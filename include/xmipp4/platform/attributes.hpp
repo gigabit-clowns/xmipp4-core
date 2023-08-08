@@ -31,7 +31,7 @@
  * tries to provide an alternative though compiler intrinsic
  * macros. If no alternative is available, a dummy declaration
  * is provided. This allows the programmer to use the attributes 
- * though macro definitions with no compatibility check, and
+ * through macro definitions with no compatibility check, and
  * then its declaration will handle the best option available.
  */
 

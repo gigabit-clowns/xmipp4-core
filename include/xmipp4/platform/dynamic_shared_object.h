@@ -25,7 +25,7 @@
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Provides API definition macros for selectively exporting
  * to the final binary file.
- * @date 2023-03-25
+ * @date 2023-08-08
  * 
  */
 
@@ -80,7 +80,7 @@
 #endif
 
 /**
- * @def XMIPP4_LOCAL
+ * @def XMIPP4_CORE_API
  * @brief Declares that the function is part of the public core API of XMIPP4
  * 
  * The functions declared as public core API will be exported to the shared object. 

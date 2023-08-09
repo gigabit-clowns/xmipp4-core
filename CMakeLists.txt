@@ -29,6 +29,10 @@ project(
 	LANGUAGES CXX
 )
 
+# Declare build options
+option(BUILD_DOC "Build documentation" ON)
+option(BUILD_TESTS "Build tests" ON)
+
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
@@ -39,11 +43,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 add_subdirectory(src)
 
 # Only build docs if it is the main project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+if(BUILD_DOC)
 	add_subdirectory(doc)
 endif()
 
 # Only build tests if it is the main project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+if(BUILD_TESTS)
 	add_subdirectory(tests)
 endif()

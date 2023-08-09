@@ -22,7 +22,7 @@
  * @file test_bit.cpp
  * @author Oier Lauzirika Zarrabeitia
  * @brief Test for utils/bit.hpp
- * @date 2023-03-04
+ * @date 2023-08-09
  */
 
 #include <catch2/catch.hpp>

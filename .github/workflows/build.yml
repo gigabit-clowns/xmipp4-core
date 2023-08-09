@@ -18,10 +18,10 @@ jobs:
         uses: threeal/cmake-action@v1.2.0
 
       - name: Build
-        runs: cmake --build build
+        run: cmake --build build
 
       - name: Test
-        runs: ctest --test-dir build
+        run: ctest --test-dir build
 
 
   

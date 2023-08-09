@@ -181,7 +181,7 @@ bit_ceil(T x) noexcept
 #if defined(__cpp_lib_int_pow2)
     return std::bit_ceil(x);
 #else
-    return T(1) << bit_width(T(x - 1));
+    return x < (1) ? T(1) : T(1) << bit_width(T(x - 1));
 #endif
 }
 

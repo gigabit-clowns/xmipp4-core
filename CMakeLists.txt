@@ -49,5 +49,6 @@ endif()
 
 # Only build tests if it is the main project
 if(BUILD_TESTS)
+	enable_testing()
 	add_subdirectory(tests)
 endif()

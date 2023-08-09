@@ -20,6 +20,17 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file constexpr.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Macro definitions for version dependant constexpr
+ * @date 2023-08-08
+ * 
+ * This file provides definitions for using constexpr when
+ * supported
+ * 
+ */
+
 #include "cpp_version.hpp"
 
 #if defined(__cpp_constexpr) || defined(XMIPP4_DOC_BUILD)

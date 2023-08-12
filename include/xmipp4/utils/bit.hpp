@@ -49,7 +49,21 @@ namespace utils
  * starting from the LSB
  * @return std::size_t with one or zero bits set.
  */
-XMIPP4_CONSTEXPR std::size_t bit(std::size_t i) noexcept;
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+std::size_t bit(std::size_t i) noexcept;
+
+/**
+ * @brief 
+ * 
+ * @tparam T Unsigned integer type
+ * @param start First bit in the range (0 is LSB)
+ * @param end Past-the-end bit in the range (0 is LSB)
+ * @return T The mask
+ */
+template<typename T>
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
+bit_range_mask(std::size_t start, std::size_t end) noexcept;
 
 /**
  * @brief Sets the lowest '0' bit to '1' in place

@@ -37,11 +37,19 @@ namespace xmipp4
 namespace utils
 {
 
-XMIPP4_INLINE_CONSTEXPR std::size_t bit(std::size_t i) noexcept
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
+std::size_t bit(std::size_t i) noexcept
 {
     return 1UL << i;
 }
 
+template<typename T>
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
+bit_range_mask(std::size_t start, std::size_t end) noexcept
+{
+    return T(bit(end)) - T(bit(start));
+}
 
 
 

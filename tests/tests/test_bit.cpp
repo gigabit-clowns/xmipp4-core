@@ -45,6 +45,41 @@ TEST_CASE( "bit definition", "[bit]" )
     REQUIRE( utils::bit(std::numeric_limits<std::size_t>::digits-1) == msb );
 }
 
+TEST_CASE( "bit range mask", "[bit]" ) 
+{
+    SECTION( "8 bits" )
+    {
+        REQUIRE( utils::bit_range_mask<uint8_t>(0, 0) == 0x00 );
+        REQUIRE( utils::bit_range_mask<uint8_t>(0, 1) == 0x01 );
+        REQUIRE( utils::bit_range_mask<uint8_t>(0, 2) == 0x03 );
+        REQUIRE( utils::bit_range_mask<uint8_t>(0, 8) == 0xFF );
+        REQUIRE( utils::bit_range_mask<uint8_t>(1, 8) == 0xFE );
+        REQUIRE( utils::bit_range_mask<uint8_t>(4, 8) == 0xF0 );
+    }
+
+    SECTION( "16 bits" )
+    {
+        REQUIRE( utils::bit_range_mask<uint16_t>(0, 0) == 0x0000 );
+        REQUIRE( utils::bit_range_mask<uint16_t>(0, 1) == 0x0001 );
+        REQUIRE( utils::bit_range_mask<uint16_t>(0, 2) == 0x0003 );
+        REQUIRE( utils::bit_range_mask<uint16_t>(0,16) == 0xFFFF );
+        REQUIRE( utils::bit_range_mask<uint16_t>(1,16) == 0xFFFE );
+        REQUIRE( utils::bit_range_mask<uint16_t>(8,16) == 0xFF00 );
+        REQUIRE( utils::bit_range_mask<uint16_t>(4,12) == 0x0FF0 );
+    }
+
+    SECTION( "32 bits" )
+    {
+        REQUIRE( utils::bit_range_mask<uint32_t>(0, 0) == 0x00000000 );
+        REQUIRE( utils::bit_range_mask<uint32_t>(0, 1) == 0x00000001 );
+        REQUIRE( utils::bit_range_mask<uint32_t>(0, 2) == 0x00000003 );
+        REQUIRE( utils::bit_range_mask<uint32_t>(0,32) == 0xFFFFFFFF );
+        REQUIRE( utils::bit_range_mask<uint32_t>(1,32) == 0xFFFFFFFE );
+        REQUIRE( utils::bit_range_mask<uint32_t>(8,32) == 0xFFFFFF00 );
+        REQUIRE( utils::bit_range_mask<uint32_t>(8,24) == 0x00FFFF00 );
+    }
+}
+
 TEST_CASE( "set lowest zero", "[bit]" ) 
 {
     SECTION( "8 bits" )

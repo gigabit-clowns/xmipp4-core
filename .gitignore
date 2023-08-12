@@ -33,3 +33,6 @@
 
 # CMake output
 build
+
+# VS Code
+.vscode

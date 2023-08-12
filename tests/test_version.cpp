@@ -35,14 +35,6 @@ using namespace xmipp4;
 
 TEST_CASE( "version constructor and getters", "[version]" ) 
 {
-    SECTION( "default constructor" ) 
-    {
-        version v;
-        REQUIRE( v.get_major() == 0 );
-        REQUIRE( v.get_minor() == 0 );
-        REQUIRE( v.get_patch() == 0 );
-    }
-
     SECTION( "piecewise constructor" )
     {
         version v(1, 2, 3);

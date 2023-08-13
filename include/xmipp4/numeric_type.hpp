@@ -114,7 +114,7 @@ XMIPP4_CONSTEXPR bool is_int_or_uint(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_float(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_complex(numeric_type type) noexcept;
 
-XMIPP4_CONSTEXPR std::string_view to_string(numeric_type type) noexcept;
+XMIPP4_CONSTEXPR const char* to_string(numeric_type type) noexcept;
 numeric_type from_string(std::string_view str);
 
 }

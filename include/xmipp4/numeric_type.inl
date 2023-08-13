@@ -324,7 +324,7 @@ XMIPP4_INLINE_CONSTEXPR bool is_complex(numeric_type type) noexcept
 
 
 
-XMIPP4_INLINE_CONSTEXPR std::string_view 
+XMIPP4_INLINE_CONSTEXPR const char*
 to_string(numeric_type type) noexcept
 {
     switch (type)

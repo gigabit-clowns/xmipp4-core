@@ -21,63 +21,52 @@
  ***************************************************************************/
 
 /**
- * @file operating_system.h
+ * @file dynamic_library_detail.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides macros for detecting the target OS
- * @date 2023-08-08
+ * @brief Platform independent functions for loading, unloading and querying
+ * dynamic libraries
+ * @date 2023-08-13
  * 
  */
 
-/**
- * @def XMIPP4_WINDOWS
- * @brief Defined if the target is Windows (32bit or 64bit)
- * 
- */
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
-    #define XMIPP4_WINDOWS 1
-#endif
+#include <xmipp4/platform/operating_system.h>
+
+namespace xmipp4
+{
+namespace detail
+{
 
 /**
- * @def XMIPP4_APPLE
- * @brief Defined if the target is MacOS
+ * @brief Open a the dynamic library
  * 
+ * @param filename Path to the dynamic library
+ * @return void* Pointer to the newly opened dynamic library
  */
-#if defined(__APPLE__) || defined(__MACH__)
-    #define XMIPP_APPLE 1
-#endif
+void* dynamic_library_open(const char* filename);
 
 /**
- * @def XMIPP4_UNIX
- * @brief Defined if the target is Unix-like, including Linux
+ * @brief Close a dynamic library
  * 
+ * @param handle Handle of the dynamic library to be closed
  */
-#if defined(__unix__) || defined(__unix)
-    #define XMIPP4_UNIX 1
-#endif
+void dynamic_library_close(void* handle) noexcept;
 
 /**
- * @def XMIPP4_LINUX
- * @brief Defined if the target is Linux
+ * @brief Get a symbol from the dynamic library
  * 
+ * @param handle Handle of the dynamic library
+ * @param name Name of the symbol
+ * @return void* Pointer to the queried symbol. NULL if not found
  */
-#if defined(__linux__) || defined(__linux) || defined(__gnu_linux__)
-    #define XMIPP4_LINUX 1
-#endif
+void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 
-/**
- * @def XMIPP4_BSD
- * @brief Defined if the target is BSD
- * 
- */
-#if defined(BSD)
-    #define XMIPP4_BSD 1
-#endif
+} // namespace detail
+}
 
-/**
- * @def XMIPP4_POSIX
- * @brief Defined if the target is POSIX
- * 
- */
-#if defined(_POSIX_VERSION) || defined(XMIPP4_UNIX)
-    #define XMIPP4_POSIX 1
+#if defined(XMIPP4_POSIX)
+    #include "dynamic_library_detail_posix.inl"
+#elif defined(XMIPP4_WINDOWS)
+    #include "dynamic_library_detail_windows.inl"
+#else
+    #error "No dynamic library implementation available for this platform"
 #endif

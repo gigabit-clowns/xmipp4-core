@@ -41,7 +41,7 @@ namespace utils
 template<typename T, byte_order O>
 XMIPP4_INLINE_CONSTEXPR 
 fixed_byte_order<T, O>::fixed_byte_order(value_type value) noexcept
-    : m_value(from_native_endian(value), order)
+    : m_value(convert_byte_order<get_native_byte_order<T>(), order>(value))
 {
 }
 
@@ -49,10 +49,8 @@ template<typename T, byte_order O>
 XMIPP4_INLINE_CONSTEXPR 
 fixed_byte_order<T, O>::operator value_type() const noexcept
 {
-    return to_native_endian(m_value, order);
+    return convert_byte_order<order, get_native_byte_order<T>()>(m_value);
 }
-
-
 
 
 
@@ -113,7 +111,7 @@ namespace detail
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<typename std::make_unsigned<T>::type, uint8_t>::value, T>::type
+typename std::enable_if<std::is_same<T, uint8_t>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
     return x;
@@ -121,7 +119,15 @@ reverse_byte_order(T x) noexcept
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<typename std::make_unsigned<T>::type, uint16_t>::value, T>::type
+typename std::enable_if<std::is_same<T, int8_t>::value, T>::type
+reverse_byte_order(T x) noexcept
+{
+    return x;
+}
+
+template<typename T>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_same<T, uint16_t>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
 #if XMIPP4_HAS_BUILTIN(bswap16)
@@ -134,7 +140,15 @@ reverse_byte_order(T x) noexcept
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<typename std::make_unsigned<T>::type, uint32_t>::value, T>::type
+typename std::enable_if<std::is_same<T, int16_t>::value, T>::type
+reverse_byte_order(T x) noexcept
+{
+    return reverse_byte_order(uint16_t(x));
+}
+
+template<typename T>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_same<T, uint32_t>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
 #if XMIPP4_HAS_BUILTIN(bswap32)
@@ -149,7 +163,15 @@ reverse_byte_order(T x) noexcept
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<typename std::make_unsigned<T>::type, uint64_t>::value, T>::type
+typename std::enable_if<std::is_same<T, int32_t>::value, T>::type
+reverse_byte_order(T x) noexcept
+{
+    return reverse_byte_order(uint32_t(x));
+}
+
+template<typename T>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_same<T, uint64_t>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
 #if XMIPP4_HAS_BUILTIN(bswap64)
@@ -168,10 +190,18 @@ reverse_byte_order(T x) noexcept
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_same<T, int64_t>::value, T>::type
+reverse_byte_order(T x) noexcept
+{
+    return reverse_byte_order(uint64_t(x));
+}
+
+template<typename T>
+XMIPP4_INLINE_CONSTEXPR 
 typename std::enable_if<std::is_pointer<T>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
-    auto v = static_cast<uintptr_t>(x);
+    auto v = static_cast<std::uintptr_t>(x);
     v = reverse_byte_order(v);
     return static_cast<T>(v);
 }
@@ -216,194 +246,55 @@ XMIPP4_INLINE_CONSTEXPR T& reverse_byte_order_inplace(T& x) noexcept
 
 
 
-
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-big_to_little_endian(T x) noexcept
+template<byte_order From, byte_order To, typename T>
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T>::type
+convert_byte_order(T x) noexcept
 {
-    return reverse_byte_order(x);
+    return convert_byte_order(x, From, To);
 }
 
 template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-little_to_big_endian(T x) noexcept
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T>::type
+convert_byte_order(T x, byte_order from, byte_order to) noexcept
 {
-    return reverse_byte_order(x);
+    convert_byte_order_inplace(x, from, to);
+    return x;
+}
+
+template<byte_order From, byte_order To, typename T>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T&>::type
+convert_byte_order_inplace(T& x) noexcept
+{
+    return convert_byte_order_inplace(x, From, To);
 }
 
 template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-big_to_little_endian_inplace(T& x) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T&>::type
+convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept
 {
-    return reverse_byte_order_inplace(x);
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-little_to_big_endian_inplace(T& x) noexcept
-{
-    return reverse_byte_order_inplace(x);
-}
-
-
-
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-big_to_native_endian(T x) noexcept
-{
-    switch (get_native_byte_order<T>())
+    switch (from)
     {
-    case byte_order::big_endian: 
-        return x;
+    case byte_order::big_endian:
+        switch (to)
+        {
+        case byte_order::big_endian:
+            return x;
+        case byte_order::little_endian:
+            return reverse_byte_order_inplace(x);
+        }
+
     case byte_order::little_endian:
-        return big_to_little_endian(x);
-    }
-}
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-native_to_big_endian(T x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return x;
-    case byte_order::little_endian:
-        return little_to_big_endian(x);
-    }
-}
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-little_to_native_endian(T x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return little_to_big_endian(x);
-    case byte_order::little_endian:
-        return x;
-    }
-}
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-native_to_little_endian(T x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return big_to_little_endian(x);
-    case byte_order::little_endian:
-        return x;
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-big_to_native_endian_inplace(T& x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return x;
-    case byte_order::little_endian:
-        return big_to_little_endian_inplace(x);
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-native_to_big_endian_inplace(T& x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return x;
-    case byte_order::little_endian:
-        return little_to_big_endian_inplace(x);
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-little_to_native_endian_inplace(T& x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return little_to_big_endian_inplace(x);
-    case byte_order::little_endian:
-        return x;
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-native_to_little_endian_inplace(T& x) noexcept
-{
-    switch (get_native_byte_order<T>())
-    {
-    case byte_order::big_endian: 
-        return big_to_little_endian_inplace(x);
-    case byte_order::little_endian:
-        return x;
-    }
-}
-
-
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-to_native_endian(T x, byte_order order) noexcept
-{
-    switch (order)
-    {
-    case byte_order::big_endian: 
-        return big_to_native_endian(x);
-    case byte_order::little_endian:
-        return little_to_native_endian(x);
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-to_native_endian_inplace(T& x, byte_order order) noexcept
-{
-    switch (order)
-    {
-    case byte_order::big_endian: 
-        return big_to_native_endian_inplace(x);
-    case byte_order::little_endian:
-        return little_to_native_endian_inplace(x);
-    }
-}
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR T 
-from_native_endian(T x, byte_order order) noexcept
-{
-    switch (order)
-    {
-    case byte_order::big_endian: 
-        return native_to_big_endian(x);
-    case byte_order::little_endian:
-        return native_to_little_endian(x);
-    }
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR T& 
-from_native_endian_inplace(T& x, byte_order order) noexcept
-{
-    switch (order)
-    {
-    case byte_order::big_endian: 
-        return native_to_big_endian_inplace(x);
-    case byte_order::little_endian:
-        return native_to_little_endian_inplace(x);
+        switch (to)
+        {
+        case byte_order::big_endian:
+            return reverse_byte_order_inplace(x);
+        case byte_order::little_endian:
+            return x;
+        }
     }
 }
 

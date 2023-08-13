@@ -52,7 +52,7 @@ class fixed_byte_order
 {
 public:
     using value_type = T;
-    static XMIPP4_CONST_CONSTEXPR byte_order order = O;
+    static inline XMIPP4_CONST_CONSTEXPR byte_order order = O;
 
     fixed_byte_order() = default;
     XMIPP4_CONSTEXPR fixed_byte_order(value_type value) noexcept;
@@ -95,52 +95,41 @@ using little_float64_t = fixed_byte_order<float64_t, byte_order::little_endian>;
 
 
 XMIPP4_CONSTEXPR byte_order get_system_byte_order() noexcept;
+
 XMIPP4_CONSTEXPR byte_order get_fpu_byte_order() noexcept;
+
 template <typename T>
-XMIPP4_CONSTEXPR typename std::enable_if<std::is_scalar<T>::value, byte_order>::type
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, byte_order>::type
 get_native_byte_order() noexcept;
 
 template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR typename std::enable_if<std::is_scalar<T>::value, T>::type
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T>::type
 reverse_byte_order(T x) noexcept;
+
 template<typename T>
 XMIPP4_CONSTEXPR T& reverse_byte_order_inplace(T& x) noexcept;
 
+template<byte_order From, byte_order To, typename T>
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T>::type
+convert_byte_order(T x) noexcept;
 
 template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T big_to_little_endian(T x) noexcept;
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T little_to_big_endian(T x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& big_to_little_endian_inplace(T& x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& little_to_big_endian_inplace(T& x) noexcept;
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T>::type
+convert_byte_order(T x, byte_order from, byte_order to) noexcept;
+
+template<byte_order From, byte_order To, typename T>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T&>::type
+convert_byte_order_inplace(T& x) noexcept;
 
 template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T big_to_native_endian(T x) noexcept;
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T native_to_big_endian(T x) noexcept;
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T little_to_native_endian(T x) noexcept;
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T native_to_little_endian(T x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& big_to_native_endian_inplace(T& x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& native_to_big_endian_inplace(T& x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& little_to_native_endian_inplace(T& x) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& native_to_little_endian_inplace(T& x) noexcept;
-
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T to_native_endian(T x, byte_order order) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& to_native_endian_inplace(T& x, byte_order order) noexcept;
-template<typename T>
-XMIPP4_NODISCARD XMIPP4_CONSTEXPR T from_native_endian(T x, byte_order order) noexcept;
-template<typename T>
-XMIPP4_CONSTEXPR T& from_native_endian_inplace(T& x, byte_order order) noexcept;
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_scalar<T>::value, T&>::type
+convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept;
 
 } // namespace utils
 } // namespace xmipp4

@@ -35,10 +35,15 @@ jobs:
     - name: Install dependencies
       run: sudo apt update && sudo apt install -y doxygen
     
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --target doxygen
 
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
         branch: gh-pages
-        folder: build/gh-pages
+        folder: build/doc/doxygen/html
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

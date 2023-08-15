@@ -20,7 +20,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-name: GitHub pages deployment
+name: Deploy Doxygen to GitHub Pages
 
 on:
   push:
@@ -42,7 +42,11 @@ jobs:
   build: 
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
 
     - name: Install dependencies
       run: sudo apt update && sudo apt install -y doxygen
@@ -53,6 +57,11 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --target doxygen
 
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ${{github.workspace}}/build/doc/doxygen/html
+
   deploy:
     environment:
       name: github-pages
@@ -60,14 +69,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: build
     steps:
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ${{github.workspace}}/build/doc/doxygen/html
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

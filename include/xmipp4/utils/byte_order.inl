@@ -38,22 +38,6 @@ namespace xmipp4
 namespace utils
 {
 
-template<typename T, byte_order O>
-XMIPP4_INLINE_CONSTEXPR 
-fixed_byte_order<T, O>::fixed_byte_order(value_type value) noexcept
-    : m_value(convert_byte_order<get_native_byte_order<T>(), order>(value))
-{
-}
-
-template<typename T, byte_order O>
-XMIPP4_INLINE_CONSTEXPR 
-fixed_byte_order<T, O>::operator value_type() const noexcept
-{
-    return convert_byte_order<order, get_native_byte_order<T>()>(m_value);
-}
-
-
-
 XMIPP4_INLINE_CONSTEXPR byte_order 
 get_system_byte_order() noexcept
 {
@@ -76,32 +60,6 @@ get_fpu_byte_order() noexcept
     #else
         #error "Unknown byte ordering"
     #endif
-}
-
-namespace detail
-{
-
-template <typename T>
-XMIPP4_CONSTEXPR typename std::enable_if<std::is_floating_point<T>::value, byte_order>::type
-get_native_byte_order() noexcept
-{
-    return get_fpu_byte_order();
-}
-
-template <typename T>
-XMIPP4_CONSTEXPR typename std::enable_if<!std::is_floating_point<T>::value, byte_order>::type
-get_native_byte_order() noexcept
-{
-    return get_system_byte_order();
-}
-
-}
-
-template <typename T>
-XMIPP4_CONSTEXPR typename std::enable_if<std::is_scalar<T>::value, byte_order>::type
-get_native_byte_order() noexcept
-{
-    return detail::get_native_byte_order<T>();
 }
 
 
@@ -196,43 +154,11 @@ reverse_byte_order(T x) noexcept
     return reverse_byte_order(uint64_t(x));
 }
 
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_pointer<T>::value, T>::type
-reverse_byte_order(T x) noexcept
-{
-    auto v = static_cast<std::uintptr_t>(x);
-    v = reverse_byte_order(v);
-    return static_cast<T>(v);
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<T, float>::value, T>::type
-reverse_byte_order(T x) noexcept
-{
-    static_assert(sizeof(x) == sizeof(uint32_t), "float has unexpected size");
-    auto& bits = reinterpret_cast<uint32_t&>(x); //HACK
-    bits = reverse_byte_order(bits);
-    return x;
-}
-
-template<typename T>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<T, double>::value, T>::type
-reverse_byte_order(T x) noexcept
-{
-    static_assert(sizeof(x) == sizeof(uint64_t), "double has unexpected size");
-    auto& bits = reinterpret_cast<uint64_t&>(x); //HACK
-    bits = reverse_byte_order(bits);
-    return x;
-}
-
 } // namespace detail
 
 template<typename T>
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_scalar<T>::value, T>::type
+typename std::enable_if<std::is_integral<T>::value, T>::type
 reverse_byte_order(T x) noexcept
 {
     return detail::reverse_byte_order(x);
@@ -248,7 +174,7 @@ XMIPP4_INLINE_CONSTEXPR T& reverse_byte_order_inplace(T& x) noexcept
 
 template<byte_order From, byte_order To, typename T>
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_scalar<T>::value, T>::type
+typename std::enable_if<std::is_integral<T>::value, T>::type
 convert_byte_order(T x) noexcept
 {
     return convert_byte_order(x, From, To);
@@ -256,7 +182,7 @@ convert_byte_order(T x) noexcept
 
 template<typename T>
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_scalar<T>::value, T>::type
+typename std::enable_if<std::is_integral<T>::value, T>::type
 convert_byte_order(T x, byte_order from, byte_order to) noexcept
 {
     convert_byte_order_inplace(x, from, to);
@@ -265,7 +191,7 @@ convert_byte_order(T x, byte_order from, byte_order to) noexcept
 
 template<byte_order From, byte_order To, typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_scalar<T>::value, T&>::type
+typename std::enable_if<std::is_integral<T>::value, T&>::type
 convert_byte_order_inplace(T& x) noexcept
 {
     return convert_byte_order_inplace(x, From, To);
@@ -273,7 +199,7 @@ convert_byte_order_inplace(T& x) noexcept
 
 template<typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_scalar<T>::value, T&>::type
+typename std::enable_if<std::is_integral<T>::value, T&>::type
 convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept
 {
     switch (from)

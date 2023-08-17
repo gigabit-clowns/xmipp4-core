@@ -1,2 +1,2 @@
-catch2==3
+catch2==3.4
 cpp-half==2.1

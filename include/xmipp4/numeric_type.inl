@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,22 +135,6 @@ type_of() noexcept
 
 template <typename T>
 XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<T, bfloat16_t>::value, numeric_type>::type
-type_of() noexcept
-{
-    return numeric_type::bfloat16;
-}
-
-template <typename T>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_same<T, bfloat19_t>::value, numeric_type>::type
-type_of() noexcept
-{
-    return numeric_type::bfloat19;
-}
-
-template <typename T>
-XMIPP4_INLINE_CONSTEXPR 
 typename std::enable_if<std::is_same<T, complex_float16_t>::value, numeric_type>::type
 type_of() noexcept
 {
@@ -206,8 +188,6 @@ XMIPP4_INLINE_CONSTEXPR std::size_t get_sizeof(numeric_type type) noexcept
     case numeric_type::float16: return sizeof(float16_t);
     case numeric_type::float32: return sizeof(float32_t);
     case numeric_type::float64: return sizeof(float64_t);
-    case numeric_type::bfloat16: return sizeof(bfloat16_t);
-    case numeric_type::bfloat19: return sizeof(bfloat19_t);
     case numeric_type::complex_float16: return sizeof(complex_float16_t);
     case numeric_type::complex_float32: return sizeof(complex_float32_t);
     case numeric_type::complex_float64: return sizeof(complex_float64_t);
@@ -229,8 +209,6 @@ XMIPP4_INLINE_CONSTEXPR std::size_t get_alignof(numeric_type type) noexcept
     case numeric_type::float16: return alignof(float16_t);
     case numeric_type::float32: return alignof(float32_t);
     case numeric_type::float64: return alignof(float64_t);
-    case numeric_type::bfloat16: return alignof(bfloat16_t);
-    case numeric_type::bfloat19: return alignof(bfloat19_t);
     case numeric_type::complex_float16: return alignof(complex_float16_t);
     case numeric_type::complex_float32: return alignof(complex_float32_t);
     case numeric_type::complex_float64: return alignof(complex_float64_t);
@@ -253,8 +231,6 @@ get_typeid(numeric_type type) noexcept
     case numeric_type::float16: return typeid(float16_t);
     case numeric_type::float32: return typeid(float32_t);
     case numeric_type::float64: return typeid(float64_t);
-    case numeric_type::bfloat16: return typeid(bfloat16_t);
-    case numeric_type::bfloat19: return typeid(bfloat19_t);
     case numeric_type::complex_float16: return typeid(complex_float16_t);
     case numeric_type::complex_float32: return typeid(complex_float32_t);
     case numeric_type::complex_float64: return typeid(complex_float64_t);
@@ -301,8 +277,6 @@ XMIPP4_INLINE_CONSTEXPR bool is_float(numeric_type type) noexcept
     case numeric_type::float16:
     case numeric_type::float32:
     case numeric_type::float64:
-    case numeric_type::bfloat16:
-    case numeric_type::bfloat19:
         return true;
     default:
         return false;
@@ -340,8 +314,6 @@ to_string(numeric_type type) noexcept
     case numeric_type::float16: return "float16";
     case numeric_type::float32: return "float32";
     case numeric_type::float64: return "float64";
-    case numeric_type::bfloat16: return "bfloat16";
-    case numeric_type::bfloat19: return "bfloat19";
     case numeric_type::complex_float16: return "complex_float16";
     case numeric_type::complex_float32: return "complex_float32";
     case numeric_type::complex_float64: return "complex_float64";
@@ -366,8 +338,6 @@ from_string(std::string_view str)
         { to_string(numeric_type::float16), numeric_type::float16 },
         { to_string(numeric_type::float32), numeric_type::float32 },
         { to_string(numeric_type::float64), numeric_type::float64 },
-        { to_string(numeric_type::bfloat16), numeric_type::bfloat16 },
-        { to_string(numeric_type::bfloat19), numeric_type::bfloat19 },
         { to_string(numeric_type::complex_float16), numeric_type::complex_float16 },
         { to_string(numeric_type::complex_float32), numeric_type::complex_float32 },
         { to_string(numeric_type::complex_float64), numeric_type::complex_float64 },
@@ -376,4 +346,4 @@ from_string(std::string_view str)
     return str_2_numeric_type.at(str);
 }
 
-}
+} // namespace xmipp4

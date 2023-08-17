@@ -69,9 +69,6 @@ using float64_t = _Float64;
 using float64_t = double;
 #endif
 
-struct bfloat16_t { uint16_t bits; };
-struct bfloat19_t { uint32_t bits; };
-
 using complex_float16_t = std::complex<float16_t>;
 using complex_float32_t = std::complex<float32_t>;
 using complex_float64_t = std::complex<float64_t>;
@@ -91,9 +88,6 @@ enum class numeric_type
     float16,
     float32,
     float64,
-
-    bfloat16, ///< BFLOAT16
-    bfloat19, ///< TF32
 
     complex_float16,
     complex_float32,

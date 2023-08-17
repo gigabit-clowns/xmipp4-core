@@ -29,17 +29,12 @@ project(
 	LANGUAGES CXX
 )
 
-# Include CTest to provide BUILD_TESTING option
-include(CTest)
-
 # Declare build options
 option(BUILD_DOC "Build documentation" ON)
+option(BUILD_TESTING "Build testing" ON)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-
-# Declare dependencies
-# TODO
 
 # Add sources
 add_subdirectory(src)
@@ -51,5 +46,6 @@ endif()
 
 # Only build tests if it is the main project
 if(BUILD_TESTING)
+	enable_testing()
 	add_subdirectory(tests)
 endif()

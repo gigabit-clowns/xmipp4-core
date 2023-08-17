@@ -53,6 +53,7 @@ jobs:
       with:
         channels: conda-forge
         environment-file: requirements.txt
+        activate-environment: xmipp4
 
     - name: Check Conda
       run: |

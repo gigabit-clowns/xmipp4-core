@@ -29,6 +29,9 @@ project(
 	LANGUAGES CXX
 )
 
+# Include CTest to provide BUILD_TESTING option
+include(CTest)
+
 # Declare build options
 option(BUILD_DOC "Build documentation" ON)
 
@@ -48,6 +51,5 @@ endif()
 
 # Only build tests if it is the main project
 if(BUILD_TESTING)
-	enable_testing()
 	add_subdirectory(tests)
 endif()

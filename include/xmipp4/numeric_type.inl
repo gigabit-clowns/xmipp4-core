@@ -237,7 +237,7 @@ get_typeid(numeric_type type) noexcept
     }
 }
 
-XMIPP4_INLINE_CONSTEXPR bool is_int(numeric_type type) noexcept
+XMIPP4_INLINE_CONSTEXPR bool is_signed_integer(numeric_type type) noexcept
 {
     switch (type)
     {
@@ -251,7 +251,7 @@ XMIPP4_INLINE_CONSTEXPR bool is_int(numeric_type type) noexcept
     }
 }
 
-XMIPP4_INLINE_CONSTEXPR bool is_uint(numeric_type type) noexcept
+XMIPP4_INLINE_CONSTEXPR bool is_unsigned_integer(numeric_type type) noexcept
 {
     switch (type)
     {
@@ -265,9 +265,9 @@ XMIPP4_INLINE_CONSTEXPR bool is_uint(numeric_type type) noexcept
     }
 }
 
-XMIPP4_INLINE_CONSTEXPR bool is_int_or_uint(numeric_type type) noexcept
+XMIPP4_INLINE_CONSTEXPR bool is_integer(numeric_type type) noexcept
 {
-    return is_int(type) || is_uint(type);
+    return is_signed_integer(type) || is_unsigned_integer(type);
 }
 
 XMIPP4_INLINE_CONSTEXPR bool is_float(numeric_type type) noexcept

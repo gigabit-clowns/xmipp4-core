@@ -24,7 +24,10 @@ cmake_minimum_required(VERSION 3.16)
 
 include(GNUInstallDirs)
 
-#Register all source and header files
+# Find dependencies
+find_package(half 2.2 REQUIRED)
+
+# Register all source and header files
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include/*.h ${PROJECT_SOURCE_DIR}/include/*.hpp)
 file(GLOB_RECURSE INLINE_SOURCES ${PROJECT_SOURCE_DIR}/include/*.inl)

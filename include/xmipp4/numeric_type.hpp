@@ -102,9 +102,9 @@ XMIPP4_CONSTEXPR numeric_type type_of(const T&) noexcept;
 XMIPP4_CONSTEXPR std::size_t get_sizeof(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR std::size_t get_alignof(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR const std::type_info& get_typeid(numeric_type type) noexcept;
-XMIPP4_CONSTEXPR bool is_int(numeric_type type) noexcept;
-XMIPP4_CONSTEXPR bool is_uint(numeric_type type) noexcept;
-XMIPP4_CONSTEXPR bool is_int_or_uint(numeric_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_signed_integer(numeric_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_unsigned_integer(numeric_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_integer(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_float(numeric_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_complex(numeric_type type) noexcept;
 

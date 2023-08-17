@@ -52,7 +52,7 @@ jobs:
       run: sudo apt update && sudo apt install -y doxygen
     
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTING=OFF
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --target doxygen

@@ -31,7 +31,6 @@ project(
 
 # Declare build options
 option(BUILD_DOC "Build documentation" ON)
-option(BUILD_TESTS "Build tests" ON)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -48,7 +47,7 @@ if(BUILD_DOC)
 endif()
 
 # Only build tests if it is the main project
-if(BUILD_TESTS)
+if(BUILD_TESTING)
 	enable_testing()
 	add_subdirectory(tests)
 endif()

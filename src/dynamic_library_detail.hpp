@@ -61,7 +61,7 @@ void dynamic_library_close(void* handle) noexcept;
 void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 
 } // namespace detail
-}
+} // namespace xmipp4
 
 #if defined(XMIPP4_POSIX)
     #include "dynamic_library_detail_posix.inl"

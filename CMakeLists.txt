@@ -26,7 +26,7 @@ cmake_minimum_required(VERSION 3.16)
 project(
     xmipp4-core
 	VERSION 4.1.0 
-	LANGUAGES CXX
+	LANGUAGES C CXX
 )
 
 # Include CTest to provide BUILD_TESTING option

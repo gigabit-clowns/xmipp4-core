@@ -28,5 +28,8 @@ source:
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - catch2==3.4
+    - cpp-half==2.1

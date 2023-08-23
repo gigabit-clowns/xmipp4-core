@@ -20,27 +20,38 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "../platform/constexpr.hpp"
+
 #include <cstddef>
+
 namespace xmipp4
 {
 
-class allocation_info;
-class column_base
+class allocation_info
 {
 public:
-    column_base() = default;
-    column_base(const column_base& other) = default;
-    column_base(column_base&& other) = default;
-    virtual ~column_base() = default;
+    XMIPP4_CONSTEXPR allocation_info() noexcept;
+    explicit XMIPP4_CONSTEXPR allocation_info(std::size_t size) noexcept;
+    XMIPP4_CONSTEXPR allocation_info(std::size_t size, std::size_t capacity) noexcept;
+    allocation_info(const allocation_info& other) = default;
+    allocation_info(allocation_info&& other) = default;
+    ~allocation_info() = default;
 
-    column_base& operator=(const column_base& other) = default;
-    column_base& operator=(column_base&& other) = default;
+    allocation_info& operator=(const allocation_info& other) = default;
+    allocation_info& operator=(allocation_info&& other) = default;
 
-    virtual void resize(const allocation_info& info, std::size_t size) = 0;
-    virtual void reserve(const allocation_info& info, std::size_t capacity) = 0;
+    XMIPP4_CONSTEXPR void set_size(std::size_t size) noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_size() const noexcept;
+
+    XMIPP4_CONSTEXPR void set_capacity(std::size_t capacity) noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_capacity() const noexcept;
 
 private:
+    std::size_t m_size;
+    std::size_t m_capacity;
 
 };
 
 } // namespace xmipp4
+
+#include "allocation_info.inl"

@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +18,54 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <cstddef>
+#include "allocation_info.hpp"
+
 namespace xmipp4
 {
 
-class allocation_info;
-class column_base
+XMIPP4_INLINE_CONSTEXPR 
+allocation_info::allocation_info() noexcept
+    : m_size(0)
+    , m_capacity(0)
 {
-public:
-    column_base() = default;
-    column_base(const column_base& other) = default;
-    column_base(column_base&& other) = default;
-    virtual ~column_base() = default;
+}
 
-    column_base& operator=(const column_base& other) = default;
-    column_base& operator=(column_base&& other) = default;
+XMIPP4_INLINE_CONSTEXPR 
+allocation_info::allocation_info(std::size_t size) noexcept
+    : m_size(size)
+    , m_capacity(size)
+{
+}
 
-    virtual void resize(const allocation_info& info, std::size_t size) = 0;
-    virtual void reserve(const allocation_info& info, std::size_t capacity) = 0;
+XMIPP4_INLINE_CONSTEXPR 
+allocation_info::allocation_info(std::size_t size, std::size_t capacity) noexcept
+    : m_size(size)
+    , m_capacity(capacity)
+{
+}
 
-private:
+XMIPP4_INLINE_CONSTEXPR 
+void allocation_info::set_size(std::size_t size) noexcept
+{
+    m_size = size;
+}
 
-};
+XMIPP4_INLINE_CONSTEXPR 
+std::size_t allocation_info::get_size() const noexcept
+{
+    return m_size;
+}
 
-} // namespace xmipp4
+XMIPP4_INLINE_CONSTEXPR 
+void allocation_info::set_capacity(std::size_t capacity) noexcept
+{
+    m_capacity = capacity;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+std::size_t allocation_info::get_capacity() const noexcept
+{
+    return m_capacity;
+}
+
+}

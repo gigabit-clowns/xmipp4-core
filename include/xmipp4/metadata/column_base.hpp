@@ -21,10 +21,14 @@
  ***************************************************************************/
 
 #include <cstddef>
+
 namespace xmipp4
+{
+namespace metadata
 {
 
 class allocation_info;
+
 class column_base
 {
 public:
@@ -43,4 +47,5 @@ private:
 
 };
 
+} // namespace metadata
 } // namespace xmipp4

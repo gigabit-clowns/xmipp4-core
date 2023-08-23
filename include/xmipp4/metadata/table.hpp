@@ -20,8 +20,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "../platform/constexpr.hpp"
-
 #include <cstddef>
 
 namespace xmipp4
@@ -29,32 +27,16 @@ namespace xmipp4
 namespace metadata
 {
 
-class allocation_info
+class allocation_info;
+class column_base;
+
+class table
 {
 public:
-    XMIPP4_CONSTEXPR allocation_info() noexcept;
-    explicit XMIPP4_CONSTEXPR allocation_info(std::size_t size) noexcept;
-    XMIPP4_CONSTEXPR allocation_info(std::size_t size, std::size_t capacity) noexcept;
-    allocation_info(const allocation_info& other) = default;
-    allocation_info(allocation_info&& other) = default;
-    ~allocation_info() = default;
-
-    allocation_info& operator=(const allocation_info& other) = default;
-    allocation_info& operator=(allocation_info&& other) = default;
-
-    XMIPP4_CONSTEXPR void set_size(std::size_t size) noexcept;
-    XMIPP4_CONSTEXPR std::size_t get_size() const noexcept;
-
-    XMIPP4_CONSTEXPR void set_capacity(std::size_t capacity) noexcept;
-    XMIPP4_CONSTEXPR std::size_t get_capacity() const noexcept;
 
 private:
-    std::size_t m_size;
-    std::size_t m_capacity;
 
 };
 
 } // namespace metadata
 } // namespace xmipp4
-
-#include "allocation_info.inl"

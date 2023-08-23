@@ -22,6 +22,8 @@
 
 namespace xmipp4
 {
+namespace metadata
+{
 
 XMIPP4_INLINE_CONSTEXPR 
 allocation_info::allocation_info() noexcept
@@ -68,4 +70,5 @@ std::size_t allocation_info::get_capacity() const noexcept
     return m_capacity;
 }
 
-}
+} // namespace metadata
+} // namespace xmipp4

@@ -28,6 +28,14 @@ namespace metadata
 {
 
 template<typename T, typename Alloc>
+template<typename... Args>
+inline
+column<T, Alloc>::column(Args&&... args)
+    : m_data(std::forward<Args>(args)...)
+{
+}
+
+template<typename T, typename Alloc>
 inline
 void column<T, Alloc>::swap(column_base& other) noexcept
 {

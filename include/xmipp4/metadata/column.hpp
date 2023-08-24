@@ -43,6 +43,8 @@ public:
     using const_pointer = typename std::allocator_traits<allocator_type>::const_pointer;
 
     column() = default;
+    template<typename... Args>
+    explicit column(Args&&... args);
     column(const allocation_context& alloc) = default;
     column(const column& other) = default;
     column(column&& other) = default;

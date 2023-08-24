@@ -18,7 +18,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "allocation_info.hpp"
+#include "allocation_context.hpp"
 
 namespace xmipp4
 {
@@ -26,48 +26,75 @@ namespace metadata
 {
 
 XMIPP4_INLINE_CONSTEXPR 
-allocation_info::allocation_info() noexcept
+allocation_context::allocation_context() noexcept
     : m_size(0)
     , m_capacity(0)
 {
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-allocation_info::allocation_info(std::size_t size) noexcept
+allocation_context::allocation_context(std::size_t size) noexcept
     : m_size(size)
     , m_capacity(size)
 {
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-allocation_info::allocation_info(std::size_t size, std::size_t capacity) noexcept
+allocation_context::allocation_context(std::size_t size, std::size_t capacity) noexcept
     : m_size(size)
     , m_capacity(capacity)
 {
 }
 
+
 XMIPP4_INLINE_CONSTEXPR 
-void allocation_info::set_size(std::size_t size) noexcept
+void allocation_context::swap(allocation_context& other) noexcept
+{
+    std::swap(m_size, other.m_size);
+    std::swap(m_capacity, other.m_capacity);
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+void allocation_context::set_size(std::size_t size) noexcept
 {
     m_size = size;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t allocation_info::get_size() const noexcept
+std::size_t allocation_context::get_size() const noexcept
 {
     return m_size;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-void allocation_info::set_capacity(std::size_t capacity) noexcept
+void allocation_context::set_capacity(std::size_t capacity) noexcept
 {
     m_capacity = capacity;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t allocation_info::get_capacity() const noexcept
+std::size_t allocation_context::get_capacity() const noexcept
 {
     return m_capacity;
+}
+
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator==(const allocation_context& x, const allocation_context& y) noexcept
+{
+    return x.get_size() == y.get_size() && x.get_capacity() == y.get_capacity();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator!=(const allocation_context& x, const allocation_context& y) noexcept
+{
+    return !(x == y);
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+void swap(allocation_context& x, allocation_context& y) noexcept
+{
+    x.swap(y);
 }
 
 } // namespace metadata

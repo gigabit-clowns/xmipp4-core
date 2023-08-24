@@ -27,7 +27,7 @@ namespace xmipp4
 namespace metadata
 {
 
-class allocation_info;
+class allocation_context;
 
 class column_base
 {
@@ -40,8 +40,7 @@ public:
     column_base& operator=(const column_base& other) = default;
     column_base& operator=(column_base&& other) = default;
 
-    virtual void resize(const allocation_info& info, std::size_t size) = 0;
-    virtual void reserve(const allocation_info& info, std::size_t capacity) = 0;
+    virtual void resize(const allocation_context& prev, const allocation_context& next) = 0;
 
 private:
 

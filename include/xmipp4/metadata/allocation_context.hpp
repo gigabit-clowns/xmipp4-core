@@ -29,18 +29,20 @@ namespace xmipp4
 namespace metadata
 {
 
-class allocation_info
+class allocation_context
 {
 public:
-    XMIPP4_CONSTEXPR allocation_info() noexcept;
-    explicit XMIPP4_CONSTEXPR allocation_info(std::size_t size) noexcept;
-    XMIPP4_CONSTEXPR allocation_info(std::size_t size, std::size_t capacity) noexcept;
-    allocation_info(const allocation_info& other) = default;
-    allocation_info(allocation_info&& other) = default;
-    ~allocation_info() = default;
+    XMIPP4_CONSTEXPR allocation_context() noexcept;
+    explicit XMIPP4_CONSTEXPR allocation_context(std::size_t size) noexcept;
+    XMIPP4_CONSTEXPR allocation_context(std::size_t size, std::size_t capacity) noexcept;
+    allocation_context(const allocation_context& other) = default;
+    allocation_context(allocation_context&& other) = default;
+    ~allocation_context() = default;
 
-    allocation_info& operator=(const allocation_info& other) = default;
-    allocation_info& operator=(allocation_info&& other) = default;
+    XMIPP4_CONSTEXPR void swap(allocation_context& other) noexcept;
+
+    allocation_context& operator=(const allocation_context& other) = default;
+    allocation_context& operator=(allocation_context&& other) = default;
 
     XMIPP4_CONSTEXPR void set_size(std::size_t size) noexcept;
     XMIPP4_CONSTEXPR std::size_t get_size() const noexcept;
@@ -54,7 +56,13 @@ private:
 
 };
 
+XMIPP4_CONSTEXPR bool operator==(const allocation_context& x, const allocation_context& y) noexcept;
+XMIPP4_CONSTEXPR bool operator!=(const allocation_context& x, const allocation_context& y) noexcept;
+
+XMIPP4_CONSTEXPR void swap(allocation_context& x, allocation_context& y) noexcept;
+
+
 } // namespace metadata
 } // namespace xmipp4
 
-#include "allocation_info.inl"
+#include "allocation_context.inl"

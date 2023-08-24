@@ -20,6 +20,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "allocation_context.hpp"
+
+#include <vector>
+#include <memory>
+#include <string>
+#include <unordered_map>
 #include <cstddef>
 
 namespace xmipp4
@@ -27,14 +33,32 @@ namespace xmipp4
 namespace metadata
 {
 
-class allocation_info;
 class column_base;
 
 class table
 {
 public:
+    table() = default;
+    table(const table& other) = delete;
+    table(table&& other) = default;
+    ~table() = default;
+
+    table& operator=(const table& other) = delete;
+    table& operator=(table&& other) = default;
+
+    void resize(std::size_t size);
+    void reserve(std::size_t capacity);
+
+    void add_column(std::string label, 
+                    std::unique_ptr<column_base> column, 
+                    const allocation_context& allocated = allocation_context() );
 
 private:
+    allocation_context m_allocated;
+    std::vector<std::unique_ptr<column_base>> m_columns;
+    std::unordered_map<std::string, std::size_t> m_label_to_index;
+
+    void resize(const allocation_context& context);
 
 };
 

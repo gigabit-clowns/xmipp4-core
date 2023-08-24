@@ -41,7 +41,8 @@ public:
     column_base& operator=(column_base&& other) = default;
 
     virtual void resize(const allocation_context& prev, const allocation_context& next) = 0;
-
+    virtual void* data() noexcept = 0;
+    virtual const void* data() const noexcept = 0;
 private:
 
 };

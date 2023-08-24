@@ -42,5 +42,19 @@ void column<T, Alloc>::resize(const allocation_context& prev, const allocation_c
     m_data.resize(next.get_size());
 }
 
+template<typename T, typename Alloc>
+inline
+typename column<T, Alloc>::pointer column<T, Alloc>::data() noexcept
+{
+    return m_data.data();
+}
+
+template<typename T, typename Alloc>
+inline
+typename column<T, Alloc>::const_pointer column<T, Alloc>::data() const noexcept
+{
+    return m_data.data();
+}
+
 } // namespace metadata
 } // namespace xmipp4

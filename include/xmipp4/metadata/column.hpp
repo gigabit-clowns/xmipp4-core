@@ -54,7 +54,8 @@ public:
     void swap(column_base& other) noexcept;
 
     void resize(const allocation_context& prev, const allocation_context& next) final;
-
+    pointer data() noexcept final;
+    const_pointer data() const noexcept final;
 private:
     std::vector<value_type> m_data;
 

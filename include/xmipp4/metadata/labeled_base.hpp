@@ -50,7 +50,10 @@ private:
 };
 
 template<typename ForwardIt, typename Map>
-ForwardIt compute_label_to_index_map(ForwardIt first, ForwardIt last, Map& map);
+ForwardIt compute_label_to_index_map(ForwardIt first, 
+                                     ForwardIt last, 
+                                     Map& map, 
+                                     typename Map::mapped_type start = {} );
 
 } // namespace metadata
 } // namespace xmipp4

@@ -58,21 +58,19 @@ const std::string& labeled_base::get_label() const noexcept
     return m_label;
 }
 
-template<typename ForwardIt, typename Map>
+template<typename ForwardIt, typename Map, typename Index>
 inline
-ForwardIt compute_label_to_index_map(ForwardIt first, ForwardIt last, Map& map)
+ForwardIt compute_label_to_index_map(ForwardIt first, 
+                                     ForwardIt last, 
+                                     Map& map,
+                                     typename Map::mapped_type start )
 {
-    // Prepare the resulting map
-    map.clear();
-    map.reserve(std::distance(first, last));
-
-    std::size_t i = 0;
     while(first != last)
     {
         // Try to insert the string and index pair on the result map
         bool inserted;
         std::tie(std::ignore, inserted) = map.emplace(
-            (*first)->get_label(), i
+            (*first)->get_label(), start
         );
 
         if(inserted)
@@ -80,12 +78,12 @@ ForwardIt compute_label_to_index_map(ForwardIt first, ForwardIt last, Map& map)
             // Label was successfully inserted. Process the next
             // element
             ++first;
-            ++i;
+            ++start;
         }
         else
         {
             // This label is duplicated. Thus, erase this element 
-            // by bringing it to the back and decrementing the end 
+            // by bringing it to the back and decrement the end 
             // iterator.
             last = std::rotate(first, std::next(first), last); // returns last-1
         }

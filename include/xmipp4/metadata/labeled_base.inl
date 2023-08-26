@@ -58,6 +58,8 @@ const std::string& labeled_base::get_label() const noexcept
     return m_label;
 }
 
+
+
 template<typename ForwardIt, typename Map, typename Index>
 inline
 ForwardIt compute_label_to_index_map(ForwardIt first, 
@@ -65,31 +67,24 @@ ForwardIt compute_label_to_index_map(ForwardIt first,
                                      Map& map,
                                      typename Map::mapped_type start )
 {
-    while(first != last)
-    {
-        // Try to insert the string and index pair on the result map
-        bool inserted;
-        std::tie(std::ignore, inserted) = map.emplace(
-            (*first)->get_label(), start
-        );
-
-        if(inserted)
+    return std::remove_if(
+        first, last,
+        [&map, &start] (const auto& labeled) -> bool
         {
-            // Label was successfully inserted. Process the next
-            // element
-            ++first;
-            ++start;
-        }
-        else
-        {
-            // This label is duplicated. Thus, erase this element 
-            // by bringing it to the back and decrement the end 
-            // iterator.
-            last = std::rotate(first, std::next(first), last); // returns last-1
-        }
-    }
+            // Try to insert the string and index pair on the result map
+            bool inserted;
+            std::tie(std::ignore, inserted) = map.emplace(
+                labeled->get_label(), start
+            );
 
-    return last;
+            // Increment the current index
+            if(inserted)
+                ++start;
+
+            // Remove if duplicate (not inserted)
+            return !inserted;
+        }
+    );
 }
 
 } // namespace metadata

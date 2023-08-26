@@ -66,24 +66,29 @@ ForwardIt compute_label_to_index_map(ForwardIt first, ForwardIt last, Map& map)
     map.clear();
     map.reserve(std::distance(first, last));
 
-    auto ite = first;
+    std::size_t i = 0;
     while(first != last)
     {
         // Try to insert the string and index pair on the result map
         bool inserted;
         std::tie(std::ignore, inserted) = map.emplace(
-            (*ite)->get_label(), std::distance(first, ite)
+            (*first)->get_label(), i
         );
 
         if(inserted)
+        {
             // Label was successfully inserted. Process the next
             // element
-            ++ite;
+            ++first;
+            ++i;
+        }
         else
+        {
             // This label is duplicated. Thus, erase this element 
             // by bringing it to the back and decrementing the end 
             // iterator.
-            last = std::rotate(ite, std::next(ite), last); // returns last-1
+            last = std::rotate(first, std::next(first), last); // returns last-1
+        }
     }
 
     return last;

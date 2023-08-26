@@ -21,43 +21,36 @@
  ***************************************************************************/
 
 #include <string>
-#include <vector>
-#include <unordered_map>
 
 namespace xmipp4
 {
 namespace metadata
 {
 
-class label_mapping
+class labeled_base
 {
 public:
-    label_mapping() = default;
-    label_mapping(std::vector<std::string> labels);
-    label_mapping(const label_mapping& other) = default;
-    label_mapping(label_mapping&& other) = default;
-    ~label_mapping() = default;
+    labeled_base() = default;
+    explicit labeled_base(const std::string& label);
+    explicit labeled_base(std::string&& label) noexcept;
+    labeled_base(const labeled_base& other) = default;
+    labeled_base(labeled_base&& other) = default;
+    virtual ~labeled_base() = default;
 
-    label_mapping& operator=(const label_mapping& other) = default;
-    label_mapping& operator=(label_mapping&& other) = default;
+    labeled_base& operator=(const labeled_base& other) = default;
+    labeled_base& operator=(labeled_base&& other) = default;
 
-    void set_labels(std::vector<std::string> labels);
-    const std::vector<std::string>& get_labels() const noexcept;
-
-    void reserve(std::size_t capacity);
-    bool add_label(std::string label);
-
-    std::size_t get_index(std::string_view label) const;
+    void set_label(const std::string& label);
+    void set_label(std::string&& label) noexcept;
+    const std::string& get_label() const noexcept;
 
 private:
-    using index_map = std::unordered_map<std::string_view, std::size_t>;
-
-    std::vector<std::string> m_labels;
-    index_map m_label_to_index;
-
-    static index_map compute_index_mapping(std::vector<std::string>& labels);
+    std::string m_label;
 
 };
+
+template<typename ForwardIt, typename Map>
+ForwardIt compute_label_to_index_map(ForwardIt first, ForwardIt last, Map& map);
 
 } // namespace metadata
 } // namespace xmipp4

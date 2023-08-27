@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,32 +18,64 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <cstddef>
+#include "column.hpp"
 
 namespace xmipp4
 {
 namespace metadata
 {
 
-class allocation_context;
-
-class column_base
+inline
+column::column(const column& other)
+    : m_typed_column()
 {
-public:
-    column_base() = default;
-    column_base(const column_base& other) = default;
-    column_base(column_base&& other) = default;
-    virtual ~column_base() = default;
+    if(other.m_typed_column)
+    {
+        m_typed_column = other.m_typed_column->clone();
+    }
+}
 
-    column_base& operator=(const column_base& other) = default;
-    column_base& operator=(column_base&& other) = default;
+inline
+column& column::operator=(const column& other)
+{
+    *this = column(other);
+}
 
-    virtual void resize(const allocation_context& prev, const allocation_context& next) = 0;
-    virtual void* data() noexcept = 0;
-    virtual const void* data() const noexcept = 0;
-private:
+inline
+void column::swap(column other) noexcept
+{
+    m_typed_column.swap(other.m_typed_column);
+}
 
-};
+inline
+const std::type_info& column::get_value_type() const noexcept
+{
+    return m_typed_column ? m_typed_column->get_value_type() : typeid(void);
+}
+
+template<typename T>
+T* column::get_data() noexcept
+{
+    T* data = nullptr;
+    if(typeid(T) == get_value_type())
+    {
+        if (m_typed_column)
+            data = m_typed_column->get_data();
+    }
+    else
+    {
+        throw 
+    }
+
+    return data;
+}
+
+template<typename T>
+const T* column::get_data() const noexcept
+{
+
+}
 
 } // namespace metadata
 } // namespace xmipp4
+

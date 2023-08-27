@@ -18,8 +18,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "column.hpp"
+#include "label_mapping.hpp"
 
+#include <tuple>
 #include <algorithm>
 
 namespace xmipp4
@@ -27,42 +28,33 @@ namespace xmipp4
 namespace metadata
 {
 
-template<typename T, typename Alloc>
-template<typename... Args>
+template<typename ForwardIt, typename Map>
 inline
-column<T, Alloc>::column(Args&&... args)
-    : m_data(std::forward<Args>(args)...)
+ForwardIt update_label_to_position_map(ForwardIt first, 
+                                       ForwardIt last, 
+                                       Map& map, 
+                                       typename Map::mapped_type start )
 {
-}
+    return std::remove_if(
+        first, last,
+        [&map, &start] (const auto& labeled) -> bool
+        {
+            // Try to insert the string and index pair on the result map
+            bool inserted;
+            std::tie(std::ignore, inserted) = map.emplace(
+                labeled->get_label(), start
+            );
 
-template<typename T, typename Alloc>
-inline
-void column<T, Alloc>::swap(column_base& other) noexcept
-{
-    m_data.swap(other);
-}
+            // Increment the current index
+            if(inserted)
+                ++start;
 
-template<typename T, typename Alloc>
-inline
-void column<T, Alloc>::resize(const allocation_context& prev, const allocation_context& next)
-{
-    m_data.reserve(next.get_capacity());
-    m_data.resize(next.get_size());
-}
-
-template<typename T, typename Alloc>
-inline
-typename column<T, Alloc>::pointer column<T, Alloc>::data() noexcept
-{
-    return m_data.data();
-}
-
-template<typename T, typename Alloc>
-inline
-typename column<T, Alloc>::const_pointer column<T, Alloc>::data() const noexcept
-{
-    return m_data.data();
+            // Remove if duplicate (not inserted)
+            return !inserted;
+        }
+    );
 }
 
 } // namespace metadata
 } // namespace xmipp4
+

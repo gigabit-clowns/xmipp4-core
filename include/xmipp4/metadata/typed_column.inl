@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,40 +18,51 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <string>
+#include "typed_column.hpp"
 
 namespace xmipp4
 {
 namespace metadata
 {
 
-class labeled_base
+
+template <typename T>
+inline
+void typed_column<T>::resize(const allocation_context& prev, const allocation_context& next)
 {
-public:
-    labeled_base() = default;
-    explicit labeled_base(const std::string& label);
-    explicit labeled_base(std::string&& label) noexcept;
-    labeled_base(const labeled_base& other) = default;
-    labeled_base(labeled_base&& other) = default;
-    virtual ~labeled_base() = default;
+    //TODO
+}
 
-    labeled_base& operator=(const labeled_base& other) = default;
-    labeled_base& operator=(labeled_base&& other) = default;
+template <typename T>
+inline
+const std::type_info& typed_column<T>::get_value_type() const noexcept
+{
+    return typeid(value_type);
+}
 
-    void set_label(const std::string& label);
-    void set_label(std::string&& label) noexcept;
-    const std::string& get_label() const noexcept;
+template <typename T>
+inline
+typename typed_column<T>::pointer typed_column<T>::get_data() noexcept
+{
+    //TODO
+}
 
-private:
-    std::string m_label;
+template <typename T>
+inline
+typename typed_column<T>::const_pointer typed_column<T>::get_data() const noexcept
+{
+    //TODO
+}
 
-};
+template <typename T>
+inline
+typed_column<T>* typed_column<T>::clone() const
+{
+    return new typed_column(*this);
+}
 
-template<typename ForwardIt, typename Map>
-ForwardIt compute_label_to_index_map(ForwardIt first, 
-                                     ForwardIt last, 
-                                     Map& map, 
-                                     typename Map::mapped_type start = {} );
+
 
 } // namespace metadata
 } // namespace xmipp4
+

@@ -20,42 +20,35 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "label_mapping.hpp"
+
+#include <vector>
 #include <memory>
-#include <typeinfo>
+#include <string>
+#include <unordered_map>
+#include <any>
+#include <cstddef>
 
 namespace xmipp4
 {
 namespace metadata
 {
 
-class typed_column_base;
-class column
+class row
 {
-public:
-    column() = default;
-    column(const column& other);
-    column(column&& other) = default;
-    ~column() = default;
-    
-    column& operator=(const column& other);
-    column& operator=(column&& other) = default;
+    row() = default;
+    row(const row& other) = default;
+    row(row&& other) = default;
+    ~row() = default;
 
-    void swap(column other) noexcept;
-
-    bool has_value() const noexcept;
-    const std::type_info& get_value_type() const noexcept;
-    
-    template<typename T>
-    T* get_data() noexcept;
-    template<typename T>
-    const T* get_data() const noexcept;
+    row& operator=(const row& other) = default;
+    row& operator=(row&& other) = default;
 
 private:
-    std::unique_ptr<typed_column_base> m_typed_column;
+    label_mapping m_label_mapping;
+    std::vector<std::any> m_items;
 
 };
 
 } // namespace metadata
 } // namespace xmipp4
-
-#include "coluimn.inl"

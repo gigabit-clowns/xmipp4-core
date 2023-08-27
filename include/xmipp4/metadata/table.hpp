@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "allocation_context.hpp"
+#include "label_mapping.hpp"
 
 #include <vector>
 #include <memory>
@@ -49,14 +50,10 @@ public:
     void resize(std::size_t size);
     void reserve(std::size_t capacity);
 
-    void add_column(std::string label, 
-                    std::unique_ptr<column_base> column, 
-                    const allocation_context& allocated = allocation_context() );
-
 private:
     allocation_context m_allocated;
+    std::unordered_map<std::string_view, std::size_t> m_label_to_index;
     std::vector<std::unique_ptr<column_base>> m_columns;
-    std::unordered_map<std::string, std::size_t> m_label_to_index;
 
     void resize(const allocation_context& context);
 

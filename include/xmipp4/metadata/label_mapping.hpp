@@ -20,42 +20,19 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <memory>
-#include <typeinfo>
-
 namespace xmipp4
 {
 namespace metadata
 {
 
-class typed_column_base;
-class column
-{
-public:
-    column() = default;
-    column(const column& other);
-    column(column&& other) = default;
-    ~column() = default;
-    
-    column& operator=(const column& other);
-    column& operator=(column&& other) = default;
+template<typename ForwardIt, typename Map>
+ForwardIt update_label_to_position_map(ForwardIt first, 
+                                       ForwardIt last, 
+                                       Map& map, 
+                                       typename Map::mapped_type start = {} );
 
-    void swap(column other) noexcept;
-
-    bool has_value() const noexcept;
-    const std::type_info& get_value_type() const noexcept;
-    
-    template<typename T>
-    T* get_data() noexcept;
-    template<typename T>
-    const T* get_data() const noexcept;
-
-private:
-    std::unique_ptr<typed_column_base> m_typed_column;
-
-};
 
 } // namespace metadata
 } // namespace xmipp4
 
-#include "coluimn.inl"
+#include "label_mapping.inl"

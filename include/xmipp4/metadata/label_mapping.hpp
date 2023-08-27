@@ -20,17 +20,55 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 namespace xmipp4
 {
 namespace metadata
 {
 
-template<typename ForwardIt, typename Map>
-ForwardIt update_label_to_position_map(ForwardIt first, 
-                                       ForwardIt last, 
-                                       Map& map, 
-                                       typename Map::mapped_type start = {} );
+class label_mapping
+{
+public:
+    label_mapping() = default;
+    explicit label_mapping(const std::vector<std::string>& labels);
+    explicit label_mapping(std::vector<std::string>&& labels);
+    label_mapping(std::initializer_list<std::string> init);
+    template<typename ForwardIt>
+    label_mapping(ForwardIt first, ForwardIt last);
+    label_mapping(const label_mapping& other) = default;
+    label_mapping(label_mapping&& other) = default;
+    ~label_mapping() = default;
 
+    label_mapping& operator=(const label_mapping& other) = default;
+    label_mapping& operator=(label_mapping&& other) = default;
+
+    std::size_t operator()(const std::string& label) const;
+
+    void set_labels(const std::vector<std::string>& labels);
+    void set_labels(std::vector<std::string>&& labels);
+    const std::vector<std::string>& get_labels() const noexcept;
+    
+    template<typename ForwardIt>
+    void add_labels(ForwardIt first, ForwardIt last);
+    bool add_label(const std::string& label);
+    bool add_label(std::string&& label);
+
+    std::size_t get_index(const std::string& label) const;
+
+private:
+    std::vector<std::string> m_labels;
+    std::unordered_map<std::string, std::size_t> m_label_to_index;
+
+    void compute_label_to_index_map();
+    void update_label_to_index_map(std::vector<std::string>::iterator first);
+
+};
+
+bool operator==(const label_mapping& x, const label_mapping& y) noexcept;
+bool operator!=(const label_mapping& x, const label_mapping& y) noexcept;
 
 } // namespace metadata
 } // namespace xmipp4

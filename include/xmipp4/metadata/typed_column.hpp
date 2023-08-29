@@ -22,7 +22,7 @@
 
 #include "../platform/attributes.hpp"
 
-#include <memory>
+#include <vector>
 #include <typeinfo>
 
 namespace xmipp4
@@ -43,14 +43,15 @@ public:
     typed_column_base& operator=(const typed_column_base& other) = default;
     typed_column_base& operator=(typed_column_base&& other) = default;
 
-    virtual void resize(const allocation_context& prev, const allocation_context& next) = 0;
-
     virtual const std::type_info& get_value_type() const noexcept = 0;
+    virtual typed_column_base* clone() const = 0;
 
-    virtual void* get_data() noexcept = 0;
-    virtual const void* get_data() const noexcept = 0;
+    virtual void resize(std::size_t size) = 0;
+    virtual std::size_t size() const noexcept = 0;
 
-    virtual std::unique_ptr<typed_column_base> clone() const = 0;
+    virtual void reserve(std::size_t capacity) = 0;
+    virtual std::size_t capacity() const noexcept = 0;
+
 
 };
 
@@ -61,9 +62,11 @@ class typed_column final
 public:
     using value_type = T;
     using pointer = value_type*;
-    using const_pointer const value_type*;
+    using const_pointer = const value_type*;
 
     typed_column() = default;
+    template<typename... Args>
+    explicit typed_column(Args&&... args);
     typed_column(const typed_column& other) = default;
     typed_column(typed_column&& other) = default;
     virtual ~typed_column() = default;
@@ -71,17 +74,11 @@ public:
     typed_column& operator=(const typed_column& other) = default;
     typed_column& operator=(typed_column&& other) = default;
 
-    void resize(const allocation_context& prev, const allocation_context& next) override;
-
     const std::type_info& get_value_type() const noexcept override;
-
-    pointer get_data() noexcept override;
-    const_pointer get_data() const noexcept override;
-
     typed_column* clone() const override;
 
 private:
-
+    std::vector<T> m_data;
 
 };
 
@@ -89,23 +86,3 @@ private:
 } // namespace xmipp4
 
 #include "typed_column.inl"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

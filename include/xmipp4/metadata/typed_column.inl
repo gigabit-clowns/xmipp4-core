@@ -25,44 +25,6 @@ namespace xmipp4
 namespace metadata
 {
 
-
-template <typename T>
-inline
-void typed_column<T>::resize(const allocation_context& prev, const allocation_context& next)
-{
-    //TODO
-}
-
-template <typename T>
-inline
-const std::type_info& typed_column<T>::get_value_type() const noexcept
-{
-    return typeid(value_type);
-}
-
-template <typename T>
-inline
-typename typed_column<T>::pointer typed_column<T>::get_data() noexcept
-{
-    //TODO
-}
-
-template <typename T>
-inline
-typename typed_column<T>::const_pointer typed_column<T>::get_data() const noexcept
-{
-    //TODO
-}
-
-template <typename T>
-inline
-typed_column<T>* typed_column<T>::clone() const
-{
-    return new typed_column(*this);
-}
-
-
-
 } // namespace metadata
 } // namespace xmipp4
 

@@ -20,15 +20,17 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "typed_column.hpp"
+
 #include <memory>
 #include <typeinfo>
+#include <type_traits>
 
 namespace xmipp4
 {
 namespace metadata
 {
 
-class typed_column_base;
 class column
 {
 public:
@@ -42,13 +44,36 @@ public:
 
     void swap(column other) noexcept;
 
-    bool has_value() const noexcept;
     const std::type_info& get_value_type() const noexcept;
     
+    typed_column_base& get_typed_column_base();
+    const typed_column_base& get_typed_column_base() const;
+    template<typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+    typed_column<T>& get_typed_column();
+    template<typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+    const typed_column<T>& get_typed_column() const;
+
+    void resize(std::size_t size);
+    std::size_t size() const noexcept;
+
+    void reserve(std::size_t capacity);
+    std::size_t capacity() const noexcept;
+
+    template<typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+    T* data();
+    template<typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+    const T* data() const;
+
+    template<typename T, typename... Args>
+    void emplace(Args&&... args);
     template<typename T>
-    T* get_data() noexcept;
+    void emplace(std::initializer_list<T> init);
     template<typename T>
-    const T* get_data() const noexcept;
+    void emplace(const std::vector<T>& v);
+    template<typename T>
+    void emplace(std::vector<T>&& v);
+    template<typename ForwardIt>
+    void emplace(ForwardIt first, ForwardIt last);
 
 private:
     std::unique_ptr<typed_column_base> m_typed_column;
@@ -58,4 +83,4 @@ private:
 } // namespace metadata
 } // namespace xmipp4
 
-#include "coluimn.inl"
+#include "column.inl"

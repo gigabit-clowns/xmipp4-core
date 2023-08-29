@@ -21,25 +21,40 @@
 #include "algorithms.hpp"
 
 #include <algorithm>
-#include <iterator>
 
 namespace xmipp4
 {
 namespace utils
 {
 
+template<typename RandomIt1, typename RandomIt2>
+void index_sort(RandomIt1 first_index, RandomIt1 last_index, RandomIt2 first_value)
+{
+    // Generate indices
+    using index_type = typename std::iterator_traits<RandomIt2>::value_type;
+    std::iota(first_index, last_index, index_type(0));
+
+    std::sort(
+        first_index, last_index,
+        [&first_value](index_type left, index_type right)
+        {
+            return first_value[left] < first_value[right];
+        }
+    );
+}
+
 template<typename RandomIt, typename IndexIt>
-void permute_from(RandomIt first_value, IndexIt first_index, std::size_t n)
+void permute_from(RandomIt1 first_value, RandomIt1 last_value, RandomIt2 first_index)
 {
     // Based on:
     // https://stackoverflow.com/a/15625572
     using std::swap;
     using std::iter_swap;
-    using index_type = typename std::iterator_traits<IndexIt>::value_type;
 
-    for(std::size_t i = 0; i < n; ++i)
+    for(auto ite = first_value; ite != last_value; ++ite)
     {
-        index_type j = first_index[i];
+        const auto i = std::distance(first_value, ite);
+        auto j = first_index[i];
         first_index[i] = i;
         while(j != i)
         {

@@ -25,8 +25,11 @@ namespace xmipp4
 namespace utils
 {
 
-template<typename RandomIt, typename IndexIt>
-void permute_from(RandomIt first_value, IndexIt first_index, std::size_t n);
+template<typename RandomIt1, typename RandomIt2>
+void index_sort(RandomIt1 first_index, RandomIt1 last_index, RandomIt2 first_value);
+
+template<typename RandomIt1, typename RandomIt2>
+void permute_from(RandomIt1 first_value, RandomIt1 last_value, RandomIt2 first_index);
 
 
 } // namespace utils

@@ -30,11 +30,17 @@ namespace xmipp4
 namespace utils
 {
 
+template <typename T>
+XMIPP4_NODISCARD std::size_t get_alignment(T* address) noexcept;
 XMIPP4_NODISCARD XMIPP4_CONSTEXPR std::size_t get_alignment(std::uintptr_t address) noexcept;
 
+template <typename T>
+XMIPP4_NODISCARD T* align_floor(T* address, std::size_t alignment) noexcept;
 XMIPP4_NODISCARD XMIPP4_CONSTEXPR std::uintptr_t align_floor(std::uintptr_t address, std::size_t alignment) noexcept;
 XMIPP4_CONSTEXPR std::uintptr_t& align_floor_inplace(std::uintptr_t& address, std::size_t alignment) noexcept;
 
+template <typename T>
+XMIPP4_NODISCARD T* align_ceil(T* address, std::size_t alignment) noexcept;
 XMIPP4_NODISCARD XMIPP4_CONSTEXPR std::uintptr_t align_ceil(std::uintptr_t address, std::size_t alignment) noexcept;
 XMIPP4_CONSTEXPR std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignment) noexcept;
 

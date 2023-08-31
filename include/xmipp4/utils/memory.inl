@@ -27,10 +27,25 @@ namespace xmipp4
 namespace utils
 {
 
+template <typename T>
+XMIPP4_NODISCARD inline 
+std::size_t get_alignment(T* address) noexcept
+{
+    return get_alignment(reinterpret_cast<std::uintptr_t>(address));
+}
+
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t get_alignment(std::uintptr_t address) noexcept
 {
     return 1 << count_trailing_zeros(address);
+}
+
+template <typename T>
+XMIPP4_NODISCARD inline
+T* align_floor(T* address, std::size_t alignment) noexcept
+{
+    align_floor_inplace(reinterpret_cast<std::uintptr_t&>(address), alignment);
+    return address;
 }
 
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
@@ -48,6 +63,14 @@ std::uintptr_t& align_floor_inplace(std::uintptr_t& address, std::size_t alignme
     return address;
 }
 
+template <typename T>
+XMIPP4_NODISCARD inline
+T* align_ceil(T* address, std::size_t alignment) noexcept
+{
+    align_ceil_inplace(reinterpret_cast<std::uintptr_t&>(address), alignment);
+    return address;
+}
+
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::uintptr_t align_ceil(std::uintptr_t address, std::size_t alignment) noexcept
 {
@@ -58,7 +81,7 @@ std::uintptr_t align_ceil(std::uintptr_t address, std::size_t alignment) noexcep
 XMIPP4_INLINE_CONSTEXPR 
 std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignment) noexcept
 {
-    ++address;
+    address += (alignment - 1);
     return align_floor_inplace(address, alignment);
 }
 

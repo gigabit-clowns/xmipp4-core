@@ -32,12 +32,12 @@ namespace metadata
 class label_mapping
 {
 public:
+    using label_container = std::vector<std::string>;
+    using label_to_position_map = std::unordered_map<std::string, std::size_t>;
+    using label_type = label_container::value_type;
+    using position_type = label_to_position_map::mapped_type;
+
     label_mapping() = default;
-    explicit label_mapping(const std::vector<std::string>& labels);
-    explicit label_mapping(std::vector<std::string>&& labels);
-    label_mapping(std::initializer_list<std::string> init);
-    template<typename ForwardIt>
-    label_mapping(ForwardIt first, ForwardIt last);
     label_mapping(const label_mapping& other) = default;
     label_mapping(label_mapping&& other) = default;
     ~label_mapping() = default;
@@ -45,25 +45,23 @@ public:
     label_mapping& operator=(const label_mapping& other) = default;
     label_mapping& operator=(label_mapping&& other) = default;
 
-    std::size_t operator()(const std::string& label) const;
+    position_type operator()(const label_type& label) const;
 
-    void set_labels(const std::vector<std::string>& labels);
-    void set_labels(std::vector<std::string>&& labels);
-    const std::vector<std::string>& get_labels() const noexcept;
+    const label_container& get_labels() const noexcept;
     
     template<typename ForwardIt>
-    void add_labels(ForwardIt first, ForwardIt last);
-    bool add_label(const std::string& label);
-    bool add_label(std::string&& label);
+    ForwardIt add_labels(ForwardIt first, ForwardIt last);
+    template<typename Label>
+    bool add_label(Label&& label);
 
-    std::size_t get_index(const std::string& label) const;
+    template<typename Label>
+    bool rename(position_type position, Label&& label);
+    template<typename Label>
+    bool rename(const label_container& old_label, Label&& new_label);
 
 private:
-    std::vector<std::string> m_labels;
-    std::unordered_map<std::string, std::size_t> m_label_to_index;
-
-    void compute_label_to_index_map();
-    void update_label_to_index_map(std::vector<std::string>::iterator first);
+    label_container m_labels;
+    label_to_position_map m_label_to_position;
 
 };
 

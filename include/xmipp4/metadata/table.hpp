@@ -20,7 +20,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "allocation_context.hpp"
 #include "label_mapping.hpp"
 
 #include <vector>
@@ -51,11 +50,6 @@ public:
     void reserve(std::size_t capacity);
 
 private:
-    allocation_context m_allocated;
-    std::unordered_map<std::string_view, std::size_t> m_label_to_index;
-    std::vector<std::unique_ptr<column_base>> m_columns;
-
-    void resize(const allocation_context& context);
 
 };
 

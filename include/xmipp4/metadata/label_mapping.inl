@@ -20,147 +20,109 @@
 
 #include "label_mapping.hpp"
 
-#include <tuple>
-#include <algorithm>
-
 namespace xmipp4
 {
 namespace metadata
 {
 
 inline
-label_mapping::label_mapping(const std::vector<std::string>& labels)
-    : m_labels(labels)
+label_mapping::position_type label_mapping::operator()(const label_type& label) const
 {
-    compute_label_to_index_map();
+    return m_label_to_position.at(label);
 }
 
 inline
-label_mapping::label_mapping(std::vector<std::string>&& labels)
-    : m_labels(std::move(labels))
-{
-    compute_label_to_index_map();
-}
-
-inline
-label_mapping::label_mapping(std::initializer_list<std::string> init)
-    : m_labels(init)
-{
-    compute_label_to_index_map();
-}
-
-template<typename ForwardIt>
-inline
-label_mapping::label_mapping(ForwardIt first, ForwardIt last)
-    : m_labels(first, last)
-{
-    compute_label_to_index_map();
-}
-
-inline
-std::size_t label_mapping::operator()(const std::string& label) const
-{
-    return m_label_to_index.at(label);
-}
-
-inline
-void label_mapping::set_labels(const std::vector<std::string>& labels)
-{
-    m_labels = labels;
-    compute_label_to_index_map();
-}
-
-inline
-void label_mapping::set_labels(std::vector<std::string>&& labels)
-{
-    m_labels = std::move(labels);
-    compute_label_to_index_map();
-}
-
-inline
-const std::vector<std::string>& label_mapping::get_labels() const noexcept
+const label_mapping::label_container& label_mapping::get_labels() const noexcept
 {
     return m_labels;
 }
 
 template<typename ForwardIt>
 inline
-void label_mapping::add_labels(ForwardIt first, ForwardIt last)
+ForwardIt label_mapping::add_labels(ForwardIt first, ForwardIt last)
 {
-    auto inserted_ite = m_labels.insert(m_labels.cend(), first, last);
-    update_label_to_index_map(inserted_ite);
-}
-
-inline
-bool label_mapping::add_label(const std::string& label)
-{
-    auto inserted_ite = m_labels.insert(m_labels.cend(), label);
-    update_label_to_index_map(inserted_ite);
-}
-
-inline
-bool label_mapping::add_label(std::string&& label)
-{
-    auto inserted_ite = m_labels.insert(m_labels.cend(), std::move(label));
-    update_label_to_index_map(inserted_ite);
-}
-
-inline
-void label_mapping::compute_label_to_index_map()
-{
-    m_label_to_index.clear();
-    update_label_to_index_map(m_labels.begin());
-}
-
-inline
-void label_mapping::update_label_to_index_map(std::vector<std::string>::iterator first)
-{
-    auto& label_to_index = m_label_to_index; // Shorthand
-
-    try
+    for(; first != last; ++first)
     {
-        std::size_t index = std::distance(m_labels.begin(), first);
-
-        // Remove duplicates while inserting items
-        // into the map
-        auto last = std::remove_if(
-            first, m_labels.end(),
-            [&label_to_index, index] (const auto& label) mutable -> bool
-            {
-                // Try to insert the string and index pair on the result map
-                bool inserted;
-                std::tie(std::ignore, inserted) = label_to_index.emplace(
-                    label, index
-                );
-
-                if(inserted)
-                    ++index;
-
-                // Remove if duplicate (not inserted)
-                return !inserted;
-            }
-        );
-
-        // Erase duplicated elements
-        m_labels.erase(last, m_labels.end());
+        const auto inserted = add_label(*first);
+        if(!inserted) break;
     }
-    catch(...)
-    {
-        // An exception occurred while computing the map
-        // Ensure that the map and vector remain coherent
-        m_labels.erase(
-            std::next(m_labels.begin(), label_to_index.size()),
-            m_labels.end()
-        );
-        throw; // Rethrow
-    }
+    return first;
 }
 
+template<typename Label>
+inline 
+bool label_mapping::add_label(Label&& label)
+{
+    // Try to insert it on the label map
+    bool inserted;
+    label_to_position_map::iterator it;
+    std::tie(it, inserted) = m_label_to_position.emplace(
+        std::forward<Label>(label), m_labels.size()
+    );
+
+    // If inserted, add it to the label list
+    if(inserted)
+    {
+        try
+        {
+            m_labels.push_back(it->first);
+        }
+        catch(...)
+        {
+            // Could not insert into the label list
+            // Remove from the map entry to keep consistency
+            m_label_to_position.erase(it);
+            throw; //Rethrow
+        }
+    }
+
+    return inserted;
+}
+
+template<typename Label>
+inline
+bool label_mapping::rename(position_type position, Label&& label)
+{
+    // Try to insert it on the label map
+    bool inserted;
+    label_to_position_map::iterator it;
+    std::tie(it, inserted) = m_label_to_position.emplace(
+        std::forward<Label>(label), position
+    );
+
+    // If inserted, update the label list and erase the
+    // old mapping
+    if(inserted)
+    {
+        try
+        {
+            auto& old_label = m_labels.at(position);
+            auto old_it = m_label_to_position.find(old_label);
+
+            old_label = it->first;
+            m_label_to_position.erase(old_it);
+        }
+        catch(...)
+        {
+            // Could not insert into the label list
+            // Remove from the map entry to keep consistency
+            m_label_to_position.erase(it);
+            throw; //Rethrow
+        }
+    }
+
+    return inserted;
+}
+
+
+
+inline
 bool operator==(const label_mapping& x, const label_mapping& y) noexcept
 {
     return x.get_labels() == y.get_labels();
 }
 
+inline
 bool operator!=(const label_mapping& x, const label_mapping& y) noexcept
 {
     return x.get_labels() != y.get_labels();

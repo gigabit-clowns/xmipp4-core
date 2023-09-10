@@ -28,13 +28,19 @@ namespace metadata
 inline
 label_mapping::position_type label_mapping::operator()(const label_type& label) const
 {
-    return m_label_to_position.at(label);
+    return get_position(label);
 }
 
 inline
 const label_mapping::label_container& label_mapping::get_labels() const noexcept
 {
     return m_labels;
+}
+
+inline
+label_mapping::position_type label_mapping::get_position(const label_type& label) const
+{
+    return m_label_to_position.at(label);
 }
 
 template<typename ForwardIt>
@@ -114,6 +120,12 @@ bool label_mapping::rename(position_type position, Label&& label)
     return inserted;
 }
 
+template<typename Label>
+inline
+bool label_mapping::rename(const label_container& old_label, Label&& new_label)
+{
+    return rename(get_position(old_label), std::forward<Label>(new_label));
+}
 
 
 inline

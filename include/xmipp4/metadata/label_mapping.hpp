@@ -48,6 +48,7 @@ public:
     position_type operator()(const label_type& label) const;
 
     const label_container& get_labels() const noexcept;
+    position_type get_position(const label_type& label) const;
     
     template<typename ForwardIt>
     ForwardIt add_labels(ForwardIt first, ForwardIt last);

@@ -21,19 +21,14 @@
  ***************************************************************************/
 
 #include "label_mapping.hpp"
+#include "column.hpp"
 
 #include <vector>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <cstddef>
 
 namespace xmipp4
 {
 namespace metadata
 {
-
-class column_base;
 
 class table
 {
@@ -50,6 +45,8 @@ public:
     void reserve(std::size_t capacity);
 
 private:
+    label_mapping m_label_mapping;
+    std::vector<column> m_columns;
 
 };
 

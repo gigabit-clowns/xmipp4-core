@@ -20,31 +20,17 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "label_mapping.hpp"
-#include "object.hpp"
-
-#include <vector>
-
 namespace xmipp4
 {
 namespace metadata
 {
 
-class row
+class object
 {
-    row() = default;
-    row(const row& other) = default;
-    row(row&& other) = default;
-    ~row() = default;
-
-    row& operator=(const row& other) = default;
-    row& operator=(row&& other) = default;
-
-private:
-    label_mapping m_label_mapping;
-    std::vector<object> m_items;
 
 };
 
 } // namespace metadata
 } // namespace xmipp4
+
+

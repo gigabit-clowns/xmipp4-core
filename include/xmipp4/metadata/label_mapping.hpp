@@ -33,9 +33,10 @@ class label_mapping
 {
 public:
     using label_container = std::vector<std::string>;
-    using label_to_position_map = std::unordered_map<std::string, std::size_t>;
+    using label_to_index_map = std::unordered_map<std::string, std::size_t>;
     using label_type = label_container::value_type;
-    using position_type = label_to_position_map::mapped_type;
+    using index_type = label_to_index_map::mapped_type;
+    using const_iterator = label_container::const_iterator;
 
     label_mapping() = default;
     label_mapping(const label_mapping& other) = default;
@@ -45,27 +46,33 @@ public:
     label_mapping& operator=(const label_mapping& other) = default;
     label_mapping& operator=(label_mapping&& other) = default;
 
-    position_type operator()(const label_type& label) const;
-
-    position_type get_position(const label_type& label) const;
+    index_type operator()(const label_type& label) const;
+    index_type get_index(const label_type& label) const;
 
     const label_container& get_labels() const noexcept;
 
     void clear() noexcept;
     void reserve(std::size_t size);
     std::size_t size() const noexcept;
+    bool empty() const noexcept;
+
+    const_iterator begin() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator end() const noexcept;
+    const_iterator cend() const noexcept;
+
+    const_iterator find(const label_type& label) const noexcept;
 
     template<typename Label>
-    bool add_label(Label&& label);
-
+    bool insert(const_iterator position, Label&& label);
     template<typename Label>
-    bool rename(position_type position, Label&& label);
-    template<typename Label>
-    bool rename(const label_container& old_label, Label&& new_label);
+    bool push_back(Label&& label);
+    const_iterator erase(const_iterator position) noexcept;
+    const_iterator erase(const_iterator first, const_iterator last) noexcept;
 
 private:
     label_container m_labels;
-    label_to_position_map m_label_to_position;
+    label_to_index_map m_label_to_index;
 
 };
 

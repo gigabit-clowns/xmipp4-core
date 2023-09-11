@@ -26,15 +26,15 @@ namespace metadata
 {
 
 inline
-label_mapping::position_type label_mapping::operator()(const label_type& label) const
+label_mapping::index_type label_mapping::operator()(const label_type& label) const
 {
-    return get_position(label);
+    return get_index(label);
 }
 
 inline
-label_mapping::position_type label_mapping::get_position(const label_type& label) const
+label_mapping::index_type label_mapping::get_index(const label_type& label) const
 {
-    return m_label_to_position.at(label);
+    return m_label_to_index.at(label);
 }
 
 inline
@@ -47,14 +47,14 @@ inline
 void label_mapping::clear() noexcept
 {
     m_labels.clear();
-    m_label_to_position.clear();
+    m_label_to_index.clear();
 }
 
 inline
 void label_mapping::reserve(std::size_t size)
 {
     m_labels.reserve(size);
-    m_label_to_position.reserve(size);
+    m_label_to_index.reserve(size);
 }
 
 inline
@@ -63,31 +63,76 @@ std::size_t label_mapping::size() const noexcept
     return m_labels.size();
 }
 
-template<typename Label>
-inline 
-bool label_mapping::add_label(Label&& label)
+inline
+bool label_mapping::empty() const noexcept
 {
-    // Try to insert it on the label map
+    return m_labels.empty();
+}
+
+inline
+label_mapping::const_iterator label_mapping::begin() const noexcept
+{
+    return m_labels.begin();
+}
+
+inline
+label_mapping::const_iterator label_mapping::cbegin() const noexcept
+{
+    return begin();
+}
+
+inline
+label_mapping::const_iterator label_mapping::end() const noexcept
+{
+    return m_labels.end();
+}
+
+inline
+label_mapping::const_iterator label_mapping::cend() const noexcept
+{
+    return end();
+}
+
+inline
+label_mapping::const_iterator label_mapping::find(const label_type& label) const noexcept
+{
+    const auto ite = m_label_to_index.find(label);
+    if (ite == m_label_to_index.end())
+        return end();
+    else
+        return std::next(begin(), ite->second);
+}
+
+template<typename Label>
+inline
+bool label_mapping::insert(const_iterator position, Label&& label)
+{
+    // Try to insert the new label into the mapping
     bool inserted;
-    label_to_position_map::iterator it;
-    std::tie(it, inserted) = m_label_to_position.emplace(
-        std::forward<Label>(label), m_labels.size()
+    label_to_index_map::iterator it;
+    std::tie(it, inserted) = m_label_to_index.emplace(
+        std::forward<Label>(label), 
+        std::distance(begin(), position)
     );
 
-    // If inserted, add it to the label list
     if(inserted)
     {
+        // Insert the label into the label list
         try
         {
-            m_labels.push_back(it->first);
+            position = m_labels.emplace(position, it->first);
         }
         catch(...)
         {
             // Could not insert into the label list
             // Remove from the map entry to keep consistency
-            m_label_to_position.erase(it);
+            m_label_to_index.erase(it);
             throw; //Rethrow
         }
+
+        // Increment all the indices after it
+        for(++position; position =! end(); ++position)
+            ++(m_label_to_index.find(*position)->second);
     }
 
     return inserted;
@@ -95,32 +140,28 @@ bool label_mapping::add_label(Label&& label)
 
 template<typename Label>
 inline
-bool label_mapping::rename(position_type position, Label&& label)
+bool label_mapping::push_back(Label&& label)
 {
-    // Try to insert it on the label map
+    // Try to insert the new label into the mapping
     bool inserted;
-    label_to_position_map::iterator it;
-    std::tie(it, inserted) = m_label_to_position.emplace(
-        std::forward<Label>(label), position
+    label_to_index_map::iterator it;
+    std::tie(it, inserted) = m_label_to_index.emplace(
+        std::forward<Label>(label), 
+        m_labels.size()
     );
 
-    // If inserted, update the label list and erase the
-    // old mapping
     if(inserted)
     {
+        // Insert the label into the label list
         try
         {
-            auto& old_label = m_labels.at(position);
-            auto old_it = m_label_to_position.find(old_label);
-
-            old_label = it->first;
-            m_label_to_position.erase(old_it);
+            m_labels.emplace_back(it->first);
         }
         catch(...)
         {
             // Could not insert into the label list
             // Remove from the map entry to keep consistency
-            m_label_to_position.erase(it);
+            m_label_to_index.erase(it);
             throw; //Rethrow
         }
     }
@@ -128,15 +169,43 @@ bool label_mapping::rename(position_type position, Label&& label)
     return inserted;
 }
 
-template<typename Label>
 inline
-bool label_mapping::rename(const label_container& old_label, Label&& new_label)
+label_mapping::const_iterator label_mapping::erase(const_iterator position) noexcept
 {
-    return rename(get_position(old_label), std::forward<Label>(new_label));
+    // Erase from the mapping
+    m_label_to_index.erase(*position);
+
+    // Erase from the label list
+    const auto result = m_labels.erase(position);
+
+    // Decrement all the indices after the erased item
+    for(auto ite = result; ite != end(); ++ite)
+        --(m_label_to_index.find(*ite)->second);
+    
+    return result;
+}
+
+inline    
+label_mapping::const_iterator label_mapping::erase(const_iterator first, const_iterator last) noexcept
+{
+    const auto count = std::distance(first, last);
+
+    // Erase from the mapping
+    for(auto ite = first; ite != last; ++ite)
+        m_label_to_index.erase(*ite);
+    
+    // Erase from the label list
+    const auto result = m_labels.erase(first, last);
+
+    // Decrement all the indices after the erased item
+    for(auto ite = result; ite != end(); ++ite)
+        m_label_to_index.find(*ite)->second -= count;
+    
+    return result;
 }
 
 
-inline
+
 bool operator==(const label_mapping& x, const label_mapping& y) noexcept
 {
     return x.get_labels() == y.get_labels();

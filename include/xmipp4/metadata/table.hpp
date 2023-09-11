@@ -41,10 +41,20 @@ public:
     table& operator=(const table& other) = delete;
     table& operator=(table&& other) = default;
 
+    const label_mapping& get_column_label_mapping() const noexcept;
+
+    std::size_t rows() const noexcept;
+    std::size_t columns() const noexcept;
+    
+    void clear() noexcept;
+
     void resize(std::size_t size);
-    void reserve(std::size_t capacity);
+
+    template<typename Label, typename Column>
+    bool add_column(Label&& label, Column&& column);
 
 private:
+    std::size_t m_size;
     label_mapping m_label_mapping;
     std::vector<column> m_columns;
 
@@ -52,3 +62,5 @@ private:
 
 } // namespace metadata
 } // namespace xmipp4
+
+#include "table.inl"

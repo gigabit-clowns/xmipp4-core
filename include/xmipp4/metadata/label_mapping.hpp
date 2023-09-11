@@ -76,9 +76,16 @@ public:
     template<typename Label>
     bool rename(const label_type& prev_label, Label&& label);
 
+    void swap_labels(const_iterator position1, const_iterator position2) noexcept;
+    bool swap_labels(const label_type& label1, const label_type& label2) noexcept;
+
 private:
     label_container m_labels;
     label_to_index_map m_label_to_index;
+
+    template<typename Label>
+    bool rename(label_to_index_map::iterator mapping, Label&& label);
+    void swap_labels(label_to_index_map::iterator mapping1, label_to_index_map::iterator mapping2) noexcept;
 
 };
 

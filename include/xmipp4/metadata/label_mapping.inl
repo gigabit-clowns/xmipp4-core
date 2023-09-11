@@ -32,27 +32,35 @@ label_mapping::position_type label_mapping::operator()(const label_type& label) 
 }
 
 inline
+label_mapping::position_type label_mapping::get_position(const label_type& label) const
+{
+    return m_label_to_position.at(label);
+}
+
+inline
 const label_mapping::label_container& label_mapping::get_labels() const noexcept
 {
     return m_labels;
 }
 
 inline
-label_mapping::position_type label_mapping::get_position(const label_type& label) const
+void label_mapping::clear() noexcept
 {
-    return m_label_to_position.at(label);
+    m_labels.clear();
+    m_label_to_position.clear();
 }
 
-template<typename ForwardIt>
 inline
-ForwardIt label_mapping::add_labels(ForwardIt first, ForwardIt last)
+void label_mapping::reserve(std::size_t size)
 {
-    for(; first != last; ++first)
-    {
-        const auto inserted = add_label(*first);
-        if(!inserted) break;
-    }
-    return first;
+    m_labels.reserve(size);
+    m_label_to_position.reserve(size);
+}
+
+inline
+std::size_t label_mapping::size() const noexcept
+{
+    return m_labels.size();
 }
 
 template<typename Label>

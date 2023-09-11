@@ -62,13 +62,19 @@ public:
     const_iterator cend() const noexcept;
 
     const_iterator find(const label_type& label) const noexcept;
+    bool contains(const label_type& label) const noexcept;
 
     template<typename Label>
     bool insert(const_iterator position, Label&& label);
     template<typename Label>
     bool push_back(Label&& label);
     const_iterator erase(const_iterator position) noexcept;
-    const_iterator erase(const_iterator first, const_iterator last) noexcept;
+    std::size_t erase(const label_type& label) noexcept;
+
+    template<typename Label>
+    bool rename(const_iterator position, Label&& label);
+    template<typename Label>
+    bool rename(const label_type& prev_label, Label&& label);
 
 private:
     label_container m_labels;

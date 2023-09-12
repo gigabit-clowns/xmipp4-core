@@ -38,11 +38,11 @@ public:
     using value_type = std::pair<const key_type, mapped_type>;
     using container_type = std::vector<value_type>;
     using key_to_index_map_type = std::unordered_map<key_type, std::size_t>;
-    using size_type = container_type::size_type;
-    using iterator = container_type::iterator;
-    using const_iterator = container_type::const_iterator;
-    using reverse_iterator = container_type::reverse_iterator;
-    using const_reverse_iterator = container_type::const_reverse_iterator;
+    using size_type = typename container_type::size_type;
+    using iterator =  typename container_type::iterator;
+    using const_iterator =  typename container_type::const_iterator;
+    using reverse_iterator =  typename container_type::reverse_iterator;
+    using const_reverse_iterator =  typename container_type::const_reverse_iterator;
 
     label_map() = default;
     template <typename InputIt>

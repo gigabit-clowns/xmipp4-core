@@ -177,53 +177,16 @@ void label_map<T>::clear() noexcept
 }
 
 template <typename T>
+template <typename Key>
 inline
 typename label_map<T>::mapped_type& 
-label_map<T>::operator[](const key_type& key)
+label_map<T>::operator[](Key&& key)
 {
     typename key_to_position_map_type::iterator mapping;
     bool inserted;
     std::tie(mapping, inserted) = m_key_to_position.insert(
         std::piecewise_construct,
-        std::forward_as_tuple(key),
-        std::forward_as_tuple()
-    );
-
-    if (inserted)
-    {
-        // Element did not exist. Insert it 
-        // at the end and update the mapping
-        try
-        {
-            mapping->second = m_items.emplace(
-                m_items.cend(),
-                std::piecewise_construct,
-                std::forward_as_tuple(mapping->first),
-                std::forward_as_tuple()
-            );
-        }
-        catch (...)
-        {
-            // Could not insert the new element
-            // into de list. Erase the mapping
-            // to preserve consistency
-            m_key_to_position.erase(mapping);
-        }
-    }
-
-    return *(mapping->second);
-}
-
-template <typename T>
-inline
-typename label_map<T>::mapped_type& 
-label_map<T>::operator[](key_type&& key)
-{
-    typename key_to_position_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_position.insert(
-        std::piecewise_construct,
-        std::forward_as_tuple(std::move(key)),
+        std::forward_as_tuple<Key>(key),
         std::forward_as_tuple()
     );
 
@@ -512,56 +475,16 @@ void label_map<T>::swap_ordering(const_iterator x, const_iterator y) noexcept
 }
 
 template <typename T>
+template <typename Key>
 inline
-bool label_map<T>::rename(iterator position, const key_type& key)
+bool label_map<T>::rename(iterator position, Key&& key)
 {
     // Try to insert the new key
     typename key_to_position_map_type::iterator mapping;
     bool inserted;
     std::tie(mapping, inserted) = m_key_to_position.insert(
         std::piecewise_construct,
-        std::forward_as_tuple(key),
-        std::forward_as_tuple()
-    );
-
-    if(inserted)
-    {
-        try
-        {
-            // New key does not exist, insert
-            // move the old value to a new key
-            mapping->second = m_items.emplace(
-                position,
-                std::piecewise_construct,
-                std::forward_as_tuple(mapping->first),
-                std::forward_as_tuple(std::move(position->second))
-            );
-        }
-        catch (...)
-        {
-            // An error ocurred inserting the new
-            // item. Remove the mapping to preserve consistency
-            m_key_to_position.erase(mapping);
-        }
-
-        // Delete the old node and mapping
-        m_key_to_position.erase(position->first);
-        m_items.erase(position);
-    }
-    
-    return inserted;
-}
-
-template <typename T>
-inline
-bool label_map<T>::rename(iterator position, key_type&& key)
-{
-    // Try to insert the new key
-    typename key_to_position_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_position.insert(
-        std::piecewise_construct,
-        std::forward_as_tuple(std::move(key)),
+        std::forward_as_tuple<Key>(key),
         std::forward_as_tuple()
     );
 

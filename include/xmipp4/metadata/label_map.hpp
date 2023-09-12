@@ -76,8 +76,8 @@ public:
     bool empty() const noexcept;
     void clear() noexcept;
 
-    mapped_type& operator[](const key_type& key);
-    mapped_type& operator[](key_type&& key);
+    template <typename Key>
+    mapped_type& operator[](Key&& key);
 
     mapped_type& at(const key_type& key);
     const mapped_type& at(const key_type& key) const;
@@ -122,8 +122,8 @@ public:
 
     void swap_ordering(const_iterator x, const_iterator y) noexcept;
 
-    bool rename(iterator position, const key_type& key);
-    bool rename(iterator position, key_type&& key);
+    template <typename Key>
+    bool rename(iterator position, Key&& key);
 
 private:
     using key_to_position_map_type = std::unordered_map<key_view_type, typename container_type::iterator>;

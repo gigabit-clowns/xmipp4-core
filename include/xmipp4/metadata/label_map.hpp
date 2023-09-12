@@ -21,7 +21,8 @@
  ***************************************************************************/
 
 #include <string>
-#include <vector>
+#include <string_view>
+#include <list>
 #include <unordered_map>
 
 namespace xmipp4
@@ -34,25 +35,27 @@ class label_map
 {
 public:
     using key_type = std::string;
+    using key_view_type = std::string_view;
     using mapped_type = T;
     using value_type = std::pair<const key_type, mapped_type>;
-    using container_type = std::vector<value_type>;
-    using key_to_index_map_type = std::unordered_map<key_type, std::size_t>;
+    using container_type = std::list<value_type>;
     using size_type = typename container_type::size_type;
     using iterator =  typename container_type::iterator;
     using const_iterator =  typename container_type::const_iterator;
     using reverse_iterator =  typename container_type::reverse_iterator;
     using const_reverse_iterator =  typename container_type::const_reverse_iterator;
+    using insertion_result = std::pair<iterator, bool>;
+    using multiple_insertion_result = std::pair<iterator, size_type>;
 
     label_map() = default;
     template <typename InputIt>
     label_map(InputIt first, InputIt last);
     label_map(std::initializer_list<value_type> init);
-    label_map(const label_map& other) = default;
+    label_map(const label_map& other);
     label_map(label_map&& other) = default;
     ~label_map() = default;
 
-    label_map& operator=(const label_map& other) = default;
+    label_map& operator=(const label_map& other);
     label_map& operator=(label_map&& other) = default;
 
     iterator begin() noexcept;
@@ -71,31 +74,48 @@ public:
 
     size_type size() const noexcept;
     bool empty() const noexcept;
-
     void clear() noexcept;
 
-    void reserve(size_type count);
-
-    std::pair<iterator, bool> insert(const_iterator position, const value_type& value);
-    std::pair<iterator, bool> insert(const_iterator position, value_type&& value);
+    insertion_result insert(const_iterator position, const value_type& value);
+    insertion_result insert(const_iterator position, value_type&& value);
     template <typename InputIt>
-    std::pair<iterator, size_type> insert(const_iterator position, InputIt first, InputIt last);
-    std::pair<iterator, size_type> insert(const_iterator position, std::initializer_list<value_type> init);
+    multiple_insertion_result insert(const_iterator position, InputIt first, InputIt last);
+    multiple_insertion_result insert(const_iterator position, std::initializer_list<value_type> init);
+
+    multiple_insertion_result splice(const_iterator position, label_map& other);
+    multiple_insertion_result splice(const_iterator position, label_map&& other);
+    insertion_result splice(const_iterator position, label_map& other, const_iterator item);
+    insertion_result splice(const_iterator position, label_map&& other, const_iterator item);
+    multiple_insertion_result splice(const_iterator position, label_map& other, const_iterator first, const_iterator last);
+    multiple_insertion_result splice(const_iterator position, label_map&& other, const_iterator first, const_iterator last);
+
     template<typename... Args>
-    std::pair<iterator, bool> emplace(const_iterator position, Args&&... args);
+    insertion_result emplace(const_iterator position, Args&&... args);
+
     iterator erase(const_iterator position) noexcept;
     iterator erase(const_iterator first, const_iterator last) noexcept;
 
-    bool push_back(const value_type& value);
-    bool push_back(value_type&& value);
+    insertion_result push_back(const value_type& value);
+    insertion_result push_back(value_type&& value);
     template<typename... Args>
-    bool emplace_back(Args&&... args);
+    insertion_result emplace_back(Args&&... args);
+
+    insertion_result push_front(const value_type& value);
+    insertion_result push_front(value_type&& value);
+    template<typename... Args>
+    insertion_result emplace_front(Args&&... args);
 
     void pop_back() noexcept;
+    void pop_front() noexcept;
 
 private:
+    using key_to_position_map_type = std::unordered_map<key_view_type, typename container_type::iterator>;
+
     container_type m_items;
-    key_to_index_map_type m_key_to_index;
+    key_to_position_map_type m_key_to_position;
+
+    insertion_result insert_mapping(iterator position);
+    multiple_insertion_result insert_mapping(iterator first, const_iterator last);
 
 };
 

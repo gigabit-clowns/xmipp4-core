@@ -29,9 +29,22 @@ template <typename T>
 template <typename InputIt>
 inline
 label_map<T>::label_map(InputIt first, InputIt last)
+    : m_items(first, last)
 {
-    for(auto it = first; it != last; ++it)
-        push_back(*it);
+    auto it = m_items.begin();
+    while(it != m_items.end())
+    {
+        bool inserted;
+        std::tie(std::ignore, inserted) = m_key_to_position.emplace(
+            it->first, 
+            it
+        );
+
+        if(inserted)
+            ++it;
+        else
+            it = m_items.erase(it);
+    }
 }
 
 template <typename T>
@@ -39,6 +52,23 @@ inline
 label_map<T>::label_map(std::initializer_list<value_type> init)
     : label_map(init.begin(), init.end())
 {
+}
+
+template <typename T>
+inline
+label_map<T>::label_map(const label_map& other)
+    : m_items(other.m_items)
+{
+    auto it = m_items.begin();
+    while(it != m_items.end())
+        m_key_to_position.emplace(it->first, it);
+}
+
+template <typename T>
+inline
+label_map<T>& label_map<T>::operator=(const label_map& other)
+{
+    *this = label_map(other);
 }
 
 template <typename T>
@@ -144,179 +174,115 @@ inline
 void label_map<T>::clear() noexcept
 {
     m_items.clear();
-    m_key_to_index.clear();
+    m_key_to_position.clear();
 }
 
 template <typename T>
 inline
-void label_map<T>::reserve(size_type count)
-{
-    m_items.reserve(count);
-    m_key_to_index.reserve(count);
-}
-
-template <typename T>
-inline
-std::pair<typename label_map<T>::iterator, bool>
+typename label_map<T>::insertion_result
 label_map<T>::insert(const_iterator position, const value_type& value)
 {
-    // Try to insert the new key
-    iterator new_position;
-    key_to_index_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_index.emplace(
-        value.first,
-        std::distance(begin(), position)
-    );
-
-    if(inserted)
-    {
-        // New item. Try to insert it
-        try
-        {
-            new_position = m_items.insert(position, value);
-        }
-        catch(...)
-        {
-            // Insertion failed. Remove the new
-            // mapping to preserve consistency
-            m_key_to_index.erase(mapping);
-            throw;
-        }
-
-        // Increment all the indices after the insertion
-        for (auto it = new_position; it != end(); ++it)
-            ++(m_key_to_index.find(it->first)->second);
-    }
-    else
-    {
-        // Key already exists. Return its position
-        new_position = std::next(begin(), mapping->second);
-    }
-
-    return std::make_pair(new_position, inserted);
+    return emplace(value);
 }
 
 template <typename T>
 inline
-std::pair<typename label_map<T>::iterator, bool>
+typename label_map<T>::insertion_result
 label_map<T>::insert(const_iterator position, value_type&& value)
 {
-    // Try to insert the new key
-    iterator new_position;
-    key_to_index_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_index.emplace(
-        value.first,
-        std::distance(begin(), position)
-    );
-
-    if(inserted)
-    {
-        // New item. Try to insert it
-        try
-        {
-            new_position = m_items.insert(position, std::move(value));
-        }
-        catch(...)
-        {
-            // Insertion failed. Remove the new
-            // mapping to preserve consistency
-            m_key_to_index.erase(mapping);
-            throw;
-        }
-
-        // Increment all the indices after the insertion
-        for (auto it = new_position; it != end(); ++it)
-            ++(m_key_to_index.find(it->first)->second);
-    }
-    else
-    {
-        // Key already exists. Return its position
-        new_position = std::next(begin(), mapping->second);
-    }
-
-    return std::make_pair(new_position, inserted);
+    return emplace(std::move(value));
 }
 
 template <typename T>
 template <typename InputIt>
 inline
-std::pair<typename label_map<T>::iterator, typename label_map<T>::size_type>
+typename label_map<T>::multiple_insertion_result
 label_map<T>::insert(const_iterator position, InputIt first, InputIt last)
 {
-    iterator new_position = std::next(begin(), std::distance(cbegin(), position));
-    size_type count = 0;
-    for (auto it = first; it != last; ++it)
-    {
-        // Try to insert the new key
-        key_to_index_map_type::iterator mapping;
-        bool inserted;
-        std::tie(mapping, inserted) = m_key_to_index.emplace(
-            it->first,
-            std::distance(begin(), new_position)
-        );
-
-        if(inserted)
-        {
-            // New item. Try to insert it
-            try
-            {
-                new_position = m_items.insert(new_position, std::move(*it));
-            }
-            catch(...)
-            {
-                // Insertion failed. Remove the new
-                // mapping to preserve consistency
-                m_key_to_index.erase(mapping);
-                throw;
-            }
-
-            // Increment all the indices after the insertion
-            for (auto it = new_position; it != end(); ++it)
-                ++(m_key_to_index.find(it->first)->second);
-
-            // Increment the insertion count
-            ++count;
-        }
-    }
-
-    return std::make_pair(new_position, count);
+    const auto insert_position = m_items.insert(position, first, last);
+    return insert_mapping(insert_position, position);
 }
 
 template <typename T>
 inline
-std::pair<typename label_map<T>::iterator, typename label_map<T>::size_type>
+typename label_map<T>::multiple_insertion_result
 label_map<T>::insert(const_iterator position, std::initializer_list<value_type> init)
 {
     return insert(position, init.begin(), init.end());
 }
 
 template <typename T>
+inline
+typename label_map<T>::multiple_insertion_result
+label_map<T>::splice(const_iterator position, label_map& other)
+{
+    return splice(position, std::move(other));
+}
+
+template <typename T>
+inline
+typename label_map<T>::multiple_insertion_result
+label_map<T>::splice(const_iterator position, label_map&& other)
+{
+    const auto first = other.begin();
+    m_items.splice(position, std::move(other.m_items));
+    other.m_key_to_position.clear();
+    return insert_mapping(first, position);
+}
+
+template <typename T>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::splice(const_iterator position, label_map& other, const_iterator item)
+{
+    return splice(position, std::move(other), item);
+}
+
+template <typename T>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::splice(const_iterator position, label_map&& other, const_iterator item)
+{
+    m_items.splice(position, std::move(other.m_items), item);
+    return insert_mapping(item);
+}
+
+template <typename T>
+inline
+typename label_map<T>::multiple_insertion_result
+label_map<T>::splice(const_iterator position, label_map& other, const_iterator first, const_iterator last)
+{
+    return splice(position, std::move(other), first, last);
+}
+
+template <typename T>
+inline
+typename label_map<T>::multiple_insertion_result
+label_map<T>::splice(const_iterator position, label_map&& other, const_iterator first, const_iterator last)
+{
+    m_items.splice(position, std::move(other.m_items), first, last);
+    return insert_mapping(first, position);
+}
+
+template <typename T>
 template<typename... Args>
 inline
-std::pair<typename label_map<T>::iterator, bool>
+typename label_map<T>::insertion_result
 label_map<T>::emplace(const_iterator position, Args&&... args)
 {
-    insert(position, value_type(std::forward<Args>(args)...));
+    const auto emplace_position = m_items.emplace(position, std::forward<Args>(args)...);
+    return insert_mapping(emplace_position);
 }
+
+
 
 template <typename T>
 inline
 typename label_map<T>::iterator 
 label_map<T>::erase(const_iterator position) noexcept
 {
-    // Remove the mapping
-    m_key_to_index.erase(position->first);
-
-    // Erase from the item list
-    const auto result = m_items.erase(position);
-
-    // Decrement all the posterior mappings
-    for(auto it = result; it != end(); ++it)
-        --(m_key_to_index.find(it->first)->second);
-    
-    return result;
+    m_key_to_position.erase(*position);
+    return m_items.erase(position);
 }
 
 template <typename T>
@@ -324,97 +290,191 @@ inline
 typename label_map<T>::iterator 
 label_map<T>::erase(const_iterator first, const_iterator last) noexcept
 {
-    // Remove all the mappings
-    for (auto it = first; it != last; ++it)
-        m_key_to_index.erase(it->first);
-
-    // Erase from the item list
-    const auto count = std::distance(first, last);
-    const auto result = m_items.erase(first, last);
-
-    // Decrement all the posterior mappings
-    for(auto it = result; it != end(); ++it)
-        m_key_to_index.find(it->first)->second -= count;
-
-    return result;
+    for(auto it = first; it != last; ++it)
+        m_key_to_position.erase(*it);
+    return m_items.erase(first, last);
 }
 
 template <typename T>
 inline
-bool label_map<T>::push_back(const value_type& value)
+typename label_map<T>::insertion_result
+label_map<T>::push_back(const value_type& value)
 {
-    // Try to insert the new key
-    key_to_index_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_index.emplace(
-        value.first,
-        m_items.size()
-    );
-
-    if(inserted)
-    {
-        // New item. Try to insert it
-        try
-        {
-            m_items.push_back(value);
-        }
-        catch(...)
-        {
-            // Insertion failed. Remove the new
-            // mapping to preserve consistency
-            m_key_to_index.erase(mapping);
-            throw;
-        }
-    }
-
-    return inserted;
+    return emplace_back(value);
 }
 
 template <typename T>
 inline
-bool label_map<T>::push_back(value_type&& value)
+typename label_map<T>::insertion_result
+label_map<T>::push_back(value_type&& value)
 {
-    // Try to insert the new key
-    key_to_index_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_index.emplace(
-        value.first,
-        m_items.size()
-    );
-
-    if(inserted)
-    {
-        // New item. Try to insert it
-        try
-        {
-            m_items.push_back(std::move(value));
-        }
-        catch(...)
-        {
-            // Insertion failed. Remove the new
-            // mapping to preserve consistency
-            m_key_to_index.erase(mapping);
-            throw;
-        }
-    }
-
-    return inserted;
+    return emplace_back(std::move(value));
 }
 
 template <typename T>
 template<typename... Args>
 inline
-bool label_map<T>::emplace_back(Args&&... args)
+typename label_map<T>::insertion_result
+label_map<T>::emplace_back(Args&&... args)
 {
-    return push_back(value_type(std::forward<Args>(args)...));
+    return emplace(cend(), std::forward<Args>(args)...);
+}
+
+template <typename T>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::push_front(const value_type& value)
+{
+    return emplace_front(value);
+}
+
+template <typename T>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::push_front(value_type&& value)
+{
+    return emplace_front(std::move(value));
+}
+
+template <typename T>
+template<typename... Args>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::emplace_front(Args&&... args)
+{
+    return emplace(cbegin(), std::forward<Args>(args)...);
 }
 
 template <typename T>
 inline
 void label_map<T>::pop_back() noexcept
 {
-    m_key_to_index.erase(m_items.back().first);
-    m_items.pop_back();
+    m_key_to_position.erase(m_items.back());
+    m_items.pop_back();    
+}
+
+template <typename T>
+inline
+void label_map<T>::pop_front() noexcept
+{
+    m_key_to_position.erase(m_items.front());
+    m_items.pop_front();    
+}
+
+
+
+template <typename T>
+inline
+typename label_map<T>::insertion_result
+label_map<T>::insert_mapping(iterator position)
+{
+    typename key_to_position_map_type::iterator mapping;
+    bool inserted;
+    try
+    {
+        std::tie(mapping, inserted) = m_key_to_position.emplace(
+            position->first,
+            position
+        );
+    }
+    catch(...)
+    {
+        // An exception occurred when updating
+        // the label map. Erase the inserted item
+        // to keep consistency
+        m_items.erase(position);
+        throw; // Rethrow
+    }
+
+    if (!inserted)
+    {
+        // Key already exists. Erase the inserted item
+        // and return the existing item with the desired
+        // key
+        m_items.erase(position);
+        position = mapping->second;
+    }
+
+    return std::make_pair(position, inserted);
+}
+
+template <typename T>
+inline
+typename label_map<T>::multiple_insertion_result
+label_map<T>::insert_mapping(iterator first, const_iterator last)
+{   
+    size_type count = 0;
+
+    // Remove all the duplicated elements at the beginning
+    // while updating the first position (as it is deleted)
+    while(first != last)
+    {
+        bool inserted;
+        try
+        {
+            std::tie(std::ignore, inserted) = m_key_to_position.emplace(
+                first->first, 
+                first
+            );
+        }
+        catch(...)
+        {
+            // An exception occurred when updating
+            // the label map. Erase all the unmapped
+            // items to keep consistency
+            m_items.erase(first, last);
+            throw; // Rethrow
+        }
+
+        if (inserted)
+        {
+            // First successful insertion
+            count = 1;
+            break;
+        }
+        else
+        {
+            first = m_items.erase(first);
+        }
+    }
+
+    // Update the mapping for the rest of elements
+    // also keeping track of duplicated elements
+    if (first != last)
+    {
+        auto it = std::next(first);
+        while(it != last)
+        {
+            bool inserted;
+            try
+            {
+                std::tie(std::ignore, inserted) = m_key_to_position.emplace(
+                    it->first, 
+                    it
+                );
+            }
+            catch(...)
+            {
+                // An exception occurred when updating
+                // the label map. Erase all the unmapped
+                // items to keep consistency
+                m_items.erase(it, last);
+                throw; // Rethrow
+            }
+
+            if (inserted)
+            {
+                ++it;
+                ++count;
+            }
+            else
+            {
+                it = m_items.erase(it);
+            }
+        }
+    }
+
+    return std::make_pair(first, count);
 }
 
 

@@ -76,6 +76,17 @@ public:
     bool empty() const noexcept;
     void clear() noexcept;
 
+    mapped_type& operator[](const key_type& key);
+    mapped_type& operator[](key_type&& key);
+
+    mapped_type& at(const key_type& key);
+    const mapped_type& at(const key_type& key) const;
+
+    iterator find(const key_type& key) noexcept;
+    const_iterator find(const key_type& key) const noexcept;
+
+    bool contains(const key_type& key) const noexcept;
+
     insertion_result insert(const_iterator position, const value_type& value);
     insertion_result insert(const_iterator position, value_type&& value);
     template <typename InputIt>
@@ -94,6 +105,7 @@ public:
 
     iterator erase(const_iterator position) noexcept;
     iterator erase(const_iterator first, const_iterator last) noexcept;
+    bool erase(const key_type key) noexcept;
 
     insertion_result push_back(const value_type& value);
     insertion_result push_back(value_type&& value);
@@ -109,6 +121,9 @@ public:
     void pop_front() noexcept;
 
     void swap_ordering(const_iterator x, const_iterator y) noexcept;
+
+    bool rename(iterator position, const key_type& key);
+    bool rename(iterator position, key_type&& key);
 
 private:
     using key_to_position_map_type = std::unordered_map<key_view_type, typename container_type::iterator>;

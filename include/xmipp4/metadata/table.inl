@@ -25,42 +25,31 @@ namespace xmipp4
 namespace metadata
 {
 
-const label_mapping& table::get_column_label_mapping() const noexcept
-{
-    return m_label_mapping;
-}
-
+inline
 std::size_t table::rows() const noexcept
 {
     return m_size;
 }
 
+inline
 std::size_t table::columns() const noexcept
 {
     return m_columns.size();
 }
 
+inline
 void table::clear() noexcept
 {
-    m_label_mapping.clear();
     m_size = 0;
     m_columns.clear();
 }
 
+inline
 void table::resize(std::size_t size)
 {
     //TODO
 }
 
-template<typename Label, typename Column>
-bool table::add_column(Label&& label, Column&& column)
-{
-    if(m_label_mapping.push_back(std::forward<Label>(label)))
-    {
-        m_columns.emplace_back(std::forward<Column>(column));
-        m_columns.back().resize(size());
-    }
-}
 
 } // namespace metadata
 } // namespace xmipp4

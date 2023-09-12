@@ -20,7 +20,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "label_mapping.hpp"
+#include "label_map.hpp"
 #include "column.hpp"
 
 #include <vector>
@@ -41,8 +41,6 @@ public:
     table& operator=(const table& other) = delete;
     table& operator=(table&& other) = default;
 
-    const label_mapping& get_column_label_mapping() const noexcept;
-
     std::size_t rows() const noexcept;
     std::size_t columns() const noexcept;
     
@@ -55,8 +53,7 @@ public:
 
 private:
     std::size_t m_size;
-    label_mapping m_label_mapping;
-    std::vector<column> m_columns;
+    label_map<column> m_columns;
 
 };
 

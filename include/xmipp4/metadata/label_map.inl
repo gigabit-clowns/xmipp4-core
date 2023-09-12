@@ -26,6 +26,22 @@ namespace metadata
 {
 
 template <typename T>
+template <typename InputIt>
+inline
+label_map<T>::label_map(InputIt first, InputIt last)
+{
+    for(auto it = first; it != last; ++it)
+        push_back(*it);
+}
+
+template <typename T>
+inline
+label_map<T>::label_map(std::initializer_list<value_type> init)
+    : label_map(init.begin(), init.end())
+{
+}
+
+template <typename T>
 inline
 typename label_map<T>::iterator label_map<T>::begin() noexcept
 {
@@ -401,6 +417,8 @@ void label_map<T>::pop_back() noexcept
     m_items.pop_back();
 }
 
+
+
 template<typename T>
 inline
 bool operator==(const label_map<T>& left, const label_map<T>& right) noexcept
@@ -415,7 +433,5 @@ bool operator!=(const label_map<T>& left, const label_map<T>& right) noexcept
     return !(left == right);
 }
 
-
 } // namespace metadata
 } // namespace xmipp4
-

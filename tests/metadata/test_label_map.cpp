@@ -22,4 +22,43 @@
 
 #include <xmipp4/metadata/label_map.hpp>
 
+#include <algorithm>
+#include <list>
+
 using namespace xmipp4;
+
+using label_map = xmipp4::metadata::label_map<std::string>; // Using string as the mapped type
+
+TEST_CASE( "constructor", "[label_map]" )
+{
+    SECTION ("Unique elements")
+    {  
+        const std::vector<label_map::value_type> values = 
+        {
+            { "hello", "good bye" },
+            { "this is", "a test" },
+            { "I hope", "it completes"},
+            { "without", "errors"}
+        };
+        label_map map(values.begin(), values.end());
+
+        REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+    }
+
+    SECTION ("Repeated elements")
+    {  
+        std::list<label_map::value_type> values = 
+        {
+            { "hello", "good bye" },
+            { "this is", "a test" },
+            { "this is", "a repeated element"},
+            { "hello", "i am repeated as well"},
+            { "I hope", "it completes"},
+            { "without", "errors"}
+        };
+        label_map map(values.begin(), values.end());
+
+        values.erase(std::next(values.begin(), 2), std::next(values.begin(), 4));        
+        REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+    }
+}

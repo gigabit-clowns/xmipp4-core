@@ -361,6 +361,20 @@ void label_map<T>::pop_front() noexcept
     m_items.pop_front();    
 }
 
+template <typename T>
+inline
+void label_map<T>::swap_ordering(const_iterator x, const_iterator y) noexcept
+{
+    if (x != y)
+    {
+        // Relink the list so that positions
+        // of x and y are swapped
+        const auto tmp = std::next(x);
+        m_items.splice(y, x);
+        m_items.splice(tmp, y);
+    }
+}
+
 
 
 template <typename T>

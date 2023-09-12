@@ -108,6 +108,8 @@ public:
     void pop_back() noexcept;
     void pop_front() noexcept;
 
+    void swap_ordering(const_iterator x, const_iterator y) noexcept;
+
 private:
     using key_to_position_map_type = std::unordered_map<key_view_type, typename container_type::iterator>;
 

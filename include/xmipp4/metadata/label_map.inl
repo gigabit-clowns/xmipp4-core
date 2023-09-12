@@ -59,8 +59,7 @@ inline
 label_map<T>::label_map(const label_map& other)
     : m_items(other.m_items)
 {
-    auto it = m_items.begin();
-    while(it != m_items.end())
+    for(auto it = m_items.begin(); it != m_items.end(); ++it)
         m_key_to_position.emplace(it->first, it);
 }
 

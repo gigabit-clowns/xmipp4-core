@@ -29,7 +29,7 @@ using namespace xmipp4;
 
 using label_map = xmipp4::metadata::label_map<std::string>; // Using string as the mapped type
 
-TEST_CASE( "Constructor", "[label_map]" )
+TEST_CASE( "Construct label map with an iterator range", "[label_map]" )
 {
     SECTION ("Unique elements")
     {  
@@ -60,5 +60,11 @@ TEST_CASE( "Constructor", "[label_map]" )
 
         values.erase(std::next(values.begin(), 2), std::next(values.begin(), 4));        
         REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+
+        SECTION ("Copy constructor")
+        {
+            label_map map2(map);
+            REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+        }
     }
 }

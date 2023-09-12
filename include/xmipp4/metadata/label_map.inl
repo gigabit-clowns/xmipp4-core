@@ -422,8 +422,14 @@ void label_map<T>::pop_back() noexcept
 template<typename T>
 inline
 bool operator==(const label_map<T>& left, const label_map<T>& right) noexcept
-{
-    //TODO
+{  
+    typename label_map<T>::const_iterator last_left, last_right;
+    std::tie(last_left, last_right) = std::mismatch(
+        left.begin(), left.end(),
+        right.begin(), right.end()
+    );
+
+    return last_left == left.end() && last_right == right.end();
 }
 
 template<typename T>

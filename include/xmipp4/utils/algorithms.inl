@@ -21,6 +21,7 @@
 #include "algorithms.hpp"
 
 #include <algorithm>
+#include <numeric>
 
 namespace xmipp4
 {
@@ -43,7 +44,7 @@ void index_sort(RandomIt1 first_index, RandomIt1 last_index, RandomIt2 first_val
     );
 }
 
-template<typename RandomIt, typename IndexIt>
+template<typename RandomIt1, typename RandomIt2>
 void permute_from(RandomIt1 first_value, RandomIt1 last_value, RandomIt2 first_index)
 {
     // Based on:

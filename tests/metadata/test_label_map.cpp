@@ -20,6 +20,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/metadata/label_mapping.hpp>
+#include <xmipp4/metadata/label_map.hpp>
 
 using namespace xmipp4;

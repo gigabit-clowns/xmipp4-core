@@ -29,42 +29,55 @@ using namespace xmipp4;
 
 using label_map = xmipp4::metadata::label_map<std::string>; // Using string as the mapped type
 
-TEST_CASE( "Construct label map with an iterator range", "[label_map]" )
+TEST_CASE( "Construct label map with unique elements", "[label_map]" )
 {
-    SECTION ("Unique elements")
-    {  
-        const std::list<label_map::value_type> values = 
-        {
-            { "hello", "good bye" },
-            { "this is", "a test" },
-            { "I hope", "it completes"},
-            { "without", "errors"}
-        };
-        label_map map(values.begin(), values.end());
+    const std::list<label_map::value_type> values = 
+    {
+        { "hello", "good bye" },
+        { "this is", "a test" },
+        { "I hope", "it completes"},
+        { "without", "errors"}
+    };
+    label_map map(values.begin(), values.end());
 
+    REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+    REQUIRE( map.at("hello") == "good bye" );
+    REQUIRE( map.at("this is") == "a test" );
+    REQUIRE( map.at("I hope") == "it completes" );
+    REQUIRE( map.at("without") == "errors" );
+
+    SECTION ("Copy constructor")
+    {
+        label_map map2(map);
         REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
     }
+}
 
-    SECTION ("Repeated elements")
-    {  
-        std::list<label_map::value_type> values = 
-        {
-            { "hello", "good bye" },
-            { "this is", "a test" },
-            { "this is", "a repeated element"},
-            { "hello", "i am repeated as well"},
-            { "I hope", "it completes"},
-            { "without", "errors"}
-        };
-        label_map map(values.begin(), values.end());
+TEST_CASE( "Construct label map with duplicate elements", "[label_map]" )
+{
+    std::list<label_map::value_type> values = 
+    {
+        { "hello", "good bye" },
+        { "this is", "a test" },
+        { "this is", "a repeated element"},
+        { "hello", "i am repeated as well"},
+        { "I hope", "it completes"},
+        { "without", "errors"}
+    };
+    label_map map(values.begin(), values.end());
 
-        values.erase(std::next(values.begin(), 2), std::next(values.begin(), 4));        
+    // Make values unique
+    values.erase(std::next(values.begin(), 2), std::next(values.begin(), 4));
+   
+    REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
+    REQUIRE( map.at("hello") == "good bye" );
+    REQUIRE( map.at("this is") == "a test" );
+    REQUIRE( map.at("I hope") == "it completes" );
+    REQUIRE( map.at("without") == "errors" );
+
+    SECTION ("Copy constructor")
+    {
+        label_map map2(map);
         REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
-
-        SECTION ("Copy constructor")
-        {
-            label_map map2(map);
-            REQUIRE( std::equal(map.begin(), map.end(), values.begin(), values.end()) );
-        }
     }
 }

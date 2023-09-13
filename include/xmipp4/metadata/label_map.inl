@@ -212,7 +212,7 @@ label_map<T>::operator[](Key&& key)
         }
     }
 
-    return *(mapping->second);
+    return mapping->second->second;
 }
 
 template <typename T>
@@ -223,7 +223,7 @@ label_map<T>::at(const key_type& key)
     const auto mapping = m_key_to_position.find(key);
     if(mapping == m_key_to_position.end())
         throw std::out_of_range("Key not present");
-    return *(mapping->second);
+    return mapping->second->second;
 }
 
 template <typename T>
@@ -234,7 +234,7 @@ label_map<T>::at(const key_type& key) const
     const auto mapping = m_key_to_position.find(key);
     if(mapping == m_key_to_position.end())
         throw std::out_of_range("Key not present");
-    return *(mapping->second);
+    return mapping->second->second;
 }
 
 template <typename T>

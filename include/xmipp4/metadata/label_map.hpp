@@ -123,7 +123,7 @@ public:
     void swap_ordering(const_iterator x, const_iterator y) noexcept;
 
     template <typename Key>
-    bool rename(iterator position, Key&& key);
+    insertion_result rename(iterator position, Key&& key);
 
 private:
     using key_to_position_map_type = std::unordered_map<key_view_type, typename container_type::iterator>;

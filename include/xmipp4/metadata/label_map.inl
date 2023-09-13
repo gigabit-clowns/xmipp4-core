@@ -477,12 +477,13 @@ void label_map<T>::swap_ordering(const_iterator x, const_iterator y) noexcept
 template <typename T>
 template <typename Key>
 inline
-bool label_map<T>::rename(iterator position, Key&& key)
+typename label_map<T>::insertion_result 
+label_map<T>::rename(iterator position, Key&& key)
 {
     // Try to insert the new key
     typename key_to_position_map_type::iterator mapping;
     bool inserted;
-    std::tie(mapping, inserted) = m_key_to_position.insert(
+    std::tie(mapping, inserted) = m_key_to_position.emplace(
         std::piecewise_construct,
         std::forward_as_tuple<Key>(key),
         std::forward_as_tuple()
@@ -513,7 +514,7 @@ bool label_map<T>::rename(iterator position, Key&& key)
         m_items.erase(position);
     }
     
-    return inserted;
+    return insertion_result(mapping->second, inserted);
 
 }
 

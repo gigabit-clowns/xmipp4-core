@@ -209,6 +209,7 @@ label_map<T>::operator[](Key&& key)
             // into de list. Erase the mapping
             // to preserve consistency
             m_key_to_position.erase(mapping);
+            throw; //Rethrow
         }
     }
 
@@ -507,6 +508,7 @@ label_map<T>::rename(iterator position, Key&& key)
             // An error ocurred inserting the new
             // item. Remove the mapping to preserve consistency
             m_key_to_position.erase(mapping);
+            throw; // Rethrow
         }
 
         // Delete the old node and mapping
@@ -515,7 +517,6 @@ label_map<T>::rename(iterator position, Key&& key)
     }
     
     return insertion_result(mapping->second, inserted);
-
 }
 
 

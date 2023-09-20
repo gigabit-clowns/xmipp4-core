@@ -20,6 +20,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4
@@ -27,25 +28,24 @@ namespace xmipp4
 namespace metadata
 {
 
-class table;
+class table_reader;
 
-class reader
+class database_reader
 {
 public:
-    reader() = default;
-    reader(const reader& other) = delete;
-    reader(reader&& other) = default;
-    virtual ~reader() = default;
+    database_reader() = default;
+    database_reader(const database_reader& other) = delete;
+    database_reader(database_reader&& other) = default;
+    virtual ~database_reader() = default;
 
-    reader& operator=(const reader& other) = delete;
-    reader& operator=(reader&& other) = default;
+    database_reader& operator=(const database_reader& other) = delete;
+    database_reader& operator=(database_reader&& other) = default;
 
-    virtual std::size_t read(table& table) = 0;
-    virtual std::size_t read(table& table, std::size_t count) = 0;
-
-    virtual std::size_t tell() const noexcept = 0;
+    virtual std::unique_ptr<table_reader> create_table_reader(const std::string& label) = 0;
+    virtual std::unique_ptr<table_reader> create_table_reader() = 0;
 
 };
 
 } // namespace metadata
 } // namespace xmipp4
+

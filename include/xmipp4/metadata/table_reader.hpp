@@ -29,20 +29,22 @@ namespace metadata
 
 class table;
 
-class writer
+class table_reader
 {
 public:
-    writer() = default;
-    writer(const writer& other) = delete;
-    writer(writer&& other) = default;
-    virtual ~writer() = default;
+    table_reader() = default;
+    table_reader(const table_reader& other) = delete;
+    table_reader(table_reader&& other) = default;
+    virtual ~table_reader() = default;
 
-    writer& operator=(const writer& other) = delete;
-    writer& operator=(writer&& other) = default;
+    table_reader& operator=(const table_reader& other) = delete;
+    table_reader& operator=(table_reader&& other) = default;
 
-    virtual std::size_t write(const table& table) = 0;
+    virtual std::size_t read(table& table) = 0;
+    virtual std::size_t read(table& table, std::size_t count) = 0;
 
     virtual std::size_t tell() const noexcept = 0;
+
 };
 
 } // namespace metadata

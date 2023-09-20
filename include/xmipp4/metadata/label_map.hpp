@@ -20,6 +20,13 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file label_map.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides label_map class
+ * 
+ */
+
 #include <string>
 #include <string_view>
 #include <list>
@@ -30,6 +37,16 @@ namespace xmipp4
 namespace metadata
 {
 
+/**
+ * @brief Map structure that associates labels to elements of type T.
+ * 
+ * Interface has been designed to be as familiar as possible to std::map
+ * and std::unordered_map. However, unlike former data structures, element
+ * order can be customized. At the same time, elements can be indexed using 
+ * their label with constant time complexity.
+ * 
+ * @tparam T Stored value type
+ */
 template <typename T>
 class label_map
 {

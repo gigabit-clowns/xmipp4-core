@@ -18,6 +18,13 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file label_map.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of label_map.inl
+ * 
+ */
+
 #include "label_map.hpp"
 
 namespace xmipp4

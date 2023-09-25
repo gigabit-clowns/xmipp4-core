@@ -55,16 +55,18 @@ axis_3d next_axis(axis_3d axis) noexcept
     case axis_3d::x: return axis_3d::y;
     case axis_3d::y: return axis_3d::z;
     case axis_3d::z: return axis_3d::x;
-    case axis_3d::minus_x: return axis_3d::minus_z;
-    case axis_3d::minus_y: return axis_3d::minus_x;
-    case axis_3d::minus_z: return axis_3d::minus_y;
+    case axis_3d::negative_x: return axis_3d::negative_z;
+    case axis_3d::negative_y: return axis_3d::negative_x;
+    case axis_3d::negative_z: return axis_3d::negative_y;
     }
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 int dot(axis_3d left, axis_3d right) noexcept
 {
-    if (left == right)
+    if (left == axis_3d::zero || right == axis_3d::zero)
+        return 0;
+    else if (left == right)
         return 1;
     else if (left == -right)
         return -1;
@@ -77,16 +79,16 @@ axis_3d cross(axis_3d left, axis_3d right) noexcept
 {
     auto result = axis_3d::zero;
 
+    // Assure that both axes are positive (or zero)
+    const auto left_is_negative = is_negative(left);
+    if (left_is_negative) left = -left;
+    const auto right_is_negative = is_negative(right);
+    if (right_is_negative) right = -right;
+
     if (left != axis_3d::zero && right != axis_3d::zero && left != right)
     {
-        // Assure that both axes are positive (or zero)
-        const auto left_is_negative = is_negative(left);
-        if (left_is_negative) left = -left;
-        const auto right_is_negative = is_negative(right);
-        if (right_is_negative) right = -right;
-
         // Determine the sign of the result
-        bool result_is_negative = left_is_negative != right_is_negative;
+        bool result_is_negative = left_is_negative != right_is_negative; //xor
 
         // Assure that the axes are ordered (x->y->z->x->...)
         if(next_axis(left) != right)
@@ -131,9 +133,9 @@ const char* to_string(axis_3d axis) noexcept
     case axis_3d::x: return "x";
     case axis_3d::y: return "y";
     case axis_3d::z: return "z";
-    case axis_3d::minus_x: return "-x";
-    case axis_3d::minus_y: return "-y";
-    case axis_3d::minus_z: return "-z";
+    case axis_3d::negative_x: return "-x";
+    case axis_3d::negative_y: return "-y";
+    case axis_3d::negative_z: return "-z";
     }
 }
 
@@ -151,9 +153,9 @@ axis_3d from_string(std::string_view str)
         { "+y", axis_3d::y },
         { to_string(axis_3d::z), axis_3d::z },
         { "+z", axis_3d::z },
-        { to_string(axis_3d::minus_x), axis_3d::minus_x },
-        { to_string(axis_3d::minus_y), axis_3d::minus_y },
-        { to_string(axis_3d::minus_z), axis_3d::minus_z },
+        { to_string(axis_3d::negative_x), axis_3d::negative_x },
+        { to_string(axis_3d::negative_y), axis_3d::negative_y },
+        { to_string(axis_3d::negative_z), axis_3d::negative_z },
 
     };
 

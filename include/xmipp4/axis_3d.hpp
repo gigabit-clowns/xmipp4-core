@@ -33,9 +33,9 @@ enum class axis_3d
     x = 1,
     y = 2,
     z = 3,
-    minus_x = -x,
-    minus_y = -y,
-    minus_z = -z,
+    negative_x = -x,
+    negative_y = -y,
+    negative_z = -z,
 };
 
 XMIPP4_CONSTEXPR axis_3d operator-(axis_3d axis) noexcept;

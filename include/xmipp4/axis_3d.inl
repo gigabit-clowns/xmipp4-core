@@ -46,7 +46,7 @@ bool is_positive(axis_3d axis) noexcept
     return static_cast<std::underlying_type<axis_3d>::type>(axis) > 0;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 axis_3d next_axis(axis_3d axis) noexcept
 {
     switch (axis)

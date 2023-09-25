@@ -38,6 +38,7 @@
  */
 #if defined(NDEBUG)
     //#define XMIPP4_ASSERT(expr) XMIPP4_ASSUME(expr) //TODO failing
+    #define XMIPP4_ASSERT(expr)
 #else
     #define XMIPP4_ASSERT(expr) assert(expr)
 #endif

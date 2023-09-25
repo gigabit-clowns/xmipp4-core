@@ -91,8 +91,7 @@ axis_3d cross(axis_3d left, axis_3d right) noexcept
         // Assure that the axes are ordered (x->y->z->x->...)
         if(next_axis(left) != right)
         {
-            // Flip te sign of the result
-            result_is_negative = !result_is_negative;
+            result_is_negative = !result_is_negative; // Negate the result when reordering
             std::swap(left, right);
         }
 

@@ -107,7 +107,7 @@ axis_3d cross(axis_3d left, axis_3d right) noexcept
             XMIPP4_ASSERT(right == axis_3d::z);
             result = axis_3d::x;
         }
-        else
+        else // left == axis_3d::z
         {
             XMIPP4_ASSERT(left == axis_3d::z);
             XMIPP4_ASSERT(right == axis_3d::x);

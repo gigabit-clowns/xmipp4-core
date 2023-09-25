@@ -47,7 +47,7 @@ XMIPP4_CONSTEXPR axis_3d next_axis(axis_3d axis) noexcept;
 XMIPP4_CONSTEXPR int dot(axis_3d left, axis_3d right) noexcept;
 XMIPP4_CONSTEXPR axis_3d cross(axis_3d left, axis_3d right) noexcept;
 
-XMIPP4_CONSTEXPR const char* to_string(axis_3d type) noexcept;
+XMIPP4_CONSTEXPR const char* to_string(axis_3d axis) noexcept;
 axis_3d from_string(std::string_view str);
 
 } // namespace xmipp4

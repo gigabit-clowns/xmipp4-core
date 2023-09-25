@@ -140,7 +140,7 @@ const char* to_string(axis_3d axis) noexcept
 }
 
 inline
-axis_3d from_string(std::string_view str)
+bool from_string(std::string_view str, axis_3d& axis) noexcept
 {
     static const 
     std::unordered_map<std::string_view, axis_3d> str_2_axis_3d = 
@@ -159,7 +159,14 @@ axis_3d from_string(std::string_view str)
 
     };
 
-    return str_2_axis_3d.at(str);
+    const auto ite = str_2_axis_3d.find(str);
+    const auto result = ite != str_2_axis_3d.cend();
+    if (result)
+    {
+        axis = ite->second;
+    }
+
+    return result;
 }
 
 } // namespace xmipp4

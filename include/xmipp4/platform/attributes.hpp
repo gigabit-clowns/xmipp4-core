@@ -137,8 +137,8 @@
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(assume)
     #define XMIPP4_ASSUME(expr) XMIPP4_CPP_ATTRIBUTE(assume(expr))
-#elif XMIPP4_HAS_GCC_ATTRIBUTE(assume)
-    #define XMIPP4_ASSUME(expr) XMIPP4_GCC_ATTRIBUTE(assume(expr))
+//#elif XMIPP4_HAS_GCC_ATTRIBUTE(assume)
+//    #define XMIPP4_ASSUME(expr) XMIPP4_GCC_ATTRIBUTE(assume(expr)) // FIXME
 #elif XMIPP4_HAS_BUILTIN(__builtin_assume)
     #define XMIPP4_ASSUME(expr) __builtin_assume(expr)
 #elif defined(__assume)

@@ -29,7 +29,7 @@
  * 
  */
 
-#include "gcc_attributes.h"
+#include "c_attributes.h"
 #include "operating_system.h"
 
 /**

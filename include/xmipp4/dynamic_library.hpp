@@ -29,6 +29,8 @@
  * @date 2023-07-09
  */
 
+#include "platform/dynamic_shared_object.h"
+
 #include <string>
 #include <cstdint>
 
@@ -47,52 +49,52 @@ public:
      * @brief Construct an empty dynamic_library object
      * 
      */
-    dynamic_library() noexcept;
+    XMIPP4_CORE_API dynamic_library() noexcept;
 
     /**
      * @brief Construct a new dynamic_library object from a file
      * 
      * @param filename Path of the dynamic library file
      */
-    explicit dynamic_library(const char* filename);
+    XMIPP4_CORE_API explicit dynamic_library(const char* filename);
 
     /**
      * @brief Construct a new dynamic_library object from a file
      * 
      * @param filename Path of the dynamic library file
      */
-    explicit dynamic_library(const std::string& filename);
+    XMIPP4_CORE_API explicit dynamic_library(const std::string& filename);
 
     dynamic_library(const dynamic_library& other) = delete;
-    dynamic_library(dynamic_library&& other) noexcept;
-    ~dynamic_library();
+    XMIPP4_CORE_API dynamic_library(dynamic_library&& other) noexcept;
+    XMIPP4_CORE_API ~dynamic_library();
 
     dynamic_library& operator=(const dynamic_library& other) = delete;
-    dynamic_library& operator=(dynamic_library&& other) noexcept;
+    XMIPP4_CORE_API dynamic_library& operator=(dynamic_library&& other) noexcept;
 
-    void swap(dynamic_library& other) noexcept;
+    XMIPP4_CORE_API void swap(dynamic_library& other) noexcept;
 
-    operator bool() const noexcept;
-
-    /**
-     * @brief Loads a dynamic library
-     * 
-     * @param filename Path to the dynamic library
-     */
-    void open(const char* filename);
+    XMIPP4_CORE_API operator bool() const noexcept;
 
     /**
      * @brief Loads a dynamic library
      * 
      * @param filename Path to the dynamic library
      */
-    void open(const std::string& filename);
+    XMIPP4_CORE_API void open(const char* filename);
+
+    /**
+     * @brief Loads a dynamic library
+     * 
+     * @param filename Path to the dynamic library
+     */
+    XMIPP4_CORE_API void open(const std::string& filename);
 
     /**
      * @brief Frees the stored dynamic library, if any
      * 
      */
-    void close() noexcept;
+    XMIPP4_CORE_API void close() noexcept;
 
     /**
      * @brief Get the address of a symbol
@@ -100,7 +102,7 @@ public:
      * @param name Name of the symbol
      * @return void* Pointer to the symbol. nullptr if not found
      */
-    void* get_symbol(const char* name) const noexcept; 
+    XMIPP4_CORE_API void* get_symbol(const char* name) const noexcept; 
 
     /**
      * @brief Get the address of a symbol
@@ -108,13 +110,13 @@ public:
      * @param name Name of the symbol
      * @return void* Pointer to the symbol. nullptr if not found
      */
-    void* get_symbol(const std::string& name) const noexcept; 
+    XMIPP4_CORE_API void* get_symbol(const std::string& name) const noexcept; 
 
 private:
     void* m_handle;
 
 };
 
-void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept;
+XMIPP4_CORE_API void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept;
 
 } // namespace xmipp4

@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file axis_3d.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of axis_3d.hpp
+ * @date 2023-09-27
+ * 
+ */
+
 #include "axis_3d.hpp"
 
 #include "platform/assert.hpp"

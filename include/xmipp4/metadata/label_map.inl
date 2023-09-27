@@ -288,7 +288,7 @@ label_map<T>::insert(const_iterator position, value_type&& value)
 template <typename T>
 template <typename InputIt>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::insert(const_iterator position, InputIt first, InputIt last)
 {
     const auto insert_position = m_items.insert(position, first, last);
@@ -297,7 +297,7 @@ label_map<T>::insert(const_iterator position, InputIt first, InputIt last)
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::insert(const_iterator position, std::initializer_list<value_type> init)
 {
     return insert(position, init.begin(), init.end());
@@ -305,7 +305,7 @@ label_map<T>::insert(const_iterator position, std::initializer_list<value_type> 
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::splice(const_iterator position, label_map& other)
 {
     return splice(position, std::move(other));
@@ -313,7 +313,7 @@ label_map<T>::splice(const_iterator position, label_map& other)
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::splice(const_iterator position, label_map&& other)
 {
     const auto first = other.begin();
@@ -341,7 +341,7 @@ label_map<T>::splice(const_iterator position, label_map&& other, const_iterator 
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::splice(const_iterator position, label_map& other, const_iterator first, const_iterator last)
 {
     return splice(position, std::move(other), first, last);
@@ -349,7 +349,7 @@ label_map<T>::splice(const_iterator position, label_map& other, const_iterator f
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::splice(const_iterator position, label_map&& other, const_iterator first, const_iterator last)
 {
     m_items.splice(position, std::move(other.m_items), first, last);
@@ -564,11 +564,9 @@ label_map<T>::insert_mapping(iterator position)
 
 template <typename T>
 inline
-typename label_map<T>::multiple_insertion_result
+typename label_map<T>::iterator
 label_map<T>::insert_mapping(iterator first, const_iterator last)
 {   
-    size_type count = 0;
-
     // Remove all the duplicated elements at the beginning
     // while updating the first position (as it is deleted)
     while(first != last)
@@ -591,15 +589,9 @@ label_map<T>::insert_mapping(iterator first, const_iterator last)
         }
 
         if (inserted)
-        {
-            // First successful insertion
-            count = 1;
-            break;
-        }
-        else
-        {
-            first = m_items.erase(first);
-        }
+            break; // First successful insertion
+        
+        first = m_items.erase(first); // Next item
     }
 
     // Update the mapping for the rest of elements
@@ -627,18 +619,13 @@ label_map<T>::insert_mapping(iterator first, const_iterator last)
             }
 
             if (inserted)
-            {
                 ++it;
-                ++count;
-            }
             else
-            {
                 it = m_items.erase(it);
-            }
         }
     }
 
-    return std::make_pair(first, count);
+    return first;
 }
 
 

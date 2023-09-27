@@ -62,7 +62,6 @@ public:
     using reverse_iterator =  typename container_type::reverse_iterator;
     using const_reverse_iterator =  typename container_type::const_reverse_iterator;
     using insertion_result = std::pair<iterator, bool>;
-    using multiple_insertion_result = std::pair<iterator, size_type>;
 
     label_map() = default;
     template <typename InputIt>
@@ -107,15 +106,15 @@ public:
     insertion_result insert(const_iterator position, const value_type& value);
     insertion_result insert(const_iterator position, value_type&& value);
     template <typename InputIt>
-    multiple_insertion_result insert(const_iterator position, InputIt first, InputIt last);
-    multiple_insertion_result insert(const_iterator position, std::initializer_list<value_type> init);
+    iterator insert(const_iterator position, InputIt first, InputIt last);
+    iterator insert(const_iterator position, std::initializer_list<value_type> init);
 
-    multiple_insertion_result splice(const_iterator position, label_map& other);
-    multiple_insertion_result splice(const_iterator position, label_map&& other);
+    iterator splice(const_iterator position, label_map& other);
+    iterator splice(const_iterator position, label_map&& other);
     insertion_result splice(const_iterator position, label_map& other, const_iterator item);
     insertion_result splice(const_iterator position, label_map&& other, const_iterator item);
-    multiple_insertion_result splice(const_iterator position, label_map& other, const_iterator first, const_iterator last);
-    multiple_insertion_result splice(const_iterator position, label_map&& other, const_iterator first, const_iterator last);
+    iterator splice(const_iterator position, label_map& other, const_iterator first, const_iterator last);
+    iterator splice(const_iterator position, label_map&& other, const_iterator first, const_iterator last);
 
     template<typename... Args>
     insertion_result emplace(const_iterator position, Args&&... args);
@@ -149,7 +148,7 @@ private:
     key_to_position_map_type m_key_to_position;
 
     insertion_result insert_mapping(iterator position);
-    multiple_insertion_result insert_mapping(iterator first, const_iterator last);
+    iterator insert_mapping(iterator first, const_iterator last);
 
 };
 

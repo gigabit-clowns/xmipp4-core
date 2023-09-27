@@ -28,6 +28,12 @@
 namespace xmipp4 
 {
 
+/**
+ * @brief Enumeration representing canonical 3D unit axes.
+ * Additionally, zero is also represented for compatibility
+ * with some operations.  
+ * 
+ */
 enum class axis_3d
 {
     zero = 0,

@@ -24,6 +24,7 @@
 #include "platform/attributes.hpp"
 
 #include <string_view>
+#include <ostream>
 
 namespace xmipp4 
 {
@@ -113,6 +114,9 @@ XMIPP4_CONSTEXPR axis_3d cross(axis_3d left, axis_3d right) noexcept;
 
 XMIPP4_CONSTEXPR const char* to_string(axis_3d axis) noexcept;
 bool from_string(std::string_view str, axis_3d& axis) noexcept;
+
+template<typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, axis_3d axis);
 
 } // namespace xmipp4
 

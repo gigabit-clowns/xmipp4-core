@@ -115,7 +115,7 @@ TEST_CASE( "dot", "[axis_3d]" )
     }
 }
 
-TEST_CASE( "coss", "[axis_3d]" ) 
+TEST_CASE( "cross", "[axis_3d]" ) 
 {
     SECTION( "One of the elements is zero" )
     {

@@ -36,7 +36,7 @@
  */
 
 #include "cpp_attributes.hpp"
-#include "gcc_attributes.h"
+#include "c_attributes.h"
 #include "builtin.h"
 
 

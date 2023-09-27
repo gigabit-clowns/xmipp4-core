@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,48 +20,32 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file test_version.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for version.hpp
- * @date 2023-08-12
- */
+#include "platform/constexpr.hpp"
+#include "utils/bit.hpp"
+#include "utils/flagset.hpp"
 
+#include <ostream>
 
-#include <catch2/catch_test_macros.hpp>
-
-#include <xmipp4/version.hpp>
-
-using namespace xmipp4;
-
-
-TEST_CASE( "version constructor and getters", "[version]" ) 
+namespace xmipp4 
 {
-    SECTION( "piecewise constructor" )
-    {
-        version v(1, 2, 3);
-        REQUIRE( v.get_major() == 1 );
-        REQUIRE( v.get_minor() == 2 );
-        REQUIRE( v.get_patch() == 3 );
-    }
 
-    SECTION( "copy constructor" )
-    {
-        version v(1, 2, 3);
-        version v2(v);
-        REQUIRE( v2.get_major() == 1 );
-        REQUIRE( v2.get_minor() == 2 );
-        REQUIRE( v2.get_patch() == 3 );
-    }
-}
+enum class access_flag_bits {
+    read = utils::bit(0),
+    write = utils::bit(1),
+};
 
-TEST_CASE( "version setters and getters", "[version]" ) 
-{
-    version v(1, 2, 3);
-    v.set_major(4);
-    v.set_minor(5);
-    v.set_patch(6);
-    REQUIRE( v.get_major() == 4 );
-    REQUIRE( v.get_minor() == 5 );
-    REQUIRE( v.get_patch() == 6 );
-}
+using access_flags = utils::flagset<access_flag_bits>;
+
+inline XMIPP4_CONST_CONSTEXPR access_flags read_only(access_flag_bits::read);
+inline XMIPP4_CONST_CONSTEXPR access_flags write_only(access_flag_bits::write);
+inline XMIPP4_CONST_CONSTEXPR access_flags read_write({access_flag_bits::read, access_flag_bits::write});
+
+XMIPP4_CONSTEXPR 
+const char* to_string(access_flag_bits v) noexcept;
+
+template<typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, access_flag_bits v);
+
+} // namespace xmipp4
+
+#include "access_flags.inl"

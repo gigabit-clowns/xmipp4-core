@@ -18,48 +18,26 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file test_version.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for version.hpp
- * @date 2023-08-12
- */
+#include "access_flags.hpp"
 
-
-#include <catch2/catch_test_macros.hpp>
-
-#include <xmipp4/version.hpp>
-
-using namespace xmipp4;
-
-
-TEST_CASE( "version constructor and getters", "[version]" ) 
+namespace xmipp4 
 {
-    SECTION( "piecewise constructor" )
-    {
-        version v(1, 2, 3);
-        REQUIRE( v.get_major() == 1 );
-        REQUIRE( v.get_minor() == 2 );
-        REQUIRE( v.get_patch() == 3 );
-    }
 
-    SECTION( "copy constructor" )
+XMIPP4_INLINE_CONSTEXPR const char* 
+to_string(access_flag_bits v) noexcept
+{
+    switch (v)
     {
-        version v(1, 2, 3);
-        version v2(v);
-        REQUIRE( v2.get_major() == 1 );
-        REQUIRE( v2.get_minor() == 2 );
-        REQUIRE( v2.get_patch() == 3 );
+    case access_flag_bits::read:    return "read";
+    case access_flag_bits::write:   return "write";
     }
 }
 
-TEST_CASE( "version setters and getters", "[version]" ) 
+template<typename T>
+inline std::basic_ostream<T>& 
+operator<<(std::basic_ostream<T>& os, access_flag_bits v)
 {
-    version v(1, 2, 3);
-    v.set_major(4);
-    v.set_minor(5);
-    v.set_patch(6);
-    REQUIRE( v.get_major() == 4 );
-    REQUIRE( v.get_minor() == 5 );
-    REQUIRE( v.get_patch() == 6 );
+    return os << to_string(v);
 }
+
+} // namespace xmipp4

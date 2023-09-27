@@ -25,7 +25,7 @@
  * @date 2023-08-09
  */
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <limits>
 #include <type_traits>

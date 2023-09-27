@@ -96,19 +96,18 @@ rotate_left(T x, int s) noexcept
 #if defined(__cpp_lib_bitops)
     return std::rotl(x, s);
 #else
-    if (s > 0)
+    if (s >= 0)
     {
         XMIPP4_CONST_CONSTEXPR auto N = std::numeric_limits<T>::digits; 
-        const auto r = s % N;
-        return (x << r) | (x >> (N - r)); 
-    }
-    else if (s < 0)
-    {
-        return rotate_right(x, -s);
+        const auto r = static_cast<unsigned>(s) % N;
+        if(r > 0)
+            return (x << r) | (x >> (N - r)); 
+        else
+            return x;
     }
     else
     {
-        return x;
+        return rotate_right(x, -s);
     }
 #endif
 }
@@ -121,19 +120,18 @@ rotate_right(T x, int s) noexcept
 #if defined(__cpp_lib_bitops)
     return std::rotr(x, s);
 #else
-    if (s > 0)
+    if (s >= 0)
     {
         XMIPP4_CONST_CONSTEXPR auto N = std::numeric_limits<T>::digits; 
-        const auto r = s % N;
-        return (x >> r) | (x << (N - r)); 
-    }
-    else if (s < 0)
-    {
-        return rotate_left(x, -s);
+        const auto r = static_cast<unsigned>(s) % N;
+        if(r > 0)
+            return (x >> r) | (x << (N - r)); 
+        else
+            return x;
     }
     else
     {
-        return x;
+        return rotate_left(x, -s);
     }
 #endif
 }

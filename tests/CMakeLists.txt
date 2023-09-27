@@ -40,8 +40,8 @@ add_executable(
 )
 set_target_properties(
 	${TESTS_NAME} PROPERTIES 
-	CMAKE_CXX_STANDARD 20
-	CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic"
+	CXX_STANDARD 20
+	CXX_FLAGS "-Wall -Wextra -Wpedantic"
 )
 target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
 

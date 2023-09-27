@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,48 +20,27 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file test_version.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for version.hpp
- * @date 2023-08-12
- */
+#include <xmipp4/access_flags.hpp>
+#include <xmipp4/platform/operating_system.h>
 
-
-#include <catch2/catch_test_macros.hpp>
-
-#include <xmipp4/version.hpp>
-
-using namespace xmipp4;
-
-
-TEST_CASE( "version constructor and getters", "[version]" ) 
+namespace xmipp4
 {
-    SECTION( "piecewise constructor" )
-    {
-        version v(1, 2, 3);
-        REQUIRE( v.get_major() == 1 );
-        REQUIRE( v.get_minor() == 2 );
-        REQUIRE( v.get_patch() == 3 );
-    }
-
-    SECTION( "copy constructor" )
-    {
-        version v(1, 2, 3);
-        version v2(v);
-        REQUIRE( v2.get_major() == 1 );
-        REQUIRE( v2.get_minor() == 2 );
-        REQUIRE( v2.get_patch() == 3 );
-    }
-}
-
-TEST_CASE( "version setters and getters", "[version]" ) 
+namespace detail
 {
-    version v(1, 2, 3);
-    v.set_major(4);
-    v.set_minor(5);
-    v.set_patch(6);
-    REQUIRE( v.get_major() == 4 );
-    REQUIRE( v.get_minor() == 5 );
-    REQUIRE( v.get_patch() == 6 );
-}
+
+void* memory_mapped_file_open(const char* filename, 
+                              std::ptrdiff_t offset,
+                              std::size_t &size, 
+                              access_flags access );
+
+void memory_mapped_file_close(void* data, std::size_t size) noexcept;
+
+
+} // namespace detail
+} // namespace xmipp4
+
+#if defined(XMIPP4_POSIX)
+    #include "memory_mapped_file_detail_posix.inl"
+#else
+    #error "No memory_mapped_file implementation available for this platform"
+#endif

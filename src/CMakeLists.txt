@@ -37,8 +37,8 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(
 	${PROJECT_NAME} PROPERTIES 
 	SOVERSION ${PROJECT_VERSION}
-	CMAKE_CXX_STANDARD 20
-	CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic"
+	CXX_STANDARD 20
+	CXX_FLAGS "-Wall -Wextra -Wpedantic"
 	DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
 )
 target_include_directories(

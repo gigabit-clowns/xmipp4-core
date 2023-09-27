@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,51 +20,39 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "enumeration.hpp"
+/**
+ * @file example_enum.hpp
+ * @author Your Name (yourname@yourdomain.tld)
+ * @brief Provides example_enum
+ * @date Today (YYYY/MM/DD)
+ * 
+ */
 
-#include <unordered_map>
+#include "platform/constexpr.hpp"
+
+#include <string_view>
+#include <ostream>
 
 namespace xmipp4 
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-const char* to_string(enumeration axis) noexcept
+/**
+ * @brief Describe the purpose of the example_enum
+ * 
+ */
+enum class example_enum
 {
-    switch (axis)
-    {
-    case enumeration::first: return "first";
-    case enumeration::second: return "second";
-    case enumeration::third: return "third";
-    }
-}
+    first,
+    second,
+    third,
+};
 
-inline
-bool from_string(std::string_view str, enumeration& axis) noexcept
-{
-    static const 
-    std::unordered_map<std::string_view, enumeration> str_2_enumeration = 
-    {
-        { to_string(enumeration::first), enumeration::first },
-        { to_string(enumeration::second), enumeration::second },
-        { to_string(enumeration::third), enumeration::third },
-
-    };
-
-    const auto ite = str_2_enumeration.find(str);
-    const auto result = ite != str_2_enumeration.cend();
-    if (result)
-    {
-        axis = ite->second;
-    }
-
-    return result;
-}
+XMIPP4_CONSTEXPR const char* to_string(example_enum ex) noexcept;
+bool from_string(std::string_view str, example_enum& ex) noexcept;
 
 template<typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, enumeration axis)
-{
-    return os << to_string(axis);
-}
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, example_enum ex);
 
 } // namespace xmipp4
+
+#include "example_enum.inl"

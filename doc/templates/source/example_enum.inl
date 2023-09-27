@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,40 +18,51 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file enumeration.hpp
- * @author Your Name (yourname@yourdomain.tld)
- * @brief Provides enumeration enum
- * @date Today (YYYY/MM/DD)
- * 
- */
+#include "example_enum.hpp"
 
-#include "platform/constexpr.hpp"
-
-#include <string_view>
-#include <ostream>
+#include <unordered_map>
 
 namespace xmipp4 
 {
 
-/**
- * @brief Describe the purpose of the enumeration
- * 
- */
-enum class enumeration
+XMIPP4_INLINE_CONSTEXPR 
+const char* to_string(example_enum ex) noexcept
 {
-    first,
-    second,
-    third,
-};
+    switch (ex)
+    {
+    case example_enum::first: return "first";
+    case example_enum::second: return "second";
+    case example_enum::third: return "third";
+    }
+}
 
-XMIPP4_CONSTEXPR const char* to_string(enumeration axis) noexcept;
-bool from_string(std::string_view str, enumeration& axis) noexcept;
+inline
+bool from_string(std::string_view str, example_enum& ex) noexcept
+{
+    static const 
+    std::unordered_map<std::string_view, example_enum> str_2_example_enum = 
+    {
+        { to_string(example_enum::first), example_enum::first },
+        { to_string(example_enum::second), example_enum::second },
+        { to_string(example_enum::third), example_enum::third },
+
+    };
+
+    const auto ite = str_2_example_enum.find(str);
+    const auto result = ite != str_2_example_enum.cend();
+    if (result)
+    {
+        ex = ite->second;
+    }
+
+    return result;
+}
 
 template<typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, enumeration axis);
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, example_enum ex)
+{
+    return os << to_string(ex);
+}
 
 } // namespace xmipp4
-
-#include "enumeration.inl"
-

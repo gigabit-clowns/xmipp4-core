@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +19,16 @@
  ***************************************************************************/
 
 /**
- * @file header.hpp
+ * @file inline_source.inl
  * @author Your Name (yourname@yourdomain.tld)
- * @brief Describe the purpose of this header
+ * @brief Implements header.hpp
  * @date Today (YYYY/MM/DD)
  * 
  */
+
+#include "header.hpp"
 
 namespace xmipp4 
 {
 
 } // namespace xmipp4
-
-#include "inline_source.inl"

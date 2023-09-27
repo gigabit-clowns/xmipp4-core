@@ -169,4 +169,11 @@ bool from_string(std::string_view str, axis_3d& axis) noexcept
     return result;
 }
 
+template<typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, axis_3d axis)
+{
+    return os << to_string(axis);
+}
+
 } // namespace xmipp4

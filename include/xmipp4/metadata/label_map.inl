@@ -189,38 +189,37 @@ inline
 typename label_map<T>::mapped_type& 
 label_map<T>::operator[](Key&& key)
 {
-    typename key_to_position_map_type::iterator mapping;
-    bool inserted;
-    std::tie(mapping, inserted) = m_key_to_position.insert(
-        std::piecewise_construct,
-        std::forward_as_tuple<Key>(key),
-        std::forward_as_tuple()
-    );
-
-    if (inserted)
+    // Find the requested element
+    auto mapping = m_key_to_position.find(key);
+    if (mapping != m_key_to_position.end())
     {
-        // Element did not exist. Insert it 
-        // at the end and update the mapping
+        return mapping->second->second;
+    }
+    else
+    {
+        // Requested key does not exist. Create a new element at the end
+        const auto ite = m_items.emplace_back(
+            std::piecewise_construct,
+            std::forward_as_tuple(std::forward<Key>(key)),
+            std::forward_as_tuple()
+        );
+        
+        // Insert the mapping
         try
         {
-            mapping->second = m_items.emplace(
-                m_items.cend(),
-                std::piecewise_construct,
-                std::forward_as_tuple(mapping->first),
-                std::forward_as_tuple()
-            );
+            m_key_to_position.insert(ite->first, ite);
         }
-        catch (...)
+        catch(...)
         {
-            // Could not insert the new element
-            // into de list. Erase the mapping
-            // to preserve consistency
-            m_key_to_position.erase(mapping);
-            throw; //Rethrow
+            // An exception occurred when updating
+            // the label map. Erase the inserted item
+            // to keep consistency
+            m_items.erase(ite);
+            throw; // Rethrow
         }
-    }
 
-    return mapping->second->second;
+        return ite->second;
+    }
 }
 
 template <typename T>

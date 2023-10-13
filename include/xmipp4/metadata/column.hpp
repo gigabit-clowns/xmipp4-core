@@ -20,13 +20,31 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <functional>
+
 namespace xmipp4
 {
 namespace metadata
 {
 
+class column_descriptor;
+
 class column
 {
+public:
+    column(const column_descriptor& descriptor) noexcept;
+    column(const column& other) = default;
+    column(column&& other) = default;
+    ~column() = default;
+
+    column& operator=(const column& other) = default;
+    column& operator=(column&& other) = default;
+
+    const column_descriptor& get_descriptor() const noexcept;
+
+private:
+    std::reference_wrapper<const column_descriptor> m_descriptor;
+    // TODO tensor with data
 
 };
 

@@ -44,21 +44,21 @@ const std::string& column_descriptor::get_label() const noexcept
 }
 
 inline
-void column_descriptor::set_category(const std::string& category)
+void column_descriptor::set_group(const std::string& group)
 {
-    m_category = category;
+    m_group = group;
 }
 
 inline
-void column_descriptor::set_category(std::string&& category) noexcept
+void column_descriptor::set_group(std::string&& group) noexcept
 {
-    m_category = std::move(category);
+    m_group = std::move(group);
 }
 
 inline
-const std::string& column_descriptor::get_category() const noexcept
+const std::string& column_descriptor::get_group() const noexcept
 {
-    return m_category;
+    return m_group;
 }
 
 inline

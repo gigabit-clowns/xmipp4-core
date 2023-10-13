@@ -44,16 +44,16 @@ public:
     void set_label(std::string&& name) noexcept;
     const std::string& get_label() const noexcept;
 
-    void set_category(const std::string& category);
-    void set_category(std::string&& category) noexcept;
-    const std::string& get_category() const noexcept;
+    void set_group(const std::string& group);
+    void set_group(std::string&& group) noexcept;
+    const std::string& get_group() const noexcept;
 
     void set_type(std::type_index type) noexcept;
     std::type_index get_type() const noexcept;
 
 private:
     std::string m_label;
-    std::string m_category;
+    std::string m_group;
     std::type_index m_type;
 
 };

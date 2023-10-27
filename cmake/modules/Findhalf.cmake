@@ -23,23 +23,30 @@
 include(FindPackageHandleStandardArgs)
 
 # Find the half library include dir
-find_path(half_INCLUDE_DIR NAMES half.hpp)
-message(${half_INCLUDE_DIR})
+find_path(
+    half_INCLUDE_DIR 
+    NAMES half.hpp
+)
 
 # Parse version from header file
-file(
-    STRINGS "${half_INCLUDE_DIR}/half.hpp"
-    half_VERSION_LINE
-    REGEX "Version"
-)
-string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
-set(half_VERSION ${CMAKE_MATCH_1})
+if (half_INCLUDE_DIR)
+    file(
+        STRINGS "${half_INCLUDE_DIR}/half.hpp"
+        half_VERSION_LINE
+        REGEX "Version"
+    )
+    string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
+    set(half_VERSION ${CMAKE_MATCH_1})
+endif()
 
-# Define the target
-add_library(half INTERFACE IMPORTED)
-target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
-
+# Define the package variables
 find_package_handle_standard_args(half 
     REQUIRED_VARS half_INCLUDE_DIR
     VERSION_VAR half_VERSION
 )
+
+if (half_FOUND)
+    # Define the target
+    add_library(half INTERFACE IMPORTED)
+    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+endif()

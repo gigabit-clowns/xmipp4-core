@@ -58,6 +58,7 @@ target_precompile_headers(
 	PRIVATE
 	${HEADERS}
 )
+target_link_libraries(${PROJECT_NAME} half)
 
 # Install library's binary files and headers
 install(

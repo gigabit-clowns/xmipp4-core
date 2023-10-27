@@ -20,6 +20,8 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
+cmake_minimum_required(VERSION 3.12)
+
 include(FindPackageHandleStandardArgs)
 
 # Find the half library include dir

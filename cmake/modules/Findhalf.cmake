@@ -20,10 +20,20 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
+include(FindPackageHandleStandardArgs)
+
+# Find the half library include dir
 find_path(half_INCLUDE_DIR NAMES half.hpp)
 message(${half_INCLUDE_DIR})
 
-set(half_VERSION 2.1.0) #TODO
+# Parse version from header file
+file(
+    STRINGS "${half_INCLUDE_DIR}/half.hpp"
+    half_VERSION_LINE
+    REGEX "Version"
+)
+string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
+set(half_VERSION ${CMAKE_MATCH_1})
 
 # Define the target
 add_library(half INTERFACE IMPORTED)

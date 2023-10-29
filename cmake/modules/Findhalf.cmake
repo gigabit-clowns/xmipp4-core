@@ -27,13 +27,13 @@ include(FindPackageHandleStandardArgs)
 # Find the half library include dir
 find_path(
     half_INCLUDE_DIR 
-    NAMES half.hpp
+    NAMES half_float/half.hpp
 )
 
 # Parse version from header file
 if (half_INCLUDE_DIR)
     file(
-        STRINGS "${half_INCLUDE_DIR}/half.hpp"
+        STRINGS "${half_INCLUDE_DIR}/half_float/half.hpp"
         half_VERSION_LINE
         REGEX "Version"
     )

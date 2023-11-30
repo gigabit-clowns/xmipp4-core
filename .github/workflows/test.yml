@@ -66,7 +66,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{matrix.compiler.c}} \
         -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}} \
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX
+        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
         -DBUILD_DOC=OFF
 
     - name: Build

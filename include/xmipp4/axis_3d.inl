@@ -59,13 +59,13 @@ axis_3d next_axis(axis_3d axis) noexcept
 {
     switch (axis)
     {
-    case axis_3d::zero: return axis_3d::zero;
     case axis_3d::x: return axis_3d::y;
     case axis_3d::y: return axis_3d::z;
     case axis_3d::z: return axis_3d::x;
     case axis_3d::negative_x: return axis_3d::negative_z;
     case axis_3d::negative_y: return axis_3d::negative_x;
     case axis_3d::negative_z: return axis_3d::negative_y;
+    default: return axis_3d::zero; // case axis_3d::zero
     }
 }
 
@@ -148,6 +148,7 @@ const char* to_string(axis_3d axis) noexcept
     case axis_3d::negative_x: return "-x";
     case axis_3d::negative_y: return "-y";
     case axis_3d::negative_z: return "-z";
+    default: return "";
     }
 }
 

@@ -63,7 +63,7 @@ public:
     XMIPP4_CONSTEXPR bool operator==(const axis_descriptor& other) const noexcept;
     XMIPP4_CONSTEXPR bool operator!=(const axis_descriptor& other) const noexcept;
 
-    XMIPP4_CONSTEXPR void swap(axis_descriptor &other) noexcept;
+    XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &other) noexcept;
 
     /**
      * @brief Set the element count
@@ -113,7 +113,7 @@ private:
 
 };
 
-XMIPP4_CONSTEXPR void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
 } //namespace xmipp4
 

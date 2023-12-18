@@ -51,7 +51,7 @@ bool axis_descriptor::operator!=(const axis_descriptor& other) const noexcept
     return !(*this == other);
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+XMIPP4_INLINE_CONSTEXPR_CPP20
 void axis_descriptor::swap(axis_descriptor &other) noexcept
 {
     std::swap(m_count, other.m_count);
@@ -96,7 +96,7 @@ std::size_t axis_descriptor::get_width() const noexcept
     return get_unsigned_step()*get_count();
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+XMIPP4_INLINE_CONSTEXPR_CPP20
 void swap(axis_descriptor &x, axis_descriptor &y) noexcept
 {
     x.swap(y);

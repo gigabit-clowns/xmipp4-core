@@ -77,7 +77,7 @@ inline void* memory_mapped_file_open(const char* filename,
     if (size == memory_mapped_file::whole_file)
     {
         size = get_file_size(fd);
-        if(size >= offset)
+        if(static_cast<std::ptrdiff_t>(size) >= offset)
         {
             size -= offset;
         }

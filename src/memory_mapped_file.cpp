@@ -44,7 +44,7 @@ memory_mapped_file::memory_mapped_file(const std::string& filename,
                                        std::ptrdiff_t offset,
                                        std::size_t size, 
                                        access_flags access )
-    : memory_mapped_file(filename.c_str(), size, access)
+    : memory_mapped_file(filename.c_str(), offset, size, access)
 {
 }
 
@@ -92,7 +92,7 @@ void memory_mapped_file::open(const std::string& filename,
                               std::size_t size,
                               access_flags access )
 {
-    open(filename, offset, size, access);
+    open(filename.c_str(), offset, size, access);
 }
 
 void memory_mapped_file::close() noexcept

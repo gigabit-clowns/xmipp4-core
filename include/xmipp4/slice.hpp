@@ -58,9 +58,9 @@ public:
      * @param step Step between consecutive elements
      * @param stop Index of the past-the-end element
      */
-    XMIPP4_CONSTEXPR slice( start_type start, 
-                                    step_type step, 
-                                    stop_type stop ) noexcept;
+    XMIPP4_CONSTEXPR slice(start_type start, 
+                           step_type step, 
+                           stop_type stop ) noexcept;
 
     /**
      * @brief Copy constructor from other specialization of slice

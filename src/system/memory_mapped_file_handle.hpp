@@ -25,13 +25,12 @@
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 void* memory_mapped_file_open(const char* filename, 
-                              std::ptrdiff_t offset,
-                              std::size_t &size, 
-                              access_flags access );
+                              access_flags access,
+                              std::size_t &size );
 
 void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
@@ -40,7 +39,7 @@ void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 } // namespace xmipp4
 
 #if defined(XMIPP4_POSIX)
-    #include "memory_mapped_file_detail_posix.inl"
+    #include "memory_mapped_file_handle_posix.inl"
 #else
     #error "No memory_mapped_file implementation available for this platform"
 #endif

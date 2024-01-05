@@ -220,4 +220,3 @@ std::ostream& operator<<(std::ostream& os, adjacent_tag);
 } // namespace xmipp4
 
 #include "slice.inl"
-

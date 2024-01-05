@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail.hpp
+ * @file dynamic_library_handle.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Platform independent functions for loading, unloading and querying
  * dynamic libraries
@@ -33,7 +33,7 @@
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 /**
@@ -60,13 +60,13 @@ void dynamic_library_close(void* handle) noexcept;
  */
 void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4
 
 #if defined(XMIPP4_POSIX)
-    #include "dynamic_library_detail_posix.inl"
+    #include "dynamic_library_handle_posix.inl"
 #elif defined(XMIPP4_WINDOWS)
-    #include "dynamic_library_detail_windows.inl"
+    #include "dynamic_library_handle_windows.inl"
 #else
     #error "No dynamic library implementation available for this platform"
 #endif

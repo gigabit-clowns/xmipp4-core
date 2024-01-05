@@ -29,12 +29,14 @@
  * @date 2023-07-09
  */
 
-#include "platform/dynamic_shared_object.h"
+#include "../platform/dynamic_shared_object.h"
 
 #include <string>
 #include <cstdint>
 
 namespace xmipp4
+{
+namespace system
 {
 
 /**
@@ -119,4 +121,5 @@ private:
 
 XMIPP4_CORE_API void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept;
 
+} // namespace system
 } // namespace xmipp4

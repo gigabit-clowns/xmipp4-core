@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail_windows.inl
+ * @file dynamic_library_handle_windows.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Windows implementation of dynamic_library_detail.hpp
+ * @brief Windows implementation of dynamic_library_handle.hpp
  * @date 2023-08-13
  * 
  */
 
-#include "dynamic_library_detail.hpp"
+#include "dynamic_library_handle.hpp"
 
 #include <windows.h>
 
@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 inline void* dynamic_library_open(const char* filename)
@@ -60,5 +60,5 @@ inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
     return ::GetProcAddress(static_cast<HMODULE>(handle), name);
 }
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4

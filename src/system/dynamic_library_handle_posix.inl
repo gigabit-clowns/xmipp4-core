@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail_posix.inl
+ * @file dynamic_library_handle_posix.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_detail.hpp
+ * @brief POSIX implementation of dynamic_library_handle.hpp
  * @date 2023-08-13
  * 
  */
 
-#include "dynamic_library_detail.hpp"
+#include "dynamic_library_handle.hpp"
 
 #include <dlfcn.h>
 
@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 inline void* dynamic_library_open(const char* filename)

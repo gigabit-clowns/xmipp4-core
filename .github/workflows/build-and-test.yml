@@ -23,11 +23,6 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - main
-      - devel
-
   pull_request:
     branches:
       - main
@@ -52,10 +47,10 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@main
 
     - name: Setup Conda and dependencies
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@main
       with:
         channels: conda-forge
         environment-file: requirements.txt

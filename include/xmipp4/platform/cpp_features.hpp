@@ -21,22 +21,22 @@
  ***************************************************************************/
 
 /**
- * @file cpp_execution.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for using C++ algorithm parallelization
- * @date 2023-11-14
+ * @file cpp_features.hpp
+ * @author Mikel Iceta Tena (miceta@cnb.csic.es)
+ * @brief Macro definitions for feature testing CPP STDLIB
+ * @date 2024-02-16
+ * 
+ * This file provides definitions for CPP features present and
+ * supported in the host machine
  * 
  */
 
-#include "cpp_features.hpp"
+#include "cpp_version.hpp"
 
-#if defined(XMIPP4_LIB_EXECUTION)
-    #include <execution>
-    #define XMIPP4_SEQ std::execution::seq,
-    #define XMIPP4_PAR std::execution::par,
-    #define XMIPP4_PAR_UNSEQ std::execution::par_unseq,
-#else
-    #define XMIPP4_SEQ
-    #define XMIPP4_PAR
-    #define XMIPP4_PAR_UNSEQ
+#if defined(__cpp_lib_int_pow2) && (__cpp_lib_int_pow2 >= XMIPP4_CPLUSPLUS20)
+    #define XMIPP4_LIB_INT_POW2
+#endif
+
+#if defined(__cpp_lib_execution) && (__cpp_lib_execution >= XMIPP4_CPLUSPLUS17)
+    #define XMIPP_LIB_EXECUTION
 #endif

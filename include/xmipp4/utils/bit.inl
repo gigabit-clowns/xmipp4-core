@@ -143,7 +143,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
 has_single_bit(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if defined(XMIPP4_LIB_INT_POW2)
     return std::has_single_bit(x);
 #else
     if(x)
@@ -165,7 +165,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 bit_floor(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if defined(XMIPP4_LIB_INT_POW2)
     return std::bit_floor(x);
 #else
     if(x) 
@@ -184,7 +184,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 bit_ceil(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if defined(XMIPP4_LIB_INT_POW2)
     return std::bit_ceil(x);
 #else
     return x <= T(1) ? T(1) : (T(1) << bit_width(T(x - 1)));
@@ -196,7 +196,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 bit_width(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if defined(XMIPP4_LIB_INT_POW2)
     return std::bit_width(x);
 #else
     XMIPP4_CONST_CONSTEXPR auto N = std::numeric_limits<T>::digits; 

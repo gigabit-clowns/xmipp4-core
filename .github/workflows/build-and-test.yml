@@ -37,7 +37,9 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os:
+        - ubuntu-latest
+        - macos-latest
         compiler: 
         - {c: gcc, cxx: g++}
         - {c: clang, cxx: clang++}

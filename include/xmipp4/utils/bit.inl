@@ -436,7 +436,7 @@ parity(unsigned int x) noexcept
 XMIPP4_INLINE_CONSTEXPR bool
 parity(unsigned long long x) noexcept
 {
-    return XMIPP4_BUILTIN(parity)(x); 
+    return XMIPP4_BUILTIN(parityll)(x); 
 }
 #endif
 

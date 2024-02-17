@@ -30,7 +30,7 @@
 
 #include "cpp_features.hpp"
 
-#if defined(XMIPP4_LIB_EXECUTION)
+#if XMIPP4_HAS_LIB_EXECUTION
     #include <execution>
     #define XMIPP4_SEQ std::execution::seq,
     #define XMIPP4_PAR std::execution::par,

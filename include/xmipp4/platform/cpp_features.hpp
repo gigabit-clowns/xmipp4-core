@@ -27,9 +27,10 @@
  * @brief Macro definitions for feature testing C++ compiler and 
  * standard library
  * @date 2024-02-16
+ * @see https://en.cppreference.com/w/cpp/feature_test
  * 
  * This file provides definitions for testing support of C++ features 
- * available for the compiler and standard library
+ * available for the compiler and standard library.
  * 
  */
 

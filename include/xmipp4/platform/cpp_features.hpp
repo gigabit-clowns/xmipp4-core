@@ -23,20 +23,28 @@
 /**
  * @file cpp_features.hpp
  * @author Mikel Iceta Tena (miceta@cnb.csic.es)
- * @brief Macro definitions for feature testing CPP STDLIB
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Macro definitions for feature testing C++ compiler and 
+ * standard library
  * @date 2024-02-16
  * 
- * This file provides definitions for CPP features present and
- * supported in the host machine
+ * This file provides definitions for testing support of C++ features 
+ * available for the compiler and standard library
  * 
  */
 
-#include "cpp_version.hpp"
+/**
+ * @brief Macro to test if a C++ feature is available
+ * @param feature Name of the feature (without the __cpp_ prefix)
+ * @param version Requested standard version as YYYYMM
+ * @see https://en.cppreference.com/w/cpp/feature_test
+ * 
+ */
+#define XMIPP4_HAS_CPP_FEATURE(feature, version) \
+    (defined(__cpp_##feature) && (__cpp_##feature >= version))
 
-#if defined(__cpp_lib_int_pow2) && (__cpp_lib_int_pow2 >= XMIPP4_CPLUSPLUS20)
-    #define XMIPP4_LIB_INT_POW2
-#endif
-
-#if defined(__cpp_lib_execution) && (__cpp_lib_execution >= XMIPP4_CPLUSPLUS17)
-    #define XMIPP_LIB_EXECUTION
-#endif
+#define XMIPP4_HAS_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
+#define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)
+#define XMIPP4_HAS_LIB_BITOPS XMIPP4_HAS_CPP_FEATURE(lib_bitops, 201907)
+#define XMIPP4_HAS_LIB_POW2 XMIPP4_HAS_CPP_FEATURE(lib_pow2, 202002)
+#define XMIPP4_HAS_LIB_EXECUTION XMIPP4_HAS_CPP_FEATURE(lib_execution, 201603)

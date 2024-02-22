@@ -26,9 +26,10 @@
  */
 
 #include "bit.hpp"
+#include "../platform/cpp_features.hpp"
 
 #include <limits>
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     #include <bit>
 #endif
 
@@ -93,7 +94,7 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 rotate_left(T x, int s) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::rotl(x, s);
 #else
     if (s >= 0)
@@ -117,7 +118,7 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 rotate_right(T x, int s) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::rotr(x, s);
 #else
     if (s >= 0)
@@ -143,7 +144,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
 has_single_bit(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if XMIPP4_HAS_LIB_POW2
     return std::has_single_bit(x);
 #else
     if(x)
@@ -165,7 +166,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 bit_floor(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if XMIPP4_HAS_LIB_POW2
     return std::bit_floor(x);
 #else
     if(x) 
@@ -184,7 +185,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 bit_ceil(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if XMIPP4_HAS_LIB_POW2
     return std::bit_ceil(x);
 #else
     return x <= T(1) ? T(1) : (T(1) << bit_width(T(x - 1)));
@@ -196,7 +197,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 bit_width(T x) noexcept
 {
-#if defined(__cpp_lib_int_pow2)
+#if XMIPP4_HAS_LIB_POW2
     return std::bit_width(x);
 #else
     XMIPP4_CONST_CONSTEXPR auto N = std::numeric_limits<T>::digits; 
@@ -263,7 +264,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_leading_zeros(T x) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::countl_zero(x);
 #else
     return detail::count_leading_zeros(x);
@@ -275,7 +276,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_leading_ones(T x) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::countl_one(x);
 #else
     return count_leading_zeros(T(~x));
@@ -341,7 +342,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_trailing_zeros(T x) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::countr_zero(x);
 #else
     return detail::count_trailing_zeros(x);
@@ -353,7 +354,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_trailing_ones(T x) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::countr_one(x);
 #else
     return count_trailing_zeros(T(~x));
@@ -400,7 +401,7 @@ XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 popcount(T x) noexcept
 {
-#if defined(__cpp_lib_bitops)
+#if XMIPP4_HAS_LIB_BITOPS
     return std::popcount(x);
 #else
     return detail::popcount(x);
@@ -436,7 +437,7 @@ parity(unsigned int x) noexcept
 XMIPP4_INLINE_CONSTEXPR bool
 parity(unsigned long long x) noexcept
 {
-    return XMIPP4_BUILTIN(parity)(x); 
+    return XMIPP4_BUILTIN(parityll)(x); 
 }
 #endif
 

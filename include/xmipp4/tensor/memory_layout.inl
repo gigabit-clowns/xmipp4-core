@@ -30,6 +30,7 @@
 #include "../platform/cpp_execution.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <numeric>
 
 namespace xmipp4

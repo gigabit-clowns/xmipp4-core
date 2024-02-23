@@ -90,7 +90,7 @@ class static_extent_impl<i, std::integer_sequence<std::size_t, Head, Tail...>>
 public:
     template<typename... Args>
     XMIPP4_CONSTEXPR static_extent_impl(Args&&... args) noexcept
-        : static_extent_impl<std::integer_sequence<std::size_t, Tail...>>(std::forward<Args>(args)...)
+        : static_extent_impl<i+1, std::integer_sequence<std::size_t, Tail...>>(std::forward<Args>(args)...)
     {
     }
 

@@ -58,16 +58,17 @@ public:
     static_extent& operator=(static_extent&& other) = default;
 
     std::size_t get_size(std::size_t index) const;
+    template<std::size_t i>
+    XMIPP4_CONSTEXPR std::size_t get_size() const noexcept;
 
     static XMIPP4_CONSTEXPR std::size_t get_rank() noexcept;
 
 private:
     using size_sequence = std::integer_sequence<std::size_t, Sizes...>;
 
-    detail::static_extent_impl<size_sequence> m_impl;
+    detail::static_extent_impl<0UL, size_sequence> m_impl;
 
 };
-
 
 } //namespace xmipp4
 

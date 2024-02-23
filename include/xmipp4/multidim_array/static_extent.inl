@@ -34,10 +34,26 @@ namespace xmipp4
 {
 
 template<std::size_t... Sizes>
+template <typename... Args>
+XMIPP4_INLINE_CONSTEXPR 
+static_extent<Sizes...>::static_extent(Args&&... args) noexcept
+    : m_impl(std::forward<Args>(args)...)
+{
+}
+
+template<std::size_t... Sizes>
 inline std::size_t 
 static_extent<Sizes...>::get_size(std::size_t index) const
 {
-    m_impl.get_size(index);
+    return get_size(m_impl, index);
+}
+
+template<std::size_t... Sizes>
+template<std::size_t i>
+XMIPP4_INLINE_CONSTEXPR std::size_t 
+static_extent<Sizes...>::get_size() const noexcept
+{
+    return get_size<i>(m_impl);
 }
 
 template<std::size_t... Sizes>
@@ -46,5 +62,8 @@ static_extent<Sizes...>::get_rank() noexcept
 {
     return sizeof... (Sizes);
 }
+
+constexpr auto ex = static_extent<2, 4, dynamic_size, 8>(2UL);
+constexpr auto s = ex.get_size<1>();
 
 } // namespace xmipp4

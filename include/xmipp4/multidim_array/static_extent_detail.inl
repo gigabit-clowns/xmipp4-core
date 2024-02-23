@@ -94,7 +94,7 @@ public:
     {
     }
 
-    static XMIPP4_CONSTEXPR std::size_t get_size() const noexcept
+    static XMIPP4_CONSTEXPR std::size_t get_size() noexcept
     {
         return Head;
     }
@@ -103,9 +103,23 @@ public:
 
 template<std::size_t i, std::size_t Head, std::size_t... Tail>
 XMIPP4_INLINE_CONSTEXPR std::size_t
-get(const static_extent_impl<i, std::integer_sequence<std::size_t, Head, Tail...>>& impl) noexcept
+get_size(const static_extent_impl<i, std::integer_sequence<std::size_t, Head, Tail...>>& impl) noexcept
 {
     return impl.get_size();
+}
+
+template<std::size_t i>
+XMIPP4_INLINE_CONSTEXPR std::size_t
+get_size(const static_extent_impl<i, std::integer_sequence<std::size_t>>& impl, std::size_t index)
+{
+    throw std::out_of_range("Dimension index exceeds bounds");
+}
+
+template<std::size_t i, std::size_t Head, std::size_t... Tail>
+XMIPP4_INLINE_CONSTEXPR std::size_t
+get_size(const static_extent_impl<i, std::integer_sequence<std::size_t, Head, Tail...>>& impl, std::size_t index)
+{
+    return (index == i) ? impl.get_size() : get_size<i+1>(impl, index);
 }
 
 } // namespace detail

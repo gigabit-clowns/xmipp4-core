@@ -39,7 +39,7 @@ namespace xmipp4
 namespace detail
 {
 
-template<typename S>
+template<std::size_t i, typename S>
 class static_extent_impl;
 
 }
@@ -57,11 +57,7 @@ public:
     static_extent& operator=(const static_extent& other) = default;
     static_extent& operator=(static_extent&& other) = default;
 
-    XMIPP4_CONSTEXPR std::size_t operator[](std::size_t index);
-
-    XMIPP4_CONSTEXPR std::size_t get_size(std::size_t index);
-    
-    XMIPP4_CONSTEXPR std::size_t get_volume();
+    std::size_t get_size(std::size_t index) const;
 
     static XMIPP4_CONSTEXPR std::size_t get_rank() noexcept;
 

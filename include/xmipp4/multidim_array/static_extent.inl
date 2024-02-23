@@ -28,51 +28,17 @@
 
 #include "static_extent.hpp"
 
-#include "../dynamic_size.hpp"
+#include "static_extent_detail.inl"
 
 namespace xmipp4
 {
 
-namespace detail
+template<std::size_t... Sizes>
+inline std::size_t 
+static_extent<Sizes...>::get_size(std::size_t index) const
 {
-
-template<std::size_t... Other>
-class static_extent_impl<std::integer_sequence<std::size_t, dynamic_size, Other...>>
-    : public static_extent_impl<std::integer_sequence<std::size_t, Other...>>
-{
-public:
-    template<typename... Args>
-    XMIPP4_CONSTEXPR static_extent_impl(std::size_t size, Args&&... args) noexcept
-        : static_extent_impl<std::integer_sequence<std::size_t, Other...>>(std::forward<Args>(args)...)
-        , m_size(size)
-    {
-    }
-
-private:
-    std::size_t m_size;
-
-};
-
-template<std::size_t First, std::size_t... Other>
-class static_extent_impl<std::integer_sequence<std::size_t, First, Other...>>
-    : public static_extent_impl<std::integer_sequence<std::size_t, Other...>>
-{
-public:
-    template<typename... Args>
-    XMIPP4_CONSTEXPR static_extent_impl(Args&&... args) noexcept
-        : static_extent_impl<std::integer_sequence<std::size_t, Other...>>(std::forward<Args>(args)...)
-    {
-    }
-
-};
-
-template<>
-class static_extent_impl<std::integer_sequence<std::size_t>>
-{
-};
-
-} // namespace detail
-
+    m_impl.get_size(index);
+}
 
 template<std::size_t... Sizes>
 XMIPP4_INLINE_CONSTEXPR std::size_t 

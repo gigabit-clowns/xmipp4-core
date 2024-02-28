@@ -31,6 +31,7 @@
 #include <xmipp4/slice.hpp>
 
 #include <type_traits>
+#include <sstream>
 
 using namespace xmipp4;
 
@@ -295,5 +296,26 @@ TEST_CASE( "cross construct slice", "[slice]" )
         REQUIRE( b.get_start() == 1 );
         REQUIRE( b.get_step() == 2 );
         REQUIRE( b.get_stop() == 3 );
+    }
+}
+
+TEST_CASE( "output slice to a std::ostream", "[slice]" )
+{
+    std::stringstream stream;
+
+    SECTION( "with int-s" )
+    {
+        XMIPP4_CONST_CONSTEXPR auto x = make_slice(1, 2, 3);
+        stream << x;
+
+        REQUIRE( stream.str() == "slice(1, 2, 3)" );
+    }
+
+    SECTION( "with tags" )
+    {
+        XMIPP4_CONST_CONSTEXPR auto x = make_slice(end);
+        stream << x;
+
+        REQUIRE( stream.str() == "slice(begin, adjacent, end)" );
     }
 }

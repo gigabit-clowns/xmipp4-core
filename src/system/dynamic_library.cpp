@@ -68,7 +68,7 @@ dynamic_library& dynamic_library::operator=(dynamic_library&& other) noexcept
     return *this;
 }
 
-dynamic_library::operator bool() const noexcept
+bool dynamic_library::is_open() const noexcept
 {
     return m_handle != nullptr;
 }

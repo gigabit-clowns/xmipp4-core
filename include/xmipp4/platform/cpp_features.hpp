@@ -34,6 +34,8 @@
  * 
  */
 
+#include "cpp_version.hpp"
+
 /**
  * @brief Macro to test if a C++ feature is available
  * @param feature Name of the feature (without the __cpp_ prefix)
@@ -41,10 +43,15 @@
  * @see https://en.cppreference.com/w/cpp/feature_test
  * 
  */
-#define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    (defined(__cpp_##feature) && (__cpp_##feature >= version)) || \
-    (defined(_MSC_VER) && __cplusplus >= version)   // HACK: As of 2024, MSVC does not
-                                                    // implement individual feature testing
+
+#if XMIPP4_HAS_CPP20
+    #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
+        (defined(__cpp_##feature) && (__cpp_##feature >= version))
+#else
+    #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
+        (XMIPP4_CPLUSPLUS >= version)
+
+#endif
 
 
 

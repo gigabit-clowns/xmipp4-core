@@ -71,7 +71,12 @@ jobs:
         pwd
         ls
         echo "Entering include/Library directory"
-        cd Library
+        if [ -d "include" ]; then 
+          cd include
+        else
+          cd Library
+        fi
+        ls
 
     - name: Configure CMake
       uses: threeal/cmake-action@main

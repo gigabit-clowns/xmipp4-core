@@ -50,7 +50,7 @@ inline int access_flags_to_open_flags(access_flags access)
     else if (access == write_only) 
         return O_WRONLY;
     else 
-        throw std::runtime_error("Unsupported access");
+        throw std::invalid_argument("Unsupported access");
 }
 
 inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept

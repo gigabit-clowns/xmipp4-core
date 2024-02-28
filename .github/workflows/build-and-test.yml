@@ -68,10 +68,10 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         echo "conda-prefix=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
         if [ -d "$CONDA_PREFIX/include" ]; then 
-          echo "include-parent-dir=$CONDA_PREFIX/include" >> "$GITHUB_OUTPUT"
+          echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
           echo $CONDA_PREFIX/include
         else
-          echo "include-parent-dir=$CONDA_PREFIX/Library/include" >> "$GITHUB_OUTPUT"
+          echo "include-parent-dir=$CONDA_PREFIX/Library" >> "$GITHUB_OUTPUT"
           echo $CONDA_PREFIX/Library/include
         fi
 

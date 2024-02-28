@@ -65,13 +65,13 @@ jobs:
     - name: Set reusable strings
       id: strings
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        # Obtanining parent dir for include directory.
-        # Location changes slightly deppending on OS.
-        if [ -d "$CONDA_PREFIX/include" ]; then 
-          echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+        # Setting strings deppending on OS.
+        if [ "$OSTYPE" =~ ^msys ]; then
+            echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+            echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
         else
-          echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+          echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Configure, Build, & Test CMake

@@ -26,11 +26,13 @@
  * 
  */
 
-#include <xmipp4/dynamic_library.hpp>
+#include <xmipp4/system/dynamic_library.hpp>
 
-#include "dynamic_library_detail.hpp"
+#include "dynamic_library_handle.hpp"
 
 namespace xmipp4
+{
+namespace system
 {
 
 dynamic_library::dynamic_library() noexcept
@@ -39,7 +41,7 @@ dynamic_library::dynamic_library() noexcept
 }
 
 dynamic_library::dynamic_library(const char* filename)
-    : m_handle(detail::dynamic_library_open(filename))
+    : m_handle(dynamic_library_open(filename))
 {
 }
 
@@ -66,7 +68,7 @@ dynamic_library& dynamic_library::operator=(dynamic_library&& other) noexcept
     return *this;
 }
 
-dynamic_library::operator bool() const noexcept
+bool dynamic_library::is_open() const noexcept
 {
     return m_handle != nullptr;
 }
@@ -92,14 +94,14 @@ void dynamic_library::close() noexcept
 {
     if (m_handle)
     {
-        detail::dynamic_library_close(m_handle);
+        dynamic_library_close(m_handle);
         m_handle = nullptr;
     }
 }
 
 void* dynamic_library::get_symbol(const char* name) const noexcept
 {
-    return detail::dynamic_library_get_symbol(m_handle, name);
+    return dynamic_library_get_symbol(m_handle, name);
 }
 
 void* dynamic_library::get_symbol(const std::string& name) const noexcept
@@ -112,4 +114,5 @@ void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
     lhs.swap(rhs);
 }
 
+} // namespace system
 } // namespace xmipp4

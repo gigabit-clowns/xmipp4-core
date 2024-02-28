@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,46 +21,52 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail_posix.inl
+ * @file dynamic_library_handle.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_detail.hpp
+ * @brief Platform independent functions for loading, unloading and querying
+ * dynamic libraries
  * @date 2023-08-13
  * 
  */
 
-#include "dynamic_library_detail.hpp"
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
+#include <xmipp4/platform/operating_system.h>
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
-inline void* dynamic_library_open(const char* filename)
-{
-    const auto result = ::dlopen(filename, 0);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
-}
+/**
+ * @brief Open a the dynamic library
+ * 
+ * @param filename Path to the dynamic library
+ * @return void* Pointer to the newly opened dynamic library
+ */
+void* dynamic_library_open(const char* filename);
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
+/**
+ * @brief Close a dynamic library
+ * 
+ * @param handle Handle of the dynamic library to be closed
+ */
+void dynamic_library_close(void* handle) noexcept;
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
+/**
+ * @brief Get a symbol from the dynamic library
+ * 
+ * @param handle Handle of the dynamic library
+ * @param name Name of the symbol
+ * @return void* Pointer to the queried symbol. NULL if not found
+ */
+void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4
+
+#if defined(XMIPP4_POSIX)
+    #include "dynamic_library_handle_posix.inl"
+#elif defined(XMIPP4_WINDOWS)
+    #include "dynamic_library_handle_windows.inl"
+#else
+    #error "No dynamic library implementation available for this platform"
+#endif

@@ -18,6 +18,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "memory_mapped_file_handle.hpp"
+
 #include <stdexcept>
 #include <sstream>
 #include <cstring>
@@ -29,7 +31,7 @@
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 inline std::size_t get_file_size(int fd) noexcept
@@ -48,7 +50,7 @@ inline int access_flags_to_open_flags(access_flags access)
     else if (access == write_only) 
         return O_WRONLY;
     else 
-        throw std::runtime_error("Unsupported access");
+        throw std::invalid_argument("Unsupported access");
 }
 
 inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept
@@ -59,15 +61,16 @@ inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept
     return prot;
 }
 
+
 inline void* memory_mapped_file_open(const char* filename, 
-                                     std::ptrdiff_t offset,
-                                     std::size_t &size, 
-                                     access_flags access )
+                                     access_flags access,
+                                     std::size_t &size )
 {
     // Open the file descriptor
     const auto open_flags = access_flags_to_open_flags(access);
     const auto fd = open(filename, open_flags);
-    if (fd < 0) {
+    if (fd < 0) 
+    {
         std::ostringstream oss;
         oss << "Error opening file: " << std::strerror(errno);
         throw std::runtime_error(oss.str());
@@ -77,19 +80,12 @@ inline void* memory_mapped_file_open(const char* filename,
     if (size == memory_mapped_file::whole_file)
     {
         size = get_file_size(fd);
-        if(static_cast<std::ptrdiff_t>(size) >= offset)
-        {
-            size -= offset;
-        }
-        else
-        {
-            throw std::runtime_error("Offset can not be greater than the file size");
-        }
     }
 
     // Memory map the opened file descriptor
-    const auto prot = access_flags_to_mmap_prot_flags(access); 
-    const auto flags = MAP_SHARED;
+    const int prot = access_flags_to_mmap_prot_flags(access); 
+    const int flags = MAP_SHARED;
+    const off_t offset = 0;
     const auto addr = mmap(
         nullptr,
         size,

@@ -28,10 +28,24 @@ namespace xmipp4
 namespace system
 {
 
+/**
+ * @brief Memory map a file
+ * 
+ * @param filename Path to the file to be mapped
+ * @param access Access type. Can not be empty
+ * @param size Size. If zero, it will be written with the size of the file
+ * @return void* Pointer to the mapped data
+ */
 void* memory_mapped_file_open(const char* filename, 
                               access_flags access,
                               std::size_t &size );
 
+/**
+ * @brief Close a memory mapped file
+ * 
+ * @param data Pointer to the memory mapped data
+ * @param size Size of the memory mapped data
+ */
 void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
 

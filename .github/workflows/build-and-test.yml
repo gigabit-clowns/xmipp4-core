@@ -64,7 +64,7 @@ jobs:
     - name: Set reusable strings
       id: strings
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" \
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" 
         echo "conda-prefix=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
@@ -74,7 +74,7 @@ jobs:
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
         c-compiler: ${{matrix.compiler.cc}}
         cxx-compiler: ${{matrix.compiler.cxx}}
-        options: >
+        options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           CMAKE_PREFIX_PATH=${{steps.strings.outputs.conda-prefix}}
           BUILD_DOC=OFF

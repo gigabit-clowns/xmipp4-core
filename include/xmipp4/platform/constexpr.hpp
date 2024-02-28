@@ -31,9 +31,9 @@
  * 
  */
 
-#include "cpp_version.hpp"
+#include "cpp_features.hpp"
 
-#if defined(__cpp_constexpr) || defined(XMIPP4_DOC_BUILD)
+#if XMIPP4_HAS_CONSTEXPR || defined(XMIPP4_DOC_BUILD)
     #define XMIPP4_CONSTEXPR constexpr
     #define XMIPP4_CONST_CONSTEXPR constexpr
     #define XMIPP4_INLINE_CONSTEXPR constexpr
@@ -43,7 +43,7 @@
     #define XMIPP4_INLINE_CONSTEXPR inline
 #endif
 
-#if defined(__cpp_if_constexpr)
+#if XMIPP4_HAS_IF_CONSTEXPR
     #define XMIPP4_IF_CONSTEXPR XMIPP4_CONSTEXPR
 #else
     #define XMIPP4_IF_CONSTEXPR

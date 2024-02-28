@@ -28,9 +28,9 @@
  * 
  */
 
-#include "cpp_version.hpp"
+#include "cpp_features.hpp"
 
-#if XMIPP4_HAS_CPP17
+#if XMIPP4_HAS_LIB_EXECUTION
     #include <execution>
     #define XMIPP4_SEQ std::execution::seq,
     #define XMIPP4_PAR std::execution::par,

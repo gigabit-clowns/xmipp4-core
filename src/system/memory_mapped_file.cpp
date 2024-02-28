@@ -76,7 +76,7 @@ memory_mapped_file& memory_mapped_file::operator=(memory_mapped_file&& other) no
     return *this;
 }
 
-memory_mapped_file::operator bool() const noexcept
+bool memory_mapped_file::is_open() const noexcept
 {
     return m_data != nullptr;
 }

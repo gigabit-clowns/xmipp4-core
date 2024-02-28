@@ -60,6 +60,7 @@ jobs:
       with:
         channels: conda-forge
         environment-file: requirements.txt
+        activate-environment: xmipp4-core
 
     - name: Set reusable strings
       id: strings

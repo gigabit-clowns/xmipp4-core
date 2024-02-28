@@ -70,6 +70,12 @@ jobs:
         cd $CONDA_PREFIX
         pwd
         ls
+        echo "Entering include/Library directory"
+        if [ -d include ]; then 
+          cd include
+        else
+          cd Library
+        fi
 
     - name: Configure CMake
       uses: threeal/cmake-action@main

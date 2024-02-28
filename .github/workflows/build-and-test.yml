@@ -66,7 +66,9 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" 
         echo "conda-prefix=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
-        ls $CONDA_PREFIX
+        cd $CONDA_PREFIX
+        pwd
+        ls
 
     - name: Configure CMake
       uses: threeal/cmake-action@main

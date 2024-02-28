@@ -66,15 +66,17 @@ jobs:
         channels: conda-forge
         environment-file: requirements.txt
 
-    - name: Configure CMake
-      run: |
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-        -S ${{ github.workspace }} \
-        -DCMAKE_C_COMPILER=${{matrix.compiler.cc}} \
-        -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}} \
-        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
-        -DBUILD_DOC=OFF
+    - name: Configure build, and test the project
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: ${{ steps.strings.outputs.build-output-dir }}
+        c-compiler: ${{matrix.compiler.cc}}
+        cxx-compiler: ${{matrix.compiler.cxx}}
+        options: >
+          CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          CMAKE_PREFIX_PATH=$CONDA_PREFIX
+          BUILD_DOC=OFF
 
     - name: Build
       run: |

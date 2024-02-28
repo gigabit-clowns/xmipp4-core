@@ -63,7 +63,4 @@ static_extent<Sizes...>::get_rank() noexcept
     return sizeof... (Sizes);
 }
 
-constexpr auto ex = static_extent<2, 4, dynamic_size, 8>(2UL);
-constexpr auto s = ex.get_size<1>();
-
 } // namespace xmipp4

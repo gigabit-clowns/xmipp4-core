@@ -71,7 +71,7 @@ jobs:
         pwd
         ls
         echo "Entering include/Library directory"
-        if [ -d include ]; then 
+        if [ -d "include" ]; then 
           cd include
         else
           cd Library

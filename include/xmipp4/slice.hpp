@@ -125,7 +125,7 @@ public:
     XMIPP4_CONSTEXPR const stop_type& get_stop() const noexcept;
 
 private:
-    // Use non-unique addresses as indices
+    // Use non-unique addresses as they
     // may be made of an empty type such
     // as std::integral_constant
     XMIPP4_NO_UNIQUE_ADDRESS start_type m_start;

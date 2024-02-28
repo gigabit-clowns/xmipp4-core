@@ -31,7 +31,7 @@
 #include "platform/constexpr.hpp"
 #include "platform/attributes.hpp"
 
-#include <iosfwd>
+#include <ostream>
 
 namespace xmipp4 
 {

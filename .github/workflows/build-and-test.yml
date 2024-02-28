@@ -66,31 +66,26 @@ jobs:
       id: strings
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        echo "conda-prefix=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+        # Obtanining parent dir for include directory.
+        # Location changes slightly deppending on OS.
         if [ -d "$CONDA_PREFIX/include" ]; then 
           echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
-          echo $CONDA_PREFIX/include
         else
-          echo "include-parent-dir=$CONDA_PREFIX/Library" >> "$GITHUB_OUTPUT"
-          echo $CONDA_PREFIX/Library/include
+          echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Configure CMake
+    - name: Configure & Build CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
         c-compiler: ${{matrix.compiler.cc}}
         cxx-compiler: ${{matrix.compiler.cxx}}
+        run-build: true
         options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           CMAKE_PREFIX_PATH=${{steps.strings.outputs.include-parent-dir}}
           BUILD_DOC=OFF
-
-    - name: Build
-      run: |
-        cmake --build ${{ steps.strings.outputs.build-output-dir }} \
-        --config ${{env.BUILD_TYPE}}
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}

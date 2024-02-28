@@ -44,16 +44,17 @@ jobs:
         compiler: 
         - {cc: gcc, cxx: g++}
         - {cc: clang, cxx: clang++}
+        - {cc: cl, cxx: cl}
 
         exclude:
         - os: windows-latest
-          cc: gcc
+          compiler: {cc: gcc, cxx: g++}
         - os: windows-latest
-          cc: clang
+          compiler: {cc: clang, cxx: clang++}
         - os: ubuntu-latest
-          cc: cl
+          compiler: {cc: cl, cxx: cl}
         - os: macos-latest
-          cc: cl
+          compiler: {cc: cl, cxx: cl}
   
     runs-on: ${{ matrix.os }}
     defaults:

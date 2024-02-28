@@ -55,16 +55,17 @@ jobs:
     steps:
     - uses: actions/checkout@main
 
-    - name: Set reusable strings
-      id: strings
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
     - name: Setup Conda and dependencies
       uses: conda-incubator/setup-miniconda@main
       with:
         channels: conda-forge
         environment-file: requirements.txt
+
+    - name: Set reusable strings
+      id: strings
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" \
+        echo "conda-prefix=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
       uses: threeal/cmake-action@main
@@ -75,7 +76,7 @@ jobs:
         cxx-compiler: ${{matrix.compiler.cxx}}
         options: >
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          CMAKE_PREFIX_PATH=$CONDA_PREFIX
+          CMAKE_PREFIX_PATH=${{steps.strings.outputs.conda-prefix}}
           BUILD_DOC=OFF
 
     - name: Build

@@ -66,13 +66,16 @@ jobs:
       id: strings
       run: |
         # Setting strings deppending on OS.
-        if [ "$OSTYPE" =~ ^msys ]; then
+        case "$OSTYPE" in
+          msys*)
             echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
             echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
-        else
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-          echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
-        fi
+            ;;
+          *)
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+            echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+            ;;
+        esac
 
     - name: Configure, Build, & Test CMake
       uses: threeal/cmake-action@main

@@ -42,7 +42,9 @@
  * 
  */
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    (defined(__cpp_##feature) && (__cpp_##feature >= version))
+    (defined(__cpp_##feature) && (__cpp_##feature >= version)) || \
+    (defined(_MSC_VER) && __cplusplus >= version)   // HACK: As of 2024, MSVC does not
+                                                    // implement individual feature testing
 
 
 

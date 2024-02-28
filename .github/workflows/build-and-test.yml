@@ -69,11 +69,11 @@ jobs:
         case "$OSTYPE" in
           msys*)
             echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
-            echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
             ;;
           *)
             echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-            echo "include-parent-dir=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
             ;;
         esac
 
@@ -88,5 +88,5 @@ jobs:
         run-test: true
         options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          CMAKE_PREFIX_PATH=${{steps.strings.outputs.include-parent-dir}}
+          CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
           BUILD_DOC=OFF

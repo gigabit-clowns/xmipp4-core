@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +18,47 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <xmipp4/access_flags.hpp>
-#include <xmipp4/platform/operating_system.h>
+/**
+ * @file dynamic_library_handle_windows.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Windows implementation of dynamic_library_handle.hpp
+ * @date 2023-08-13
+ * 
+ */
+
+#include "dynamic_library_handle.hpp"
+
+#include <windows.h>
+
+#include <stdexcept>
+#include <sstream>
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
-void* memory_mapped_file_open(const char* filename, 
-                              std::ptrdiff_t offset,
-                              std::size_t &size, 
-                              access_flags access );
+inline void* dynamic_library_open(const char* filename)
+{
+    const auto result = static_cast<void*>(::LoadLibrary(filename));
+    if (result == NULL)
+    {
+        std::ostringstream oss;
+        oss << "Error loading dynamic library " << filename;
+        throw std::runtime_error(oss.str());
+    }
+    return result;
+}
 
-void memory_mapped_file_close(void* data, std::size_t size) noexcept;
+inline void dynamic_library_close(void* handle) noexcept
+{
+    ::FreeLibrary(static_cast<HMODULE>(handle));
+}
 
+inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
+{
+    return ::GetProcAddress(static_cast<HMODULE>(handle), name);
+}
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4
-
-#if defined(XMIPP4_POSIX)
-    #include "memory_mapped_file_detail_posix.inl"
-#else
-    #error "No memory_mapped_file implementation available for this platform"
-#endif

@@ -40,20 +40,12 @@ jobs:
         os:
         - ubuntu-latest
         - macos-latest
-        - windows-latest
         compiler: 
         - {cc: gcc, cxx: g++}
         - {cc: clang, cxx: clang++}
-        - {cc: cl, cxx: cl}
 
-        exclude:
+        include:
         - os: windows-latest
-          compiler: {cc: gcc, cxx: g++}
-        - os: windows-latest
-          compiler: {cc: clang, cxx: clang++}
-        - os: ubuntu-latest
-          compiler: {cc: cl, cxx: cl}
-        - os: macos-latest
           compiler: {cc: cl, cxx: cl}
   
     runs-on: ${{ matrix.os }}

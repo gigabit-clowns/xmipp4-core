@@ -74,7 +74,7 @@ jobs:
           echo "include-parent-dir=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Configure & Build CMake
+    - name: Configure, Build, & Test CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
@@ -82,11 +82,8 @@ jobs:
         c-compiler: ${{matrix.compiler.cc}}
         cxx-compiler: ${{matrix.compiler.cxx}}
         run-build: true
+        run-test: true
         options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           CMAKE_PREFIX_PATH=${{steps.strings.outputs.include-parent-dir}}
           BUILD_DOC=OFF
-
-    - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest -C ${{env.BUILD_TYPE}}

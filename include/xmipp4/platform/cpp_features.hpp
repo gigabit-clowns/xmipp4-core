@@ -42,7 +42,10 @@
  * 
  */
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    (defined(__cpp_##feature) && (__cpp_##feature >= version))
+    ((defined(__cpp_##feature) && (__cpp_##feature >= version)) || \
+    (!defined(__cpp_##feature) && __cplusplus >= version))
+
+
 
 #define XMIPP4_HAS_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
 #define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)

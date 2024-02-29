@@ -34,6 +34,12 @@
  * 
  */
 
+#include "cpp_version.hpp"
+
+#if XMIPP4_HAS_CPP20
+# include <version>
+#endif
+
 /**
  * @brief Macro to test if a C++ feature is available
  * @param feature Name of the feature (without the __cpp_ prefix)
@@ -44,9 +50,39 @@
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
     (defined(__cpp_##feature) && (__cpp_##feature >= version))
 
+/**
+ * @def XMIPP4_HAS_CONSTEXPR 
+ * @brief Tests if constexpr is supported by the compiler
+ * 
+ */
+#if XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
+# define XMIPP4_HAS_CONSTEXPR 1
+#elif XMIPP4_HAS_CPP11
+# if defined(__clang__) && defined(__apple_build_version__)
+#  if __apple_build_version__ >= 10000000 
+#   define XMIPP4_HAS_CONSTEXPR 1
+#  else
+#   define XMIPP4_HAS_CONSTEXPR 0
+#  endif
+# elif defined(__GNUC__)
+#  if __GNUC__ >= 5 
+#   define XMIPP4_HAS_CONSTEXPR 1
+#  else
+#   define XMIPP4_HAS_CONSTEXPR 0
+#  endif
+# elif defined(_MSC_VER)
+#  if _MSC_VER >= 1900
+#   define XMIPP4_HAS_CONSTEXPR 1
+#  else
+#   define XMIPP4_HAS_CONSTEXPR 0
+#  endif
+# else
+#  define CONSTEXPR_SUPPORTED 1 // Unkown compiler. Assume supported
+# endif
+#else
+# define XMIPP4_HAS_CONSTEXPR 0
+#endif
 
-
-#define XMIPP4_HAS_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
 #define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)
 #define XMIPP4_HAS_LIB_BITOPS XMIPP4_HAS_CPP_FEATURE(lib_bitops, 201907)
 #define XMIPP4_HAS_LIB_POW2 XMIPP4_HAS_CPP_FEATURE(lib_pow2, 202002)

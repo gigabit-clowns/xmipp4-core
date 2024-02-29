@@ -56,7 +56,7 @@
     #elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
         #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
     #else
-        #pragma error "Unknown byte order"
+        #error "Unknown byte order"
     #endif
 
 // Detect with _LITTLE_ENDIAN and _BIG_ENDIAN macro.
@@ -76,7 +76,7 @@
 
 // Failed detecting 
 #else
-    #pragma error "Could not determine byte ordering"
+    #error "Could not determine byte ordering"
 #endif
 
 
@@ -92,7 +92,7 @@
     #elif (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__)
         #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
     #else
-        #pragma error "Unknown float byte order"
+        #error "Unknown float byte order"
     #endif
 
 #else

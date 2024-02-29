@@ -68,5 +68,5 @@ void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 #elif defined(XMIPP4_WINDOWS)
     #include "dynamic_library_handle_windows.inl"
 #else
-    #pragma error "No dynamic library_handle implementation available for this platform"
+    #error "No dynamic library_handle implementation available for this platform"
 #endif

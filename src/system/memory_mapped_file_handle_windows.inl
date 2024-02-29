@@ -212,5 +212,5 @@ inline void memory_mapped_file_close(void* data, std::size_t) noexcept
     UnmapViewOfFile(data);
 }
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4

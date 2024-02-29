@@ -137,5 +137,5 @@ inline void memory_mapped_file_close(void* data, std::size_t size) noexcept
     munmap(data, size);
 }
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4

@@ -60,5 +60,5 @@ inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
     return ::dlsym(handle, name);
 }
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4

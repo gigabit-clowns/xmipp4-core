@@ -49,7 +49,7 @@ void* memory_mapped_file_open(const char* filename,
 void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4
 
 #if defined(XMIPP4_POSIX)

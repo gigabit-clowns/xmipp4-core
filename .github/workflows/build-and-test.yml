@@ -77,16 +77,23 @@ jobs:
             ;;
         esac
 
-    - name: Configure, Build, & Test CMake
+    - name: Configure CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
         c-compiler: ${{matrix.compiler.cc}}
         cxx-compiler: ${{matrix.compiler.cxx}}
-        run-build: true
-        run-test: true
         options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
           BUILD_DOC=OFF
+
+    - name: Build
+      run: |
+        cmake --build ${{steps.strings.outputs.build-output-dir}} \
+        --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{steps.strings.outputs.build-output-dir}}
+      run: ctest -C ${{env.BUILD_TYPE}}

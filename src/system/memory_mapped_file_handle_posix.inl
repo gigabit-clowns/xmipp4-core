@@ -20,6 +20,8 @@
 
 #include "memory_mapped_file_handle.hpp"
 
+#include <platform/constexpr.hpp>
+
 #include <stdexcept>
 #include <sstream>
 #include <cstring>
@@ -33,13 +35,6 @@ namespace xmipp4
 {
 namespace system
 {
-
-inline std::size_t get_file_size(int fd) noexcept
-{
-    struct stat file_stats;
-    fstat(fd, &file_stats);
-    return static_cast<std::size_t>(file_stats.st_size);
-}
 
 inline int access_flags_to_open_flags(access_flags access)
 {
@@ -61,12 +56,9 @@ inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept
     return prot;
 }
 
-
-inline void* memory_mapped_file_open(const char* filename, 
-                                     access_flags access,
-                                     std::size_t &size )
+inline int open_file(const char* filename, 
+                     access_flags access )
 {
-    // Open the file descriptor
     const auto open_flags = access_flags_to_open_flags(access);
     const auto fd = open(filename, open_flags);
     if (fd < 0) 
@@ -75,18 +67,18 @@ inline void* memory_mapped_file_open(const char* filename,
         oss << "Error opening file: " << std::strerror(errno);
         throw std::runtime_error(oss.str());
     }
-    
-    // Populate the size if necessary
-    if (size == memory_mapped_file::whole_file)
-    {
-        size = get_file_size(fd);
-    }
+    return fd;
+}
 
-    // Memory map the opened file descriptor
+inline void* memory_map_file_descriptor(int fd, 
+                                        access_flags access, 
+                                        std::size_t size )
+{
     const int prot = access_flags_to_mmap_prot_flags(access); 
-    const int flags = MAP_SHARED;
-    const off_t offset = 0;
-    const auto addr = mmap(
+    XMIPP4_CONST_CONSTEXPR int flags = MAP_SHARED;
+    XMIPP4_CONST_CONSTEXPR off_t offset = 0;
+
+    const auto result = mmap(
         nullptr,
         size,
         prot,
@@ -95,19 +87,48 @@ inline void* memory_mapped_file_open(const char* filename,
         offset
     );
 
-    // Close the file descriptor after memory mapping regardless
-    // of the result
-    close(fd);
-
-    // Check the result
-    if (addr == MAP_FAILED)
+    if (result == MAP_FAILED)
     {
         std::ostringstream oss;
         oss << "Error memory mapping the file: " << std::strerror(errno);
         throw std::runtime_error(oss.str());
     }
 
-    return addr;
+    return result;
+}
+
+inline std::size_t get_file_size(int fd) noexcept
+{
+    struct stat file_stats;
+    fstat(fd, &file_stats);
+    return static_cast<std::size_t>(file_stats.st_size);
+}
+
+
+
+inline void* memory_mapped_file_open(const char* filename, 
+                                     access_flags access,
+                                     std::size_t &size )
+{
+    const auto fd = open_file(filename, access);
+
+    void* result;
+    try
+    {
+        if (size == 0) size = get_file_size(fd);
+        result = memory_map_file_descriptor(filename, access, size);
+    }
+    catch(...)
+    {
+        close(fd);
+        throw;
+    }
+    
+    // Close the file descriptor as it is not 
+    // longer needed
+    close(fd);
+
+    return result;
 }
 
 inline void memory_mapped_file_close(void* data, std::size_t size) noexcept

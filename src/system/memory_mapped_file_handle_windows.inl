@@ -62,6 +62,12 @@ inline DWORD access_flags_to_view_access(access_flags access)
         throw std::invalid_argument("Unsupported access");
 }
 
+inline void split_low_high(SIZE_T x, DWORD& low, DWORD& high) noexcept
+{
+    low = size & 0xFFFFFFFF;
+    high = size >> 32;
+}
+
 inline HANDLE open_file(const char* filename, 
                         access_flags access )
 {
@@ -98,9 +104,10 @@ inline HANDLE create_file_mapping(HANDLE file,
 
     const DWORD protect = access_flags_to_memory_map_protect(access);
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
-    DWORD maximum_size_high = 0;
-    DWORD maximum_size_low = 0;
     XMIPP4_CONST_CONSTEXPR LPCSTR name = 0;
+    DWORD maximum_size_low;
+    DWORD maximum_size_high;
+    split_low_high(size, maximum_size_low, maximum_size_high);
 
     HANDLE result = CreateFileMappingA(
         file, 

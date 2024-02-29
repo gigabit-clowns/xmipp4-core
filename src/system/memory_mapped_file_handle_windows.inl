@@ -64,8 +64,8 @@ inline DWORD access_flags_to_view_access(access_flags access)
 
 inline void split_low_high(SIZE_T x, DWORD& low, DWORD& high) noexcept
 {
-    low = size & 0xFFFFFFFF;
-    high = size >> 32;
+    low = x & 0xFFFFFFFF;
+    high = x >> 32;
 }
 
 inline HANDLE open_file(const char* filename, 
@@ -91,7 +91,7 @@ inline HANDLE open_file(const char* filename,
     {
         std::stringstream oss;
         oss << "Could not open file " << filename << " Error " << GetLastError();
-        throw std::runtime_error(oss.str())
+        throw std::runtime_error(oss.str());
     }
 
     return result;
@@ -122,7 +122,7 @@ inline HANDLE create_file_mapping(HANDLE file,
     {
         std::stringstream oss;
         oss << "Could not create file mapping. Error " << GetLastError();
-        throw std::runtime_error(oss.str())
+        throw std::runtime_error(oss.str());
     }
 
     return result;
@@ -148,7 +148,7 @@ inline HANDLE create_file_mapping_view(HANDLE mapping,
     {
         std::stringstream oss;
         oss << "Could not create file mapping view. Error " << GetLastError();
-        throw std::runtime_error(oss.str())
+        throw std::runtime_error(oss.str());
     }
 
     return result;
@@ -161,7 +161,7 @@ inline std::size_t get_file_size(HANDLE handle)
     {
         throw std::runtime_error("Could not retrieve file size");
     }
-    return size;
+    return size.QuadPart;
 }
 
 
@@ -170,13 +170,13 @@ inline void* memory_mapped_file_open(const char* filename,
                                      access_flags access,
                                      std::size_t &size )
 {
-    const auto file_handle = open_file(filename);
+    const auto file_handle = open_file(filename, access);
     
     // Create a file mapping for the file
     HANDLE mapping_handle;
     try
     {
-        if(size === 0) size = get_file_size(file_handle);
+        if(size == 0) size = get_file_size(file_handle);
         mapping_handle = create_file_mapping(file_handle, access, size);
     }
     catch(...)

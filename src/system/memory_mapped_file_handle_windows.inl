@@ -20,7 +20,7 @@
 
 #include "memory_mapped_file_handle.hpp"
 
-#include <platform/constexpr.hpp>
+#include <xmipp4/platform/constexpr.hpp>
 
 #include <stdexcept>
 #include <sstream>

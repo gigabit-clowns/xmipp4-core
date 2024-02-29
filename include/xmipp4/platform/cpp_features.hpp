@@ -77,7 +77,8 @@
 #   define XMIPP4_HAS_CONSTEXPR 0
 #  endif
 # else
-#  define CONSTEXPR_SUPPORTED 1 // Unkown compiler. Assume supported
+#  pragma warning "Unknown compiler. Assuming constexpr support"
+#  define CONSTEXPR_SUPPORTED 1
 # endif
 #else
 # define XMIPP4_HAS_CONSTEXPR 0

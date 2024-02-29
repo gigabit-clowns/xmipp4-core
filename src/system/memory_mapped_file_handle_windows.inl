@@ -82,6 +82,7 @@ inline HANDLE open_file(const char* filename,
         filename,
         desired_access,
         share_mode,
+        security_attributes,
         create_mode,
         flags,
         template_file

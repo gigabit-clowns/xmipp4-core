@@ -37,10 +37,10 @@ using namespace xmipp4;
 
 TEST_CASE( "bit definition", "[bit]" ) 
 {
-    REQUIRE( utils::bit(0) == 1UL );
-    REQUIRE( utils::bit(1) == 2UL );
-    REQUIRE( utils::bit(2) == 4UL );
-    REQUIRE( utils::bit(8) == 256UL );
+    REQUIRE( utils::bit(0) == 1ULL );
+    REQUIRE( utils::bit(1) == 2ULL );
+    REQUIRE( utils::bit(2) == 4ULL );
+    REQUIRE( utils::bit(8) == 256ULL );
     XMIPP4_CONST_CONSTEXPR auto msb = std::numeric_limits<std::make_signed<std::size_t>::type>::min();
     REQUIRE( utils::bit(std::numeric_limits<std::size_t>::digits-1) == msb );
 }
@@ -334,10 +334,10 @@ TEST_CASE( "mask trailing ones", "[bit]" )
     SECTION( "64 bits" )
     {
         REQUIRE( utils::mask_trailing_ones(uint64_t(0x0000000000000000)) == uint64_t(0x0000000000000000));
-        REQUIRE( utils::mask_trailing_ones(uint32_t(0x0000000000000001)) == uint32_t(0x0000000000000001));
-        REQUIRE( utils::mask_trailing_ones(uint32_t(0x0000000000000003)) == uint32_t(0x0000000000000003));
-        REQUIRE( utils::mask_trailing_ones(uint32_t(0xFFFFFFFFFFFFFFF3)) == uint32_t(0x0000000000000003));
-        REQUIRE( utils::mask_trailing_ones(uint32_t(0xFFFFFFFFFFFFFFFF)) == uint32_t(0xFFFFFFFFFFFFFFFF));
+        REQUIRE( utils::mask_trailing_ones(uint64_t(0x0000000000000001)) == uint64_t(0x0000000000000001));
+        REQUIRE( utils::mask_trailing_ones(uint64_t(0x0000000000000003)) == uint64_t(0x0000000000000003));
+        REQUIRE( utils::mask_trailing_ones(uint64_t(0xFFFFFFFFFFFFFFF3)) == uint64_t(0x0000000000000003));
+        REQUIRE( utils::mask_trailing_ones(uint64_t(0xFFFFFFFFFFFFFFFF)) == uint64_t(0xFFFFFFFFFFFFFFFF));
     }
 }
 

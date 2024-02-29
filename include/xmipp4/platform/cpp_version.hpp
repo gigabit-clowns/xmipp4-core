@@ -31,7 +31,17 @@
  * 
  */
 
-#define XMIPP4_CPLUSPLUS (__cplusplus)
+/**
+ * @def XMIPP4_CPLUSPLUS
+ * @brief C++ standard version
+ * 
+ */
+#if defined(_MSVC_LANG)
+# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
+#else
+# define XMIPP4_CPLUSPLUS (__cplusplus)
+#endif
+
 #define XMIPP4_CPLUSPLUS11 (201103L)
 #define XMIPP4_CPLUSPLUS14 (201402L)
 #define XMIPP4_CPLUSPLUS17 (201703L)

@@ -147,7 +147,7 @@ get_byte_bits() noexcept
     #if defined(CHAR_BIT)
         return CHAR_BIT;
     #else
-        #warning "Could not determine byte size. Defaulting to 8"
+        #pragma message("Could not determine byte size. Defaulting to 8")
         return 8UL;
     #endif
 }

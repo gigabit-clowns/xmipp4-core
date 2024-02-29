@@ -27,6 +27,8 @@
  * @date 2023-08-12
  */
 
+#include "operating_system.h"
+
 /**
  * @brief Constant representing little endian byte ordering
  * 
@@ -63,6 +65,15 @@
 #elif defined(_BIG_ENDIAN)
     #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
 
+// Detect for Windows
+#elif defined(XMIPP4_WINDOWS)
+    #include <Windows.h>
+    #if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
+        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
+    #elif REG_DWORD == REG_DWORD_BIG_ENDIAN
+        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
+    #endif
+
 // Failed detecting 
 #else
     #error "Could not determine byte ordering"
@@ -85,6 +96,6 @@
     #endif
 
 #else
-    #warning "Could not determine float byte ordering. Defaulting to system byte order"
+    #pragma message ("Could not determine float byte ordering. Defaulting to system byte order")
     #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER
 #endif

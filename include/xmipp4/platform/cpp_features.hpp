@@ -35,7 +35,6 @@
  */
 
 #include "cpp_version.hpp"
-#include "compile_diagnostics.h"
 
 #if XMIPP4_HAS_CPP20
 # include <version>

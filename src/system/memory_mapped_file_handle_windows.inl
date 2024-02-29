@@ -199,6 +199,8 @@ inline void* memory_mapped_file_open(const char* filename,
     }
 
     // Close intermediate handles
+    // As stated in the documentation, this is safe, as they are
+    // reference counted and the view holds a reference to them.
     CloseHandle(mapping_handle);
     CloseHandle(file_handle);
 

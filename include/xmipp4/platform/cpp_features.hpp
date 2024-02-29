@@ -77,12 +77,17 @@
 #   define XMIPP4_HAS_CONSTEXPR 0
 #  endif
 # else
-#  pragma warning "Unknown compiler. Assuming constexpr support"
+#  warning "Unknown compiler. Assuming constexpr support"
 #  define CONSTEXPR_SUPPORTED 1
 # endif
 #else
 # define XMIPP4_HAS_CONSTEXPR 0
 #endif
+
+#if !XMIPP4_HAS_CONSTEXPR
+    #error "Constexpr not detected"
+#endif
+
 
 #define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)
 #define XMIPP4_HAS_LIB_BITOPS XMIPP4_HAS_CPP_FEATURE(lib_bitops, 201907)

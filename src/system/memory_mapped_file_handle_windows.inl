@@ -147,8 +147,6 @@ inline HANDLE create_file_mapping_view(HANDLE mapping,
     return result;
 }
 
-
-
 inline std::size_t get_file_size(HANDLE handle)
 {
     LARGE_INTEGER size;
@@ -167,16 +165,11 @@ inline void* memory_mapped_file_open(const char* filename,
 {
     const auto file_handle = open_file(filename);
     
-    // Retrieve the size if necessary
-    if (size == 0)
-    {
-        size = get_file_size(file_handle);
-    }
-
     // Create a file mapping for the file
     HANDLE mapping_handle;
     try
     {
+        if(size === 0) size = get_file_size(file_handle);
         mapping_handle = create_file_mapping(file_handle, access, size);
     }
     catch(...)

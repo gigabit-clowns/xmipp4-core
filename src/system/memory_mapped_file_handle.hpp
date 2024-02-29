@@ -55,5 +55,5 @@ void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 #if defined(XMIPP4_POSIX)
     #include "memory_mapped_file_handle_posix.inl"
 #else
-    #error "No memory_mapped_file implementation available for this platform"
+    #pragma error "No memory_mapped_file_handle implementation available for this platform"
 #endif

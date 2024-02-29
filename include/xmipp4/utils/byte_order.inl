@@ -46,7 +46,7 @@ get_system_byte_order() noexcept
     #elif XMIPP4_BYTE_ORDER == XMIPP4_BYTE_ORDER_BIG_ENDIAN
         return byte_order::big_endian;
     #else
-        #error "Unknown byte ordering"
+        #pragma error "Unknown byte ordering"
     #endif
 }
 
@@ -58,7 +58,7 @@ get_fpu_byte_order() noexcept
     #elif XMIPP4_FLOAT_BYTE_ORDER == XMIPP4_BYTE_ORDER_BIG_ENDIAN
         return byte_order::big_endian;
     #else
-        #error "Unknown byte ordering"
+        #pragma error "Unknown byte ordering"
     #endif
 }
 

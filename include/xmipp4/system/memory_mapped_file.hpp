@@ -43,7 +43,7 @@ public:
      * @brief Constant meaning to map the whole file
      * 
      */
-    static inline XMIPP4_CONST_CONSTEXPR std::size_t whole_file = 0UL;
+    static inline XMIPP4_CONST_CONSTEXPR std::size_t whole_file = 0;
 
     /**
      * @brief Construct an empty memory-mapped file

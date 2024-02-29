@@ -39,10 +39,15 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        - macos-latest
         compiler: 
-        - {c: gcc, cxx: g++}
-        - {c: clang, cxx: clang++}
+        - {cc: gcc, cxx: g++}
+        - {cc: clang, cxx: clang++}
+
+        include:
+        - os: macos-latest
+          compiler: {cc: clang, cxx: clang++}
+        - os: windows-latest
+          compiler: {cc: cl, cxx: cl}
   
     runs-on: ${{ matrix.os }}
     defaults:
@@ -56,21 +61,35 @@ jobs:
       with:
         channels: conda-forge
         environment-file: requirements.txt
+        activate-environment: xmipp4-core
 
-    - name: Configure CMake
+    - name: Set reusable strings
+      id: strings
       run: |
-        cmake -B ${{github.workspace}}/build \
-        -DCMAKE_C_COMPILER=${{matrix.compiler.c}} \
-        -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}} \
-        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
-        -DBUILD_DOC=OFF
+        # Setting strings deppending on OS.
+        case "$OSTYPE" in
+          msys*)
+            echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+            ;;
+        esac
 
-    - name: Build
-      run: |
-        cmake --build ${{github.workspace}}/build \
-        --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Configure, build and test with CMake
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: ${{ steps.strings.outputs.build-output-dir }}
+        c-compiler: ${{matrix.compiler.cc}}
+        cxx-compiler: ${{matrix.compiler.cxx}}
+        options: |
+          CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
+          BUILD_DOC=OFF
+        run-build: true
+        build-args: --config ${{env.BUILD_TYPE}}
+        run-test: true
+        test-args: --build-config ${{env.BUILD_TYPE}}

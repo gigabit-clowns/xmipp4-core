@@ -38,7 +38,6 @@ set_target_properties(
 	${PROJECT_NAME} PROPERTIES 
 	SOVERSION ${PROJECT_VERSION}
 	CXX_STANDARD 20
-	CXX_FLAGS "-Wall -Wextra -Wpedantic"
 	DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
 )
 target_include_directories(

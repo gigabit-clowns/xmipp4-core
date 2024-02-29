@@ -76,7 +76,7 @@ inline HANDLE open_file(const char* filename,
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
     XMIPP4_CONST_CONSTEXPR DWORD create_mode = OPEN_EXISTING;
     XMIPP4_CONST_CONSTEXPR DWORD flags = 0;
-    XMIPP4_CONST_CONSTEXPR HANDLE template = 0;
+    XMIPP4_CONST_CONSTEXPR HANDLE template_file = 0;
 
     HANDLE result = CreateFileA(
         filename,
@@ -84,7 +84,7 @@ inline HANDLE open_file(const char* filename,
         share_mode,
         create_mode,
         flags,
-        template
+        template_file
     );
 
     if(result == INVALID_HANDLE_VALUE)

@@ -214,4 +214,3 @@ inline void memory_mapped_file_close(void* data, std::size_t) noexcept
 
 } // namespace detail
 } // namespace xmipp4
-

@@ -287,7 +287,7 @@ std::size_t compute_layout_volume(ForwardIt first,
 {
     return std::accumulate(
         first, last,
-        1UL,
+        std::size_t(1),
         [] (std::size_t current, const axis_descriptor &axis) -> std::size_t
         {
             return current * axis.get_count();

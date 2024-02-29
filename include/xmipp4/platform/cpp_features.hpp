@@ -35,6 +35,7 @@
  */
 
 #include "cpp_version.hpp"
+#include "compile_diagnostics.h"
 
 #if XMIPP4_HAS_CPP20
 # include <version>
@@ -77,7 +78,7 @@
 #   define XMIPP4_HAS_CONSTEXPR 0
 #  endif
 # else
-#  pragma warning "Unknown compiler. Assuming constexpr support"
+#  pragma message ("Unknown compiler. Assuming constexpr support")
 #  define CONSTEXPR_SUPPORTED 1
 # endif
 #else

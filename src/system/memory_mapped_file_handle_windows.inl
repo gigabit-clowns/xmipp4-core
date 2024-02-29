@@ -49,7 +49,7 @@ inline DWORD access_flags_to_memory_map_protect(access_flags access)
         throw std::invalid_argument("Unsupported access");
 }
 
-inline DWORD access_flags_view_access(access_flags access)
+inline DWORD access_flags_to_view_access(access_flags access)
 {
 
     if (access == read_only)
@@ -125,7 +125,7 @@ inline HANDLE create_file_mapping_view(HANDLE mapping,
                                        access_flags access,
                                        std::size_t size )
 {
-    const DWORD desired_access = access_flags_view_access(access);
+    const DWORD desired_access = access_flags_to_view_access(access);
     XMIPP4_CONST_CONSTEXPR DWORD offset_high = 0;
     XMIPP4_CONST_CONSTEXPR DWORD offset_low = 0;
 

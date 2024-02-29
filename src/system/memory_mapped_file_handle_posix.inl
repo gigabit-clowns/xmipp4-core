@@ -61,6 +61,7 @@ inline int open_file(const char* filename,
 {
     const auto open_flags = access_flags_to_open_flags(access);
     const auto fd = open(filename, open_flags);
+
     if (fd < 0) 
     {
         std::ostringstream oss;
@@ -116,7 +117,7 @@ inline void* memory_mapped_file_open(const char* filename,
     try
     {
         if (size == 0) size = get_file_size(fd);
-        result = memory_map_file_descriptor(filename, access, size);
+        result = memory_map_file_descriptor(fd, access, size);
     }
     catch(...)
     {

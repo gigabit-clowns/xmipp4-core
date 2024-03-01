@@ -51,22 +51,6 @@ slice<Start, Step, Stop>::slice(const slice<Start2, Step2, Stop2>& other) noexce
 }
 
 template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR 
-bool slice<Start, Step, Stop>::operator==(const slice& other) const noexcept
-{
-    return m_start == other.m_start && 
-           m_step == other.m_step && 
-           m_stop == other.m_stop;
-}
-
-template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR 
-bool slice<Start, Step, Stop>::operator!=(const slice& other) const noexcept
-{
-    return !(*this == other);
-}
-
-template <typename Start, typename Step, typename Stop>
 XMIPP4_INLINE_CONSTEXPR void 
 slice<Start, Step, Stop>::set_start(start_type start) noexcept
 {
@@ -110,6 +94,98 @@ slice<Start, Step, Stop>::get_stop() const noexcept
 
 
 
+template <typename Start1, typename Step1, typename Stop1, 
+          typename Start2, typename Step2, typename Stop2>
+XMIPP4_INLINE_CONSTEXPR bool
+operator==( const slice<Start1, Step1, Stop1>& lhs, 
+            const slice<Start2, Step2, Stop2>& rhs ) noexcept
+{
+    return lhs.get_start() == rhs.get_start() &&
+           lhs.get_step() == rhs.get_step() &&
+           lhs.get_stop() == rhs.get_stop() ;
+}
+
+template <typename Start1, typename Step1, typename Stop1, 
+          typename Start2, typename Step2, typename Stop2>
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=( const slice<Start1, Step1, Stop1>& lhs, 
+            const slice<Start2, Step2, Stop2>& rhs ) noexcept
+{
+    return !(lhs == rhs);
+}
+
+template <typename Start, typename Step, typename Stop>
+inline std::ostream& 
+operator<<(std::ostream& os, const slice<Start, Step, Stop> &s)
+{
+    return os << "slice(" << s.get_start()
+              << ", " << s.get_step()
+              << ", " << s.get_stop() << ")";
+}
+
+
+
+
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator==(const begin_tag&, const begin_tag&) noexcept
+{
+    return true;
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=(const begin_tag&, const begin_tag&) noexcept
+{
+    return false;
+}
+
+inline std::ostream& operator<<(std::ostream& os, begin_tag)
+{
+    return os << "begin";
+}
+
+
+
+XMIPP4_CONSTEXPR bool
+operator==(const adjacent_tag&, const adjacent_tag&) noexcept
+{
+    return true;
+}
+
+XMIPP4_CONSTEXPR bool
+operator!=(const adjacent_tag&, const adjacent_tag&) noexcept
+{
+    return false;
+}
+
+inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
+{
+    return os << "adjacent";
+}
+
+
+
+XMIPP4_CONSTEXPR bool
+operator==(const end_tag& lhs, const end_tag& rhs) noexcept
+{
+    return true;
+}
+
+XMIPP4_CONSTEXPR bool
+operator!=(const end_tag& lhs, const end_tag& rhs) noexcept
+{
+    return true;
+}
+
+inline std::ostream& operator<<(std::ostream& os, end_tag)
+{
+    return os << "end";
+}
+
+
+
+
+
 template <typename Stop>
 XMIPP4_INLINE_CONSTEXPR slice<begin_tag, adjacent_tag, Stop> 
 make_slice(Stop stop) noexcept
@@ -141,31 +217,6 @@ make_slice(Start start, Step step, Stop stop) noexcept
         step, 
         stop
     );
-}
-
-
-
-template <typename Start, typename Step, typename Stop>
-inline std::ostream& operator<<(std::ostream& os, const slice<Start, Step, Stop> &s)
-{
-    return os << "slice(" << s.get_start()
-              << ", " << s.get_step()
-              << ", " << s.get_stop() << ")";
-}
-
-inline std::ostream& operator<<(std::ostream& os, begin_tag)
-{
-    return os << "begin";
-}
-
-inline std::ostream& operator<<(std::ostream& os, end_tag)
-{
-    return os << "end";
-}
-
-inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
-{
-    return os << "adjacent";
 }
 
 } // namespace xmipp4

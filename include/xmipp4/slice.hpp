@@ -282,7 +282,7 @@ struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
  */
 inline XMIPP4_CONST_CONSTEXPR all_tag all;
 
-
+std::ostream& operator<<(std::ostream& os, all_tag);
 
 
 

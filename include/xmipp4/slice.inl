@@ -198,6 +198,11 @@ replace_end_with_size(end_tag, std::size_t size) noexcept
 
 
 
+XMIPP4_INLINE_CONSTEXPR all_tag::all_tag() noexcept
+    : slice(begin, adjacent, end)
+{
+}
+
 
 
 template <typename Stop>

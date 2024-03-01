@@ -73,6 +73,7 @@ public:
      */
     template <typename Start2, typename Step2, typename Stop2>
     XMIPP4_CONSTEXPR slice(const slice<Start2, Step2, Stop2>& other) noexcept;
+    slice() = default;
     slice(const slice& other) = default;
     slice(slice&& other) = default;
     ~slice() = default;
@@ -241,7 +242,6 @@ inline XMIPP4_CONST_CONSTEXPR end_tag end;
  */
 struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
 {
-    XMIPP4_CONSTEXPR all_tag() noexcept;
 };
 
 /**

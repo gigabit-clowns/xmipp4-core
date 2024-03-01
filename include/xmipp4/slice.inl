@@ -31,95 +31,95 @@
 namespace xmipp4 
 {
 
-template <typename Start, typename Step, typename Stop>
+template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Step, Stop>::slice(start_type start, 
-                                step_type step, 
-                                stop_type stop ) noexcept
+slice<Start, Stride, Stop>::slice(start_type start, 
+                                  stride_type stride, 
+                                  stop_type stop ) noexcept
     : m_start(start)
-    , m_step(step)
+    , m_stride(stride)
     , m_stop(stop)
 {
 }
 
-template <typename Start, typename Step, typename Stop>
-template <typename Start2, typename Step2, typename Stop2>
+template <typename Start, typename Stride, typename Stop>
+template <typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Step, Stop>::slice(const slice<Start2, Step2, Stop2>& other) noexcept
-    : slice(other.get_start(), other.get_step(), other.get_stop())
+slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
+    : slice(other.get_start(), other.get_stride(), other.get_stop())
 {
 }
 
-template <typename Start, typename Step, typename Stop>
+template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Step, Stop>::set_start(start_type start) noexcept
+slice<Start, Stride, Stop>::set_start(start_type start) noexcept
 {
     m_start = start;
 }
 
-template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Step, Stop>::start_type& 
-slice<Start, Step, Stop>::get_start() const noexcept
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::start_type& 
+slice<Start, Stride, Stop>::get_start() const noexcept
 {
     return m_start;
 }
 
-template <typename Start, typename Step, typename Stop>
+template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Step, Stop>::set_step(step_type step) noexcept
+slice<Start, Stride, Stop>::set_stride(stride_type stride) noexcept
 {
-    m_step = step;
+    m_stride = stride;
 }
 
-template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Step, Stop>::step_type&
-slice<Start, Step, Stop>::get_step() const noexcept
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::stride_type&
+slice<Start, Stride, Stop>::get_stride() const noexcept
 {
-    return m_step;
+    return m_stride;
 }
 
-template <typename Start, typename Step, typename Stop>
+template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Step, Stop>::set_stop(stop_type stop) noexcept
+slice<Start, Stride, Stop>::set_stop(stop_type stop) noexcept
 {
     m_stop = stop;
 }
 
-template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Step, Stop>::stop_type& 
-slice<Start, Step, Stop>::get_stop() const noexcept
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::stop_type& 
+slice<Start, Stride, Stop>::get_stop() const noexcept
 {
     return m_stop;
 }
 
 
 
-template <typename Start1, typename Step1, typename Stop1, 
-          typename Start2, typename Step2, typename Stop2>
+template <typename Start1, typename Stride1, typename Stop1, 
+          typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR bool
-operator==( const slice<Start1, Step1, Stop1>& lhs, 
-            const slice<Start2, Step2, Stop2>& rhs ) noexcept
+operator==( const slice<Start1, Stride1, Stop1>& lhs, 
+            const slice<Start2, Stride2, Stop2>& rhs ) noexcept
 {
     return lhs.get_start() == rhs.get_start() &&
-           lhs.get_step() == rhs.get_step() &&
+           lhs.get_stride() == rhs.get_stride() &&
            lhs.get_stop() == rhs.get_stop() ;
 }
 
-template <typename Start1, typename Step1, typename Stop1, 
-          typename Start2, typename Step2, typename Stop2>
+template <typename Start1, typename Stride1, typename Stop1, 
+          typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR bool
-operator!=( const slice<Start1, Step1, Stop1>& lhs, 
-            const slice<Start2, Step2, Stop2>& rhs ) noexcept
+operator!=( const slice<Start1, Stride1, Stop1>& lhs, 
+            const slice<Start2, Stride2, Stop2>& rhs ) noexcept
 {
     return !(lhs == rhs);
 }
 
-template <typename Start, typename Step, typename Stop>
+template <typename Start, typename Stride, typename Stop>
 inline std::ostream& 
-operator<<(std::ostream& os, const slice<Start, Step, Stop> &s)
+operator<<(std::ostream& os, const slice<Start, Stride, Stop> &s)
 {
     return os << "slice(" << s.get_start()
-              << ", " << s.get_step()
+              << ", " << s.get_stride()
               << ", " << s.get_stop() << ")";
 }
 
@@ -232,13 +232,13 @@ make_slice(Start start, Stop stop) noexcept
     );
 }
 
-template <typename Start, typename Step, typename Stop>
-XMIPP4_INLINE_CONSTEXPR slice<Start, Step, Stop> 
-make_slice(Start start, Step step, Stop stop) noexcept
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_INLINE_CONSTEXPR slice<Start, Stride, Stop> 
+make_slice(Start start, Stride stride, Stop stop) noexcept
 {
-    return slice<Start, Step, Stop>(
+    return slice<Start, Stride, Stop>(
         start, 
-        step, 
+        stride, 
         stop
     );
 }

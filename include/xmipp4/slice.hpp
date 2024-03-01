@@ -40,9 +40,9 @@ namespace xmipp4
 /**
  * @brief Class representing an slice of an array
  * 
- * @tparam Start Type of the starting index. May be an std::integral_constant or begin_tag
- * @tparam Step Type of the step. May be an std::integral_constant or adjacent_tag
- * @tparam Stop Type of the stopping index. May be an std::integral_constant or end_tag
+ * @tparam Start Type of the starting index. May be an integral, std::integral_constant or begin_tag
+ * @tparam Step Type of the step. May be an integral, std::integral_constant or adjacent_tag
+ * @tparam Stop Type of the stopping index. May be an integral, std::integral_constant or end_tag
  */
 template <typename Start, typename Step, typename Stop>
 class slice

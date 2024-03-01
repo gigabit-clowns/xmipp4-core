@@ -218,11 +218,43 @@ operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, end_tag);
 
+/**
+ * @brief Returns stop value
+ * Useful when using with other overloads to filter end_tag
+ * 
+ * @tparam I Integral type
+ * @param stop Stop value
+ * @param size Size of an array
+ * @return I Stop value
+ */
 template <typename I>
 XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_integral<I>::value, I>::type
 replace_end_with_size(I stop, std::size_t size) noexcept;
 
+/**
+ * @brief Returns stop value
+ * Useful when using with other overloads to filter end_tag
+ *
+ * @tparam I Integral type
+ * @tparam N Static array size
+ * @param stop Stop value
+ * @param size Size of an array
+ * @return std::integral_constant<I, N> Stop value
+ */
+template <typename I, I N>
+XMIPP4_CONSTEXPR
+std::integral_constant<I, N>
+replace_end_with_size(std::integral_constant<I, N> stop, std::size_t size) noexcept;
+
+/**
+ * @brief Returns the array size
+ * Useful when using with other overloads to filter end_tag
+ * 
+ * @param stop Stop value
+ * @param size Size of an array
+ * @return std::size_t Array size
+ */
 XMIPP4_CONSTEXPR std::size_t 
 replace_end_with_size(end_tag stop, std::size_t size) noexcept;
 

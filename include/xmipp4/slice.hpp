@@ -32,6 +32,7 @@
 #include "platform/attributes.hpp"
 
 #include <ostream>
+#include <type_traits>
 
 namespace xmipp4 
 {
@@ -78,9 +79,6 @@ public:
     
     slice& operator=(const slice& other) = default;
     slice& operator=(slice&& other) = default;
-
-    XMIPP4_CONSTEXPR bool operator==(const slice& other) const noexcept;
-    XMIPP4_CONSTEXPR bool operator!=(const slice& other) const noexcept;
 
     /**
      * @brief Set the starting index
@@ -134,11 +132,42 @@ private:
 
 };
 
+template <typename Start1, typename Step1, typename Stop1, 
+          typename Start2, typename Step2, typename Stop2>
+XMIPP4_CONSTEXPR bool
+operator==( const slice<Start1, Step1, Stop1>& lhs, 
+            const slice<Start2, Step2, Stop2>& rhs ) noexcept;
+
+template <typename Start1, typename Step1, typename Stop1, 
+          typename Start2, typename Step2, typename Stop2>
+XMIPP4_CONSTEXPR bool
+operator!=( const slice<Start1, Step1, Stop1>& lhs, 
+            const slice<Start2, Step2, Stop2>& rhs ) noexcept;
+
+template <typename Start, typename Step, typename Stop>
+std::ostream& operator<<(std::ostream& os, const slice<Start, Step, Stop> &s);
+
+
+
+
+
 /**
  * @brief Tag defining the beginning on an axis
  * 
  */
-struct begin_tag {};
+struct begin_tag {
+    template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
+    XMIPP4_CONSTEXPR
+    operator I() const noexcept { return 0; }
+};
+
+XMIPP4_CONSTEXPR bool
+operator==(const begin_tag& lhs, const begin_tag& rhs) noexcept;
+
+XMIPP4_CONSTEXPR bool
+operator!=(const begin_tag& lhs, const begin_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, begin_tag);
 
 /**
  * @brief Constant representing the beginning on an axis
@@ -146,11 +175,49 @@ struct begin_tag {};
  */
 inline XMIPP4_CONST_CONSTEXPR begin_tag begin;
 
+
+
+/**
+ * @brief Tag defining unit stride
+ * 
+ */
+struct adjacent_tag {
+    template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
+    XMIPP4_CONSTEXPR
+    operator I() const noexcept { return 1; }
+};
+
+XMIPP4_CONSTEXPR bool
+operator==(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
+
+XMIPP4_CONSTEXPR bool
+operator!=(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, adjacent_tag);
+
+/**
+ * @brief Constant representing unit stride
+ * 
+ */
+inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
+
+
+
 /**
  * @brief Tag defining the end on an axis
  * 
  */
-struct end_tag {};
+struct end_tag {
+
+};
+
+XMIPP4_CONSTEXPR bool
+operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
+
+XMIPP4_CONSTEXPR bool
+operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, end_tag);
 
 /**
  * @brief Constant representing the end on an axis
@@ -158,17 +225,9 @@ struct end_tag {};
  */
 inline XMIPP4_CONST_CONSTEXPR end_tag end;
 
-/**
- * @brief Tag defining unit stride
- * 
- */
-struct adjacent_tag {};
 
-/**
- * @brief Constant representing unit stride
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
+
+
 
 /**
  * @brief Obtain a slice bounded at the end
@@ -208,14 +267,6 @@ make_slice(Start start, Stop stop) noexcept;
 template <typename Start, typename Step, typename Stop>
 XMIPP4_CONSTEXPR slice<Start, Step, Stop> 
 make_slice(Start start, Step step, Stop stop) noexcept;
-
-
-
-template <typename Start, typename Step, typename Stop>
-std::ostream& operator<<(std::ostream& os, const slice<Start, Step, Stop> &s);
-std::ostream& operator<<(std::ostream& os, begin_tag);
-std::ostream& operator<<(std::ostream& os, end_tag);
-std::ostream& operator<<(std::ostream& os, adjacent_tag);
 
 } // namespace xmipp4
 

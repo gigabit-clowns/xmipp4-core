@@ -182,28 +182,6 @@ inline std::ostream& operator<<(std::ostream& os, end_tag)
     return os << "end";
 }
 
-template <typename I>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<I>::value, I>::type
-replace_end_with_size(I stop, std::size_t) noexcept
-{
-    return stop;
-}
-
-template <typename I, I N>
-XMIPP4_CONSTEXPR
-std::integral_constant<I, N>
-replace_end_with_size(std::integral_constant<I, N> stop, std::size_t) noexcept
-{
-    return stop;
-}
-
-XMIPP4_INLINE_CONSTEXPR std::size_t 
-replace_end_with_size(end_tag, std::size_t size) noexcept
-{
-    return size;
-}
-
 inline std::ostream& operator<<(std::ostream& os, all_tag)
 {
     return os << "all";

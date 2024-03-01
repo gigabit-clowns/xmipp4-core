@@ -297,6 +297,16 @@ TEST_CASE( "cross construct slice", "[slice]" )
         REQUIRE( b.get_step() == 2 );
         REQUIRE( b.get_stop() == 3 );
     }
+
+    SECTION( "with tags" )
+    {
+        XMIPP4_CONST_CONSTEXPR auto a = make_slice(std::size_t(8));
+        XMIPP4_CONST_CONSTEXPR auto b = slice<int, int, int>(a);
+
+        REQUIRE( b.get_start() == 0 );
+        REQUIRE( b.get_step() == 1 );
+        REQUIRE( b.get_stop() == 8 );
+    }
 }
 
 TEST_CASE( "output slice to a std::ostream", "[slice]" )

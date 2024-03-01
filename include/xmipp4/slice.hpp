@@ -207,9 +207,7 @@ inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
  * @brief Tag defining the end on an axis
  * 
  */
-struct end_tag {
-
-};
+struct end_tag {};
 
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
@@ -218,6 +216,14 @@ XMIPP4_CONSTEXPR bool
 operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, end_tag);
+
+template <typename I>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_integral<I>::value, I>::type
+replace_end_with_size(I stop, std::size_t size) noexcept;
+
+XMIPP4_CONSTEXPR std::size_t 
+replace_end_with_size(end_tag stop, std::size_t size) noexcept;
 
 /**
  * @brief Constant representing the end on an axis

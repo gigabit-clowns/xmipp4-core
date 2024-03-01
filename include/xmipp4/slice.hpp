@@ -234,6 +234,22 @@ inline XMIPP4_CONST_CONSTEXPR end_tag end;
 
 
 
+/**
+ * @brief Special case of slice representing all elements+
+ * of an axis
+ * 
+ */
+struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
+{
+    XMIPP4_CONSTEXPR all_tag() noexcept;
+};
+
+
+inline XMIPP4_CONST_CONSTEXPR all_tag all;
+
+
+
+
 
 /**
  * @brief Obtain a slice bounded at the end

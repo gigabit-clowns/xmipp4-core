@@ -244,7 +244,10 @@ struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
     XMIPP4_CONSTEXPR all_tag() noexcept;
 };
 
-
+/**
+ * @brief Constant representing all elements of an axis
+ * 
+ */
 inline XMIPP4_CONST_CONSTEXPR all_tag all;
 
 

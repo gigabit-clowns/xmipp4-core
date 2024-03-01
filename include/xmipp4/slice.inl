@@ -204,6 +204,10 @@ replace_end_with_size(end_tag, std::size_t size) noexcept
     return size;
 }
 
+inline std::ostream& operator<<(std::ostream& os, all_tag)
+{
+    return os << "all";
+}
 
 
 template <typename Stop>

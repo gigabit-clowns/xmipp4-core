@@ -59,15 +59,10 @@ inline DWORD access_flags_to_memory_map_protect(access_flags access)
 
 inline DWORD access_flags_to_view_access(access_flags access)
 {
-
-    if (access == read_only)
-        return FILE_MAP_READ;
-    else if (access = write_only)
-        return FILE_MAP_WRITE;
-    else if (access = read_write)
-        return FILE_MAP_ALL_ACCESS;
-    else 
-        throw std::invalid_argument("Unsupported access");
+    DWORD result = 0;
+    if(access.test(access_flag_bits::read)) result |= FILE_MAP_READ;
+    if(access.test(access_flag_bits::write)) result |= FILE_MAP_WRITE;
+    return result;
 }
 
 inline HANDLE open_file(const char* filename, 

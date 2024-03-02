@@ -39,6 +39,14 @@ inline DWORD access_flags_to_open_access(access_flags access)
     return result;
 }
 
+inline DWORD access_flags_to_share_mode(access_flags access)
+{
+    DWORD result = 0;
+    if(access.test(access_flag_bits::read)) result |= FILE_SHARE_READ;
+    if(access.test(access_flag_bits::write)) result |= FILE_SHARE_WRITE;
+    return result;
+}
+
 inline DWORD access_flags_to_memory_map_protect(access_flags access)
 {
     if (access.test(access_flag_bits::write))
@@ -51,31 +59,20 @@ inline DWORD access_flags_to_memory_map_protect(access_flags access)
 
 inline DWORD access_flags_to_view_access(access_flags access)
 {
-
-    if (access == read_only)
-        return FILE_MAP_READ;
-    else if (access = write_only)
-        return FILE_MAP_WRITE;
-    else if (access = read_write)
-        return FILE_MAP_ALL_ACCESS;
-    else 
-        throw std::invalid_argument("Unsupported access");
-}
-
-inline void split_low_high(SIZE_T x, DWORD& low, DWORD& high) noexcept
-{
-    low = x & 0xFFFFFFFF;
-    high = x >> 32;
+    DWORD result = 0;
+    if(access.test(access_flag_bits::read)) result |= FILE_MAP_READ;
+    if(access.test(access_flag_bits::write)) result |= FILE_MAP_WRITE;
+    return result;
 }
 
 inline HANDLE open_file(const char* filename, 
                         access_flags access )
 {
     const DWORD desired_access = access_flags_to_open_access(access);
-    XMIPP4_CONST_CONSTEXPR DWORD share_mode = 0;
+    const DWORD share_mode = access_flags_to_share_mode(access);
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
     XMIPP4_CONST_CONSTEXPR DWORD create_mode = OPEN_EXISTING;
-    XMIPP4_CONST_CONSTEXPR DWORD flags = 0;
+    XMIPP4_CONST_CONSTEXPR DWORD flags = FILE_ATTRIBUTE_NORMAL;
     XMIPP4_CONST_CONSTEXPR HANDLE template_file = 0;
 
     HANDLE result = CreateFileA(
@@ -99,16 +96,14 @@ inline HANDLE open_file(const char* filename,
 }
 
 inline HANDLE create_file_mapping(HANDLE file, 
-                                  access_flags access,
-                                  std::size_t size )
+                                  access_flags access )
 {
 
     const DWORD protect = access_flags_to_memory_map_protect(access);
+    XMIPP4_CONST_CONSTEXPR DWORD maximum_size_low = 0;
+    XMIPP4_CONST_CONSTEXPR DWORD maximum_size_high = 0;
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
     XMIPP4_CONST_CONSTEXPR LPCSTR name = 0;
-    DWORD maximum_size_low;
-    DWORD maximum_size_high;
-    split_low_high(size, maximum_size_low, maximum_size_high);
 
     HANDLE result = CreateFileMappingA(
         file, 
@@ -178,7 +173,7 @@ inline void* memory_mapped_file_open(const char* filename,
     try
     {
         if(size == 0) size = get_file_size(file_handle);
-        mapping_handle = create_file_mapping(file_handle, access, size);
+        mapping_handle = create_file_mapping(file_handle, access);
     }
     catch(...)
     {

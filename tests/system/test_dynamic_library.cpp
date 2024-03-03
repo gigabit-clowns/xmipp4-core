@@ -30,11 +30,21 @@
 
 #include <xmipp4/system/dynamic_library.hpp>
 
+#include <xmipp4/platform/operating_system.h>
+
 using namespace xmipp4;
 
 TEST_CASE( "open libc as dynamic library", "[dynamic_library]" ) 
 {
-    system::dynamic_library libc("libc.so.6");
+    #if defined(XMIPP4_LINUX)
+        system::dynamic_library libc("libc.so.6");
+    #elif defined(XMIPP4_APPLE)
+        system::dynamic_library libc("libc.dylib");
+    #elif defined(XMIPP4_WINDOWS)
+        system::dynamic_library libc("libc.dll");
+    #else
+        #error "Unknown OS"
+    #endif
 
     REQUIRE( libc.is_open() );
     REQUIRE( libc.get_symbol("fopen") != nullptr );

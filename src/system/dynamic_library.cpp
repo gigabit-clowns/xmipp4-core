@@ -116,3 +116,16 @@ void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
 
 } // namespace system
 } // namespace xmipp4
+
+
+
+extern "C"
+{
+    /**
+     * @brief Dummy function used by the the dynamic_library_test
+     */
+    XMIPP4_CORE_API std::uint32_t xmipp4_dynamic_library_test_hook()
+    {
+        return 0xDEADBEEF;
+    }
+}

@@ -82,4 +82,3 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const version& ver)
 } // namespace xmipp4
 
 #include "version.inl"
-

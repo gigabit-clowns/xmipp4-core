@@ -30,34 +30,46 @@
 
 #include <xmipp4/system/dynamic_library.hpp>
 
+#include <xmipp4/xmipp.hpp>
 #include <xmipp4/platform/operating_system.h>
+
+#include <sstream>
 
 using namespace xmipp4;
 
-TEST_CASE( "open libc as dynamic library", "[dynamic_library]" ) 
+static std::string get_xmipp_core_soname()
 {
-    // Determine the OS-specific path to libc
-    std::string path;
     #if defined(XMIPP4_LINUX)
-        path = "libc.so.6"; //FIXME find a way to not hardcode libc version
+        std::stringstream stream;
+        stream << "./libxmipp4-core.so." << get_core_version();
+        return stream.str();
     #elif defined(XMIPP4_APPLE)
-        path = "libSystem.dylib"; //TODO untested
+        return "xmipp4-core.dylib"
     #elif defined(XMIPP4_WINDOWS)
-        path = "msvcrt";
+        return "xmipp4-core"
     #else
         #error "Unknown OS"
     #endif
+}
 
-    // Load libc
-    system::dynamic_library libc(path);
+TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
+{
+    system::dynamic_library xmipp4_core(get_xmipp_core_soname());
 
-    // Poll
-    REQUIRE( libc.is_open() );
-    REQUIRE( libc.get_symbol("fopen") != nullptr );
+    REQUIRE( xmipp4_core.is_open() );
+    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+
+    using test_hook_function_ptr =  uint32_t (*)();
+    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
+        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
+    );
+
+    REQUIRE(test_hook != nullptr );
+    REQUIRE(test_hook() == 0xDEADBEEF );
 }
 
 TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
 {
-    system::dynamic_library libc;
-    REQUIRE( libc.is_open() == false );
+    system::dynamic_library lib;
+    REQUIRE( lib.is_open() == false );
 }

@@ -44,9 +44,9 @@ static std::string get_xmipp_core_soname()
         stream << "./libxmipp4-core.so." << get_core_version();
         return stream.str();
     #elif defined(XMIPP4_APPLE)
-        return "xmipp4-core.dylib"
+        return "xmipp4-core.dylib";
     #elif defined(XMIPP4_WINDOWS)
-        return "xmipp4-core"
+        return "xmipp4-core";
     #else
         #error "Unknown OS"
     #endif

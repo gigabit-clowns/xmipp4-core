@@ -41,7 +41,7 @@ TEST_CASE( "open libc as dynamic library", "[dynamic_library]" )
     #if defined(XMIPP4_LINUX)
         path = "libc.so.6"; //FIXME find a way to not hardcode libc version
     #elif defined(XMIPP4_APPLE)
-        path = "libc.dylib"; //TODO untested
+        path = "libSystem.dylib"; //TODO untested
     #elif defined(XMIPP4_WINDOWS)
         path = "msvcrt";
     #else

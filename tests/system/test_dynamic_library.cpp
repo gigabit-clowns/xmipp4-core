@@ -37,11 +37,12 @@ using namespace xmipp4;
 TEST_CASE( "open libc as dynamic library", "[dynamic_library]" ) 
 {
     #if defined(XMIPP4_LINUX)
+        //FIXME find a way to not hardcode libc version
         system::dynamic_library libc("libc.so.6");
     #elif defined(XMIPP4_APPLE)
         system::dynamic_library libc("libc.dylib");
     #elif defined(XMIPP4_WINDOWS)
-        system::dynamic_library libc("libc.dll");
+        system::dynamic_library libc("msvcrt");
     #else
         #error "Unknown OS"
     #endif

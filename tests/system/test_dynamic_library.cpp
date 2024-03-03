@@ -37,26 +37,13 @@
 
 using namespace xmipp4;
 
-static std::string get_xmipp_core_soname()
-{
-    #if defined(XMIPP4_LINUX)
-        std::stringstream stream;
-        stream << "./libxmipp4-core.so." << get_core_version();
-        return stream.str();
-    #elif defined(XMIPP4_APPLE)
-        std::stringstream stream;
-        stream << "libxmipp4-core." << get_core_version() << ".dylib";
-        return stream.str();
-    #elif defined(XMIPP4_WINDOWS)
-        return "xmipp4-core";
-    #else
-        #error "Unknown OS"
-    #endif
-}
-
 TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
 {
-    system::dynamic_library xmipp4_core(get_xmipp_core_soname());
+    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
+        "xmipp4-core",
+        get_core_version()
+    );
+    system::dynamic_library xmipp4_core(xmipp4_core_soname);
 
     REQUIRE( xmipp4_core.is_open() );
     REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );

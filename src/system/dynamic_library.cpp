@@ -30,6 +30,8 @@
 
 #include "dynamic_library_handle.hpp"
 
+#include <sstream>
+
 namespace xmipp4
 {
 namespace system
@@ -109,6 +111,46 @@ void* dynamic_library::get_symbol(const std::string& name) const noexcept
     return get_symbol(name.c_str());
 }
 
+
+
+std::string dynamic_library::make_soname(const std::string& library_name)
+{
+    #if defined(XMIPP4_LINUX)
+        std::stringstream stream;
+        stream << "lib" << library_name << ".so";
+        return stream.str();
+    #elif defined(XMIPP4_APPLE)
+        std::stringstream stream;
+        stream << "lib" << library_name << ".dylib";
+        return stream.str();
+    #elif defined(XMIPP4_WINDOWS)
+        return library_name;
+    #else
+        #error "Unknown OS"
+    #endif
+}
+
+std::string dynamic_library::make_soname(const std::string& library_name, 
+                                         version ver )
+{
+    #if defined(XMIPP4_LINUX)
+        std::stringstream stream;
+        stream << "lib" << library_name << ".so" << '.' << ver;
+        return stream.str();
+    #elif defined(XMIPP4_APPLE)
+        std::stringstream stream;
+        stream << "lib" << library_name << '.' << ver <<".dylib";
+        return stream.str();
+    #elif defined(XMIPP4_WINDOWS)
+        (void)(ver); // Ignore to prevent warnings
+        return library_name;
+    #else
+        #error "Unknown OS"
+    #endif
+}
+
+
+
 void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
 {
     lhs.swap(rhs);
@@ -116,3 +158,16 @@ void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
 
 } // namespace system
 } // namespace xmipp4
+
+
+
+extern "C"
+{
+    /**
+     * @brief Dummy function used by the the dynamic_library_test
+     */
+    XMIPP4_CORE_API std::uint32_t xmipp4_dynamic_library_test_hook()
+    {
+        return 0xDEADBEEF;
+    }
+}

@@ -19,49 +19,25 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file xmipp.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Implementation of xmipp.hpp
+ * @date 2024-03-03
  * 
  */
 
-#include "dynamic_library_handle.hpp"
-
-#include <xmipp4/platform/constexpr.hpp>
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
+#include <xmipp4/xmipp.hpp>
 
 namespace xmipp4
 {
-namespace system
-{
 
-inline void* dynamic_library_open(const char* filename)
+version get_core_version() noexcept
 {
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
+    return version(
+        XMIPP4_VERSION_MAJOR,
+        XMIPP4_VERSION_MINOR,
+        XMIPP4_VERSION_PATCH
+    );
 }
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
-
-} // namespace system
 } // namespace xmipp4

@@ -19,49 +19,46 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file test_dynamic_library.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Tests for system/dynamic_library.hpp
+ * @date 2024-03-03
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/platform/constexpr.hpp>
+#include <xmipp4/system/dynamic_library.hpp>
 
-#include <dlfcn.h>
+#include <xmipp4/xmipp.hpp>
+#include <xmipp4/platform/operating_system.h>
 
-#include <stdexcept>
 #include <sstream>
 
-namespace xmipp4
-{
-namespace system
-{
+using namespace xmipp4;
 
-inline void* dynamic_library_open(const char* filename)
+TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
 {
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
+    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
+        "xmipp4-core",
+        get_core_version()
+    );
+    system::dynamic_library xmipp4_core(xmipp4_core_soname);
+
+    REQUIRE( xmipp4_core.is_open() );
+    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+
+    using test_hook_function_ptr =  uint32_t (*)();
+    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
+        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
+    );
+
+    REQUIRE(test_hook != nullptr );
+    REQUIRE(test_hook() == 0xDEADBEEF );
 }
 
-inline void dynamic_library_close(void* handle) noexcept
+TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
 {
-    ::dlclose(handle);
+    system::dynamic_library lib;
+    REQUIRE( lib.is_open() == false );
 }
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
-
-} // namespace system
-} // namespace xmipp4

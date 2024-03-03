@@ -55,4 +55,3 @@ TEST_CASE( "open libc as dynamic library", "[dynamic_library]" )
     REQUIRE( libc.is_open() );
     REQUIRE( libc.get_symbol("fopen") != nullptr );
 }
-

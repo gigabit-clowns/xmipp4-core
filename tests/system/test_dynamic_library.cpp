@@ -19,49 +19,24 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file test_dynamic_library.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Tests for system/dynamic_library.hpp
+ * @date 2024-03-03
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/platform/constexpr.hpp>
+#include <xmipp4/system/dynamic_library.hpp>
 
-#include <dlfcn.h>
+using namespace xmipp4;
 
-#include <stdexcept>
-#include <sstream>
-
-namespace xmipp4
+TEST_CASE( "open libc as dynamic library", "[dynamic_library]" ) 
 {
-namespace system
-{
+    system::dynamic_library libc("libc.so.6");
 
-inline void* dynamic_library_open(const char* filename)
-{
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
+    REQUIRE( libc.is_open() );
+    REQUIRE( libc.get_symbol("fopen") != nullptr );
 }
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
-
-} // namespace system
-} // namespace xmipp4

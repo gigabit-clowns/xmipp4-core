@@ -37,14 +37,43 @@
 
 using namespace xmipp4;
 
-TEST_CASE( "memory map a file", "[memory_mapped_file]" ) 
+static const std::string test_data = 
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
+static std::string write_test_data()
 {
     const std::string path = "memory_map.txt";
-    const std::string data = 
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
     std::ofstream output_file(path.c_str());
-    output_file.write(data.c_str(), data.size());
-    output_file.close();
+    output_file.write(test_data.c_str(), test_data.size());
+    return path;
+}
+
+static bool check_test_data(const char* data, std::size_t count)
+{
+    return std::strncmp(data, test_data.c_str(), count) == 0;
+}
+
+static void fill_test_pattern(char* data, std::size_t count)
+{
+    for(std::size_t i = 0; i < count; ++i)
+    {
+        data[i] = static_cast<char>('a' + i);
+    }
+}
+
+static bool check_test_pattern(const char* data, std::size_t count)
+{
+    for(std::size_t i = 0; i < count; ++i)
+    {
+        if(data[i] != static_cast<char>('a' + i))
+            return false;
+    }
+    return true;
+}
+
+TEST_CASE( "memory map a file for reading", "[memory_mapped_file]" ) 
+{
+    const auto path = write_test_data();
 
     SECTION ("Read first few bytes")
     {
@@ -55,8 +84,10 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
             false
         );
 
+        // Expect the first 8 bytes to be equal to the test data
+        REQUIRE( mm.is_open() );
         REQUIRE( mm.size() == 8 );
-        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), 8) == 0 );
+        REQUIRE( check_test_data(static_cast<const char*>(mm.data()), mm.size()) );
     }
 
     SECTION ("Read the entire file")
@@ -67,45 +98,14 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
             system::memory_mapped_file::whole_file,
             false
         );
-
-        REQUIRE( mm.size() == data.size() );
-        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
+        
+        // Expect the whole range to be equal to the test data
+        REQUIRE( mm.is_open() );
+        REQUIRE( mm.size() == test_data.size() );
+        REQUIRE( check_test_data(static_cast<const char*>(mm.data()), mm.size()) );
     }
 
-    SECTION ("Write the entire file")
-    {
-        system::memory_mapped_file mm(
-            path, 
-            read_write, 
-            system::memory_mapped_file::whole_file,
-            false
-        );
-
-        REQUIRE( mm.size() == data.size() );
-        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
-
-        char *memory_mapped_data = static_cast<char*>(mm.data());
-        for(std::size_t i = 0; i < data.size(); ++i)
-        {
-            memory_mapped_data[i] = static_cast<char>('a' + i);
-        }
-
-        mm.close();
-        mm.open(
-            path, 
-            read_only, 
-            system::memory_mapped_file::whole_file,
-            false
-        );
-
-        memory_mapped_data = static_cast<char*>(mm.data());
-        for(std::size_t i = 0; i < data.size(); ++i)
-        {
-            REQUIRE( memory_mapped_data[i] == static_cast<char>('a' + i) );
-        }
-    }
-
-    SECTION ("Write the entire file as copy on write")
+   SECTION ("Write the entire file as copy on write")
     {
         system::memory_mapped_file mm(
             path, 
@@ -114,16 +114,17 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
             true
         );
 
-        REQUIRE( mm.size() == data.size() );
-        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
+        // Check that the test data has been read
+        REQUIRE( mm.is_open() );
+        REQUIRE( mm.size() == test_data.size() );
+        REQUIRE( check_test_data(static_cast<const char*>(mm.data()), mm.size()) );
 
-        char *memory_mapped_data = static_cast<char*>(mm.data());
-        for(std::size_t i = 0; i < data.size(); ++i)
-        {
-            memory_mapped_data[i] = static_cast<char>('a' + i);
-        }
-
+        // Write some random data and close
+        fill_test_pattern(static_cast<char*>(mm.data()), mm.size());
         mm.close();
+        REQUIRE( !mm.is_open() );
+
+        // Re-open and expect the original test data
         mm.open(
             path, 
             read_only, 
@@ -131,7 +132,42 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
             false
         );
 
-        REQUIRE( mm.size() == data.size() );
-        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
+        REQUIRE( mm.is_open() );
+        REQUIRE( mm.size() == test_data.size() );
+        REQUIRE( check_test_data(static_cast<const char*>(mm.data()), mm.size()) );
     }
+}
+
+TEST_CASE( "memory map a file for writing", "[memory_mapped_file]" ) 
+{
+    const auto path = write_test_data();
+
+    system::memory_mapped_file mm(
+        path, 
+        read_write, 
+        system::memory_mapped_file::whole_file,
+        false
+    );
+
+    // Check that the test data has been read
+    REQUIRE( mm.is_open() );
+    REQUIRE( mm.size() == test_data.size() );
+    REQUIRE( check_test_data(static_cast<const char*>(mm.data()), mm.size()) );
+
+    // Write some random data and close
+    fill_test_pattern(static_cast<char*>(mm.data()), mm.size());
+    mm.close();
+    REQUIRE( !mm.is_open() );
+
+    // Re-open and expect the modified test data
+    mm.open(
+        path, 
+        read_only, 
+        system::memory_mapped_file::whole_file,
+        false
+    );
+
+    REQUIRE( mm.is_open() );
+    REQUIRE( mm.size() == test_data.size() );
+    REQUIRE( check_test_pattern(static_cast<const char*>(mm.data()), mm.size()) );
 }

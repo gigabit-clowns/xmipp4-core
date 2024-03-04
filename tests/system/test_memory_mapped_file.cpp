@@ -51,7 +51,8 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
         system::memory_mapped_file mm(
             path, 
             read_only, 
-            8
+            8,
+            false
         );
 
         REQUIRE( mm.size() == 8 );
@@ -63,7 +64,8 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
         system::memory_mapped_file mm(
             path, 
             read_only, 
-            system::memory_mapped_file::whole_file
+            system::memory_mapped_file::whole_file,
+            false
         );
 
         REQUIRE( mm.size() == data.size() );
@@ -75,7 +77,8 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
         system::memory_mapped_file mm(
             path, 
             read_write, 
-            system::memory_mapped_file::whole_file
+            system::memory_mapped_file::whole_file,
+            false
         );
 
         REQUIRE( mm.size() == data.size() );
@@ -88,12 +91,47 @@ TEST_CASE( "memory map a file", "[memory_mapped_file]" )
         }
 
         mm.close();
-        mm.open(path, read_only);
+        mm.open(
+            path, 
+            read_only, 
+            system::memory_mapped_file::whole_file,
+            false
+        );
 
         memory_mapped_data = static_cast<char*>(mm.data());
         for(std::size_t i = 0; i < data.size(); ++i)
         {
             REQUIRE( memory_mapped_data[i] == static_cast<char>('a' + i) );
         }
+    }
+
+    SECTION ("Write the entire file as copy on write")
+    {
+        system::memory_mapped_file mm(
+            path, 
+            read_write, 
+            system::memory_mapped_file::whole_file,
+            true
+        );
+
+        REQUIRE( mm.size() == data.size() );
+        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
+
+        char *memory_mapped_data = static_cast<char*>(mm.data());
+        for(std::size_t i = 0; i < data.size(); ++i)
+        {
+            memory_mapped_data[i] = static_cast<char>('a' + i);
+        }
+
+        mm.close();
+        mm.open(
+            path, 
+            read_only, 
+            system::memory_mapped_file::whole_file,
+            false
+        );
+
+        REQUIRE( mm.size() == data.size() );
+        REQUIRE( std::strncmp(static_cast<const char*>(mm.data()), data.c_str(), mm.size()) == 0 );
     }
 }

@@ -73,7 +73,7 @@ inline DWORD access_flags_to_view_access(access_flags access,
 {
     DWORD result;
 
-    if(copy_on_write)
+    if(copy_on_write && access.test(access_flag_bits::write))
     {
         result = FILE_MAP_COPY;
     }

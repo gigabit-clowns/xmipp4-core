@@ -31,45 +31,58 @@ namespace xmipp4
 namespace system
 {
 
-inline DWORD access_flags_to_open_access(access_flags access)
+inline DWORD access_flags_to_open_access(access_flags access,
+                                         bool copy_on_write )
 {
     DWORD result = 0;
-    if(access.test(access_flag_bits::read)) result |= GENERIC_READ;
-    if(access.test(access_flag_bits::write)) result |= GENERIC_WRITE;
+    
+    if(access.test(access_flag_bits::read)) 
+        result |= GENERIC_READ;
+    if(access.test(access_flag_bits::write) && !copy_on_write) 
+        result |= GENERIC_WRITE;
+
     return result;
 }
 
-inline DWORD access_flags_to_share_mode(access_flags access)
+inline DWORD access_flags_to_memory_map_protect(access_flags access,
+                                                bool copy_on_write )
 {
-    DWORD result = 0;
-    if(access.test(access_flag_bits::read)) result |= FILE_SHARE_READ;
-    if(access.test(access_flag_bits::write)) result |= FILE_SHARE_WRITE;
-    return result;
+    if (copy_on_write)
+    {
+        return PAGE_WRITECOPY;
+    }
+    else
+    {
+        if (access.test(access_flag_bits::write))
+            return PAGE_READWRITE;
+        else if (access.test(access_flag_bits::read))
+            return PAGE_READONLY;
+        else 
+            throw std::invalid_argument("Unsupported access");
+    }
 }
 
-inline DWORD access_flags_to_memory_map_protect(access_flags access)
-{
-    if (access.test(access_flag_bits::write))
-        return PAGE_READWRITE;
-    else if (access.test(access_flag_bits::read))
-        return PAGE_READONLY;
-    else 
-        throw std::invalid_argument("Unsupported access");
-}
-
-inline DWORD access_flags_to_view_access(access_flags access)
+inline DWORD access_flags_to_view_access(access_flags access,
+                                         bool copy_on_write )
 {
     DWORD result = 0;
-    if(access.test(access_flag_bits::read)) result |= FILE_MAP_READ;
-    if(access.test(access_flag_bits::write)) result |= FILE_MAP_WRITE;
+
+    if(access.test(access_flag_bits::read)) 
+        result |= FILE_MAP_READ;
+    if(access.test(access_flag_bits::write)) 
+        result |= FILE_MAP_WRITE;
+    if(copy_on_write)
+        result |= FILE_MAP_COPY;
+
     return result;
 }
 
 inline HANDLE open_file(const char* filename, 
-                        access_flags access )
+                        access_flags access,
+                        bool copy_on_write )
 {
-    const DWORD desired_access = access_flags_to_open_access(access);
-    const DWORD share_mode = access_flags_to_share_mode(access);
+    const DWORD desired_access = access_flags_to_open_access(access, copy_on_write);
+    XMIPP4_CONST_CONSTEXPR DWORD share_mode = 0;
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
     XMIPP4_CONST_CONSTEXPR DWORD create_mode = OPEN_EXISTING;
     XMIPP4_CONST_CONSTEXPR DWORD flags = FILE_ATTRIBUTE_NORMAL;
@@ -96,10 +109,11 @@ inline HANDLE open_file(const char* filename,
 }
 
 inline HANDLE create_file_mapping(HANDLE file, 
-                                  access_flags access )
+                                  access_flags access,
+                                  bool copy_on_write )
 {
 
-    const DWORD protect = access_flags_to_memory_map_protect(access);
+    const DWORD protect = access_flags_to_memory_map_protect(access, copy_on_write);
     XMIPP4_CONST_CONSTEXPR DWORD maximum_size_low = 0;
     XMIPP4_CONST_CONSTEXPR DWORD maximum_size_high = 0;
     XMIPP4_CONST_CONSTEXPR LPSECURITY_ATTRIBUTES security_attributes = 0;
@@ -126,9 +140,10 @@ inline HANDLE create_file_mapping(HANDLE file,
 
 inline HANDLE create_file_mapping_view(HANDLE mapping, 
                                        access_flags access,
-                                       std::size_t size )
+                                       std::size_t size,
+                                       bool copy_on_write )
 {
-    const DWORD desired_access = access_flags_to_view_access(access);
+    const DWORD desired_access = access_flags_to_view_access(access, copy_on_write);
     XMIPP4_CONST_CONSTEXPR DWORD offset_high = 0;
     XMIPP4_CONST_CONSTEXPR DWORD offset_low = 0;
 
@@ -164,16 +179,25 @@ inline std::size_t get_file_size(HANDLE handle)
 
 inline void* memory_mapped_file_open(const char* filename, 
                                      access_flags access,
-                                     std::size_t &size )
+                                     std::size_t &size,
+                                     bool copy_on_write )
 {
-    const auto file_handle = open_file(filename, access);
+    const auto file_handle = open_file(
+        filename, 
+        access,
+        copy_on_write
+    );
     
     // Create a file mapping for the file
     HANDLE mapping_handle;
     try
     {
         if(size == 0) size = get_file_size(file_handle);
-        mapping_handle = create_file_mapping(file_handle, access);
+        mapping_handle = create_file_mapping(
+            file_handle, 
+            access, 
+            copy_on_write
+        );
     }
     catch(...)
     {
@@ -185,7 +209,12 @@ inline void* memory_mapped_file_open(const char* filename,
     void* result;
     try
     {
-        result = create_file_mapping_view(mapping_handle, access, size);
+        result = create_file_mapping_view(
+            mapping_handle, 
+            access, 
+            size, 
+            copy_on_write
+        );
     }
     catch(...)
     {

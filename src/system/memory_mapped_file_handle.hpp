@@ -32,13 +32,17 @@ namespace system
  * @brief Memory map a file
  * 
  * @param filename Path to the file to be mapped
- * @param access Access type. Can not be empty
- * @param size Size. If zero, it will be written with the size of the file
+ * @param access Memory access type. It can not be empty
+ * @param size Number of bytes to be mapped. If zero, it 
+ * will be written with the size of the file
+ * @param copy_on_write If true, changes are not commited 
+ * to the file
  * @return void* Pointer to the mapped data
  */
 void* memory_mapped_file_open(const char* filename, 
                               access_flags access,
-                              std::size_t &size );
+                              std::size_t &size,
+                              bool copy_on_write );
 
 /**
  * @brief Close a memory mapped file

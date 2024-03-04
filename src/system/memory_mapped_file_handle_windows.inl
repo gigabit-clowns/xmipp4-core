@@ -47,19 +47,25 @@ inline DWORD access_flags_to_open_access(access_flags access,
 inline DWORD access_flags_to_memory_map_protect(access_flags access,
                                                 bool copy_on_write )
 {
-    if (copy_on_write)
+    DWORD result;
+
+    if (access.test(access_flag_bits::write))
     {
-        return PAGE_WRITECOPY;
+        if (copy_on_write)
+            result = PAGE_WRITECOPY;
+        else
+            result = PAGE_READWRITE;
     }
-    else
+    else if (access.test(access_flag_bits::read))
     {
-        if (access.test(access_flag_bits::write))
-            return PAGE_READWRITE;
-        else if (access.test(access_flag_bits::read))
-            return PAGE_READONLY;
-        else 
-            throw std::invalid_argument("Unsupported access");
+        result = PAGE_READONLY;
     }
+    else 
+    {
+        throw std::invalid_argument("Unsupported access");
+    }
+
+    return result;
 }
 
 inline DWORD access_flags_to_view_access(access_flags access,
@@ -68,11 +74,15 @@ inline DWORD access_flags_to_view_access(access_flags access,
     DWORD result = 0;
 
     if(access.test(access_flag_bits::read)) 
+    {
         result |= FILE_MAP_READ;
+    }
     if(access.test(access_flag_bits::write)) 
+    {
         result |= FILE_MAP_WRITE;
-    if(copy_on_write)
-        result |= FILE_MAP_COPY;
+        if(copy_on_write)
+            result |= FILE_MAP_COPY;
+    }
 
     return result;
 }

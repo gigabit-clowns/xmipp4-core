@@ -52,14 +52,14 @@ public:
     XMIPP4_CORE_API memory_mapped_file() noexcept;
 
     /**
-     * @brief Construct with a file opened in memory
+     * @brief Construct with a file opened in memory.
      * 
-     * @param filename Path to the file to be mapped
-     * @param access Memory access permissions. Can not be empty
+     * @param filename Path to the file to be mapped.
+     * @param access Memory access permissions. Can not be empty.
      * @param size Number of bytes to be mapped. Use whole_file (0) 
-     * to map the entire file
+     * to map the entire file.
      * @param copy_on_write Do not write back changes to the file.
-     * access must be read_write
+     * Has no effect if write access is not enabled.
      */
     XMIPP4_CORE_API explicit memory_mapped_file(const char* filename, 
                                                 access_flags access = read_only,
@@ -67,14 +67,14 @@ public:
                                                 bool copy_on_write = false );
 
     /**
-     * @brief Construct with a file opened in memory
+     * @brief Construct with a file opened in memory.
      * 
-     * @param filename Path to the file to be mapped
-     * @param access Memory access permissions. Can not be empty
+     * @param filename Path to the file to be mapped.
+     * @param access Memory access permissions. Can not be empty.
      * @param size Number of bytes to be mapped. Use whole_file (0) 
-     * to map the entire file
-     * @param copy_on_write Do not write back changes to the file
-     * access must be read_write
+     * to map the entire file.
+     * @param copy_on_write Do not write back changes to the file.
+     * Has no effect if write access is not enabled.
      */
     XMIPP4_CORE_API explicit memory_mapped_file(const std::string& filename, 
                                                 access_flags access = read_only,
@@ -103,15 +103,15 @@ public:
     XMIPP4_CORE_API void swap(memory_mapped_file& other) noexcept;
 
     /**
-     * @brief Opens a file in memory
-     * In case another file is open, first it closes it
+     * @brief Opens a file in memory.
+     * In case another file is open, first it closes it.
      * 
-     * @param filename Path to the file to be mapped
-     * @param access Memory access permissions. Can not be empty
+     * @param filename Path to the file to be mapped.
+     * @param access Memory access permissions. Can not be empty.
      * @param size Number of bytes to be mapped. Use whole_file (0) 
-     * to map the entire file
-     * @param copy_on_write Do not write back changes to the file
-     * access must be read_write
+     * to map the entire file.
+     * @param copy_on_write Do not write back changes to the file.
+     * Has no effect if write access is not enabled.
      */
     XMIPP4_CORE_API void open(const char* filename, 
                               access_flags access = read_only,
@@ -119,15 +119,15 @@ public:
                               bool copy_on_write = false );
 
     /**
-     * @brief Opens a file in memory
-     * In case another file is open, first it closes it
+     * @brief Opens a file in memory.
+     * In case another file is open, first it closes it.
      * 
-     * @param filename Path to the file to be mapped
-     * @param access Memory access permissions. Can not be empty
+     * @param filename Path to the file to be mapped.
+     * @param access Memory access permissions. Can not be empty.
      * @param size Number of bytes to be mapped. Use whole_file (0) 
-     * to map the entire file
-     * @param copy_on_write Do not write back changes to the file
-     * access must be read_write
+     * to map the entire file.
+     * @param copy_on_write Do not write back changes to the file.
+     * Has no effect if write access is not enabled.
      */
     XMIPP4_CORE_API void open(const std::string& filename, 
                               access_flags access = read_only,

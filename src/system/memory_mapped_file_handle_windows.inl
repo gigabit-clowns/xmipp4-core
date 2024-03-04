@@ -71,17 +71,19 @@ inline DWORD access_flags_to_memory_map_protect(access_flags access,
 inline DWORD access_flags_to_view_access(access_flags access,
                                          bool copy_on_write )
 {
-    DWORD result = 0;
+    DWORD result;
 
-    if(access.test(access_flag_bits::read)) 
+    if(copy_on_write)
     {
-        result |= FILE_MAP_READ;
+        result = FILE_MAP_COPY;
     }
-    if(access.test(access_flag_bits::write)) 
+    else
     {
-        result |= FILE_MAP_WRITE;
-        if(copy_on_write)
-            result |= FILE_MAP_COPY;
+        result = 0;
+        if(access.test(access_flag_bits::read)) 
+            result |= FILE_MAP_READ;
+        if(access.test(access_flag_bits::write)) 
+            result |= FILE_MAP_WRITE;
     }
 
     return result;

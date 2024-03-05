@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file xmipp.cpp
+ * @file core_version.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of xmipp.hpp
+ * @brief Implementation of core_version.hpp
  * @date 2024-03-03
  * 
  */
 
-#include <xmipp4/xmipp.hpp>
+#include <xmipp4/core_version.hpp>
 
 namespace xmipp4
 {
@@ -34,9 +34,9 @@ namespace xmipp4
 version get_core_version() noexcept
 {
     return version(
-        XMIPP4_VERSION_MAJOR,
-        XMIPP4_VERSION_MINOR,
-        XMIPP4_VERSION_PATCH
+        VERSION_MAJOR,
+        VERSION_MINOR,
+        VERSION_PATCH
     );
 }
 

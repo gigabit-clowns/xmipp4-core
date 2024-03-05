@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file xmipp.hpp
+ * @file core_version.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Xmipp related functions
+ * @brief Utilities for getting xmipp4-core version
  * @date 2024-03-03
  * 
  */

@@ -20,8 +20,6 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-mkdir build
-
 # Configure CMake
 cmake ^
 	-B build ^

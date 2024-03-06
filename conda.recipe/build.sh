@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env sh
+
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
 #

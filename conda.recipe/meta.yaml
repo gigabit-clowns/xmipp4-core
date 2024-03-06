@@ -36,7 +36,6 @@ requirements:
     - cpp-half==2.1
 
   run:
-    - libgcc >=5.2     # [linux]
     - cpp-half==2.1
 
 test:

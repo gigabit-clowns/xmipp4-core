@@ -34,6 +34,13 @@
 
 using namespace xmipp4;
 
+#ifdef major
+#undef major
+#endif
+
+#ifdef minor
+#undef minor
+#endif
 
 TEST_CASE( "check axis pair ordering", "[memory_layout]" ) 
 {

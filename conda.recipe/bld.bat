@@ -30,12 +30,18 @@ cmake ^
 	-DCMAKE_BUILD_TYPE=Release ^
 	-DBUILD_DOC=OFF
 
+IF %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
+
 # Build
 cmake ^
 	--build build ^
 	--config Release
 
+IF %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
+
 # Install
 cmake ^
 	--install build ^
 	--config Release
+
+exit %ERRORLEVEL%

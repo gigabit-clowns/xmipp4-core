@@ -40,4 +40,4 @@ requirements:
 
 test:
   commands:
-    - test_xmipp4-core
+    - xmipp4-core_tests

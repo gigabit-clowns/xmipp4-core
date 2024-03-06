@@ -20,16 +20,22 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-package:
-  name: xmipp4-core
-  version: "4.1.0"
+mkdir build
 
-source:
+# Configure CMake
+cmake ^
+	-B build ^
+	-G "%CMAKE_GENERATOR%" ^
+	-DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" ^
+	-DCMAKE_BUILD_TYPE=Release ^
+	-DBUILD_DOC=OFF
 
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - catch2==3.4
-    - cpp-half==2.1
+# Build
+cmake ^
+	--build build ^
+	--config Release
+
+# Install
+cmake ^
+	--install build ^
+	--config Release

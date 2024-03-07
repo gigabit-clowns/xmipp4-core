@@ -22,6 +22,11 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
+# Clean previous builds
+if [ -d build ]
+	rm -r build
+fi
+
 # Configure CMake
 cmake \
 	-B ./build \

@@ -37,11 +37,7 @@ cmake \
 	-DBUILD_DOC=OFF
 
 # Build
-cmake \
-	--build ./build \
-	--config Release
+cmake --build ./build --config Release
 
 # Install
-cmake \
-	--install ./build \
-	--config Release
+cmake --install ./build --config Release

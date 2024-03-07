@@ -58,15 +58,17 @@
  * 
  */
 #if XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
-# define XMIPP4_HAS_CONSTEXPR 1
-#elif XMIPP4_HAS_CPP11
-# if defined(__clang__) && defined(__apple_build_version__)
+#  define XMIPP4_HAS_CONSTEXPR 1
+#elif XMIPP4_HAS_CPP11 && defined(_MSC_VER)
+#  if _MSC_VER >= 1900
+#    define XMIPP4_HAS_CONSTEXPR 1
 #  else
 #    define XMIPP4_HAS_CONSTEXPR 0
 #  endif
 #else
 #    define XMIPP4_HAS_CONSTEXPR 0
 #endif
+
 
 
 #define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)

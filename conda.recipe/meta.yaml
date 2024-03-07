@@ -25,8 +25,19 @@ package:
   version: "4.1.0"
 
 source:
+  path: ../
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake>=3.16
+    - catch2==3.4
+    - cpp-half==2.1
+
+  run:
+    - cpp-half==2.1
+
+test:
+  commands:
+    - xmipp4-core_tests

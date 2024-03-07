@@ -34,21 +34,20 @@
 
 using namespace xmipp4;
 
-
 TEST_CASE( "check axis pair ordering", "[memory_layout]" ) 
 {
-    const axis_descriptor major(12, 1);
-    const axis_descriptor minor(12, 12);
+    const axis_descriptor major_axis(12, 1);
+    const axis_descriptor minor_axis(12, 12);
 
     SECTION("column major")
     {
-        REQUIRE(check_axis_order(major, minor, column_major));
-        REQUIRE(!check_axis_order(major, minor, row_major));
+        REQUIRE(check_axis_order(major_axis, minor_axis, column_major));
+        REQUIRE(!check_axis_order(major_axis, minor_axis, row_major));
     }
     SECTION("row major")
     {
-        REQUIRE(!check_axis_order(minor, major, column_major));
-        REQUIRE(check_axis_order(minor, major, row_major));
+        REQUIRE(!check_axis_order(minor_axis, major_axis, column_major));
+        REQUIRE(check_axis_order(minor_axis, major_axis, row_major));
     }
 }
 
@@ -56,15 +55,15 @@ TEST_CASE( "check axis pair overlap", "[memory_layout]" )
 {
     SECTION("overlapping")
     {
-        const axis_descriptor major(12, 1);
-        const axis_descriptor minor(12, 6);
-        REQUIRE(check_axis_overlap(major, minor));
+        const axis_descriptor major_axis(12, 1);
+        const axis_descriptor minor_axis(12, 6);
+        REQUIRE(check_axis_overlap(major_axis, minor_axis));
     }
     SECTION("non overlapping")
     {
-        const axis_descriptor major(12, 1);
-        const axis_descriptor minor(12, 12);
-        REQUIRE(!check_axis_overlap(major, minor));
+        const axis_descriptor major_axis(12, 1);
+        const axis_descriptor minor_axis(12, 12);
+        REQUIRE(!check_axis_overlap(major_axis, minor_axis));
     }
 }
 
@@ -72,15 +71,15 @@ TEST_CASE( "check axis pair regularity", "[memory_layout]" )
 {
     SECTION("regular")
     {
-        const axis_descriptor major(12, 1);
-        const axis_descriptor minor(12, 12);
-        REQUIRE(is_regular(major, minor));
+        const axis_descriptor major_axis(12, 1);
+        const axis_descriptor minor_axis(12, 12);
+        REQUIRE(is_regular(major_axis, minor_axis));
     }
     SECTION("non regular")
     {
-        const axis_descriptor major(12, 1);
-        const axis_descriptor minor(12, 14);
-        REQUIRE(!is_regular(major, minor));
+        const axis_descriptor major_axis(12, 1);
+        const axis_descriptor minor_axis(12, 14);
+        REQUIRE(!is_regular(major_axis, minor_axis));
     }
 }
 

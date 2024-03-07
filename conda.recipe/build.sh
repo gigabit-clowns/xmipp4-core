@@ -23,7 +23,7 @@
 # ***************************************************************************
 
 # Clean previous builds
-if [ -d build ]
+if [ -d build ] then
 	rm -r build
 fi
 

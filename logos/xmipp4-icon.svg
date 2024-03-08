@@ -27,9 +27,9 @@
      showgrid="false"
      showguides="true"
      inkscape:lockguides="false"
-     inkscape:zoom="1.7011718"
-     inkscape:cx="298.91161"
-     inkscape:cy="295.09071"
+     inkscape:zoom="1.2029101"
+     inkscape:cx="342.91839"
+     inkscape:cy="359.12908"
      inkscape:window-width="2560"
      inkscape:window-height="1411"
      inkscape:window-x="0"
@@ -51,8 +51,8 @@
        inkscape:label=""
        inkscape:color="rgb(0,134,229)" />
     <sodipodi:guide
-       position="256,212"
-       orientation="0.81915204,-0.57357644"
+       position="292.44548,265.25831"
+       orientation="0.8571673,-0.51503807"
        id="guide4944"
        inkscape:locked="false"
        inkscape:label=""
@@ -78,8 +78,8 @@
        id="linearGradient2386"
        x1="109.54985"
        y1="436.20703"
-       x2="370.74765"
-       y2="136.19226"
+       x2="362.60825"
+       y2="130.78215"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <g
@@ -95,32 +95,32 @@
        sodipodi:rx="200"
        sodipodi:ry="200"
        sodipodi:start="2.3924173"
-       sodipodi:end="5.3234518"
+       sodipodi:end="5.27458"
        sodipodi:arc-type="arc"
-       d="M 109.54985,436.20703 A 200,200 0 0 1 105.15744,168.67398 200,200 0 0 1 370.74765,136.19226"
-       inkscape:transform-center-x="42.626173"
+       d="M 109.54985,436.20703 A 200,200 0 0 1 101.99372,172.3988 200,200 0 0 1 362.60825,130.78215"
+       inkscape:transform-center-x="48.496094"
        inkscape:transform-center-y="-31.896486"
        inkscape:label="Arc"
        sodipodi:open="true" />
     <path
-       d="M 369.83455,421.8559 H 310.78394 L 254.12266,329.69598 197.46138,421.8559 H 142.16544 L 223.06136,296.24535 147.28543,178.14413 h 57.00261 L 256.85333,265.86671 402.22655,91.166848 287.5733,298.97601 Z"
+       d="M 369.83455,421.8559 H 310.78394 L 254.12266,329.69598 197.46138,421.8559 H 142.16544 L 223.06136,296.24535 147.28543,178.14413 h 57.00261 L 256.85333,265.86671 391.38003,82.086944 287.5733,298.97601 Z"
        style="font-weight:bold;font-size:341.333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Bold';stroke-width:48"
        id="path4889"
        sodipodi:nodetypes="cccccccccccc"
        inkscape:label="X"
-       inkscape:transform-center-x="-16.195995"
-       inkscape:transform-center-y="-43.488626" />
+       inkscape:transform-center-x="-9.57051"
+       inkscape:transform-center-y="-49.726315" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:128px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Bold';fill:none;fill-opacity:1;stroke:#8e1919;stroke-width:48;stroke-opacity:1"
-       x="391.45285"
-       y="99.967628"
+       x="397.38004"
+       y="109.94345"
        id="text4948"
        inkscape:label="4"><tspan
          sodipodi:role="line"
          id="tspan4946"
-         x="391.45285"
-         y="99.967628"
-         style="font-size:128px;fill:#000000;fill-opacity:1;stroke:none">4</tspan></text>
+         x="397.38004"
+         y="109.94345"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:128px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#000000;fill-opacity:1;stroke:none">4</tspan></text>
   </g>
 </svg>

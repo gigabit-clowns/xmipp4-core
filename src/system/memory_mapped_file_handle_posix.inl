@@ -36,30 +36,47 @@ namespace xmipp4
 namespace system
 {
 
-inline int access_flags_to_open_flags(access_flags access)
+inline int access_flags_to_open_flags(access_flags access,
+                                      bool copy_on_write )
 {
-    if (access == read_write) 
-        return O_RDWR;
-    else if (access == read_only) 
-        return O_RDONLY;
-    else if (access == write_only) 
-        return O_WRONLY;
-    else 
-        throw std::invalid_argument("Unsupported access");
+    int result;
+
+    if(copy_on_write)
+    {
+        result = O_RDONLY;
+    }
+    else
+    {
+        if (access == read_write) 
+            result = O_RDWR;
+        else if (access == read_only) 
+            result = O_RDONLY;
+        else if (access == write_only) 
+            result = O_WRONLY;
+        else 
+            throw std::invalid_argument("Unsupported access");
+    }
+
+    return result;
 }
 
 inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept
 {
     int prot = PROT_NONE;
-    if (access.test(access_flag_bits::read)) prot |= PROT_READ;
-    if (access.test(access_flag_bits::write)) prot |= PROT_WRITE;
+
+    if (access.test(access_flag_bits::read)) 
+        prot |= PROT_READ;
+    if (access.test(access_flag_bits::write)) 
+        prot |= PROT_WRITE;
+
     return prot;
 }
 
 inline int open_file(const char* filename, 
-                     access_flags access )
+                     access_flags access,
+                     bool copy_on_write )
 {
-    const auto open_flags = access_flags_to_open_flags(access);
+    const auto open_flags = access_flags_to_open_flags(access, copy_on_write);
     const auto fd = open(filename, open_flags);
 
     if (fd < 0) 
@@ -73,10 +90,11 @@ inline int open_file(const char* filename,
 
 inline void* memory_map_file_descriptor(int fd, 
                                         access_flags access, 
-                                        std::size_t size )
+                                        std::size_t size,
+                                        bool copy_on_write )
 {
     const int prot = access_flags_to_mmap_prot_flags(access); 
-    XMIPP4_CONST_CONSTEXPR int flags = MAP_SHARED;
+    const int flags = copy_on_write ? MAP_PRIVATE : MAP_SHARED;
     XMIPP4_CONST_CONSTEXPR off_t offset = 0;
 
     const auto result = mmap(
@@ -109,15 +127,25 @@ inline std::size_t get_file_size(int fd) noexcept
 
 inline void* memory_mapped_file_open(const char* filename, 
                                      access_flags access,
-                                     std::size_t &size )
+                                     std::size_t &size,
+                                     bool copy_on_write )
 {
-    const auto fd = open_file(filename, access);
+    const auto fd = open_file(
+        filename, 
+        access,
+        copy_on_write
+    );
 
     void* result;
     try
     {
         if (size == 0) size = get_file_size(fd);
-        result = memory_map_file_descriptor(fd, access, size);
+        result = memory_map_file_descriptor(
+            fd, 
+            access, 
+            size, 
+            copy_on_write
+        );
     }
     catch(...)
     {

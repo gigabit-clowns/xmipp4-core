@@ -11,6 +11,7 @@
    sodipodi:docname="xmipp4-icon.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
@@ -27,8 +28,8 @@
      showguides="true"
      inkscape:lockguides="false"
      inkscape:zoom="1.7011718"
-     inkscape:cx="351.22848"
-     inkscape:cy="295.0907"
+     inkscape:cx="298.91161"
+     inkscape:cy="295.09071"
      inkscape:window-width="2560"
      inkscape:window-height="1411"
      inkscape:window-x="0"
@@ -58,13 +59,35 @@
        inkscape:color="rgb(0,134,229)" />
   </sodipodi:namedview>
   <defs
-     id="defs2" />
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2384">
+      <stop
+         style="stop-color:#8e1919;stop-opacity:0.30000001;"
+         offset="0"
+         id="stop2382" />
+      <stop
+         style="stop-color:#8e1919;stop-opacity:1;"
+         offset="1"
+         id="stop2380" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2384"
+       id="linearGradient2386"
+       x1="109.54985"
+       y1="436.20703"
+       x2="370.74765"
+       y2="136.19226"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
   <g
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;fill-opacity:1;stroke:#8e1919;stroke-width:48;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient2386);stroke-width:48;stroke-opacity:1"
        id="path1158"
        sodipodi:type="arc"
        sodipodi:cx="256"

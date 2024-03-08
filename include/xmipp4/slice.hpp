@@ -162,6 +162,13 @@ struct begin_tag {
     operator I() const noexcept { return 0; }
 };
 
+/**
+ * @brief Construct a begin_tag
+ * 
+ * @return A begin_tag
+ */
+XMIPP4_CONSTEXPR begin_tag begin() noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 
@@ -169,12 +176,6 @@ XMIPP4_CONSTEXPR bool
 operator!=(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, begin_tag);
-
-/**
- * @brief Constant representing the beginning on an axis
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR begin_tag begin;
 
 
 
@@ -188,6 +189,13 @@ struct adjacent_tag {
     operator I() const noexcept { return 1; }
 };
 
+/**
+ * @brief Construct an adjacent_tag
+ * 
+ * @return An adjacent_tag
+ */
+XMIPP4_CONSTEXPR adjacent_tag adjacent() noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 
@@ -195,12 +203,6 @@ XMIPP4_CONSTEXPR bool
 operator!=(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, adjacent_tag);
-
-/**
- * @brief Constant representing unit stride
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
 
 
 
@@ -210,6 +212,13 @@ inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
  */
 struct end_tag {};
 
+/**
+ * @brief Construct an end_tag
+ * 
+ * @return An end_tag
+ */
+XMIPP4_CONSTEXPR end_tag end() noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
 
@@ -217,12 +226,6 @@ XMIPP4_CONSTEXPR bool
 operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, end_tag);
-
-/**
- * @brief Constant representing the end on an axis
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR end_tag end;
 
 
 
@@ -237,10 +240,11 @@ struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
 };
 
 /**
- * @brief Constant representing all elements of an axis
+ * @brief Construct an all_tag
  * 
+ * @return An all_tag
  */
-inline XMIPP4_CONST_CONSTEXPR all_tag all;
+XMIPP4_CONSTEXPR all_tag all() noexcept;
 
 std::ostream& operator<<(std::ostream& os, all_tag);
 

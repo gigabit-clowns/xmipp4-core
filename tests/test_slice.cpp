@@ -86,7 +86,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
 
     SECTION( "with end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -156,7 +156,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
 
     SECTION( "with begin and end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin, end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -228,7 +228,7 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
 
     SECTION( "with begin, adjacent and end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin, adjacent, end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), adjacent(), end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -323,7 +323,7 @@ TEST_CASE( "output slice to a std::ostream", "[slice]" )
 
     SECTION( "with tags" )
     {
-        XMIPP4_CONST_CONSTEXPR auto x = make_slice(end);
+        XMIPP4_CONST_CONSTEXPR auto x = make_slice(end());
         stream << x;
 
         REQUIRE( stream.str() == "slice(begin, adjacent, end)" );

@@ -127,6 +127,11 @@ operator<<(std::ostream& os, const slice<Start, Stride, Stop> &s)
 
 
 
+XMIPP4_INLINE_CONSTEXPR begin_tag begin() noexcept
+{
+    return begin_tag();
+}
+
 XMIPP4_INLINE_CONSTEXPR bool
 operator==(const begin_tag&, const begin_tag&) noexcept
 {
@@ -146,13 +151,18 @@ inline std::ostream& operator<<(std::ostream& os, begin_tag)
 
 
 
-XMIPP4_CONSTEXPR bool
+XMIPP4_INLINE_CONSTEXPR adjacent_tag adjacent() noexcept
+{
+    return adjacent_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
 operator==(const adjacent_tag&, const adjacent_tag&) noexcept
 {
     return true;
 }
 
-XMIPP4_CONSTEXPR bool
+XMIPP4_INLINE_CONSTEXPR bool
 operator!=(const adjacent_tag&, const adjacent_tag&) noexcept
 {
     return false;
@@ -165,14 +175,19 @@ inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
 
 
 
-XMIPP4_CONSTEXPR bool
-operator==(const end_tag& lhs, const end_tag& rhs) noexcept
+XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
+{
+    return end_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator==(const end_tag&, const end_tag&) noexcept
 {
     return true;
 }
 
-XMIPP4_CONSTEXPR bool
-operator!=(const end_tag& lhs, const end_tag& rhs) noexcept
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=(const end_tag&, const end_tag&) noexcept
 {
     return true;
 }
@@ -182,10 +197,20 @@ inline std::ostream& operator<<(std::ostream& os, end_tag)
     return os << "end";
 }
 
+
+
+XMIPP4_INLINE_CONSTEXPR all_tag all() noexcept
+{
+    return all_tag();
+}
+
 inline std::ostream& operator<<(std::ostream& os, all_tag)
 {
     return os << "all";
 }
+
+
+
 
 
 template <typename Stop>
@@ -193,8 +218,8 @@ XMIPP4_INLINE_CONSTEXPR slice<begin_tag, adjacent_tag, Stop>
 make_slice(Stop stop) noexcept
 {
     return slice<begin_tag, adjacent_tag, Stop>(
-        begin, 
-        adjacent,  
+        begin(), 
+        adjacent(),  
         stop
     );
 }
@@ -205,7 +230,7 @@ make_slice(Start start, Stop stop) noexcept
 {
     return slice<Start, adjacent_tag, Stop>(
         start, 
-        adjacent, 
+        adjacent(), 
         stop
     );
 }

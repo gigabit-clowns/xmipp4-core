@@ -32,7 +32,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace memory
 {
 
 XMIPP4_INLINE_CONSTEXPR uint8_t 
@@ -152,11 +152,11 @@ get_byte_bits() noexcept
     #endif
 }
 
-} // namespace utils
+} // namespace memory
 } // namespace xmipp4
 
 XMIPP4_INLINE_CONSTEXPR size_t 
-std::hash<xmipp4::utils::byte>::operator()(xmipp4::utils::byte b) const noexcept
+std::hash<xmipp4::memory::byte>::operator()(xmipp4::memory::byte b) const noexcept
 {
-    return xmipp4::utils::as_uint8(b);
+    return xmipp4::memory::as_uint8(b);
 }

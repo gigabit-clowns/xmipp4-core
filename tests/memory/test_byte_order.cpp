@@ -27,9 +27,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/utils/byte_order.hpp>
+#include <xmipp4/memory/byte_order.hpp>
 
-using namespace xmipp4::utils;
+using namespace xmipp4::memory;
 
 TEST_CASE( "reverse byte order", "[byte_order]" ) 
 {

@@ -39,7 +39,7 @@ namespace memory
 {
 
 struct defer_construct_tag {};
-XMIPP4_CONST_CONSTEXPR defer_construct_tag defer_construct;
+XMIPP4_INLINE_CONST_CONSTEXPR defer_construct_tag defer_construct;
 
 template <typename T, typename Alloc = std::allocator<T>>
 class pimpl

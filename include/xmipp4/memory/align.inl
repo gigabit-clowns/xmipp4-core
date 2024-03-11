@@ -18,13 +18,13 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "memory.hpp"
+#include "align.hpp"
 
-#include "bit.hpp"
+#include "../utils/bit.hpp"
 
 namespace xmipp4
 {
-namespace utils
+namespace memory
 {
 
 template <typename T>
@@ -37,7 +37,7 @@ std::size_t get_alignment(T* address) noexcept
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t get_alignment(std::uintptr_t address) noexcept
 {
-    return 1 << count_trailing_zeros(address);
+    return utils::mask_trailing_zeros(address) + 1;
 }
 
 template <typename T>
@@ -85,5 +85,5 @@ std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignmen
     return align_floor_inplace(address, alignment);
 }
 
-} // namespace utils
+} // namespace memory
 } // namespace xmipp4

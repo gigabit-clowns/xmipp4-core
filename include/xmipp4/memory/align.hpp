@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * @file memory.hpp
+ * @file align.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Utility functions related to memory address manipulations
  * @date 2023-08-31
@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace memory
 {
 
 /**
@@ -135,8 +135,7 @@ std::uintptr_t align_ceil(std::uintptr_t address, std::size_t alignment) noexcep
 XMIPP4_CONSTEXPR 
 std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignment) noexcept;
 
-} // namespace utils
+} // namespace memory
 } // namespace xmipp4
 
-#include "memory.inl"
-
+#include "align.inl"

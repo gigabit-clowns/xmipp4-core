@@ -23,7 +23,6 @@
 #include "../access_flags.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../platform/constexpr.hpp"
-#include "../utils/byte.hpp"
 
 #include <type_traits>
 

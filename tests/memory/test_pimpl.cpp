@@ -30,8 +30,6 @@
 
 #include <xmipp4/memory/pimpl.hpp>
 
-#include <sstream>
-
 using namespace xmipp4;
 
 struct test_implementation

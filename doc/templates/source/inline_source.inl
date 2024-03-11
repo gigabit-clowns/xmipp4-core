@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +19,16 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
+ * @file inline_source.inl
+ * @author Your Name (yourname@yourdomain.tld)
+ * @brief Implements header.hpp
+ * @date Today (YYYY/MM/DD)
  * 
  */
 
-/**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
- * 
- */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
-#else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
-#endif
+#include "header.hpp"
 
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
+namespace xmipp4 
+{
 
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)
+} // namespace xmipp4

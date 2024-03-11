@@ -43,15 +43,15 @@
  * 
  */
 #if defined(__APPLE__) || defined(__MACH__)
-    #define XMIPP_APPLE 1
+    #define XMIPP4_APPLE 1
 #endif
 
 /**
  * @def XMIPP4_UNIX
- * @brief Defined if the target is Unix-like, including Linux
+ * @brief Defined if the target is Unix-like, including Linux and MacOS
  * 
  */
-#if defined(__unix__) || defined(__unix)
+#if defined(__unix__) || defined(__unix) || defined(XMIPP4_APPLE)
     #define XMIPP4_UNIX 1
 #endif
 

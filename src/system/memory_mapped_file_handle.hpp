@@ -20,53 +20,46 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file dynamic_library_detail.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Platform independent functions for loading, unloading and querying
- * dynamic libraries
- * @date 2023-08-13
- * 
- */
-
+#include <xmipp4/access_flags.hpp>
 #include <xmipp4/platform/operating_system.h>
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 /**
- * @brief Open a the dynamic library
+ * @brief Memory map a file.
  * 
- * @param filename Path to the dynamic library
- * @return void* Pointer to the newly opened dynamic library
+ * @param filename Path to the file to be mapped.
+ * @param access Memory access type. It can not be empty.
+ * @param size Number of bytes to be mapped. If zero, it 
+ * will be written with the size of the file.
+ * @param copy_on_write If true, changes are not commited 
+ * to the file. Has no effect if write access is not enabled.
+ * @return void* Pointer to the mapped data.
  */
-void* dynamic_library_open(const char* filename);
+void* memory_mapped_file_open(const char* filename, 
+                              access_flags access,
+                              std::size_t &size,
+                              bool copy_on_write );
 
 /**
- * @brief Close a dynamic library
+ * @brief Close a memory mapped file.
  * 
- * @param handle Handle of the dynamic library to be closed
+ * @param data Pointer to the memory mapped data.
+ * @param size Size of the memory mapped data.
  */
-void dynamic_library_close(void* handle) noexcept;
+void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
-/**
- * @brief Get a symbol from the dynamic library
- * 
- * @param handle Handle of the dynamic library
- * @param name Name of the symbol
- * @return void* Pointer to the queried symbol. NULL if not found
- */
-void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4
 
 #if defined(XMIPP4_POSIX)
-    #include "dynamic_library_detail_posix.inl"
+    #include "memory_mapped_file_handle_posix.inl"
 #elif defined(XMIPP4_WINDOWS)
-    #include "dynamic_library_detail_windows.inl"
+    #include "memory_mapped_file_handle_windows.inl"
 #else
-    #error "No dynamic library implementation available for this platform"
+    #error "No memory_mapped_file_handle implementation available for this platform"
 #endif

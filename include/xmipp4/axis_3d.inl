@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file axis_3d.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of axis_3d.hpp
+ * @date 2023-09-27
+ * 
+ */
+
 #include "axis_3d.hpp"
 
 #include "platform/assert.hpp"
@@ -51,74 +59,78 @@ axis_3d next_axis(axis_3d axis) noexcept
 {
     switch (axis)
     {
-    case axis_3d::zero: return axis_3d::zero;
     case axis_3d::x: return axis_3d::y;
     case axis_3d::y: return axis_3d::z;
     case axis_3d::z: return axis_3d::x;
     case axis_3d::negative_x: return axis_3d::negative_z;
     case axis_3d::negative_y: return axis_3d::negative_x;
     case axis_3d::negative_z: return axis_3d::negative_y;
+    default: return axis_3d::zero; // case axis_3d::zero
     }
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 int dot(axis_3d left, axis_3d right) noexcept
 {
-    if (left == axis_3d::zero || right == axis_3d::zero)
-        return 0;
-    else if (left == right)
-        return 1;
-    else if (left == -right)
-        return -1;
-    else
-        return 0;
+    int result = 0;
+    if (left != axis_3d::zero && right != axis_3d::zero)
+    {
+        if (left == right)
+            result = 1;
+        else if (left == -right)
+            result = -1;
+    }
+
+    return result;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 axis_3d cross(axis_3d left, axis_3d right) noexcept
 {
     auto result = axis_3d::zero;
-
-    // Assure that both axes are positive (or zero)
-    const auto left_is_negative = is_negative(left);
-    if (left_is_negative) left = -left;
-    const auto right_is_negative = is_negative(right);
-    if (right_is_negative) right = -right;
-
-    if (left != axis_3d::zero && right != axis_3d::zero && left != right)
+    if (left != axis_3d::zero && right != axis_3d::zero)
     {
-        // Determine the sign of the result
-        bool result_is_negative = left_is_negative != right_is_negative; //xor
+        // Assure that both axes are positive
+        const auto left_is_negative = is_negative(left);
+        if (left_is_negative) left = -left;
+        const auto right_is_negative = is_negative(right);
+        if (right_is_negative) right = -right;
 
-        // Assure that the axes are ordered (x->y->z->x->...)
-        if(next_axis(left) != right)
+        if (left != right)
         {
-            result_is_negative = !result_is_negative; // Negate the result when reordering
-            std::swap(left, right);
-        }
+            // Determine the sign of the result
+            bool result_is_negative = left_is_negative != right_is_negative; //xor
 
-        // Manual implementation of ordered positive axis cross products.
-        // There are only 3 possible combinations
-        if(left == axis_3d::x)
-        {
-            XMIPP4_ASSERT(right == axis_3d::y);
-            result = axis_3d::z;
-        }
-        else if(left == axis_3d::y)
-        {
-            XMIPP4_ASSERT(right == axis_3d::z);
-            result = axis_3d::x;
-        }
-        else // left == axis_3d::z
-        {
-            XMIPP4_ASSERT(left == axis_3d::z);
-            XMIPP4_ASSERT(right == axis_3d::x);
-            result = axis_3d::y;
-        }
+            // Assure that the axes are ordered (x->y->z->x->...)
+            if(next_axis(left) != right)
+            {
+                result_is_negative = !result_is_negative; // Negate the result when reordering
+                std::swap(left, right);
+            }
 
-        // Copy the sign
-        if (result_is_negative)
-            result = -result;
+            // Manual implementation of ordered positive axis cross products.
+            // There are only 3 possible combinations
+            if(left == axis_3d::x)
+            {
+                XMIPP4_ASSERT(right == axis_3d::y);
+                result = axis_3d::z;
+            }
+            else if(left == axis_3d::y)
+            {
+                XMIPP4_ASSERT(right == axis_3d::z);
+                result = axis_3d::x;
+            }
+            else // left == axis_3d::z
+            {
+                XMIPP4_ASSERT(left == axis_3d::z);
+                XMIPP4_ASSERT(right == axis_3d::x);
+                result = axis_3d::y;
+            }
+
+            // Copy the sign
+            if (result_is_negative)
+                result = -result;
+        }
     }
 
     return result;
@@ -136,6 +148,7 @@ const char* to_string(axis_3d axis) noexcept
     case axis_3d::negative_x: return "-x";
     case axis_3d::negative_y: return "-y";
     case axis_3d::negative_z: return "-z";
+    default: return "";
     }
 }
 

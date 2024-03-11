@@ -19,32 +19,32 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail_posix.inl
+ * @file dynamic_library_handle_windows.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_detail.hpp
+ * @brief Windows implementation of dynamic_library_handle.hpp
  * @date 2023-08-13
  * 
  */
 
-#include "dynamic_library_detail.hpp"
+#include "dynamic_library_handle.hpp"
 
-#include <dlfcn.h>
+#include <windows.h>
 
 #include <stdexcept>
 #include <sstream>
 
 namespace xmipp4
 {
-namespace detail
+namespace system
 {
 
 inline void* dynamic_library_open(const char* filename)
 {
-    const auto result = ::dlopen(filename, 0);
+    const auto result = static_cast<void*>(::LoadLibrary(filename));
     if (result == NULL)
     {
         std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
+        oss << "Error loading dynamic library " << filename;
         throw std::runtime_error(oss.str());
     }
     return result;
@@ -52,13 +52,13 @@ inline void* dynamic_library_open(const char* filename)
 
 inline void dynamic_library_close(void* handle) noexcept
 {
-    ::dlclose(handle);
+    ::FreeLibrary(static_cast<HMODULE>(handle));
 }
 
 inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
 {
-    return ::dlsym(handle, name);
+    return ::GetProcAddress(static_cast<HMODULE>(handle), name);
 }
 
-} // namespace detail
+} // namespace system
 } // namespace xmipp4

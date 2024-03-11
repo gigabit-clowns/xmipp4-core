@@ -21,35 +21,22 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
+ * @file cpp_execution.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
+ * @brief Macro definitions for using C++ algorithm parallelization
+ * @date 2023-11-14
  * 
  */
 
-/**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
- * 
- */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
+#include "cpp_features.hpp"
+
+#if XMIPP4_HAS_LIB_EXECUTION
+    #include <execution>
+    #define XMIPP4_SEQ std::execution::seq,
+    #define XMIPP4_PAR std::execution::par,
+    #define XMIPP4_PAR_UNSEQ std::execution::par_unseq,
 #else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
+    #define XMIPP4_SEQ
+    #define XMIPP4_PAR
+    #define XMIPP4_PAR_UNSEQ
 #endif
-
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
-
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)

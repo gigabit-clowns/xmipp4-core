@@ -18,11 +18,21 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <xmipp4/memory_mapped_file.hpp>
+/**
+ * @file memory_mapped_file.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of memory_mapped_file.hpp
+ * @date 2023-08-13
+ * 
+ */
 
-#include "memory_mapped_file_detail.hpp"
+#include <xmipp4/system/memory_mapped_file.hpp>
+
+#include "memory_mapped_file_handle.hpp"
 
 namespace xmipp4
+{
+namespace system
 {
 
 memory_mapped_file::memory_mapped_file() noexcept
@@ -32,19 +42,19 @@ memory_mapped_file::memory_mapped_file() noexcept
 }
 
 memory_mapped_file::memory_mapped_file(const char* filename, 
-                                       std::ptrdiff_t offset,
-                                       std::size_t size, 
-                                       access_flags access )
+                                       access_flags access,
+                                       std::size_t size,
+                                       bool copy_on_write )
     : m_size(size)
-    , m_data(detail::memory_mapped_file_open(filename, offset, m_size, access))
+    , m_data(memory_mapped_file_open(filename, access, m_size, copy_on_write))
 {
 }
 
 memory_mapped_file::memory_mapped_file(const std::string& filename, 
-                                       std::ptrdiff_t offset,
-                                       std::size_t size, 
-                                       access_flags access )
-    : memory_mapped_file(filename.c_str(), size, access)
+                                       access_flags access,
+                                       std::size_t size,
+                                       bool copy_on_write )
+    : memory_mapped_file(filename.c_str(), access, size, copy_on_write)
 {
 }
 
@@ -68,7 +78,7 @@ memory_mapped_file& memory_mapped_file::operator=(memory_mapped_file&& other) no
     return *this;
 }
 
-memory_mapped_file::operator bool() const noexcept
+bool memory_mapped_file::is_open() const noexcept
 {
     return m_data != nullptr;
 }
@@ -80,26 +90,26 @@ void memory_mapped_file::swap(memory_mapped_file& other) noexcept
 }
 
 void memory_mapped_file::open(const char* filename, 
-                              std::ptrdiff_t offset,
+                              access_flags access,
                               std::size_t size,
-                              access_flags access )
+                              bool copy_on_write )
 {
-    *this = memory_mapped_file(filename, offset, size, access);
+    *this = memory_mapped_file(filename, access, size, copy_on_write);
 }
 
 void memory_mapped_file::open(const std::string& filename, 
-                              std::ptrdiff_t offset,
+                              access_flags access,
                               std::size_t size,
-                              access_flags access )
+                              bool copy_on_write )
 {
-    open(filename, offset, size, access);
+    open(filename.c_str(), access, size, copy_on_write);
 }
 
 void memory_mapped_file::close() noexcept
 {
     if (m_data)
     {
-        detail::memory_mapped_file_close(m_data, m_size);
+        memory_mapped_file_close(m_data, m_size);
         m_size = 0UL;
         m_data = nullptr;
     }
@@ -122,4 +132,5 @@ void swap(memory_mapped_file& lhs, memory_mapped_file& rhs) noexcept
     lhs.swap(rhs);
 }
 
+} // namespace system
 } // namespace xmipp4

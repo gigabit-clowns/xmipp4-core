@@ -22,10 +22,34 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-find_package(Doxygen REQUIRED)
+include(FindPackageHandleStandardArgs)
 
-doxygen_add_docs(
-    doxygen ALL
-    ${PROJECT_SOURCE_DIR}/include
-    CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+# Find the half library include dir
+find_path(
+    half_INCLUDE_DIR 
+    NAMES half.hpp
+    PATH_SUFFIXES half_float half
 )
+
+# Parse version from header file
+if (half_INCLUDE_DIR)
+    file(
+        STRINGS "${half_INCLUDE_DIR}/half.hpp"
+        half_VERSION_LINE
+        REGEX "Version"
+    )
+    string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
+    set(half_VERSION ${CMAKE_MATCH_1})
+endif()
+
+# Define the package variables
+find_package_handle_standard_args(half 
+    REQUIRED_VARS half_INCLUDE_DIR
+    VERSION_VAR half_VERSION
+)
+
+if (half_FOUND)
+    # Define the target
+    add_library(half INTERFACE IMPORTED)
+    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+endif()

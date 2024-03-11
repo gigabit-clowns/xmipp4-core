@@ -21,35 +21,38 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
+ * @file example_enum.hpp
+ * @author Your Name (yourname@yourdomain.tld)
+ * @brief Provides example_enum
+ * @date Today (YYYY/MM/DD)
  * 
  */
+
+#include "platform/constexpr.hpp"
+
+#include <string_view>
+#include <ostream>
+
+namespace xmipp4 
+{
 
 /**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
+ * @brief Describe the purpose of the example_enum
  * 
  */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
-#else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
-#endif
+enum class example_enum
+{
+    first,
+    second,
+    third,
+};
 
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
+XMIPP4_CONSTEXPR const char* to_string(example_enum ex) noexcept;
+bool from_string(std::string_view str, example_enum& ex) noexcept;
 
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)
+template<typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, example_enum ex);
+
+} // namespace xmipp4
+
+#include "example_enum.inl"

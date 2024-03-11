@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +18,26 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <xmipp4/access_flags.hpp>
-#include <xmipp4/platform/operating_system.h>
+/**
+ * @file core_version.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of core_version.hpp
+ * @date 2024-03-03
+ * 
+ */
+
+#include <xmipp4/core_version.hpp>
 
 namespace xmipp4
 {
-namespace detail
+
+version get_core_version() noexcept
 {
+    return version(
+        VERSION_MAJOR,
+        VERSION_MINOR,
+        VERSION_PATCH
+    );
+}
 
-void* memory_mapped_file_open(const char* filename, 
-                              std::ptrdiff_t offset,
-                              std::size_t &size, 
-                              access_flags access );
-
-void memory_mapped_file_close(void* data, std::size_t size) noexcept;
-
-
-} // namespace detail
 } // namespace xmipp4
-
-#if defined(XMIPP4_POSIX)
-    #include "memory_mapped_file_detail_posix.inl"
-#else
-    #error "No memory_mapped_file implementation available for this platform"
-#endif

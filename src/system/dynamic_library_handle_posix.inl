@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +19,49 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
+ * @file dynamic_library_handle_posix.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
+ * @brief POSIX implementation of dynamic_library_handle.hpp
+ * @date 2023-08-13
  * 
  */
 
-/**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
- * 
- */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
-#else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
-#endif
+#include "dynamic_library_handle.hpp"
 
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
+#include <xmipp4/platform/constexpr.hpp>
 
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)
+#include <dlfcn.h>
+
+#include <stdexcept>
+#include <sstream>
+
+namespace xmipp4
+{
+namespace system
+{
+
+inline void* dynamic_library_open(const char* filename)
+{
+    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
+    const auto result = ::dlopen(filename, flags);
+    if (result == NULL)
+    {
+        std::ostringstream oss;
+        oss << "Error loading dynamic library: " << dlerror();
+        throw std::runtime_error(oss.str());
+    }
+    return result;
+}
+
+inline void dynamic_library_close(void* handle) noexcept
+{
+    ::dlclose(handle);
+}
+
+inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
+{
+    return ::dlsym(handle, name);
+}
+
+} // namespace system
+} // namespace xmipp4

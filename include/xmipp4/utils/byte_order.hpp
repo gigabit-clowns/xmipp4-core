@@ -30,7 +30,6 @@
 
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
-#include "../numeric_type.hpp"
 
 #include <type_traits>
 

@@ -20,36 +20,46 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file cpp_version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
- * 
- */
+#include "platform/constexpr.hpp"
+#include "utils/flagset.hpp"
 
-/**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
- * 
- */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
-#else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
-#endif
+#include <string_view>
+#include <ostream>
 
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
+namespace xmipp4
+{
 
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)
+enum class example_flag_bits
+{
+    first = utils::bit(0),
+    second = utils::bit(1),
+    third = utils::bit(2),
+};
+
+using example_flags = utils::flagset<example_flag_bits>;
+
+XMIPP4_CONSTEXPR const char* to_string(example_flag_bits ex) noexcept;
+bool from_string(std::string_view str, example_flag_bits& ex) noexcept;
+
+template<typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, enumeration ex);
+
+template<typename B>
+struct flag_traits;
+
+template<>
+struct flag_traits<compute::example_flag_bits>
+{
+    using flagset_type = compute::example_flags;
+
+    static inline XMIPP4_CONST_CONSTEXPR flagset_type all = 
+    {
+        example_flag_bits::first,
+        example_flag_bits::second,
+        example_flag_bits::third,
+    };
+};
+
+} // namespace xmipp4
+
+#include "example_flags.inl"

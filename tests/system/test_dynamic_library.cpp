@@ -19,46 +19,45 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_detail_windows.inl
+ * @file test_dynamic_library.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Windows implementation of dynamic_library_detail.hpp
- * @date 2023-08-13
+ * @brief Tests for system/dynamic_library.hpp
+ * @date 2024-03-03
  * 
  */
 
-#include "dynamic_library_detail.hpp"
+#include <catch2/catch_test_macros.hpp>
 
-#include <windows.h>
+#include <xmipp4/system/dynamic_library.hpp>
 
-#include <stdexcept>
+#include <xmipp4/core_version.hpp>
+
 #include <sstream>
 
-namespace xmipp4
-{
-namespace detail
-{
+using namespace xmipp4;
 
-inline void* dynamic_library_open(const char* filename)
+TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
 {
-    const auto result = static_cast<void*>(::LoadLibrary(filename));
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library " << filename;
-        throw std::runtime_error(oss.str());
-    }
-    return result;
+    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
+        "xmipp4-core",
+        get_core_version()
+    );
+    system::dynamic_library xmipp4_core(xmipp4_core_soname);
+
+    REQUIRE( xmipp4_core.is_open() );
+    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+
+    using test_hook_function_ptr =  uint32_t (*)();
+    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
+        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
+    );
+
+    REQUIRE(test_hook != nullptr );
+    REQUIRE(test_hook() == 0xDEADBEEF );
 }
 
-inline void dynamic_library_close(void* handle) noexcept
+TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
 {
-    ::FreeLibrary(static_cast<HMODULE>(handle));
+    system::dynamic_library lib;
+    REQUIRE( lib.is_open() == false );
 }
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::GetProcAddress(static_cast<HMODULE>(handle), name);
-}
-
-} // namespace detail
-} // namespace xmipp4

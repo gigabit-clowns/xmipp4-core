@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
 #
@@ -20,12 +22,22 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.12)
+# Clean previous builds
+if [ -d build ]
+then
+	rm -r build
+fi
 
-find_package(Doxygen REQUIRED)
+# Configure CMake
+cmake \
+	-B ./build \
+	-G "$CMAKE_GENERATOR" \
+	-DCMAKE_INSTALL_PREFIX="$PREFIX" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_DOC=OFF
 
-doxygen_add_docs(
-    doxygen ALL
-    ${PROJECT_SOURCE_DIR}/include
-    CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
-)
+# Build
+cmake --build ./build --config Release
+
+# Install
+cmake --install ./build --config Release

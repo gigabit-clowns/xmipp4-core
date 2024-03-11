@@ -1,0 +1,95 @@
+#***************************************************************************
+# Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307  USA
+#
+#  All comments concerning this program package may be sent to the
+#  e-mail address 'xmipp@cnb.csic.es'
+# ***************************************************************************
+
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - devel
+
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        compiler: 
+        - {cc: gcc, cxx: g++}
+        - {cc: clang, cxx: clang++}
+
+        include:
+        - os: macos-latest
+          compiler: {cc: clang, cxx: clang++}
+        - os: windows-latest
+          compiler: {cc: cl, cxx: cl}
+  
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+    - uses: actions/checkout@main
+
+    - name: Setup Conda and dependencies
+      uses: conda-incubator/setup-miniconda@main
+      with:
+        channels: conda-forge
+        environment-file: requirements.txt
+        activate-environment: xmipp4-core
+
+    - name: Set reusable strings
+      id: strings
+      run: |
+        # Setting strings deppending on OS.
+        case "$OSTYPE" in
+          msys*)
+            echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+            echo "prefix-path=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
+            ;;
+        esac
+
+    - name: Configure, build and test with CMake
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: ${{ steps.strings.outputs.build-output-dir }}
+        c-compiler: ${{matrix.compiler.cc}}
+        cxx-compiler: ${{matrix.compiler.cxx}}
+        options: |
+          CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
+          BUILD_DOC=OFF
+        run-build: true
+        build-args: --config ${{env.BUILD_TYPE}}
+        run-test: true
+        test-args: --build-config ${{env.BUILD_TYPE}}

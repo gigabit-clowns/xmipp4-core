@@ -29,12 +29,15 @@
  * @date 2023-07-09
  */
 
-#include "platform/dynamic_shared_object.h"
+#include "../version.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <string>
 #include <cstdint>
 
 namespace xmipp4
+{
+namespace system
 {
 
 /**
@@ -74,7 +77,12 @@ public:
 
     XMIPP4_CORE_API void swap(dynamic_library& other) noexcept;
 
-    XMIPP4_CORE_API operator bool() const noexcept;
+    /**
+     * @brief Check if a dynamic library is loaded
+     * 
+     * @return bool Returns true if a library is loaded
+     */
+    XMIPP4_CORE_API bool is_open() const noexcept;
 
     /**
      * @brief Loads a dynamic library
@@ -112,11 +120,34 @@ public:
      */
     XMIPP4_CORE_API void* get_symbol(const std::string& name) const noexcept; 
 
+    /**
+     * @brief Obtain the platform specific soname for a library name
+     * 
+     * @param library_name Name of the library
+     * @return The soname
+     */
+    static XMIPP4_CORE_API 
+    std::string make_soname(const std::string& library_name);
+
+    /**
+     * @brief Obtain the platform specific soname for a library name
+     * 
+     * @param library_name Name of the library
+     * @param ver Version of the library
+     * @return The soname
+     */
+    static XMIPP4_CORE_API 
+    std::string make_soname(const std::string& library_name, version ver);
+
 private:
     void* m_handle;
 
 };
 
+/**
+ * @brief Exchange two dynamic_library objects
+ */
 XMIPP4_CORE_API void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept;
 
+} // namespace system
 } // namespace xmipp4

@@ -21,35 +21,24 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
+ * @file c_features.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
+ * @brief Macro definitions for feature testing C compiler and 
+ * @date 2024-03-06
+ * @see https://en.cppreference.com/w/cpp/feature_test
  * 
- * This file provides definitions for determining 
- * the C++ version support
+ * This file provides definitions for testing support of C features 
+ * available for the compiler
  * 
  */
 
 /**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
+ * @def XMIPP4_HAS_C_FEATURE
+ * @brief Check if a feature is supported by the compiler
  * 
  */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
+#if defined(__has_feature)
+    #define XMIPP4_HAS_C_FEATURE(feature) __has_feature(feature)
 #else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
+    #define XMIPP4_HAS_C_FEATURE(feature) 0
 #endif
-
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
-
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)

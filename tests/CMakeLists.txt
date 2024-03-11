@@ -40,10 +40,25 @@ add_executable(
 )
 set_target_properties(
 	${TESTS_NAME} PROPERTIES 
-	CXX_STANDARD 20
+	CXX_STANDARD 17
 	CXX_FLAGS "-Wall -Wextra -Wpedantic"
 )
 target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
 
+# On windows targets, copy the library to the test directory
+if(WIN32)
+	add_custom_command(TARGET ${TESTS_NAME}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_CURRENT_BINARY_DIR}"
+		COMMENT "Copy DLL file to ${CMAKE_CURRENT_BINARY_DIR} directory" VERBATIM
+	)
+endif()
+
 # Discover tests
 catch_discover_tests(${TESTS_NAME})
+
+# Install
+install(
+	TARGETS ${TESTS_NAME}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

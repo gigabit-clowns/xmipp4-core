@@ -21,35 +21,28 @@
  ***************************************************************************/
 
 /**
- * @file cpp_version.hpp
+ * @file core_version.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
+ * @brief Utilities for getting xmipp4-core version
+ * @date 2024-03-03
  * 
  */
+
+#include "version.hpp"
+#include "platform/dynamic_shared_object.h"
+
+namespace xmipp4 
+{
 
 /**
- * @def XMIPP4_CPLUSPLUS
- * @brief C++ standard version
+ * @brief Get the version of the xmipp-core installation
  * 
+ * This function returns the version of the loaded xmipp-core .so
+ * file
+ * 
+ * @return version Version of the installation
  */
-#if defined(_MSVC_LANG)
-# define XMIPP4_CPLUSPLUS (_MSVC_LANG)
-#else
-# define XMIPP4_CPLUSPLUS (__cplusplus)
-#endif
+XMIPP4_CORE_API
+version get_core_version() noexcept;
 
-#define XMIPP4_CPLUSPLUS11 (201103L)
-#define XMIPP4_CPLUSPLUS14 (201402L)
-#define XMIPP4_CPLUSPLUS17 (201703L)
-#define XMIPP4_CPLUSPLUS20 (202002L)
-#define XMIPP4_CPLUSPLUS23 (999999L) /*TBD*/
-
-#define XMIPP4_HAS_CPP11 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS11)
-#define XMIPP4_HAS_CPP14 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS14)
-#define XMIPP4_HAS_CPP17 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS17)
-#define XMIPP4_HAS_CPP20 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS20)
-#define XMIPP4_HAS_CPP23 (XMIPP4_CPLUSPLUS >= XMIPP4_CPLUSPLUS23)
+} // namespace xmipp4

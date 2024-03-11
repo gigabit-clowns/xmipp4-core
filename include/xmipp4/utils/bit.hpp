@@ -248,7 +248,7 @@ typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_leading_ones(T x) noexcept;
 
 /**
- * @brief Counts the number of consecutive '0's from the MSB
+ * @brief Counts the number of consecutive '0's from the LSB
  * 
  * @tparam T unsigned type
  * @param x The input word

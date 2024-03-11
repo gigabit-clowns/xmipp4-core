@@ -31,7 +31,6 @@
 #include <xmipp4/system/dynamic_library.hpp>
 
 #include <xmipp4/core_version.hpp>
-#include <xmipp4/platform/operating_system.h>
 
 #include <sstream>
 

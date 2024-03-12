@@ -48,11 +48,10 @@ class pimpl
 public:
     using value_type = T;
     using allocator_type = Alloc;
-    using allocator_traits = std::allocator_traits<allocator_type>;
-    using reference = typename allocator_traits::reference;
-    using const_reference = typename allocator_traits::const_reference;
-    using pointer = typename allocator_traits::pointer;
-    using const_pointer = typename allocator_traits::const_pointer;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     /**
      * @brief Deferred construction. 
@@ -191,10 +190,14 @@ public:
     allocator_type get_allocator() const noexcept;
 
 private:
+    using allocator_traits = std::allocator_traits<allocator_type>;
+
     XMIPP4_NO_UNIQUE_ADDRESS allocator_type m_allocator;
     pointer m_responsibility;
 
     void swap_responsibility(pimpl& other) noexcept;
+    void move_assign(pimpl& other, std::false_type);
+    void move_assign(pimpl& other, std::true_type);
 
 };
 

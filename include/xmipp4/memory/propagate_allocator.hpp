@@ -29,37 +29,49 @@
  * 
  */
 
-#include <memory>
-#include <type_traits>
-
 namespace xmipp4 
 {
 namespace memory
 {
 
+/**
+ * @brief Swap allocators when required.
+ * 
+ * Swap allocators only if std::allocator_traits::propagate_container_swap
+ * evaluates to std::true_type
+ * 
+ * @tparam Alloc Allocator type
+ * @param x One of the allocators
+ * @param y The other allocator
+ */
 template <typename Alloc>
-typename std::enable_if<std::allocator_traits<Alloc>::propagate_on_container_swap::value>::type
-propagate_allocator_on_swap(Alloc& x, Alloc& y);
+void propagate_allocator_on_swap(Alloc& x, Alloc& y);
 
+/**
+ * @brief Move allocator when required.
+ * 
+ * Move allocator only if std::allocator_traits::propagate_container_move_assign
+ * evaluates to std::true_type
+ * 
+ * @tparam Alloc Allocator type
+ * @param to The allocator to be assigned to
+ * @param from The allocator to be assigned from
+ */
 template <typename Alloc>
-typename std::enable_if<!std::allocator_traits<Alloc>::propagate_on_container_swap::value>::type
-propagate_allocator_on_swap(Alloc& x, Alloc& y) noexcept;
+void propagate_allocator_on_move_assign(Alloc& to, Alloc& from);
 
+/**
+ * @brief Copy allocator when required.
+ * 
+ * Copy allocator only if std::allocator_traits::propagate_container_copy_assign
+ * evaluates to std::true_type
+ * 
+ * @tparam Alloc Allocator type
+ * @param to The allocator to be assigned to
+ * @param from The allocator to be assigned from
+ */
 template <typename Alloc>
-typename std::enable_if<std::allocator_traits<Alloc>::propagate_on_container_move_assignment::value>::type
-propagate_allocator_on_move_assign(Alloc& to, Alloc& from);
-
-template <typename Alloc>
-typename std::enable_if<!std::allocator_traits<Alloc>::propagate_on_container_move_assignment::value>::type
-propagate_allocator_on_move_assign(Alloc& to, Alloc& from) noexcept;
-
-template <typename Alloc>
-typename std::enable_if<std::allocator_traits<Alloc>::propagate_on_container_copy_assignment::value>::type
-propagate_allocator_on_copy_assign(Alloc& to, const Alloc& from);
-
-template <typename Alloc>
-typename std::enable_if<!std::allocator_traits<Alloc>::propagate_on_container_copy_assignment::value>::type
-propagate_allocator_on_copy_assign(Alloc& to, const Alloc& from) noexcept;
+void propagate_allocator_on_copy_assign(Alloc& to, const Alloc& from);
 
 } // namespace memory
 } // namespace xmipp4

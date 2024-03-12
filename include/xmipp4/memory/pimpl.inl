@@ -28,8 +28,6 @@
 
 #include "pimpl.hpp"
 
-#include <vector>
-
 namespace xmipp4 
 {
 namespace memory
@@ -38,7 +36,7 @@ namespace memory
 template <typename T, typename Alloc>
 inline
 pimpl<T, Alloc>::pimpl(defer_construct_tag) noexcept
-    : pimpl(std::allocator_arg, {}, defer_construct)
+    : pimpl(defer_construct, {})
 {
 }
 
@@ -77,7 +75,7 @@ pimpl<T, Alloc>::pimpl(std::allocator_arg_t,
 
 template <typename T, typename Alloc>
 inline pimpl<T, Alloc>::pimpl(const pimpl& other)
-    : pimpl(other, other.get_allocator())
+    : pimpl(other, other.m_allocator)
 {
 }
 
@@ -108,7 +106,7 @@ inline pimpl<T, Alloc>::~pimpl()
 template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
 {
-    m_allocator = other.get_allocator(); //TODO only if allocator_traits::
+    m_allocator = other.m_allocator //TODO only if allocator_traits::
     
     if (other)
     {
@@ -125,7 +123,7 @@ inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
 template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(pimpl&& other) noexcept
 {
-    pimpl tmp(std::allocator_arg, get_allocator(), defer_construct);
+    pimpl tmp(std::allocator_arg, m_allocator, defer_construct);
     swap_responsibility(tmp);
 
     m_allocator = std::move(other.m_allocator); //TODO only of allocator_traits::

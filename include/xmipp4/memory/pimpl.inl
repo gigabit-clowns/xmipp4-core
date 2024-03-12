@@ -28,7 +28,7 @@
 
 #include "pimpl.hpp"
 
-#include <vector>
+#include "propagate_allocator.hpp"
 
 namespace xmipp4 
 {
@@ -38,15 +38,14 @@ namespace memory
 template <typename T, typename Alloc>
 inline
 pimpl<T, Alloc>::pimpl(defer_construct_tag) noexcept
-    : pimpl(std::allocator_arg, {}, defer_construct)
+    : pimpl(defer_construct, {})
 {
 }
 
 template <typename T, typename Alloc>
 inline
-pimpl<T, Alloc>::pimpl(std::allocator_arg_t, 
-                       const allocator_type& alloc, 
-                       defer_construct_tag ) noexcept
+pimpl<T, Alloc>::pimpl(defer_construct_tag, 
+                       const allocator_type& alloc ) noexcept
     : m_allocator(alloc)
     , m_responsibility(nullptr)
 {
@@ -77,8 +76,24 @@ pimpl<T, Alloc>::pimpl(std::allocator_arg_t,
 }
 
 template <typename T, typename Alloc>
+inline pimpl<T, Alloc>::pimpl(const pimpl& other)
+    : pimpl(other, other.m_allocator)
+{
+}
+
+template <typename T, typename Alloc>
+inline pimpl<T, Alloc>::pimpl(const pimpl &other, const allocator_type& alloc)
+    : pimpl(defer_construct, alloc)
+{
+    if (other)
+    {
+        emplace(*other);
+    }
+}
+
+template <typename T, typename Alloc>
 inline pimpl<T, Alloc>::pimpl(pimpl&& other) noexcept
-    : m_allocator(other.m_allocator)
+    : m_allocator(std::move(other.m_allocator))
     , m_responsibility(other.m_responsibility)
 {
     other.m_responsibility = nullptr;
@@ -91,10 +106,32 @@ inline pimpl<T, Alloc>::~pimpl()
 }
 
 template <typename T, typename Alloc>
+inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
+{
+    propagate_allocator_on_copy_assign(m_allocator, other.m_allocator);
+    
+    if (other)
+    {
+        emplace(*other);
+    }
+    else
+    {
+        reset();
+    }
+    
+    return *this;
+}
+
+template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(pimpl&& other) noexcept
 {
-    swap(other);
-    other.reset();
+    using enable_stealing = std::integral_constant<
+        bool, 
+        allocator_traits::is_always_equal::value ||
+        allocator_traits::propagate_on_container_move_assignment::value
+    >;
+
+    move_assign(other, enable_stealing());
     return *this;
 }
 
@@ -135,10 +172,8 @@ inline pimpl<T, Alloc>::operator bool() const noexcept
 template <typename T, typename Alloc>
 inline void pimpl<T, Alloc>::swap(pimpl& other) noexcept
 {
-    using std::swap;
-    // TODO consider what to do with the allocator
-    // https://quuxplusone.github.io/blog/2023/06/02/not-so-quick-pmr/
-    swap(m_responsibility, other.m_responsibility);
+    propagate_allocator_on_swap(m_allocator, other.m_allocator);
+    swap_responsibility(other);
 }
 
 template <typename T, typename Alloc>
@@ -217,6 +252,37 @@ inline typename pimpl<T, Alloc>::allocator_type
 pimpl<T, Alloc>::get_allocator() const noexcept
 {
     return m_allocator;
+}
+
+
+
+template <typename T, typename Alloc>
+inline void pimpl<T, Alloc>::swap_responsibility(pimpl& other) noexcept
+{
+    using std::swap;
+    swap(m_responsibility, other.m_responsibility);
+}
+
+template <typename T, typename Alloc>
+inline void pimpl<T, Alloc>::move_assign(pimpl& other, std::false_type)
+{
+    if(m_allocator == other.m_allocator)
+    {
+        move_assign(other, std::true_type());
+    }
+    else
+    {
+        *this = other;
+        other.reset();
+    }
+}
+
+template <typename T, typename Alloc>
+inline void pimpl<T, Alloc>::move_assign(pimpl& other, std::true_type)
+{
+    propagate_allocator_on_move_assign(m_allocator, other.m_allocator);
+    swap_responsibility(other);
+    other.reset();
 }
 
 

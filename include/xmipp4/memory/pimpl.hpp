@@ -32,6 +32,7 @@
 #include "../platform/attributes.hpp"
 
 #include <memory>
+#include <type_traits>
 
 namespace xmipp4 
 {
@@ -47,10 +48,10 @@ class pimpl
 public:
     using value_type = T;
     using allocator_type = Alloc;
-    using reference = typename allocator_type::reference;
-    using const_reference = typename allocator_type::const_reference;
-    using pointer = typename allocator_type::pointer;
-    using const_pointer = typename allocator_type::const_pointer;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     /**
      * @brief Deferred construction. 
@@ -67,9 +68,8 @@ public:
      * 
      * @param alloc The allocator used for this object.
      */
-    pimpl(std::allocator_arg_t, 
-          const allocator_type& alloc, 
-          defer_construct_tag ) noexcept;
+    pimpl(defer_construct_tag, 
+          const allocator_type& alloc ) noexcept;
     
     /**
      * @brief Construct an underlying value.
@@ -90,11 +90,12 @@ public:
     template <typename... Args, typename = typename std::enable_if<std::is_constructible<value_type, Args...>::value>::type>
     pimpl(std::allocator_arg_t, const allocator_type& alloc, Args&&... args);
 
-    pimpl(const pimpl &other) = delete;
+    pimpl(const pimpl &other);
+    pimpl(const pimpl &other, const allocator_type &alloc);
     pimpl(pimpl &&other) noexcept;
     ~pimpl();
 
-    pimpl& operator=(const pimpl& other) = delete;
+    pimpl& operator=(const pimpl& other);
     pimpl& operator=(pimpl&& other) noexcept;
 
     /**
@@ -193,6 +194,10 @@ private:
 
     XMIPP4_NO_UNIQUE_ADDRESS allocator_type m_allocator;
     pointer m_responsibility;
+
+    void swap_responsibility(pimpl& other) noexcept;
+    void move_assign(pimpl& other, std::false_type);
+    void move_assign(pimpl& other, std::true_type);
 
 };
 

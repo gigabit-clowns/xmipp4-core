@@ -280,10 +280,9 @@ inline void pimpl<T, Alloc>::move_assign(pimpl& other, std::false_type)
 template <typename T, typename Alloc>
 inline void pimpl<T, Alloc>::move_assign(pimpl& other, std::true_type)
 {
-    pimpl tmp(defer_construct, m_allocator);
-    this->swap_responsibility(tmp);
     propagate_allocator_on_move_assign(m_allocator, other.m_allocator);
-    tmp.swap_responsibility(other);
+    swap_responsibility(other);
+    other.reset();
 }
 
 

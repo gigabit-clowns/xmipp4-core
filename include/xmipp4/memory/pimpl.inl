@@ -28,6 +28,8 @@
 
 #include "pimpl.hpp"
 
+#include "propagate_allocator.hpp"
+
 namespace xmipp4 
 {
 namespace memory
@@ -106,7 +108,7 @@ inline pimpl<T, Alloc>::~pimpl()
 template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
 {
-    m_allocator = other.m_allocator //TODO only if allocator_traits::
+    propagate_allocator_on_copy_assign(m_allocator, other.m_allocator);
     
     if (other)
     {
@@ -123,10 +125,10 @@ inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
 template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(pimpl&& other) noexcept
 {
-    pimpl tmp(std::allocator_arg, m_allocator, defer_construct);
+    pimpl tmp(defer_construct, m_allocator);
     swap_responsibility(tmp);
 
-    m_allocator = std::move(other.m_allocator); //TODO only of allocator_traits::
+    propagate_allocator_on_move_assign(m_allocator, other.m_allocator);
     swap_responsibility(other);
 
     return *this;
@@ -169,8 +171,7 @@ inline pimpl<T, Alloc>::operator bool() const noexcept
 template <typename T, typename Alloc>
 inline void pimpl<T, Alloc>::swap(pimpl& other) noexcept
 {
-    using std::swap;
-    swap(m_allocator, other.m_allocator); //TODO only if allcator_traits::
+    propagate_allocator_on_swap(m_allocator, other.m_allocator);
     swap_responsibility(other);
 }
 

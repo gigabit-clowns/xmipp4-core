@@ -32,6 +32,7 @@
 #include "../platform/attributes.hpp"
 
 #include <memory>
+#include <type_traits>
 
 namespace xmipp4 
 {

@@ -67,9 +67,8 @@ public:
      * 
      * @param alloc The allocator used for this object.
      */
-    pimpl(std::allocator_arg_t, 
-          const allocator_type& alloc, 
-          defer_construct_tag ) noexcept;
+    pimpl(defer_construct_tag, 
+          const allocator_type& alloc ) noexcept;
     
     /**
      * @brief Construct an underlying value.
@@ -90,11 +89,12 @@ public:
     template <typename... Args, typename = typename std::enable_if<std::is_constructible<value_type, Args...>::value>::type>
     pimpl(std::allocator_arg_t, const allocator_type& alloc, Args&&... args);
 
-    pimpl(const pimpl &other) = delete;
+    pimpl(const pimpl &other);
+    pimpl(const pimpl &other, const allocator_type &alloc);
     pimpl(pimpl &&other) noexcept;
     ~pimpl();
 
-    pimpl& operator=(const pimpl& other) = delete;
+    pimpl& operator=(const pimpl& other);
     pimpl& operator=(pimpl&& other) noexcept;
 
     /**
@@ -193,6 +193,8 @@ private:
 
     XMIPP4_NO_UNIQUE_ADDRESS allocator_type m_allocator;
     pointer m_responsibility;
+
+    void swap_responsibility(pimpl& other) noexcept;
 
 };
 

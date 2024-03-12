@@ -44,9 +44,8 @@ pimpl<T, Alloc>::pimpl(defer_construct_tag) noexcept
 
 template <typename T, typename Alloc>
 inline
-pimpl<T, Alloc>::pimpl(std::allocator_arg_t, 
-                       const allocator_type& alloc, 
-                       defer_construct_tag ) noexcept
+pimpl<T, Alloc>::pimpl(defer_construct_tag, 
+                       const allocator_type& alloc ) noexcept
     : m_allocator(alloc)
     , m_responsibility(nullptr)
 {
@@ -77,8 +76,24 @@ pimpl<T, Alloc>::pimpl(std::allocator_arg_t,
 }
 
 template <typename T, typename Alloc>
+inline pimpl<T, Alloc>::pimpl(const pimpl& other)
+    : pimpl(other, other.get_allocator())
+{
+}
+
+template <typename T, typename Alloc>
+inline pimpl<T, Alloc>::pimpl(const pimpl &other, const allocator_type& alloc)
+    : pimpl(defer_construct, alloc)
+{
+    if (other)
+    {
+        emplace(*other);
+    }
+}
+
+template <typename T, typename Alloc>
 inline pimpl<T, Alloc>::pimpl(pimpl&& other) noexcept
-    : m_allocator(other.m_allocator)
+    : m_allocator(std::move(other.m_allocator))
     , m_responsibility(other.m_responsibility)
 {
     other.m_responsibility = nullptr;
@@ -91,10 +106,31 @@ inline pimpl<T, Alloc>::~pimpl()
 }
 
 template <typename T, typename Alloc>
+inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(const pimpl& other)
+{
+    m_allocator = other.get_allocator(); //TODO only if allocator_traits::
+    
+    if (other)
+    {
+        emplace(*other);
+    }
+    else
+    {
+        reset();
+    }
+    
+    return *this;
+}
+
+template <typename T, typename Alloc>
 inline pimpl<T, Alloc>& pimpl<T, Alloc>::operator=(pimpl&& other) noexcept
 {
-    swap(other);
-    other.reset();
+    pimpl tmp(std::allocator_arg, get_allocator(), defer_construct);
+    swap_responsibility(tmp);
+
+    m_allocator = std::move(other.m_allocator); //TODO only of allocator_traits::
+    swap_responsibility(other);
+
     return *this;
 }
 
@@ -136,9 +172,8 @@ template <typename T, typename Alloc>
 inline void pimpl<T, Alloc>::swap(pimpl& other) noexcept
 {
     using std::swap;
-    // TODO consider what to do with the allocator
-    // https://quuxplusone.github.io/blog/2023/06/02/not-so-quick-pmr/
-    swap(m_responsibility, other.m_responsibility);
+    swap(m_allocator, other.m_allocator); //TODO only if allcator_traits::
+    swap_responsibility(other);
 }
 
 template <typename T, typename Alloc>
@@ -217,6 +252,15 @@ inline typename pimpl<T, Alloc>::allocator_type
 pimpl<T, Alloc>::get_allocator() const noexcept
 {
     return m_allocator;
+}
+
+
+
+template <typename T, typename Alloc>
+inline void pimpl<T, Alloc>::swap_responsibility(pimpl& other) noexcept
+{
+    using std::swap;
+    swap(m_responsibility, other.m_responsibility);
 }
 
 

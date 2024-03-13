@@ -29,6 +29,7 @@
  */
 
 #include "memory/pimpl.hpp"
+#include "platform/dynamic_shared_object.h"
 
 namespace xmipp4
 {
@@ -38,19 +39,22 @@ class plugin;
 class plugin_loader
 {
 public:
-    plugin_loader();
-    plugin_loader(const std::string& name);
+    XMIPP4_CORE_API plugin_loader();
+    XMIPP4_CORE_API plugin_loader(const std::string& name);
     plugin_loader(const plugin_loader& other) = delete;
-    plugin_loader(plugin_loader&& other);
-    ~plugin_loader();
+    XMIPP4_CORE_API plugin_loader(plugin_loader&& other);
+    XMIPP4_CORE_API ~plugin_loader();
 
     plugin_loader& operator=(const plugin_loader& other) = delete;
-    plugin_loader& operator=(plugin_loader&& other);
+    XMIPP4_CORE_API plugin_loader& operator=(plugin_loader&& other);
 
-    const plugin* begin() const noexcept;
-    const plugin* end() const noexcept;
+    XMIPP4_CORE_API const plugin* begin() const noexcept;
+    XMIPP4_CORE_API const plugin* end() const noexcept;
 
-    void reset();
+    XMIPP4_CORE_API std::size_t count() const noexcept;
+
+    XMIPP4_CORE_API bool is_open() const noexcept;
+    XMIPP4_CORE_API void reset();
 
 private:
     class implementation;

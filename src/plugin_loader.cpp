@@ -39,11 +39,15 @@ namespace xmipp4
 class plugin_loader::implementation
 {
 public:
-    implementation(const std::string& name)
+    explicit implementation(const std::string& name)
         : m_dynamic_library(system::dynamic_library::make_soname(name))
-        , m_count()
-        , m_data(get_plugins(m_dynamic_library, m_count))
     {
+        m_data = get_plugins(m_dynamic_library, m_count);
+    }
+
+    std::size_t count() const noexcept
+    {
+        return m_count;
     }
 
     const plugin* begin() const noexcept
@@ -53,11 +57,10 @@ public:
 
     const plugin* end() const noexcept
     {
-        return m_data + m_count;
+        return begin() + count();
     }
 
 private:
-
     system::dynamic_library m_dynamic_library;
     std::size_t m_count;
     const plugin* m_data;
@@ -82,6 +85,8 @@ private:
 
 };
 
+
+
 plugin_loader::plugin_loader()
     : m_implementation(memory::defer_construct)
 {
@@ -98,6 +103,8 @@ plugin_loader::~plugin_loader() = default;
 
 plugin_loader& plugin_loader::operator=(plugin_loader&& other) = default;
 
+
+
 const plugin* plugin_loader::begin() const noexcept
 {
     return m_implementation ? m_implementation->begin() : nullptr;
@@ -106,6 +113,16 @@ const plugin* plugin_loader::begin() const noexcept
 const plugin* plugin_loader::end() const noexcept
 {
     return m_implementation ? m_implementation->end() : nullptr;
+}
+
+std::size_t plugin_loader::count() const noexcept
+{
+    return m_implementation ? m_implementation->count() : 0;
+}
+
+bool plugin_loader::is_open() const noexcept
+{
+    return static_cast<bool>(m_implementation);
 }
 
 void plugin_loader::reset()

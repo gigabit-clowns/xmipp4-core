@@ -77,7 +77,9 @@ private:
         
         if (!func)
         {
-            throw std::runtime_error("plugin hook could not be found");
+            throw std::runtime_error(
+                "xmipp4_get_plugins symbol could not be found"
+            );
         }
 
         return func(&count);

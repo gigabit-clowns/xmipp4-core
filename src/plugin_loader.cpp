@@ -132,4 +132,9 @@ void plugin_loader::reset()
     m_implementation.reset();
 }
 
+void plugin_loader::load(const std::string& name)
+{
+    m_implementation.emplace(name);
+}
+
 }

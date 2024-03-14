@@ -55,6 +55,7 @@ public:
 
     XMIPP4_CORE_API bool is_open() const noexcept;
     XMIPP4_CORE_API void reset();
+    XMIPP4_CORE_API void load(const std::string& name);
 
 private:
     class implementation;

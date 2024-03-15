@@ -39,23 +39,23 @@ class plugin;
 class plugin_loader
 {
 public:
-    XMIPP4_CORE_API plugin_loader();
-    XMIPP4_CORE_API plugin_loader(const std::string& name);
+    plugin_loader();
+    plugin_loader(const std::string& name);
     plugin_loader(const plugin_loader& other) = delete;
-    XMIPP4_CORE_API plugin_loader(plugin_loader&& other);
-    XMIPP4_CORE_API ~plugin_loader();
+    plugin_loader(plugin_loader&& other);
+    ~plugin_loader();
 
     plugin_loader& operator=(const plugin_loader& other) = delete;
-    XMIPP4_CORE_API plugin_loader& operator=(plugin_loader&& other);
+    plugin_loader& operator=(plugin_loader&& other);
 
-    XMIPP4_CORE_API const plugin* begin() const noexcept;
-    XMIPP4_CORE_API const plugin* end() const noexcept;
+    const plugin* begin() const noexcept;
+    const plugin* end() const noexcept;
 
-    XMIPP4_CORE_API std::size_t count() const noexcept;
+    std::size_t count() const noexcept;
 
-    XMIPP4_CORE_API bool is_open() const noexcept;
-    XMIPP4_CORE_API void reset();
-    XMIPP4_CORE_API void load(const std::string& name);
+    bool is_open() const noexcept;
+    void reset();
+    void load(const std::string& name);
 
 private:
     class implementation;

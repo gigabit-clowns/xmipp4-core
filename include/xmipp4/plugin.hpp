@@ -37,22 +37,22 @@
 namespace xmipp4
 {
 
-class plugin
+class XMIPP4_CORE_API plugin
 {
 public:
-    XMIPP4_CORE_API plugin(const std::string& name, version version);
-    XMIPP4_CORE_API plugin(const plugin& other);
-    XMIPP4_CORE_API plugin(plugin&& other);
-    XMIPP4_CORE_API ~plugin();
+    plugin(const std::string& name, version version);
+    plugin(const plugin& other);
+    plugin(plugin&& other);
+    ~plugin();
 
-    XMIPP4_CORE_API plugin& operator=(const plugin& other);
-    XMIPP4_CORE_API plugin& operator=(plugin&& other);
+    plugin& operator=(const plugin& other);
+    plugin& operator=(plugin&& other);
 
-    XMIPP4_CORE_API void set_name(const std::string& name);
-    XMIPP4_CORE_API const std::string& get_name() const noexcept;
+    void set_name(const std::string& name);
+    const std::string& get_name() const noexcept;
 
-    XMIPP4_CORE_API void set_version(version version) noexcept;
-    XMIPP4_CORE_API version get_version() const noexcept;
+    void set_version(version version) noexcept;
+    version get_version() const noexcept;
 
 private:
     class implementation;

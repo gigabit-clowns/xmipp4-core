@@ -50,12 +50,12 @@ public:
         return m_count;
     }
 
-    const plugin* begin() const noexcept
+    const plugin* const* begin() const noexcept
     {
         return m_data;
     }
 
-    const plugin* end() const noexcept
+    const plugin* const* end() const noexcept
     {
         return begin() + count();
     }
@@ -63,12 +63,12 @@ public:
 private:
     system::dynamic_library m_dynamic_library;
     std::size_t m_count;
-    const plugin* m_data;
+    const plugin* const* m_data;
 
-    static const plugin* get_plugins(const system::dynamic_library& lib, 
-                                     std::size_t &count )
+    static const plugin* const* get_plugins(const system::dynamic_library& lib, 
+                                            std::size_t &count )
     {
-        using get_plugins_function_type = const plugin* (*)(std::size_t*);
+        using get_plugins_function_type = const plugin* const* (*)(std::size_t*);
         const char symbol_name[] = "xmipp4_get_plugins";
 
         const auto func = reinterpret_cast<get_plugins_function_type>(
@@ -107,12 +107,12 @@ plugin_loader& plugin_loader::operator=(plugin_loader&& other) = default;
 
 
 
-const plugin* plugin_loader::begin() const noexcept
+const plugin* const* plugin_loader::begin() const noexcept
 {
     return m_implementation ? m_implementation->begin() : nullptr;
 }
 
-const plugin* plugin_loader::end() const noexcept
+const plugin* const* plugin_loader::end() const noexcept
 {
     return m_implementation ? m_implementation->end() : nullptr;
 }

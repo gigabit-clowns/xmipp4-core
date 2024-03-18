@@ -48,8 +48,8 @@ public:
     plugin_loader& operator=(const plugin_loader& other) = delete;
     plugin_loader& operator=(plugin_loader&& other);
 
-    const plugin* begin() const noexcept;
-    const plugin* end() const noexcept;
+    const plugin* const* begin() const noexcept;
+    const plugin* const* end() const noexcept;
 
     std::size_t count() const noexcept;
 

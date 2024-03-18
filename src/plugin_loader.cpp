@@ -41,8 +41,9 @@ class plugin_loader::implementation
 public:
     explicit implementation(const std::string& name)
         : m_dynamic_library(system::dynamic_library::make_soname(name))
+        , m_data(get_plugins(m_dynamic_library))
+        , m_count(count_plugins(m_data))
     {
-        m_data = get_plugins(m_dynamic_library, m_count);
     }
 
     std::size_t count() const noexcept
@@ -62,13 +63,24 @@ public:
 
 private:
     system::dynamic_library m_dynamic_library;
-    std::size_t m_count;
     const plugin* const* m_data;
+    std::size_t m_count;
 
-    static const plugin* const* get_plugins(const system::dynamic_library& lib, 
-                                            std::size_t &count )
+    static std::size_t count_plugins(const plugin* const* plugins)
     {
-        using get_plugins_function_type = const plugin* const* (*)(std::size_t*);
+        std::size_t count = 0;
+
+        if(plugins)
+        {
+            for(; plugins[count]; ++count);
+        }
+
+        return count;
+    }
+
+    static const plugin* const* get_plugins(const system::dynamic_library& lib)
+    {
+        using get_plugins_function_type = const plugin* const* (*)();
         const char symbol_name[] = "xmipp4_get_plugins";
 
         const auto func = reinterpret_cast<get_plugins_function_type>(
@@ -82,7 +94,7 @@ private:
             );
         }
 
-        return func(&count);
+        return func();
     }
 
 };

@@ -43,7 +43,8 @@ set_target_properties(
 target_include_directories(
 	${PROJECT_NAME} 
 	PUBLIC 
-	${PROJECT_SOURCE_DIR}/include/
+	  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(
 	${PROJECT_NAME} 
@@ -67,10 +68,28 @@ endif()
 # Install library's binary files and headers
 install(
 	TARGETS ${PROJECT_NAME} 
-	LIBRARY 
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	EXPORT ${PROJECT_NAME}-targets
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
 	DIRECTORY ${PROJECT_SOURCE_DIR}/include/ 
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+install(
+  EXPORT ${PROJECT_NAME}-targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake
+  NAMESPACE ${PROJECT_NAME}::
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake
+)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake
 )

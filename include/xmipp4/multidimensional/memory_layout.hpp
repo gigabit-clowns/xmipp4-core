@@ -36,7 +36,7 @@
 
 namespace xmipp4 
 {
-namespace multidim
+namespace multidimensional
 {
 
 inline XMIPP4_CONST_CONSTEXPR struct column_major_tag {} column_major;
@@ -400,7 +400,7 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt2 squeeze_layout(ForwardIt1 first_from,
                                                  ForwardIt1 last_from,
                                                  ForwardIt2 first_to );
 
-} // namespace multidim
+} // namespace multidimensional
 } // namespace xmipp4
 
 #include "memory_layout.inl"

@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace multidim
+namespace multidimensional
 {
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -357,5 +357,5 @@ ForwardIt2 squeeze_layout(ForwardIt1 first_from,
     );
 }
 
-} // namespace multidim
+} // namespace multidimensional
 } // namespace xmipp4

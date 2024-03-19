@@ -35,7 +35,7 @@
 
 namespace xmipp4 
 {
-namespace multidim
+namespace multidimensional
 {
 
 /**
@@ -117,7 +117,7 @@ private:
 
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
-} // namespace multidim
+} // namespace multidimensional
 } // namespace xmipp4
 
 #include "axis_descriptor.inl"

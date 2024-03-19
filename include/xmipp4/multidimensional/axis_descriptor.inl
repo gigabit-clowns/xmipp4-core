@@ -30,7 +30,7 @@
 
 namespace xmipp4
 {
-namespace multidim
+namespace multidimensional
 {
 
 XMIPP4_INLINE_CONSTEXPR axis_descriptor::axis_descriptor(std::size_t count, 
@@ -104,5 +104,5 @@ void swap(axis_descriptor &x, axis_descriptor &y) noexcept
     x.swap(y);
 }
 
-} // namespace multidim
+} // namespace multidimensional
 } // namespace xmipp4

@@ -76,6 +76,7 @@ install(
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+# Create and install config files
 include(CMakePackageConfigHelpers)
 install(
   EXPORT ${PROJECT_NAME}-targets

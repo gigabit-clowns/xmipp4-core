@@ -28,11 +28,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/tensor/memory_layout.hpp>
+#include <xmipp4/multidim/memory_layout.hpp>
 
 #include <vector>
 
-using namespace xmipp4;
+using namespace xmipp4::multidim;
 
 TEST_CASE( "check axis pair ordering", "[memory_layout]" ) 
 {

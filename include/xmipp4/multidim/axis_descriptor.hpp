@@ -35,6 +35,8 @@
 
 namespace xmipp4 
 {
+namespace multidim
+{
 
 /**
  * @brief Class describing element layout on a tensor
@@ -115,6 +117,7 @@ private:
 
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
-} //namespace xmipp4
+} // namespace multidim
+} // namespace xmipp4
 
 #include "axis_descriptor.inl"

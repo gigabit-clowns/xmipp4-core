@@ -35,6 +35,8 @@
 
 namespace xmipp4
 {
+namespace multidim
+{
 
 XMIPP4_INLINE_CONSTEXPR 
 bool check_axis_order(const axis_descriptor &prev, 
@@ -355,4 +357,5 @@ ForwardIt2 squeeze_layout(ForwardIt1 first_from,
     );
 }
 
+} // namespace multidim
 } // namespace xmipp4

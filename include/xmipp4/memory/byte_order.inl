@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace memory
 {
 
 XMIPP4_INLINE_CONSTEXPR byte_order 
@@ -224,5 +224,5 @@ convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept
     }
 }
 
-} // namespace utils
+} // namespace memory
 } // namespace xmipp4

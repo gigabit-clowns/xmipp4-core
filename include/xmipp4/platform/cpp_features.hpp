@@ -34,6 +34,7 @@
  * 
  */
 
+#include "c_features.h"
 #include "cpp_version.hpp"
 
 #if XMIPP4_HAS_CPP20
@@ -48,7 +49,8 @@
  * 
  */
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    (defined(__cpp_##feature) && (__cpp_##feature >= version))
+    ((defined(__cpp_##feature) && (__cpp_##feature >= version)) || \
+    (XMIPP4_HAS_C_FEATURE(cxx_##feature) && XMIPP4_CPLUSPLUS >= version))
 
 /**
  * @def XMIPP4_HAS_CONSTEXPR 
@@ -56,32 +58,15 @@
  * 
  */
 #if XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
-# define XMIPP4_HAS_CONSTEXPR 1
-#elif XMIPP4_HAS_CPP11
-# if defined(__clang__) && defined(__apple_build_version__)
-#  if __apple_build_version__ >= 10000000 
-#   define XMIPP4_HAS_CONSTEXPR 1
-#  else
-#   define XMIPP4_HAS_CONSTEXPR 0
-#  endif
-# elif defined(__GNUC__)
-#  if __GNUC__ >= 5 
-#   define XMIPP4_HAS_CONSTEXPR 1
-#  else
-#   define XMIPP4_HAS_CONSTEXPR 0
-#  endif
-# elif defined(_MSC_VER)
+#  define XMIPP4_HAS_CONSTEXPR 1
+#elif XMIPP4_HAS_CPP11 && defined(_MSC_VER)
 #  if _MSC_VER >= 1900
-#   define XMIPP4_HAS_CONSTEXPR 1
+#    define XMIPP4_HAS_CONSTEXPR 1
 #  else
-#   define XMIPP4_HAS_CONSTEXPR 0
+#    define XMIPP4_HAS_CONSTEXPR 0
 #  endif
-# else
-#  pragma message ("Unknown compiler. Assuming constexpr support")
-#  define CONSTEXPR_SUPPORTED 1
-# endif
 #else
-# define XMIPP4_HAS_CONSTEXPR 0
+#    define XMIPP4_HAS_CONSTEXPR 0
 #endif
 
 

@@ -37,7 +37,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace memory
 {
 
 enum class byte : uint8_t {};
@@ -70,13 +70,13 @@ XMIPP4_CONSTEXPR byte& operator^=(byte& lhs, byte rhs) noexcept;
 
 XMIPP4_CONSTEXPR std::size_t get_byte_bits() noexcept;
 
-} // namespace utils
+} // namespace memory
 } // namespace xmipp4
 
 template <>
-struct std::hash<xmipp4::utils::byte>
+struct std::hash<xmipp4::memory::byte>
 {
-    XMIPP4_CONSTEXPR size_t operator()(xmipp4::utils::byte b) const noexcept;
+    XMIPP4_CONSTEXPR size_t operator()(xmipp4::memory::byte b) const noexcept;
 };
 
 #include "byte.inl"

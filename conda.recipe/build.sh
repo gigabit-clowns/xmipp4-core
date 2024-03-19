@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
 #
@@ -20,45 +22,22 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.16)
+# Clean previous builds
+if [ -d build ]
+then
+	rm -r build
+fi
 
-find_package(Catch2 REQUIRED)
+# Configure CMake
+cmake \
+	-B ./build \
+	-G "$CMAKE_GENERATOR" \
+	-DCMAKE_INSTALL_PREFIX="$PREFIX" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_DOC=OFF
 
-include(CTest)
-include(Catch)
-
-# Test excecutable name
-set(TESTS_NAME "${PROJECT_NAME}_tests")
-
-# Register all source and header files
-file(GLOB_RECURSE TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-
-# Add the test executable
-add_executable(
-    ${TESTS_NAME}
-    ${TEST_SOURCES}
-)
-set_target_properties(
-	${TESTS_NAME} PROPERTIES 
-	CXX_STANDARD 17
-	CXX_FLAGS "-Wall -Wextra -Wpedantic"
-)
-target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-
-# On windows targets, copy the library to the test directory
-if(WIN32)
-	add_custom_command(TARGET ${TESTS_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_CURRENT_BINARY_DIR}"
-		COMMENT "Copy DLL file to ${CMAKE_CURRENT_BINARY_DIR} directory" VERBATIM
-	)
-endif()
-
-# Discover tests
-catch_discover_tests(${TESTS_NAME})
+# Build
+cmake --build ./build --config Release
 
 # Install
-install(
-	TARGETS ${TESTS_NAME}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+cmake --install ./build --config Release

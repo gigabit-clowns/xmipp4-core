@@ -43,16 +43,18 @@ memory_mapped_file::memory_mapped_file() noexcept
 
 memory_mapped_file::memory_mapped_file(const char* filename, 
                                        access_flags access,
-                                       std::size_t size )
+                                       std::size_t size,
+                                       bool copy_on_write )
     : m_size(size)
-    , m_data(memory_mapped_file_open(filename, access, m_size))
+    , m_data(memory_mapped_file_open(filename, access, m_size, copy_on_write))
 {
 }
 
 memory_mapped_file::memory_mapped_file(const std::string& filename, 
                                        access_flags access,
-                                       std::size_t size )
-    : memory_mapped_file(filename.c_str(), access, size)
+                                       std::size_t size,
+                                       bool copy_on_write )
+    : memory_mapped_file(filename.c_str(), access, size, copy_on_write)
 {
 }
 
@@ -89,16 +91,18 @@ void memory_mapped_file::swap(memory_mapped_file& other) noexcept
 
 void memory_mapped_file::open(const char* filename, 
                               access_flags access,
-                              std::size_t size )
+                              std::size_t size,
+                              bool copy_on_write )
 {
-    *this = memory_mapped_file(filename, access, size);
+    *this = memory_mapped_file(filename, access, size, copy_on_write);
 }
 
 void memory_mapped_file::open(const std::string& filename, 
                               access_flags access,
-                              std::size_t size )
+                              std::size_t size,
+                              bool copy_on_write )
 {
-    open(filename.c_str(), access, size);
+    open(filename.c_str(), access, size, copy_on_write);
 }
 
 void memory_mapped_file::close() noexcept

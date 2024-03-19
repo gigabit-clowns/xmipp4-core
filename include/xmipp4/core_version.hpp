@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,45 +21,28 @@
  ***************************************************************************/
 
 /**
- * @file test_dynamic_library.cpp
+ * @file core_version.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for system/dynamic_library.hpp
+ * @brief Utilities for getting xmipp4-core version
  * @date 2024-03-03
  * 
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include "version.hpp"
+#include "platform/dynamic_shared_object.h"
 
-#include <xmipp4/system/dynamic_library.hpp>
-
-#include <xmipp4/core_version.hpp>
-
-#include <sstream>
-
-using namespace xmipp4;
-
-TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
+namespace xmipp4 
 {
-    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
-        "xmipp4-core",
-        get_core_version()
-    );
-    system::dynamic_library xmipp4_core(xmipp4_core_soname);
 
-    REQUIRE( xmipp4_core.is_open() );
-    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+/**
+ * @brief Get the version of the xmipp-core installation
+ * 
+ * This function returns the version of the loaded xmipp-core .so
+ * file
+ * 
+ * @return version Version of the installation
+ */
+XMIPP4_CORE_API
+version get_core_version() noexcept;
 
-    using test_hook_function_ptr =  uint32_t (*)();
-    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
-        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
-    );
-
-    REQUIRE(test_hook != nullptr );
-    REQUIRE(test_hook() == 0xDEADBEEF );
-}
-
-TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
-{
-    system::dynamic_library lib;
-    REQUIRE( lib.is_open() == false );
-}
+} // namespace xmipp4

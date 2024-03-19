@@ -44,9 +44,9 @@ class array
 {
 
 private:
-	std::vector<axis_descriptor> m_layout;
+    std::vector<axis_descriptor> m_layout;
     std::size_t m_offset;
-	std::shared_ptr<storage> m_storage;
+    std::shared_ptr<storage> m_storage;
 
 };
 

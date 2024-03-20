@@ -33,7 +33,7 @@ project(
 include(CTest)
 
 # Declare build options
-option(BUILD_DOC "Build documentation" ON)
+option(XMIPP4_CORE_BUILD_DOC "Build documentation" ON)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -42,7 +42,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 add_subdirectory(src)
 
 # Only build docs if it is the main project
-if(BUILD_DOC)
+if(XMIPP4_CORE_BUILD_DOC)
 	add_subdirectory(doc)
 endif()
 

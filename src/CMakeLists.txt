@@ -23,6 +23,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 # Find dependencies
 find_package(half 2.1 REQUIRED)
@@ -77,20 +78,30 @@ install(
 )
 
 # Create and install config files
-include(CMakePackageConfigHelpers)
-install(
-  EXPORT ${PROJECT_NAME}-targets
-  FILE ${PROJECT_NAME}-targets.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-  NAMESPACE ${PROJECT_NAME}::
-)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+	NO_SET_AND_CHECK_MACRO
+	NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+	COMPATIBILITY SameMinorVersion
 )
 
 install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+	DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/modules/
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/modules
+)
+install(
+  EXPORT ${PROJECT_NAME}-targets
+  FILE ${PROJECT_NAME}-targets.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+install(
+  FILES 
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )

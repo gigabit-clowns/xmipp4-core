@@ -88,7 +88,7 @@ jobs:
         options: |
           CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
-          BUILD_DOC=OFF
+          XMIPP4_CORE_BUILD_DOC=OFF
         run-build: true
         build-args: --config ${{env.BUILD_TYPE}}
         run-test: true

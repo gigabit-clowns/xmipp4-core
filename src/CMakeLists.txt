@@ -91,6 +91,10 @@ write_basic_package_version_file(
 )
 
 install(
+	DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/modules/
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/modules
+)
+install(
   EXPORT ${PROJECT_NAME}-targets
   FILE ${PROJECT_NAME}-targets.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}

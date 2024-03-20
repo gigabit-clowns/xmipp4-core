@@ -20,10 +20,6 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.12)
-
-include(CMakeFindDependencyMacro)
+@PACKAGE_INIT@
 
 include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
-
-check_required_components(@PROJECT_NAME@)

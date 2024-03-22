@@ -63,9 +63,9 @@ void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
 } // namespace system
 } // namespace xmipp4
 
-#if defined(XMIPP4_POSIX)
+#if XMIPP4_CHECK_OS(POSIX)
     #include "dynamic_library_handle_posix.inl"
-#elif defined(XMIPP4_WINDOWS)
+#elif XMIPP4_CHECK_OS(WINDOWS)
     #include "dynamic_library_handle_windows.inl"
 #else
     #error "No dynamic library_handle implementation available for this platform"

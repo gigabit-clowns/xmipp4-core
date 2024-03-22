@@ -81,3 +81,9 @@
 #if defined(_POSIX_VERSION) || defined(XMIPP4_UNIX)
     #define XMIPP4_POSIX 1
 #endif
+
+/**
+ * @brief Check if targeting a particular OS or OS family
+ * 
+ */
+#define XMIPP4_CHECK_OS(os) defined(XMIPP4_ ## os)

@@ -31,6 +31,20 @@
 namespace xmipp4 
 {
 
+namespace detail
+{
+
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+To propagate_end(From x)
+{
+    XMIPP4_CONST_CONSTEXPR auto new_end = std::numeric_limits<To>::max(); 
+    const auto is_finite = x != std::numeric_limits<From>::max();
+    return is_finite ? x : new_end;
+}
+
+}
+
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Stride, Stop>::slice(start_type start, 
@@ -46,7 +60,7 @@ template <typename Start, typename Stride, typename Stop>
 template <typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
-    : slice(other.get_start(), other.get_stride(), other.get_stop())
+    : slice(other.get_start(), other.get_stride(), detail::propagate_end(other.get_stop()))
 {
 }
 

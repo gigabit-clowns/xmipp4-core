@@ -39,8 +39,8 @@ namespace xmipp4
 class plugin_loader::implementation
 {
 public:
-    explicit implementation(const std::string& name)
-        : m_dynamic_library(system::dynamic_library::make_soname(name))
+    explicit implementation(const std::string& path)
+        : m_dynamic_library(path)
     {
         m_data = get_plugins(m_dynamic_library, m_count);
     }
@@ -94,8 +94,8 @@ plugin_loader::plugin_loader()
 {
 }
 
-plugin_loader::plugin_loader(const std::string& name)
-    : m_implementation(name)
+plugin_loader::plugin_loader(const std::string& path)
+    : m_implementation(path)
 {
 }
 
@@ -132,9 +132,9 @@ void plugin_loader::reset()
     m_implementation.reset();
 }
 
-void plugin_loader::load(const std::string& name)
+void plugin_loader::load(const std::string& path)
 {
-    m_implementation.emplace(name);
+    m_implementation.emplace(path);
 }
 
 }

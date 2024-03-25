@@ -40,7 +40,7 @@ class plugin_loader
 {
 public:
     plugin_loader();
-    plugin_loader(const std::string& name);
+    plugin_loader(const std::string& path);
     plugin_loader(const plugin_loader& other) = delete;
     plugin_loader(plugin_loader&& other);
     ~plugin_loader();
@@ -55,7 +55,7 @@ public:
 
     bool is_open() const noexcept;
     void reset();
-    void load(const std::string& name);
+    void load(const std::string& path);
 
 private:
     class implementation;

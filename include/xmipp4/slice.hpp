@@ -267,7 +267,7 @@ std::ostream& operator<<(std::ostream& os, adjacent_tag);
 struct end_tag {
     template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
     XMIPP4_CONSTEXPR
-    operator I() const noexcept { return std::numeric_limits<I>::max(); }
+    operator I() const noexcept { return (std::numeric_limits<I>::max)(); }
 };
 
 /**

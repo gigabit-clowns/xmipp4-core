@@ -31,103 +31,102 @@
 namespace xmipp4 
 {
 
-XMIPP4_INLINE_CONSTEXPR version::version( unsigned major, 
-                            unsigned minor, 
-                            unsigned patch ) noexcept
-    : m_major(major)
-    , m_minor(minor)
-    , m_patch(patch)
+XMIPP4_INLINE_CONSTEXPR 
+version::version(std::uint32_t major, 
+                 std::uint32_t minor, 
+                 std::uint32_t patch ) noexcept
+    : m_data(major) // No need to mask, as it will be shifted
 {
+    // Shift and write fields
+    XMIPP4_CONST_CONSTEXPR std::uint32_t minor_mask = (1 << minor_bits) - 1;
+    m_data <<= minor_bits;
+    m_data |= minor & minor_mask;
+
+    XMIPP4_CONST_CONSTEXPR std::uint32_t patch_mask = (1 << patch_bits) - 1;
+    m_data <<= patch_bits;
+    m_data |= patch & patch_mask;
 }
 
-XMIPP4_INLINE_CONSTEXPR void 
-version::set_major(unsigned major) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator==(const version& other) noexcept
 {
-    m_major = major;
+    return m_data == other.m_data;
 }
 
-XMIPP4_INLINE_CONSTEXPR unsigned 
-version::get_major() const noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator!=(const version& other) noexcept
 {
-    return m_major;
+    return m_data != other.m_data;
 }
 
-XMIPP4_INLINE_CONSTEXPR void 
-version::set_minor(unsigned minor) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator<(const version& other) noexcept
 {
-    m_minor = minor;
+    return m_data < other.m_data;
 }
 
-XMIPP4_INLINE_CONSTEXPR unsigned 
-version::get_minor() const noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator<=(const version& other) noexcept
 {
-    return m_minor;
+    return m_data <= other.m_data;
 }
 
-XMIPP4_INLINE_CONSTEXPR void 
-version::set_patch(unsigned patch) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator>(const version& other) noexcept
 {
-    m_patch = patch;
+    return m_data > other.m_data;
 }
 
-XMIPP4_INLINE_CONSTEXPR unsigned 
-version::get_patch() const noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool version::operator>=(const version& other) noexcept
 {
-    return m_patch;
+    return m_data >= other.m_data;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+void version::set_major(std::uint32_t major) noexcept
+{
+    major <<= major_offset;
+    m_data &= ~major_mask;
+    m_data |= major;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+std::uint32_t version::get_major() const noexcept
+{
+    return m_data >> major_offset;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+void version::set_minor(std::uint32_t minor) noexcept
+{
+    minor <<= minor_offset;
+    minor &= minor_mask;
+    m_data &= ~minor_mask;
+    m_data |= minor;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+std::uint32_t version::get_minor() const noexcept
+{
+    return (m_data & minor_mask) >> minor_bits;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+void version::set_patch(std::uint32_t patch) noexcept
+{
+    patch &= patch_mask;
+    m_data &= ~patch_mask;
+    m_data |= patch;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+std::uint32_t version::get_patch() const noexcept
+{
+    return m_data & patch_mask;
 }
 
 
-
-namespace detail
-{
-
-XMIPP4_INLINE_CONSTEXPR std::tuple<unsigned, unsigned, unsigned>
-as_tuple(const version& version) noexcept
-{
-    return std::make_tuple(
-        version.get_major(),
-        version.get_minor(),
-        version.get_patch()
-    );
-}
-
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator==(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) == detail::as_tuple(rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator!=(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) != detail::as_tuple(rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator<(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) < detail::as_tuple(rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator<=(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) <= detail::as_tuple(rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator>(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) > detail::as_tuple(rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR bool 
-operator>=(const version& lhs, const version& rhs) noexcept
-{
-    return detail::as_tuple(lhs) >= detail::as_tuple(rhs);
-}
 
 template<typename T>
 inline std::basic_ostream<T>& 

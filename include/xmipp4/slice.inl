@@ -34,13 +34,50 @@ namespace xmipp4
 namespace detail
 {
 
+// Trivial case: No type change
 template <typename To, typename From>
 XMIPP4_INLINE_CONSTEXPR
-To propagate_end(From x)
+typename std::enable_if<std::is_integral<To>::value && std::is_same<From, To>::value, To>::type
+propagate_end(From x)
 {
-    XMIPP4_CONST_CONSTEXPR auto new_end = std::numeric_limits<To>::max(); 
-    const auto is_finite = x != std::numeric_limits<From>::max();
-    return is_finite ? x : new_end;
+    return x;
+}
+
+// Casting to a different integer type. Propagate end values carefully
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value && std::is_integral<From>::value, To>::type
+propagate_end(From x)
+{
+    const auto is_end = (x == static_cast<From>(end));
+    return is_end ? static_cast<To>(end) : static_cast<To>(x);
+}
+
+// Casting an end tag to integer type. Force an end value
+template <typename To>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(end_tag)
+{
+    return static_cast<To>(end); 
+}
+
+// Integral constant with end value
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(std::integral_constant<From, static_cast<From>(end)> v)
+{
+    return static_cast<To>(end);
+}
+
+// General case with integral_constant (do not propagate)
+template <typename To, typename From, From value>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(std::integral_constant<From, value> v)
+{
+    return static_cast<To>(v);
 }
 
 }
@@ -60,7 +97,11 @@ template <typename Start, typename Stride, typename Stop>
 template <typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
-    : slice(other.get_start(), other.get_stride(), detail::propagate_end(other.get_stop()))
+    : slice(
+        other.get_start(),
+        static_cast<stride_type>(other.get_stride()),
+        detail::propagate_end<stop_type>(other.get_stop())
+    )
 {
 }
 

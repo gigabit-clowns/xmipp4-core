@@ -62,22 +62,13 @@ propagate_end(end_tag)
     return end(); 
 }
 
-// Integral constant with end value
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(std::integral_constant<From, static_cast<From>(end())> v)
-{
-    return end();
-}
-
-// General case with integral_constant (do not propagate)
+// std::integral_constant
 template <typename To, typename From, From value>
 XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_integral<To>::value, To>::type
 propagate_end(std::integral_constant<From, value> v)
 {
-    return v;
+    return propagate_end<To>(value);
 }
 
 } // namespace detail

@@ -65,6 +65,19 @@ public:
                            stop_type stop ) noexcept;
 
     /**
+     * @brief Constructor with type conversion
+     * 
+     * @tparam Start2 
+     * @tparam Stride2 
+     * @tparam Stop2 
+     * @param other The object to be copied
+     */
+    template <typename Start2, typename Stride2, typename Stop2>
+    XMIPP4_CONSTEXPR slice(Start2 start,
+                           Stride2 stride,
+                           Stop2 stop ) noexcept;
+
+    /**
      * @brief Copy constructor from other specialization of slice
      * 
      * @tparam Start2 

@@ -96,12 +96,22 @@ slice<Start, Stride, Stop>::slice(start_type start,
 template <typename Start, typename Stride, typename Stop>
 template <typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
+slice<Start, Stride, Stop>::slice(Start2 start,
+                                  Stride2 stride,
+                                  Stop2 stop ) noexcept
     : slice(
-        other.get_start(),
-        static_cast<stride_type>(other.get_stride()),
-        detail::propagate_end<stop_type>(other.get_stop())
+        static_cast<start_type>(start),
+        static_cast<stride_type>(stride),
+        detail::propagate_end<stop_type>(stop)
     )
+{
+}
+
+template <typename Start, typename Stride, typename Stop>
+template <typename Start2, typename Stride2, typename Stop2>
+XMIPP4_INLINE_CONSTEXPR 
+slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
+    : slice(other.get_start(), other.get_stride(), other.get_stop())
 {
 }
 

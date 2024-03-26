@@ -80,7 +80,11 @@ propagate_end(std::integral_constant<From, value> v)
     return v;
 }
 
-}
+} // namespace detail
+
+
+
+
 
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 

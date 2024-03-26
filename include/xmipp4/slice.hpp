@@ -277,6 +277,18 @@ struct end_tag {
  */
 XMIPP4_CONSTEXPR end_tag end() noexcept;
 
+/**
+ * @brief Replace end value with the actual array size.
+ * 
+ * @tparam T Integral type or end_tag.
+ * @param x Value to be sanitized.
+ * @param size Array size.
+ * @return std::size_t x if x does not represent array end. size otherwise.
+ */
+template <typename T>
+XMIPP4_CONSTEXPR XMIPP4_NODISCARD
+std::size_t replace_end(T x, std::size_t size) noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
 

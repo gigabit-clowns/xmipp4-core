@@ -306,9 +306,35 @@ inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
 
 
 
+namespace detail
+{
+
+XMIPP4_INLINE_CONSTEXPR 
+std::size_t replace_end(end_tag, std::size_t size) noexcept
+{
+    return size;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, std::size_t>::type
+replace_end(I x, std::size_t size) noexcept
+{
+    return x==end() ? size : x;
+}
+
+}
+
 XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
 {
     return end_tag();
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR XMIPP4_NODISCARD
+std::size_t replace_end(T x, std::size_t size) noexcept
+{
+    return detail::replace_end(x, size);
 }
 
 XMIPP4_INLINE_CONSTEXPR bool

@@ -31,55 +31,6 @@
 namespace xmipp4 
 {
 
-namespace detail
-{
-
-// Trivial case: No type change
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && 
-                        std::is_same<From, To>::value, To>::type
-propagate_end(From x)
-{
-    return x;
-}
-
-// Casting to a different integer type. Propagate end values carefully
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && 
-                        std::is_integral<From>::value && 
-                        !std::is_same<From, To>::value, To>::type
-propagate_end(From x)
-{
-    const auto is_end = x == end();
-    return is_end ? static_cast<To>(end()) : static_cast<To>(x);
-}
-
-// Casting an end tag to integer type. Force an end value
-template <typename To>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(end_tag)
-{
-    return end(); 
-}
-
-// std::integral_constant
-template <typename To, typename From, From value>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(std::integral_constant<From, value> v)
-{
-    return propagate_end<To>(value);
-}
-
-} // namespace detail
-
-
-
-
-
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Stride, Stop>::slice(start_type start, 
@@ -100,7 +51,7 @@ slice<Start, Stride, Stop>::slice(Start2 start,
     : slice(
         static_cast<start_type>(start),
         static_cast<stride_type>(stride),
-        detail::propagate_end<stop_type>(stop)
+        propagate_end<stop_type>(stop)
     )
 {
 }
@@ -109,11 +60,7 @@ template <typename Start, typename Stride, typename Stop>
 template <typename Start2, typename Stride2, typename Stop2>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
-    : slice(
-        other.get_start(),
-        static_cast<stride_type>(other.get_stride()),
-        detail::propagate_end<stop_type>(other.get_stop())
-    )
+    : slice(other.get_start(), other.get_stride(), other.get_stop())
 {
 }
 
@@ -323,7 +270,42 @@ replace_end(I x, std::size_t size) noexcept
     return x==end() ? size : x;
 }
 
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_same<From, To>::value, To>::type
+propagate_end(From&& x)
+{
+    return std::forward<From>(x);
 }
+
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value && 
+                        std::is_integral<From>::value && 
+                        !std::is_same<From, To>::value, To>::type
+propagate_end(From x)
+{
+    const auto is_end = x == end();
+    return is_end ? static_cast<To>(end()) : static_cast<To>(x);
+}
+
+template <typename To>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(end_tag)
+{
+    return end(); 
+}
+
+template <typename To, typename From, From value>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(std::integral_constant<From, value>)
+{
+    return propagate_end<To>(value);
+}
+
+} // namespace detail
 
 XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
 {
@@ -331,10 +313,17 @@ XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
 }
 
 template <typename T>
-XMIPP4_INLINE_CONSTEXPR XMIPP4_NODISCARD
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
 std::size_t replace_end(T x, std::size_t size) noexcept
 {
     return detail::replace_end(x, size);
+}
+
+template <typename To, typename From>
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
+To propagate_end(From x) noexcept
+{
+    return detail::propagate_end<To>(x);
 }
 
 XMIPP4_INLINE_CONSTEXPR bool

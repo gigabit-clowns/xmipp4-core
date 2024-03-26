@@ -286,8 +286,21 @@ XMIPP4_CONSTEXPR end_tag end() noexcept;
  * @return std::size_t x if x does not represent array end. size otherwise.
  */
 template <typename T>
-XMIPP4_CONSTEXPR XMIPP4_NODISCARD
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 std::size_t replace_end(T x, std::size_t size) noexcept;
+
+/**
+ * @brief Cast types preserving special end value.
+ * 
+ * @tparam To Type to be casted to. Must be integral type.
+ * @tparam From Type to be casted from. Must be integral type, 
+ * end_tag or std::integral_constant.
+ * @param x Value to be casted from.
+ * @return To Casted value.
+ */
+template <typename To, typename From>
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR
+To propagate_end(From x) noexcept;
 
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;

@@ -33,6 +33,7 @@
 
 #include <ostream>
 #include <type_traits>
+#include <limits>
 
 namespace xmipp4 
 {
@@ -210,7 +211,11 @@ std::ostream& operator<<(std::ostream& os, adjacent_tag);
  * @brief Tag defining the end on an axis
  * 
  */
-struct end_tag {};
+struct end_tag {
+    template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
+    XMIPP4_CONSTEXPR
+    operator I() const noexcept { return std::numeric_limits<I>::max(); }
+};
 
 /**
  * @brief Construct an end_tag

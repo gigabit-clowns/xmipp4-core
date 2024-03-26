@@ -189,6 +189,26 @@ operator==(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 XMIPP4_CONSTEXPR bool
 operator!=(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const begin_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const begin_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const begin_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const begin_tag& rhs) noexcept;
+
 std::ostream& operator<<(std::ostream& os, begin_tag);
 
 
@@ -216,6 +236,26 @@ operator==(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 XMIPP4_CONSTEXPR bool
 operator!=(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const adjacent_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const adjacent_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const adjacent_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const adjacent_tag& rhs) noexcept;
+
 std::ostream& operator<<(std::ostream& os, adjacent_tag);
 
 
@@ -242,6 +282,26 @@ operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
 
 XMIPP4_CONSTEXPR bool
 operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const end_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const end_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const end_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const end_tag& rhs) noexcept;
 
 std::ostream& operator<<(std::ostream& os, end_tag);
 

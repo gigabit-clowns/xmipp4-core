@@ -307,6 +307,17 @@ TEST_CASE( "cross construct slice", "[slice]" )
         REQUIRE( b.get_stride() == 1 );
         REQUIRE( b.get_stop() == 8 );
     }
+
+    SECTION( "integer promotion preserves end value")
+    {
+        const auto s0 = make_slice(1, 2, end());
+        const slice<int, int, std::uint8_t> s1(s0);
+        const slice<int, int, std::int64_t> s2(s1);
+        const slice<int, int, std::uint32_t> s3(s2);
+        const slice<int, int, int> s4(s3);
+
+        REQUIRE( s4.get_stop() == end() );
+    }
 }
 
 TEST_CASE( "output slice to a std::ostream", "[slice]" )

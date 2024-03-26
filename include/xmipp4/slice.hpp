@@ -65,6 +65,19 @@ public:
                            stop_type stop ) noexcept;
 
     /**
+     * @brief Constructor with type conversion
+     * 
+     * @tparam Start2 
+     * @tparam Stride2 
+     * @tparam Stop2 
+     * @param other The object to be copied
+     */
+    template <typename Start2, typename Stride2, typename Stop2>
+    XMIPP4_CONSTEXPR slice(Start2 start,
+                           Stride2 stride,
+                           Stop2 stop ) noexcept;
+
+    /**
      * @brief Copy constructor from other specialization of slice
      * 
      * @tparam Start2 
@@ -163,19 +176,40 @@ struct begin_tag {
     operator I() const noexcept { return 0; }
 };
 
+/**
+ * @brief Construct a begin_tag
+ * 
+ * @return A begin_tag
+ */
+XMIPP4_CONSTEXPR begin_tag begin() noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 
 XMIPP4_CONSTEXPR bool
 operator!=(const begin_tag& lhs, const begin_tag& rhs) noexcept;
 
-std::ostream& operator<<(std::ostream& os, begin_tag);
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const begin_tag& lhs, I rhs) noexcept;
 
-/**
- * @brief Constant representing the beginning on an axis
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR begin_tag begin;
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const begin_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const begin_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const begin_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, begin_tag);
 
 
 
@@ -189,19 +223,40 @@ struct adjacent_tag {
     operator I() const noexcept { return 1; }
 };
 
+/**
+ * @brief Construct an adjacent_tag
+ * 
+ * @return An adjacent_tag
+ */
+XMIPP4_CONSTEXPR adjacent_tag adjacent() noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 
 XMIPP4_CONSTEXPR bool
 operator!=(const adjacent_tag& lhs, const adjacent_tag& rhs) noexcept;
 
-std::ostream& operator<<(std::ostream& os, adjacent_tag);
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const adjacent_tag& lhs, I rhs) noexcept;
 
-/**
- * @brief Constant representing unit stride
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const adjacent_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const adjacent_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const adjacent_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, adjacent_tag);
 
 
 
@@ -212,8 +267,15 @@ inline XMIPP4_CONST_CONSTEXPR adjacent_tag adjacent;
 struct end_tag {
     template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
     XMIPP4_CONSTEXPR
-    operator I() const noexcept { return std::numeric_limits<I>::max(); }
+    operator I() const noexcept { return (std::numeric_limits<I>::max)(); }
 };
+
+/**
+ * @brief Construct an end_tag
+ * 
+ * @return An end_tag
+ */
+XMIPP4_CONSTEXPR end_tag end() noexcept;
 
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
@@ -221,13 +283,27 @@ operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
 XMIPP4_CONSTEXPR bool
 operator!=(const end_tag& lhs, const end_tag& rhs) noexcept;
 
-std::ostream& operator<<(std::ostream& os, end_tag);
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const end_tag& lhs, I rhs) noexcept;
 
-/**
- * @brief Constant representing the end on an axis
- * 
- */
-inline XMIPP4_CONST_CONSTEXPR end_tag end;
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const end_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const end_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const end_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, end_tag);
 
 
 
@@ -242,10 +318,11 @@ struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
 };
 
 /**
- * @brief Constant representing all elements of an axis
+ * @brief Construct an all_tag
  * 
+ * @return An all_tag
  */
-inline XMIPP4_CONST_CONSTEXPR all_tag all;
+XMIPP4_CONSTEXPR all_tag all() noexcept;
 
 std::ostream& operator<<(std::ostream& os, all_tag);
 

@@ -37,7 +37,8 @@ namespace detail
 // Trivial case: No type change
 template <typename To, typename From>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && std::is_same<From, To>::value, To>::type
+typename std::enable_if<std::is_integral<To>::value && 
+                        std::is_same<From, To>::value, To>::type
 propagate_end(From x)
 {
     return x;
@@ -46,11 +47,13 @@ propagate_end(From x)
 // Casting to a different integer type. Propagate end values carefully
 template <typename To, typename From>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && std::is_integral<From>::value, To>::type
+typename std::enable_if<std::is_integral<To>::value && 
+                        std::is_integral<From>::value && 
+                        !std::is_same<From, To>::value, To>::type
 propagate_end(From x)
 {
-    const auto is_end = (x == static_cast<From>(end));
-    return is_end ? static_cast<To>(end) : static_cast<To>(x);
+    const auto is_end = x == end();
+    return is_end ? static_cast<To>(end()) : static_cast<To>(x);
 }
 
 // Casting an end tag to integer type. Force an end value
@@ -59,28 +62,23 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_integral<To>::value, To>::type
 propagate_end(end_tag)
 {
-    return static_cast<To>(end); 
+    return end(); 
 }
 
-// Integral constant with end value
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(std::integral_constant<From, static_cast<From>(end)> v)
-{
-    return static_cast<To>(end);
-}
-
-// General case with integral_constant (do not propagate)
+// std::integral_constant
 template <typename To, typename From, From value>
 XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_integral<To>::value, To>::type
 propagate_end(std::integral_constant<From, value> v)
 {
-    return static_cast<To>(v);
+    return propagate_end<To>(value);
 }
 
-}
+} // namespace detail
+
+
+
+
 
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 
@@ -90,6 +88,20 @@ slice<Start, Stride, Stop>::slice(start_type start,
     : m_start(start)
     , m_stride(stride)
     , m_stop(stop)
+{
+}
+
+template <typename Start, typename Stride, typename Stop>
+template <typename Start2, typename Stride2, typename Stop2>
+XMIPP4_INLINE_CONSTEXPR 
+slice<Start, Stride, Stop>::slice(Start2 start,
+                                  Stride2 stride,
+                                  Stop2 stop ) noexcept
+    : slice(
+        static_cast<start_type>(start),
+        static_cast<stride_type>(stride),
+        detail::propagate_end<stop_type>(stop)
+    )
 {
 }
 
@@ -182,6 +194,11 @@ operator<<(std::ostream& os, const slice<Start, Stride, Stop> &s)
 
 
 
+XMIPP4_INLINE_CONSTEXPR begin_tag begin() noexcept
+{
+    return begin_tag();
+}
+
 XMIPP4_INLINE_CONSTEXPR bool
 operator==(const begin_tag&, const begin_tag&) noexcept
 {
@@ -194,6 +211,38 @@ operator!=(const begin_tag&, const begin_tag&) noexcept
     return false;
 }
 
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const begin_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) == rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const begin_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) != rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const begin_tag& rhs) noexcept
+{
+    return lhs == static_cast<I>(rhs);
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const begin_tag& rhs) noexcept
+{
+    return lhs != static_cast<I>(rhs);
+}
+
 inline std::ostream& operator<<(std::ostream& os, begin_tag)
 {
     return os << "begin";
@@ -201,16 +250,53 @@ inline std::ostream& operator<<(std::ostream& os, begin_tag)
 
 
 
-XMIPP4_CONSTEXPR bool
+XMIPP4_INLINE_CONSTEXPR adjacent_tag adjacent() noexcept
+{
+    return adjacent_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
 operator==(const adjacent_tag&, const adjacent_tag&) noexcept
 {
     return true;
 }
 
-XMIPP4_CONSTEXPR bool
+XMIPP4_INLINE_CONSTEXPR bool
 operator!=(const adjacent_tag&, const adjacent_tag&) noexcept
 {
     return false;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const adjacent_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) == rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const adjacent_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) != rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const adjacent_tag& rhs) noexcept
+{
+    return lhs == static_cast<I>(rhs);
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const adjacent_tag& rhs) noexcept
+{
+    return lhs != static_cast<I>(rhs);
 }
 
 inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
@@ -220,21 +306,65 @@ inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
 
 
 
-XMIPP4_CONSTEXPR bool
-operator==(const end_tag& lhs, const end_tag& rhs) noexcept
+XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
+{
+    return end_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator==(const end_tag&, const end_tag&) noexcept
 {
     return true;
 }
 
-XMIPP4_CONSTEXPR bool
-operator!=(const end_tag& lhs, const end_tag& rhs) noexcept
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=(const end_tag&, const end_tag&) noexcept
 {
     return true;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const end_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) == rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const end_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) != rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const end_tag& rhs) noexcept
+{
+    return lhs == static_cast<I>(rhs);
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const end_tag& rhs) noexcept
+{
+    return lhs != static_cast<I>(rhs);
 }
 
 inline std::ostream& operator<<(std::ostream& os, end_tag)
 {
     return os << "end";
+}
+
+
+
+XMIPP4_INLINE_CONSTEXPR all_tag all() noexcept
+{
+    return all_tag();
 }
 
 inline std::ostream& operator<<(std::ostream& os, all_tag)
@@ -243,13 +373,16 @@ inline std::ostream& operator<<(std::ostream& os, all_tag)
 }
 
 
+
+
+
 template <typename Stop>
 XMIPP4_INLINE_CONSTEXPR slice<begin_tag, adjacent_tag, Stop> 
 make_slice(Stop stop) noexcept
 {
     return slice<begin_tag, adjacent_tag, Stop>(
-        begin, 
-        adjacent,  
+        begin(), 
+        adjacent(),  
         stop
     );
 }
@@ -260,7 +393,7 @@ make_slice(Start start, Stop stop) noexcept
 {
     return slice<Start, adjacent_tag, Stop>(
         start, 
-        adjacent, 
+        adjacent(), 
         stop
     );
 }

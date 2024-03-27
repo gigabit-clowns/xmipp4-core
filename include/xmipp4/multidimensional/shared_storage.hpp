@@ -35,6 +35,7 @@ public:
     using value_type = T;
 
     shared_storage() = default;
+    explicit shared_storage(std::size_t size);
     shared_storage(const shared_storage& other) = default;
     shared_storage(shared_storage&& other) = default;
     ~shared_storage() = default;
@@ -49,7 +50,8 @@ public:
     const value_type* data() const noexcept;
 
 private:
-    std::shared_ptr<std::vector<value_type>> m_data;
+    using container_type = std::vector<value_type>;
+    std::shared_ptr<container_type> m_data;
 
 };
 

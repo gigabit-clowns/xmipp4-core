@@ -43,7 +43,7 @@ void  shared_storage<T>::resize(std::size_t size)
     }
     else
     {   
-        // Data owned by others or non existant. Create a new container.
+        // Data referenced by others or non existant. Create a new container.
         m_data = std::make_shared(size);
     }
 }

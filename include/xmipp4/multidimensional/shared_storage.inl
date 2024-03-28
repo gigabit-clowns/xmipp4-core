@@ -36,6 +36,50 @@ shared_storage<T>::shared_storage(std::size_t size)
 }
 
 template <typename T>
+template <typename Q>
+inline
+shared_storage<T>::shared_storage(const shared_storage<Q>& other)
+    : m_data(other.m_data)
+{
+}
+
+template <typename T>
+template <typename Q>
+inline
+shared_storage<T>::shared_storage(shared_storage<Q>&& other)
+    : m_data(std::move(other.m_data))
+{
+}
+
+
+
+template <typename T>
+inline
+typename shared_storage<T>::alias_type 
+shared_storage<T>::alias() noexcept
+{
+    return *this;
+}
+
+template <typename T>
+inline
+typename shared_storage<T>::const_alias_type 
+shared_storage<T>::alias() const noexcept
+{
+    return *this;
+}
+
+template <typename T>
+inline
+typename shared_storage<T>::const_alias_type 
+shared_storage<T>::view() const noexcept
+{
+    return alias();
+}
+
+
+
+template <typename T>
 inline
 std::size_t shared_storage<T>::size() const noexcept
 {

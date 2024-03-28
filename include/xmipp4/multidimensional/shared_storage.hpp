@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <vector>
+#include <type_traits>
 
 namespace xmipp4 
 {
@@ -33,9 +34,15 @@ class shared_storage
 {
 public:
     using value_type = T;
+    using alias_type = shared_storage<T>;
+    using const_alias_type = shared_storage<const T>;
 
     shared_storage() = default;
     explicit shared_storage(std::size_t size);
+    template <typename Q>
+    shared_storage(const shared_storage<Q>& other);
+    template <typename Q>
+    shared_storage(shared_storage<Q>&& other);
     shared_storage(const shared_storage& other) = default;
     shared_storage(shared_storage&& other) = default;
     ~shared_storage() = default;
@@ -43,14 +50,20 @@ public:
     shared_storage& operator=(const shared_storage& other) = default;
     shared_storage& operator=(shared_storage&& other) = default;
 
+    alias_type alias() noexcept;
+    const_alias_type alias() const noexcept;
+    const_alias_type view() const noexcept;
+
     std::size_t size() const noexcept;
     void resize(std::size_t size);
 
     value_type* data() noexcept;
     const value_type* data() const noexcept;
 
+
 private:
-    using container_type = std::vector<value_type>;
+    using container_type = 
+        std::vector<typename std::remove_const<value_type>::type>;
     std::shared_ptr<container_type> m_data;
 
 };
@@ -61,7 +74,8 @@ struct storage_traits;
 template <typename T>
 struct storage_traits<shared_storage<T>>
 {
-
+    using alias_type = typename shared_storage<T>::alias_type;
+    using const_alias_type = typename shared_storage<T>::const_alias_type;
 };
 
 } // namespace multidimensional

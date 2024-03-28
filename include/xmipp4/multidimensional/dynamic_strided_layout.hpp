@@ -20,41 +20,46 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file array.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines array class
- * @date 2024-03-19
- * 
- */
+#include "axis_descriptor.hpp"
+
+#include <vector>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
+class dynamic_strided_layout
+{
+public:
+    using shape_type = std::vector<std::size_t>;
+
+    dynamic_strided_layout() = default;
+    template <typename It>
+    dynamic_strided_layout(It first, It last);
+    dynamic_strided_layout(std::initializer_list<std::size_t> shape);
+    dynamic_strided_layout(const shape_type &shape);
+    dynamic_strided_layout(const dynamic_strided_layout& other) = default;
+    dynamic_strided_layout(dynamic_strided_layout&& other) = default;
+    ~dynamic_strided_layout() = default;
+
+    dynamic_strided_layout& operator=(const dynamic_strided_layout& other) = default;
+    dynamic_strided_layout& operator=(dynamic_strided_layout&& other) = default;
+
+private:
+    std::vector<axis_descriptor> m_axes;
+
+};
+
 template <typename T>
 struct layout_traits;
 
-template <typename T>
-struct storage_traits;
-
-template <typename L, typename S>
-class array
+struct layout_traits<dynamic_strided_layout>
 {
-public:
-    using layout_type = L;
-    using storage_type = S;
-    using layout_traits = multidimensional::layout_traits<layout_type>;
-    using storage_traits = multidimensional::storage_traits<storage_type>;
-
-    const layout_type& get_layout() const noexcept;
-
-private:
-    layout_type m_layout;
-    storage_type m_storage;
-
+    using shape_type = dynamic_strided_layout::shape_type;
 };
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+#include "dynamic_strided_layout.inl"

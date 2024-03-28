@@ -28,8 +28,11 @@ namespace multidimensional
 template <typename T>
 inline
 shared_storage<T>::shared_storage(std::size_t size)
-    : m_data(std::make_shared<container_type>(size))
-{   
+{
+    if (size) 
+    {
+        m_data = std::make_shared<container_type>(size);
+    }
 }
 
 template <typename T>
@@ -50,8 +53,15 @@ void  shared_storage<T>::resize(std::size_t size)
     }
     else
     {   
-        // Data referenced by others or non existant. Create a new container.
-        m_data = std::make_shared<container_type>(size);
+        // Container referenced by others. Cannot modify it
+        if (size)
+        {
+            m_data = std::make_shared<container_type>(size);
+        }
+        else
+        {   
+            m_data.reset();
+        }
     }
 }
 

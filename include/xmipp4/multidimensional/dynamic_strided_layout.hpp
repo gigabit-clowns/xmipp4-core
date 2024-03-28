@@ -54,6 +54,7 @@ private:
 template <typename T>
 struct layout_traits;
 
+template <>
 struct layout_traits<dynamic_strided_layout>
 {
     using shape_type = dynamic_strided_layout::shape_type;

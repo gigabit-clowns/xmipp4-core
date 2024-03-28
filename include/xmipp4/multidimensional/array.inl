@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,53 +18,20 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file array.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines array class
- * @date 2024-03-19
- * 
- */
+#include "array.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
-
-template <typename T>
-struct layout_traits;
-
-template <typename T>
-struct storage_traits;
-
+    
 template <typename L, typename S>
-class array
+inline
+const typename array<L, S>::layout_type& 
+array<L, S>::get_layout() const noexcept
 {
-public:
-    using layout_type = L;
-    using storage_type = S;
-    using layout_traits = multidimensional::layout_traits<layout_type>;
-    using storage_traits = multidimensional::storage_traits<storage_type>;
-    using alias_type = array<layout_type, typename storage_traits::alias_type>;
-    using const_alias_type = array<layout_type, typename storage_traits::const_alias_type>;
-
-    const layout_type& get_layout() const noexcept;
-
-private:
-    layout_type m_layout;
-    storage_type m_storage;
-
-};
-
-class dynamic_strided_layout;
-
-template <typename T>
-class shared_storage;
-
-template <typename T>
-using dynamic_array = array<dynamic_strided_layout, shared_storage<T>>;
+    return m_layout;
+}
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "array.inl"

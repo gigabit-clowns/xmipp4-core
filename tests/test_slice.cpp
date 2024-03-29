@@ -320,6 +320,88 @@ TEST_CASE( "cross construct slice", "[slice]" )
     }
 }
 
+TEST_CASE( "sanitize slice", "[slice]" )
+{
+    std::size_t start;
+    std::size_t stop;
+    std::ptrdiff_t step;
+
+    SECTION( "Normal" )
+    {
+        sanitize_slice(make_slice(1, 2, 4), 8UL, start, stop, step);
+        REQUIRE( start == 1 );
+        REQUIRE( stop == 4 );
+        REQUIRE( step == 2 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 2 );
+    }
+    
+    SECTION( "Negative bounds" )
+    {
+        sanitize_slice(make_slice(-5, 4, -1), 8UL, start, stop, step);
+        REQUIRE( start == 3 );
+        REQUIRE( stop == 7 );
+        REQUIRE( step == 4 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 1 );
+    }
+    
+    SECTION( "Odd" )
+    {
+        sanitize_slice(odd(), 8UL, start, stop, step);
+        REQUIRE( start == 1 );
+        REQUIRE( stop == 8 );
+        REQUIRE( step == 2 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 4 );
+    }
+    
+    SECTION( "Empty" )
+    {
+        sanitize_slice(all(), 0UL, start, stop, step);
+        REQUIRE( start == 0 );
+        REQUIRE( stop == 0 );
+        REQUIRE( step == 1 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 0 );
+    }
+    
+    SECTION( "Reversed" )
+    {
+        sanitize_slice(make_slice(end(), -1, 2), 8UL, start, stop, step);
+        REQUIRE( start == 8 );
+        REQUIRE( stop == 2 );
+        REQUIRE( step == -1 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 6 );
+    }
+    
+    SECTION( "Out of bounds (positive)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 1, 9), 8UL, start, stop, step));
+    }
+    
+    SECTION( "Out of bounds (negative)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(-9, 1, 5), 8UL, start, stop, step));
+    }
+
+    SECTION( "Zero stride" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 0, 2), 8UL, start, stop, step));
+    }
+
+    SECTION( "Unordered" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(2, 1, 1), 8UL, start, stop, step));
+    }
+
+    SECTION( "Unordered (reversed)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, -1, 2), 8UL, start, stop, step));
+    }
+}
+
 TEST_CASE( "output slice to a std::ostream", "[slice]" )
 {
     std::stringstream stream;

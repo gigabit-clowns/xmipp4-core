@@ -430,12 +430,33 @@ template <typename Start, typename Stride, typename Stop>
 XMIPP4_CONSTEXPR slice<Start, Stride, Stop> 
 make_slice(Start start, Stride stride, Stop stop) noexcept;
 
-
+/**
+ * @brief Validates an slice index (start or stop).
+ * This function performs the following actions
+ * - Replaces end value with size
+ * - Replaces negative values with size + index
+ * - Checks for bounds
+ * 
+ * @tparam T Type of the index.
+ * @param index The index to be validated.
+ * @param size Size of the referenced array.
+ * @return std::size_t Index sanitized according to the array size.
+ */
 template <typename T>
-std::size_t sanitize_slice_index(T index, 
-                                 std::size_t step, 
-                                 std::size_t size );
+std::size_t sanitize_slice_index(T index, std::size_t size);
 
+/**
+ * @brief Sanitizes and unpacks a slice for use.
+ * 
+ * @tparam Start Type of the start value.
+ * @tparam Stride Type of the stride value.
+ * @tparam Stop Type of the stop value.
+ * @param slc The slice to be sanitized.
+ * @param size Size of the referenced array.
+ * @param start Output of start value.
+ * @param stop Output of stop value.
+ * @param step Output of step value.
+ */
 template <typename Start, typename Stride, typename Stop>
 void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                     std::size_t size,
@@ -443,6 +464,15 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                     std::size_t &stop,
                     std::ptrdiff_t &step );
 
+/**
+ * @brief Compute the number of elements referenced by a slice.
+ * Sanitized parameters must be provided. Otherwise behaviour is undefined.
+ * 
+ * @param start Start value.
+ * @param stop Stop value.
+ * @param step Step value.
+ * @return std::size_t Number of elements referenced by the slice.
+ */
 XMIPP4_CONSTEXPR
 std::size_t compute_slice_size(std::size_t start, 
                                std::size_t stop, 

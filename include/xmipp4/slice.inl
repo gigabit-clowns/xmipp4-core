@@ -425,7 +425,6 @@ template <typename I>
 inline
 typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, std::size_t>::type
 sanitize_slice_index(I index, 
-                     std::size_t step, 
                      std::size_t size )
 {
     std::size_t result;
@@ -471,7 +470,6 @@ template <typename I>
 inline
 typename std::enable_if<std::is_integral<I>::value && !std::is_signed<I>::value, std::size_t>::type
 sanitize_slice_index(I index, 
-                     std::size_t step, 
                      std::size_t size )
 {
     std::size_t result;
@@ -499,7 +497,6 @@ sanitize_slice_index(I index,
 
 XMIPP4_INLINE_CONSTEXPR
 std::size_t sanitize_slice_index(begin_tag, 
-                                 std::size_t, 
                                  std::size_t ) noexcept
 {
     return 0;
@@ -507,7 +504,6 @@ std::size_t sanitize_slice_index(begin_tag,
 
 XMIPP4_INLINE_CONSTEXPR
 std::size_t sanitize_slice_index(end_tag, 
-                                 std::size_t, 
                                  std::size_t size ) noexcept
 {
     return size;
@@ -516,7 +512,6 @@ std::size_t sanitize_slice_index(end_tag,
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
 std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(begin())>, 
-                                 std::size_t, 
                                  std::size_t ) noexcept
 {
     return 0;
@@ -525,7 +520,6 @@ std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(begin(
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
 std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(end())>, 
-                                 std::size_t, 
                                  std::size_t size ) noexcept
 {
     return size;
@@ -534,20 +528,18 @@ std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(end())
 template <typename I, I value>
 inline
 std::size_t sanitize_slice_index(std::integral_constant<I, value>, 
-                                 std::size_t step, 
                                  std::size_t size )
 {
-    return sanitize_slice_index(value, step, size);
+    return sanitize_slice_index(value, size);
 }
 
 } // namespace detail
 
 template <typename T>
 std::size_t sanitize_slice_index(T index, 
-                                 std::size_t step, 
                                  std::size_t size )
 {
-    return detail::sanitize_slice_index(index, step, size);
+    return detail::sanitize_slice_index(index, size);
 }
 
 template <typename Start, typename Stride, typename Stop>
@@ -557,18 +549,12 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                     std::size_t &stop,
                     std::ptrdiff_t &step )
 { 
+    // Sanitize start and stop
+    start = sanitize_slice_index(slc.get_start(), size);
+    stop = sanitize_slice_index(slc.get_stop(), size);
+
     // Sanitize step
     step = slc.get_stride();
-    if (step == 0)
-    {
-        throw std::invalid_argument("step cannot be zero");
-    }
-
-    // Sanitize start and stop
-    start = sanitize_slice_index(slc.get_start(), step, size);
-    stop = sanitize_slice_index(slc.get_stop(), step, size);
-
-    // Check ordering
     if (step < 0)
     {
         if(start < stop)
@@ -579,7 +565,7 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
             throw std::invalid_argument(oss.str());
         }
     }
-    else // step > 0
+    else if(step > 0)
     {
         if(start > stop)
         {
@@ -588,6 +574,10 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                 << " the stop (" << stop << ") value when using positive step";
             throw std::invalid_argument(oss.str());
         }
+    }
+    else // step == 0
+    {
+        throw std::invalid_argument("step cannot be zero");
     }
 }
 

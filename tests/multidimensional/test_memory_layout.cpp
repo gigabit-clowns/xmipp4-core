@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/multidimensional/memory_layout.hpp>
+#include <xmipp4/multidimensional/strided_layout_utils.hpp>
 
 #include <vector>
 
@@ -151,7 +151,7 @@ TEST_CASE("check contiguous layout", "[memory_layout]")
         REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend(), column_major));
         REQUIRE(is_contiguous_layout(layout.crbegin(), layout.crend(), row_major));
     }
-    SECTION("first axis has not unit step")
+    SECTION("first axis has not unit stride")
     {
         layout[0] = axis_descriptor(1, 2);
         REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), column_major));
@@ -165,7 +165,7 @@ TEST_CASE("check contiguous layout", "[memory_layout]")
     }
 }
 
-TEST_CASE("compute contiguous axis steps")
+TEST_CASE("compute contiguous axis strides")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2),
@@ -178,30 +178,30 @@ TEST_CASE("compute contiguous axis steps")
 
     SECTION("column major")
     {
-        const auto volume = compute_contiguous_axis_steps(layout.begin(), layout.end(), column_major);
-        REQUIRE(layout[0].get_step() == 1);
-        REQUIRE(layout[1].get_step() == 2);
-        REQUIRE(layout[2].get_step() == 6);
-        REQUIRE(layout[3].get_step() == 48);
-        REQUIRE(layout[4].get_step() == 240);
-        REQUIRE(layout[5].get_step() == 240);
+        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), column_major);
+        REQUIRE(layout[0].get_stride() == 1);
+        REQUIRE(layout[1].get_stride() == 2);
+        REQUIRE(layout[2].get_stride() == 6);
+        REQUIRE(layout[3].get_stride() == 48);
+        REQUIRE(layout[4].get_stride() == 240);
+        REQUIRE(layout[5].get_stride() == 240);
         REQUIRE(volume == 2160);
     }
 
     SECTION("row major")
     {
-        const auto volume = compute_contiguous_axis_steps(layout.begin(), layout.end(), row_major);
-        REQUIRE(layout[5].get_step() == 1);
-        REQUIRE(layout[4].get_step() == 9);
-        REQUIRE(layout[3].get_step() == 9);
-        REQUIRE(layout[2].get_step() == 45);
-        REQUIRE(layout[1].get_step() == 360);
-        REQUIRE(layout[0].get_step() == 1080);
+        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), row_major);
+        REQUIRE(layout[5].get_stride() == 1);
+        REQUIRE(layout[4].get_stride() == 9);
+        REQUIRE(layout[3].get_stride() == 9);
+        REQUIRE(layout[2].get_stride() == 45);
+        REQUIRE(layout[1].get_stride() == 360);
+        REQUIRE(layout[0].get_stride() == 1080);
         REQUIRE(volume == 2160);
     }
 }
 
-TEST_CASE("find max and min step", "[memory_layout]")
+TEST_CASE("find max and min stride", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 8),
@@ -212,8 +212,8 @@ TEST_CASE("find max and min step", "[memory_layout]")
         axis_descriptor(4, 2)
     };
 
-    REQUIRE(find_max_step(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
-    REQUIRE(find_min_step(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
+    REQUIRE(find_max_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
+    REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
 }
 
 TEST_CASE("transpose layout", "[memory_layout]")

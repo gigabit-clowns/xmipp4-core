@@ -34,9 +34,9 @@ namespace multidimensional
 {
 
 XMIPP4_INLINE_CONSTEXPR axis_descriptor::axis_descriptor(std::size_t count, 
-                                                         std::ptrdiff_t step ) noexcept
+                                                         std::ptrdiff_t stride ) noexcept
     : m_count(count)
-    , m_step(step)
+    , m_stride(stride)
 {   
 }
     
@@ -44,7 +44,7 @@ XMIPP4_INLINE_CONSTEXPR
 bool axis_descriptor::operator==(const axis_descriptor& other) const noexcept
 {
     return m_count == other.m_count && 
-           m_step == other.m_step;
+           m_stride == other.m_stride;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -57,7 +57,7 @@ XMIPP4_INLINE_CONSTEXPR_CPP20
 void axis_descriptor::swap(axis_descriptor &other) noexcept
 {
     std::swap(m_count, other.m_count);
-    std::swap(m_step, other.m_step);
+    std::swap(m_stride, other.m_stride);
 }
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -73,35 +73,48 @@ std::size_t axis_descriptor::get_count() const noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-void axis_descriptor::set_step(std::ptrdiff_t step) noexcept
+void axis_descriptor::set_stride(std::ptrdiff_t stride) noexcept
 {
-    m_step = step;
+    m_stride = stride;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::ptrdiff_t axis_descriptor::get_step() const noexcept
+std::ptrdiff_t axis_descriptor::get_stride() const noexcept
 {
-    return m_step;
+    return m_stride;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t axis_descriptor::get_unsigned_step() const noexcept
+std::size_t axis_descriptor::get_unsigned_stride() const noexcept
 {
     //FIXME Using a manual abs because std::abs is not constexpr. Use a proper abs function
-    const auto step = get_step();
-    return static_cast<std::size_t>(step < 0 ? -step : step);
+    const auto stride = get_stride();
+    return static_cast<std::size_t>(stride < 0 ? -stride : stride);
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t axis_descriptor::get_width() const noexcept
 {
-    return get_unsigned_step()*get_count();
+    return get_unsigned_stride()*get_count();
 }
+
+
 
 XMIPP4_INLINE_CONSTEXPR_CPP20
 void swap(axis_descriptor &x, axis_descriptor &y) noexcept
 {
     x.swap(y);
+}
+
+
+
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_INLINE_CONSTEXPR 
+axis_descriptor apply_slice(const axis_descriptor &desc, 
+                            const slice<Start, Stride, Stop> &slc,
+                            std::ptrdiff_t &offset ) noexcept
+{
+    return axis_descriptor(); //TODO
 }
 
 } // namespace multidimensional

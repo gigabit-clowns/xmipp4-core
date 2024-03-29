@@ -46,8 +46,14 @@ public:
     dynamic_strided_layout& operator=(const dynamic_strided_layout& other) = default;
     dynamic_strided_layout& operator=(dynamic_strided_layout&& other) = default;
 
+    std::size_t get_rank() const noexcept;
+    const axis_descriptor& get_axis(std::size_t i) const;
+    std::size_t get_count(std::size_t i) const;
+    std::size_t get_stride(std::size_t i) const;
+
 private:
     std::vector<axis_descriptor> m_axes;
+    std::ptrdiff_t m_offset;
 
 };
 

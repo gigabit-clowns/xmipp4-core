@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file memory_layout.inl
+ * @file strided_layout_utils.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of memory_layout.hpp
+ * @brief Implementation of strided_layout_utils.hpp
  * @date 2023-08-16
  * 
  */
 
-#include "memory_layout.hpp"
+#include "strided_layout_utils.hpp"
 #include "../platform/cpp_execution.hpp"
 
 #include <algorithm>
@@ -43,7 +43,7 @@ bool check_axis_order(const axis_descriptor &prev,
                       const axis_descriptor &next,
                       column_major_tag ) noexcept
 {
-    return prev.get_unsigned_step() < next.get_unsigned_step();
+    return prev.get_unsigned_stride() < next.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -51,21 +51,21 @@ bool check_axis_order(const axis_descriptor &prev,
                       const axis_descriptor &next,
                       row_major_tag ) noexcept
 {
-    return prev.get_unsigned_step() > next.get_unsigned_step();
+    return prev.get_unsigned_stride() > next.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 bool check_axis_overlap(const axis_descriptor &major, 
                         const axis_descriptor &minor ) noexcept
 {
-    return minor.get_unsigned_step() < major.get_width();
+    return minor.get_unsigned_stride() < major.get_width();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 bool is_regular(const axis_descriptor &major, 
                 const axis_descriptor &minor ) noexcept
 {
-    return major.get_width() == minor.get_unsigned_step();
+    return major.get_width() == minor.get_unsigned_stride();
 }
 
 template<typename ForwardIt, typename OrderTag>
@@ -162,8 +162,8 @@ bool is_contiguous_layout(ForwardIt first,
     if(first == last)
         return true;
     
-    // The first axis must have unit step
-    if(first->get_step() != 1)
+    // The first axis must have unit stride
+    if(first->get_stride() != 1)
         return false;
 
     // Layout must be regular
@@ -187,8 +187,8 @@ bool is_contiguous_layout(BidirIt first,
     if(!is_regular_layout(first, last, row_major))
         return false;
 
-    // The last axis must have unit step
-    if(std::make_reverse_iterator(last)->get_step() != 1)
+    // The last axis must have unit stride
+    if(std::make_reverse_iterator(last)->get_stride() != 1)
         return false;
 
     return true;
@@ -196,16 +196,16 @@ bool is_contiguous_layout(BidirIt first,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::size_t compute_contiguous_axis_steps(ForwardIt first,
-                                          ForwardIt last,
-                                          column_major_tag) noexcept
+std::size_t compute_contiguous_axis_strides(ForwardIt first,
+                                            ForwardIt last,
+                                            column_major_tag) noexcept
 {
     std::size_t volume = 1;
     std::for_each(XMIPP4_SEQ
         first, last,
         [&volume] (axis_descriptor& desc) -> void
         {
-            desc.set_step(volume);
+            desc.set_stride(volume);
             volume *= desc.get_count();
         }
     );
@@ -214,11 +214,11 @@ std::size_t compute_contiguous_axis_steps(ForwardIt first,
 
 template<typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::size_t compute_contiguous_axis_steps(BidirIt first,
-                                          BidirIt last,
-                                          row_major_tag) noexcept
+std::size_t compute_contiguous_axis_strides(BidirIt first,
+                                            BidirIt last,
+                                            row_major_tag) noexcept
 {
-    return compute_contiguous_axis_steps(
+    return compute_contiguous_axis_strides(
         std::make_reverse_iterator(last),
         std::make_reverse_iterator(first),
         column_major
@@ -240,7 +240,7 @@ OutputIt fill_shape_from_axes(InputIt first,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_max_step(ForwardIt first, ForwardIt last) noexcept
+ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
 {
     return std::max_element(XMIPP4_PAR_UNSEQ
         first, last, 
@@ -253,7 +253,7 @@ ForwardIt find_max_step(ForwardIt first, ForwardIt last) noexcept
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_min_step(ForwardIt first, ForwardIt last) noexcept
+ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
 {
     return std::min_element(XMIPP4_PAR_UNSEQ
         first, last, 
@@ -306,10 +306,10 @@ axis_descriptor flatten_regular_layout(ForwardIt first,
     if (first == last)
         return axis_descriptor();
 
-    const auto step = first->get_step();
+    const auto stride = first->get_stride();
     const auto count = compute_layout_volume(first, last);
 
-    return axis_descriptor(count, step);
+    return axis_descriptor(count, stride);
 }   
 
 template<typename BidirIt>
@@ -321,10 +321,10 @@ axis_descriptor flatten_regular_layout(BidirIt first,
     if (first == last)
         return axis_descriptor();
 
-    const auto step = std::make_reverse_iterator(last)->get_step();
+    const auto stride = std::make_reverse_iterator(last)->get_stride();
     const auto count = compute_layout_volume(first, last);
 
-    return axis_descriptor(count, step);
+    return axis_descriptor(count, stride);
 }
 
 

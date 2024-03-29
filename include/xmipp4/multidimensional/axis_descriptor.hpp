@@ -28,6 +28,7 @@
  * 
  */
 
+#include "../slice.hpp"
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"
 
@@ -50,10 +51,10 @@ public:
      * @brief Constructor
      * 
      * @param count Number of elements in the axis. Defaults to 0
-     * @param step Step between consecutive elements. In items. Defaults to 1
+     * @param stride Step between consecutive elements. In items. Defaults to 1
      */
     XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t count = 0, 
-                                              std::ptrdiff_t step = 1 ) noexcept;
+                                              std::ptrdiff_t stride = 1 ) noexcept;
 
     axis_descriptor(const axis_descriptor& other) = default;
     axis_descriptor(axis_descriptor&& other) = default;
@@ -82,25 +83,25 @@ public:
     XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
 
     /**
-     * @brief Set the step between consecutive elements
+     * @brief Set the stride between consecutive elements
      * 
-     * @param step Step between consecutive elements. In items
+     * @param stride Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR void set_step(std::ptrdiff_t step) noexcept;
+    XMIPP4_CONSTEXPR void set_stride(std::ptrdiff_t stride) noexcept;
 
     /**
-     * @brief Get the step between consecutive elements
+     * @brief Get the stride between consecutive elements
      * 
      * @return std::ptrdiff_t Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR std::ptrdiff_t get_step() const noexcept;
+    XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
 
     /**
-     * @brief Get the unsigned step between consecutive elements
+     * @brief Get the unsigned stride between consecutive elements
      * 
      * @return std::size_t Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR std::size_t get_unsigned_step() const noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_unsigned_stride() const noexcept;
 
     /**
      * @brief Get the total size of the axis. In items
@@ -111,11 +112,18 @@ public:
 
 private:
     std::size_t m_count; ///< Number of elements
-    std::ptrdiff_t m_step; ///< Step between adjacent elements. In items
+    std::ptrdiff_t m_stride; ///< Step between adjacent elements. In items
 
 };
 
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+
+
+template <typename Start, typename Stride, typename Stop>
+XMIPP4_CONSTEXPR 
+axis_descriptor apply_slice(const axis_descriptor &desc, 
+                            const slice<Start, Stride, Stop> &s,
+                            std::ptrdiff_t &offset ) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

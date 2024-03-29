@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * @file memory_layout.hpp
+ * @file strided_layout_utils.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Declaration of utility functions for handling sequences 
  * of axis_descriptor
@@ -47,7 +47,7 @@ inline XMIPP4_CONST_CONSTEXPR struct row_major_tag {} row_major;
  * 
  * Axes are considered to be in column major order if the
  * first axis is more contiguous in memory than the second one,
- * this is, if its step is smaller in magnitude.
+ * this is, if its stride is smaller in magnitude.
  * 
  * @param prev First axis
  * @param next Second axis
@@ -62,7 +62,7 @@ XMIPP4_CONSTEXPR bool check_axis_order(const axis_descriptor &prev,
  * 
  * Axes are considered to be in row major order if the second
  * axis is more contiguous in memory than the first one,
- * this is, if its step is smaller in magnitude.
+ * this is, if its stride is smaller in magnitude.
  * 
  * @param prev First axis
  * @param next Second axis
@@ -76,7 +76,7 @@ XMIPP4_CONSTEXPR bool check_axis_order(const axis_descriptor &prev,
  * @brief Check if a pair of axes is overlapping
  * 
  * Axes are considered to be overlapping if the size 
- * of the major axis is strictly smaller than the step
+ * of the major axis is strictly smaller than the stride
  * of the minor axis
  * 
  * @param prev First axis
@@ -90,10 +90,10 @@ XMIPP4_CONSTEXPR bool check_axis_overlap(const axis_descriptor &major,
  * @brief Check if a pair of axes is regular
  * 
  * A pair of axes is regular if the minor axis (the slow one)
- * has a step equal to the size of the major axis (the fast one)
+ * has a stride equal to the size of the major axis (the fast one)
  * 
- * @param major The axis with the smaller step
- * @param minor The axis with the larger step
+ * @param major The axis with the smaller stride
+ * @param minor The axis with the larger stride
  * @return bool True if axes are regular
  */
 XMIPP4_CONSTEXPR bool is_regular(const axis_descriptor &major, 
@@ -181,7 +181,7 @@ XMIPP4_CONSTEXPR_CPP20 bool is_regular_layout(ForwardIt first,
  * @brief Check if a column major layout is contiguous
  * 
  * A layout is contiguous if it is regular and its major axis
- * has a unit step
+ * has a unit stride
  * 
  * @see is_regular_layout
  * 
@@ -199,7 +199,7 @@ XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(ForwardIt first,
  * @brief Check if a row major layout is contiguous
  * 
  * A layout is contiguous if it is regular and its major axis
- * has a unit step
+ * has a unit stride
  * 
  * @see is_regular_layout
  * 
@@ -214,7 +214,7 @@ XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(BidirIt first,
                                                  row_major_tag ) noexcept;
 
 /**
- * @brief Fill the steps of a layout such that it is contiguous
+ * @brief Fill the strides of a layout such that it is contiguous
  * in column major ordering
  * 
  * @tparam ForwardIt Forward iterator
@@ -223,12 +223,12 @@ XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(BidirIt first,
  * @return std::size_t The volume, this is, the product of all sizes
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_steps(ForwardIt first,
-                                                                 ForwardIt last,
-                                                                 column_major_tag) noexcept;
+XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_strides(ForwardIt first,
+                                                                   ForwardIt last,
+                                                                   column_major_tag) noexcept;
 
 /**
- * @brief Fill the steps of a layout such that it is contiguous
+ * @brief Fill the strides of a layout such that it is contiguous
  * in row major ordering
  * 
  * @tparam BidirIt Bidirectional iterator
@@ -237,9 +237,9 @@ XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_steps(ForwardIt first
  * @return std::size_t The volume, this is, the product of all sizes
  */
 template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_steps(BidirIt first,
-                                                                 BidirIt last,
-                                                                 row_major_tag) noexcept;
+XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_strides(BidirIt first,
+                                                                   BidirIt last,
+                                                                   row_major_tag) noexcept;
 
 /**
  * @brief Copy the sizes of a layout to another range
@@ -258,32 +258,32 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt fill_shape_from_axes(InputIt first,
                                                      OutputIt out );
 
 /**
- * @brief Finds the axis with the largest step magnitude.
+ * @brief Finds the axis with the largest stride magnitude.
  * 
- * The axis with the largest step is considered as the minor axis
+ * The axis with the largest stride is considered as the minor axis
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
  * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the largest step magnitude
+ * @return ForwardIt The axis with the largest stride magnitude
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_step(ForwardIt first, 
-                                               ForwardIt last ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_stride(ForwardIt first, 
+                                                 ForwardIt last ) noexcept;
 
 /**
- * @brief Finds the axis with the smallest step magnitude.
+ * @brief Finds the axis with the smallest stride magnitude.
  * 
- * The axis with the smallest step is considered as the major axis
+ * The axis with the smallest stride is considered as the major axis
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
  * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the smallest step magnitude
+ * @return ForwardIt The axis with the smallest stride magnitude
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_step(ForwardIt first, 
-                                               ForwardIt last ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first, 
+                                                 ForwardIt last ) noexcept;
 
 /**
  * @brief Reverses the ordering of a layout
@@ -400,7 +400,16 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt2 squeeze_layout(ForwardIt1 first_from,
                                                  ForwardIt1 last_from,
                                                  ForwardIt2 first_to );
 
+
+template<typename InputIt, typename OutputIt, typename... Slices>
+XMIPP4_CONSTEXPR OutputIt apply_slices_to_layout(InputIt first, 
+                                                 InputIt last,
+                                                 OutputIt out,
+                                                 std::ptrdiff_t &offset,
+                                                 Slices&&... slices );
+                                                 
+
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "memory_layout.inl"
+#include "strided_layout_utils.inl"

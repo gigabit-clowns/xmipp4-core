@@ -109,12 +109,27 @@ void swap(axis_descriptor &x, axis_descriptor &y) noexcept
 
 
 template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR 
+inline
 axis_descriptor apply_slice(const axis_descriptor &desc, 
                             const slice<Start, Stride, Stop> &slc,
-                            std::ptrdiff_t &offset ) noexcept
+                            std::ptrdiff_t &offset )
 {
-    return axis_descriptor(); //TODO
+    std::size_t start;
+    std::size_t stop;
+    std::ptrdiff_t stride;
+    sanitize_slice(
+        slc, desc.get_count(),
+        start, stop, stride
+    );
+    const auto count = compute_slice_size(start, stop, stride);
+
+    // When using a negative stride, indices refer to the previous element
+    // we are not interested in this behaviour.
+    if (stride < 0) --start;
+
+    offset += desc.get_stride()*start;
+    stride *= desc.get_stride();
+    return axis_descriptor(count, stride);
 }
 
 } // namespace multidimensional

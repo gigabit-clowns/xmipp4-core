@@ -120,10 +120,9 @@ XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcep
 
 
 template <typename Start, typename Stride, typename Stop>
-XMIPP4_CONSTEXPR 
 axis_descriptor apply_slice(const axis_descriptor &desc, 
                             const slice<Start, Stride, Stop> &s,
-                            std::ptrdiff_t &offset ) noexcept;
+                            std::ptrdiff_t &offset );
 
 } // namespace multidimensional
 } // namespace xmipp4

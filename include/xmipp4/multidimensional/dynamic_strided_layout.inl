@@ -71,6 +71,14 @@ std::size_t dynamic_strided_layout::get_stride(std::size_t i) const
     return get_axis(i).get_stride();
 }
 
+inline
+std::size_t dynamic_strided_layout::get_required_storage_size() const noexcept
+{
+    if (m_axes.size() == 0) return 0UL;
+    const auto minor_axis = find_max_stride(m_axes.cbegin(), m_axes.cend());
+    return minor_axis->get_width();
+}
+
 } // namespace multidimensional
 } // namespace xmipp4
 

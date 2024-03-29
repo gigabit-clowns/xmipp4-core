@@ -51,6 +51,8 @@ public:
     std::size_t get_count(std::size_t i) const;
     std::size_t get_stride(std::size_t i) const;
 
+    std::size_t get_required_storage_size() const noexcept;
+
 private:
     std::vector<axis_descriptor> m_axes;
     std::ptrdiff_t m_offset;

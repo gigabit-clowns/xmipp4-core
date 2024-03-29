@@ -424,8 +424,7 @@ namespace detail
 template <typename I>
 inline
 typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, std::size_t>::type
-sanitize_slice_index(I index, 
-                     std::size_t size )
+sanitize_slice_index(I index, std::size_t size)
 {
     std::size_t result;
 
@@ -469,8 +468,7 @@ sanitize_slice_index(I index,
 template <typename I>
 inline
 typename std::enable_if<std::is_integral<I>::value && !std::is_signed<I>::value, std::size_t>::type
-sanitize_slice_index(I index, 
-                     std::size_t size )
+sanitize_slice_index(I index, std::size_t size)
 {
     std::size_t result;
 
@@ -496,15 +494,13 @@ sanitize_slice_index(I index,
 }
 
 XMIPP4_INLINE_CONSTEXPR
-std::size_t sanitize_slice_index(begin_tag, 
-                                 std::size_t ) noexcept
+std::size_t sanitize_slice_index(begin_tag, std::size_t) noexcept
 {
     return 0;
 }
 
 XMIPP4_INLINE_CONSTEXPR
-std::size_t sanitize_slice_index(end_tag, 
-                                 std::size_t size ) noexcept
+std::size_t sanitize_slice_index(end_tag, std::size_t size) noexcept
 {
     return size;
 }
@@ -542,6 +538,107 @@ std::size_t sanitize_slice_index(T index,
     return detail::sanitize_slice_index(index, size);
 }
 
+namespace detail
+{
+
+inline 
+void check_direct_slice_ordering(std::size_t start, std::size_t stop)
+{
+    if(start > stop)
+    {
+        std::ostringstream oss;
+        oss << "start value (" << start << ") must be less or equal than" 
+            << " the stop (" << stop << ") value when using positive step";
+        throw std::invalid_argument(oss.str());
+    }
+}
+
+inline 
+void check_reversed_slice_ordering(std::size_t start, std::size_t stop)
+{
+    if(start < stop)
+    {
+        std::ostringstream oss;
+        oss << "start value (" << start << ") must be greater or equal than" 
+            << " the stop (" << stop << ") value when using negative step";
+        throw std::invalid_argument(oss.str());
+    }
+}
+
+template <typename I>
+inline
+typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, std::ptrdiff_t>::type
+sanitize_slice_step(I step, std::size_t start, std::size_t stop)
+{
+    if (step < 0)
+    {
+        check_reversed_slice_ordering(start, stop);
+    }
+    else if(step > 0)
+    {
+        check_direct_slice_ordering(start, stop);
+    }
+    else // step == 0
+    {
+        throw std::invalid_argument("step cannot be zero");
+    }
+    return step;
+}
+
+template <typename I>
+inline
+typename std::enable_if<std::is_integral<I>::value && !std::is_signed<I>::value, std::ptrdiff_t>::type
+sanitize_slice_step(I step, std::size_t start, std::size_t stop)
+{
+    if(step == 0)
+    {
+        throw std::invalid_argument("step cannot be zero");
+    }
+    else // step > 0
+    {
+        check_direct_slice_ordering(start, stop);
+    }
+
+    return step;
+}
+
+inline
+std::ptrdiff_t sanitize_slice_step(adjacent_tag, std::size_t start, std::size_t stop)
+{
+    check_direct_slice_ordering(start, stop);
+    return 1;
+}
+
+template <typename I, I value>
+inline
+typename std::enable_if<(value>0), std::ptrdiff_t>::type
+sanitize_slice_step(std::integral_constant<I, value>, 
+                    std::size_t start, 
+                    std::size_t stop)
+{
+    check_direct_slice_ordering(start, stop);
+    return value;
+}
+
+template <typename I, I value>
+inline
+typename std::enable_if<(value<0), std::ptrdiff_t>::type
+sanitize_slice_step(std::integral_constant<I, value>, 
+                    std::size_t start, 
+                    std::size_t stop)
+{
+    check_reversed_slice_ordering(start, stop);
+    return value;
+}
+
+} // namespace detail
+
+template <typename T>
+std::ptrdiff_t sanitize_slice_step(T step, std::size_t start, std::size_t stop)
+{
+    return detail::sanitize_slice_step(step, start, stop);
+}
+
 template <typename Start, typename Stride, typename Stop>
 void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                     std::size_t size,
@@ -549,36 +646,9 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
                     std::size_t &stop,
                     std::ptrdiff_t &step )
 { 
-    // Sanitize start and stop
     start = sanitize_slice_index(slc.get_start(), size);
     stop = sanitize_slice_index(slc.get_stop(), size);
-
-    // Sanitize step
-    step = slc.get_stride();
-    if (step < 0)
-    {
-        if(start < stop)
-        {
-            std::ostringstream oss;
-            oss << "start value (" << start << ") must be greater or equal than" 
-                << " the stop (" << stop << ") value when using negative step";
-            throw std::invalid_argument(oss.str());
-        }
-    }
-    else if(step > 0)
-    {
-        if(start > stop)
-        {
-            std::ostringstream oss;
-            oss << "start value (" << start << ") must be less or equal than" 
-                << " the stop (" << stop << ") value when using positive step";
-            throw std::invalid_argument(oss.str());
-        }
-    }
-    else // step == 0
-    {
-        throw std::invalid_argument("step cannot be zero");
-    }
+    step = sanitize_slice_step(slc.get_stride(), start, stop);
 }
 
 XMIPP4_INLINE_CONSTEXPR

@@ -446,6 +446,19 @@ template <typename T>
 std::size_t sanitize_slice_index(T index, std::size_t size);
 
 /**
+ * @brief Sanitize step and check coherency with start stop value
+ * ordering.
+ * 
+ * @tparam T Type of the step.
+ * @param step Step of the slice.
+ * @param start Start value.
+ * @param stop Stop value.
+ * @return std::ptrdiff_t Sanitized step.
+ */
+template <typename T>
+std::ptrdiff_t sanitize_slice_step(T step, std::size_t start, std::size_t stop);
+
+/**
  * @brief Sanitizes and unpacks a slice for use.
  * 
  * @tparam Start Type of the start value.

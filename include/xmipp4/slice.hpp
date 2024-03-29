@@ -41,9 +41,18 @@ namespace xmipp4
 /**
  * @brief Class representing an slice of an array
  * 
- * @tparam Start Type of the starting index. May be an integral, std::integral_constant or begin_tag
- * @tparam Stride Type of the stride. May be an integral, std::integral_constant or adjacent_tag
- * @tparam Stop Type of the stopping index. May be an integral, std::integral_constant or end_tag
+ * @tparam Start Type of the starting index. 
+ * May be an integral, std::integral_constant, begin_tag or end_tag.
+ * @tparam Stride Type of the stride. 
+ * May be an integral, std::integral_constant or adjacent_tag.
+ * @tparam Stop Type of the stopping index.
+ * May be an integral, std::integral_constant, begin_tag or end_tag.
+ * 
+ * Step cannot be zero. Negative values are allowed. When using a negative 
+ * step, the slice refers to (start, stop] range, where start >= stop 
+ * (similarly to reverse iterators in the STL library). When using a 
+ * positive step, the slice refers to the [start, stop) range, where 
+ * start <= stop.
  */
 template <typename Start, typename Stride, typename Stop>
 class slice
@@ -277,6 +286,19 @@ struct end_tag {
  */
 XMIPP4_CONSTEXPR end_tag end() noexcept;
 
+/**
+ * @brief Cast types preserving special end value.
+ * 
+ * @tparam To Type to be casted to. Must be integral type.
+ * @tparam From Type to be casted from. Must be integral type, 
+ * end_tag or std::integral_constant.
+ * @param x Value to be casted from.
+ * @return To Casted value.
+ */
+template <typename To, typename From>
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR
+To propagate_end(From x) noexcept;
+
 XMIPP4_CONSTEXPR bool
 operator==(const end_tag& lhs, const end_tag& rhs) noexcept;
 
@@ -309,7 +331,7 @@ std::ostream& operator<<(std::ostream& os, end_tag);
 
 
 /**
- * @brief Special case of slice representing all elements+
+ * @brief Special case of slice representing all elements
  * of an axis
  * 
  */
@@ -325,6 +347,47 @@ struct all_tag : slice<begin_tag, adjacent_tag, end_tag>
 XMIPP4_CONSTEXPR all_tag all() noexcept;
 
 std::ostream& operator<<(std::ostream& os, all_tag);
+
+
+
+
+/**
+ * @brief Special case of slice representing even elements
+ * of an axis
+ * 
+ */
+struct even_tag : slice<std::integral_constant<std::size_t, 0>, 
+                        std::integral_constant<std::size_t, 2>, 
+                        end_tag >
+{
+};
+
+/**
+ * @brief Construct an even_tag
+ * 
+ * @return An even_tag
+ */
+XMIPP4_CONSTEXPR even_tag even() noexcept;
+
+
+
+/**
+ * @brief Special case of slice representing odd elements
+ * of an axis
+ * 
+ */
+struct odd_tag : slice<std::integral_constant<std::size_t, 1>, 
+                       std::integral_constant<std::size_t, 2>, 
+                       end_tag >
+{
+};
+
+/**
+ * @brief Construct an odd_tag
+ * 
+ * @return An odd_tag
+ */
+XMIPP4_CONSTEXPR odd_tag odd() noexcept;
 
 
 
@@ -366,6 +429,24 @@ make_slice(Start start, Stop stop) noexcept;
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_CONSTEXPR slice<Start, Stride, Stop> 
 make_slice(Start start, Stride stride, Stop stop) noexcept;
+
+
+template <typename T>
+std::size_t sanitize_slice_index(T index, 
+                                 std::size_t step, 
+                                 std::size_t size );
+
+template <typename Start, typename Stride, typename Stop>
+void sanitize_slice(const slice<Start, Stride, Stop> &slc,
+                    std::size_t size,
+                    std::size_t &start,
+                    std::size_t &stop,
+                    std::ptrdiff_t &step );
+
+XMIPP4_CONSTEXPR
+std::size_t compute_slice_size(std::size_t start, 
+                               std::size_t stop, 
+                               std::ptrdiff_t step ) noexcept;
 
 } // namespace xmipp4
 

@@ -28,54 +28,10 @@
 
 #include "slice.hpp"
 
+#include <sstream>
+
 namespace xmipp4 
 {
-
-namespace detail
-{
-
-// Trivial case: No type change
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && std::is_same<From, To>::value, To>::type
-propagate_end(From x)
-{
-    return x;
-}
-
-// Casting to a different integer type. Propagate end values carefully
-template <typename To, typename From>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value && std::is_integral<From>::value, To>::type
-propagate_end(From x)
-{
-    const auto is_end = x == end();
-    return is_end ? static_cast<To>(end()) : static_cast<To>(x);
-}
-
-// Casting an end tag to integer type. Force an end value
-template <typename To>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(end_tag)
-{
-    return end(); 
-}
-
-// std::integral_constant
-template <typename To, typename From, From value>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(std::integral_constant<From, value> v)
-{
-    return propagate_end<To>(value);
-}
-
-} // namespace detail
-
-
-
-
 
 template <typename Start, typename Stride, typename Stop>
 XMIPP4_INLINE_CONSTEXPR 
@@ -97,7 +53,7 @@ slice<Start, Stride, Stop>::slice(Start2 start,
     : slice(
         static_cast<start_type>(start),
         static_cast<stride_type>(stride),
-        detail::propagate_end<stop_type>(stop)
+        propagate_end<stop_type>(stop)
     )
 {
 }
@@ -299,9 +255,56 @@ inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
 
 
 
+namespace detail
+{
+
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_same<From, To>::value, To>::type
+propagate_end(From&& x)
+{
+    return std::forward<From>(x);
+}
+
+template <typename To, typename From>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value && 
+                        std::is_integral<From>::value && 
+                        !std::is_same<From, To>::value, To>::type
+propagate_end(From x)
+{
+    const auto is_end = x == end();
+    return is_end ? static_cast<To>(end()) : static_cast<To>(x);
+}
+
+template <typename To>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(end_tag)
+{
+    return end(); 
+}
+
+template <typename To, typename From, From value>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(std::integral_constant<From, value>)
+{
+    return propagate_end<To>(value);
+}
+
+} // namespace detail
+
 XMIPP4_INLINE_CONSTEXPR end_tag end() noexcept
 {
     return end_tag();
+}
+
+template <typename To, typename From>
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR
+To propagate_end(From x) noexcept
+{
+    return detail::propagate_end<To>(x);
 }
 
 XMIPP4_INLINE_CONSTEXPR bool
@@ -365,6 +368,15 @@ inline std::ostream& operator<<(std::ostream& os, all_tag)
     return os << "all";
 }
 
+XMIPP4_INLINE_CONSTEXPR even_tag even() noexcept
+{
+    return even_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR odd_tag odd() noexcept
+{
+    return odd_tag();
+}
 
 
 
@@ -400,6 +412,205 @@ make_slice(Start start, Stride stride, Stop stop) noexcept
         stride, 
         stop
     );
+}
+
+
+
+
+
+namespace detail
+{
+
+template <typename I>
+inline
+typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, std::size_t>::type
+sanitize_slice_index(I index, 
+                     std::size_t step, 
+                     std::size_t size )
+{
+    std::size_t result;
+
+    if (index == end())
+    {
+        result = size;
+    }
+    else
+    {
+        if (index < 0)
+        {  
+            if (index < (-size))
+            {
+                std::ostringstream oss;
+                oss << "Index (" << index << ") must be greater or equal than "
+                    << "the negative array size (" << (-size) << ").";
+
+                throw std::out_of_range(oss.str());
+            }
+
+            result = index + size;
+        }
+        else
+        {
+            if(index > size)
+            {
+                std::ostringstream oss;
+                oss << "Index (" << index << ") must be less or equal than "
+                    << "the axis size (" << size << ").";
+
+                throw std::out_of_range(oss.str());
+            }
+
+            result = index;
+        }
+    }
+
+    return result;
+}
+
+template <typename I>
+inline
+typename std::enable_if<std::is_integral<I>::value && !std::is_signed<I>::value, std::size_t>::type
+sanitize_slice_index(I index, 
+                     std::size_t step, 
+                     std::size_t size )
+{
+    std::size_t result;
+
+    if (index == end())
+    {
+        result = size;
+    }
+    else
+    {
+        if(index > size)
+        {
+            std::ostringstream oss;
+            oss << "Index (" << index << ") must be less or equal than "
+                << "the axis size (" << size << ").";
+
+            throw std::out_of_range(oss.str());
+        }
+
+        result = index;
+    }
+
+    return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t sanitize_slice_index(begin_tag, 
+                                 std::size_t, 
+                                 std::size_t ) noexcept
+{
+    return 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t sanitize_slice_index(end_tag, 
+                                 std::size_t, 
+                                 std::size_t size ) noexcept
+{
+    return size;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(begin())>, 
+                                 std::size_t, 
+                                 std::size_t ) noexcept
+{
+    return 0;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(end())>, 
+                                 std::size_t, 
+                                 std::size_t size ) noexcept
+{
+    return size;
+}
+
+template <typename I, I value>
+inline
+std::size_t sanitize_slice_index(std::integral_constant<I, value>, 
+                                 std::size_t step, 
+                                 std::size_t size )
+{
+    return sanitize_slice_index(value, step, size);
+}
+
+} // namespace detail
+
+template <typename T>
+std::size_t sanitize_slice_index(T index, 
+                                 std::size_t step, 
+                                 std::size_t size )
+{
+    return detail::sanitize_slice_index(index, step, size);
+}
+
+template <typename Start, typename Stride, typename Stop>
+void sanitize_slice(const slice<Start, Stride, Stop> &slc,
+                    std::size_t size,
+                    std::size_t &start,
+                    std::size_t &stop,
+                    std::ptrdiff_t &step )
+{ 
+    // Sanitize step
+    step = slc.get_stride();
+    if (step == 0)
+    {
+        throw std::invalid_argument("step cannot be zero");
+    }
+
+    // Sanitize start and stop
+    start = sanitize_slice_index(slc.get_start(), step, size);
+    stop = sanitize_slice_index(slc.get_stop(), step, size);
+
+    // Check ordering
+    if (step < 0)
+    {
+        if(start < stop)
+        {
+            std::ostringstream oss;
+            oss << "start value (" << start << ") must be greater or equal than" 
+                << " the stop (" << stop << ") value when using negative step";
+            throw std::invalid_argument(oss.str());
+        }
+    }
+    else // step > 0
+    {
+        if(start > stop)
+        {
+            std::ostringstream oss;
+            oss << "start value (" << start << ") must be less or equal than" 
+                << " the stop (" << stop << ") value when using positive step";
+            throw std::invalid_argument(oss.str());
+        }
+    }
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t compute_slice_size(std::size_t start, 
+                               std::size_t stop, 
+                               std::ptrdiff_t step ) noexcept
+{
+    if (start == stop)
+    {
+        return 0;
+    }
+    else 
+    {
+        if (step < 0)
+        {
+            return (start - stop - 1) / (-step) + 1;
+        }
+        else // step > 0
+        {
+            return (stop - start - 1) / step + 1;
+        }
+    }
 }
 
 } // namespace xmipp4

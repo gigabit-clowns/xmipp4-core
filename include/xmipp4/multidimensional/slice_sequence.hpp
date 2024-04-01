@@ -29,6 +29,29 @@ namespace xmipp4
 namespace multidimensional
 {
 
+template <typename T>
+class slice_sequence_leaf
+{
+public:
+    using value_type = T;
+
+    template <typename... Args>
+    explicit XMIPP4_CONSTEXPR slice_sequence_leaf(Args&&... args);
+    slice_sequence_leaf(const slice_sequence_leaf &other) = default; 
+    slice_sequence_leaf(slice_sequence_leaf &&other) = default; 
+    ~slice_sequence_leaf() = default;
+
+    slice_sequence_leaf& operator=(const slice_sequence_leaf &other) = default; 
+    slice_sequence_leaf& operator=(slice_sequence_leaf &&other) = default; 
+
+    XMIPP4_CONSTEXPR value_type& get() noexcept;
+    XMIPP4_CONSTEXPR const value_type& get() const noexcept;
+
+private:
+    value_type m_value;
+
+};
+
 template <typename... Slices>
 class slice_sequence;
 
@@ -39,7 +62,8 @@ class slice_sequence<>
 
 template <typename Head, typename... Tail>
 class slice_sequence<Head, Tail...>
-    : private slice_sequence<Tail...>
+    : private slice_sequence_leaf<Head>
+    , private slice_sequence<Tail...>
 {
 public:
     using head_type = Head;
@@ -55,13 +79,13 @@ public:
     slice_sequence& operator=(const slice_sequence &other) = default;
     slice_sequence& operator=(slice_sequence &&other) = default;
 
-    XMIPP4_CONSTEXPR head_type& get() noexcept;
-    XMIPP4_CONSTEXPR const head_type& get() const noexcept;
+    XMIPP4_CONSTEXPR head_type& head() noexcept;
+    XMIPP4_CONSTEXPR const head_type& head() const noexcept;
     XMIPP4_CONSTEXPR tail_type& tail() noexcept;
     XMIPP4_CONSTEXPR const tail_type& tail() const noexcept;
 
 private:
-    head_type m_value;
+    using leaf_type = slice_sequence_leaf<Head>; 
 
 };
 

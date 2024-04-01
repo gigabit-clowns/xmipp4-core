@@ -389,7 +389,7 @@ OutputIt apply_slices_to_layout(InputIt first,
     }
 
     // Apply the slice to the current axis
-    *(out++) = apply_slice(*(first++), slices.get(), offset);
+    *(out++) = apply_slice(*(first++), slices.head(), offset);
 
     return apply_slices_to_layout(
         first, last, 

@@ -27,29 +27,55 @@ namespace xmipp4
 namespace multidimensional
 {
 
+template <typename T>
+template <typename... Args>
+XMIPP4_INLINE_CONSTEXPR 
+slice_sequence_leaf<T>::slice_sequence_leaf(Args&&... args)
+    : m_value(std::forward<Args>(args)...)
+{
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR 
+typename slice_sequence_leaf<T>::value_type& 
+slice_sequence_leaf<T>::get() noexcept
+{
+    return m_value;
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR 
+const typename slice_sequence_leaf<T>::value_type& 
+slice_sequence_leaf<T>::get() const noexcept
+{
+    return m_value;
+}
+
+
+
 template <typename Head, typename... Tail>
 template<typename First, typename... Rest>
 XMIPP4_INLINE_CONSTEXPR
 slice_sequence<Head, Tail...>::slice_sequence(First&& first, Rest&&... rest)
-    : tail_type(std::forward<Rest>(rest)...)
-    , m_value(std::forward<First>(first))
+    : leaf_type(std::forward<First>(first))
+    , tail_type(std::forward<Rest>(rest)...)
 {
 }
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
 typename slice_sequence<Head, Tail...>::head_type& 
-slice_sequence<Head, Tail...>::get() noexcept
+slice_sequence<Head, Tail...>::head() noexcept
 {
-    return m_value;
+    return static_cast<leaf_type&>(*this).get();
 }
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
 const typename slice_sequence<Head, Tail...>::head_type& 
-slice_sequence<Head, Tail...>::get() const noexcept
+slice_sequence<Head, Tail...>::head() const noexcept
 {
-    return m_value;
+    return static_cast<const leaf_type&>(*this).get();
 }
 
 template <typename Head, typename... Tail>

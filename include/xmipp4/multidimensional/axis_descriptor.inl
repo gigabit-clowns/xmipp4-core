@@ -108,6 +108,15 @@ void swap(axis_descriptor &x, axis_descriptor &y) noexcept
 
 
 
+template <typename I>
+inline
+void apply_index(const axis_descriptor &desc,
+                 I index,
+                 std::ptrdiff_t &offset )
+{
+    // TODO
+}
+
 template <typename Start, typename Stride, typename Stop>
 inline
 axis_descriptor apply_slice(const axis_descriptor &desc, 
@@ -123,9 +132,9 @@ axis_descriptor apply_slice(const axis_descriptor &desc,
     );
     const auto count = compute_slice_size(start, stop, stride);
 
-    // When using a negative stride, indices refer to the previous element
-    // we are not interested in this behaviour.
-    if (stride < 0) --start;
+    // When using a negative stride, indices refer to the previous element.
+    // We are not interested in this behaviour here.
+    if (stride < 0 && start > 0) --start;
 
     offset += desc.get_stride()*start;
     stride *= desc.get_stride();

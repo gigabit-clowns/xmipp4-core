@@ -119,6 +119,12 @@ private:
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
 
+
+template <typename I>
+void apply_index(const axis_descriptor &desc,
+                 I index,
+                 std::ptrdiff_t &offset );
+
 template <typename Start, typename Stride, typename Stop>
 axis_descriptor apply_slice(const axis_descriptor &desc, 
                             const slice<Start, Stride, Stop> &s,

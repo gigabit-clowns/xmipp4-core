@@ -353,7 +353,110 @@ ForwardIt2 squeeze_layout(ForwardIt1 first_from,
     return std::remove_copy_if(
         first_from, last_from,
         first_to,
-        check_squeeze    
+        check_squeeze
+    );
+}
+
+
+namespace detail
+{
+
+template<typename InputIt, typename OutputIt>
+inline
+OutputIt apply_slices_to_layout(InputIt first, 
+                                InputIt last,
+                                OutputIt out,
+                                const slice_sequence<>& slices,
+                                std::ptrdiff_t &offset )
+{
+    // Nothing else to process. Consume the rest of axes
+    return std::copy(first, last, out);
+}
+
+template<typename InputIt, typename OutputIt, 
+         typename Start, typename Stride, typename Stop, 
+         typename... Slices >
+inline
+OutputIt apply_slices_to_layout(InputIt first, 
+                                InputIt last,
+                                OutputIt out,
+                                const slice_sequence<slice<Start, Stride, Stop>, Slices...>& slices,
+                                std::ptrdiff_t &offset )
+{
+    if (first == last)
+    {
+        throw std::out_of_range("A slice was provided but there are no axes left");
+    }
+
+    // Apply the slice to the current axis
+    *(out++) = apply_slice(*(first++), slices.get(), offset);
+
+    return apply_slices_to_layout(
+        first, last, 
+        out, 
+        slices.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename... Slices>
+inline
+OutputIt apply_slices_to_layout(InputIt first, 
+                                InputIt last,
+                                OutputIt out,
+                                const slice_sequence<new_axis_tag, Slices...>& slices,
+                                std::ptrdiff_t &offset )
+{
+
+    *(out++) = axis_descriptor(1, 0);
+
+    return apply_slices_to_layout(
+        first, last, 
+        out, 
+        slices.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename... Slices>
+inline
+OutputIt apply_slices_to_layout(InputIt first, 
+                                InputIt last,
+                                OutputIt out,
+                                const slice_sequence<ellipsis_tag, Slices...>& slices,
+                                std::ptrdiff_t &offset )
+{
+    const auto axes_left = std::distance(first, last);
+    const auto axis_consumption = axes_left - 0UL; // TODO
+
+    // TODO check
+
+    // Consume axes    
+    out = std::copy_n(first, axis_consumption, out);
+
+    return apply_slices_to_layout(
+        std::next(first, axis_consumption), last, 
+        out, 
+        slices.tail(),
+        offset
+    );
+}
+
+} // namespace detail
+
+template<typename InputIt, typename OutputIt, typename... Slices>
+inline
+OutputIt apply_slices_to_layout(InputIt first, 
+                                InputIt last,
+                                OutputIt out,
+                                const slice_sequence<Slices...>& slices,
+                                std::ptrdiff_t &offset )
+{
+    return detail::apply_slices_to_layout(
+        first, last, 
+        out,
+        slices, 
+        offset
     );
 }
 

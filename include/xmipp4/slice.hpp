@@ -491,6 +491,22 @@ std::size_t compute_slice_size(std::size_t start,
                                std::size_t stop, 
                                std::ptrdiff_t step ) noexcept;
 
+/**
+ * @brief Compute the pivot index of the slice. The pivot point is
+ * the element referred by the start index. When the stride of the
+ * slice is positive, this is the start value itself. When the stride
+ * is negative, this is the start value minus one, as this is exclusive.
+ * However, if the start value is zero, this is not decremented (in this
+ * case, the slice has size zero).
+ * 
+ * @param start Start index of the slice.
+ * @param step Step of the slice.
+ * @return std::size_t The pivot index.
+ */
+XMIPP4_CONSTEXPR
+std::size_t compute_slice_pivot(std::size_t start, 
+                                std::ptrdiff_t step ) noexcept;
+
 } // namespace xmipp4
 
 #include "slice.inl"

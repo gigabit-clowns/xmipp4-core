@@ -131,13 +131,10 @@ axis_descriptor apply_slice(const axis_descriptor &desc,
         slc, desc.get_count(),
         start, stop, stride
     );
+    const auto pivot = compute_slice_pivot(start, stride);
     const auto count = compute_slice_size(start, stop, stride);
-
-    // When using a negative stride, indices refer to the previous element.
-    // We are not interested in this behaviour here.
-    if (stride < 0 && start > 0) --start;
-
-    offset += desc.get_stride()*start;
+    
+    offset += desc.get_stride()*pivot;
     stride *= desc.get_stride();
     return axis_descriptor(count, stride);
 }

@@ -673,4 +673,11 @@ std::size_t compute_slice_size(std::size_t start,
     }
 }
 
+XMIPP4_INLINE_CONSTEXPR
+std::size_t compute_slice_pivot(std::size_t start, 
+                                std::ptrdiff_t step ) noexcept
+{
+    return (step < 0 && start > 0) ? (start-1) : start;
+}
+
 } // namespace xmipp4

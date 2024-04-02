@@ -27,6 +27,7 @@
  */
 
 #include "axis_descriptor.hpp"
+#include "../index.hpp"
 
 namespace xmipp4
 {
@@ -114,7 +115,7 @@ void apply_index(const axis_descriptor &desc,
                  I index,
                  std::ptrdiff_t &offset )
 {
-    // TODO
+    offset += sanitize_index(index, desc.get_count()) * desc.get_stride();
 }
 
 template <typename Start, typename Stride, typename Stop>

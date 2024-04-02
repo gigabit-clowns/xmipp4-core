@@ -101,7 +101,7 @@ slice_sequence<Head, Tail...>::tail() const noexcept
 XMIPP4_INLINE_CONSTEXPR
 new_axis_tag new_axis() noexcept
 {
-    return new_axis();
+    return new_axis_tag();
 }
 
 XMIPP4_INLINE_CONSTEXPR

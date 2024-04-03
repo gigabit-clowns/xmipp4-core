@@ -23,6 +23,7 @@
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 
+#include <type_traits>
 #include <cstddef>
 
 namespace xmipp4 
@@ -141,7 +142,8 @@ ellipsis_tag ellipsis() noexcept;
 
 template <typename... Slices>
 XMIPP4_CONSTEXPR
-slice_sequence<Slices...> make_slice_sequence(const Slices&... slices);
+slice_sequence<typename std::decay<Slices>::type...> 
+make_slice_sequence(Slices&&... slices);
 
 } // namespace multidimensional
 } // namespace xmipp4

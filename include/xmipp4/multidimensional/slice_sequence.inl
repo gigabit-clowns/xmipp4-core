@@ -90,9 +90,12 @@ ellipsis_tag ellipsis() noexcept
 
 template <typename... Slices>
 XMIPP4_INLINE_CONSTEXPR
-slice_sequence<Slices...> make_slice_sequence(const Slices&... slices)
+slice_sequence<typename std::decay<Slices>::type...> 
+make_slice_sequence(Slices&&... slices)
 {
-    return slice_sequence<Slices...>(slices...);
+    return slice_sequence<typename std::decay<Slices>::type...>(
+        std::forward<Slices>(slices)...
+    );
 }
 
 } // namespace multidimensional

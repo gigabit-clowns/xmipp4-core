@@ -366,6 +366,62 @@ inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
 
 
 
+XMIPP4_INLINE_CONSTEXPR reversed_tag reversed() noexcept
+{
+    return reversed_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator==(const reversed_tag&, const reversed_tag&) noexcept
+{
+    return true;
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=(const reversed_tag&, const reversed_tag&) noexcept
+{
+    return false;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const reversed_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) == rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const reversed_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) != rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const reversed_tag& rhs) noexcept
+{
+    return lhs == static_cast<I>(rhs);
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const reversed_tag& rhs) noexcept
+{
+    return lhs != static_cast<I>(rhs);
+}
+
+inline std::ostream& operator<<(std::ostream& os, reversed_tag)
+{
+    return os << "reversed";
+}
+
+
+
 XMIPP4_INLINE_CONSTEXPR all_tag all() noexcept
 {
     return all_tag();
@@ -611,10 +667,21 @@ sanitize_slice_step(I step, std::size_t start, std::size_t stop)
 }
 
 inline
-std::ptrdiff_t sanitize_slice_step(adjacent_tag, std::size_t start, std::size_t stop)
+std::ptrdiff_t sanitize_slice_step(adjacent_tag, 
+                                   std::size_t start, 
+                                   std::size_t stop )
 {
     check_direct_slice_ordering(start, stop);
     return 1;
+}
+
+inline
+std::ptrdiff_t sanitize_slice_step(reversed_tag, 
+                                   std::size_t start, 
+                                   std::size_t stop )
+{
+    check_reversed_slice_ordering(start, stop);
+    return -1;
 }
 
 template <typename I, I value>

@@ -331,6 +331,54 @@ std::ostream& operator<<(std::ostream& os, adjacent_tag);
 
 
 /**
+ * @brief Tag defining unit step
+ * 
+ */
+struct reversed_tag {
+    template <typename I, typename = typename std::enable_if<std::is_integral<I>::value &&
+                                                             std::is_signed<I>::value >::type >
+    XMIPP4_CONSTEXPR
+    operator I() const noexcept { return -1; }
+};
+
+/**
+ * @brief Construct an reversed_tag
+ * 
+ * @return An reversed_tag
+ */
+XMIPP4_CONSTEXPR reversed_tag reversed() noexcept;
+
+XMIPP4_CONSTEXPR bool
+operator==(const reversed_tag& lhs, const reversed_tag& rhs) noexcept;
+
+XMIPP4_CONSTEXPR bool
+operator!=(const reversed_tag& lhs, const reversed_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const reversed_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const reversed_tag& lhs, I rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const reversed_tag& rhs) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const reversed_tag& rhs) noexcept;
+
+std::ostream& operator<<(std::ostream& os, reversed_tag);
+
+
+
+/**
  * @brief Special case of slice representing all elements
  * of an axis
  * 

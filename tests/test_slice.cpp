@@ -334,6 +334,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
         REQUIRE( step == 2 );
 
         REQUIRE( compute_slice_size(start, stop, step) == 2 );
+        REQUIRE( compute_slice_pivot(start, step) == 1 );
     }
     
     SECTION( "Negative bounds" )
@@ -344,6 +345,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
         REQUIRE( step == 4 );
 
         REQUIRE( compute_slice_size(start, stop, step) == 1 );
+        REQUIRE( compute_slice_pivot(start, step) == 3 );
     }
     
     SECTION( "Odd" )
@@ -354,6 +356,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
         REQUIRE( step == 2 );
 
         REQUIRE( compute_slice_size(start, stop, step) == 4 );
+        REQUIRE( compute_slice_pivot(start, step) == 1 );
     }
     
     SECTION( "Empty" )
@@ -364,16 +367,29 @@ TEST_CASE( "sanitize slice", "[slice]" )
         REQUIRE( step == 1 );
 
         REQUIRE( compute_slice_size(start, stop, step) == 0 );
+        REQUIRE( compute_slice_pivot(start, step) == 0 );
     }
     
     SECTION( "Reversed" )
     {
-        sanitize_slice(make_slice(end(), 2, -1), 8UL, start, stop, step);
+        sanitize_slice(make_slice(end(), 2, reversed()), 8UL, start, stop, step);
         REQUIRE( start == 8 );
         REQUIRE( stop == 2 );
         REQUIRE( step == -1 );
 
         REQUIRE( compute_slice_size(start, stop, step) == 6 );
+        REQUIRE( compute_slice_pivot(start, step) == 7 );
+    }
+    
+    SECTION( "Reversed empty" )
+    {
+        sanitize_slice(make_slice(begin(), begin(), reversed()), 8UL, start, stop, step);
+        REQUIRE( start == 0 );
+        REQUIRE( stop == 0 );
+        REQUIRE( step == -1 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 0 );
+        REQUIRE( compute_slice_pivot(start, step) == 0 );
     }
     
     SECTION( "Out of bounds (positive)" )

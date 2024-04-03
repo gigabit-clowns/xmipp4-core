@@ -331,7 +331,8 @@ std::ostream& operator<<(std::ostream& os, adjacent_tag);
 
 
 /**
- * @brief Tag defining unit step
+ * @brief Tag defining to transverse the axis in reversed
+ * ordering with unit step.
  * 
  */
 struct reversed_tag {

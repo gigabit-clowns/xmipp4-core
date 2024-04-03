@@ -42,7 +42,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(-2);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -50,7 +50,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -65,7 +65,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(std::size_t(4));
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -73,7 +73,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -88,7 +88,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -96,7 +96,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -110,7 +110,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
         XMIPP4_CONST_CONSTEXPR auto five = std::integral_constant<int, 5>();
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(five);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -118,7 +118,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -134,7 +134,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(1, 20);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -142,7 +142,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
             "Start must be an int"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -158,7 +158,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -166,7 +166,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -181,7 +181,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
         XMIPP4_CONST_CONSTEXPR auto five = std::integral_constant<int, 5>();
         XMIPP4_CONST_CONSTEXPR auto s = make_slice(one, five);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -189,7 +189,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
             "Start must be a std::integral_constant<std::size_t, 1>"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -199,13 +199,13 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
     }
 }
 
-TEST_CASE( "construct slice with start and stop and stride values", "[slice]" ) 
+TEST_CASE( "construct slice with start and stop and step values", "[slice]" ) 
 {
     SECTION( "with int" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(1, 2, 20);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(1, 20, 2);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -213,7 +213,7 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
             "Start must be an int"
         );
         static_assert(
-            std::is_same<decltype(stride), const int>::value, 
+            std::is_same<decltype(step), const int>::value, 
             "Stride must be an int"
         );
         static_assert(
@@ -222,15 +222,15 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
         );
         
         REQUIRE(start == 1);
-        REQUIRE(stride == 2);
+        REQUIRE(step == 2);
         REQUIRE(stop == 20);
     }
 
     SECTION( "with begin, adjacent and end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), adjacent(), end());
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), end(), adjacent());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -238,7 +238,7 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
             "Start must be a begin_tag"
         );
         static_assert(
-            std::is_same<decltype(stride), const adjacent_tag>::value, 
+            std::is_same<decltype(step), const adjacent_tag>::value, 
             "Stride must be an adjacent_tag"
         );
         static_assert(
@@ -252,9 +252,9 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
         XMIPP4_CONST_CONSTEXPR auto one = std::integral_constant<std::size_t, 1>();
         XMIPP4_CONST_CONSTEXPR auto two = std::integral_constant<std::size_t, 2>();
         XMIPP4_CONST_CONSTEXPR auto five = std::integral_constant<int, 5>();
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(one, two, five);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(one, five, two);
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
-        XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
+        XMIPP4_CONST_CONSTEXPR auto step = s.get_step();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
 
         static_assert(
@@ -262,7 +262,7 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
             "Start must be a std::integral_constant<std::size_t, 1>"
         );
         static_assert(
-            std::is_same<decltype(stride), const std::integral_constant<std::size_t, 2>>::value, 
+            std::is_same<decltype(step), const std::integral_constant<std::size_t, 2>>::value, 
             "Stride must be an std::integral_constant<std::size_t, 2>"
         );
         static_assert(
@@ -276,11 +276,11 @@ TEST_CASE( "cross construct slice", "[slice]" )
 {
     SECTION( "with integers" )
     {
-        XMIPP4_CONST_CONSTEXPR auto a = make_slice(1, 2, 3);
+        XMIPP4_CONST_CONSTEXPR auto a = make_slice(1, 3, 2);
         XMIPP4_CONST_CONSTEXPR auto b = slice<std::size_t, std::size_t, std::size_t>(a);
 
         REQUIRE( b.get_start() == 1 );
-        REQUIRE( b.get_stride() == 2 );
+        REQUIRE( b.get_step() == 2 );
         REQUIRE( b.get_stop() == 3 );
     }
 
@@ -288,13 +288,13 @@ TEST_CASE( "cross construct slice", "[slice]" )
     {
         XMIPP4_CONST_CONSTEXPR auto a = make_slice(
             std::integral_constant<int, 1>(),
-            std::integral_constant<int, 2>(),
-            std::integral_constant<int, 3>()
+            std::integral_constant<int, 3>(),
+            std::integral_constant<int, 2>()
         );
         XMIPP4_CONST_CONSTEXPR auto b = slice<std::size_t, std::size_t, std::size_t>(a);
 
         REQUIRE( b.get_start() == 1 );
-        REQUIRE( b.get_stride() == 2 );
+        REQUIRE( b.get_step() == 2 );
         REQUIRE( b.get_stop() == 3 );
     }
 
@@ -304,13 +304,13 @@ TEST_CASE( "cross construct slice", "[slice]" )
         XMIPP4_CONST_CONSTEXPR auto b = slice<int, int, int>(a);
 
         REQUIRE( b.get_start() == 0 );
-        REQUIRE( b.get_stride() == 1 );
+        REQUIRE( b.get_step() == 1 );
         REQUIRE( b.get_stop() == 8 );
     }
 
     SECTION( "integer promotion preserves end value")
     {
-        const auto s0 = make_slice(1, 2, end());
+        const auto s0 = make_slice(1, end(), 2);
         const slice<int, int, std::uint8_t> s1(s0);
         const slice<int, int, std::int64_t> s2(s1);
         const slice<int, int, std::uint32_t> s3(s2);
@@ -328,7 +328,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
 
     SECTION( "Normal" )
     {
-        sanitize_slice(make_slice(1, 2, 4), 8UL, start, stop, step);
+        sanitize_slice(make_slice(1, 4, 2), 8UL, start, stop, step);
         REQUIRE( start == 1 );
         REQUIRE( stop == 4 );
         REQUIRE( step == 2 );
@@ -338,7 +338,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
     
     SECTION( "Negative bounds" )
     {
-        sanitize_slice(make_slice(-5, 4, -1), 8UL, start, stop, step);
+        sanitize_slice(make_slice(-5, -1, 4), 8UL, start, stop, step);
         REQUIRE( start == 3 );
         REQUIRE( stop == 7 );
         REQUIRE( step == 4 );
@@ -368,7 +368,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
     
     SECTION( "Reversed" )
     {
-        sanitize_slice(make_slice(end(), -1, 2), 8UL, start, stop, step);
+        sanitize_slice(make_slice(end(), 2, -1), 8UL, start, stop, step);
         REQUIRE( start == 8 );
         REQUIRE( stop == 2 );
         REQUIRE( step == -1 );
@@ -378,17 +378,17 @@ TEST_CASE( "sanitize slice", "[slice]" )
     
     SECTION( "Out of bounds (positive)" )
     {
-        REQUIRE_THROWS(sanitize_slice(make_slice(1, 1, 9), 8UL, start, stop, step));
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 9, 1), 8UL, start, stop, step));
     }
     
     SECTION( "Out of bounds (negative)" )
     {
-        REQUIRE_THROWS(sanitize_slice(make_slice(-9, 1, 5), 8UL, start, stop, step));
+        REQUIRE_THROWS(sanitize_slice(make_slice(-9, 5, 1), 8UL, start, stop, step));
     }
 
-    SECTION( "Zero stride" )
+    SECTION( "Zero step" )
     {
-        REQUIRE_THROWS(sanitize_slice(make_slice(1, 0, 2), 8UL, start, stop, step));
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 2, 0), 8UL, start, stop, step));
     }
 
     SECTION( "Unordered" )
@@ -398,7 +398,7 @@ TEST_CASE( "sanitize slice", "[slice]" )
 
     SECTION( "Unordered (reversed)" )
     {
-        REQUIRE_THROWS(sanitize_slice(make_slice(1, -1, 2), 8UL, start, stop, step));
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 2, -1), 8UL, start, stop, step));
     }
 }
 
@@ -408,10 +408,10 @@ TEST_CASE( "output slice to a std::ostream", "[slice]" )
 
     SECTION( "with int-s" )
     {
-        XMIPP4_CONST_CONSTEXPR auto x = make_slice(1, 2, 3);
+        XMIPP4_CONST_CONSTEXPR auto x = make_slice(1, 3, 2);
         stream << x;
 
-        REQUIRE( stream.str() == "slice(1, 2, 3)" );
+        REQUIRE( stream.str() == "slice(1, 3, 2)" );
     }
 
     SECTION( "with tags" )
@@ -419,6 +419,6 @@ TEST_CASE( "output slice to a std::ostream", "[slice]" )
         XMIPP4_CONST_CONSTEXPR auto x = make_slice(end());
         stream << x;
 
-        REQUIRE( stream.str() == "slice(begin, adjacent, end)" );
+        REQUIRE( stream.str() == "slice(begin, end, adjacent)" );
     }
 }

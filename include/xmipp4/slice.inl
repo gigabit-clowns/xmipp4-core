@@ -33,110 +33,110 @@
 namespace xmipp4 
 {
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Stride, Stop>::slice(start_type start, 
-                                  stride_type stride, 
-                                  stop_type stop ) noexcept
+slice<Start, Stop, Step>::slice(start_type start, 
+                                stop_type stop,
+                                step_type step ) noexcept
     : m_start(start)
-    , m_stride(stride)
     , m_stop(stop)
+    , m_step(step)
 {
 }
 
-template <typename Start, typename Stride, typename Stop>
-template <typename Start2, typename Stride2, typename Stop2>
+template <typename Start, typename Stop, typename Step>
+template <typename Start2, typename Stop2, typename Step2>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Stride, Stop>::slice(Start2 start,
-                                  Stride2 stride,
-                                  Stop2 stop ) noexcept
+slice<Start, Stop, Step>::slice(Start2 start,
+                                Stop2 stop,
+                                Step2 step ) noexcept
     : slice(
-        static_cast<start_type>(start),
-        static_cast<stride_type>(stride),
-        propagate_end<stop_type>(stop)
+        propagate_end<start_type>(start),
+        propagate_end<stop_type>(stop),
+        static_cast<step_type>(step)
     )
 {
 }
 
-template <typename Start, typename Stride, typename Stop>
-template <typename Start2, typename Stride2, typename Stop2>
+template <typename Start, typename Stop, typename Step>
+template <typename Start2, typename Stop2, typename Step2>
 XMIPP4_INLINE_CONSTEXPR 
-slice<Start, Stride, Stop>::slice(const slice<Start2, Stride2, Stop2>& other) noexcept
-    : slice(other.get_start(), other.get_stride(), other.get_stop())
+slice<Start, Stop, Step>::slice(const slice<Start2, Stop2, Step2>& other) noexcept
+    : slice(other.get_start(), other.get_stop(), other.get_step())
 {
 }
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Stride, Stop>::set_start(start_type start) noexcept
+slice<Start, Stop, Step>::set_start(start_type start) noexcept
 {
     m_start = start;
 }
 
-template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::start_type& 
-slice<Start, Stride, Stop>::get_start() const noexcept
+template <typename Start, typename Stop, typename Step>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stop, Step>::start_type& 
+slice<Start, Stop, Step>::get_start() const noexcept
 {
     return m_start;
 }
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Stride, Stop>::set_stride(stride_type stride) noexcept
-{
-    m_stride = stride;
-}
-
-template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::stride_type&
-slice<Start, Stride, Stop>::get_stride() const noexcept
-{
-    return m_stride;
-}
-
-template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR void 
-slice<Start, Stride, Stop>::set_stop(stop_type stop) noexcept
+slice<Start, Stop, Step>::set_stop(stop_type stop) noexcept
 {
     m_stop = stop;
 }
 
-template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stride, Stop>::stop_type& 
-slice<Start, Stride, Stop>::get_stop() const noexcept
+template <typename Start, typename Stop, typename Step>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stop, Step>::stop_type& 
+slice<Start, Stop, Step>::get_stop() const noexcept
 {
     return m_stop;
 }
 
-
-
-template <typename Start1, typename Stride1, typename Stop1, 
-          typename Start2, typename Stride2, typename Stop2>
-XMIPP4_INLINE_CONSTEXPR bool
-operator==( const slice<Start1, Stride1, Stop1>& lhs, 
-            const slice<Start2, Stride2, Stop2>& rhs ) noexcept
+template <typename Start, typename Stop, typename Step>
+XMIPP4_INLINE_CONSTEXPR void 
+slice<Start, Stop, Step>::set_step(step_type step) noexcept
 {
-    return lhs.get_start() == rhs.get_start() &&
-           lhs.get_stride() == rhs.get_stride() &&
-           lhs.get_stop() == rhs.get_stop() ;
+    m_step = step;
 }
 
-template <typename Start1, typename Stride1, typename Stop1, 
-          typename Start2, typename Stride2, typename Stop2>
+template <typename Start, typename Stop, typename Step>
+XMIPP4_INLINE_CONSTEXPR const typename slice<Start, Stop, Step>::step_type&
+slice<Start, Stop, Step>::get_step() const noexcept
+{
+    return m_step;
+}
+
+
+
+template <typename Start1, typename Stop1, typename Step1, 
+          typename Start2, typename Stop2, typename Step2>
 XMIPP4_INLINE_CONSTEXPR bool
-operator!=( const slice<Start1, Stride1, Stop1>& lhs, 
-            const slice<Start2, Stride2, Stop2>& rhs ) noexcept
+operator==( const slice<Start1, Stop1, Step1>& lhs, 
+            const slice<Start2, Stop2, Step2>& rhs ) noexcept
+{
+    return lhs.get_start() == rhs.get_start() &&
+           lhs.get_stop() == rhs.get_stop() &&
+           lhs.get_step() == rhs.get_step();
+}
+
+template <typename Start1, typename Stop1, typename Step1, 
+          typename Start2, typename Stop2, typename Step2>
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=( const slice<Start1, Stop1, Step1>& lhs, 
+            const slice<Start2, Stop2, Step2>& rhs ) noexcept
 {
     return !(lhs == rhs);
 }
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 inline std::ostream& 
-operator<<(std::ostream& os, const slice<Start, Stride, Stop> &s)
+operator<<(std::ostream& os, const slice<Start, Stop, Step> &s)
 {
     return os << "slice(" << s.get_start()
-              << ", " << s.get_stride()
-              << ", " << s.get_stop() << ")";
+              << ", " << s.get_stop()
+              << ", " << s.get_step() << ")";
 }
 
 
@@ -199,71 +199,15 @@ inline std::ostream& operator<<(std::ostream& os, begin_tag)
 
 
 
-XMIPP4_INLINE_CONSTEXPR adjacent_tag adjacent() noexcept
-{
-    return adjacent_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR bool
-operator==(const adjacent_tag&, const adjacent_tag&) noexcept
-{
-    return true;
-}
-
-XMIPP4_INLINE_CONSTEXPR bool
-operator!=(const adjacent_tag&, const adjacent_tag&) noexcept
-{
-    return false;
-}
-
-template <typename I>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_integral<I>::value, bool>::type
-operator==(const adjacent_tag& lhs, I rhs) noexcept
-{
-    return static_cast<I>(lhs) == rhs;
-}
-
-template <typename I>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_integral<I>::value, bool>::type
-operator!=(const adjacent_tag& lhs, I rhs) noexcept
-{
-    return static_cast<I>(lhs) != rhs;
-}
-
-template <typename I>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_integral<I>::value, bool>::type
-operator==(I lhs, const adjacent_tag& rhs) noexcept
-{
-    return lhs == static_cast<I>(rhs);
-}
-
-template <typename I>
-XMIPP4_INLINE_CONSTEXPR 
-typename std::enable_if<std::is_integral<I>::value, bool>::type
-operator!=(I lhs, const adjacent_tag& rhs) noexcept
-{
-    return lhs != static_cast<I>(rhs);
-}
-
-inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
-{
-    return os << "adjacent";
-}
-
-
-
 namespace detail
 {
 
 template <typename To, typename From>
 XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_same<From, To>::value, To>::type
-propagate_end(From&& x)
+propagate_end(From x)
 {
-    return std::forward<From>(x);
+    return x;
 }
 
 template <typename To, typename From>
@@ -283,6 +227,14 @@ typename std::enable_if<std::is_integral<To>::value, To>::type
 propagate_end(end_tag)
 {
     return end(); 
+}
+
+template <typename To>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<To>::value, To>::type
+propagate_end(begin_tag)
+{
+    return begin(); 
 }
 
 template <typename To, typename From, From value>
@@ -358,6 +310,62 @@ inline std::ostream& operator<<(std::ostream& os, end_tag)
 
 
 
+XMIPP4_INLINE_CONSTEXPR adjacent_tag adjacent() noexcept
+{
+    return adjacent_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator==(const adjacent_tag&, const adjacent_tag&) noexcept
+{
+    return true;
+}
+
+XMIPP4_INLINE_CONSTEXPR bool
+operator!=(const adjacent_tag&, const adjacent_tag&) noexcept
+{
+    return false;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(const adjacent_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) == rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(const adjacent_tag& lhs, I rhs) noexcept
+{
+    return static_cast<I>(lhs) != rhs;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator==(I lhs, const adjacent_tag& rhs) noexcept
+{
+    return lhs == static_cast<I>(rhs);
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR 
+typename std::enable_if<std::is_integral<I>::value, bool>::type
+operator!=(I lhs, const adjacent_tag& rhs) noexcept
+{
+    return lhs != static_cast<I>(rhs);
+}
+
+inline std::ostream& operator<<(std::ostream& os, adjacent_tag)
+{
+    return os << "adjacent";
+}
+
+
+
 XMIPP4_INLINE_CONSTEXPR all_tag all() noexcept
 {
     return all_tag();
@@ -382,35 +390,35 @@ XMIPP4_INLINE_CONSTEXPR odd_tag odd() noexcept
 
 
 template <typename Stop>
-XMIPP4_INLINE_CONSTEXPR slice<begin_tag, adjacent_tag, Stop> 
+XMIPP4_INLINE_CONSTEXPR slice<begin_tag, Stop, adjacent_tag> 
 make_slice(Stop stop) noexcept
 {
-    return slice<begin_tag, adjacent_tag, Stop>(
+    return slice<begin_tag, Stop, adjacent_tag>(
         begin(), 
-        adjacent(),  
-        stop
+        stop,
+        adjacent()
     );
 }
 
 template <typename Start, typename Stop>
-XMIPP4_INLINE_CONSTEXPR slice<Start, adjacent_tag, Stop> 
+XMIPP4_INLINE_CONSTEXPR slice<Start, Stop, adjacent_tag> 
 make_slice(Start start, Stop stop) noexcept
 {
-    return slice<Start, adjacent_tag, Stop>(
+    return slice<Start, Stop, adjacent_tag>(
         start, 
-        adjacent(), 
-        stop
+        stop,
+        adjacent()
     );
 }
 
-template <typename Start, typename Stride, typename Stop>
-XMIPP4_INLINE_CONSTEXPR slice<Start, Stride, Stop> 
-make_slice(Start start, Stride stride, Stop stop) noexcept
+template <typename Start, typename Stop, typename Step>
+XMIPP4_INLINE_CONSTEXPR slice<Start, Stop, Step> 
+make_slice(Start start, Stop stop, Step step) noexcept
 {
-    return slice<Start, Stride, Stop>(
+    return slice<Start, Stop, Step>(
         start, 
-        stride, 
-        stop
+        stop,
+        step 
     );
 }
 
@@ -639,8 +647,8 @@ std::ptrdiff_t sanitize_slice_step(T step, std::size_t start, std::size_t stop)
     return detail::sanitize_slice_step(step, start, stop);
 }
 
-template <typename Start, typename Stride, typename Stop>
-void sanitize_slice(const slice<Start, Stride, Stop> &slc,
+template <typename Start, typename Stop, typename Step>
+void sanitize_slice(const slice<Start, Stop, Step> &slc,
                     std::size_t size,
                     std::size_t &start,
                     std::size_t &stop,
@@ -648,7 +656,7 @@ void sanitize_slice(const slice<Start, Stride, Stop> &slc,
 { 
     start = sanitize_slice_index(slc.get_start(), size);
     stop = sanitize_slice_index(slc.get_stop(), size);
-    step = sanitize_slice_step(slc.get_stride(), start, stop);
+    step = sanitize_slice_step(slc.get_step(), start, stop);
 }
 
 XMIPP4_INLINE_CONSTEXPR

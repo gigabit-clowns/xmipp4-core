@@ -148,6 +148,16 @@ struct ellipsis_tag {};
 XMIPP4_CONSTEXPR
 ellipsis_tag ellipsis() noexcept;
 
+
+
+/**
+ * @brief Construct a sequence of slices of arbitrary type.
+ * 
+ * @tparam Slices Types of the slices.
+ * @param slices Sequence of slices.
+ * @return slice_sequence<typename std::decay<Slices>::type...>
+ * Object representing all provided slices.
+ */
 template <typename... Slices>
 XMIPP4_CONSTEXPR
 slice_sequence<typename std::decay<Slices>::type...> 

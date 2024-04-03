@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file slice_sequence.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of slice_sequence.hpp
+ * @date 2024-04-03
+ * 
+ */
+
 #include "slice_sequence.hpp"
 
 #include <utility>

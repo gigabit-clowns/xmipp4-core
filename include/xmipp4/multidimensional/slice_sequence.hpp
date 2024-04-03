@@ -20,6 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file slice_sequence.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides utilities for manipulating slice sequences
+ * @date 2024-04-03
+ * 
+ */
+
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

@@ -30,6 +30,13 @@ namespace xmipp4
 namespace multidimensional
 {
 
+/**
+ * @brief Defines a sequence of slicing classes.
+ * 
+ * @tparam Slices Slicing classes. May be any specialization of slice, 
+ * an integral value or std::integral_constant
+ * 
+ */
 template <typename... Slices>
 class slice_sequence;
 
@@ -46,6 +53,16 @@ public:
     using tail_type = slice_sequence<Tail...>;
 
     slice_sequence() = default;
+
+    /**
+     * @brief Construct an slice_sequence using its values.
+     * 
+     * @tparam First Type of the first slice.
+     * @tparam Rest Types of the rest of the slices.
+     * @param first First item on the sequence.
+     * @param rest The rest of the items on the sequence.
+     * 
+     */
     template<typename First, typename... Rest>
     explicit XMIPP4_CONSTEXPR slice_sequence(First&& first, Rest&&... rest);
     slice_sequence(const slice_sequence &other) = default;
@@ -55,9 +72,32 @@ public:
     slice_sequence& operator=(const slice_sequence &other) = default;
     slice_sequence& operator=(slice_sequence &&other) = default;
 
+    /**
+     * @brief Get a reference to the head item on the sequence.
+     * 
+     * @return head_type& Head element.
+     */
     XMIPP4_CONSTEXPR head_type& head() noexcept;
+
+    /**
+     * @brief Get a const reference to the head item on the sequence.
+     * 
+     * @return const head_type& Head element.
+     */
     XMIPP4_CONSTEXPR const head_type& head() const noexcept;
+
+    /**
+     * @brief Get a reference to the trailing elements of the sequence.
+     * 
+     * @return tail_type& Head element.
+     */
     XMIPP4_CONSTEXPR tail_type& tail() noexcept;
+
+    /**
+     * @brief Get a const reference to the trailing elements of the sequence.
+     * 
+     * @return const tail_type& Head element.
+     */
     XMIPP4_CONSTEXPR const tail_type& tail() const noexcept;
 
 private:
@@ -65,6 +105,8 @@ private:
     XMIPP4_NO_UNIQUE_ADDRESS tail_type m_tail;
 
 };
+
+
 
 /**
  * @brief Tag to express the creation a new axis of size one.

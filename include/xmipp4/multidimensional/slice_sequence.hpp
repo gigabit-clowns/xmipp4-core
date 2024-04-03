@@ -20,6 +20,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <cstddef>
@@ -28,29 +29,6 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
-template <typename T>
-class slice_sequence_leaf
-{
-public:
-    using value_type = T;
-
-    template <typename... Args>
-    explicit XMIPP4_CONSTEXPR slice_sequence_leaf(Args&&... args);
-    slice_sequence_leaf(const slice_sequence_leaf &other) = default; 
-    slice_sequence_leaf(slice_sequence_leaf &&other) = default; 
-    ~slice_sequence_leaf() = default;
-
-    slice_sequence_leaf& operator=(const slice_sequence_leaf &other) = default; 
-    slice_sequence_leaf& operator=(slice_sequence_leaf &&other) = default; 
-
-    XMIPP4_CONSTEXPR value_type& get() noexcept;
-    XMIPP4_CONSTEXPR const value_type& get() const noexcept;
-
-private:
-    value_type m_value;
-
-};
 
 template <typename... Slices>
 class slice_sequence;
@@ -62,8 +40,6 @@ class slice_sequence<>
 
 template <typename Head, typename... Tail>
 class slice_sequence<Head, Tail...>
-    : private slice_sequence_leaf<Head>
-    , private slice_sequence<Tail...>
 {
 public:
     using head_type = Head;
@@ -85,7 +61,8 @@ public:
     XMIPP4_CONSTEXPR const tail_type& tail() const noexcept;
 
 private:
-    using leaf_type = slice_sequence_leaf<Head>; 
+    XMIPP4_NO_UNIQUE_ADDRESS head_type m_head;
+    XMIPP4_NO_UNIQUE_ADDRESS tail_type m_tail;
 
 };
 

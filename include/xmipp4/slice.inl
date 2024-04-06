@@ -223,24 +223,21 @@ propagate_end(From x)
 
 template <typename To>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(end_tag)
+To propagate_end(end_tag)
 {
-    return end(); 
+    return static_cast<To>(end());
 }
 
 template <typename To>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(begin_tag)
+To propagate_end(begin_tag)
 {
-    return begin(); 
+    return static_cast<To>(begin());
 }
 
 template <typename To, typename From, From value>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<To>::value, To>::type
-propagate_end(std::integral_constant<From, value>)
+To propagate_end(std::integral_constant<From, value>)
 {
     return propagate_end<To>(value);
 }

@@ -30,7 +30,7 @@
  */
 
 #include "axis_descriptor.hpp"
-#include "slice_sequence.hpp"
+#include "subscript_sequence.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <cstddef>
@@ -402,12 +402,12 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt2 squeeze_layout(ForwardIt1 first_from,
                                                  ForwardIt2 first_to );
 
 
-template<typename InputIt, typename OutputIt, typename... Slices>
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<Slices...>& slices,
-                                std::ptrdiff_t &offset );
+template<typename InputIt, typename OutputIt, typename... Subscripts>
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset );
                                                  
 
 } // namespace multidimensional

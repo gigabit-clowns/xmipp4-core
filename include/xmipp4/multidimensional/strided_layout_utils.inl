@@ -363,99 +363,138 @@ namespace detail
 
 template<typename InputIt, typename OutputIt>
 inline
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<>& slices,
-                                std::ptrdiff_t &offset )
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<>&,
+                                    std::ptrdiff_t &)
 {
-    // Nothing else to process. Consume the rest of axes
+    // No more subscripts to be processed.
+    // Copy the remaining axes
     return std::copy(first, last, out);
 }
 
-template<typename InputIt, typename OutputIt, 
-         typename Start, typename Stride, typename Stop, 
-         typename... Slices >
+template<typename InputIt, typename OutputIt, typename I, typename... Subscripts>
 inline
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<slice<Start, Stride, Stop>, Slices...>& slices,
-                                std::ptrdiff_t &offset )
+typename std::enable_if<std::is_integral<I>::value, OutputIt>::type
+apply_subscripts_to_layout(InputIt first, 
+                           InputIt last,
+                           OutputIt out,
+                           const subscript_sequence<I, Subscripts...>& subscripts,
+                           std::ptrdiff_t &offset)
 {
-    if (first == last)
+    // Consume index
+    apply_index(*first, subscripts.head(), offset);
+    ++first;
+
+    return apply_subscripts_to_layout(
+        first, last,
+        out,
+        subscripts.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename I, I value, typename... Subscripts>
+inline
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<std::integral_constant<I, value>, Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset)
+{
+    // Consume index
+    apply_index(*first, subscripts.head(), offset);
+    ++first;
+
+    return apply_subscripts_to_layout(
+        first, last,
+        out,
+        subscripts.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename Start, typename Stop, typename Step, typename... Subscripts>
+inline
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<slice<Start, Stop, Step>, Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset)
+{
+    *out = apply_slice(*first, subscripts.head(), offset);
+    ++out;
+    ++first;
+
+    return apply_subscripts_to_layout(
+        first, last,
+        out,
+        subscripts.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename... Subscripts>
+inline
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<new_axis_tag, Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset )
+{
+    *out = axis_descriptor(1, 0); // Add an axis
+    ++out;
+
+    return apply_subscripts_to_layout(
+        first, last,
+        out,
+        subscripts.tail(),
+        offset
+    );
+}
+
+template<typename InputIt, typename OutputIt, typename... Subscripts>
+inline
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<ellipsis_tag, Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset )
+{
+    using tail_type = typename decltype(subscripts)::tail_type;
+    XMIPP4_CONST_CONSTEXPR auto remaining_subscripts = tail_type::consumption();
+    const auto remaining_axes = std::distance(first, last);
+    const auto padding_axes = remaining_axes - remaining_subscripts;
+    
+    // Copy padding axes
+    for (decltype(padding_axes) i = 0; i < padding_axes; ++i, ++first, ++out)
     {
-        throw std::out_of_range("A slice was provided but there are no axes left");
+        *out = *first;
     }
 
-    // Apply the slice to the current axis
-    *(out++) = apply_slice(*(first++), slices.head(), offset);
-
-    return apply_slices_to_layout(
-        first, last, 
-        out, 
-        slices.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename... Slices>
-inline
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<new_axis_tag, Slices...>& slices,
-                                std::ptrdiff_t &offset )
-{
-
-    *(out++) = axis_descriptor(1, 0);
-
-    return apply_slices_to_layout(
-        first, last, 
-        out, 
-        slices.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename... Slices>
-inline
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<ellipsis_tag, Slices...>& slices,
-                                std::ptrdiff_t &offset )
-{
-    const auto axes_left = std::distance(first, last);
-    const auto axis_consumption = axes_left - 0UL; // TODO
-
-    // TODO check
-
-    // Consume axes    
-    out = std::copy_n(first, axis_consumption, out);
-
-    return apply_slices_to_layout(
-        std::next(first, axis_consumption), last, 
-        out, 
-        slices.tail(),
+    return apply_subscripts_to_layout(
+        first, last,
+        out,
+        subscripts.tail(),
         offset
     );
 }
 
 } // namespace detail
 
-template<typename InputIt, typename OutputIt, typename... Slices>
+template<typename InputIt, typename OutputIt, typename... Subscripts>
 inline
-OutputIt apply_slices_to_layout(InputIt first, 
-                                InputIt last,
-                                OutputIt out,
-                                const slice_sequence<Slices...>& slices,
-                                std::ptrdiff_t &offset )
+OutputIt apply_subscripts_to_layout(InputIt first, 
+                                    InputIt last,
+                                    OutputIt out,
+                                    const subscript_sequence<Subscripts...>& subscripts,
+                                    std::ptrdiff_t &offset )
 {
-    return detail::apply_slices_to_layout(
+    return detail::apply_subscripts_to_layout(
         first, last, 
         out,
-        slices, 
+        subscripts, 
         offset
     );
 }

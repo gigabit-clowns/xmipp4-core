@@ -36,13 +36,20 @@
 
 namespace xmipp4 
 {
+
+template <typename T, typename>
+struct is_index;
+
+template <typename T, typename>
+struct is_slice;
+
 namespace multidimensional
 {
 
 /**
- * @brief Defines a sequence of slicing classes.
+ * @brief Defines a sequence of subscript classes.
  * 
- * @tparam Subscripts Slicing classes. May be any specialization of slice, 
+ * @tparam Subscripts Subscript classes. May be any specialization of slice, 
  * an integral value, std::integral_constant, new_axis_tag or ellipsis_tag.
  * 
  */
@@ -52,6 +59,27 @@ class subscript_sequence;
 template <>
 class subscript_sequence<>
 {
+    /**
+     * @brief Obtain the number of subscripts on the sequence.
+     * 
+     * @return std::size_t Subscript count.
+     */
+    static XMIPP4_CONSTEXPR std::size_t size() noexcept;
+
+    /**
+     * @brief Obtain the number of axes consumed by this sequence.
+     * 
+     * @return std::size_t Number of consumed axes.
+     */
+    static XMIPP4_CONSTEXPR std::size_t consumption() noexcept;
+
+    /**
+     * @brief Obtain the number of axes produced by this sequence.
+     * 
+     * @return std::size_t Number of produced axes.
+     */
+    static XMIPP4_CONSTEXPR std::size_t production() noexcept;
+
 };
 
 template <typename Head, typename... Tail>
@@ -109,6 +137,27 @@ public:
      */
     XMIPP4_CONSTEXPR const tail_type& tail() const noexcept;
 
+    /**
+     * @brief Obtain the number of subscripts on the sequence.
+     * 
+     * @return std::size_t Subscript count.
+     */
+    static XMIPP4_CONSTEXPR std::size_t size() noexcept;
+
+    /**
+     * @brief Obtain the number of axes consumed by this sequence.
+     * 
+     * @return std::size_t Number of consumed axes.
+     */
+    static XMIPP4_CONSTEXPR std::size_t consumption() noexcept;
+
+    /**
+     * @brief Obtain the number of axes produced by this sequence.
+     * 
+     * @return std::size_t Number of produced axes.
+     */
+    static XMIPP4_CONSTEXPR std::size_t production() noexcept;
+
 private:
     XMIPP4_NO_UNIQUE_ADDRESS head_type m_head;
     XMIPP4_NO_UNIQUE_ADDRESS tail_type m_tail;
@@ -147,6 +196,54 @@ struct ellipsis_tag {};
  */
 XMIPP4_CONSTEXPR
 ellipsis_tag ellipsis() noexcept;
+
+
+
+template <typename T, typename = void>
+struct axis_consumption;
+
+template <typename T>
+struct axis_consumption<T, typename std::enable_if<is_index<T>::value>::type>
+    : std::integral_constant<std::size_t, 1>
+{
+};
+
+template <typename T>
+struct axis_consumption<T, typename std::enable_if<is_slice<T>::value>::type>
+    : std::integral_constant<std::size_t, 1>
+{
+};
+
+template <>
+struct axis_consumption<new_axis_tag>
+    : std::integral_constant<std::size_t, 0>
+{
+};
+
+
+
+template <typename T, typename = void>
+struct axis_production;
+
+template <typename T>
+struct axis_production<T, typename std::enable_if<is_index<T>::value>::type>
+    : std::integral_constant<std::size_t, 0>
+{
+};
+
+template <typename T>
+struct axis_production<T, typename std::enable_if<is_slice<T>::value>::type>
+    : std::integral_constant<std::size_t, 1>
+{
+};
+
+template <>
+struct axis_production<new_axis_tag>
+    : std::integral_constant<std::size_t, 1>
+{
+};
+
+
 
 
 

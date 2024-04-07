@@ -35,6 +35,26 @@ namespace xmipp4
 namespace multidimensional
 {
 
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<>::size() noexcept
+{
+    return 0UL;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<>::consumption() noexcept
+{
+    return 0UL;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<>::production() noexcept
+{
+    return 0UL;
+}
+
+
+
 template <typename Head, typename... Tail>
 template<typename First, typename... Rest>
 XMIPP4_INLINE_CONSTEXPR
@@ -74,6 +94,27 @@ const typename subscript_sequence<Head, Tail...>::tail_type&
 subscript_sequence<Head, Tail...>::tail() const noexcept
 {
     return m_tail;
+}
+
+template <typename Head, typename... Tail>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<Head, Tail...>::size() noexcept
+{
+    return sizeof...(Tail) + 1;
+}
+
+template <typename Head, typename... Tail>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<Head, Tail...>::consumption() noexcept
+{
+    return tail_type::consumption() + axis_consumption<head_type>::value;
+}
+
+template <typename Head, typename... Tail>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t subscript_sequence<Head, Tail...>::production() noexcept
+{
+    return tail_type::production() + axis_production<head_type>::value;
 }
 
 

@@ -179,12 +179,17 @@ std::ostream& operator<<(std::ostream& os, const slice<Start, Stop, Step> &s);
 
 
 template <typename T>
-struct subscript_traits;
-
-template <typename Start, typename Stop, typename Step>
-struct subscript_traits<slice<Start, Stop, Step>>
+struct is_slice
+    : false_type
 {
 };
+
+template <typename Start, typename Stop, typename Step>
+struct is_slice<slice<Start, Stop, Step>>
+    : true_type
+{
+};
+
 
 
 /**

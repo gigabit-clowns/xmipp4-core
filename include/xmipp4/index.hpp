@@ -20,10 +20,29 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <type_traits>
 #include <cstddef>
 
 namespace xmipp4 
 {
+
+template <typename T, typename=void>
+struct is_index
+	: false_type
+{
+};
+
+template <typename I>
+struct is_index<I, typename std::enable_if<std::is_integral<I>::value>::type>
+	: true_type
+{
+};
+
+template <typename I, I value>
+struct is_index<std::integral_constant<I, value>>
+	: true_type
+{
+};
 
 template <typename I>
 std::size_t sanitize_index(I index, std::size_t length);

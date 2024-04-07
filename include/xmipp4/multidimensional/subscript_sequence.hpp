@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file slice_sequence.hpp
+ * @file subscript_sequence.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides utilities for manipulating slice sequences
+ * @brief Provides utilities for manipulating subscript sequences
  * @date 2024-04-03
  * 
  */
@@ -42,44 +42,44 @@ namespace multidimensional
 /**
  * @brief Defines a sequence of slicing classes.
  * 
- * @tparam Slices Slicing classes. May be any specialization of slice, 
+ * @tparam Subscripts Slicing classes. May be any specialization of subscript, 
  * an integral value or std::integral_constant
  * 
  */
-template <typename... Slices>
-class slice_sequence;
+template <typename... Subscripts>
+class subscript_sequence;
 
 template <>
-class slice_sequence<>
+class subscript_sequence<>
 {
 };
 
 template <typename Head, typename... Tail>
-class slice_sequence<Head, Tail...>
+class subscript_sequence<Head, Tail...>
 {
 public:
     using head_type = Head;
-    using tail_type = slice_sequence<Tail...>;
+    using tail_type = subscript_sequence<Tail...>;
 
-    slice_sequence() = default;
+    subscript_sequence() = default;
 
     /**
-     * @brief Construct an slice_sequence using its values.
+     * @brief Construct an subscript_sequence using its values.
      * 
-     * @tparam First Type of the first slice.
-     * @tparam Rest Types of the rest of the slices.
+     * @tparam First Type of the first subscript.
+     * @tparam Rest Types of the rest of the subscripts.
      * @param first First item on the sequence.
      * @param rest The rest of the items on the sequence.
      * 
      */
     template<typename First, typename... Rest>
-    explicit XMIPP4_CONSTEXPR slice_sequence(First&& first, Rest&&... rest);
-    slice_sequence(const slice_sequence &other) = default;
-    slice_sequence(slice_sequence &&other) = default;
-    ~slice_sequence() = default;
+    explicit XMIPP4_CONSTEXPR subscript_sequence(First&& first, Rest&&... rest);
+    subscript_sequence(const subscript_sequence &other) = default;
+    subscript_sequence(subscript_sequence &&other) = default;
+    ~subscript_sequence() = default;
 
-    slice_sequence& operator=(const slice_sequence &other) = default;
-    slice_sequence& operator=(slice_sequence &&other) = default;
+    subscript_sequence& operator=(const subscript_sequence &other) = default;
+    subscript_sequence& operator=(subscript_sequence &&other) = default;
 
     /**
      * @brief Get a reference to the head item on the sequence.
@@ -151,19 +151,19 @@ ellipsis_tag ellipsis() noexcept;
 
 
 /**
- * @brief Construct a sequence of slices of arbitrary type.
+ * @brief Construct a sequence of subscripts of arbitrary type.
  * 
- * @tparam Slices Types of the slices.
- * @param slices Sequence of slices.
- * @return slice_sequence<typename std::decay<Slices>::type...>
- * Object representing all provided slices.
+ * @tparam Subscripts Types of the subscripts.
+ * @param subscripts Sequence of subscripts.
+ * @return subscript_sequence<typename std::decay<Subscripts>::type...>
+ * Object representing all provided subscripts.
  */
-template <typename... Slices>
+template <typename... Subscripts>
 XMIPP4_CONSTEXPR
-slice_sequence<typename std::decay<Slices>::type...> 
-make_slice_sequence(Slices&&... slices);
+subscript_sequence<typename std::decay<Subscripts>::type...> 
+make_subscript_sequence(Subscripts&&... subscripts);
 
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "slice_sequence.inl"
+#include "subscript_sequence.inl"

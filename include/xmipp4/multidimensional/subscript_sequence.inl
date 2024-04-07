@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file slice_sequence.inl
+ * @file subscript_sequence.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of slice_sequence.hpp
+ * @brief Implementation of subscript_sequence.hpp
  * @date 2024-04-03
  * 
  */
 
-#include "slice_sequence.hpp"
+#include "subscript_sequence.hpp"
 
 #include <utility>
 
@@ -38,7 +38,7 @@ namespace multidimensional
 template <typename Head, typename... Tail>
 template<typename First, typename... Rest>
 XMIPP4_INLINE_CONSTEXPR
-slice_sequence<Head, Tail...>::slice_sequence(First&& first, Rest&&... rest)
+subscript_sequence<Head, Tail...>::subscript_sequence(First&& first, Rest&&... rest)
     : m_head(std::forward<First>(first))
     , m_tail(std::forward<Rest>(rest)...)
 {
@@ -46,32 +46,32 @@ slice_sequence<Head, Tail...>::slice_sequence(First&& first, Rest&&... rest)
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
-typename slice_sequence<Head, Tail...>::head_type& 
-slice_sequence<Head, Tail...>::head() noexcept
+typename subscript_sequence<Head, Tail...>::head_type& 
+subscript_sequence<Head, Tail...>::head() noexcept
 {
     return m_head;
 }
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
-const typename slice_sequence<Head, Tail...>::head_type& 
-slice_sequence<Head, Tail...>::head() const noexcept
+const typename subscript_sequence<Head, Tail...>::head_type& 
+subscript_sequence<Head, Tail...>::head() const noexcept
 {
     return m_head;
 }
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
-typename slice_sequence<Head, Tail...>::tail_type& 
-slice_sequence<Head, Tail...>::tail() noexcept
+typename subscript_sequence<Head, Tail...>::tail_type& 
+subscript_sequence<Head, Tail...>::tail() noexcept
 {
     return m_tail;
 }
 
 template <typename Head, typename... Tail>
 XMIPP4_INLINE_CONSTEXPR
-const typename slice_sequence<Head, Tail...>::tail_type& 
-slice_sequence<Head, Tail...>::tail() const noexcept
+const typename subscript_sequence<Head, Tail...>::tail_type& 
+subscript_sequence<Head, Tail...>::tail() const noexcept
 {
     return m_tail;
 }
@@ -96,13 +96,13 @@ ellipsis_tag ellipsis() noexcept
 
 
 
-template <typename... Slices>
+template <typename... Subscripts>
 XMIPP4_INLINE_CONSTEXPR
-slice_sequence<typename std::decay<Slices>::type...> 
-make_slice_sequence(Slices&&... slices)
+subscript_sequence<typename std::decay<Subscripts>::type...> 
+make_subscript_sequence(Subscripts&&... subscripts)
 {
-    return slice_sequence<typename std::decay<Slices>::type...>(
-        std::forward<Slices>(slices)...
+    return subscript_sequence<typename std::decay<Subscripts>::type...>(
+        std::forward<Subscripts>(subscripts)...
     );
 }
 

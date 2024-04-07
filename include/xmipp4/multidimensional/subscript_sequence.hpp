@@ -42,8 +42,8 @@ namespace multidimensional
 /**
  * @brief Defines a sequence of slicing classes.
  * 
- * @tparam Subscripts Slicing classes. May be any specialization of subscript, 
- * an integral value or std::integral_constant
+ * @tparam Subscripts Slicing classes. May be any specialization of slice, 
+ * an integral value, std::integral_constant, new_axis_tag or ellipsis_tag.
  * 
  */
 template <typename... Subscripts>

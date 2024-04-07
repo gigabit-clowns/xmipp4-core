@@ -178,15 +178,15 @@ std::ostream& operator<<(std::ostream& os, const slice<Start, Stop, Step> &s);
 
 
 
-template <typename T>
+template <typename T, typename=void>
 struct is_slice
-    : false_type
+    : std::false_type
 {
 };
 
 template <typename Start, typename Stop, typename Step>
 struct is_slice<slice<Start, Stop, Step>>
-    : true_type
+    : std::true_type
 {
 };
 
@@ -401,19 +401,14 @@ std::ostream& operator<<(std::ostream& os, reversed_tag);
  * of an axis
  * 
  */
-struct all_tag : slice<begin_tag, end_tag, adjacent_tag>
-{
-};
+using all_slice = slice<begin_tag, end_tag, adjacent_tag>;
 
 /**
  * @brief Construct an all_tag
  * 
  * @return An all_tag
  */
-XMIPP4_CONSTEXPR all_tag all() noexcept;
-
-std::ostream& operator<<(std::ostream& os, all_tag);
-
+XMIPP4_CONSTEXPR all_slice all() noexcept;
 
 
 
@@ -422,18 +417,16 @@ std::ostream& operator<<(std::ostream& os, all_tag);
  * of an axis
  * 
  */
-struct even_tag : slice<std::integral_constant<std::size_t, 0>, 
-                        end_tag,
-                        std::integral_constant<std::size_t, 2> >
-{
-};
+using even_slice = slice<std::integral_constant<std::size_t, 0>, 
+                         end_tag,
+                         std::integral_constant<std::size_t, 2> >;
 
 /**
  * @brief Construct an even_tag
  * 
  * @return An even_tag
  */
-XMIPP4_CONSTEXPR even_tag even() noexcept;
+XMIPP4_CONSTEXPR even_slice even() noexcept;
 
 
 
@@ -442,18 +435,16 @@ XMIPP4_CONSTEXPR even_tag even() noexcept;
  * of an axis
  * 
  */
-struct odd_tag : slice<std::integral_constant<std::size_t, 1>, 
-                       end_tag,
-                       std::integral_constant<std::size_t, 2> >
-{
-};
+using odd_slice = slice<std::integral_constant<std::size_t, 1>, 
+                        end_tag,
+                        std::integral_constant<std::size_t, 2> >;
 
 /**
  * @brief Construct an odd_tag
  * 
  * @return An odd_tag
  */
-XMIPP4_CONSTEXPR odd_tag odd() noexcept;
+XMIPP4_CONSTEXPR odd_slice odd() noexcept;
 
 
 

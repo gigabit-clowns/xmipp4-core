@@ -419,26 +419,20 @@ inline std::ostream& operator<<(std::ostream& os, reversed_tag)
 
 
 
-XMIPP4_INLINE_CONSTEXPR all_tag all() noexcept
+XMIPP4_INLINE_CONSTEXPR all_slice all() noexcept
 {
-    return all_tag();
+    return all_slice();
 }
 
-inline std::ostream& operator<<(std::ostream& os, all_tag)
+XMIPP4_INLINE_CONSTEXPR even_slice even() noexcept
 {
-    return os << "all";
+    return even_slice();
 }
 
-XMIPP4_INLINE_CONSTEXPR even_tag even() noexcept
+XMIPP4_INLINE_CONSTEXPR odd_slice odd() noexcept
 {
-    return even_tag();
+    return odd_slice();
 }
-
-XMIPP4_INLINE_CONSTEXPR odd_tag odd() noexcept
-{
-    return odd_tag();
-}
-
 
 
 

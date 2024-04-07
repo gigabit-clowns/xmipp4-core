@@ -39,8 +39,18 @@ namespace xmipp4
 {
 
 /**
- * @brief Class representing an slice of an array
- * 
+ * @brief Class representing an slice of an array.
+ *
+ * The slice class holds two indices representing the range of referenced 
+ * items. Similarly to STL iterators, these indices refer to the first and 
+ * past-the-end elements of the range. In addition, a step value is also 
+ * stored, which defines the stride (in elements) when accessing contiguous
+ * items. This step cannot be zero. Negative values are allowed. When using
+ * a negative step, the slice refers to (start, stop] range, where 
+ * start >= stop (similarly to reverse iterators in the STL library). 
+ * When using a positive step, the slice refers to the [start, stop) range, 
+ * where start <= stop.
+ *  
  * @tparam Start Type of the starting index. 
  * May be an integral, std::integral_constant, begin_tag or end_tag.
  * @tparam Stop Type of the stopping index.
@@ -48,11 +58,6 @@ namespace xmipp4
  * @tparam Step Type of the step. 
  * May be an integral, std::integral_constant or adjacent_tag.
  * 
- * Step cannot be zero. Negative values are allowed. When using a negative 
- * step, the slice refers to (start, stop] range, where start >= stop 
- * (similarly to reverse iterators in the STL library). When using a 
- * positive step, the slice refers to the [start, stop) range, where 
- * start <= stop.
  */
 template <typename Start, typename Stop, typename Step>
 class slice
@@ -541,12 +546,14 @@ std::size_t compute_slice_size(std::size_t start,
                                std::ptrdiff_t step ) noexcept;
 
 /**
- * @brief Compute the pivot index of the slice. The pivot point is
- * the element referred by the start index. When the step of the
- * slice is positive, this is the start value itself. When the step
- * is negative, this is the start value minus one, as this is exclusive.
- * However, if the start value is zero, this is not decremented (in this
- * case, the slice has size zero).
+ * @brief Compute the pivot index of the slice. Sanitized parameters
+ * must be provided. Otherwise behaviour is undefined.
+ * 
+ * The pivot point is the element referred by the start index. When 
+ * the step of the slice is positive, this is the start value itself. 
+ * When the step is negative, this is the start value minus one, as 
+ * this index is exclusive. However, if the start value is zero, it is 
+ * not decremented (in this case, the slice has size zero).
  * 
  * @param start Start index of the slice.
  * @param step Step of the slice.

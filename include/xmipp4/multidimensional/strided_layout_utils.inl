@@ -376,7 +376,7 @@ OutputIt apply_subscripts_to_layout(InputIt first,
 
 template<typename InputIt, typename OutputIt, typename I, typename... Subscripts>
 inline
-typename std::enable_if<std::is_integral<I>::value, OutputIt>::type
+typename std::enable_if<is_index<I>::value, OutputIt>::type
 apply_subscripts_to_layout(InputIt first, 
                            InputIt last,
                            OutputIt out,
@@ -395,33 +395,13 @@ apply_subscripts_to_layout(InputIt first,
     );
 }
 
-template<typename InputIt, typename OutputIt, typename I, I value, typename... Subscripts>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<std::integral_constant<I, value>, Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset)
-{
-    // Consume index
-    apply_index(*first, subscripts.head(), offset);
-    ++first;
-
-    return apply_subscripts_to_layout(
-        first, last,
-        out,
-        subscripts.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename Start, typename Stop, typename Step, typename... Subscripts>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<slice<Start, Stop, Step>, Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset)
+template<typename InputIt, typename OutputIt, typename S, typename... Subscripts>
+typename std::enable_if<is_slice<S>::value, OutputIt>::type
+apply_subscripts_to_layout(InputIt first, 
+                           InputIt last,
+                           OutputIt out,
+                           const subscript_sequence<S, Subscripts...>& subscripts,
+                           std::ptrdiff_t &offset)
 {
     *out = apply_slice(*first, subscripts.head(), offset);
     ++out;

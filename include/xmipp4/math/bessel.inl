@@ -20,7 +20,9 @@
 
 #include "bessel.hpp"
 
+#include "power.hpp"
 #include "trigonometry.hpp"
+#include "exponential.hpp"
 #include "../platform/builtin.h"
 
 // Check MSVC-specific support for bessel functions
@@ -50,7 +52,7 @@ cylindrical_bessel_j0(F x) noexcept
     F ax,z;
     F xx,y,ans,ans1,ans2;
 
-    if ((ax=abs(x)) < 8.0) 
+    if ((ax=abs(x)) < F(8)) 
     {
         y=x*x;
         ans1=F(57568490574.0)+y*(F(-13362590354.0)+y*(F(651619640.7)
@@ -59,7 +61,8 @@ cylindrical_bessel_j0(F x) noexcept
           +y*(F(59272.64853)+y*(F(267.8532712)+y*F(1)))));
 
         ans=ans1/ans2;
-    } else 
+    } 
+    else 
     {
         z=F(8.0)/ax;
         y=z*z;
@@ -138,9 +141,9 @@ cylindrical_bessel_j1(F x) noexcept
          +y*(F(99447.43394)+y*(F(376.9991397)+y*F(1)))));
 
         ans=ans1/ans2;
-   }
-   else
-   {
+    }
+    else
+    {
         z=8.0/ax;
         y=z*z;
         xx=ax-2.356194491;
@@ -152,9 +155,9 @@ cylindrical_bessel_j1(F x) noexcept
 
         ans=sqrt(F(0.636619772)/ax)*(cos(xx)*ans1-z*sin(xx)*ans2);
         if (x < 0) ans = -ans;
-   }
+    }
 
-   return ans;
+    return ans;
 }
 
 #if XMIPP4_HAS_BUILTIN(j1f)
@@ -268,7 +271,36 @@ inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y0(F x) noexcept
 {
-    //TODO
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    F z;
+    F xx,y,ans,ans1,ans2;
+
+    if (x < F(8)) 
+    {
+        y=x*x;
+        ans1 = F(-2957821389.0)+y*(F(7062834065.0)+y*(F(-512359803.6)
+         +y*(F(10879881.29)+y*(F(-86327.92757)+y*F(228.4622733)))));
+        ans2=F(40076544269.0)+y*(F(745249964.8)+y*(F(7189466.438)
+         +y*(F(47447.26470)+y*(F(226.1030244)+y*F(1)))));
+
+        ans=(ans1/ans2)+F(0.636619772)*cylindrical_bessel_j0(x)*log(x);
+    } 
+    else 
+    {
+        z=F(8)/x;
+        y=z*z;
+        xx=x-F(0.785398164);
+        ans1=F(1)+y*(F(-0.1098628627e-2)+y*(F(0.2734510407e-4)
+           +y*(F(-0.2073370639e-5)+y*F(0.2093887211e-6))));
+        ans2 = F(-0.1562499995e-1)+y*(F(0.1430488765e-3)
+           +y*(F(-0.6911147651e-5)+y*(F(0.7621095161e-6)
+           +y*(F(-0.934945152e-7)))));
+
+        ans=sqrt(F(0.636619772)/x)*(sin(xx)*ans1+z*cos(xx)*ans2);
+    }
+
+    return ans;
 }
 
 #if XMIPP4_HAS_BUILTIN(y0f)
@@ -319,7 +351,38 @@ inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y1(F x) noexcept
 {
-    // TODO
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    F z;
+    F xx,y,ans,ans1,ans2;
+
+    if (x < F(8)) 
+    {
+      y=x*x;
+      ans1=x*(F(-0.4900604943e13)+y*(F(0.1275274390e13)
+         +y*(F(-0.5153438139e11)+y*(F(0.7349264551e9)
+         +y*(F(-0.4237922726e7)+y*F(0.8511937935e4))))));
+      ans2=F(0.2499580570e14)+y*(F(0.4244419664e12)
+         +y*(F(0.3733650367e10)+y*(F(0.2245904002e8)
+         +y*(F(0.1020426050e6)+y*(F(0.3549632885e3)+y)))));
+
+      ans=(ans1/ans2)+F(0.636619772)*(cylindrical_bessel_j1(x)*log(x)-F(1)/x);
+    } 
+    else
+    {
+      z=F(8)/x;
+      y=z*z;
+      xx=x-F(2.356194491);
+      ans1=F(1)+y*(F(0.183105e-2)+y*(F(-0.3516396496e-4)
+         +y*(F(0.2457520174e-5)+y*(F(-0.240337019e-6)))));
+      ans2=F(0.04687499995)+y*(F(-0.2002690873e-3)
+         +y*(F(0.8449199096e-5)+y*(F(-0.88228987e-6)
+         +y*F(0.105787412e-6))));
+
+      ans=sqrt(F(0.636619772)/x)*(sin(xx)*ans1+z*cos(xx)*ans2);
+    }
+
+    return ans;
 }
 
 #if XMIPP4_HAS_BUILTIN(y1f)
@@ -368,7 +431,7 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn(F x) noexcept
+cylindrical_bessel_yn(int n, F x) noexcept
 {
     //TODO
 }

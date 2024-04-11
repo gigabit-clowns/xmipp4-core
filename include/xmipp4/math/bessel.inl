@@ -30,10 +30,12 @@
 #if defined(_MSC_VER)
 #define XMIPP4_MSVC_BESSEL
     #if _MSC_VER >= 1800 // MSVC 2013 and later
-        #include <cmath>
         #define XMIPP4_MSVC_NATIVE_BESSEL
     #endif
 #endif
+
+#include <limits>
+#include <cmath>
 
 namespace xmipp4
 {
@@ -277,7 +279,15 @@ cylindrical_bessel_y0(F x) noexcept
     F z;
     F xx,y,ans,ans1,ans2;
 
-    if (x < F(8)) 
+    if(x < 0)
+    {
+        ans = std::nan("");
+    }
+    else if (x == 0)
+    {
+        ans = -std::numeric_limits<F>::infinity();
+    }
+    else if (x < F(8)) 
     {
         y=x*x;
         ans1 = F(-2957821389.0)+y*(F(7062834065.0)+y*(F(-512359803.6)
@@ -357,7 +367,15 @@ cylindrical_bessel_y1(F x) noexcept
     F z;
     F xx,y,ans,ans1,ans2;
 
-    if (x < F(8)) 
+    if(x < 0)
+    {
+        ans = std::nan("");
+    }
+    else if (x == 0)
+    {
+        ans = -std::numeric_limits<F>::infinity();
+    }
+    else if (x < F(8)) 
     {
       y=x*x;
       ans1=x*(F(-0.4900604943e13)+y*(F(0.1275274390e13)

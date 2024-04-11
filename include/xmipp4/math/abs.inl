@@ -39,7 +39,7 @@ abs(U x) noexcept
 
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_integral<I>::value && std::is_integral<I>::value, typename std::make_unsigned<I>::type>::type
+typename std::make_unsigned<typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, I>::type>::type
 abs(I x) noexcept
 {
     return x < 0 ? -x : x;

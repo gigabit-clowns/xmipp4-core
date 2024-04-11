@@ -62,4 +62,4 @@ cylindrical_bessel_yn(F n, F x) noexcept;
 } // namespace math
 } // namespace xmipp4
 
-#include "trigonometry.inl"
+#include "bessel.inl"

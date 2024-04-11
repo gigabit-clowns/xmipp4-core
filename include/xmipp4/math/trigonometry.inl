@@ -126,7 +126,7 @@ typename std::enable_if<std::is_floating_point<F>::value, void>::type
 sincos(F angle, F &y, F &x) noexcept
 {
     y = sin(angle);
-    x = cos(angle)
+    x = cos(angle);
 }
 
 #if XMIPP4_HAS_BUILTIN(sincosf)

@@ -20,7 +20,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <utility>
 #include <type_traits>
 
 namespace xmipp4

@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,38 +18,56 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <type_traits>
+#include "abs.hpp"
+
+#include "../platform/builtin.h"
+
+#include <cmath>
 
 namespace xmipp4
 {
 namespace math
 {
 
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp(F exponent) noexcept;
+namespace detail
+{
+
+inline float abs(float x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(fabsf)
+    return XMIPP4_BUILTIN(fabsf)(x);
+#else
+    return fabsf(x);
+#endif
+}
+
+inline double abs(double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(fabs)
+    return XMIPP4_BUILTIN(fabs)(x);
+#else
+    return fabs(x);
+#endif
+}
+
+inline long double abs(long double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(fabsl)
+    return XMIPP4_BUILTIN(fabsl)(x);
+#else
+    return fabsl(x);
+#endif
+}
+
+} // namespace detail
 
 template <typename F>
+inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp2(F exponent) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log2(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log10(F x) noexcept;
+abs(F x) noexcept
+{
+    return detail::abs(x);
+}
 
 } // namespace math
 } // namespace xmipp4
-
-#include "exponential.inl"

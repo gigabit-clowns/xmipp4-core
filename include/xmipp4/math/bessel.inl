@@ -20,6 +20,7 @@
 
 #include "bessel.hpp"
 
+#include "abs.hpp"
 #include "power.hpp"
 #include "trigonometry.hpp"
 #include "exponential.hpp"

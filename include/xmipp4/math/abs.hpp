@@ -29,29 +29,9 @@ namespace math
 
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp(F exponent) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp2(F exponent) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log2(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log10(F x) noexcept;
+abs(F exponent) noexcept;
 
 } // namespace math
 } // namespace xmipp4
 
-#include "exponential.inl"
+#include "abs.inl"

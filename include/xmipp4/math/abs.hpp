@@ -20,6 +20,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "../platform/constexpr.hpp"
+
 #include <type_traits>
 
 namespace xmipp4
@@ -27,9 +29,19 @@ namespace xmipp4
 namespace math
 {
 
+template <typename U>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, U>::type
+abs(U x) noexcept;
+
+template <typename I>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_integral<I>::value && std::is_integral<I>::value, typename std::make_unsigned<I>::type>::type
+abs(I x) noexcept;
+
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-abs(F exponent) noexcept;
+abs(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

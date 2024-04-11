@@ -29,6 +29,22 @@ namespace xmipp4
 namespace math
 {
 
+template <typename U>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, U>::type
+abs(U x) noexcept
+{
+    return x; // Nothing to do
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<I>::value && std::is_integral<I>::value, typename std::make_unsigned<I>::type>::type
+abs(I x) noexcept
+{
+    return x < 0 ? -x : x;
+}
+
 namespace detail
 {
 

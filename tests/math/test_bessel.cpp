@@ -127,7 +127,7 @@ TEST_CASE( "cylindrical_bessel_jn", "[math]" )
     for(const auto& sample : ground_truth)
     {
         REQUIRE( cylindrical_bessel_jn(sample.first.first, sample.first.second) == Catch::Approx(sample.second) );
-        //REQUIRE( cylindrical_bessel_jn(sample.first.first, static_cast<float>(sample.first.second)) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_jn(sample.first.first, static_cast<float>(sample.first.second)) == Catch::Approx(sample.second) );
     }
 }
 
@@ -151,6 +151,8 @@ TEST_CASE( "cylindrical_bessel_y0", "[math]" )
     {
         REQUIRE( cylindrical_bessel_y0(sample.first) == Catch::Approx(sample.second) );
         REQUIRE( cylindrical_bessel_y0(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_yn(0, sample.first) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_yn(0, static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
     }
 
     REQUIRE( std::isnan(cylindrical_bessel_y1(-1.0)) );
@@ -176,8 +178,40 @@ TEST_CASE( "cylindrical_bessel_y1", "[math]" )
     {
         REQUIRE( cylindrical_bessel_y1(sample.first) == Catch::Approx(sample.second) );
         REQUIRE( cylindrical_bessel_y1(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_yn(1, sample.first) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_yn(1, static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
     }
 
     REQUIRE( std::isnan(cylindrical_bessel_y1(-1.0)) );
     REQUIRE( std::isnan(cylindrical_bessel_y1(-1.0f)) );
+}
+
+TEST_CASE( "cylindrical_bessel_yn", "[math]" ) 
+{
+    const std::map<std::pair<int, double>, double> ground_truth = 
+    {
+        {{3, 0.0}, -std::numeric_limits<double>::infinity()},
+        {{2, 1.0}, -1.650682606816255},
+        {{4, 10.0}, -0.144949511868094},
+        {{2, 0.1}, -1.276447832426902e+02},
+        {{10, 0.5}, -1.219636233495696e+11},
+        {{4, 0.5}, -4.992725608195124e+02},
+        {{3, 1.0}, -5.821517605964731},
+        {{3, 100.0}, 0.023445786687761},
+        {{4, 100.0}, -0.075430119923762},
+        {{5, 100.0}, -0.029480196281662},
+        {{-2, 1.0}, -1.650682606816255},
+        {{-3, 1.0}, 5.821517605964731},
+    };
+
+    for(const auto& sample : ground_truth)
+    {
+        REQUIRE( cylindrical_bessel_yn(sample.first.first, sample.first.second) == Catch::Approx(sample.second) );
+        REQUIRE( cylindrical_bessel_yn(sample.first.first, static_cast<float>(sample.first.second)) == Catch::Approx(sample.second) );
+    }
+
+    REQUIRE( std::isnan(cylindrical_bessel_yn(2, -1.0)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(2, -1.0f)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(-3, -1.0)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(-3, -1.0f)) );
 }

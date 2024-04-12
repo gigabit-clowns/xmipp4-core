@@ -503,16 +503,42 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn_iterative(int n, F x, std::size_t n_iter = 20) noexcept
+cylindrical_bessel_yn_iterative(int n, F x) noexcept
 {
-    F result = 0;
-
-    for (std::size_t i = 0; i < n_iter; ++i)
+    int sign = 1;
+    if (n < 0)
     {
-        //TODO
+        n = -n;
+        sign = cos_pi(n);
     }
 
-    return result;
+    F result;
+    if(x < 0)
+    {
+        result = std::nan("");
+    }
+    else if (x == 0)
+    {
+        result = -std::numeric_limits<F>::infinity();
+    }
+    else
+    {
+        // Based on:
+        // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+        F tox = F(2) / x;
+        F bym = cylindrical_bessel_y0(x);
+        F by = cylindrical_bessel_y1(x);
+        for(unsigned k = 1; k < static_cast<unsigned>(n); ++k)
+        {
+            const auto temp = k*tox*by-bym;
+            bym=by;
+            by=temp;
+        }
+
+        result = by;
+    }
+
+    return sign*result;
 }
 
 template <typename F>

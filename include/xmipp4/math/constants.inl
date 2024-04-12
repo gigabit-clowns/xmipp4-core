@@ -20,8 +20,6 @@
 
 #include "constants.hpp"
 
-#include <cmath>
-
 namespace xmipp4
 {
 namespace math
@@ -32,7 +30,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 pi() noexcept
 {
-    return M_PI;
+    return 3.14159265358979323846L;
 }
 
 template <typename F>
@@ -40,7 +38,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 pi_2() noexcept
 {
-    return M_PI_2;
+    return 1.57079632679489661923L;
 }
 
 template <typename F>
@@ -48,7 +46,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 pi_4() noexcept
 {
-    return M_PI_4;
+    return 0.785398163397448309616L;
 }
 
 template <typename F>
@@ -56,7 +54,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 e() noexcept
 {
-    return M_E;
+    return 2.71828182845904523536L;
 }
 
 template <typename F>
@@ -64,7 +62,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 sqrt2() noexcept
 {
-    return M_SQRT2;
+    return 1.41421356237309504880L;
 }
 
 template <typename F>
@@ -72,7 +70,7 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 sqrt1_2() noexcept
 {
-    return M_SQRT1_2;
+    return 0.707106781186547524401L;
 }
 
 } // namespace math

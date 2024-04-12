@@ -18,7 +18,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "abs.hpp"
+#include "erf.hpp"
 
 #include "../platform/builtin.h"
 
@@ -29,24 +29,44 @@ namespace xmipp4
 namespace math
 {
 
-template <typename U>
-XMIPP4_CONSTEXPR
-typename std::enable_if<std::is_unsigned<U>::value, U>::type
-factorial(U x) noexcept
+namespace detail
 {
-    U result = 1;
-    for(; x > 0; --x) result *= x;
-    return result;
+
+inline float erf(float x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(erff)
+    return XMIPP4_BUILTIN(erff)(x);
+#else
+    return erff(x);
+#endif
 }
 
-template <typename T, typename U>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_unsigned<U>::value, T>::type
-large_factorial(U x) noexcept
+inline double erf(double x) noexcept
 {
-    T result = 1;
-    for (U i = 2; i <= x; ++i) result *= i;
-    return result;
+#if XMIPP4_HAS_BUILTIN(erf)
+    return XMIPP4_BUILTIN(erf)(x);
+#else
+    return erf(x);
+#endif
+}
+
+inline long double erf(long double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(erfl)
+    return XMIPP4_BUILTIN(erfl)(x);
+#else
+    return erfl(x);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+erf(F x) noexcept
+{
+    return detail::erf(x);
 }
 
 
@@ -56,30 +76,30 @@ large_factorial(U x) noexcept
 namespace detail
 {
 
-inline float gamma(float x) noexcept
+inline float erfc(float x) noexcept
 {
-#if XMIPP4_HAS_BUILTIN(tgammaf)
-    return XMIPP4_BUILTIN(tgammaf)(x);
+#if XMIPP4_HAS_BUILTIN(erfcf)
+    return XMIPP4_BUILTIN(erfcf)(x);
 #else
-    return tgammaf(x);
+    return erfcf(x);
 #endif
 }
 
-inline double gamma(double x) noexcept
+inline double erfc(double x) noexcept
 {
-#if XMIPP4_HAS_BUILTIN(tgamma)
-    return XMIPP4_BUILTIN(tgamma)(x);
+#if XMIPP4_HAS_BUILTIN(erfc)
+    return XMIPP4_BUILTIN(erfc)(x);
 #else
-    return tgamma(x);
+    return erfc(x);
 #endif
 }
 
-inline long double gamma(long double x) noexcept
+inline long double erfc(long double x) noexcept
 {
-#if XMIPP4_HAS_BUILTIN(tgammal)
-    return XMIPP4_BUILTIN(tgammal)(x);
+#if XMIPP4_HAS_BUILTIN(erfcl)
+    return XMIPP4_BUILTIN(erfcl)(x);
 #else
-    return tgammal(x);
+    return erfcl(x);
 #endif
 }
 
@@ -88,9 +108,9 @@ inline long double gamma(long double x) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-gamma(F x) noexcept
+erfc(F x) noexcept
 {
-    return detail::gamma(x);
+    return detail::erfc(x);
 }
 
 } // namespace math

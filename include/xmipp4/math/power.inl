@@ -76,6 +76,7 @@ inline double pow(double base, double exp) noexcept
 #if XMIPP4_HAS_BUILTIN(pow)
     return XMIPP4_BUILTIN(pow)(base, exp);
 #else
+    using ::pow;
     return pow(base, exp);
 #endif
 }
@@ -120,6 +121,7 @@ inline double sqrt(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(sqrt)
     return XMIPP4_BUILTIN(sqrt)(x);
 #else
+    using ::sqrt;
     return sqrt(x);
 #endif
 }
@@ -164,6 +166,7 @@ inline double cbrt(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(cbrt)
     return XMIPP4_BUILTIN(cbrt)(x);
 #else
+    using ::cbrt;
     return cbrt(x);
 #endif
 }

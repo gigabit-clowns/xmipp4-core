@@ -46,6 +46,7 @@ inline double erf(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(erf)
     return XMIPP4_BUILTIN(erf)(x);
 #else
+    using ::erf;
     return erf(x);
 #endif
 }
@@ -90,6 +91,7 @@ inline double erfc(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(erfc)
     return XMIPP4_BUILTIN(erfc)(x);
 #else
+    using ::erfc;
     return erfc(x);
 #endif
 }

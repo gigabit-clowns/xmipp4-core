@@ -46,6 +46,7 @@ inline double cos(double angle) noexcept
 #if XMIPP4_HAS_BUILTIN(cos)
     return XMIPP4_BUILTIN(cos)(angle);
 #else
+    using ::cos;
     return cos(angle);
 #endif
 }
@@ -90,6 +91,7 @@ inline double sin(double angle) noexcept
 #if XMIPP4_HAS_BUILTIN(sin)
     return XMIPP4_BUILTIN(sin)(angle);
 #else
+    using ::sin;
     return sin(angle);
 #endif
 }
@@ -191,6 +193,7 @@ inline double tan(double angle) noexcept
 #if XMIPP4_HAS_BUILTIN(tan)
     return XMIPP4_BUILTIN(tan)(angle);
 #else
+    using ::tan;
     return tan(angle);
 #endif
 }
@@ -235,6 +238,7 @@ inline double acos(double ratio) noexcept
 #if XMIPP4_HAS_BUILTIN(acos)
     return XMIPP4_BUILTIN(acos)(ratio);
 #else
+    using ::acos;
     return acos(ratio);
 #endif
 }
@@ -279,6 +283,7 @@ inline double asin(double ratio) noexcept
 #if XMIPP4_HAS_BUILTIN(asin)
     return XMIPP4_BUILTIN(asin)(ratio);
 #else
+    using ::asin;
     return asin(ratio);
 #endif
 }
@@ -324,6 +329,7 @@ inline double atan(double ratio) noexcept
 #if XMIPP4_HAS_BUILTIN(atan)
     return XMIPP4_BUILTIN(atan)(ratio);
 #else
+    using ::atan;
     return atan(ratio);
 #endif
 }
@@ -368,6 +374,7 @@ inline double atan2(double y, double x) noexcept
 #if XMIPP4_HAS_BUILTIN(atan2)
     return XMIPP4_BUILTIN(atan2)(y, x);
 #else
+    using ::atan2;
     return atan2(y, x);
 #endif
 }

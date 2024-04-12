@@ -292,5 +292,17 @@ log10(F x) noexcept
     return detail::log10(x);
 }
 
+
+
+
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+logn(F n, F x) noexcept
+{
+    return log(x) / log(n);
+}
+
 } // namespace math
 } // namespace xmipp4

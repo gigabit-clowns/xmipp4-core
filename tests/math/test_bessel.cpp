@@ -73,7 +73,6 @@ TEST_CASE( "cylindrical_bessel_j1", "[math]" )
     const std::map<double, double> ground_truth = 
     {
         {0.0, 0.0},
-        {0.0, 0.0},
         {0.1, 0.049937526036242},
         {0.5, 0.242268457674874},
         {1.0, 0.440050585744934},

@@ -51,6 +51,10 @@ template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 log10(F x) noexcept;
 
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+logn(F n, F x) noexcept;
+
 } // namespace math
 } // namespace xmipp4
 

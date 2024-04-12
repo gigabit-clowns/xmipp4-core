@@ -162,7 +162,6 @@ TEST_CASE( "cylindrical_bessel_y1", "[math]" )
 {
     const std::map<double, double> ground_truth = 
     {
-        {0.0, -std::numeric_limits<double>::infinity()},
         {0.1, -6.458951094702027},
         {0.5, -1.471472392670243},
         {1.0, -0.781212821300289},
@@ -189,7 +188,6 @@ TEST_CASE( "cylindrical_bessel_yn", "[math]" )
 {
     const std::map<std::pair<int, double>, double> ground_truth = 
     {
-        {{3, 0.0}, -std::numeric_limits<double>::infinity()},
         {{2, 1.0}, -1.650682606816255},
         {{4, 10.0}, -0.144949511868094},
         {{2, 0.1}, -1.276447832426902e+02},

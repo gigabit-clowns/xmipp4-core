@@ -47,7 +47,7 @@ inline double exp(double exponent) noexcept
 #if XMIPP4_HAS_BUILTIN(exp)
     return XMIPP4_BUILTIN(exp)(exponent);
 #else
-    return exp(exponent);
+    return ::exp(exponent);
 #endif
 }
 
@@ -91,7 +91,7 @@ inline double exp2(double exponent) noexcept
 #if XMIPP4_HAS_BUILTIN(exp2)
     return XMIPP4_BUILTIN(exp2)(exponent);
 #else
-    return exp2(exponent);
+    return ::exp2(exponent);
 #endif
 }
 
@@ -181,7 +181,7 @@ inline double log(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(log)
     return XMIPP4_BUILTIN(log)(x);
 #else
-    return log(x);
+    return ::log(x);
 #endif
 }
 
@@ -225,7 +225,7 @@ inline double log2(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(log2)
     return XMIPP4_BUILTIN(log2)(x);
 #else
-    return log2(x);
+    return ::log2(x);
 #endif
 }
 
@@ -269,7 +269,7 @@ inline double log10(double x) noexcept
 #if XMIPP4_HAS_BUILTIN(log10)
     return XMIPP4_BUILTIN(log10)(x);
 #else
-    return log10(x);
+    return ::log10(x);
 #endif
 }
 

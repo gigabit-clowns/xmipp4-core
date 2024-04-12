@@ -38,6 +38,19 @@
 
 using namespace xmipp4::math;
 
+TEST_CASE( "square", "[math]" ) 
+{
+    REQUIRE( xmipp4::math::square(0) == 0 );
+    REQUIRE( xmipp4::math::square(0.0) == 0.0 );
+    REQUIRE( xmipp4::math::square(0.0f) == 0.0f );
+    REQUIRE( xmipp4::math::square(-1) == 1 );
+    REQUIRE( xmipp4::math::square(-2) == 4 );
+    REQUIRE( xmipp4::math::square(16) == 256 );
+    REQUIRE( xmipp4::math::square(16U) == 256U );
+    REQUIRE( xmipp4::math::square(16.0) == 256.0 );
+    REQUIRE( xmipp4::math::square(16.0f) == 256.0f );
+}
+
 TEST_CASE( "pow", "[math]" ) 
 {
     const std::map<std::pair<double, double>, double> ground_truth = 

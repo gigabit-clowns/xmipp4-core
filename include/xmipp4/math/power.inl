@@ -20,6 +20,7 @@
 
 #include "power.hpp"
 
+#include "abs.hpp"
 #include "../platform/builtin.h"
 
 #include <cmath>
@@ -28,6 +29,35 @@ namespace xmipp4
 {
 namespace math
 {
+
+template <typename U>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, U>::type
+square(U x) noexcept
+{
+    return x*x;
+}
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR
+typename std::make_unsigned<typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, I>::type>::type
+square(I x) noexcept
+{
+    const auto u = abs(x);
+    return square(u);
+}
+
+template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+square(F x) noexcept
+{
+    return x*x;
+}
+
+
+
+
 
 namespace detail
 {

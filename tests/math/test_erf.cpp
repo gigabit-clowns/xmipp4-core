@@ -72,4 +72,3 @@ TEST_CASE( "erfc", "[math]" )
         REQUIRE( xmipp4::math::erfc(-static_cast<float>(sample)) == Catch::Approx(1.0 - xmipp4::math::erf(-sample)) );
     }
 }
-

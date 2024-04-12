@@ -391,5 +391,17 @@ atan2(F y, F x) noexcept
     return detail::atan2(y, x);
 }
 
+
+
+
+
+template <typename I>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_integral<I>::value, int>::type
+cos_pi(I x) noexcept
+{
+    return (x%2) ? -1 : +1;
+}
+
 } // namespace math
 } // namespace xmipp4

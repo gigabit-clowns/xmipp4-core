@@ -59,4 +59,3 @@ TEST_CASE( "abs", "[math]" )
     REQUIRE( abs(-1.0) == 1.0 );
     REQUIRE( abs(-std::numeric_limits<double>::infinity()) == std::numeric_limits<double>::infinity() );
 }
-

@@ -20,6 +20,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "../platform/constexpr.hpp"
+
 #include <type_traits>
 
 namespace xmipp4
@@ -27,31 +29,21 @@ namespace xmipp4
 namespace math
 {
 
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j0(F x) noexcept;
+template <typename U>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, U>::type
+factorial(U x) noexcept;
+
+template <typename T, typename U>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, T>::type
+large_factorial(U x) noexcept;
 
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn(int n, F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1(F x) noexcept;
-
-template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn(int n, F x) noexcept;
+gamma(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4
 
-#include "bessel.inl"
+#include "factorial.inl"

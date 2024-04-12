@@ -24,6 +24,7 @@
 #include "power.hpp"
 #include "trigonometry.hpp"
 #include "exponential.hpp"
+#include "factorial.hpp"
 #include "../platform/builtin.h"
 
 // Check MSVC-specific support for bessel functions
@@ -36,6 +37,8 @@
 
 #include <limits>
 #include <cmath>
+
+#include <iostream>
 
 namespace xmipp4
 {
@@ -209,9 +212,70 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn(F x) noexcept
+cylindrical_bessel_jn_iterative(int n, F x, F eps = F(1e-12)) noexcept
 {
-    //TODO
+    int sign = 1;
+    if (n < 0)
+    {
+        n = -n;
+        sign = cos_pi(n);
+    }
+
+    F result;
+    if (abs(x) > n)
+    {
+        // Based on:
+        // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+        F tox = F(2) / x;
+        F bjm = cylindrical_bessel_j0(x);
+        F bj = cylindrical_bessel_j1(x);
+        for(unsigned k = 1; k < static_cast<unsigned>(n); ++k)
+        {
+            const auto temp = k*tox*bj-bjm;
+            bjm=bj;
+            bj=temp;
+        }
+
+        result = bj;
+    }
+    else
+    {
+        // Based on:
+        // https://www.bragitoff.com/2017/08/bessel-function-series-c-program/
+        F term = F(1) / large_factorial<F>(static_cast<unsigned>(n));
+        std::cout << term << std::endl;
+        F sum = term;
+        std::size_t k = 1;
+        do
+        {
+            const auto term_ratio = -(x*x) / static_cast<F>(4*k*(n+k));
+            term *= term_ratio;
+            sum += term;
+            ++k;
+        }
+        while (abs(term/sum) > eps);
+
+        result = sum * pow(x/F(2), static_cast<F>(n));
+    }
+
+    result *= sign;
+    return result;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_jn(int n, F x) noexcept
+{
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    switch (n)
+    {
+    case 0: return cylindrical_bessel_j0(x);
+    case 1: return cylindrical_bessel_j1(x);
+    case -1: return -cylindrical_bessel_j1(x);
+    default: return cylindrical_bessel_jn_iterative(n, x);
+    }
 }
 
 #if XMIPP4_HAS_BUILTIN(jnf)
@@ -254,20 +318,9 @@ cylindrical_bessel_jn(int n, F x) noexcept
 
 
 
-template <typename F>
-inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn(F n, F x) noexcept
-{
-    // TODO
-}
-
-
-
-
-
 namespace detail
 {
+
 
 template <typename F>
 inline
@@ -450,9 +503,32 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_yn_iterative(int n, F x, std::size_t n_iter = 20) noexcept
+{
+    F result = 0;
+
+    for (std::size_t i = 0; i < n_iter; ++i)
+    {
+        //TODO
+    }
+
+    return result;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_yn(int n, F x) noexcept
 {
-    //TODO
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    switch (n)
+    {
+    case 0: return cylindrical_bessel_y0(x);
+    case 1: return cylindrical_bessel_y1(x);
+    case -1: return -cylindrical_bessel_y1(x);
+    default: return cylindrical_bessel_yn_iterative(n, x);
+    }
 }
 
 #if XMIPP4_HAS_BUILTIN(ynf)
@@ -489,18 +565,6 @@ typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_yn(int n, F x) noexcept
 {
     return detail::cylindrical_bessel_yn(n, x);
-}
-
-
-
-
-
-template <typename F>
-inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn(F n, F x) noexcept
-{
-    // TODO
 }
 
 } // namespace math

@@ -43,7 +43,6 @@ TEST_CASE( "factorial", "[math]" )
     REQUIRE( factorial(1U) == 1U );
     REQUIRE( factorial(2U) == 2U );
     REQUIRE( factorial(5U) == 120U );
-    REQUIRE( factorial(5U) == 120U );
     REQUIRE( factorial(uint8_t(6)) == 208 ); // Overflow
 }
 

@@ -91,5 +91,49 @@ gamma(F x) noexcept
     return detail::gamma(x);
 }
 
+
+
+
+
+namespace detail
+{
+
+inline float erf(float x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(erff)
+    return XMIPP4_BUILTIN(erff)(x);
+#else
+    return erff(x);
+#endif
+}
+
+inline double erf(double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(erf)
+    return XMIPP4_BUILTIN(erf)(x);
+#else
+    return erf(x);
+#endif
+}
+
+inline long double erf(long double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(erfl)
+    return XMIPP4_BUILTIN(erfl)(x);
+#else
+    return erfl(x);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+erf(F x) noexcept
+{
+    return detail::erf(x);
+}
+
 } // namespace math
 } // namespace xmipp4

@@ -31,6 +31,7 @@
 
 #include <xmipp4/math/factorial.hpp>
 
+#include <map>
 #include <limits>
 #include <cstdint>
 
@@ -61,4 +62,25 @@ TEST_CASE( "gamma", "[math]" )
     REQUIRE( xmipp4::math::gamma(2.0) == Catch::Approx(1.0) );
     REQUIRE( xmipp4::math::gamma(16.0) == Catch::Approx(1.307674368e+12) );
     REQUIRE( xmipp4::math::gamma(-1.5) == Catch::Approx(2.363271801207355) );
+}
+
+TEST_CASE( "erf", "[math]" ) 
+{
+    const std::map<double, double> ground_truth = 
+    {
+        {0.0, 0.0},
+        {0.1, 0.112462916018285},
+        {0.5, 0.520499877813047},
+        {1.0, 0.842700792949715},
+        {2.0, 0.995322265018953},
+        {10.0, 1.0},
+    };
+
+    for(const auto& sample : ground_truth)
+    {
+        REQUIRE( xmipp4::math::erf(sample.first) == Catch::Approx(sample.second) );
+        REQUIRE( xmipp4::math::erf(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
+        REQUIRE( xmipp4::math::erf(-sample.first) == Catch::Approx(-sample.second) );
+        REQUIRE( xmipp4::math::erf(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
+    }
 }

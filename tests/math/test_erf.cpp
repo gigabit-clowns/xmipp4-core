@@ -19,9 +19,9 @@
  ***************************************************************************/
 
 /**
- * @file test_factorial.cpp
+ * @file test_erf.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for factorial.hpp
+ * @brief Tests for erf.hpp
  * @date 2024-04-12
  * 
  */

@@ -80,7 +80,7 @@ jobs:
             ;;
         esac
 
-    - name: Configure, build and test with CMake
+    - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
@@ -93,5 +93,7 @@ jobs:
           XMIPP4_CORE_BUILD_DOC=OFF
         run-build: true
         build-args: --config ${{ env.BUILD_TYPE }}
-        run-test: true
-        test-args: --build-config ${{ env.BUILD_TYPE }}
+
+    - name: Run tests
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: ctest -C ${{env.BUILD_TYPE}}

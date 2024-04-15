@@ -29,7 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <xmipp4/math/bessel.hpp>
+#include <xmipp4/core/math/bessel.hpp>
 
 #include <map>
 #include <cmath>

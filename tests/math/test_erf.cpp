@@ -29,7 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <xmipp4/math/erf.hpp>
+#include <xmipp4/core/math/erf.hpp>
 
 #include <map>
 #include <set>

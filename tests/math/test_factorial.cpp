@@ -29,7 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <xmipp4/math/factorial.hpp>
+#include <xmipp4/core/math/factorial.hpp>
 
 #include <map>
 #include <limits>

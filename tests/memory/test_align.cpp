@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/memory/align.hpp>
+#include <xmipp4/core/memory/align.hpp>
 
 using namespace xmipp4;
 

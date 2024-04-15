@@ -28,8 +28,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/system/memory_mapped_file.hpp>
-#include <xmipp4/access_flags.hpp>
+#include <xmipp4/core/system/memory_mapped_file.hpp>
+
+#include <xmipp4/core/access_flags.hpp>
 
 #include <fstream>
 #include <string>

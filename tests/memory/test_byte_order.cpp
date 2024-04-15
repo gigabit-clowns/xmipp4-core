@@ -27,7 +27,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/memory/byte_order.hpp>
+#include <xmipp4/core/memory/byte_order.hpp>
 
 using namespace xmipp4::memory;
 

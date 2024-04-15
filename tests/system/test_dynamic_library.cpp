@@ -28,9 +28,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/system/dynamic_library.hpp>
+#include <xmipp4/core/system/dynamic_library.hpp>
 
-#include <xmipp4/core_version.hpp>
+#include <xmipp4/core/core_version.hpp>
 
 #include <sstream>
 

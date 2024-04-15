@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/axis_3d.hpp>
+#include <xmipp4/core/axis_3d.hpp>
 
 using namespace xmipp4;
 

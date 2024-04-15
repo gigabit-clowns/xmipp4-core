@@ -29,7 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <xmipp4/math/trigonometry.hpp>
+#include <xmipp4/math/trigonometric.hpp>
 
 #include <xmipp4/math/constants.hpp>
 

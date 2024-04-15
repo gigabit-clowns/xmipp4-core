@@ -22,7 +22,7 @@
 
 #include "abs.hpp"
 #include "power.hpp"
-#include "trigonometry.hpp"
+#include "trigonometric.hpp"
 #include "exponential.hpp"
 #include "factorial.hpp"
 #include "../platform/builtin.h"

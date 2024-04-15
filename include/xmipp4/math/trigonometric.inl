@@ -18,7 +18,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "trigonometry.hpp"
+#include "trigonometric.hpp"
 
 #include "../platform/builtin.h"
 

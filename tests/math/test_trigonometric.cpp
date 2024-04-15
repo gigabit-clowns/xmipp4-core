@@ -19,9 +19,9 @@
  ***************************************************************************/
 
 /**
- * @file test_trigonometry.cpp
+ * @file test_trigonometric.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for trigonometry.hpp
+ * @brief Tests for trigonometric.hpp
  * @date 2024-04-12
  * 
  */

@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file constants.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of constants.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "constants.hpp"
 
 namespace xmipp4

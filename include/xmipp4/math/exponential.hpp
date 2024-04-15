@@ -20,6 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file exponential.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides multiple exponential and logarithmic functions.
+ * @date 2024-04-15
+ * 
+ */
+
 #include <type_traits>
 
 namespace xmipp4

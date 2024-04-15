@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file hyperbolic.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of hyperbolic.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "hyperbolic.hpp"
 
 #include "../platform/builtin.h"

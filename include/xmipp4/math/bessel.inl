@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file bessel.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of bessel.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "bessel.hpp"
 
 #include "abs.hpp"

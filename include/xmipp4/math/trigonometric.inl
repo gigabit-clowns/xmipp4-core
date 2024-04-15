@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file trigonometric.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of trigonometric.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "trigonometric.hpp"
 
 #include "../platform/builtin.h"

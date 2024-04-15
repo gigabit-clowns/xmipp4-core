@@ -20,6 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file erf.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides the error function (erf).
+ * @date 2024-04-15
+ * 
+ */
+
 #include <type_traits>
 
 namespace xmipp4

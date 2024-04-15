@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file factorial.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of factorial.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "abs.hpp"
 
 #include "../platform/builtin.h"

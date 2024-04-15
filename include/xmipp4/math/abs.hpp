@@ -20,6 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file abs.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides abs function for various types.
+ * @date 2024-04-15
+ * 
+ */
+
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>

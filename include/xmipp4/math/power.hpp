@@ -20,6 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file power.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides arbitrary exponentiation functions.
+ * @date 2024-04-15
+ * 
+ */
+
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>

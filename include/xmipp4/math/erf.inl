@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file erf.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of erf.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "erf.hpp"
 
 #include "../platform/builtin.h"

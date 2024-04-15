@@ -18,6 +18,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file nearest_integer.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of nearest_integer.hpp
+ * @date 2024-04-15
+ * 
+ */
+
 #include "nearest_integer.hpp"
 
 #include "../platform/builtin.h"

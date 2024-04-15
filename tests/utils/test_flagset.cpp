@@ -32,8 +32,9 @@
 #include <type_traits>
 #include <cstdint>
 
-#include <xmipp4/utils/flagset.hpp>
-#include <xmipp4/utils/bit.hpp>
+#include <xmipp4/core/utils/flagset.hpp>
+
+#include <xmipp4/core/utils/bit.hpp>
 
 using namespace xmipp4;
 

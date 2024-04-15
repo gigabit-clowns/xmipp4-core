@@ -26,7 +26,7 @@
  * 
  */
 
-#include <xmipp4/system/memory_mapped_file.hpp>
+#include <xmipp4/core/system/memory_mapped_file.hpp>
 
 #include "memory_mapped_file_handle.hpp"
 

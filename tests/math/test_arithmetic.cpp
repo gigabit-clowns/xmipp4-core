@@ -29,7 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <xmipp4/math/arithmetic.hpp>
+#include <xmipp4/core/math/arithmetic.hpp>
 
 using namespace xmipp4::math;
 

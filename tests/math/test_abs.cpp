@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/math/abs.hpp>
+#include <xmipp4/core/math/abs.hpp>
 
 #include <limits>
 #include <cstdint>

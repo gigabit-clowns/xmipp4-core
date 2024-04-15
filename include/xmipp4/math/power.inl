@@ -144,6 +144,14 @@ sqrt(F x) noexcept
 }
 
 
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+rsqrt(F x) noexcept
+{
+    return F(1) / sqrt(x);
+}
+
+
 
 
 

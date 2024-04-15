@@ -95,6 +95,29 @@ TEST_CASE( "sqrt", "[math]" )
     REQUIRE( std::isnan(xmipp4::math::sqrt(-1.0f)) );
 }
 
+TEST_CASE( "rsqrt", "[math]" ) 
+{
+    const std::map<double, double> ground_truth = 
+    {
+        {0.0, std::numeric_limits<double>::infinity()},
+        {0.0144, 8.333333333333333333},
+        {0.01, 10.0},
+        {0.5, sqrt2<double>()},
+        {1.0, 1.0},
+        {2.0, sqrt1_2<double>()},
+        {144.0, 0.0833333333333333333333},
+    };
+
+    for(const auto& sample : ground_truth)
+    {
+        REQUIRE( xmipp4::math::rsqrt(sample.first) == Catch::Approx(sample.second) );
+        REQUIRE( xmipp4::math::rsqrt(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
+    }
+
+    REQUIRE( std::isnan(xmipp4::math::rsqrt(-1.0)) );
+    REQUIRE( std::isnan(xmipp4::math::rsqrt(-1.0f)) );
+}
+
 TEST_CASE( "cbrt", "[math]" ) 
 {
     const std::map<double, double> ground_truth = 

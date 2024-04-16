@@ -739,26 +739,46 @@ cylindrical_bessel_i0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F y, ax, ans;
+    F result;
 
-    ax = math::abs(x);
+    const auto ax = abs(x);
     if (ax < F(3.75))
-    {
-        y = x / F(3.75);
-        y *= y;
-        ans = F(1)+y*(F(3.5156229)+y*(F(3.0899424)+y*(F(1.2067492)
-                +y*(F(0.2659732)+y*(F(0.360768e-1)+y*F(0.45813e-2))))));
+    {   
+        const auto y = square(x/F(3.75));
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            1.0,
+            3.5156229,
+            3.0899424,
+            1.2067492,
+            0.2659732,
+            0.360768e-1,
+            0.45813e-2
+        };
+
+        result = evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
     else
     {
-        y = F(3.75) / ax;
-        ans = (exp(ax) / sqrt(ax)) * (F(0.39894228)+y*(F(0.1328592e-1)
-                +y*(F(0.225319e-2)+y*(F(-0.157565e-2)+y*(F(0.916281e-2)
-                +y*(F(-0.2057706e-1)+y*(F(0.2635537e-1)+y*(F(-0.1647633e-1)
-                +y*F(0.392377e-2)))))))));
+        const auto y = F(3.75) / ax;
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
+            0.39894228, 
+            0.1328592e-1, 
+            0.225319e-2, 
+            -0.157565e-2, 
+            0.916281e-2, 
+            -0.2057706e-1, 
+            0.2635537e-1, 
+            -0.1647633e-1,
+            0.392377e-2
+        };
+
+        result = (exp(ax) / sqrt(ax));
+        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
 
-    return ans;
+    return result;
 }
 
 } // namespace detail
@@ -785,26 +805,46 @@ cylindrical_bessel_i1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F y, ax, ans;
+    F result;
     
-    ax = math::abs(x);
+    const auto ax = math::abs(x);
     if (ax < F(3.75))
     {
-        y = x / F(3.75);
-        y *= y;
-        ans = ax * (0.5+y*(0.87890594+y*(0.51498869+y*(0.15084934
-                    +y*(0.2658733e-1+y*(0.301532e-2+y* 0.32411e-3))))));
+        const auto y = square(x/F(3.75));
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            0.5,
+            0.87890594,
+            0.51498869,
+            0.15084934,
+            0.2658733e-1,
+            0.301532e-2,
+            0.32411e-3
+        };
+
+        result = ax * evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
     else
     {
-        y = F(3.75) / ax;
-        ans = F(0.2282967e-1)+y*(F(-0.2895312e-1)+y*(F(0.1787654e-1)
-                -y* F(0.420059e-2)));
-        ans = F(0.39894228)+y*(F(-0.3988024e-1)+y*(F(-0.362018e-2)
-                +y*(F(0.163801e-2)+y*(F(-0.1031555e-1)+y*ans))));
-        ans *= (exp(ax) / sqrt(ax));
+        const auto y = F(3.75) / ax;
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
+            0.39894228,
+            -0.3988024e-1,
+            -0.362018e-2,
+            0.163801e-2,
+            -0.1031555e-1,
+            0.2282967e-1,
+            -0.2895312e-1,
+            0.1787654e-1,
+            -0.420059e-2
+        };
+
+        result = (exp(ax) / sqrt(ax));
+        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
-    return x < 0 ? -ans : ans;
+
+    return x < 0 ? -result : result;
 }
 
 } // namespace detail

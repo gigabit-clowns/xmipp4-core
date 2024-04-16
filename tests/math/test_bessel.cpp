@@ -60,7 +60,6 @@ TEST_CASE( "cylindrical_bessel_j0", "[math]" )
         REQUIRE( cylindrical_bessel_j0(-sample.first) == Catch::Approx(sample.second) );
         REQUIRE( cylindrical_bessel_j0(-static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
 
-    
         REQUIRE( cylindrical_bessel_jn(0, sample.first) == Catch::Approx(sample.second) );
         REQUIRE( cylindrical_bessel_jn(0, static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
         REQUIRE( cylindrical_bessel_jn(0, -sample.first) == Catch::Approx(sample.second) );

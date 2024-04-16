@@ -141,5 +141,28 @@ sign(F x) noexcept
     }
 }
 
+template <typename BidirIt, typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
+{
+    F y = 0;
+    if (std::distance(first, last) > 0)
+    {
+        // Evaluate using Horner's method
+        // Initialize with the last element
+        auto ite = std::make_reverse_iterator(last);
+        y = *ite;
+        ++ite;
+
+        for(; ite != std::make_reverse_iterator(first); ++ite)
+        {
+            y = multiply_add(y, x, *ite);
+        } 
+    }
+
+    return y;
+}
+
 } // namespace math
 } // namespace xmipp4

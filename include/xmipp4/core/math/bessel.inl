@@ -44,6 +44,7 @@
     #endif
 #endif
 
+#include <array>
 #include <limits>
 #include <cmath>
 
@@ -62,36 +63,65 @@ cylindrical_bessel_j0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F ax,z;
-    F xx,y,ans,ans1,ans2;
+    F result;
 
-    if ((ax=abs(x)) < F(8)) 
+    const auto ax = abs(x);
+    if (ax < F(8)) 
     {
-        y=x*x;
-        ans1=F(57568490574.0)+y*(F(-13362590354.0)+y*(F(651619640.7)
-          +y*(F(-11214424.18)+y*(F(77392.33017)+y*(F(-184.9052456))))));
-        ans2=F(57568490411.0)+y*(F(1029532985.0)+y*(F(9494680.718)
-          +y*(F(59272.64853)+y*(F(267.8532712)+y*F(1)))));
+        const auto y=square(x);
 
-        ans=ans1/ans2;
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 6> num_poly = {
+            57568490574.0,
+            -13362590354.0,
+            651619640.7,
+            -11214424.18,
+            77392.33017,
+            -184.9052456
+        };
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 6> den_poly = {
+            57568490411.0,
+            1029532985.0,
+            9494680.718,
+            59272.64853,
+            267.8532712,
+            1,
+        };
+
+        const auto num = evaluate_polynomial(num_poly.cbegin(), num_poly.cend(), y);
+        const auto den = evaluate_polynomial(den_poly.cbegin(), den_poly.cend(), y);
+
+        result = num / den;
     } 
     else 
     {
-        z=F(8.0)/ax;
-        y=z*z;
-        xx=ax-F(0.785398164);
-        ans1=F(1)+y*(F(-0.1098628627e-2)+y*(F(0.2734510407e-4)
-          +y*(F(-0.2073370639e-5)+y*F(0.2093887211e-6))));
-        ans2 = F(-0.1562499995e-1)+y*(F(0.1430488765e-3)
-          +y*(F(-0.6911147651e-5)+y*(F(0.7621095161e-6)
-          -y*F(0.934935152e-7))));
+        const auto z = F(8)/ax;
+        const auto y = square(z);
+        const auto xx = ax - F(0.785398164);
 
-        ans=sqrt(F(0.636619772)/ax)*(cos(xx)*ans1-z*sin(xx)*ans2);
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 5> a_poly = {
+            1.0,
+            -0.1098628627e-2,
+            0.2734510407e-4,
+            -0.2073370639e-5,
+            0.2093887211e-6,
+        };
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 5> b_poly = {
+            -0.1562499995e-1,
+            0.1430488765e-3,
+            -0.6911147651e-5,
+            0.7621095161e-6,
+            -0.934935152e-7
+        };
+
+        const auto a = evaluate_polynomial(a_poly.cbegin(), a_poly.cend(), y);
+        const auto b = evaluate_polynomial(b_poly.cbegin(), b_poly.cend(), y);
+
+        result = sqrt(F(0.636619772)/ax)*(cos(xx)*a-z*sin(xx)*b);
     }
 
-    return ans;
+    return result;
 }
-
+/*
 #if XMIPP4_HAS_BUILTIN(j0f)
 inline float cylindrical_bessel_j0(float x) noexcept
 {
@@ -117,7 +147,7 @@ inline long double cylindrical_bessel_j0(long double x) noexcept
     return XMIPP4_BUILTIN(j0l)(x);
 }
 #endif
-
+*/
 } // namespace detail
 
 template <typename F>

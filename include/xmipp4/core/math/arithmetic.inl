@@ -121,5 +121,25 @@ mod(F num, F den) noexcept
     return detail::mod(num, den);
 }
 
+
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+sign(F x) noexcept
+{
+    switch (std::fpclassify(x))
+    {
+    case FP_NAN:
+        return x;
+
+    case FP_ZERO:
+        return F(0);
+
+    default: // Determine sign
+        return x<0 ? F(-1) : F(1); 
+    }
+}
+
 } // namespace math
 } // namespace xmipp4

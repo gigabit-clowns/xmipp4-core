@@ -84,7 +84,7 @@ cylindrical_bessel_j0(F x) noexcept
             9494680.718,
             59272.64853,
             267.8532712,
-            1,
+            1.0,
         };
 
         const auto num = evaluate_polynomial(num_poly.cbegin(), num_poly.cend(), y);
@@ -121,7 +121,7 @@ cylindrical_bessel_j0(F x) noexcept
 
     return result;
 }
-/*
+
 #if XMIPP4_HAS_BUILTIN(j0f)
 inline float cylindrical_bessel_j0(float x) noexcept
 {
@@ -147,7 +147,7 @@ inline long double cylindrical_bessel_j0(long double x) noexcept
     return XMIPP4_BUILTIN(j0l)(x);
 }
 #endif
-*/
+
 } // namespace detail
 
 template <typename F>
@@ -172,35 +172,64 @@ cylindrical_bessel_j1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F ax,z;
-    F xx,y,ans,ans1,ans2;
+    F result;
 
-    if ((ax=abs(x)) < F(8)) 
+    const auto ax = abs(x);
+    if (ax < F(8)) 
     {
-        y=x*x;
-        ans1=x*(F(72362614232.0)+y*(F(-7895059235.0)+y*(F(242396853.1)
-         +y*(F(-2972611.439)+y*(F(15704.48260)+y*(F(-30.16036606)))))));
-        ans2=F(144725228442.0)+y*(F(2300535178.0)+y*(F(18583304.74)
-         +y*(F(99447.43394)+y*(F(376.9991397)+y*F(1)))));
+        const auto y = square(x);
 
-        ans=ans1/ans2;
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 6> num_poly = {
+            72362614232.0, 
+            -7895059235.0, 
+            242396853.1, 
+            -2972611.439, 
+            15704.48260, 
+            -30.16036606
+        };
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 6> den_poly = {
+            144725228442.0, 
+            2300535178.0, 
+            18583304.74,
+            99447.43394,
+            376.9991397,
+            1.0
+        };
+
+        const auto num = evaluate_polynomial(num_poly.cbegin(), num_poly.cend(), y);
+        const auto den = evaluate_polynomial(den_poly.cbegin(), den_poly.cend(), y);
+
+        result = x * (num / den);
     }
     else
     {
-        z=8.0/ax;
-        y=z*z;
-        xx=ax-2.356194491;
-        ans1=F(1)+y*(F(0.183105e-2)+y*(F(-0.3516396496e-4)
-         +y*(F(0.2457520174e-5)+y*(F(-0.240337019e-6)))));
-        ans2=F(0.04687499995)+y*(F(-0.2002690873e-3)
-         +y*(F(0.8449199096e-5)+y*(F(-0.88228987e-6)
-         +y*F(0.105787412e-6))));
+        const auto z = F(8)/ax;
+        const auto y = square(z);
+        const auto xx = ax - F(2.356194491);
 
-        ans=sqrt(F(0.636619772)/ax)*(cos(xx)*ans1-z*sin(xx)*ans2);
-        if (x < 0) ans = -ans;
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 5> a_poly = {
+            1.0, 
+            0.183105e-2, 
+            -0.3516396496e-4, 
+            0.2457520174e-5, 
+            -0.240337019e-6
+        };
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 5> b_poly = {
+            0.04687499995, 
+            -0.2002690873e-3, 
+            0.8449199096e-5, 
+            -0.88228987e-6, 
+            0.105787412e-6
+        };
+
+        const auto a = evaluate_polynomial(a_poly.cbegin(), a_poly.cend(), y);
+        const auto b = evaluate_polynomial(b_poly.cbegin(), b_poly.cend(), y);
+
+        result = sqrt(F(0.636619772)/ax)*(cos(xx)*a-z*sin(xx)*b);
+        if (x < 0) result = -result;
     }
 
-    return ans;
+    return result;
 }
 
 #if XMIPP4_HAS_BUILTIN(j1f)

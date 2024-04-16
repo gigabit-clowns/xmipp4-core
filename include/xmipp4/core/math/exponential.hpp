@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,49 +21,49 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file exponential.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Provides multiple exponential and logarithmic functions.
+ * @date 2024-04-15
  * 
  */
 
-#include "dynamic_library_handle.hpp"
-
-#include <xmipp4/core/platform/constexpr.hpp>
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
+#include <type_traits>
 
 namespace xmipp4
 {
-namespace system
+namespace math
 {
 
-inline void* dynamic_library_open(const char* filename)
-{
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
-}
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+exp(F exponent) noexcept;
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+exp2(F exponent) noexcept;
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+exp10(F exponent) noexcept;
 
-} // namespace system
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+log(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+log2(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+log10(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+logn(F n, F x) noexcept;
+
+} // namespace math
 } // namespace xmipp4
+
+#include "exponential.inl"

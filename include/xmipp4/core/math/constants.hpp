@@ -21,22 +21,53 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_size.hpp
+ * @file constants.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides the dynamic_size constant
- * @date 2024-02-22
+ * @brief Definition of common mathematical constants.
+ * @date 2024-04-15
  * 
  */
 
-#include "platform/constexpr.hpp"
+#include "../platform/constexpr.hpp"
 
-#include <limits>
-#include <cstddef>
+#include <type_traits>
 
-namespace xmipp4 
+namespace xmipp4
+{
+namespace math
 {
 
-inline XMIPP4_CONST_CONSTEXPR auto dynamic_size 
-    = std::numeric_limits<std::size_t>::max();
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+pi() noexcept;
 
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+pi_2() noexcept;
+
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+pi_4() noexcept;
+
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+e() noexcept;
+
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+sqrt2() noexcept;
+
+template <typename F>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+sqrt1_2() noexcept;
+
+} // namespace math
 } // namespace xmipp4
+
+#include "constants.inl"

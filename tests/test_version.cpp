@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/version.hpp>
+#include <xmipp4/core/version.hpp>
 
 using namespace xmipp4;
 

@@ -26,7 +26,7 @@
  * 
  */
 
-#include <xmipp4/system/dynamic_library.hpp>
+#include <xmipp4/core/system/dynamic_library.hpp>
 
 #include "dynamic_library_handle.hpp"
 

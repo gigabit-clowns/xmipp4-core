@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,49 +21,21 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file math.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Includes all math headers.
+ * @date 2024-04-15
  * 
  */
 
-#include "dynamic_library_handle.hpp"
-
-#include <xmipp4/core/platform/constexpr.hpp>
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
-
-namespace xmipp4
-{
-namespace system
-{
-
-inline void* dynamic_library_open(const char* filename)
-{
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
-}
-
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
-
-} // namespace system
-} // namespace xmipp4
+#include "abs.hpp"
+#include "arithmetic.hpp"
+#include "bessel.hpp"
+#include "constants.hpp"
+#include "erf.hpp"
+#include "exponential.hpp"
+#include "factorial.hpp"
+#include "hyperbolic.hpp"
+#include "nearest_integer.hpp"
+#include "power.hpp"
+#include "trigonometric.hpp"

@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/multidimensional/strided_layout_utils.hpp>
+#include <xmipp4/core/multidimensional/strided_layout_utils.hpp>
 
 #include <vector>
 

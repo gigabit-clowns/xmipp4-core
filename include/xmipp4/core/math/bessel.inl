@@ -774,7 +774,7 @@ cylindrical_bessel_i0(F x) noexcept
             0.392377e-2
         };
 
-        result = (exp(ax) / sqrt(ax));
+        result = exp(ax) / sqrt(ax);
         result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
 
@@ -840,7 +840,7 @@ cylindrical_bessel_i1(F x) noexcept
             -0.420059e-2
         };
 
-        result = (exp(ax) / sqrt(ax));
+        result = exp(ax) / sqrt(ax);
         result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
 
@@ -943,32 +943,52 @@ cylindrical_bessel_k0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F y, ans;
+    F result;
 
     if(x < 0)
     {
-        ans = std::nan("");
+        result = std::nan("");
     }
     else if (x == 0)
     {
-        ans = std::numeric_limits<F>::infinity();
+        result = std::numeric_limits<F>::infinity();
     }
     else if (x <= F(2)) 
     {
-        y=x*x/F(4);
-        ans=(-log(x/F(2))*cylindrical_bessel_i0(x))+(F(-0.57721566)+y*(F(0.42278420)
-            +y*(F(0.23069756)+y*(F(0.3488590e-1)+y*(F(0.262698e-2)
-            +y*(F(0.10750e-3)+y*F(0.74e-5)))))));
+        const auto y = square(x) / F(4);
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            -0.57721566, 
+            0.42278420, 
+            0.23069756, 
+            0.3488590e-1, 
+            0.262698e-2, 
+            0.10750e-3, 
+            0.74e-5
+        };
+
+        result = -log(x/F(2)) * cylindrical_bessel_i0(x);
+        result += evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     } 
     else 
     {
-        y=F(2)/x;
-        ans=(exp(-x)/sqrt(x))*(F(1.25331414)+y*(F(-0.7832358e-1)
-            +y*(F(0.2189568e-1)+y*(F(-0.1062446e-1)+y*(F(0.587872e-2)
-            +y*(F(-0.251540e-2)+y*F(0.53208e-3)))))));
+        const auto y = F(2)/x;
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            1.25331414, 
+            -0.7832358e-1, 
+            0.2189568e-1, 
+            -0.1062446e-1, 
+            0.587872e-2, 
+            -0.251540e-2, 
+            0.53208e-3
+        };
+
+        result = exp(-x)/sqrt(x);
+        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
     }
 
-    return ans;
+    return result;
 }
 
 } // namespace detail
@@ -995,32 +1015,52 @@ cylindrical_bessel_k1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F y, ans;
+    F result;
 
     if(x < 0)
     {
-        ans = std::nan("");
+        result = std::nan("");
     }
     else if (x == 0)
     {
-        ans = std::numeric_limits<F>::infinity();
+        result = std::numeric_limits<F>::infinity();
     }
     else if (x <= F(2)) 
     {
-        y=x*x/F(4);
-        ans=(log(x/F(2))*cylindrical_bessel_i1(x))+(F(1)/x)*(F(1)+y*(F(0.15443144)
-            +y*(F(-0.67278579)+y*(F(-0.18156897)+y*(F(-0.1919402e-1)
-            +y*(F(-0.110404e-2)+y*(F(-0.4686e-4))))))));
+        const auto y = square(x)/F(4);
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            1.0,
+            0.15443144, 
+            -0.67278579,
+            -0.18156897,
+            -0.1919402e-1,
+            -0.110404e-2,
+            -0.4686e-4
+        };
+
+        result = log(x/F(2))*cylindrical_bessel_i1(x);
+        result += evaluate_polynomial(poly.cbegin(), poly.cend(), y) / x;  
     } 
     else 
     {
-        y=F(2)/x;
-        ans=(exp(-x)/sqrt(x))*(F(1.25331414)+y*(F(0.23498619)
-            +y*(F(-0.3655620e-1)+y*(F(0.1504268e-1)+y*(F(-0.780353e-2)
-            +y*(F(0.325614e-2)+y*(F(-0.68245e-3))))))));
+        const auto y = F(2)/x;
+
+        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+            1.25331414,
+            0.23498619,
+            -0.3655620e-1,
+            0.1504268e-1,
+            -0.780353e-2,
+            0.325614e-2,
+            -0.68245e-3
+        };
+
+        result = exp(-x)/sqrt(x);
+        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);  
     }
 
-    return ans;
+    return result;
 }
 
 } // namespace detail

@@ -43,6 +43,10 @@ template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 mod(F num, F den) noexcept;
 
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+sign(F x) noexcept;
+
 } // namespace math
 } // namespace xmipp4
 

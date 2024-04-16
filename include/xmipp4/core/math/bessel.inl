@@ -763,5 +763,176 @@ cylindrical_bessel_in(int n, F x) noexcept
     return detail::cylindrical_bessel_in(n, x);
 }
 
+
+
+
+
+namespace detail
+{
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0(F x) noexcept
+{
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    F y, ans;
+
+    if(x < 0)
+    {
+        ans = std::nan("");
+    }
+    else if (x == 0)
+    {
+        ans = std::numeric_limits<F>::infinity();
+    }
+    else if (x <= F(2)) 
+    {
+        y=x*x/F(4);
+        ans=(-log(x/F(2))*cylindrical_bessel_i0(x))+(F(-0.57721566)+y*(F(0.42278420)
+            +y*(F(0.23069756)+y*(F(0.3488590e-1)+y*(F(0.262698e-2)
+            +y*(F(0.10750e-3)+y*F(0.74e-5)))))));
+    } 
+    else 
+    {
+        y=F(2)/x;
+        ans=(exp(-x)/sqrt(x))*(F(1.25331414)+y*(F(-0.7832358e-1)
+            +y*(F(0.2189568e-1)+y*(F(-0.1062446e-1)+y*(F(0.587872e-2)
+            +y*(F(-0.251540e-2)+y*F(0.53208e-3)))))));
+    }
+
+    return ans;
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0(F x) noexcept
+{
+    return detail::cylindrical_bessel_k0(x);
+}
+
+
+
+
+
+namespace detail
+{
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1(F x) noexcept
+{
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    F y, ans;
+
+    if(x < 0)
+    {
+        ans = std::nan("");
+    }
+    else if (x == 0)
+    {
+        ans = std::numeric_limits<F>::infinity();
+    }
+    else if (x <= F(2)) 
+    {
+        y=x*x/F(4);
+        ans=(log(x/F(2))*cylindrical_bessel_i1(x))+(F(1)/x)*(F(1)+y*(F(0.15443144)
+            +y*(F(-0.67278579)+y*(F(-0.18156897)+y*(F(-0.1919402e-1)
+            +y*(F(-0.110404e-2)+y*(F(-0.4686e-4))))))));
+    } 
+    else 
+    {
+        y=F(2)/x;
+        ans=(exp(-x)/sqrt(x))*(F(1.25331414)+y*(F(0.23498619)
+            +y*(F(-0.3655620e-1)+y*(F(0.1504268e-1)+y*(F(-0.780353e-2)
+            +y*(F(0.325614e-2)+y*(F(-0.68245e-3))))))));
+    }
+
+    return ans;
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1(F x) noexcept
+{
+    return detail::cylindrical_bessel_k1(x);
+}
+
+
+
+
+
+namespace detail
+{
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_kn_iterative(int n, F x) noexcept
+{
+    F result;
+
+    if (x < 0)
+    {
+        result = std::nan("");
+    }
+    else if (x == 0)
+    {
+        result = std::numeric_limits<F>::infinity();
+    }
+    else
+    {
+        n = math::abs(n);
+
+        // Based on:
+        // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+        const F tox = F(2)/x;
+        F bkm = cylindrical_bessel_k0(x);
+        F bk = cylindrical_bessel_k1(x);
+        for (unsigned k=1; k<static_cast<unsigned>(n); k++) {
+            const auto temp = bkm+k*tox*bk;
+            bkm = bk;
+            bk = temp;
+        }
+        
+        result = bk;
+    }
+
+    return result;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_kn(int n, F x) noexcept
+{
+    switch (n)
+    {
+    case 0: return cylindrical_bessel_k0(x);
+    case 1: case -1: return cylindrical_bessel_k1(x);
+    default: return cylindrical_bessel_kn_iterative(n, x);
+    }
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_kn(int n, F x) noexcept
+{
+    return detail::cylindrical_bessel_kn(n, x);
+}
+
+
 } // namespace math
 } // namespace xmipp4

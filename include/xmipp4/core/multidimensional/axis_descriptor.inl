@@ -101,6 +101,20 @@ std::size_t axis_descriptor::get_width() const noexcept
 
 
 
+XMIPP4_INLINE_CONSTEXPR
+axis_descriptor make_contiguous_axis(std::size_t count) noexcept
+{
+    return axis_descriptor(count, 1);
+}
+
+XMIPP4_INLINE_CONSTEXPR
+axis_descriptor make_phantom_axis(std::size_t count) noexcept
+{
+    return axis_descriptor(count, 0);
+}
+
+
+
 XMIPP4_INLINE_CONSTEXPR_CPP20
 void swap(axis_descriptor &x, axis_descriptor &y) noexcept
 {

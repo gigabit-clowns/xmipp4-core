@@ -423,7 +423,7 @@ OutputIt apply_subscripts_to_layout(InputIt first,
                                     const subscript_sequence<new_axis_tag, Subscripts...>& subscripts,
                                     std::ptrdiff_t &offset )
 {
-    *out = axis_descriptor(1, 0); // Add an axis
+    *out = make_phantom_axis(); // Add an axis
     ++out;
 
     return apply_subscripts_to_layout(

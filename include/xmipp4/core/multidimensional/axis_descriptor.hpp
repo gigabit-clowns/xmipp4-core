@@ -116,6 +116,31 @@ private:
 
 };
 
+/**
+ * @brief Create a contiguous axis_descriptor.
+ * 
+ * A contiguous axis descriptor has a unitary stride.
+ * 
+ * @param count Number of elements on the axis.
+ * @return axis_descriptor. The resulting axis
+ */
+XMIPP4_CONSTEXPR
+axis_descriptor make_contiguous_axis(std::size_t count=1) noexcept;
+
+/**
+ * @brief Create a phantom axis_descriptor.
+ * 
+ * A phantom axis descriptor has null stride. 
+ * This means that it does not contribute to the
+ * underlying array's size and all its elements
+ * are repeated. 
+ * 
+ * @param count Number of elements on the axis.
+ * @return axis_descriptor. The resulting axis
+ */
+XMIPP4_CONSTEXPR
+axis_descriptor make_phantom_axis(std::size_t count=1) noexcept;
+
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
 

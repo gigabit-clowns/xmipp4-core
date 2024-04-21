@@ -50,10 +50,10 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param count Number of elements in the axis. Defaults to 0
+     * @param extent Number of elements in the axis. Defaults to 0
      * @param stride Step between consecutive elements. In items. Defaults to 1
      */
-    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t count = 0, 
+    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t extent = 0, 
                                               std::ptrdiff_t stride = 1 ) noexcept;
 
     axis_descriptor(const axis_descriptor& other) = default;
@@ -71,16 +71,16 @@ public:
     /**
      * @brief Set the element count
      * 
-     * @param count The element count
+     * @param extent The element count
      */
-    XMIPP4_CONSTEXPR void set_count(std::size_t count) noexcept;
+    XMIPP4_CONSTEXPR void set_extent(std::size_t extent) noexcept;
 
     /**
      * @brief Return the element count
      * 
      * @return std::size_t Element count
      */
-    XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_extent() const noexcept;
 
     /**
      * @brief Set the stride between consecutive elements
@@ -111,7 +111,7 @@ public:
     XMIPP4_CONSTEXPR std::size_t get_width() const noexcept;
 
 private:
-    std::size_t m_count; ///< Number of elements
+    std::size_t m_extent; ///< Number of elements
     std::ptrdiff_t m_stride; ///< Step between adjacent elements. In items
 
 };
@@ -121,11 +121,11 @@ private:
  * 
  * A contiguous axis descriptor has a unitary stride.
  * 
- * @param count Number of elements on the axis.
+ * @param extent Number of elements on the axis.
  * @return axis_descriptor. The resulting axis
  */
 XMIPP4_CONSTEXPR
-axis_descriptor make_contiguous_axis(std::size_t count=1) noexcept;
+axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
 
 /**
  * @brief Create a phantom axis_descriptor.
@@ -135,11 +135,11 @@ axis_descriptor make_contiguous_axis(std::size_t count=1) noexcept;
  * underlying array's size and all its elements
  * are repeated. 
  * 
- * @param count Number of elements on the axis.
+ * @param extent Number of elements on the axis.
  * @return axis_descriptor. The resulting axis
  */
 XMIPP4_CONSTEXPR
-axis_descriptor make_phantom_axis(std::size_t count=1) noexcept;
+axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 

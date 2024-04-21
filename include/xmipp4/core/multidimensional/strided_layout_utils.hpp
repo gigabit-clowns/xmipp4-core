@@ -40,8 +40,26 @@ namespace xmipp4
 namespace multidimensional
 {
 
-inline XMIPP4_CONST_CONSTEXPR struct column_major_tag {} column_major;
-inline XMIPP4_CONST_CONSTEXPR struct row_major_tag {} row_major;
+struct column_major_tag {};
+
+/**
+ * @brief Construct a column major tag
+ * 
+ * @return column_major_tag
+ */
+XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
+
+
+struct row_major_tag {};
+
+/**
+ * @brief Construct a row major tag
+ * 
+ * @return row_major_tag
+ */
+XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
+
+
 
 /**
  * @brief Check if a pair of axes is column major.
@@ -353,7 +371,7 @@ XMIPP4_CONSTEXPR_CPP20 axis_descriptor flatten_regular_layout(BidirIt first,
 /**
  * @brief Check if an axis can be squeezed
  * 
- * An axis can be squeezed only if it has a size of 1
+ * An axis can be squeezed only if it has a extent of 1
  * 
  * @param axis The axis to be checked
  * @return bool True if the axis can be squeezed. False otherwise

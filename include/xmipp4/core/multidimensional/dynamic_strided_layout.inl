@@ -32,7 +32,7 @@ inline
 dynamic_strided_layout::dynamic_strided_layout(It first, It last)
     : m_axes(first, last)
 {
-    compute_contiguous_axis_strides(m_axes.begin(), m_axes.end(), column_major);
+    compute_contiguous_axis_strides(m_axes.begin(), m_axes.end(), column_major());
 }
 
 inline
@@ -60,13 +60,13 @@ const axis_descriptor& dynamic_strided_layout::get_axis(std::size_t i) const
 }
 
 inline
-std::size_t dynamic_strided_layout::get_count(std::size_t i) const
+std::size_t dynamic_strided_layout::get_extent(std::size_t i) const
 {
-    return get_axis(i).get_count();
+    return get_axis(i).get_extent();
 }
 
 inline
-std::size_t dynamic_strided_layout::get_stride(std::size_t i) const
+std::ptrdiff_t dynamic_strided_layout::get_stride(std::size_t i) const
 {
     return get_axis(i).get_stride();
 }
@@ -74,7 +74,7 @@ std::size_t dynamic_strided_layout::get_stride(std::size_t i) const
 inline
 std::size_t dynamic_strided_layout::get_required_storage_size() const noexcept
 {
-    if (m_axes.size() == 0) return 0UL;
+    if (m_axes.empty()) return 0UL;
     const auto minor_axis = find_max_stride(m_axes.cbegin(), m_axes.cend());
     return minor_axis->get_width();
 }

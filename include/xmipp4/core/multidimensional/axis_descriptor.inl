@@ -34,9 +34,9 @@ namespace xmipp4
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR axis_descriptor::axis_descriptor(std::size_t count, 
+XMIPP4_INLINE_CONSTEXPR axis_descriptor::axis_descriptor(std::size_t extent, 
                                                          std::ptrdiff_t stride ) noexcept
-    : m_count(count)
+    : m_extent(extent)
     , m_stride(stride)
 {   
 }
@@ -44,7 +44,7 @@ XMIPP4_INLINE_CONSTEXPR axis_descriptor::axis_descriptor(std::size_t count,
 XMIPP4_INLINE_CONSTEXPR 
 bool axis_descriptor::operator==(const axis_descriptor& other) const noexcept
 {
-    return m_count == other.m_count && 
+    return m_extent == other.m_extent && 
            m_stride == other.m_stride;
 }
 
@@ -57,20 +57,20 @@ bool axis_descriptor::operator!=(const axis_descriptor& other) const noexcept
 XMIPP4_INLINE_CONSTEXPR_CPP20
 void axis_descriptor::swap(axis_descriptor &other) noexcept
 {
-    std::swap(m_count, other.m_count);
+    std::swap(m_extent, other.m_extent);
     std::swap(m_stride, other.m_stride);
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-void axis_descriptor::set_count(std::size_t count) noexcept
+void axis_descriptor::set_extent(std::size_t extent) noexcept
 {
-    m_count = count;
+    m_extent = extent;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t axis_descriptor::get_count() const noexcept
+std::size_t axis_descriptor::get_extent() const noexcept
 {
-    return m_count;
+    return m_extent;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -96,21 +96,21 @@ std::size_t axis_descriptor::get_unsigned_stride() const noexcept
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t axis_descriptor::get_width() const noexcept
 {
-    return get_unsigned_stride()*get_count();
+    return get_unsigned_stride()*get_extent();
 }
 
 
 
 XMIPP4_INLINE_CONSTEXPR
-axis_descriptor make_contiguous_axis(std::size_t count) noexcept
+axis_descriptor make_contiguous_axis(std::size_t extent) noexcept
 {
-    return axis_descriptor(count, 1);
+    return axis_descriptor(extent, 1);
 }
 
 XMIPP4_INLINE_CONSTEXPR
-axis_descriptor make_phantom_axis(std::size_t count) noexcept
+axis_descriptor make_phantom_axis(std::size_t extent) noexcept
 {
-    return axis_descriptor(count, 0);
+    return axis_descriptor(extent, 0);
 }
 
 
@@ -129,7 +129,7 @@ void apply_index(const axis_descriptor &desc,
                  I index,
                  std::ptrdiff_t &offset )
 {
-    offset += sanitize_index(index, desc.get_count()) * desc.get_stride();
+    offset += sanitize_index(index, desc.get_extent()) * desc.get_stride();
 }
 
 template <typename Start, typename Stride, typename Stop>
@@ -142,15 +142,15 @@ axis_descriptor apply_slice(const axis_descriptor &desc,
     std::size_t stop;
     std::ptrdiff_t stride;
     sanitize_slice(
-        slc, desc.get_count(),
+        slc, desc.get_extent(),
         start, stop, stride
     );
     const auto pivot = compute_slice_pivot(start, stride);
-    const auto count = compute_slice_size(start, stop, stride);
+    const auto extent = compute_slice_size(start, stop, stride);
     
     offset += desc.get_stride()*pivot;
     stride *= desc.get_stride();
-    return axis_descriptor(count, stride);
+    return axis_descriptor(extent, stride);
 }
 
 } // namespace multidimensional

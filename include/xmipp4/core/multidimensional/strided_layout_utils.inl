@@ -38,6 +38,18 @@ namespace xmipp4
 namespace multidimensional
 {
 
+XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
+{
+    return column_major_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
+{
+    return row_major_tag();
+}
+
+
+
 XMIPP4_INLINE_CONSTEXPR 
 bool check_axis_order(const axis_descriptor &prev, 
                       const axis_descriptor &next,
@@ -167,7 +179,7 @@ bool is_contiguous_layout(ForwardIt first,
         return false;
 
     // Layout must be regular
-    if(!is_regular_layout(first, last, column_major))
+    if(!is_regular_layout(first, last, column_major()))
         return false;
 
     return true;
@@ -184,7 +196,7 @@ bool is_contiguous_layout(BidirIt first,
         return true;
     
     // Layout must be regular
-    if(!is_regular_layout(first, last, row_major))
+    if(!is_regular_layout(first, last, row_major()))
         return false;
 
     // The last axis must have unit stride
@@ -206,7 +218,7 @@ std::size_t compute_contiguous_axis_strides(ForwardIt first,
         [&volume] (axis_descriptor& desc) -> void
         {
             desc.set_stride(volume);
-            volume *= desc.get_count();
+            volume *= desc.get_extent();
         }
     );
     return volume;
@@ -221,7 +233,7 @@ std::size_t compute_contiguous_axis_strides(BidirIt first,
     return compute_contiguous_axis_strides(
         std::make_reverse_iterator(last),
         std::make_reverse_iterator(first),
-        column_major
+        column_major()
     );
 }
 
@@ -234,7 +246,7 @@ OutputIt fill_shape_from_axes(InputIt first,
     return std::transform(
         first, last,
         out,
-        std::mem_fn(&axis_descriptor::get_count)
+        std::mem_fn(&axis_descriptor::get_extent)
     );
 }
 
@@ -246,7 +258,7 @@ ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
         first, last, 
         [] (const axis_descriptor &x, const axis_descriptor &y) -> bool
         {
-            return check_axis_order(x, y, column_major);
+            return check_axis_order(x, y, column_major());
         }
     );
 }
@@ -259,7 +271,7 @@ ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
         first, last, 
         [] (const axis_descriptor &x, const axis_descriptor &y) -> bool
         {
-            return check_axis_order(x, y, column_major);
+            return check_axis_order(x, y, column_major());
         }
     );
 }
@@ -292,7 +304,7 @@ std::size_t compute_layout_volume(ForwardIt first,
         std::size_t(1),
         [] (std::size_t current, const axis_descriptor &axis) -> std::size_t
         {
-            return current * axis.get_count();
+            return current * axis.get_extent();
         }
     );
 }
@@ -307,9 +319,9 @@ axis_descriptor flatten_regular_layout(ForwardIt first,
         return axis_descriptor();
 
     const auto stride = first->get_stride();
-    const auto count = compute_layout_volume(first, last);
+    const auto extent = compute_layout_volume(first, last);
 
-    return axis_descriptor(count, stride);
+    return axis_descriptor(extent, stride);
 }   
 
 template<typename BidirIt>
@@ -322,16 +334,16 @@ axis_descriptor flatten_regular_layout(BidirIt first,
         return axis_descriptor();
 
     const auto stride = std::make_reverse_iterator(last)->get_stride();
-    const auto count = compute_layout_volume(first, last);
+    const auto extent = compute_layout_volume(first, last);
 
-    return axis_descriptor(count, stride);
+    return axis_descriptor(extent, stride);
 }
 
 
 XMIPP4_INLINE_CONSTEXPR 
 bool check_squeeze(const axis_descriptor &axis) noexcept
 {
-    return axis.get_count() == 1;
+    return axis.get_extent() == 1;
 }
 
 template <typename ForwardIt>

@@ -41,13 +41,13 @@ TEST_CASE( "check axis pair ordering", "[memory_layout]" )
 
     SECTION("column major")
     {
-        REQUIRE(check_axis_order(major_axis, minor_axis, column_major));
-        REQUIRE(!check_axis_order(major_axis, minor_axis, row_major));
+        REQUIRE(check_axis_order(major_axis, minor_axis, column_major()));
+        REQUIRE(!check_axis_order(major_axis, minor_axis, row_major()));
     }
     SECTION("row major")
     {
-        REQUIRE(!check_axis_order(minor_axis, major_axis, column_major));
-        REQUIRE(check_axis_order(minor_axis, major_axis, row_major));
+        REQUIRE(!check_axis_order(minor_axis, major_axis, column_major()));
+        REQUIRE(check_axis_order(minor_axis, major_axis, row_major()));
     }
 }
 
@@ -96,18 +96,18 @@ TEST_CASE ("check layout ordering", "[memory_layout]")
 
     SECTION("ordered")
     {
-        REQUIRE(check_layout_order(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), row_major));
-        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), column_major));
-        REQUIRE(check_layout_order(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(check_layout_order(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), column_major()));
+        REQUIRE(check_layout_order(layout.crbegin(), layout.crend(), row_major()));
     }
     SECTION("disordered")
     {
         std::swap(layout[2], layout[3]);
-        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), row_major));
-        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), column_major));
-        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(!check_layout_order(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), column_major()));
+        REQUIRE(!check_layout_order(layout.crbegin(), layout.crend(), row_major()));
     }
 }
 
@@ -124,14 +124,14 @@ TEST_CASE("check layout overlap")
 
     SECTION("non overlapping")
     {
-        REQUIRE(!check_layout_overlap(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(!check_layout_overlap(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(!check_layout_overlap(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(!check_layout_overlap(layout.crbegin(), layout.crend(), row_major()));
     }
     SECTION("overlapping")
     {
-        layout[0].set_count(3);
-        REQUIRE(check_layout_overlap(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(check_layout_overlap(layout.crbegin(), layout.crend(), row_major));
+        layout[0].set_extent(3);
+        REQUIRE(check_layout_overlap(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(check_layout_overlap(layout.crbegin(), layout.crend(), row_major()));
     }
 }
 
@@ -148,20 +148,20 @@ TEST_CASE("check contiguous layout", "[memory_layout]")
 
     SECTION("contiguous")
     {
-        REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(is_contiguous_layout(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(is_contiguous_layout(layout.crbegin(), layout.crend(), row_major()));
     }
     SECTION("first axis has not unit stride")
     {
         layout[0] = axis_descriptor(1, 2);
-        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), row_major()));
     }
     SECTION("disordered")
     {
         std::swap(layout[2], layout[3]);
-        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), column_major));
-        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), row_major));
+        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), column_major()));
+        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), row_major()));
     }
 }
 
@@ -178,7 +178,7 @@ TEST_CASE("compute contiguous axis strides")
 
     SECTION("column major")
     {
-        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), column_major);
+        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), column_major());
         REQUIRE(layout[0].get_stride() == 1);
         REQUIRE(layout[1].get_stride() == 2);
         REQUIRE(layout[2].get_stride() == 6);
@@ -190,7 +190,7 @@ TEST_CASE("compute contiguous axis strides")
 
     SECTION("row major")
     {
-        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), row_major);
+        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), row_major());
         REQUIRE(layout[5].get_stride() == 1);
         REQUIRE(layout[4].get_stride() == 9);
         REQUIRE(layout[3].get_stride() == 9);
@@ -250,7 +250,7 @@ TEST_CASE("flatten contiguous layout", "[memory_layout]")
             axis_descriptor(4, 128),
         };
 
-        REQUIRE(flatten_regular_layout(layout.cbegin(), layout.cend(), column_major) == axis_descriptor(256, 2));
+        REQUIRE(flatten_regular_layout(layout.cbegin(), layout.cend(), column_major()) == axis_descriptor(256, 2));
     }
     SECTION("row major")
     {
@@ -262,7 +262,7 @@ TEST_CASE("flatten contiguous layout", "[memory_layout]")
             axis_descriptor(4, 2),
         };
 
-        REQUIRE(flatten_regular_layout(layout.cbegin(), layout.cend(), row_major) == axis_descriptor(256, 2));
+        REQUIRE(flatten_regular_layout(layout.cbegin(), layout.cend(), row_major()) == axis_descriptor(256, 2));
     }
 }
 

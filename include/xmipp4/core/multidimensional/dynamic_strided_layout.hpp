@@ -48,8 +48,8 @@ public:
 
     std::size_t get_rank() const noexcept;
     const axis_descriptor& get_axis(std::size_t i) const;
-    std::size_t get_count(std::size_t i) const;
-    std::size_t get_stride(std::size_t i) const;
+    std::size_t get_extent(std::size_t i) const;
+    std::ptrdiff_t get_stride(std::size_t i) const;
 
     std::size_t get_required_storage_size() const noexcept;
 

@@ -19,49 +19,35 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file test_arithmetic.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Tests for arithmetic.hpp
+ * @date 2024-04-15
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
-#include <xmipp4/core/platform/constexpr.hpp>
+#include <xmipp4/core/math/arithmetic.hpp>
 
-#include <dlfcn.h>
+using namespace xmipp4::math;
 
-#include <stdexcept>
-#include <sstream>
 
-namespace xmipp4
+TEST_CASE( "multiply_add", "[math]" ) 
 {
-namespace system
-{
+    REQUIRE( xmipp4::math::multiply_add(2.31, 1.35, 2.21) == Catch::Approx(5.3285) );
+    REQUIRE( xmipp4::math::multiply_add(2.31f, 1.35f, 2.21f) == Catch::Approx(5.3285f) );
 
-inline void* dynamic_library_open(const char* filename)
-{
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
+    REQUIRE( xmipp4::math::multiply_add(-2.5252, 5.23565, 73.2121) == Catch::Approx(59.99103662) );
+    REQUIRE( xmipp4::math::multiply_add(-2.5252f, 5.23565f, 73.2121f) == Catch::Approx(59.99103662) );
 }
 
-inline void dynamic_library_close(void* handle) noexcept
+TEST_CASE( "mod", "[math]" ) 
 {
-    ::dlclose(handle);
+    REQUIRE( xmipp4::math::mod(2.31, 1.35) == Catch::Approx(0.96) );
+    REQUIRE( xmipp4::math::mod(2.31f, 1.35f) == Catch::Approx(0.96) );
+    
+    REQUIRE( xmipp4::math::mod(2.31, -1.35) == Catch::Approx(0.96) );
+    REQUIRE( xmipp4::math::mod(2.31f, -1.35f) == Catch::Approx(0.96) );
 }
-
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
-
-} // namespace system
-} // namespace xmipp4

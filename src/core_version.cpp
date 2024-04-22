@@ -26,7 +26,7 @@
  * 
  */
 
-#include <xmipp4/core_version.hpp>
+#include <xmipp4/core/core_version.hpp>
 
 namespace xmipp4
 {

@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,49 +21,37 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file abs.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Provides abs function for various types.
+ * @date 2024-04-15
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include "../platform/constexpr.hpp"
 
-#include <xmipp4/core/platform/constexpr.hpp>
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
+#include <type_traits>
 
 namespace xmipp4
 {
-namespace system
+namespace math
 {
 
-inline void* dynamic_library_open(const char* filename)
-{
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
-}
+template <typename U>
+XMIPP4_CONSTEXPR
+typename std::enable_if<std::is_unsigned<U>::value, U>::type
+abs(U x) noexcept;
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
+template <typename I>
+XMIPP4_CONSTEXPR
+typename std::make_unsigned<typename std::enable_if<std::is_integral<I>::value && std::is_signed<I>::value, I>::type>::type
+abs(I x) noexcept;
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+abs(F x) noexcept;
 
-} // namespace system
+} // namespace math
 } // namespace xmipp4
+
+#include "abs.inl"

@@ -20,8 +20,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <xmipp4/access_flags.hpp>
-#include <xmipp4/platform/operating_system.h>
+#include <xmipp4/core/access_flags.hpp>
+#include <xmipp4/core/platform/operating_system.h>
 
 namespace xmipp4
 {

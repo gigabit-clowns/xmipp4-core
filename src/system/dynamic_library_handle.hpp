@@ -29,7 +29,7 @@
  * 
  */
 
-#include <xmipp4/platform/operating_system.h>
+#include <xmipp4/core/platform/operating_system.h>
 
 namespace xmipp4
 {

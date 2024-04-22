@@ -1,5 +1,6 @@
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#              Martín Salinas Antón (ssalinasmartin@gmail.com)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,6 +60,7 @@ jobs:
     - name: Setup Conda and dependencies
       uses: conda-incubator/setup-miniconda@main
       with:
+        miniconda-version: latest
         channels: conda-forge
         environment-file: requirements.txt
         activate-environment: xmipp4-core
@@ -78,18 +80,20 @@ jobs:
             ;;
         esac
 
-    - name: Configure, build and test with CMake
+    - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
-        c-compiler: ${{matrix.compiler.cc}}
-        cxx-compiler: ${{matrix.compiler.cxx}}
+        c-compiler: ${{ matrix.compiler.cc }}
+        cxx-compiler: ${{ matrix.compiler.cxx }}
         options: |
-          CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          CMAKE_PREFIX_PATH=${{steps.strings.outputs.prefix-path}}
-          BUILD_DOC=OFF
+          CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          CMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-path }}
+          XMIPP4_CORE_BUILD_DOC=OFF
         run-build: true
-        build-args: --config ${{env.BUILD_TYPE}}
-        run-test: true
-        test-args: --build-config ${{env.BUILD_TYPE}}
+        build-args: --config ${{ env.BUILD_TYPE }}
+
+    - name: Run tests
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: ctest -C ${{env.BUILD_TYPE}}

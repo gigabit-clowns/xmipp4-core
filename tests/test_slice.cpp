@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/slice.hpp>
+#include <xmipp4/core/slice.hpp>
 
 #include <type_traits>
 #include <sstream>
@@ -86,7 +86,7 @@ TEST_CASE( "construct slice with stop value", "[slice]" )
 
     SECTION( "with end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -156,7 +156,7 @@ TEST_CASE( "construct slice with start and stop values", "[slice]" )
 
     SECTION( "with begin and end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin, end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -228,7 +228,7 @@ TEST_CASE( "construct slice with start and stop and stride values", "[slice]" )
 
     SECTION( "with begin, adjacent and end" )
     {
-        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin, adjacent, end);
+        XMIPP4_CONST_CONSTEXPR auto s = make_slice(begin(), adjacent(), end());
         XMIPP4_CONST_CONSTEXPR auto start = s.get_start();
         XMIPP4_CONST_CONSTEXPR auto stride = s.get_stride();
         XMIPP4_CONST_CONSTEXPR auto stop = s.get_stop();
@@ -307,6 +307,99 @@ TEST_CASE( "cross construct slice", "[slice]" )
         REQUIRE( b.get_stride() == 1 );
         REQUIRE( b.get_stop() == 8 );
     }
+
+    SECTION( "integer promotion preserves end value")
+    {
+        const auto s0 = make_slice(1, 2, end());
+        const slice<int, int, std::uint8_t> s1(s0);
+        const slice<int, int, std::int64_t> s2(s1);
+        const slice<int, int, std::uint32_t> s3(s2);
+        const slice<int, int, int> s4(s3);
+
+        REQUIRE( s4.get_stop() == end() );
+    }
+}
+
+TEST_CASE( "sanitize slice", "[slice]" )
+{
+    std::size_t start;
+    std::size_t stop;
+    std::ptrdiff_t step;
+
+    SECTION( "Normal" )
+    {
+        sanitize_slice(make_slice(1, 2, 4), 8UL, start, stop, step);
+        REQUIRE( start == 1 );
+        REQUIRE( stop == 4 );
+        REQUIRE( step == 2 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 2 );
+    }
+    
+    SECTION( "Negative bounds" )
+    {
+        sanitize_slice(make_slice(-5, 4, -1), 8UL, start, stop, step);
+        REQUIRE( start == 3 );
+        REQUIRE( stop == 7 );
+        REQUIRE( step == 4 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 1 );
+    }
+    
+    SECTION( "Odd" )
+    {
+        sanitize_slice(odd(), 8UL, start, stop, step);
+        REQUIRE( start == 1 );
+        REQUIRE( stop == 8 );
+        REQUIRE( step == 2 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 4 );
+    }
+    
+    SECTION( "Empty" )
+    {
+        sanitize_slice(all(), 0UL, start, stop, step);
+        REQUIRE( start == 0 );
+        REQUIRE( stop == 0 );
+        REQUIRE( step == 1 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 0 );
+    }
+    
+    SECTION( "Reversed" )
+    {
+        sanitize_slice(make_slice(end(), -1, 2), 8UL, start, stop, step);
+        REQUIRE( start == 8 );
+        REQUIRE( stop == 2 );
+        REQUIRE( step == -1 );
+
+        REQUIRE( compute_slice_size(start, stop, step) == 6 );
+    }
+    
+    SECTION( "Out of bounds (positive)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 1, 9), 8UL, start, stop, step));
+    }
+    
+    SECTION( "Out of bounds (negative)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(-9, 1, 5), 8UL, start, stop, step));
+    }
+
+    SECTION( "Zero stride" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, 0, 2), 8UL, start, stop, step));
+    }
+
+    SECTION( "Unordered" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(2, 1, 1), 8UL, start, stop, step));
+    }
+
+    SECTION( "Unordered (reversed)" )
+    {
+        REQUIRE_THROWS(sanitize_slice(make_slice(1, -1, 2), 8UL, start, stop, step));
+    }
 }
 
 TEST_CASE( "output slice to a std::ostream", "[slice]" )
@@ -323,7 +416,7 @@ TEST_CASE( "output slice to a std::ostream", "[slice]" )
 
     SECTION( "with tags" )
     {
-        XMIPP4_CONST_CONSTEXPR auto x = make_slice(end);
+        XMIPP4_CONST_CONSTEXPR auto x = make_slice(end());
         stream << x;
 
         REQUIRE( stream.str() == "slice(begin, adjacent, end)" );

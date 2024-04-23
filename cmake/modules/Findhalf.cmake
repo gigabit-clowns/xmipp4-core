@@ -23,16 +23,18 @@
 cmake_minimum_required(VERSION 3.12)
 
 include(FindPackageHandleStandardArgs)
+include(FetchContent)
+include(GNUInstallDirs)
 
-# Find the half library include dir
+# Try to find the half library include dir
 find_path(
     half_INCLUDE_DIR 
     NAMES half.hpp
     PATH_SUFFIXES half_float half
 )
 
-# Parse version from header file
 if (half_INCLUDE_DIR)
+    # Parse version from header file
     file(
         STRINGS "${half_INCLUDE_DIR}/half.hpp"
         half_VERSION_LINE
@@ -40,6 +42,30 @@ if (half_INCLUDE_DIR)
     )
     string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
     set(half_VERSION ${CMAKE_MATCH_1})
+
+    # Define the target
+    add_library(half INTERFACE IMPORTED)
+    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+else()
+    # Half not found. Obtain it from source
+    set(half_VERSION 2.2.0)
+    FetchContent_Declare(
+        half
+        URL https://kumisystems.dl.sourceforge.net/project/half/half/${half_VERSION}/half-${half_VERSION}.zip
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+    )
+    FetchContent_GetProperties(half)
+    if(NOT half_POPULATED)
+        FetchContent_Populate(half)
+    endif()
+
+    # Define the taget
+    set(half_INCLUDE_DIR ${half_SOURCE_DIR}/include)
+    add_library(half INTERFACE)
+    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+    install(DIRECTORY ${half_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 # Define the package variables
@@ -47,9 +73,3 @@ find_package_handle_standard_args(half
     REQUIRED_VARS half_INCLUDE_DIR
     VERSION_VAR half_VERSION
 )
-
-if (half_FOUND)
-    # Define the target
-    add_library(half INTERFACE IMPORTED)
-    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
-endif()

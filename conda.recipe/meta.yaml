@@ -49,7 +49,7 @@ requirements:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vvv 
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps
 
 test:
   commands:

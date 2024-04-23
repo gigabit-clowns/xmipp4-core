@@ -34,10 +34,6 @@ about:
 source:
   path: ../
 
-build:
-  number: 0
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps
-
 requirements:
   build:
     - {{ compiler('c') }}
@@ -48,6 +44,10 @@ requirements:
     - catch2>=3
     - cpp-half>=2.1
     - ninja
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps
 
 test:
   commands:

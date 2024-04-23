@@ -58,9 +58,8 @@ else()
         FetchContent_Populate(half)
     endif()
 
-    # Define the taget
     set(half_INCLUDE_DIR ${half_SOURCE_DIR}/include)
-    install(DIRECTORY ${half_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(FILES ${half_INCLUDE_DIR}/half.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 # Define the package variables

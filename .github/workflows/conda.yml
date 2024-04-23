@@ -54,7 +54,7 @@ jobs:
           channel-priority: strict
 
       - name: Prepare
-        run: conda install conda-build
+        run: conda install conda-build conda-verify
 
       - name: Build
         run: conda build conda.recipe

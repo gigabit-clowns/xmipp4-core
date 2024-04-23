@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(Catch2 REQUIRED)
+find_package(Catch2 3.0 REQUIRED)
 
 include(CTest)
 include(Catch)

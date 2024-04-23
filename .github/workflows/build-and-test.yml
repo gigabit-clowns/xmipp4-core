@@ -61,9 +61,7 @@ jobs:
       uses: conda-incubator/setup-miniconda@main
       with:
         miniconda-version: latest
-        channels: conda-forge
-        environment-file: requirements.txt
-        activate-environment: xmipp4-core
+        activate-environment: xmipp4
 
     - name: Set reusable strings
       id: strings

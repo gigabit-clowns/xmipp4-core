@@ -43,6 +43,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - python
+    - pip
     - cmake>=3.16
     - catch2>=3
     - cpp-half>=2.1

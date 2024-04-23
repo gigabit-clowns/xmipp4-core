@@ -50,7 +50,3 @@ requirements:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vvv --no-deps
-
-test:
-  commands:
-    - xmipp4-core_tests

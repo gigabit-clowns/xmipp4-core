@@ -42,13 +42,10 @@ if (half_INCLUDE_DIR)
     )
     string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
     set(half_VERSION ${CMAKE_MATCH_1})
-
-    # Define the target
-    add_library(half INTERFACE IMPORTED)
-    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
 else()
     # Half not found. Obtain it from source
     set(half_VERSION 2.2.0)
+    cmake_policy(SET CMP0135 NEW) # To avoid warnings
     FetchContent_Declare(
         half
         URL https://kumisystems.dl.sourceforge.net/project/half/half/${half_VERSION}/half-${half_VERSION}.zip
@@ -63,8 +60,6 @@ else()
 
     # Define the taget
     set(half_INCLUDE_DIR ${half_SOURCE_DIR}/include)
-    add_library(half INTERFACE)
-    target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
     install(DIRECTORY ${half_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
@@ -73,3 +68,7 @@ find_package_handle_standard_args(half
     REQUIRED_VARS half_INCLUDE_DIR
     VERSION_VAR half_VERSION
 )
+
+# Define the target
+add_library(half INTERFACE IMPORTED)
+target_include_directories(half INTERFACE ${half_INCLUDE_DIR})

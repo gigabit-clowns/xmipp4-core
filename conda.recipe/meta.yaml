@@ -20,23 +20,30 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
+# File based on:
+# https://github.com/pybind/cmake_example/blob/master/conda.recipe/meta.yaml
+
 package:
   name: xmipp4-core
-  version: "4.1.0"
+  version: "0.1.0"
+
+about:
+  summary: Core library for the xmipp4 framework
+  license_file: LICENSE
 
 source:
   path: ../
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - catch2==3.4
-    - cpp-half==2.1
-
-  run:
-    - cpp-half==2.1
+    - ninja
 
 test:
   commands:

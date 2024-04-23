@@ -43,7 +43,7 @@ if (half_INCLUDE_DIR)
     string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
     set(half_VERSION ${CMAKE_MATCH_1})
 else()
-    # Half not found. Obtain it from source
+    # Half not found. Download it from SourceForge
     set(half_VERSION 2.2.0)
     cmake_policy(SET CMP0135 NEW) # To avoid warnings
     FetchContent_Declare(

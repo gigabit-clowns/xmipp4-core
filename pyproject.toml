@@ -27,6 +27,7 @@ name = "xmipp4-core"
 version = "0.1.0"
 authors = [
     { name = "Oier Lauzirika Zarrabeitia", email = "oierlauzi@bizkaia.eu" },
+    { name = "Martín Salinas Antón", email = "ssalinasmartin@gmail.com" },
 ]
 description = "Core component of the xmipp4 framework"
 classifiers = [

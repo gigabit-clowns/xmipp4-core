@@ -22,9 +22,16 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(Catch2 3.0 REQUIRED)
-
 include(CTest)
+include(FetchContent)
+
+# Fetch Catch2
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.5.4
+)
+FetchContent_MakeAvailable(Catch2)
 include(Catch)
 
 # Test excecutable name

@@ -1,3 +1,0 @@
-cmake>=3.16
-catch2==3.4
-cpp-half==2.1

@@ -35,11 +35,14 @@ source:
   path: ../
 
 requirements:
+  host:
+    - python
+    - pip
+    - scikit-build-core
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - python
-    - pip
     - cmake>=3.16
     - catch2>=3
     - cpp-half>=2.1
@@ -47,7 +50,7 @@ requirements:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps
+  script: {{ PYTHON }} -m pip install . -vvv 
 
 test:
   commands:

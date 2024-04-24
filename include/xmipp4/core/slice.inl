@@ -521,14 +521,6 @@ std::size_t sanitize_slice_index(std::integral_constant<I, end()>,
 {
     return size;
 }
-#else
-template <typename I, I value>
-inline
-std::size_t sanitize_slice_index(std::integral_constant<I, value>, 
-                                 std::size_t size ) noexcept
-{
-    return sanitize_slice_index(value, size); // Fallback to the normal version
-}
 #endif
 
 template <typename I, I value>

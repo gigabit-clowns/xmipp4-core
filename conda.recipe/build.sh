@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
 #
@@ -20,32 +22,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-# File based on:
-# https://github.com/pybind/cmake_example/blob/master/conda.recipe/meta.yaml
+# https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
-package:
-  name: xmipp4-core
-  version: "0.1.0"
-
-about:
-  summary: Core library for the xmipp4 framework
-  license_file: LICENSE
-
-source:
-  path: ../
-
-requirements:
-  host:
-    - python
-    - pip
-    - scikit-build-core
-
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake>=3.16
-    - cpp-half>=2.1
-    - ninja
-
-build:
-  number: 0
+python -m pip install . -vvv --no-deps

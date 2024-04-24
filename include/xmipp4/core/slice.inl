@@ -523,7 +523,7 @@ std::size_t sanitize_slice_index(std::integral_constant<I, end()>,
 }
 #else
 template <typename I, I value>
-XMIPP4_INLINE_CONSTEXPR
+inline
 std::size_t sanitize_slice_index(std::integral_constant<I, value>, 
                                  std::size_t size ) noexcept
 {

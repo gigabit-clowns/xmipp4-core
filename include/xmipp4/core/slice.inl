@@ -507,7 +507,7 @@ std::size_t sanitize_slice_index(end_tag, std::size_t size) noexcept
 
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
-std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(begin())>, 
+std::size_t sanitize_slice_index(std::integral_constant<I, begin()>, 
                                  std::size_t ) noexcept
 {
     return 0;
@@ -515,7 +515,7 @@ std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(begin(
 
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
-std::size_t sanitize_slice_index(std::integral_constant<I, static_cast<I>(end())>, 
+std::size_t sanitize_slice_index(std::integral_constant<I, end()>, 
                                  std::size_t size ) noexcept
 {
     return size;

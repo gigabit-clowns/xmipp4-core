@@ -138,6 +138,7 @@ exp10(F exponent) noexcept
     return pow(base, exponent);
 }
 
+#if !defined(__APPLE__) //FIXME: Not compiling with conda, undefiend reference to _exp10
 #if XMIPP4_HAS_BUILTIN(exp10f)
 inline float exp10(float exponent) noexcept
 {
@@ -157,6 +158,7 @@ inline long double exp10(long double exponent) noexcept
 {
     return XMIPP4_BUILTIN(exp10l)(exponent);
 }
+#endif
 #endif
 
 } // namespace detail

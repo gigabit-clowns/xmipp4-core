@@ -47,6 +47,8 @@ template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_jn(int n, F x) noexcept;
 
+
+
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y0(F x) noexcept;
@@ -58,6 +60,34 @@ cylindrical_bessel_y1(F x) noexcept;
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_yn(int n, F x) noexcept;
+
+
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i0(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i1(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_in(int n, F x) noexcept;
+
+
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1(F x) noexcept;
+
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_kn(int n, F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

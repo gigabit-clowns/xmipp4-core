@@ -1,5 +1,6 @@
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#              Martín Salinas Antón (ssalinasmartin@gmail.com)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,32 +21,40 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-# File based on:
-# https://github.com/pybind/cmake_example/blob/master/conda.recipe/meta.yaml
+# Based on:
+# https://github.com/pybind/cmake_example/blob/master/.github/workflows/conda.yml
 
-package:
-  name: xmipp4-core
-  version: "0.1.0"
+name: Conda
+on:
+  pull_request:
+    branches:
+      - main
 
-about:
-  summary: Core library for the xmipp4 framework
-  license_file: LICENSE
+  workflow_dispatch:
 
-source:
-  path: ../
-
-requirements:
-  host:
-    - python
-    - pip
-    - scikit-build-core
-
+jobs:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake>=3.16
-    - cpp-half>=2.1
-    - ninja
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
 
-build:
-  number: 0
+    runs-on: ${{ matrix.platform }}
+
+    defaults:
+      run:
+        shell: "bash -l {0}"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get conda
+        uses: conda-incubator/setup-miniconda@v3.0.3
+        with:
+          channels: conda-forge
+          channel-priority: strict
+
+      - name: Prepare
+        run: conda install conda-build conda-verify
+
+      - name: Build
+        run: conda build conda.recipe

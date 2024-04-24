@@ -20,25 +20,5 @@
 ::  e-mail address 'xmipp@cnb.csic.es'
 :: ***************************************************************************
 
-:: Clean previous builds
-rmdir /s /q build
-
-:: Configure CMake
-cmake ^
-	-B build ^
-	-G "%CMAKE_GENERATOR%" ^
-	-DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
-	-DCMAKE_BUILD_TYPE=Release ^
-	-DBUILD_DOC=OFF
-
-IF %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-
-:: Build
-cmake --build build --config Release
-
-IF %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-
-:: Install
-cmake --install build --config Release
-
-exit %ERRORLEVEL%
+python -m pip install . -vvv --no-deps
+exit errorlevel

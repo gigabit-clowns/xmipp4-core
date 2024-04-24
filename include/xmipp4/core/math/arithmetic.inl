@@ -121,5 +121,48 @@ mod(F num, F den) noexcept
     return detail::mod(num, den);
 }
 
+
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+sign(F x) noexcept
+{
+    switch (std::fpclassify(x))
+    {
+    case FP_NAN:
+        return x;
+
+    case FP_ZERO:
+        return F(0);
+
+    default: // Determine sign
+        return x<0 ? F(-1) : F(1); 
+    }
+}
+
+template <typename BidirIt, typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
+{
+    F y = 0;
+    if (std::distance(first, last) > 0)
+    {
+        // Evaluate using Horner's method
+        // Initialize with the last element
+        auto ite = std::make_reverse_iterator(last);
+        y = *ite;
+        ++ite;
+
+        for(; ite != std::make_reverse_iterator(first); ++ite)
+        {
+            y = multiply_add(y, x, *ite);
+        } 
+    }
+
+    return y;
+}
+
 } // namespace math
 } // namespace xmipp4

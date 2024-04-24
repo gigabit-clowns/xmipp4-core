@@ -505,6 +505,7 @@ std::size_t sanitize_slice_index(end_tag, std::size_t size) noexcept
     return size;
 }
 
+#if !defined(_MSC_VER) // FIXME: Getting C1001 INTERNAL COMPILER error.
 template <typename I>
 XMIPP4_INLINE_CONSTEXPR
 std::size_t sanitize_slice_index(std::integral_constant<I, begin()>, 
@@ -520,6 +521,7 @@ std::size_t sanitize_slice_index(std::integral_constant<I, end()>,
 {
     return size;
 }
+#endif
 
 template <typename I, I value>
 inline

@@ -29,43 +29,51 @@ namespace xmipp4
 namespace compute
 {
 
+inline
 void device_descriptor::set_uuid(const uuid &id) noexcept
 {
     m_uuid = id;
 }
 
+inline
 const uuid& device_descriptor::get_uuid() const noexcept
 {
     return m_uuid;
 }
 
+inline
 void device_descriptor::set_type(device_type type) noexcept
 {
 	m_type = type;
 }
 
+inline
 device_type device_descriptor::get_type() const noexcept
 {
     return m_type;
 }
 
+inline
 template <typename Str>
 void device_descriptor::set_vendor(Str &&vendor)
 {
     m_vendor = std::forward<Str>(vendor);
 }
 
+inline
 const std::string& device_descriptor::get_vendor() const noexcept
 {
     return m_vendor;
 }
 
+inline
 template <typename Str>
 void device_descriptor::set_model(Str &&model)
 {
     m_model = std::forward<Str>(model);
 }
 
+inline
 const std::string& device_descriptor::get_model() const noexcept
 {
     return m_model;

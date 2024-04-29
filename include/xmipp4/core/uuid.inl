@@ -29,6 +29,7 @@
 #include "uuid.hpp"
 
 #include <algorithm>
+#include <iterator>
 
 namespace xmipp4 
 {

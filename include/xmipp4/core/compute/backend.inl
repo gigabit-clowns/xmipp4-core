@@ -27,6 +27,7 @@ namespace xmipp4
 namespace compute
 {
 
+inline
 std::vector<device_descriptor> backend::enumerate_devices() const
 {
     std::vector<device_descriptor> result;

@@ -20,37 +20,19 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend interface
- * @date 2024-04-29
- * 
- */
+#include "backend.hpp"
 
-#include "device_descriptor.hpp"
-
-#include <memory>
-#include <vector>
-
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-class device;
-
-class backend
+std::vector<device_descriptor> backend::enumerate_devices() const
 {
-public:
-    std::vector<device_descriptor> enumerate_devices() const;
-    virtual void enumerate_devices(std::vector<device_descriptor>& out) const = 0;
-    virtual std::unique_ptr<device> create_device(std::size_t index) const = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t index) const = 0;
+    std::vector<device_descriptor> result;
+    enumerate_devices(result);
+    return result;
+}
 
-};
-
-} // namespace compute
+}
 } // namespace xmipp4
-
-#include "backend.inl"

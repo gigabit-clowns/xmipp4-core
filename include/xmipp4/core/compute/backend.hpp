@@ -43,6 +43,14 @@ class device;
 class backend
 {
 public:
+    backend() = default;
+    backend(const backend &other) = default;
+    backend(backend &&other) = default;
+    virtual ~backend() = default;
+
+    backend& operator=(const backend &other) = default;
+    backend& operator=(backend &&other) = default;
+
     std::vector<device_descriptor> enumerate_devices() const;
     virtual void enumerate_devices(std::vector<device_descriptor>& out) const = 0;
     virtual std::unique_ptr<device> create_device(std::size_t index) const = 0;

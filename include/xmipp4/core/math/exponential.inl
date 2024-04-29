@@ -134,9 +134,11 @@ inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 exp10(F exponent) noexcept
 {
-    return pow(F(10), exponent);
+    XMIPP4_CONST_CONSTEXPR F base = 10;
+    return pow(base, exponent);
 }
 
+#if !defined(__APPLE__) //FIXME: Not compiling with conda, undefiend reference to _exp10
 #if XMIPP4_HAS_BUILTIN(exp10f)
 inline float exp10(float exponent) noexcept
 {
@@ -156,6 +158,7 @@ inline long double exp10(long double exponent) noexcept
 {
     return XMIPP4_BUILTIN(exp10l)(exponent);
 }
+#endif
 #endif
 
 } // namespace detail

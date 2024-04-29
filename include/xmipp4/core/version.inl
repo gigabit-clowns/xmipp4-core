@@ -38,13 +38,13 @@ version::version(std::uint32_t major,
     : m_data(major) // No need to mask, as it will be shifted
 {
     // Shift and write fields
-    XMIPP4_CONST_CONSTEXPR std::uint32_t minor_mask = (1 << minor_bits) - 1;
+    XMIPP4_CONST_CONSTEXPR std::uint32_t right_minor_mask = (1 << minor_bits) - 1;
     m_data <<= minor_bits;
-    m_data |= minor & minor_mask;
+    m_data |= minor & right_minor_mask;
 
-    XMIPP4_CONST_CONSTEXPR std::uint32_t patch_mask = (1 << patch_bits) - 1;
+    XMIPP4_CONST_CONSTEXPR std::uint32_t right_patch_mask = (1 << patch_bits) - 1;
     m_data <<= patch_bits;
-    m_data |= patch & patch_mask;
+    m_data |= patch & right_patch_mask;
 }
 
 XMIPP4_INLINE_CONSTEXPR 

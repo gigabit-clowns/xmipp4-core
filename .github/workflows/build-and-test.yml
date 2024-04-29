@@ -57,43 +57,19 @@ jobs:
     steps:
     - uses: actions/checkout@main
 
-    - name: Setup Conda and dependencies
-      uses: conda-incubator/setup-miniconda@main
-      with:
-        miniconda-version: latest
-        channels: conda-forge
-        environment-file: requirements.txt
-        activate-environment: xmipp4-core
-
-    - name: Set reusable strings
-      id: strings
-      run: |
-        # Setting strings deppending on OS.
-        case "$OSTYPE" in
-          msys*)
-            echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
-            echo "prefix-path=$CONDA_PREFIX\Library" >> "$GITHUB_OUTPUT"
-            ;;
-          *)
-            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-            echo "prefix-path=$CONDA_PREFIX" >> "$GITHUB_OUTPUT"
-            ;;
-        esac
-
     - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}
-        build-dir: ${{ steps.strings.outputs.build-output-dir }}
+        build-dir: "${{ github.workspace }}/build"
         c-compiler: ${{ matrix.compiler.cc }}
         cxx-compiler: ${{ matrix.compiler.cxx }}
         options: |
           CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          CMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-path }}
           XMIPP4_CORE_BUILD_DOC=OFF
         run-build: true
         build-args: --config ${{ env.BUILD_TYPE }}
 
     - name: Run tests
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      working-directory: "${{ github.workspace }}/build"
       run: ctest -C ${{env.BUILD_TYPE}}

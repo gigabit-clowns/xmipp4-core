@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
@@ -22,22 +22,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-# Clean previous builds
-if [ -d build ]
-then
-	rm -r build
-fi
+# https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
-# Configure CMake
-cmake \
-	-B ./build \
-	-G "$CMAKE_GENERATOR" \
-	-DCMAKE_INSTALL_PREFIX="$PREFIX" \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DBUILD_DOC=OFF
-
-# Build
-cmake --build ./build --config Release
-
-# Install
-cmake --install ./build --config Release
+python -m pip install . -vvv --no-deps

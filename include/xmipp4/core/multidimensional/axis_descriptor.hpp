@@ -28,12 +28,15 @@
  * 
  */
 
+#include "../slice.hpp"
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"
 
 #include <cstddef>
 
 namespace xmipp4 
+{
+namespace multidimensional
 {
 
 /**
@@ -47,11 +50,11 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param count Number of elements in the axis. Defaults to 0
-     * @param step Step between consecutive elements. In items. Defaults to 1
+     * @param extent Number of elements in the axis. Defaults to 0
+     * @param stride Step between consecutive elements. In items. Defaults to 1
      */
-    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t count = 0, 
-                                              std::ptrdiff_t step = 1 ) noexcept;
+    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t extent = 0, 
+                                              std::ptrdiff_t stride = 1 ) noexcept;
 
     axis_descriptor(const axis_descriptor& other) = default;
     axis_descriptor(axis_descriptor&& other) = default;
@@ -68,37 +71,37 @@ public:
     /**
      * @brief Set the element count
      * 
-     * @param count The element count
+     * @param extent The element count
      */
-    XMIPP4_CONSTEXPR void set_count(std::size_t count) noexcept;
+    XMIPP4_CONSTEXPR void set_extent(std::size_t extent) noexcept;
 
     /**
      * @brief Return the element count
      * 
      * @return std::size_t Element count
      */
-    XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_extent() const noexcept;
 
     /**
-     * @brief Set the step between consecutive elements
+     * @brief Set the stride between consecutive elements
      * 
-     * @param step Step between consecutive elements. In items
+     * @param stride Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR void set_step(std::ptrdiff_t step) noexcept;
+    XMIPP4_CONSTEXPR void set_stride(std::ptrdiff_t stride) noexcept;
 
     /**
-     * @brief Get the step between consecutive elements
+     * @brief Get the stride between consecutive elements
      * 
      * @return std::ptrdiff_t Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR std::ptrdiff_t get_step() const noexcept;
+    XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
 
     /**
-     * @brief Get the unsigned step between consecutive elements
+     * @brief Get the unsigned stride between consecutive elements
      * 
      * @return std::size_t Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR std::size_t get_unsigned_step() const noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_unsigned_stride() const noexcept;
 
     /**
      * @brief Get the total size of the axis. In items
@@ -108,13 +111,51 @@ public:
     XMIPP4_CONSTEXPR std::size_t get_width() const noexcept;
 
 private:
-    std::size_t m_count; ///< Number of elements
-    std::ptrdiff_t m_step; ///< Step between adjacent elements. In items
+    std::size_t m_extent; ///< Number of elements
+    std::ptrdiff_t m_stride; ///< Step between adjacent elements. In items
 
 };
 
+/**
+ * @brief Create a contiguous axis_descriptor.
+ * 
+ * A contiguous axis descriptor has a unitary stride.
+ * 
+ * @param extent Number of elements on the axis.
+ * @return axis_descriptor. The resulting axis
+ */
+XMIPP4_CONSTEXPR
+axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
+
+/**
+ * @brief Create a phantom axis_descriptor.
+ * 
+ * A phantom axis descriptor has null stride. 
+ * This means that it does not contribute to the
+ * underlying array's size and all its elements
+ * are repeated. 
+ * 
+ * @param extent Number of elements on the axis.
+ * @return axis_descriptor. The resulting axis
+ */
+XMIPP4_CONSTEXPR
+axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
+
 XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
-} //namespace xmipp4
+
+
+template <typename I>
+void apply_index(const axis_descriptor &desc,
+                 I index,
+                 std::ptrdiff_t &offset );
+
+template <typename Start, typename Stride, typename Stop>
+axis_descriptor apply_slice(const axis_descriptor &desc, 
+                            const slice<Start, Stride, Stop> &s,
+                            std::ptrdiff_t &offset );
+
+} // namespace multidimensional
+} // namespace xmipp4
 
 #include "axis_descriptor.inl"

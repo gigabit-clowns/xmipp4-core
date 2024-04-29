@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "device_type.hpp"
+#include "../uuid.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <string>
@@ -41,6 +42,9 @@ public:
     device_descriptor& operator=(const device_descriptor& other) = default;
     device_descriptor& operator=(device_descriptor&& other) = default;
 
+    void set_uuid(const uuid &id) noexcept;
+    const uuid& get_uuid() const noexcept;
+
     void set_type(device_type type) noexcept;
     device_type get_type() const noexcept;
 
@@ -53,6 +57,7 @@ public:
     const std::string& get_model() const noexcept;
 
 private:
+    uuid m_uuid;
     device_type m_type;
     std::string m_vendor;
     std::string m_model;

@@ -29,6 +29,16 @@ namespace xmipp4
 namespace compute
 {
 
+void device_descriptor::set_uuid(const uuid &id) noexcept
+{
+    m_uuid = id;
+}
+
+const uuid& device_descriptor::get_uuid() const noexcept
+{
+    return m_uuid;
+}
+
 void device_descriptor::set_type(device_type type) noexcept
 {
 	m_type = type;

@@ -167,6 +167,16 @@ void to_hex(byte b, C &high, C &low) noexcept
     low = hex_characters[value & 0x0F];
 }
 
+template<typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const byte& b)
+{
+    T high;
+    T low;
+    to_hex(b, high, low);
+    return os << high << low;
+}
+
 } // namespace memory
 } // namespace xmipp4
 

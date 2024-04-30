@@ -163,13 +163,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const uuid& id)
         const auto count = counts[i];
         for(std::size_t j = 0; j < count; ++j, ++ite)
         {
-            const auto value = memory::as_byte(*ite);
-
-            T high;
-            T low;
-            memory::to_hex(value, high, low);
-
-            os << high << low;
+            os << memory::as_byte(*ite);
         }
     }
 

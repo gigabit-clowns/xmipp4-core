@@ -28,6 +28,8 @@
 
 #include "uuid.hpp"
 
+#include "memory/byte.hpp"
+
 #include <algorithm>
 #include <iterator>
 
@@ -152,10 +154,6 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const uuid& id)
     
     XMIPP4_CONST_CONSTEXPR T separator = '-'; 
     XMIPP4_CONST_CONSTEXPR std::array<std::size_t, 5> counts = {4, 2, 2, 2, 6}; 
-    XMIPP4_CONST_CONSTEXPR std::array<T, 16> hex_characters = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
-        'A', 'B', 'C', 'D', 'E', 'F'
-    };
 
     auto ite = data.cbegin();
     for(std::size_t i = 0; i < counts.size(); ++i)
@@ -165,9 +163,13 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const uuid& id)
         const auto count = counts[i];
         for(std::size_t j = 0; j < count; ++j, ++ite)
         {
-            const auto value = *ite;
-            os << hex_characters[value >> 4];
-            os << hex_characters[value & 0x0F];
+            const auto value = memory::as_byte(*ite);
+
+            T high;
+            T low;
+            memory::to_hex(value, high, low);
+
+            os << high << low;
         }
     }
 

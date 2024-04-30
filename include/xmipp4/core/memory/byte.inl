@@ -28,6 +28,7 @@
 
 #include "byte.hpp"
 
+#include <array>
 #include <climits>
 
 namespace xmipp4
@@ -150,6 +151,20 @@ get_byte_bits() noexcept
         #pragma message("Could not determine byte size. Defaulting to 8")
         return 8UL;
     #endif
+}
+
+template <typename C>
+XMIPP4_INLINE_CONSTEXPR 
+void to_hex(byte b, C &high, C &low) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR std::array<C, 16> hex_characters = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+        'A', 'B', 'C', 'D', 'E', 'F'
+    };
+
+    const auto value = as_uint8(b);
+    high = hex_characters[value >> 4];
+    low = hex_characters[value & 0x0F];
 }
 
 } // namespace memory

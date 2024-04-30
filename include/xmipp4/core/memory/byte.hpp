@@ -70,6 +70,9 @@ XMIPP4_CONSTEXPR byte& operator^=(byte& lhs, byte rhs) noexcept;
 
 XMIPP4_CONSTEXPR std::size_t get_byte_bits() noexcept;
 
+template <typename C>
+XMIPP4_CONSTEXPR void to_hex(byte b, C &high, C &low) noexcept;
+
 } // namespace memory
 } // namespace xmipp4
 

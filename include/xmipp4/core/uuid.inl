@@ -150,21 +150,23 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const uuid& id)
 {
     const auto &data = id.get_data();
     
-    // Create a copy of OS with own formatting
-    std::ostream os2(os.rdbuf()); 
-    os2 << std::hex;
-
     XMIPP4_CONST_CONSTEXPR T separator = '-'; 
     XMIPP4_CONST_CONSTEXPR std::array<std::size_t, 5> counts = {4, 2, 2, 2, 6}; 
-    auto input_iterator = data.cbegin();
-    auto output_iterator = std::ostream_iterator<uint8_t>(os2);
+    XMIPP4_CONST_CONSTEXPR std::array<T, 16> hex_characters = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+    auto ite = data.cbegin();
     for(std::size_t i = 0; i < counts.size(); ++i)
     {
-        if(i > 0) *(output_iterator++) = separator;
+        if(i > 0) os << separator;
         
         const auto count = counts[i];
-        output_iterator = std::copy_n(input_iterator, count, output_iterator);
-        input_iterator = std::next(input_iterator, count);
+        for(std::size_t j = 0; j < count; ++j, ++ite)
+        {
+            const auto value = *ite;
+            os << hex_characters[value >> 4];
+            os << hex_characters[value & 0x0F];
+        }
     }
 
     return os;

@@ -145,14 +145,37 @@ XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcep
 
 
 
+/**
+ * @brief Apply an index to an axis descriptor to increment the offset
+ * 
+ * @tparam I Index type.
+ * @param desc Axis descriptor.
+ * @param index The index.
+ * @param offset Offset to be incremented.
+ */
 template <typename I>
 void apply_index(const axis_descriptor &desc,
                  I index,
                  std::ptrdiff_t &offset );
 
-template <typename Start, typename Stride, typename Stop>
+/**
+ * @brief Apply a slice to an axis descriptor.
+ * 
+ * When slicing an axis, an offset can be introduced to the
+ * current view. Additionally, axis' stride and extent may
+ * be modified.
+ * 
+ * @tparam Start Start type.
+ * @tparam Stop Stop type.
+ * @tparam Step Step type.
+ * @param desc Axis descriptor.
+ * @param s Slice to be applied.
+ * @param offset Offset to be incremented.
+ * @return axis_descriptor Sliced axis descriptor.
+ */
+template <typename Start, typename Stop, typename Step>
 axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stride, Stop> &s,
+                            const slice<Start, Stop, Step> &s,
                             std::ptrdiff_t &offset );
 
 } // namespace multidimensional

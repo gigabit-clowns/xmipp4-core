@@ -132,24 +132,25 @@ void apply_index(const axis_descriptor &desc,
     offset += sanitize_index(index, desc.get_extent()) * desc.get_stride();
 }
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 inline
 axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stride, Stop> &slc,
+                            const slice<Start, Stop, Step> &slc,
                             std::ptrdiff_t &offset )
 {
     std::size_t start;
     std::size_t stop;
-    std::ptrdiff_t stride;
+    std::ptrdiff_t step;
     sanitize_slice(
         slc, desc.get_extent(),
-        start, stop, stride
+        start, stop, step
     );
-    const auto pivot = compute_slice_pivot(start, stride);
-    const auto extent = compute_slice_size(start, stop, stride);
+    const auto pivot = compute_slice_pivot(start, step);
+    const auto extent = compute_slice_size(start, stop, step);
     
-    offset += desc.get_stride()*pivot;
-    stride *= desc.get_stride();
+    auto stride = desc.get_stride();
+    offset += stride*pivot;
+    stride *= step;
     return axis_descriptor(extent, stride);
 }
 

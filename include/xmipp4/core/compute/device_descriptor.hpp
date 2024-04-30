@@ -64,6 +64,13 @@ private:
 
 };
 
+bool operator==(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+bool operator!=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+bool operator<(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+bool operator<=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+bool operator>(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+bool operator>=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept;
+
 } // namespace compute
 } // namespace xmipp4
 

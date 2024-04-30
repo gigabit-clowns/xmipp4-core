@@ -79,5 +79,43 @@ const std::string& device_descriptor::get_model() const noexcept
     return m_model;
 }
 
+
+
+inline
+bool operator==(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() == rhs.get_uuid();
+}
+
+inline
+bool operator!=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() != rhs.get_uuid();
+}
+
+inline
+bool operator<(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() < rhs.get_uuid();
+}
+
+inline
+bool operator<=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() <= rhs.get_uuid();
+}
+
+inline
+bool operator>(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() > rhs.get_uuid();
+}
+
+inline
+bool operator>=(const device_descriptor &lhs, const device_descriptor &rhs) noexcept
+{
+    return lhs.get_uuid() >= rhs.get_uuid();
+}
+
 }
 } // namespace xmipp4

@@ -156,6 +156,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const uuid& id)
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
         'A', 'B', 'C', 'D', 'E', 'F'
     };
+
     auto ite = data.cbegin();
     for(std::size_t i = 0; i < counts.size(); ++i)
     {

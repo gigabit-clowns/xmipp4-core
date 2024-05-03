@@ -90,6 +90,13 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_axis(ForwardIt current,
                                                 ForwardIt first,
                                                 ForwardIt last ) noexcept;
 
+template<typename ForwardIt, typename OutputIt, typename OrderTag>
+XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
+                                            ForwardIt last_from,
+                                            OutputIt first_to,
+                                            std::ptrdiff_t &offset,
+                                            OrderTag &&order ) noexcept;
+
 /**
  * @brief Check if a layout is packed
  * 

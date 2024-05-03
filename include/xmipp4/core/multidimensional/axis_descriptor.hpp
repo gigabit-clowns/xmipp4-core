@@ -200,6 +200,28 @@ XMIPP4_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis is reversed.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is reversed.
+ */
+XMIPP4_CONSTEXPR
+bool is_reversed(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Obtain the offset applied when reversing an axis.
+ * 
+ * If the axis is not reversed, this function returns true.
+ * If the axis is reversed, this function returns the width
+ * of the axis.
+ * 
+ * @param axis Axis to be analyzed. 
+ * @return std::size_t The offset.
+*/
+XMIPP4_CONSTEXPR
+std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept;
+
+/**
  * @brief Apply an index to an axis descriptor to increment the offset
  * 
  * @tparam I Index type.

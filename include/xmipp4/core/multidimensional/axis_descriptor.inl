@@ -154,6 +154,18 @@ bool is_contiguous(const axis_descriptor &axis) noexcept
     return axis.get_unsigned_stride() == 1;
 }
 
+XMIPP4_INLINE_CONSTEXPR
+bool is_reversed(const axis_descriptor &axis) noexcept
+{
+    return axis.get_stride() < 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept
+{
+    return is_reversed(axis) ? axis.get_width() : 0;
+}
+
 
 
 template <typename I>

@@ -80,6 +80,67 @@ TEST_CASE("find next axis", "[memory_layout]")
     REQUIRE(ite == std::next(layout.cbegin(), 2));
 }
 
+TEST_CASE("check packed layout", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(4, 2),
+        axis_descriptor(2, 8),
+        axis_descriptor(4, -16),
+        axis_descriptor(10, 0),
+        axis_descriptor(1, -64),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, 128),
+        axis_descriptor(2, 0),
+    };
+
+    SECTION("contiguous")
+    {
+        REQUIRE(is_packed_layout(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(is_packed_layout(layout.crbegin(), layout.crend(), column_major()));
+    }
+    SECTION("not packed")
+    {
+        layout[2] = axis_descriptor(2, -4);
+        REQUIRE(!is_packed_layout(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(!is_packed_layout(layout.crbegin(), layout.crend(), column_major()));
+    }
+}
+
+TEST_CASE("check contiguous layout", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(2, -1),
+        axis_descriptor(4, 2),
+        axis_descriptor(2, 8),
+        axis_descriptor(4, -16),
+        axis_descriptor(10, 0),
+        axis_descriptor(1, -64),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, 128),
+        axis_descriptor(2, 0),
+    };
+
+    SECTION("contiguous")
+    {
+        REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+    }
+    SECTION("first axis has not unit stride")
+    {
+        layout[1] = axis_descriptor(1, 2);
+        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+    }
+    SECTION("not packed")
+    {
+        layout[2] = axis_descriptor(2, -4);
+        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
+        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+    }
+}
+
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {

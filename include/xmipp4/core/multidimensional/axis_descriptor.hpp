@@ -116,6 +116,8 @@ private:
 
 };
 
+XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+
 /**
  * @brief Create a contiguous axis_descriptor.
  * 
@@ -141,9 +143,61 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
 XMIPP4_CONSTEXPR
 axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
-XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is less than 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept;
 
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is equal to 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept;
 
+/**
+ * @brief Check if an axis has a non zero stride.
+ * 
+ * @param axis The axis to be checked.
+ * @return bool True if the axis has a non-zero stride.
+ */
+XMIPP4_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if a pair of axes is packed.
+ * 
+ * A pair of axes is packed if the width of the major axis
+ * is equal to the stride of the minor axis.
+ * 
+ * @param minor Minor (slow) axis.
+ * @param major Major (fast) axis.
+ * @return bool True if the pair of axes is packed.
+ */
+XMIPP4_CONSTEXPR
+bool is_packed(const axis_descriptor &major,
+               const axis_descriptor &minor ) noexcept;
+
+/**
+ * @brief Check if an axis is contiguous.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is contiguous.
+ */
+XMIPP4_CONSTEXPR
+bool is_contiguous(const axis_descriptor &axis) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

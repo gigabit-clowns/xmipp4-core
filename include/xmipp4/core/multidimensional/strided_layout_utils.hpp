@@ -42,39 +42,6 @@ namespace multidimensional
 {
 
 /**
- * @brief Compare the absolute strides of a given pair of axes.
- * 
- * @param lhs Left hand side operand.
- * @param rhs Right hand side operand.
- * @return bool True if left hand side's absolute stride is less than 
- * right hand side's stride.
- */
-XMIPP4_CONSTEXPR 
-bool compare_strides_less(const axis_descriptor &lhs, 
-                          const axis_descriptor &rhs ) noexcept;
-
-/**
- * @brief Compare the absolute strides of a given pair of axes.
- * 
- * @param lhs Left hand side operand.
- * @param rhs Right hand side operand.
- * @return bool True if left hand side's absolute stride is equal to 
- * right hand side's stride.
- */
-XMIPP4_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept;
-
-/**
- * @brief Check if an axis has a non zero stride.
- * 
- * @param axis The axis to be checked.
- * @return bool True if the axis has a non-zero stride.
- */
-XMIPP4_CONSTEXPR
-bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
-
-/**
  * @brief Finds the axis with the largest stride magnitude.
  * 
  * The axis with the largest stride is considered as the minor axis
@@ -122,6 +89,43 @@ template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_axis(ForwardIt current,
                                                 ForwardIt first,
                                                 ForwardIt last ) noexcept;
+
+/**
+ * @brief Check if a layout is packed
+ * 
+ * A layout is packed if adjacent non-zero strided axes are packed
+ * 
+ * @see is_packed
+ * 
+ * @tparam ForwardIt Forward iterator
+ * @tparam OrderTag Order tag
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @param order Hint about the layout ordering
+ * @return bool True if the layout is contiguous. False otherwise
+ */
+template<typename ForwardIt, typename OrderTag>
+XMIPP4_CONSTEXPR_CPP20 bool is_packed_layout(ForwardIt first, 
+                                             ForwardIt last,
+                                             OrderTag &&order ) noexcept;
+
+/**
+ * @brief Check if a layout is contiguous
+ * 
+ * A column major layout is contiguous if it is packed and
+ * the last non-zero axis has a stride of 1.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @tparam OrderTag Order tag.
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @param order Hint about the layout ordering
+ * @return bool True if the layout is contiguous. False otherwise
+ */
+template<typename ForwardIt, typename OrderTag>
+XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(ForwardIt first, 
+                                                 ForwardIt last,
+                                                 OrderTag &&order ) noexcept;
 
 /**
  * @brief Fill the strides of a layout such that it is contiguous

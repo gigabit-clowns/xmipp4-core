@@ -37,26 +37,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-bool compare_strides_less(const axis_descriptor &lhs, 
-                          const axis_descriptor &rhs ) noexcept
-{
-    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept
-{
-    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool check_nonzero_stride(const axis_descriptor &axis) noexcept
-{
-    return axis.get_stride() != 0;
-}
-
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
@@ -114,6 +94,132 @@ ForwardIt find_next_axis(ForwardIt current,
         {
             result = ite;
         }
+    }
+
+    return result;
+}
+
+namespace detail
+{
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool is_packed_layout(ForwardIt first, 
+                      ForwardIt last,
+                      ForwardIt &major,
+                      column_major_tag ) noexcept
+{
+    // Start from a non-zero stride
+    first = std::find_if(
+        first, last,
+        check_nonzero_stride
+    );
+    
+    bool result = true;
+    if(first != last)
+    {
+        auto prev = first;
+        ++first;
+        for(; first != last; ++first)
+        {
+            if(!check_nonzero_stride(*first))
+            {
+                continue;
+            }
+
+            if(!is_packed(*first, *prev))
+            {
+                result = false;
+                break;
+            }
+
+            prev = first;
+        }
+
+        // The major axis is the last non-zero axis.
+        major = prev;
+            
+    }
+    else
+    {
+        major = last;
+    }
+
+    return result;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool is_packed_layout(ForwardIt first, 
+                      ForwardIt last,
+                      ForwardIt &major,
+                      row_major_tag ) noexcept
+{
+    // Start from a non-zero stride
+    first = std::find_if(
+        first, last,
+        check_nonzero_stride
+    );
+    
+    // The major axis is the first non-zero axis.
+    major = first;
+    
+    bool result = true;
+    if(first != last)
+    {
+        auto prev = first;
+        ++first;
+        for(; first != last; ++first)
+        {
+            if(!check_nonzero_stride(*first))
+            {
+                continue;
+            }
+
+            if(!is_packed(*prev, *first))
+            {
+                result = false;
+                break;
+            }
+
+            prev = first;
+        }
+    }
+
+    return result;
+}
+
+} // namespace detail
+
+template<typename ForwardIt, typename OrderTag>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool is_packed_layout(ForwardIt first, 
+                      ForwardIt last,
+                      OrderTag &&order ) noexcept
+{
+    ForwardIt major; // Ignore
+    return detail::is_packed_layout(
+        first, last, 
+        major, std::forward<OrderTag>(order)
+    );
+}
+
+template<typename ForwardIt, typename OrderTag>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool is_contiguous_layout(ForwardIt first, 
+                          ForwardIt last,
+                          OrderTag &&order ) noexcept
+{
+    // Check if it is packed and obtain the major axis
+    ForwardIt major;
+    auto result = detail::is_packed_layout(
+        first, last, 
+        major, std::forward<OrderTag>(order)
+    );
+
+    if(result && major != last)
+    {
+        result = is_contiguous(*major);
     }
 
     return result;

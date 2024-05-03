@@ -101,6 +101,14 @@ std::size_t axis_descriptor::get_width() const noexcept
 
 
 
+XMIPP4_INLINE_CONSTEXPR_CPP20
+void swap(axis_descriptor &x, axis_descriptor &y) noexcept
+{
+    x.swap(y);
+}
+
+
+
 XMIPP4_INLINE_CONSTEXPR
 axis_descriptor make_contiguous_axis(std::size_t extent) noexcept
 {
@@ -113,12 +121,37 @@ axis_descriptor make_phantom_axis(std::size_t extent) noexcept
     return axis_descriptor(extent, 0);
 }
 
-
-
-XMIPP4_INLINE_CONSTEXPR_CPP20
-void swap(axis_descriptor &x, axis_descriptor &y) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept
 {
-    x.swap(y);
+    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept
+{
+    return axis.get_stride() != 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_packed(const axis_descriptor &major,
+               const axis_descriptor &minor ) noexcept
+{
+    return major.get_width() == minor.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_contiguous(const axis_descriptor &axis) noexcept
+{
+    return axis.get_unsigned_stride() == 1;
 }
 
 

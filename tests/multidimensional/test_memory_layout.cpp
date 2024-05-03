@@ -49,6 +49,37 @@ TEST_CASE("find max and min stride", "[memory_layout]")
     REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
 }
 
+TEST_CASE("find next axis", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 8), //0
+        axis_descriptor(2, 64), //1
+        axis_descriptor(4, -128), //2
+        axis_descriptor(4, 16), //3
+        axis_descriptor(4, 0), //4
+        axis_descriptor(1, -16), //5
+        axis_descriptor(2, 1), //6
+        axis_descriptor(4, -2) //7
+    };
+
+    auto ite = find_min_stride(layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 4));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 6));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 7));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 0));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 3));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 5));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 1));
+    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE(ite == std::next(layout.cbegin(), 2));
+}
+
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {

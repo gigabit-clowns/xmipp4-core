@@ -112,7 +112,7 @@ ForwardIt find_next_axis(ForwardIt current,
         if (compare_strides_less(*current, *ite) &&
             compare_strides_less(*ite, *result) )
         {
-            result = first;
+            result = ite;
         }
     }
 

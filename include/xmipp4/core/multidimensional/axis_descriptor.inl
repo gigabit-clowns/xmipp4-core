@@ -27,7 +27,9 @@
  */
 
 #include "axis_descriptor.hpp"
+
 #include "../index.hpp"
+#include "../math/abs.hpp"
 
 namespace xmipp4
 {
@@ -88,9 +90,7 @@ std::ptrdiff_t axis_descriptor::get_stride() const noexcept
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t axis_descriptor::get_unsigned_stride() const noexcept
 {
-    //FIXME Using a manual abs because std::abs is not constexpr. Use a proper abs function
-    const auto stride = get_stride();
-    return static_cast<std::size_t>(stride < 0 ? -stride : stride);
+    return math::abs(get_stride());
 }
 
 XMIPP4_INLINE_CONSTEXPR 

@@ -34,6 +34,21 @@
 
 using namespace xmipp4::multidimensional;
 
+TEST_CASE("find max and min stride", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 8),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, -128),
+        axis_descriptor(4, 16),
+        axis_descriptor(2, 1),
+        axis_descriptor(4, -2)
+    };
+
+    REQUIRE(find_max_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
+    REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
+}
+
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
@@ -68,21 +83,6 @@ TEST_CASE("compute contiguous axis strides", "[memory_layout]")
         REQUIRE(layout[0].get_stride() == 1080);
         REQUIRE(volume == 2160);
     }
-}
-
-TEST_CASE("find max and min stride", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(4, 16),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, 2)
-    };
-
-    REQUIRE(find_max_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
-    REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
 }
 
 TEST_CASE("transpose layout", "[memory_layout]")

@@ -27,7 +27,6 @@
  */
 
 #include "strided_layout_utils.hpp"
-#include "../platform/cpp_execution.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -38,172 +37,86 @@ namespace xmipp4
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
-{
-    return column_major_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
-{
-    return row_major_tag();
-}
-
-
-
 XMIPP4_INLINE_CONSTEXPR 
-bool check_axis_order(const axis_descriptor &prev, 
-                      const axis_descriptor &next,
-                      column_major_tag ) noexcept
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept
 {
-    return prev.get_unsigned_stride() < next.get_unsigned_stride();
+    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-bool check_axis_order(const axis_descriptor &prev, 
-                      const axis_descriptor &next,
-                      row_major_tag ) noexcept
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept
 {
-    return prev.get_unsigned_stride() > next.get_unsigned_stride();
+    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-bool check_axis_overlap(const axis_descriptor &major, 
-                        const axis_descriptor &minor ) noexcept
+XMIPP4_INLINE_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept
 {
-    return minor.get_unsigned_stride() < major.get_width();
+    return axis.get_stride() != 0;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-bool is_regular(const axis_descriptor &major, 
-                const axis_descriptor &minor ) noexcept
-{
-    return major.get_width() == minor.get_unsigned_stride();
-}
-
-template<typename ForwardIt, typename OrderTag>
+template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_order(ForwardIt first, 
-                        ForwardIt last,
-                        OrderTag &&order) noexcept
+ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
 {
-    return std::is_sorted(XMIPP4_PAR_UNSEQ
+    return std::max_element(
         first, last, 
-        [order] (const auto &x, const auto &y) -> bool
-        {
-            return check_axis_order(x, y, order);
-        }
+        compare_strides_less
+    );
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20
+ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
+{
+    return std::min_element(
+        first, last, 
+        compare_strides_less
     );
 }
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_overlap(ForwardIt first, 
-                          ForwardIt last,
-                          column_major_tag ) noexcept
-
+ForwardIt find_next_axis(ForwardIt current,
+                         ForwardIt first,
+                         ForwardIt last ) noexcept
 {
-    const auto ite = std::adjacent_find(XMIPP4_PAR_UNSEQ
+    // Find an axis with the same stride after the current one
+    ForwardIt result = std::find_if(
+        std::next(current), last,
+        [current] (const axis_descriptor &desc)
+        {
+            return compare_strides_equal(*current, desc);
+        }
+    );
+    if (result != last)
+        return result;
+
+    // Find the first stride greater than current one
+    result = std::find_if(
         first, last,
-        [] (const axis_descriptor &prev, const axis_descriptor &next) -> bool
+        [current] (const axis_descriptor &desc)
         {
-            return check_axis_overlap(prev, next);
+            return compare_strides_less(*current, desc);
         }
     );
+    if (result == last)
+        return result;
 
-    return ite != last;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_overlap(ForwardIt first, 
-                          ForwardIt last,
-                          row_major_tag ) noexcept
-{
-    const auto ite = std::adjacent_find(XMIPP4_PAR_UNSEQ
-        first, last,
-        [] (const axis_descriptor &prev, const axis_descriptor &next) -> bool
+    // Try to minimize the stride
+    for(auto ite = std::next(result); ite != last; ++ite)
+    {
+        // current < first < result
+        if (compare_strides_less(*current, *ite) &&
+            compare_strides_less(*ite, *result) )
         {
-            return check_axis_overlap(next, prev);
+            result = first;
         }
-    );
+    }
 
-    return ite != last;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_regular_layout(ForwardIt first, 
-                       ForwardIt last,
-                       column_major_tag ) noexcept
-{
-    const auto ite = std::adjacent_find(XMIPP4_PAR_UNSEQ
-        first, last,
-        [] (const axis_descriptor &prev, const axis_descriptor &next) -> bool
-        {
-            return !is_regular(prev, next);
-        }
-    );
-
-    return ite == last;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_regular_layout(ForwardIt first, 
-                       ForwardIt last,
-                       row_major_tag ) noexcept
-{
-    const auto ite = std::adjacent_find(XMIPP4_PAR_UNSEQ
-        first, last,
-        [] (const axis_descriptor &prev, const axis_descriptor &next) -> bool
-        {
-            return !is_regular(next, prev);
-        }
-    );
-
-    return ite == last;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_contiguous_layout(ForwardIt first, 
-                          ForwardIt last,
-                          column_major_tag ) noexcept
-{
-    // Check that it is not an empty range
-    if(first == last)
-        return true;
-    
-    // The first axis must have unit stride
-    if(first->get_stride() != 1)
-        return false;
-
-    // Layout must be regular
-    if(!is_regular_layout(first, last, column_major()))
-        return false;
-
-    return true;
-}
-
-template<typename BidirIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_contiguous_layout(BidirIt first, 
-                          BidirIt last,
-                          row_major_tag ) noexcept
-{
-    // Check that it is not an empty range
-    if(first == last)
-        return true;
-    
-    // Layout must be regular
-    if(!is_regular_layout(first, last, row_major()))
-        return false;
-
-    // The last axis must have unit stride
-    if(std::make_reverse_iterator(last)->get_stride() != 1)
-        return false;
-
-    return true;
+    return result;
 }
 
 template<typename ForwardIt>
@@ -213,7 +126,7 @@ std::size_t compute_contiguous_axis_strides(ForwardIt first,
                                             column_major_tag) noexcept
 {
     std::size_t volume = 1;
-    std::for_each(XMIPP4_SEQ
+    std::for_each(
         first, last,
         [&volume] (axis_descriptor& desc) -> void
         {
@@ -250,31 +163,7 @@ OutputIt fill_shape_from_axes(InputIt first,
     );
 }
 
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
-{
-    return std::max_element(XMIPP4_PAR_UNSEQ
-        first, last, 
-        [] (const axis_descriptor &x, const axis_descriptor &y) -> bool
-        {
-            return check_axis_order(x, y, column_major());
-        }
-    );
-}
 
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
-{
-    return std::min_element(XMIPP4_PAR_UNSEQ
-        first, last, 
-        [] (const axis_descriptor &x, const axis_descriptor &y) -> bool
-        {
-            return check_axis_order(x, y, column_major());
-        }
-    );
-}
 
 template <typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
@@ -283,10 +172,10 @@ void transpose_layout(BidirIt first, BidirIt last) noexcept
     std::reverse(first, last);
 }
 
-template <typename BidirIt, typename ForwardIt>
+template <typename BidirIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt transpose_layout(BidirIt first_from, BidirIt last_from,
-                           ForwardIt first_to )
+OutputIt transpose_layout(BidirIt first_from, BidirIt last_from,
+                          OutputIt first_to )
 {
     return std::reverse_copy(
         first_from, last_from,
@@ -309,37 +198,6 @@ std::size_t compute_layout_volume(ForwardIt first,
     );
 }
 
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-axis_descriptor flatten_regular_layout(ForwardIt first,
-                                       ForwardIt last,
-                                       column_major_tag ) noexcept
-{
-    if (first == last)
-        return axis_descriptor();
-
-    const auto stride = first->get_stride();
-    const auto extent = compute_layout_volume(first, last);
-
-    return axis_descriptor(extent, stride);
-}   
-
-template<typename BidirIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-axis_descriptor flatten_regular_layout(BidirIt first,
-                                       BidirIt last,
-                                       row_major_tag ) noexcept
-{
-    if (first == last)
-        return axis_descriptor();
-
-    const auto stride = std::make_reverse_iterator(last)->get_stride();
-    const auto extent = compute_layout_volume(first, last);
-
-    return axis_descriptor(extent, stride);
-}
-
-
 XMIPP4_INLINE_CONSTEXPR 
 bool check_squeeze(const axis_descriptor &axis) noexcept
 {
@@ -356,11 +214,11 @@ ForwardIt squeeze_layout(ForwardIt first, ForwardIt last) noexcept
     );
 }
 
-template <typename ForwardIt1, typename ForwardIt2>
+template <typename InputIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt2 squeeze_layout(ForwardIt1 first_from, 
-                          ForwardIt1 last_from,
-                          ForwardIt2 first_to )
+OutputIt squeeze_layout(InputIt first_from, 
+                        InputIt last_from,
+                        OutputIt first_to )
 {
     return std::remove_copy_if(
         first_from, last_from,

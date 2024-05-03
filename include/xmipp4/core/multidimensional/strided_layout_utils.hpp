@@ -30,6 +30,7 @@
  */
 
 #include "axis_descriptor.hpp"
+#include "layout_flags.hpp"
 #include "subscript_sequence.hpp"
 #include "../platform/constexpr.hpp"
 
@@ -40,197 +41,87 @@ namespace xmipp4
 namespace multidimensional
 {
 
-struct column_major_tag {};
-
 /**
- * @brief Construct a column major tag
+ * @brief Compare the absolute strides of a given pair of axes.
  * 
- * @return column_major_tag
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is less than 
+ * right hand side's stride.
  */
-XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
-
-
-struct row_major_tag {};
+XMIPP4_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept;
 
 /**
- * @brief Construct a row major tag
+ * @brief Compare the absolute strides of a given pair of axes.
  * 
- * @return row_major_tag
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is equal to 
+ * right hand side's stride.
  */
-XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
-
-
+XMIPP4_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept;
 
 /**
- * @brief Check if a pair of axes is column major.
+ * @brief Check if an axis has a non zero stride.
  * 
- * Axes are considered to be in column major order if the
- * first axis is more contiguous in memory than the second one,
- * this is, if its stride is smaller in magnitude.
- * 
- * @param prev First axis
- * @param next Second axis
- * @return bool True if axes are in column major, False otherwise
+ * @param axis The axis to be checked.
+ * @return bool True if the axis has a non-zero stride.
  */
-XMIPP4_CONSTEXPR bool check_axis_order(const axis_descriptor &prev, 
-                                       const axis_descriptor &next,
-                                       column_major_tag ) noexcept;
+XMIPP4_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
 
 /**
- * @brief Check if a pair of axes is row major.
+ * @brief Finds the axis with the largest stride magnitude.
  * 
- * Axes are considered to be in row major order if the second
- * axis is more contiguous in memory than the first one,
- * this is, if its stride is smaller in magnitude.
- * 
- * @param prev First axis
- * @param next Second axis
- * @return bool True if axes are in row major, False otherwise
- */
-XMIPP4_CONSTEXPR bool check_axis_order(const axis_descriptor &prev, 
-                                       const axis_descriptor &next,
-                                       row_major_tag ) noexcept;
-
-/**
- * @brief Check if a pair of axes is overlapping
- * 
- * Axes are considered to be overlapping if the size 
- * of the major axis is strictly smaller than the stride
- * of the minor axis
- * 
- * @param prev First axis
- * @param next Second axis
- * @return bool True if axes are overlapping
- */
-XMIPP4_CONSTEXPR bool check_axis_overlap(const axis_descriptor &major, 
-                                         const axis_descriptor &minor ) noexcept;
-
-/**
- * @brief Check if a pair of axes is regular
- * 
- * A pair of axes is regular if the minor axis (the slow one)
- * has a stride equal to the size of the major axis (the fast one)
- * 
- * @param major The axis with the smaller stride
- * @param minor The axis with the larger stride
- * @return bool True if axes are regular
- */
-XMIPP4_CONSTEXPR bool is_regular(const axis_descriptor &major, 
-                                 const axis_descriptor &minor ) noexcept;
-
-/**
- * @brief Check if a sequence of axes has a particular ordering
+ * The axis with the largest stride is considered as the minor axis
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
  * @param last Iterator to the past-the-end element in the range
- * @param order OrderTag specifying axis ordering
- * @return True if all elements in the range are ordered
- */
-template<typename ForwardIt, typename OrderTag>
-XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first, 
-                                               ForwardIt last,
-                                               OrderTag &&order ) noexcept;
-
-/**
- * @brief Check if a column major layout contains overlapping axes
- *
- * @see check_axis_overlap 
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return bool True if the range contains at least one overlapping pair. 
- * False otherwise
+ * @return ForwardIt The axis with the largest stride magnitude
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool check_layout_overlap(ForwardIt first, 
-                                                 ForwardIt last,
-                                                 column_major_tag ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_stride(ForwardIt first, 
+                                                 ForwardIt last ) noexcept;
 
 /**
- * @brief Check if a row major layout contains overlapping axes
- *
- * @see check_axis_overlap 
+ * @brief Finds the axis with the smallest stride magnitude.
  * 
- * @tparam BidirIt Bidirectional iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return bool True if the range contains at least one overlapping pair. 
- * False otherwise
- */
-template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 bool check_layout_overlap(BidirIt first, 
-                                                 BidirIt last,
-                                                 row_major_tag ) noexcept;
-
-/**
- * @brief Check if a column major layout is regular
- * 
- * @see is_regular
+ * The axis with the smallest stride is considered as the major axis
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
  * @param last Iterator to the past-the-end element in the range
- * @return bool True if all the adjacent axis pairs are regular. 
- * False otherwise
+ * @return ForwardIt The axis with the smallest stride magnitude
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool is_regular_layout(ForwardIt first, 
-                                              ForwardIt last,
-                                              column_major_tag ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first, 
+                                                 ForwardIt last ) noexcept;
 
 /**
- * @brief Check if a row major layout is regular
+ * @brief Find the next axis in succession.
  * 
- * @see is_regular
+ * The next axis is the axis which has the smallest stride magnitude but 
+ * greater than the current one's. Equal possibility is only considered for 
+ * axes after the current one. If none is found, last is returned.
  * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return bool True if all the adjacent axis pairs are regular. 
- * False otherwise
+ * @note This method has linear complexity. Repeatedly using it to iterate
+ * over a range will lead to quadratic complexity. Only use it for small ranges.
+ * Otherwise, consider sorting the range first and use specialized methods.
+ * @tparam ForwardIt 
+ * @param current Current iterator between [first, last).
+ * @param first First iterator.
+ * @param last Past-the-end iterator.
+ * @return ForwardIt Next axis in succession.
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool is_regular_layout(ForwardIt first, 
-                                              ForwardIt last,
-                                              row_major_tag ) noexcept;
-
-/**
- * @brief Check if a column major layout is contiguous
- * 
- * A layout is contiguous if it is regular and its major axis
- * has a unit stride
- * 
- * @see is_regular_layout
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return bool True if the layout is contiguous. False otherwise
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(ForwardIt first, 
-                                                 ForwardIt last,
-                                                 column_major_tag ) noexcept;
-
-/**
- * @brief Check if a row major layout is contiguous
- * 
- * A layout is contiguous if it is regular and its major axis
- * has a unit stride
- * 
- * @see is_regular_layout
- * 
- * @tparam BidirIt Bidirectional iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return bool True if the layout is contiguous. False otherwise
- */
-template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(BidirIt first, 
-                                                 BidirIt last,
-                                                 row_major_tag ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_axis(ForwardIt current,
+                                                ForwardIt first,
+                                                ForwardIt last ) noexcept;
 
 /**
  * @brief Fill the strides of a layout such that it is contiguous
@@ -277,34 +168,6 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt fill_shape_from_axes(InputIt first,
                                                      OutputIt out );
 
 /**
- * @brief Finds the axis with the largest stride magnitude.
- * 
- * The axis with the largest stride is considered as the minor axis
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the largest stride magnitude
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_stride(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
- * @brief Finds the axis with the smallest stride magnitude.
- * 
- * The axis with the smallest stride is considered as the major axis
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the smallest stride magnitude
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
  * @brief Reverses the ordering of a layout
  * 
  * @tparam BidirIt Bidirectional iterator
@@ -318,15 +181,16 @@ XMIPP4_CONSTEXPR_CPP20 void transpose_layout(BidirIt first, BidirIt last) noexce
  * @brief Reverses the ordering of a layout out-of-place
  * 
  * @tparam BidirIt Bidirectional iterator
- * @tparam ForwardIt Forward iterator
+ * @tparam OutputIt Output iterator
  * @param first_from Iterator to the first element in the input range
  * @param last_from Iterator to the past-the-end element in the input range
  * @param first_to Iterator to hte first element in the output range.
  * Must have (last-first) elements available
  */
-template <typename BidirIt, typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt transpose_layout(BidirIt first_from, BidirIt last_from,
-                                                  ForwardIt first_to );
+template <typename BidirIt, typename OutputIt>
+XMIPP4_CONSTEXPR_CPP20 OutputIt transpose_layout(BidirIt first_from, 
+                                                 BidirIt last_from,
+                                                 OutputIt first_to );
 
 /**
  * @brief Computes the volume of a layout
@@ -341,32 +205,6 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt transpose_layout(BidirIt first_from, BidirIt la
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 std::size_t compute_layout_volume(ForwardIt first,
                                                          ForwardIt last ) noexcept;
-
-/**
- * @brief Flattens a regular column major layout
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return axis_descriptor Axis containing all the flattened axes
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 axis_descriptor flatten_regular_layout(ForwardIt first,
-                                                              ForwardIt last,
-                                                              column_major_tag ) noexcept;
-
-/**
- * @brief Flattens a regular row major layout
- * 
- * @tparam BidirIt Bidirectional iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return axis_descriptor Axis containing all the flattened axes
- */
-template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 axis_descriptor flatten_regular_layout(BidirIt first,
-                                                              BidirIt last,
-                                                              row_major_tag ) noexcept;
 
 /**
  * @brief Check if an axis can be squeezed
@@ -406,27 +244,18 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt squeeze_layout(ForwardIt first, ForwardIt last)
  * @see check_squeeze
  * @see std::remove_if_copy
  * 
- * @tparam ForwardIt1 Forward iterator
- * @tparam ForwardIt2 Forward iterator
+ * @tparam InputIt Input iterator
+ * @tparam OutputIt Output iterator
  * @param first_from Iterator to the first element in the input range
  * @param last_from Iterator to the past-the-end element in the input range
  * @param first_to Iterator to hte first element in the output range.
  * Must have (last-first) elements available
  * @return ForwardIt2 Iterator to the past-the-end element in the output range
  */
-template <typename ForwardIt1, typename ForwardIt2>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt2 squeeze_layout(ForwardIt1 first_from, 
-                                                 ForwardIt1 last_from,
-                                                 ForwardIt2 first_to );
-
-
-template<typename InputIt, typename OutputIt, typename... Subscripts>
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset );
-                                                 
+template <typename InputIt, typename OutputIt>
+XMIPP4_CONSTEXPR_CPP20 OutputIt squeeze_layout(InputIt first_from, 
+                                               InputIt last_from,
+                                               OutputIt first_to );
 
 } // namespace multidimensional
 } // namespace xmipp4

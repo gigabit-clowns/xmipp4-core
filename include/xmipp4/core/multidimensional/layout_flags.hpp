@@ -21,16 +21,17 @@
  ***************************************************************************/
 
 /**
- * @file layout_type.hpp
+ * @file layout_flags.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declares layout_type enum
+ * @brief Declares layout_flags flagset
  * @date 2024-05-01
  * 
  */
 
+#include "../utils/bit.hpp"
+#include "../utils/flagset.hpp"
 #include "../platform/constexpr.hpp"
 
-#include <string_view>
 #include <ostream>
 
 namespace xmipp4 
@@ -38,21 +39,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-enum class layout_type
+enum class layout_flag_bits
 {
-    unknown = -1,
-    custom,
-    column_major,
-    row_major
+    contiguous = utils::bit(0),
+    column_major = utils::bit(1),
+    row_major = utils::bit(2)
 };
 
-XMIPP4_CONSTEXPR const char* to_string(layout_type axis) noexcept;
-bool from_string(std::string_view str, layout_type& axis) noexcept;
-
-template<typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_type axis);
-
-
+using layout_flags = utils::flagset<layout_flag_bits>;
 
 
 
@@ -78,4 +72,4 @@ XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "layout_type.inl"
+#include "layout_flags.inl"

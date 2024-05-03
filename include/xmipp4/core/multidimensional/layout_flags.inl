@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file layout_type.inl
+ * @file layout_flags.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of layout_type.hpp
+ * @brief Implementation of layout_flags.hpp
  * @date 2024-05-01
  * 
  */
 
-#include "layout_type.hpp"
+#include "layout_flags.hpp"
 
 #include <unordered_map>
 
@@ -36,45 +36,22 @@ namespace multidimensional
 {
 
 XMIPP4_INLINE_CONSTEXPR 
-const char* to_string(layout_type axis) noexcept
+const char* to_string(layout_flag_bits flag) noexcept
 {
-    switch (axis)
+    switch (flag)
     {
-    case layout_type::unknown: return "unknown";
-    case layout_type::custom: return "custom";
-    case layout_type::column_major: return "column_major";
-    case layout_type::row_major: return "row_major";
+    case layout_flag_bits::contiguous: return "contiguous";
+    case layout_flag_bits::column_major: return "column_major";
+    case layout_flag_bits::row_major: return "row_major";
     default: return "";
     }
 }
 
-inline
-bool from_string(std::string_view str, layout_type& axis) noexcept
-{
-    static const 
-    std::unordered_map<std::string_view, layout_type> str_2_layout_type = 
-    {
-        { to_string(layout_type::unknown), layout_type::unknown },
-        { to_string(layout_type::custom), layout_type::custom },
-        { to_string(layout_type::column_major), layout_type::column_major },
-        { to_string(layout_type::row_major), layout_type::row_major },
-    };
-
-    const auto ite = str_2_layout_type.find(str);
-    const auto result = ite != str_2_layout_type.cend();
-    if (result)
-    {
-        axis = ite->second;
-    }
-
-    return result;
-}
-
 template<typename T>
 inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_type axis)
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits flag)
 {
-    return os << to_string(axis);
+    return os << to_string(flag);
 }
 
 

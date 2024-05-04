@@ -140,7 +140,7 @@ ForwardIt pack_layout_one(ForwardIt first,
     ++first;
     for(; first != last; ++first)
     {
-        if(!check_nonzero_stride(*first))
+        if(!is_significant(*first))
             continue;
 
         if(!is_packed(*first, *prev))
@@ -172,7 +172,7 @@ ForwardIt pack_layout_one(ForwardIt first,
     ++first;
     for(; first != last; ++first)
     {
-        if(!check_nonzero_stride(*first))
+        if(!is_significant(*first))
             continue;
 
         if(!is_packed(*prev, *first))

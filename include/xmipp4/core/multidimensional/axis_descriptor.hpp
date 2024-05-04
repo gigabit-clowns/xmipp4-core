@@ -209,6 +209,18 @@ XMIPP4_CONSTEXPR
 bool is_reversed(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis is significant.
+ * 
+ * An axis is significant if it has a non-zero stride
+ * and an extent unequal to 1.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is significant.
+ */
+XMIPP4_CONSTEXPR
+bool is_significant(const axis_descriptor &axis) noexcept;
+
+/**
  * @brief Obtain the offset applied when reversing an axis.
  * 
  * If the axis is not reversed, this function returns true.

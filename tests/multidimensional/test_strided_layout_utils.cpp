@@ -31,6 +31,7 @@
 #include <xmipp4/core/multidimensional/strided_layout_utils.hpp>
 
 #include <vector>
+#include <random>
 
 using namespace xmipp4::multidimensional;
 
@@ -52,50 +53,68 @@ TEST_CASE("find max and min stride", "[memory_layout]")
 TEST_CASE("find first significant axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8), //0
-        axis_descriptor(2, 64), //1
-        axis_descriptor(4, -128), //2
-        axis_descriptor(4, 16), //3
-        axis_descriptor(1, -1), //4
-        axis_descriptor(2, 1), //5
-        axis_descriptor(4, 0), //6
-        axis_descriptor(1, -16), //7
-        axis_descriptor(4, -2) //8
+        axis_descriptor(2, 8),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, -128),
+        axis_descriptor(4, 16),
+        axis_descriptor(1, -1),
+        axis_descriptor(2, 1),
+        axis_descriptor(4, 0),
+        axis_descriptor(1, -16),
+        axis_descriptor(4, -2)
     };
 
-    auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
-    REQUIRE(std::distance(layout.cbegin(), ite) == 5);
+    std::mt19937 gen(0);
+
+    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+    for(std::size_t i = 0; i < n_iter; ++i)
+    {
+        // Shuffle input
+        std::shuffle(layout.begin(), layout.end(), gen);
+
+        auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(2, 1) );
+    }
 }
 
 TEST_CASE("find next significant axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8), //0
-        axis_descriptor(2, 64), //1
-        axis_descriptor(4, -128), //2
-        axis_descriptor(4, 16), //3
-        axis_descriptor(4, 0), //4
-        axis_descriptor(1, -16), //5
-        axis_descriptor(2, 1), //6
-        axis_descriptor(4, -2) //7
+        axis_descriptor(2, 8),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, -128),
+        axis_descriptor(4, 16),
+        axis_descriptor(4, 0),
+        axis_descriptor(1, -16),
+        axis_descriptor(2, 1),
+        axis_descriptor(4, -2)
     };
 
-    auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 6 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 7 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 0 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 3 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 1 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 2 );
-    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE( std::distance(layout.cbegin(), ite) == 8 );
-}
+    std::mt19937 gen(0);
 
+    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+    for(std::size_t i = 0; i < n_iter; ++i)
+    {
+        // Shuffle input
+        std::shuffle(layout.begin(), layout.end(), gen);
+
+        // Test
+        auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(2, 1) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(4, -2) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(2, 8) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(4, 16) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(2, 64) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( *ite == axis_descriptor(4, -128) );
+        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+        REQUIRE( ite == layout.cend() );
+    }
+}
 
 TEST_CASE("pack layout", "[memory_layout]")
 {
@@ -107,44 +126,38 @@ TEST_CASE("pack layout", "[memory_layout]")
         //---------------------
         axis_descriptor(4, -32),
         axis_descriptor(1, -128),
-        axis_descriptor(2, 128),
+        axis_descriptor(3, 128),
         //---------------------
         axis_descriptor(9, -512),
         axis_descriptor(2, 0),
     };
 
     std::vector<axis_descriptor> packed;
-    std::ptrdiff_t offset = 0;
+    std::ptrdiff_t offset;
+    std::mt19937 gen(0);
 
-    SECTION("row major")
+    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+    for(std::size_t i = 0; i < n_iter; ++i)
     {
+        // Shuffle input
+        std::shuffle(layout.begin(), layout.end(), gen);
+
+        // Clear output
+        packed.clear();
+        offset = 0;
+
+        // Pack
         pack_layout(
             layout.cbegin(), layout.cend(),
             std::back_inserter(packed),
-            offset,
-            row_major()
+            offset
         );
 
+        // Test
         REQUIRE( packed.size() == 3 );
         REQUIRE( packed[0] == axis_descriptor(8, 2) );
-        REQUIRE( packed[1] == axis_descriptor(8, 32) );
+        REQUIRE( packed[1] == axis_descriptor(12, 32) );
         REQUIRE( packed[2] == axis_descriptor(9, 512) );
-        REQUIRE( offset == -(8*512+3*32) );
-    }
-    
-    SECTION("column major")
-    {
-        pack_layout(
-            layout.crbegin(), layout.crend(),
-            std::back_inserter(packed),
-            offset,
-            column_major()
-        );
-
-        REQUIRE( packed.size() == 3 );
-        REQUIRE( packed[0] == axis_descriptor(9, 512) );
-        REQUIRE( packed[1] == axis_descriptor(8, 32) );
-        REQUIRE( packed[2] == axis_descriptor(8, 2) );
         REQUIRE( offset == -(8*512+3*32) );
     }
 }

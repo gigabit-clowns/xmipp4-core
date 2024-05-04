@@ -92,7 +92,7 @@ ForwardIt find_next_significant_axis(ForwardIt current,
         first, last,
         [current] (const axis_descriptor &desc)
         {
-            return compare_strides_less(*current, desc);
+            return !check_squeeze(desc) && compare_strides_less(*current, desc);
         }
     );
 
@@ -102,7 +102,8 @@ ForwardIt find_next_significant_axis(ForwardIt current,
         for(auto ite = std::next(result); ite != last; ++ite)
         {
             // current < first < result
-            if (compare_strides_less(*current, *ite) &&
+            if (!check_squeeze(*ite) &&
+                compare_strides_less(*current, *ite) &&
                 compare_strides_less(*ite, *result) )
             {
                 result = ite;
@@ -120,72 +121,6 @@ template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt pack_layout_one(ForwardIt first, 
                           ForwardIt last,
-                          axis_descriptor &packed,
-                          std::ptrdiff_t &offset,
-                          column_major_tag ) noexcept
-{
-    std::size_t extent = first->get_extent();
-    offset -= get_reverse_axis_offset(*first);
-    
-    auto prev = first;
-    ++first;
-    for(; first != last; ++first)
-    {
-        if(!is_significant(*first))
-            continue;
-
-        if(!is_packed(*first, *prev))
-            break;
-
-        extent *= first->get_extent();
-        offset -= get_reverse_axis_offset(*first);
-
-        prev = first;
-    }
-
-    const auto stride = prev->get_unsigned_stride();
-    packed = axis_descriptor(extent, stride);
-
-    return first;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt pack_layout_one(ForwardIt first, 
-                          ForwardIt last,
-                          axis_descriptor &packed,
-                          std::ptrdiff_t &offset,
-                          row_major_tag ) noexcept
-{
-    std::size_t extent = first->get_extent();
-    const auto stride = first->get_unsigned_stride();
-    offset -= get_reverse_axis_offset(*first);
-
-    auto prev = first;
-    ++first;
-    for(; first != last; ++first)
-    {
-        if(!is_significant(*first))
-            continue;
-
-        if(!is_packed(*prev, *first))
-            break;
-
-        extent *= first->get_extent();
-        offset -= get_reverse_axis_offset(*first);
-
-        prev = first;
-    }
-
-    packed = axis_descriptor(extent, stride);
-
-    return first;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt pack_layout_one(ForwardIt first, 
-                          ForwardIt last,
                           ForwardIt current,
                           axis_descriptor &packed,
                           std::ptrdiff_t &offset ) noexcept
@@ -198,8 +133,8 @@ ForwardIt pack_layout_one(ForwardIt first,
     current = find_next_significant_axis(current, first, last);
     while(current != last && is_packed(*prev, *current))
     {
-        extent *= prev->get_extent();
-        offset -= get_reverse_axis_offset(*prev);
+        extent *= current->get_extent();
+        offset -= get_reverse_axis_offset(*current);
 
         prev = current;
         current = find_next_significant_axis(current, first, last);
@@ -210,45 +145,12 @@ ForwardIt pack_layout_one(ForwardIt first,
     return current;
 }
 
-template<typename ForwardIt, typename OutputIt, typename OrderTag>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-OutputIt pack_layout(ForwardIt first_from, 
-                     ForwardIt last_from,
-                     OutputIt first_to,
-                     std::ptrdiff_t &offset,
-                     OrderTag &&order ) noexcept
-{
-    // Start from a significant axis
-    first_from = std::find_if(
-        first_from, last_from,
-        is_significant
-    );
-
-    // Pack contiguous runs of axes
-    while(first_from != last_from)
-    {
-        // Pack a single run of the layout
-        axis_descriptor packed;
-        first_from = pack_layout_one(
-            first_from, last_from,
-            packed, offset,
-            std::forward<OrderTag>(order)
-        );
-
-        // Write a new axis to the output
-        *first_to = packed;
-        ++first_to;
-    }
-
-    return first_to;
-}
-
 template<typename ForwardIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
                      ForwardIt last_from,
                      OutputIt first_to,
-                     std::ptrdiff_t &offset ) noexcept
+                     std::ptrdiff_t &offset )
 {
     auto ite = find_first_significant_axis(first_from, last_from);
 
@@ -273,18 +175,16 @@ OutputIt pack_layout(ForwardIt first_from,
 
 } // namespace detail
 
-template<typename ForwardIt, typename OutputIt, typename OrderTag>
+template<typename ForwardIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
                      ForwardIt last_from,
                      OutputIt first_to,
-                     std::ptrdiff_t &offset,
-                     OrderTag &&order ) noexcept
+                     std::ptrdiff_t &offset )
 {
     return detail::pack_layout(
         first_from, last_from,
-        first_to, offset,
-        std::forward<OrderTag>(order)
+        first_to, offset
     );
 }
 

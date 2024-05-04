@@ -114,15 +114,13 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_significant_axis(ForwardIt current,
  * @param last_from Iterator to the past-the-end input axis.
  * @param first_to Iterator to the first output axis.
  * @param offset Offset to be modified to account negative strides.
- * @param order Axis ordering.
  * @return OutputIt Iterator to the past-the-end output axis.
  */
-template<typename ForwardIt, typename OutputIt, typename OrderTag>
+template<typename ForwardIt, typename OutputIt>
 XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
                                             ForwardIt last_from,
                                             OutputIt first_to,
-                                            std::ptrdiff_t &offset,
-                                            OrderTag &&order ) noexcept;
+                                            std::ptrdiff_t &offset );
 
 /**
  * @brief Check if a layout is packed

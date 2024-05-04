@@ -49,24 +49,25 @@ TEST_CASE("find max and min stride", "[memory_layout]")
     REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
 }
 
-TEST_CASE("find first axis", "[memory_layout]")
+TEST_CASE("find first significant axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 8), //0
         axis_descriptor(2, 64), //1
         axis_descriptor(4, -128), //2
         axis_descriptor(4, 16), //3
-        axis_descriptor(2, 1), //4
-        axis_descriptor(4, 0), //5
-        axis_descriptor(1, -1), //6
+        axis_descriptor(1, -1), //4
+        axis_descriptor(2, 1), //5
+        axis_descriptor(4, 0), //6
         axis_descriptor(1, -16), //7
         axis_descriptor(4, -2) //8
     };
 
-    REQUIRE(find_first_axis(layout.cbegin(), layout.cend()) == std::next(layout.cend(), 4));
+    auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
+    REQUIRE(std::distance(layout.cbegin(), ite) == 5);
 }
 
-TEST_CASE("find next axis", "[memory_layout]")
+TEST_CASE("find next significant axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 8), //0
@@ -79,23 +80,22 @@ TEST_CASE("find next axis", "[memory_layout]")
         axis_descriptor(4, -2) //7
     };
 
-    auto ite = find_min_stride(layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 4));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 6));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 7));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 0));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 3));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 5));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 1));
-    ite = find_next_axis(ite, layout.cbegin(), layout.cend());
-    REQUIRE(ite == std::next(layout.cbegin(), 2));
+    auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 6 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 7 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 0 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 3 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 1 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 2 );
+    ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
+    REQUIRE( std::distance(layout.cbegin(), ite) == 8 );
 }
+
 
 TEST_CASE("pack layout", "[memory_layout]")
 {

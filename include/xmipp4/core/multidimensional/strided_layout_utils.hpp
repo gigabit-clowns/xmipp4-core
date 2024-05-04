@@ -70,10 +70,9 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first,
                                                  ForwardIt last ) noexcept;
 
 /**
- * @brief Find the first axis in succession
+ * @brief Find the first significant axis in succession
  * 
- * The first axis sis the axis with the smallest non-zero stride magnitude.
- * If multiple of such strides are present, the first one is returned.
+ * The first axis is the significant axis with the smallest magnitude.
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element
@@ -81,28 +80,29 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first,
  * @return ForwardIt First axis.
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_first_axis(ForwardIt first,
-                                                 ForwardIt last ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_first_significant_axis(ForwardIt first,
+                                                             ForwardIt last ) noexcept;
+
 /**
- * @brief Find the next axis in succession.
+ * @brief Find the next significant axis in succession.
  * 
  * The next axis is the axis which has the smallest stride magnitude but 
- * greater than the current one's. Equal possibility is only considered for 
- * axes after the current one. If none is found, last is returned.
+ * greater than the current one's. If none is found, last is returned.
  * 
  * @note This method has linear complexity. Repeatedly using it to iterate
  * over a range will lead to quadratic complexity. Only use it for small ranges.
  * Otherwise, consider sorting the range first and use specialized methods.
  * @tparam ForwardIt 
- * @param current Current iterator between [first, last).
+ * @param current Current iterator between [first, last). Note that it must be 
+ * dereferenceable.
  * @param first First iterator.
  * @param last Past-the-end iterator.
  * @return ForwardIt Next axis in succession.
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_axis(ForwardIt current,
-                                                ForwardIt first,
-                                                ForwardIt last ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_significant_axis(ForwardIt current,
+                                                            ForwardIt first,
+                                                            ForwardIt last ) noexcept;
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.

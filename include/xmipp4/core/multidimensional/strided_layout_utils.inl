@@ -59,21 +59,21 @@ ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_first_axis(ForwardIt first, ForwardIt last) noexcept
+ForwardIt find_first_significant_axis(ForwardIt first, ForwardIt last) noexcept
 {
     auto result = std::find_if(
         first, last,
-        check_nonzero_stride
+        is_significant
     );
 
     if(result != last)
     {
         for(auto ite = std::next(result); ite != last; ++ite)
         {
-            if(check_nonzero_stride(*first) &&
-               compare_strides_less(*first, *result) )
+            if(is_significant(*ite) &&
+               compare_strides_less(*ite, *result) )
             {
-                result = first;
+                result = ite;
             }
         }
     }
@@ -83,40 +83,30 @@ ForwardIt find_first_axis(ForwardIt first, ForwardIt last) noexcept
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_next_axis(ForwardIt current,
-                         ForwardIt first,
-                         ForwardIt last ) noexcept
+ForwardIt find_next_significant_axis(ForwardIt current,
+                                     ForwardIt first,
+                                     ForwardIt last ) noexcept
 {
-    // Find an axis with the same stride after the current one
-    ForwardIt result = std::find_if(
-        std::next(current), last,
-        [current] (const axis_descriptor &desc)
-        {
-            return compare_strides_equal(*current, desc);
-        }
-    );
-    if (result != last)
-        return result;
-
     // Find the first stride greater than current one
-    result = std::find_if(
+    auto result = std::find_if(
         first, last,
         [current] (const axis_descriptor &desc)
         {
             return compare_strides_less(*current, desc);
         }
     );
-    if (result == last)
-        return result;
 
     // Try to minimize the stride
-    for(auto ite = std::next(result); ite != last; ++ite)
+    if (result != last)
     {
-        // current < first < result
-        if (compare_strides_less(*current, *ite) &&
-            compare_strides_less(*ite, *result) )
+        for(auto ite = std::next(result); ite != last; ++ite)
         {
-            result = ite;
+            // current < first < result
+            if (compare_strides_less(*current, *ite) &&
+                compare_strides_less(*ite, *result) )
+            {
+                result = ite;
+            }
         }
     }
 

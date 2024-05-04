@@ -80,6 +80,58 @@ TEST_CASE("find next axis", "[memory_layout]")
     REQUIRE(ite == std::next(layout.cbegin(), 2));
 }
 
+TEST_CASE("pack layout", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(4, 2),
+        axis_descriptor(2, 8),
+        axis_descriptor(10, 0),
+        //---------------------
+        axis_descriptor(4, -32),
+        axis_descriptor(1, -128),
+        axis_descriptor(2, 128),
+        //---------------------
+        axis_descriptor(9, -512),
+        axis_descriptor(2, 0),
+    };
+
+    std::vector<axis_descriptor> packed;
+    std::ptrdiff_t offset = 0;
+
+    SECTION("row major")
+    {
+        pack_layout(
+            layout.cbegin(), layout.cend(),
+            std::back_inserter(packed),
+            offset,
+            row_major()
+        );
+
+        REQUIRE( packed.size() == 3 );
+        REQUIRE( packed[0] == axis_descriptor(8, 2) );
+        REQUIRE( packed[1] == axis_descriptor(8, 32) );
+        REQUIRE( packed[2] == axis_descriptor(9, 512) );
+        REQUIRE( offset == -(8*512+3*32) );
+    }
+    
+    SECTION("column major")
+    {
+        pack_layout(
+            layout.crbegin(), layout.crend(),
+            std::back_inserter(packed),
+            offset,
+            column_major()
+        );
+
+        REQUIRE( packed.size() == 3 );
+        REQUIRE( packed[0] == axis_descriptor(9, 512) );
+        REQUIRE( packed[1] == axis_descriptor(8, 32) );
+        REQUIRE( packed[2] == axis_descriptor(8, 2) );
+        REQUIRE( offset == -(8*512+3*32) );
+    }
+}
+
 TEST_CASE("check packed layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {

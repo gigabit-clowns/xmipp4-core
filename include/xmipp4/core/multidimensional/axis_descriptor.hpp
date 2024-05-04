@@ -212,7 +212,7 @@ bool is_reversed(const axis_descriptor &axis) noexcept;
  * @brief Obtain the offset applied when reversing an axis.
  * 
  * If the axis is not reversed, this function returns true.
- * If the axis is reversed, this function returns the width
+ * If the axis is reversed, this function returns (extent-1)*unsigned_stride
  * of the axis.
  * 
  * @param axis Axis to be analyzed. 

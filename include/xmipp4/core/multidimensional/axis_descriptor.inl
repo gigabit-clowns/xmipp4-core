@@ -163,7 +163,9 @@ bool is_reversed(const axis_descriptor &axis) noexcept
 XMIPP4_INLINE_CONSTEXPR
 std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept
 {
-    return is_reversed(axis) ? axis.get_width() : 0;
+    const auto extent = axis.get_extent();
+    const auto stride = axis.get_stride();
+    return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
 }
 
 

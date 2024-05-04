@@ -162,34 +162,7 @@ TEST_CASE("pack layout", "[memory_layout]")
     }
 }
 
-TEST_CASE("check packed layout", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(2, 8),
-        axis_descriptor(4, -16),
-        axis_descriptor(10, 0),
-        axis_descriptor(1, -64),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(2, 0),
-    };
-
-    SECTION("contiguous")
-    {
-        REQUIRE(is_packed_layout(layout.cbegin(), layout.cend(), row_major()));
-        REQUIRE(is_packed_layout(layout.crbegin(), layout.crend(), column_major()));
-    }
-    SECTION("not packed")
-    {
-        layout[2] = axis_descriptor(2, -4);
-        REQUIRE(!is_packed_layout(layout.cbegin(), layout.cend(), row_major()));
-        REQUIRE(!is_packed_layout(layout.crbegin(), layout.crend(), column_major()));
-    }
-}
-
-TEST_CASE("check contiguous layout", "[memory_layout]")
+TEST_CASE("is contiguous layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 0),
@@ -206,20 +179,49 @@ TEST_CASE("check contiguous layout", "[memory_layout]")
 
     SECTION("contiguous")
     {
-        REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
-        REQUIRE(is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+        std::mt19937 gen(0);
+
+        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+        for(std::size_t i = 0; i < n_iter; ++i)
+        {
+            // Shuffle input
+            std::shuffle(layout.begin(), layout.end(), gen);
+
+            // Test
+            REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend()));
+        }
     }
     SECTION("first axis has not unit stride")
     {
         layout[1] = axis_descriptor(1, 2);
-        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
-        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+
+        std::mt19937 gen(0);
+
+        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+        for(std::size_t i = 0; i < n_iter; ++i)
+        {
+            // Shuffle input
+            std::shuffle(layout.begin(), layout.end(), gen);
+
+            // Test
+            REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
+        }
     }
     SECTION("not packed")
     {
         layout[2] = axis_descriptor(2, -4);
-        REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend(), row_major()));
-        REQUIRE(!is_contiguous_layout(layout.crbegin(), layout.crend(), column_major()));
+
+        std::mt19937 gen(0);
+
+        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
+        for(std::size_t i = 0; i < n_iter; ++i)
+        {
+            // Shuffle input
+            std::shuffle(layout.begin(), layout.end(), gen);
+
+            // Test
+            REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
+        }
     }
 }
 

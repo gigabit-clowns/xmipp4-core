@@ -145,6 +145,8 @@ ForwardIt pack_layout_one(ForwardIt first,
     return current;
 }
 
+} // namespace detail
+
 template<typename ForwardIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
@@ -159,7 +161,7 @@ OutputIt pack_layout(ForwardIt first_from,
     {
         // Pack a single run of the layout
         axis_descriptor packed;
-        ite = pack_layout_one(
+        ite = detail::pack_layout_one(
             first_from, last_from, 
             ite,
             packed, offset
@@ -173,142 +175,35 @@ OutputIt pack_layout(ForwardIt first_from,
     return first_to;
 }
 
-} // namespace detail
-
-template<typename ForwardIt, typename OutputIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-OutputIt pack_layout(ForwardIt first_from, 
-                     ForwardIt last_from,
-                     OutputIt first_to,
-                     std::ptrdiff_t &offset )
-{
-    return detail::pack_layout(
-        first_from, last_from,
-        first_to, offset
-    );
-}
-
-namespace detail
-{
-
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_packed_layout(ForwardIt first, 
-                      ForwardIt last,
-                      ForwardIt &major,
-                      column_major_tag ) noexcept
+bool is_contiguous_layout(ForwardIt first, ForwardIt last) noexcept
 {
-    // Start from a non-zero stride
-    first = std::find_if(
-        first, last,
-        check_nonzero_stride
-    );
-    
+    auto ite = find_first_significant_axis(first, last);
+
     bool result = true;
-    if(first != last)
+    if(ite != last)
     {
-        auto prev = first;
-        ++first;
-        for(; first != last; ++first)
+        if(!is_contiguous(*ite))
         {
-            if(!check_nonzero_stride(*first))
-            {
-                continue;
-            }
-
-            if(!is_packed(*first, *prev))
-            {
-                result = false;
-                break;
-            }
-
-            prev = first;
+            result = false;
         }
-
-        // The major axis is the last non-zero axis.
-        major = prev;
-            
-    }
-    else
-    {
-        major = last;
-    }
-
-    return result;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_packed_layout(ForwardIt first, 
-                      ForwardIt last,
-                      ForwardIt &major,
-                      row_major_tag ) noexcept
-{
-    // Start from a non-zero stride
-    first = std::find_if(
-        first, last,
-        check_nonzero_stride
-    );
-    
-    // The major axis is the first non-zero axis.
-    major = first;
-    
-    bool result = true;
-    if(first != last)
-    {
-        auto prev = first;
-        ++first;
-        for(; first != last; ++first)
+        else
         {
-            if(!check_nonzero_stride(*first))
+            auto prev = ite;
+            ite = find_next_significant_axis(ite, first, last);
+            while(ite != last)
             {
-                continue;
-            }
+                if (!is_packed(*prev, *ite))
+                {
+                    result = false;
+                    break;
+                }
 
-            if(!is_packed(*prev, *first))
-            {
-                result = false;
-                break;
+                prev = ite;
+                ite = find_next_significant_axis(ite, first, last);
             }
-
-            prev = first;
         }
-    }
-
-    return result;
-}
-
-} // namespace detail
-
-template<typename ForwardIt, typename OrderTag>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_packed_layout(ForwardIt first, 
-                      ForwardIt last,
-                      OrderTag &&order ) noexcept
-{
-    ForwardIt major; // Ignore
-    return detail::is_packed_layout(
-        first, last, 
-        major, std::forward<OrderTag>(order)
-    );
-}
-
-template<typename ForwardIt, typename OrderTag>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_contiguous_layout(ForwardIt first, 
-                          ForwardIt last,
-                          OrderTag &&order ) noexcept
-{
-    // Check if it is packed and obtain the major axis
-    ForwardIt major;
-    auto result = detail::is_packed_layout(
-        first, last, 
-        major, std::forward<OrderTag>(order)
-    );
-
-    if(result && major != last)
-    {
-        result = is_contiguous(*major);
     }
 
     return result;

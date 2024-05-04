@@ -123,30 +123,11 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
                                             std::ptrdiff_t &offset );
 
 /**
- * @brief Check if a layout is packed
- * 
- * A layout is packed if adjacent non-zero strided axes are packed
- * 
- * @see is_packed
- * 
- * @tparam ForwardIt Forward iterator
- * @tparam OrderTag Order tag
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @param order Hint about the layout ordering
- * @return bool True if the layout is contiguous. False otherwise
- */
-template<typename ForwardIt, typename OrderTag>
-XMIPP4_CONSTEXPR_CPP20 bool is_packed_layout(ForwardIt first, 
-                                             ForwardIt last,
-                                             OrderTag &&order ) noexcept;
-
-/**
  * @brief Check if a layout is contiguous
- * 
- * A column major layout is contiguous if it is packed and
- * the last non-zero axis has a stride of 1.
- * 
+ *
+ * A layout is contiguous if elements are tightly packed in
+ * memory
+ *  
  * @tparam ForwardIt Forward iterator.
  * @tparam OrderTag Order tag.
  * @param first Iterator to the first element in the range
@@ -154,10 +135,9 @@ XMIPP4_CONSTEXPR_CPP20 bool is_packed_layout(ForwardIt first,
  * @param order Hint about the layout ordering
  * @return bool True if the layout is contiguous. False otherwise
  */
-template<typename ForwardIt, typename OrderTag>
+template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(ForwardIt first, 
-                                                 ForwardIt last,
-                                                 OrderTag &&order ) noexcept;
+                                                 ForwardIt last ) noexcept;
 
 /**
  * @brief Fill the strides of a layout such that it is contiguous

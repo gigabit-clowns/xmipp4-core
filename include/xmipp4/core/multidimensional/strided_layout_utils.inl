@@ -102,55 +102,75 @@ ForwardIt find_next_axis(ForwardIt current,
 namespace detail
 {
 
-template<typename ForwardIt, typename OutputIt>
+template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-OutputIt pack_layout(ForwardIt first_from, 
-                     ForwardIt last_from,
-                     OutputIt first_to,
-                     std::ptrdiff_t &offset,
-                     column_major_tag ) noexcept
+ForwardIt pack_layout_one(ForwardIt first, 
+                          ForwardIt last,
+                          axis_descriptor &packed,
+                          std::ptrdiff_t &offset,
+                          column_major_tag ) noexcept
 {
-    // Start from a non-zero stride
-    first_from = std::find_if(
-        first_from, last_from,
-        check_nonzero_stride
-    );
-
-    // Pack contiguous runs of axes
-    while(first_from != last_from)
+    auto prev = first;
+    std::size_t extent = prev->get_extent();
+    offset -= get_reverse_axis_offset(*prev);
+    ++first;
+    for(; first != last; ++first)
     {
-        auto prev_from = first_from;
-        std::size_t extent = prev_from->get_extent();
-        offset -= get_reverse_axis_offset(*prev_from);
-        ++first_from;
-        for(; first_from != last_from; ++first_from)
-        {
-            if(!check_nonzero_stride(*first_from))
-                continue;
+        if(!check_nonzero_stride(*first))
+            continue;
 
-            if(!is_packed(*first_from, *prev_from))
-                break;
+        if(!is_packed(*first, *prev))
+            break;
 
-            prev_from = first_from;
-            extent *= prev_from->get_extent();
-            offset -= get_reverse_axis_offset(*prev_from);
-        }
-
-        // Write a new axis to the output
-        *first_to = axis_descriptor(extent, prev_from->get_unsigned_stride()); // FIXME deal with offsets
-        ++first_to;
+        prev = first;
+        extent *= prev->get_extent();
+        offset -= get_reverse_axis_offset(*prev);
     }
 
-    return first_to;
+    const auto stride = prev->get_unsigned_stride();
+    packed = axis_descriptor(extent, stride);
+
+    return first;
 }
 
-template<typename ForwardIt, typename OutputIt>
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt pack_layout_one(ForwardIt first, 
+                          ForwardIt last,
+                          axis_descriptor &packed,
+                          std::ptrdiff_t &offset,
+                          row_major_tag ) noexcept
+{
+    auto prev = first;
+    std::size_t extent = prev->get_extent();
+    const auto stride = prev->get_unsigned_stride();
+    offset -= get_reverse_axis_offset(*prev);
+    ++first;
+    for(; first != last; ++first)
+    {
+        if(!check_nonzero_stride(*first))
+            continue;
+
+        if(!is_packed(*prev, *first))
+            break;
+
+        prev = first;
+        extent *= prev->get_extent();
+        offset -= get_reverse_axis_offset(*prev);
+    }
+
+    packed = axis_descriptor(extent, stride);
+
+    return first;
+}
+
+template<typename ForwardIt, typename OutputIt, typename OrderTag>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
                      ForwardIt last_from,
                      OutputIt first_to,
                      std::ptrdiff_t &offset,
-                     row_major_tag ) noexcept
+                     OrderTag &&order ) noexcept
 {
     // Start from a non-zero stride
     first_from = std::find_if(
@@ -161,26 +181,16 @@ OutputIt pack_layout(ForwardIt first_from,
     // Pack contiguous runs of axes
     while(first_from != last_from)
     {
-        auto prev_from = first_from;
-        std::size_t extent = prev_from->get_extent();
-        const auto stride = prev_from->get_unsigned_stride();
-        offset -= get_reverse_axis_offset(*prev_from);
-        ++first_from;
-        for(; first_from != last_from; ++first_from)
-        {
-            if(!check_nonzero_stride(*first_from))
-                continue;
-
-            if(!is_packed(*prev_from, *first_from))
-                break;
-
-            prev_from = first_from;
-            extent *= prev_from->get_extent();
-            offset -= get_reverse_axis_offset(*prev_from);
-        }
+        // Pack a single run of the layout
+        axis_descriptor packed;
+        first_from = pack_layout_one(
+            first_from, last_from,
+            packed, offset,
+            std::forward<OrderTag>(order)
+        );
 
         // Write a new axis to the output
-        *first_to = axis_descriptor(extent, stride); 
+        *first_to = packed;
         ++first_to;
     }
 

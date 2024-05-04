@@ -222,6 +222,19 @@ XMIPP4_CONSTEXPR
 std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis can be squeezed
+ * 
+ * An axis can be squeezed only if it has a extent of 1
+ * 
+ * @param axis The axis to be checked
+ * @return bool True if the axis can be squeezed. False otherwise
+ */
+XMIPP4_CONSTEXPR 
+bool check_squeeze(const axis_descriptor &axis) noexcept;
+
+
+
+/**
  * @brief Apply an index to an axis descriptor to increment the offset
  * 
  * @tparam I Index type.

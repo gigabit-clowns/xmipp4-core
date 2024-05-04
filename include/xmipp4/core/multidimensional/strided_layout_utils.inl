@@ -59,6 +59,30 @@ ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt find_first_axis(ForwardIt first, ForwardIt last) noexcept
+{
+    auto result = std::find_if(
+        first, last,
+        check_nonzero_stride
+    );
+
+    if(result != last)
+    {
+        for(auto ite = std::next(result); ite != last; ++ite)
+        {
+            if(check_nonzero_stride(*first) &&
+               compare_strides_less(*first, *result) )
+            {
+                result = first;
+            }
+        }
+    }
+
+    return result;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt find_next_axis(ForwardIt current,
                          ForwardIt first,
                          ForwardIt last ) noexcept
@@ -419,11 +443,6 @@ std::size_t compute_layout_volume(ForwardIt first,
     );
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-bool check_squeeze(const axis_descriptor &axis) noexcept
-{
-    return axis.get_extent() == 1;
-}
 
 template <typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 

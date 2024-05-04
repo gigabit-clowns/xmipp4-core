@@ -168,6 +168,12 @@ std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept
     return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
 }
 
+XMIPP4_INLINE_CONSTEXPR 
+bool check_squeeze(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() == 1;
+}
+
 
 
 template <typename I>

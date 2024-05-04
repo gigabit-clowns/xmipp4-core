@@ -70,6 +70,20 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first,
                                                  ForwardIt last ) noexcept;
 
 /**
+ * @brief Find the first axis in succession
+ * 
+ * The first axis sis the axis with the smallest non-zero stride magnitude.
+ * If multiple of such strides are present, the first one is returned.
+ * 
+ * @tparam ForwardIt Forward iterator
+ * @param first Iterator to the first element
+ * @param last Iterator to the past-the-end element.
+ * @return ForwardIt First axis.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_first_axis(ForwardIt first,
+                                                 ForwardIt last ) noexcept;
+/**
  * @brief Find the next axis in succession.
  * 
  * The next axis is the axis which has the smallest stride magnitude but 
@@ -90,6 +104,19 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_axis(ForwardIt current,
                                                 ForwardIt first,
                                                 ForwardIt last ) noexcept;
 
+/**
+ * @brief Merge contiguous axes of a layout to reduce it as much as possible.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @tparam OutputIt Output iterator.
+ * @tparam OrderTag Order tag.
+ * @param first_from Iterator to the first input axis.
+ * @param last_from Iterator to the past-the-end input axis.
+ * @param first_to Iterator to the first output axis.
+ * @param offset Offset to be modified to account negative strides.
+ * @param order Axis ordering.
+ * @return OutputIt Iterator to the past-the-end output axis.
+ */
 template<typename ForwardIt, typename OutputIt, typename OrderTag>
 XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
                                             ForwardIt last_from,
@@ -216,16 +243,6 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt transpose_layout(BidirIt first_from,
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 std::size_t compute_layout_volume(ForwardIt first,
                                                          ForwardIt last ) noexcept;
-
-/**
- * @brief Check if an axis can be squeezed
- * 
- * An axis can be squeezed only if it has a extent of 1
- * 
- * @param axis The axis to be checked
- * @return bool True if the axis can be squeezed. False otherwise
- */
-XMIPP4_CONSTEXPR bool check_squeeze(const axis_descriptor &axis) noexcept;
 
 /**
  * @brief Squeezes a layout

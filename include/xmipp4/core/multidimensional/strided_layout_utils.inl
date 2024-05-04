@@ -124,9 +124,10 @@ ForwardIt pack_layout_one(ForwardIt first,
                           std::ptrdiff_t &offset,
                           column_major_tag ) noexcept
 {
+    std::size_t extent = first->get_extent();
+    offset -= get_reverse_axis_offset(*first);
+    
     auto prev = first;
-    std::size_t extent = prev->get_extent();
-    offset -= get_reverse_axis_offset(*prev);
     ++first;
     for(; first != last; ++first)
     {
@@ -136,9 +137,10 @@ ForwardIt pack_layout_one(ForwardIt first,
         if(!is_packed(*first, *prev))
             break;
 
+        extent *= first->get_extent();
+        offset -= get_reverse_axis_offset(*first);
+
         prev = first;
-        extent *= prev->get_extent();
-        offset -= get_reverse_axis_offset(*prev);
     }
 
     const auto stride = prev->get_unsigned_stride();
@@ -155,10 +157,11 @@ ForwardIt pack_layout_one(ForwardIt first,
                           std::ptrdiff_t &offset,
                           row_major_tag ) noexcept
 {
+    std::size_t extent = first->get_extent();
+    const auto stride = first->get_unsigned_stride();
+    offset -= get_reverse_axis_offset(*first);
+
     auto prev = first;
-    std::size_t extent = prev->get_extent();
-    const auto stride = prev->get_unsigned_stride();
-    offset -= get_reverse_axis_offset(*prev);
     ++first;
     for(; first != last; ++first)
     {
@@ -168,14 +171,43 @@ ForwardIt pack_layout_one(ForwardIt first,
         if(!is_packed(*prev, *first))
             break;
 
+        extent *= first->get_extent();
+        offset -= get_reverse_axis_offset(*first);
+
         prev = first;
-        extent *= prev->get_extent();
-        offset -= get_reverse_axis_offset(*prev);
     }
 
     packed = axis_descriptor(extent, stride);
 
     return first;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt pack_layout_one(ForwardIt first, 
+                          ForwardIt last,
+                          ForwardIt current,
+                          axis_descriptor &packed,
+                          std::ptrdiff_t &offset ) noexcept
+{
+    std::size_t extent = current->get_extent();
+    const auto stride = current->get_unsigned_stride();
+    offset -= get_reverse_axis_offset(*current);
+
+    auto prev = current;
+    current = find_next_significant_axis(current, first, last);
+    while(current != last && is_packed(*prev, *current))
+    {
+        extent *= prev->get_extent();
+        offset -= get_reverse_axis_offset(*prev);
+
+        prev = current;
+        current = find_next_significant_axis(current, first, last);
+    }
+
+    packed = axis_descriptor(extent, stride);
+
+    return current;
 }
 
 template<typename ForwardIt, typename OutputIt, typename OrderTag>
@@ -186,10 +218,10 @@ OutputIt pack_layout(ForwardIt first_from,
                      std::ptrdiff_t &offset,
                      OrderTag &&order ) noexcept
 {
-    // Start from a non-zero stride
+    // Start from a significant axis
     first_from = std::find_if(
         first_from, last_from,
-        check_nonzero_stride
+        is_significant
     );
 
     // Pack contiguous runs of axes
@@ -201,6 +233,34 @@ OutputIt pack_layout(ForwardIt first_from,
             first_from, last_from,
             packed, offset,
             std::forward<OrderTag>(order)
+        );
+
+        // Write a new axis to the output
+        *first_to = packed;
+        ++first_to;
+    }
+
+    return first_to;
+}
+
+template<typename ForwardIt, typename OutputIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+OutputIt pack_layout(ForwardIt first_from, 
+                     ForwardIt last_from,
+                     OutputIt first_to,
+                     std::ptrdiff_t &offset ) noexcept
+{
+    auto ite = find_first_significant_axis(first_from, last_from);
+
+    // Pack contiguous runs of axes
+    while(ite != last_from)
+    {
+        // Pack a single run of the layout
+        axis_descriptor packed;
+        ite = pack_layout_one(
+            first_from, last_from, 
+            ite,
+            packed, offset
         );
 
         // Write a new axis to the output

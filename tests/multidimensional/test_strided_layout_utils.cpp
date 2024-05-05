@@ -30,10 +30,19 @@
 
 #include <xmipp4/core/multidimensional/strided_layout_utils.hpp>
 
+#include <tuple>
 #include <vector>
-#include <random>
 
 using namespace xmipp4::multidimensional;
+
+XMIPP4_INLINE_CONSTEXPR
+bool lexicographic_axis_compare(const axis_descriptor &lhs, 
+                                const axis_descriptor &rhs) noexcept
+{
+    const auto lhs_tuple = std::make_tuple(lhs.get_extent(), lhs.get_stride());
+    const auto rhs_tuple = std::make_tuple(rhs.get_extent(), rhs.get_stride());
+    return lhs_tuple < rhs_tuple;
+}
 
 TEST_CASE("find max and min stride", "[memory_layout]")
 {
@@ -64,14 +73,9 @@ TEST_CASE("find first significant axis", "[memory_layout]")
         axis_descriptor(4, -2)
     };
 
-    std::mt19937 gen(0);
-
-    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-    for(std::size_t i = 0; i < n_iter; ++i)
+    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
     {
-        // Shuffle input
-        std::shuffle(layout.begin(), layout.end(), gen);
-
         auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
         REQUIRE( *ite == axis_descriptor(2, 1) );
     }
@@ -90,15 +94,9 @@ TEST_CASE("find next significant axis", "[memory_layout]")
         axis_descriptor(4, -2)
     };
 
-    std::mt19937 gen(0);
-
-    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-    for(std::size_t i = 0; i < n_iter; ++i)
+    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
     {
-        // Shuffle input
-        std::shuffle(layout.begin(), layout.end(), gen);
-
-        // Test
         auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
         REQUIRE( *ite == axis_descriptor(2, 1) );
         ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
@@ -134,14 +132,10 @@ TEST_CASE("pack layout", "[memory_layout]")
 
     std::vector<axis_descriptor> packed;
     std::ptrdiff_t offset;
-    std::mt19937 gen(0);
 
-    XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-    for(std::size_t i = 0; i < n_iter; ++i)
+    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
     {
-        // Shuffle input
-        std::shuffle(layout.begin(), layout.end(), gen);
-
         // Clear output
         packed.clear();
         offset = 0;
@@ -179,15 +173,9 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
 
     SECTION("contiguous")
     {
-        std::mt19937 gen(0);
-
-        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-        for(std::size_t i = 0; i < n_iter; ++i)
+        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
         {
-            // Shuffle input
-            std::shuffle(layout.begin(), layout.end(), gen);
-
-            // Test
             REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend()));
         }
     }
@@ -195,15 +183,9 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
     {
         layout[1] = axis_descriptor(1, 2);
 
-        std::mt19937 gen(0);
-
-        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-        for(std::size_t i = 0; i < n_iter; ++i)
+        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
         {
-            // Shuffle input
-            std::shuffle(layout.begin(), layout.end(), gen);
-
-            // Test
             REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
         }
     }
@@ -211,15 +193,9 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
     {
         layout[2] = axis_descriptor(2, -4);
 
-        std::mt19937 gen(0);
-
-        XMIPP4_CONST_CONSTEXPR std::size_t n_iter = 1024;
-        for(std::size_t i = 0; i < n_iter; ++i)
+        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
+        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
         {
-            // Shuffle input
-            std::shuffle(layout.begin(), layout.end(), gen);
-
-            // Test
             REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
         }
     }

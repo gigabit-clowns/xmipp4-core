@@ -191,6 +191,20 @@ bool is_packed(const axis_descriptor &major,
                const axis_descriptor &minor ) noexcept;
 
 /**
+ * @brief Check if a pair of axes is overlapping.
+ * 
+ * A pair of axes is overlapping if the width of the major axis
+ * is strictly greater than the stride of the minor axis.
+ * 
+ * @param minor Minor (slow) axis.
+ * @param major Major (fast) axis.
+ * @return bool True if the pair of axes is overlapping.
+ */
+XMIPP4_CONSTEXPR
+bool check_overlap(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept;
+
+/**
  * @brief Check if an axis is contiguous.
  * 
  * @param axis Axis to be checked.

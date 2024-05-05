@@ -149,6 +149,13 @@ bool is_packed(const axis_descriptor &major,
 }
 
 XMIPP4_INLINE_CONSTEXPR
+bool check_overlap(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept
+{
+    return major.get_width() > minor.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept
 {
     return axis.get_unsigned_stride() == 1;

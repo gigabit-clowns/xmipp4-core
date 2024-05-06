@@ -143,6 +143,16 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
 XMIPP4_CONSTEXPR
 axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
+
+/**
+ * @brief Compute the size of the buffer required to store the axis.
+ * 
+ * @param lhs The axis.
+ * @return std::size_t Size in elements.
+ */
+XMIPP4_CONSTEXPR 
+std::size_t get_axis_buffer_size(const axis_descriptor &axis) noexcept;
+
 /**
  * @brief Compare the absolute strides of a given pair of axes.
  * 

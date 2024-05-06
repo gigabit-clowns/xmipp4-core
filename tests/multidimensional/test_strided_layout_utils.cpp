@@ -237,6 +237,49 @@ TEST_CASE("compute contiguous axis strides", "[memory_layout]")
     }
 }
 
+TEST_CASE("compute layout buffer size" "memory_layout")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(2, -1),
+        axis_descriptor(4, 2),
+        axis_descriptor(2, 8),
+        axis_descriptor(4, -16),
+        axis_descriptor(10, 0),
+        axis_descriptor(1, -64),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, 128),
+        axis_descriptor(2, 0),
+    };
+
+    SECTION("normal")
+    {
+        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        REQUIRE(size == 512);
+    }
+
+    SECTION("non contiguous")
+    {
+        layout[1] = axis_descriptor(1, 2);
+        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        REQUIRE(size == 511); // Last element no longer required
+    }
+
+    SECTION("zero sized axis")
+    {
+        layout[0] = axis_descriptor(0, 1);
+        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        REQUIRE(size == 0);
+    }
+
+    SECTION("empty")
+    {
+        layout.clear();
+        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        REQUIRE(size == 1);
+    }
+}
+
 TEST_CASE("transpose layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {

@@ -121,6 +121,21 @@ axis_descriptor make_phantom_axis(std::size_t extent) noexcept
     return axis_descriptor(extent, 0);
 }
 
+XMIPP4_INLINE_CONSTEXPR
+std::size_t get_axis_buffer_size(const axis_descriptor &axis) noexcept
+{
+    std::size_t result = 0UL;
+    auto extent = axis.get_extent();
+    if (extent > 0)
+    {   
+        const auto stride = axis.get_unsigned_stride();
+        --extent;
+        result = 1UL + extent*stride;
+    }
+
+    return result;
+}
+
 XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_less(const axis_descriptor &lhs, 
                           const axis_descriptor &rhs ) noexcept

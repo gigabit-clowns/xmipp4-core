@@ -288,6 +288,32 @@ std::size_t compute_layout_volume(ForwardIt first,
     );
 }
 
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+std::size_t compute_layout_buffer_size(ForwardIt first,
+                                       ForwardIt last ) noexcept
+{
+    std::size_t result = 0;
+    for(; first != last; ++first)
+    {
+        auto extent = first->get_extent();
+        if (extent > 0)
+        {
+            const auto stride = first->get_unsigned_stride();
+            result += (extent-1)*stride;
+        }
+        else
+        {
+            // Zero found, no elements can be stored 
+            // in this layout.
+            result = 0;
+            break; 
+        }
+    }
+
+    // If no zero was found, add 1 to the result
+    return result + static_cast<std::size_t>(first==last);
+}
 
 template <typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 

@@ -219,8 +219,23 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt transpose_layout(BidirIt first_from,
  * @return std::size_t The volume of the layout
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 std::size_t compute_layout_volume(ForwardIt first,
-                                                         ForwardIt last ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 
+std::size_t compute_layout_volume(ForwardIt first,
+                                  ForwardIt last ) noexcept;
+
+/**
+ * @brief Computes the buffer size required to store a layout
+ * 
+ * @tparam ForwardIt Forward iterator
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return std::size_t The size of the buffer required to store the
+ * provided layout. In elements.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+std::size_t compute_layout_buffer_size(ForwardIt first,
+                                       ForwardIt last ) noexcept;
 
 /**
  * @brief Squeezes a layout

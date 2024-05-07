@@ -258,6 +258,18 @@ XMIPP4_CONSTEXPR
 bool is_significant(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis is repeating.
+ * 
+ * An axis is repeating if it has an extent greater than one
+ * and zero stride.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is repeating.
+ */
+XMIPP4_CONSTEXPR
+bool is_repeating(const axis_descriptor &axis) noexcept;
+
+/**
  * @brief Obtain the offset applied when reversing an axis.
  * 
  * If the axis is not reversed, this function returns true.

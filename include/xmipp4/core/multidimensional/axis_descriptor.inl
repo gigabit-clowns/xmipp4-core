@@ -194,7 +194,13 @@ bool is_reversed(const axis_descriptor &axis) noexcept
 XMIPP4_INLINE_CONSTEXPR
 bool is_significant(const axis_descriptor &axis) noexcept
 {
-    return axis.get_stride() != 0 && axis.get_extent() != 1;
+    return axis.get_extent() != 1 && axis.get_stride() != 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_repeating(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() > 1 && axis.get_stride() == 0;
 }
 
 XMIPP4_INLINE_CONSTEXPR

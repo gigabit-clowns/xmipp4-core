@@ -237,7 +237,7 @@ TEST_CASE("compute contiguous axis strides", "[memory_layout]")
     }
 }
 
-TEST_CASE("compute layout buffer size" "memory_layout")
+TEST_CASE("compute layout buffer size", "memory_layout")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 0),

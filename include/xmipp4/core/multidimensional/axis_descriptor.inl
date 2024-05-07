@@ -122,18 +122,27 @@ axis_descriptor make_phantom_axis(std::size_t extent) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-std::size_t get_axis_buffer_size(const axis_descriptor &axis) noexcept
+std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept
 {
-    std::size_t result = 0UL;
-    auto extent = axis.get_extent();
+    std::ptrdiff_t result = 0UL;
+    const auto extent = axis.get_extent();
     if (extent > 0)
     {   
         const auto stride = axis.get_unsigned_stride();
-        --extent;
-        result = 1UL + extent*stride;
+        result = (extent-1)*stride;
+    }
+    else
+    {
+        result = -1;
     }
 
     return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t get_axis_buffer_size(const axis_descriptor &axis) noexcept
+{
+    return 1 + get_axis_last_position(axis);
 }
 
 XMIPP4_INLINE_CONSTEXPR 

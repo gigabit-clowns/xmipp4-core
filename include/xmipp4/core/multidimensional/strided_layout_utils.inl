@@ -296,22 +296,22 @@ std::size_t compute_layout_buffer_size(ForwardIt first,
     std::size_t result = 0;
     for(; first != last; ++first)
     {
-        auto extent = first->get_extent();
-        if (extent > 0)
+        const auto last_position = get_axis_last_position(*first);
+        if (last_position >= 0)
         {
-            const auto stride = first->get_unsigned_stride();
-            result += (extent-1)*stride;
+            result += last_position;
         }
         else
         {
-            // Zero found, no elements can be stored 
+            // Zero sized axis found, no elements can be stored 
             // in this layout.
             result = 0;
-            break; 
+            break;
         }
     }
 
-    // If no zero was found, add 1 to the result
+    // If no zero sized axis was found (reached the end), 
+    // add 1 to the result
     return result + static_cast<std::size_t>(first==last);
 }
 

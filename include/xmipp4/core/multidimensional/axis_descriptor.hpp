@@ -145,9 +145,22 @@ axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
 
 /**
- * @brief Compute the size of the buffer required to store the axis.
+ * @brief Compute the last position referenced by an axis.
  * 
- * @param lhs The axis.
+ * This is equivalent to (extent-1)*abs(stride) when extent is not zero.
+ * If the axis has an extent of zero, -1 is returned.
+ * 
+ * @param axis The axis.
+ * @return std::ptrdiff_t Axis last position. -1 if the axis has a zero
+ * extent.
+ */
+XMIPP4_CONSTEXPR 
+std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Compute the size of the buffer required to store the axis' elements
+ * 
+ * @param axis The axis.
  * @return std::size_t Size in elements.
  */
 XMIPP4_CONSTEXPR 

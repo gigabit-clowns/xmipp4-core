@@ -217,6 +217,24 @@ bool check_squeeze(const axis_descriptor &axis) noexcept
     return axis.get_extent() == 1;
 }
 
+XMIPP4_CONSTEXPR
+bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
+{
+    bool result = true;
+
+    if(x.get_extent() != y.get_extent())
+    {
+        if(x.get_extent() == 1)
+            x = make_phantom_axis(y.get_extent());
+        else if(y.get_extent() == 1)
+            y = make_phantom_axis(x.get_extent());
+        else
+            result = false; // Unable to broadcast
+    }
+
+    return result;
+}
+
 
 
 template <typename I>

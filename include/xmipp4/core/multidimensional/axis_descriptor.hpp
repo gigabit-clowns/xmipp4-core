@@ -293,7 +293,27 @@ std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept;
 XMIPP4_CONSTEXPR 
 bool check_squeeze(const axis_descriptor &axis) noexcept;
 
-
+/**
+ * @brief Broadcast axis extents.
+ * 
+ * Broadcasting tries to match axis extents without altering the
+ * storage requirements. 
+ * 
+ * If both axes have the same extents nothing is modified and true 
+ * is returned.
+ * If axis extents mismatch and one of them has a extent of 1, it is 
+ * replaced with a phantom axis with the same extent as the other one
+ * and true is returned.
+ * Otherwise nothing can be performed to match axis extents and false 
+ * is returned.
+ * 
+ * @see make_phantom_axis
+ * @param x First axis to broadcast.
+ * @param y Second axis to broadcast.
+ * @return bool True when successful. False for failure.
+ */
+XMIPP4_CONSTEXPR
+bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

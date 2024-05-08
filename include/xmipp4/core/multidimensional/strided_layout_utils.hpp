@@ -278,6 +278,25 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt squeeze_layout(InputIt first_from,
                                                InputIt last_from,
                                                OutputIt first_to );
 
+/**
+ * @brief Broadcast two layouts to match their shapes.
+ * 
+ * @note Both layouts must have the same rank (number of axes).
+ * When broadcasting different sized layouts, the shortest one
+ * should be padded with phantom axes at the beginning before calling
+ * this function.
+ * @tparam ForwardIt1 Forward iterator.
+ * @tparam ForwardIt2 Forward iterator.
+ * @param first1 Iterator to the beginning of the first layout.
+ * @param first2 Iterator to the beginning of the second layout.
+ * @param n Rank of the layouts.
+ * @return bool True if successful, false otherwise. 
+ */
+template <typename ForwardIt1, typename ForwardIt2>
+XMIPP4_CONSTEXPR_CPP20 bool broadcast_layout(ForwardIt1 first1,
+                                             ForwardIt2 first2,
+                                             std::size_t n );
+
 } // namespace multidimensional
 } // namespace xmipp4
 

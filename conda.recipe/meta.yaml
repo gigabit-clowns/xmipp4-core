@@ -49,3 +49,7 @@ requirements:
 
 build:
   number: 0
+
+test:
+  commands:
+    - xmipp4-core_tests

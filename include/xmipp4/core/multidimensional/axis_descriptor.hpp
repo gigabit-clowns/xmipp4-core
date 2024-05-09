@@ -158,15 +158,6 @@ XMIPP4_CONSTEXPR
 std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
 
 /**
- * @brief Compute the size of the buffer required to store the axis' elements
- * 
- * @param axis The axis.
- * @return std::size_t Size in elements.
- */
-XMIPP4_CONSTEXPR 
-std::size_t get_axis_buffer_size(const axis_descriptor &axis) noexcept;
-
-/**
  * @brief Compare the absolute strides of a given pair of axes.
  * 
  * @param lhs Left hand side operand.
@@ -230,6 +221,9 @@ bool check_overlap(const axis_descriptor &major,
 /**
  * @brief Check if an axis is contiguous.
  * 
+ * An axis is contiguous if the magnitude of its stride
+ * is one.
+ * 
  * @param axis Axis to be checked.
  * @return bool True if the axis is contiguous.
  */
@@ -238,6 +232,8 @@ bool is_contiguous(const axis_descriptor &axis) noexcept;
 
 /**
  * @brief Check if an axis is reversed.
+ * 
+ * An axis is reversed if has negative stride.
  * 
  * @param axis Axis to be checked.
  * @return bool True if the axis is reversed.

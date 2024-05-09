@@ -332,7 +332,7 @@ TEST_CASE("squeeze layout", "[memory_layout]")
     }
 }
 
-TEST_CASE("broadcast layout", "[memory_layout]")
+TEST_CASE("broadcast layouts", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 0),
@@ -346,14 +346,14 @@ TEST_CASE("broadcast layout", "[memory_layout]")
 
     SECTION("itself")
     {
-        REQUIRE( broadcast_layout(layout.begin(), layout.begin(), layout.size()) );
+        REQUIRE( broadcast_layouts(layout.size(), layout.begin(), layout.begin()) );
     }
 
     SECTION("broadcasting axes")
     {
         auto layout2 = layout;
         layout2[3].set_extent(1);
-        REQUIRE( broadcast_layout(layout.begin(), layout2.begin(), layout.size()) );
+        REQUIRE( broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
         REQUIRE( layout2[3].get_extent() == 4 );
         REQUIRE( layout2[3].get_stride() == 0 );
     }
@@ -362,6 +362,6 @@ TEST_CASE("broadcast layout", "[memory_layout]")
     {
         auto layout2 = layout;
         layout2[3].set_extent(2);
-        REQUIRE( !broadcast_layout(layout.begin(), layout2.begin(), layout.size()) );
+        REQUIRE( !broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
     }
 }

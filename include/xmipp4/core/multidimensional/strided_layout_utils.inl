@@ -460,24 +460,21 @@ OutputIt apply_subscripts_to_layout(InputIt first,
     );
 }
 
-template <typename ForwardIt1, typename ForwardIt2>
+template <typename... ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool broadcast_layout(ForwardIt1 first1,
-                      ForwardIt2 first2,
-                      std::size_t n )
+bool broadcast_layouts(std::size_t rank,
+                       ForwardIt... firsts )
 {
     bool result = true;
 
-    for(std::size_t i = 0; i < n; ++i)
+    for(std::size_t i = 0; i < rank; ++i)
     {
-        if(!broadcast(*first1, *first2))
+        if(!broadcast((*(firsts++))...))
         {
+            // Failed to broadcast the current dimension
             result = false;
             break;
         }
-
-        ++first1;
-        ++first2;
     }
 
     return result;

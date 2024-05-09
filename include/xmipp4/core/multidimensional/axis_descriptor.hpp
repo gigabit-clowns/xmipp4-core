@@ -304,13 +304,13 @@ bool check_squeeze(const axis_descriptor &axis) noexcept;
  * Otherwise nothing can be performed to match axis extents and false 
  * is returned. In this case, axes are left in a valid but undefined state.
  * 
- * @tparam AxisDescriptor axis_descriptor types.
+ * @tparam AxisDescriptors axis_descriptor types.
  * @param descriptors Axis descriptors to be broadcasted
  * @return bool True when success, False otherwise.
  */
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_CONSTEXPR
-bool broadcast(AxisDescriptor&... descriptors) noexcept;
+bool broadcast(AxisDescriptors&... descriptors) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

@@ -248,23 +248,34 @@ bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
 }
 
 /// Broadcast N>2 axes.
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
 bool broadcast(axis_descriptor& first, 
                axis_descriptor& second,
-               AxisDescriptor&... others ) noexcept
+               axis_descriptor& third,
+               AxisDescriptors&... others ) noexcept
 {
-    // Try all combinations
-    return broadcast(first, second) && 
-           broadcast(first, others...) && 
-           broadcast(second, others...) ;
+    // This code recursively explores adjacent items in a ping-pong
+    // pattern, so that changes propagate back to the first element.
+    // For instance, when called with 4 arguments, it leads to the 
+    // comparing broadcast for the following combinations:
+    // (0, 1) (1, 2) (2, 3) (1, 2) (0, 1)
+
+    if(!broadcast(first, second)) // Forward propagate
+        return false;
+    if(!broadcast(second, third, others...)) // Recurse
+        return false;
+    if(!broadcast(first, second)) // Back propagate 
+        return false;
+
+    return true;
 }
 
 } // namespace detail
 
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast(AxisDescriptor&... axes) noexcept
+bool broadcast(AxisDescriptors&... axes) noexcept
 {
     return detail::broadcast(axes...);
 }

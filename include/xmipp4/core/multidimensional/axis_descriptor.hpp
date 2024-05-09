@@ -116,6 +116,8 @@ private:
 
 };
 
+XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+
 /**
  * @brief Create a contiguous axis_descriptor.
  * 
@@ -141,18 +143,206 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
 XMIPP4_CONSTEXPR
 axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
-XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
 
+/**
+ * @brief Compute the last position referenced by an axis.
+ * 
+ * This is equivalent to (extent-1)*abs(stride) when extent is not zero.
+ * If the axis has an extent of zero, -1 is returned.
+ * 
+ * @param axis The axis.
+ * @return std::ptrdiff_t Axis last position. -1 if the axis has a zero
+ * extent.
+ */
+XMIPP4_CONSTEXPR 
+std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
 
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is less than 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept;
 
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is equal to 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept;
+
+/**
+ * @brief Check if an axis has a non zero stride.
+ * 
+ * @param axis The axis to be checked.
+ * @return bool True if the axis has a non-zero stride.
+ */
+XMIPP4_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if a pair of axes is packed.
+ * 
+ * A pair of axes is packed if the width of the major axis
+ * is equal to the stride of the minor axis.
+ * 
+ * @param minor Minor (slow) axis.
+ * @param major Major (fast) axis.
+ * @return bool True if the pair of axes is packed.
+ */
+XMIPP4_CONSTEXPR
+bool is_packed(const axis_descriptor &major,
+               const axis_descriptor &minor ) noexcept;
+
+/**
+ * @brief Check if a pair of axes is overlapping.
+ * 
+ * A pair of axes is overlapping if the width of the major axis
+ * is strictly greater than the stride of the minor axis.
+ * 
+ * @param minor Minor (slow) axis.
+ * @param major Major (fast) axis.
+ * @return bool True if the pair of axes is overlapping.
+ */
+XMIPP4_CONSTEXPR
+bool check_overlap(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept;
+
+/**
+ * @brief Check if an axis is contiguous.
+ * 
+ * An axis is contiguous if the magnitude of its stride
+ * is one.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is contiguous.
+ */
+XMIPP4_CONSTEXPR
+bool is_contiguous(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis is reversed.
+ * 
+ * An axis is reversed if has negative stride.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is reversed.
+ */
+XMIPP4_CONSTEXPR
+bool is_reversed(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis is significant.
+ * 
+ * An axis is significant if it has a non-zero stride
+ * and an extent unequal to 1.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is significant.
+ */
+XMIPP4_CONSTEXPR
+bool is_significant(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis is repeating.
+ * 
+ * An axis is repeating if it has an extent greater than one
+ * and zero stride.
+ * 
+ * @param axis Axis to be checked.
+ * @return bool True if the axis is repeating.
+ */
+XMIPP4_CONSTEXPR
+bool is_repeating(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Obtain the offset applied when reversing an axis.
+ * 
+ * If the axis is not reversed, this function returns true.
+ * If the axis is reversed, this function returns (extent-1)*unsigned_stride
+ * of the axis.
+ * 
+ * @param axis Axis to be analyzed. 
+ * @return std::size_t The offset.
+*/
+XMIPP4_CONSTEXPR
+std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis can be squeezed
+ * 
+ * An axis can be squeezed only if it has a extent of 1
+ * 
+ * @param axis The axis to be checked
+ * @return bool True if the axis can be squeezed. False otherwise
+ */
+XMIPP4_CONSTEXPR 
+bool check_squeeze(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Broadcast axis extents.
+ * 
+ * Broadcasting tries to match axis extents without altering the
+ * storage requirements. 
+ * 
+ * If all axes have the same extents nothing is modified and true 
+ * is returned.
+ * If some axes mismatch the size of the rest but have an extent of 1,
+ * they are replaced with a phantom axis with the same extent as the other 
+ * ones and true is returned. For this to happen, there needs to be at
+ * least one axis with an extent different to 1.
+ * Otherwise nothing can be performed to match axis extents and false 
+ * is returned. In this case, axes are left in a valid but undefined state.
+ * 
+ * @tparam AxisDescriptor axis_descriptor types.
+ * @param descriptors Axis descriptors to be broadcasted
+ * @return bool True when success, False otherwise.
+ */
+template<typename... AxisDescriptor>
+XMIPP4_CONSTEXPR
+bool broadcast(AxisDescriptor&... descriptors) noexcept;
+
+/**
+ * @brief Apply an index to an axis descriptor to increment the offset
+ * 
+ * @tparam I Index type.
+ * @param desc Axis descriptor.
+ * @param index The index.
+ * @param offset Offset to be incremented.
+ */
 template <typename I>
 void apply_index(const axis_descriptor &desc,
                  I index,
                  std::ptrdiff_t &offset );
 
-template <typename Start, typename Stride, typename Stop>
+/**
+ * @brief Apply a slice to an axis descriptor.
+ * 
+ * When slicing an axis, an offset can be introduced to the
+ * current view. Additionally, axis' stride and extent may
+ * be modified.
+ * 
+ * @tparam Start Start type.
+ * @tparam Stop Stop type.
+ * @tparam Step Step type.
+ * @param desc Axis descriptor.
+ * @param s Slice to be applied.
+ * @param offset Offset to be incremented.
+ * @return axis_descriptor Sliced axis descriptor.
+ */
+template <typename Start, typename Stop, typename Step>
 axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stride, Stop> &s,
+                            const slice<Start, Stop, Step> &s,
                             std::ptrdiff_t &offset );
 
 } // namespace multidimensional

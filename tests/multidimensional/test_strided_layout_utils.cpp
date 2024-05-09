@@ -21,7 +21,7 @@
 /**
  * @file test_memory_layout.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for tensor/memory_layout.hpp
+ * @brief Tests for multidimensional/strided_layout_utils.hpp
  * @date 2023-09-25
  * 
  */

@@ -217,7 +217,25 @@ bool check_squeeze(const axis_descriptor &axis) noexcept
     return axis.get_extent() == 1;
 }
 
-XMIPP4_CONSTEXPR
+namespace detail
+{
+
+// No axis to broadcast. Always succeed.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast() noexcept
+{
+    return true;
+}
+
+// Single axis to broadcast. Always succeed.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(const axis_descriptor&) noexcept
+{
+    return true;
+}
+
+/// Broadcast a pair of axes.
+XMIPP4_INLINE_CONSTEXPR
 bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
 {
     bool result = true;
@@ -233,6 +251,28 @@ bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
     }
 
     return result;
+}
+
+/// Broadcast N>2 axes.
+template<typename... AxisDescriptor>
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(axis_descriptor& first, 
+               axis_descriptor& second,
+               AxisDescriptor&... others ) noexcept
+{
+    // Try all combinations
+    return broadcast(first, second) && 
+           broadcast(first, others...) && 
+           broadcast(second, others...) ;
+}
+
+} // namespace detail
+
+template<typename... AxisDescriptor>
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(AxisDescriptor&... axes) noexcept
+{
+    return detail::broadcast(axes...);
 }
 
 

@@ -299,21 +299,22 @@ bool check_squeeze(const axis_descriptor &axis) noexcept;
  * Broadcasting tries to match axis extents without altering the
  * storage requirements. 
  * 
- * If both axes have the same extents nothing is modified and true 
+ * If all axes have the same extents nothing is modified and true 
  * is returned.
- * If axis extents mismatch and one of them has a extent of 1, it is 
- * replaced with a phantom axis with the same extent as the other one
- * and true is returned.
+ * If some axes mismatch the size of the rest but have an extent of 1,
+ * they are replaced with a phantom axis with the same extent as the other 
+ * ones and true is returned. For this to happen, there needs to be at
+ * least one axis with an extent different to 1.
  * Otherwise nothing can be performed to match axis extents and false 
- * is returned.
+ * is returned. In this case, axes are left in a valid but undefined state.
  * 
- * @see make_phantom_axis
- * @param x First axis to broadcast.
- * @param y Second axis to broadcast.
- * @return bool True when successful. False for failure.
+ * @tparam AxisDescriptor axis_descriptor types.
+ * @param descriptors Axis descriptors to be broadcasted
+ * @return bool True when success, False otherwise.
  */
+template<typename... AxisDescriptor>
 XMIPP4_CONSTEXPR
-bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept;
+bool broadcast(AxisDescriptor&... descriptors) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

@@ -27,7 +27,9 @@
  */
 
 #include "axis_descriptor.hpp"
+
 #include "../index.hpp"
+#include "../math/abs.hpp"
 
 namespace xmipp4
 {
@@ -88,15 +90,21 @@ std::ptrdiff_t axis_descriptor::get_stride() const noexcept
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t axis_descriptor::get_unsigned_stride() const noexcept
 {
-    //FIXME Using a manual abs because std::abs is not constexpr. Use a proper abs function
-    const auto stride = get_stride();
-    return static_cast<std::size_t>(stride < 0 ? -stride : stride);
+    return math::abs(get_stride());
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t axis_descriptor::get_width() const noexcept
 {
     return get_unsigned_stride()*get_extent();
+}
+
+
+
+XMIPP4_INLINE_CONSTEXPR_CPP20
+void swap(axis_descriptor &x, axis_descriptor &y) noexcept
+{
+    x.swap(y);
 }
 
 
@@ -113,12 +121,152 @@ axis_descriptor make_phantom_axis(std::size_t extent) noexcept
     return axis_descriptor(extent, 0);
 }
 
-
-
-XMIPP4_INLINE_CONSTEXPR_CPP20
-void swap(axis_descriptor &x, axis_descriptor &y) noexcept
+XMIPP4_INLINE_CONSTEXPR
+std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept
 {
-    x.swap(y);
+    std::ptrdiff_t result = 0UL;
+    const auto extent = axis.get_extent();
+    if (extent > 0)
+    {   
+        const auto stride = axis.get_unsigned_stride();
+        result = (extent-1)*stride;
+    }
+    else
+    {
+        result = -1;
+    }
+
+    return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool check_nonzero_stride(const axis_descriptor &axis) noexcept
+{
+    return axis.get_stride() != 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_packed(const axis_descriptor &major,
+               const axis_descriptor &minor ) noexcept
+{
+    return major.get_width() == minor.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool check_overlap(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept
+{
+    return major.get_width() > minor.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_contiguous(const axis_descriptor &axis) noexcept
+{
+    return axis.get_unsigned_stride() == 1;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_reversed(const axis_descriptor &axis) noexcept
+{
+    return axis.get_stride() < 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_significant(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() != 1 && axis.get_stride() != 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_repeating(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() > 1 && axis.get_stride() == 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept
+{
+    const auto extent = axis.get_extent();
+    const auto stride = axis.get_stride();
+    return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool check_squeeze(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() == 1;
+}
+
+namespace detail
+{
+
+// No axis to broadcast. Always succeed.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast() noexcept
+{
+    return true;
+}
+
+// Single axis to broadcast. Always succeed.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(const axis_descriptor&) noexcept
+{
+    return true;
+}
+
+/// Broadcast a pair of axes.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
+{
+    bool result = true;
+
+    if(x.get_extent() != y.get_extent())
+    {
+        if(x.get_extent() == 1)
+            x = make_phantom_axis(y.get_extent());
+        else if(y.get_extent() == 1)
+            y = make_phantom_axis(x.get_extent());
+        else
+            result = false; // Unable to broadcast
+    }
+
+    return result;
+}
+
+/// Broadcast N>2 axes.
+template<typename... AxisDescriptor>
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(axis_descriptor& first, 
+               axis_descriptor& second,
+               AxisDescriptor&... others ) noexcept
+{
+    // Try all combinations
+    return broadcast(first, second) && 
+           broadcast(first, others...) && 
+           broadcast(second, others...) ;
+}
+
+} // namespace detail
+
+template<typename... AxisDescriptor>
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast(AxisDescriptor&... axes) noexcept
+{
+    return detail::broadcast(axes...);
 }
 
 
@@ -132,24 +280,25 @@ void apply_index(const axis_descriptor &desc,
     offset += sanitize_index(index, desc.get_extent()) * desc.get_stride();
 }
 
-template <typename Start, typename Stride, typename Stop>
+template <typename Start, typename Stop, typename Step>
 inline
 axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stride, Stop> &slc,
+                            const slice<Start, Stop, Step> &slc,
                             std::ptrdiff_t &offset )
 {
     std::size_t start;
     std::size_t stop;
-    std::ptrdiff_t stride;
+    std::ptrdiff_t step;
     sanitize_slice(
         slc, desc.get_extent(),
-        start, stop, stride
+        start, stop, step
     );
-    const auto pivot = compute_slice_pivot(start, stride);
-    const auto extent = compute_slice_size(start, stop, stride);
+    const auto pivot = compute_slice_pivot(start, step);
+    const auto extent = compute_slice_size(start, stop, step);
     
-    offset += desc.get_stride()*pivot;
-    stride *= desc.get_stride();
+    auto stride = desc.get_stride();
+    offset += stride*pivot;
+    stride *= step;
     return axis_descriptor(extent, stride);
 }
 

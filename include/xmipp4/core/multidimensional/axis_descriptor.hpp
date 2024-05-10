@@ -53,9 +53,10 @@ public:
      * @param extent Number of elements in the axis. Defaults to 0
      * @param stride Step between consecutive elements. In items. Defaults to 1
      */
-    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t extent = 0, 
-                                              std::ptrdiff_t stride = 1 ) noexcept;
+    XMIPP4_CONSTEXPR axis_descriptor(std::size_t extent, 
+                                     std::ptrdiff_t stride ) noexcept;
 
+    axis_descriptor() = default;
     axis_descriptor(const axis_descriptor& other) = default;
     axis_descriptor(axis_descriptor&& other) = default;
     ~axis_descriptor() = default;

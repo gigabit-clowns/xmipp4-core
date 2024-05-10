@@ -204,12 +204,12 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
-        axis_descriptor(2),
-        axis_descriptor(3),
-        axis_descriptor(8),
-        axis_descriptor(5),
-        axis_descriptor(1),
-        axis_descriptor(9)
+        make_contiguous_axis(2),
+        make_contiguous_axis(3),
+        make_contiguous_axis(8),
+        make_contiguous_axis(5),
+        make_contiguous_axis(1),
+        make_contiguous_axis(9)
     };
 
     SECTION("column major")

@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 3.12)
 find_package(Doxygen REQUIRED)
 
 doxygen_add_docs(
-    doxygen ALL
+    doxygen
     ${PROJECT_SOURCE_DIR}/include
     CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
 )

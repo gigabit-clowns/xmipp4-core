@@ -72,7 +72,8 @@ ForwardIt pack_layout_one(ForwardIt first,
     offset -= get_reverse_axis_offset(*first);
 
     auto prev = first;
-    do
+    first = std::find_if(std::next(first), last, is_significant);
+    while(first != last && is_regular(*prev, *first))
     {
         extent *= first->get_extent();
         offset -= get_reverse_axis_offset(*first);
@@ -80,7 +81,6 @@ ForwardIt pack_layout_one(ForwardIt first,
         prev = first;
         first = std::find_if(std::next(first), last, is_significant);
     }
-    while(first != last && is_regular(*prev, *first));
 
     packed = axis_descriptor(extent, stride);
     return first;
@@ -124,27 +124,28 @@ bool is_contiguous_layout(ForwardIt first, ForwardIt last)
     first = std::find_if(first, last, is_significant);
 
     bool result = true;
-    if (first != last)
+    if (first == last)
     {
-        if(is_contiguous(*first))
+        result = true;
+    }
+    else if(!is_contiguous(*first))
+    {
+        result = false;
+    }
+    else
+    {
+        auto prev = first;
+        first = std::find_if(std::next(first), last, is_significant);
+        while(first != last)
         {
-            auto prev = first;
-            first = std::find_if(std::next(first), last, is_significant);
-            while(first != last)
+            if (!is_regular(*prev, *first))
             {
-                if (!is_regular(*prev, *first))
-                {
-                    result = false;
-                    break;
-                }
-
-                prev = first;
-                first = std::find_if(std::next(first), last, is_significant);
+                result = false;
+                break;
             }
-        }
-        else
-        {
-            result = false;
+
+            prev = first;
+            first = std::find_if(std::next(first), last, is_significant);
         }
     }
 

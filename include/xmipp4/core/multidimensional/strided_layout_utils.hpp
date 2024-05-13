@@ -93,6 +93,32 @@ XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first,
                                                 row_major_tag );
 
 /**
+ * @brief Check if a layout has column major ordering.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return bool True if the layout has column major ordering.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first, 
+                                               ForwardIt last,
+                                               column_major_tag ) noexcept;
+
+/**
+ * @brief Check if a layout has row major ordering.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return bool True if the layout has row major ordering.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first, 
+                                               ForwardIt last,
+                                               row_major_tag ) noexcept;
+
+/**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
  * @note Input range must be ordered according to the criteria specified by

@@ -105,6 +105,63 @@ void sort_layout_inplace(BidirIt first,
     std::sort(first, last, compare_strides_less);
 }
 
+
+
+namespace detail
+{
+
+template<typename ForwardIt, typename Cmp>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool check_layout_order(ForwardIt first, 
+                        ForwardIt last,
+                        const Cmp &compare ) noexcept
+{
+    // Start at the first non-zero stride
+    first = std::find_if(first, last, is_significant);
+
+    bool result = true;
+    if (first != last)
+    {
+        auto prev = first;
+        first = std::find_if(std::next(first), last, is_significant);
+        while(first != last)
+        {
+            if(!compare(*first, *result))
+            {
+                result = false;
+                break;
+            }
+
+            first = std::find_if(std::next(first), last, is_significant);
+        }
+    }
+
+    return result;
+
+}
+
+} // namespace detail
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool check_layout_order(ForwardIt first, 
+                        ForwardIt last,
+                        column_major_tag ) noexcept
+{
+    return detail::check_layout_order(first, last, compare_strides_greater);
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool check_layout_order(ForwardIt first, 
+                        ForwardIt last,
+                        row_major_tag ) noexcept
+{
+    return detail::check_layout_order(first, last, compare_strides_less);
+}
+
+
+
 namespace detail
 {
 

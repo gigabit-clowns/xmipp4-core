@@ -77,7 +77,6 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first,
  * with the same criteria.
  * @tparam ForwardIt Forward iterator.
  * @tparam OutputIt Output iterator.
- * @tparam OrderTag Order tag.
  * @param first_from Iterator to the first input axis.
  * @param last_from Iterator to the past-the-end input axis.
  * @param first_to Iterator to the first output axis.
@@ -89,6 +88,28 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
                                             ForwardIt last_from,
                                             OutputIt first_to,
                                             std::ptrdiff_t &offset );
+
+/**
+ * @brief Merge contiguous axes of a layout to reduce it as much as possible.
+ * 
+ * This function operates in-place, meaning that axes are modified and a new
+ * range end is returned. Items contained between the new end and the previous
+ * end should be removed.
+ * 
+ * @note Input range must be sorted according to compare_strides_less criteria. 
+ * Otherwise behavior is undefined. The output range is guaranteed to be sorted 
+ * with the same criteria.
+ * @see pack_layout
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first input axis.
+ * @param last Iterator to the past-the-end input axis.
+ * @param offset Offset to be modified to account negative strides.
+ * @return ForwardIt Iterator to the new past-the-end axis.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 ForwardIt pack_layout_inplace(ForwardIt first, 
+                                                     ForwardIt last,
+                                                     std::ptrdiff_t &offset );
 
 /**
  * @brief Check if the layout is contiguous.

@@ -118,6 +118,17 @@ OutputIt pack_layout(ForwardIt first_from,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt pack_layout_inplace(ForwardIt first, 
+                              ForwardIt last,
+                              std::ptrdiff_t &offset )
+{
+    // It is safe to call the non-inplace version,
+    // as it will write to already read positions.
+    return pack_layout(first, last, first, offset);
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
 bool is_contiguous_layout(ForwardIt first, ForwardIt last)
 {
     // Start at a significant axis

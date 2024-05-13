@@ -66,18 +66,16 @@ TEST_CASE("pack layout", "[memory_layout]")
         axis_descriptor(2, 0),
     };
 
-    std::vector<axis_descriptor> packed;
+    std::vector<axis_descriptor> packed = layout;
     std::ptrdiff_t offset = 0;
-
-    // Prepare
-    std::sort(layout.begin(), layout.end(), compare_strides_less);
+    std::sort(packed.begin(), packed.end(), compare_strides_less);
 
     // Pack
-    pack_layout(
-        layout.cbegin(), layout.cend(),
-        std::back_inserter(packed),
+    auto ite = pack_layout_inplace(
+        packed.begin(), packed.end(),
         offset
     );
+    packed.erase(ite, packed.end());
 
     // Test
     REQUIRE( packed.size() == 3 );

@@ -152,6 +152,17 @@ XMIPP4_CONSTEXPR
 std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Compute the product of the stride magnitude and extent
+ * 
+ * @note This does not need to be confused with the number of elements 
+ * referenced by the axis. To do so, please refer to get_extent
+ * @param axis The axis.
+ * @return std::size_t The product of the stride magnitude and extent.
+ */
+XMIPP4_CONSTEXPR 
+std::size_t get_axis_length(const axis_descriptor &axis) noexcept;
+
+/**
  * @brief Compare the absolute strides of a given pair of axes.
  * 
  * @param lhs Left hand side operand.

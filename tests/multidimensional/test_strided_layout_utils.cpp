@@ -35,19 +35,35 @@
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("find max and min stride", "[memory_layout]")
+TEST_CASE("find major axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 8),
         axis_descriptor(2, 64),
         axis_descriptor(4, -128),
+        axis_descriptor(4, 0),
         axis_descriptor(4, 16),
         axis_descriptor(2, 1),
         axis_descriptor(4, -2)
     };
 
-    REQUIRE(find_max_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
-    REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
+    REQUIRE(find_major_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 5));
+}
+
+TEST_CASE("find minor axis", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 8),
+        axis_descriptor(2, 64),
+        axis_descriptor(1, 512),
+        axis_descriptor(4, -128),
+        axis_descriptor(4, 0),
+        axis_descriptor(4, 16),
+        axis_descriptor(2, 1),
+        axis_descriptor(4, -2)
+    };
+
+    REQUIRE(find_minor_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 3));
 }
 
 TEST_CASE("pack layout", "[memory_layout]")
@@ -68,21 +84,40 @@ TEST_CASE("pack layout", "[memory_layout]")
 
     std::vector<axis_descriptor> packed = layout;
     std::ptrdiff_t offset = 0;
-    std::sort(packed.begin(), packed.end(), compare_strides_less);
 
-    // Pack
-    auto ite = pack_layout_inplace(
-        packed.begin(), packed.end(),
-        offset
-    );
-    packed.erase(ite, packed.end());
+    SECTION("row major")
+    {
+        std::sort(packed.begin(), packed.end(), compare_strides_less);
+        auto ite = pack_layout_inplace(
+            packed.begin(), packed.end(),
+            offset,
+            row_major()
+        );
+        packed.erase(ite, packed.end());
 
-    // Test
-    REQUIRE( packed.size() == 3 );
-    REQUIRE( packed[0] == axis_descriptor(8, 2) );
-    REQUIRE( packed[1] == axis_descriptor(12, 32) );
-    REQUIRE( packed[2] == axis_descriptor(9, 512) );
-    REQUIRE( offset == -(8*512+3*32) );
+        REQUIRE( packed.size() == 3 );
+        REQUIRE( packed[0] == axis_descriptor(8, 2) );
+        REQUIRE( packed[1] == axis_descriptor(12, 32) );
+        REQUIRE( packed[2] == axis_descriptor(9, 512) );
+        REQUIRE( offset == -(8*512+3*32) );
+    }
+
+    SECTION("column major")
+    {
+        std::sort(packed.rbegin(), packed.rend(), compare_strides_less);
+        auto ite = pack_layout_inplace(
+            packed.begin(), packed.end(),
+            offset,
+            column_major()
+        );
+        packed.erase(ite, packed.end());
+
+        REQUIRE( packed.size() == 3 );
+        REQUIRE( packed[0] == axis_descriptor(9, 512) );
+        REQUIRE( packed[1] == axis_descriptor(12, 32) );
+        REQUIRE( packed[2] == axis_descriptor(8, 2) );
+        REQUIRE( offset == -(8*512+3*32) );
+    }
 }
 
 TEST_CASE("is contiguous layout", "[memory_layout]")
@@ -102,21 +137,18 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
 
     SECTION("contiguous")
     {
-        std::sort(layout.begin(), layout.end(), compare_strides_less);
         REQUIRE( is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
     SECTION("first axis has not unit stride")
     {
         layout[1] = axis_descriptor(1, 2);
 
-        std::sort(layout.begin(), layout.end(), compare_strides_less);
         REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
     SECTION("not packed")
     {
         layout[2] = axis_descriptor(2, -4);
 
-        std::sort(layout.begin(), layout.end(), compare_strides_less);
         REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
 }

@@ -40,25 +40,10 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
 /**
- * @brief Finds the axis with the largest stride magnitude.
+ * @brief Finds the significant axis with the smallest stride magnitude.
  * 
- * The axis with the largest stride is considered as the minor axis
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the largest stride magnitude
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_stride(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
- * @brief Finds the axis with the smallest stride magnitude.
- * 
- * The axis with the smallest stride is considered as the major axis
+ * If there are no significant axes in the range, last is returned.
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
@@ -66,56 +51,73 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_max_stride(ForwardIt first,
  * @return ForwardIt The axis with the smallest stride magnitude
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first, 
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_major_axis(ForwardIt first, 
                                                  ForwardIt last ) noexcept;
+
+/**
+ * @brief Finds the significant axis with the largest stride magnitude.
+ * 
+ * If there are no significant axes in the range, last is returned.
+ * 
+ * @tparam ForwardIt Forward iterator
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return ForwardIt The axis with the largest stride magnitude
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first, 
+                                                 ForwardIt last ) noexcept;
+
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
- * @note Input range must be sorted according to compare_strides_less criteria. 
- * Otherwise behavior is undefined. The output range is guaranteed to be sorted 
- * with the same criteria.
+ * @note Input range must be ordered according to the criteria specified by
+ * order. Otherwise behavior is undefined. Output will be ordered accordingly.
  * @tparam ForwardIt Forward iterator.
  * @tparam OutputIt Output iterator.
+ * @tparam OrderTag Order tag.
  * @param first_from Iterator to the first input axis.
  * @param last_from Iterator to the past-the-end input axis.
  * @param first_to Iterator to the first output axis.
  * @param offset Offset to be modified to account negative strides.
+ * @param order Ordering of the axes.
  * @return OutputIt Iterator to the past-the-end output axis.
  */
-template<typename ForwardIt, typename OutputIt>
+template<typename ForwardIt, typename OutputIt, typename OrderTag>
 XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
                                             ForwardIt last_from,
                                             OutputIt first_to,
-                                            std::ptrdiff_t &offset );
+                                            std::ptrdiff_t &offset,
+                                            OrderTag &&order );
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
- * This function operates in-place, meaning that axes are modified and a new
- * range end is returned. Items contained between the new end and the previous
- * end should be removed.
+ * This function operates in-place, meaning that axes are modified and the new
+ * past-the-end iterator is returned. Items contained between the new end 
+ * and the previous end should be removed.
  * 
- * @note Input range must be sorted according to compare_strides_less criteria. 
- * Otherwise behavior is undefined. The output range is guaranteed to be sorted 
- * with the same criteria.
+ * @note Input range must be ordered according to the criteria specified by
+ * order. Otherwise behavior is undefined. Output will be ordered accordingly.
  * @see pack_layout
  * @tparam ForwardIt Forward iterator.
+ * @tparam OrderTag Order tag.
  * @param first Iterator to the first input axis.
  * @param last Iterator to the past-the-end input axis.
  * @param offset Offset to be modified to account negative strides.
+ * @param order Ordering of the axes.
  * @return ForwardIt Iterator to the new past-the-end axis.
  */
-template<typename ForwardIt>
+template<typename ForwardIt, typename OrderTag>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt pack_layout_inplace(ForwardIt first, 
                                                      ForwardIt last,
-                                                     std::ptrdiff_t &offset );
+                                                     std::ptrdiff_t &offset,
+                                                     OrderTag &&order );
 
 /**
  * @brief Check if the layout is contiguous.
  * 
- * @note Input range must be sorted according to compare_strides_less criteria. 
- * Otherwise behavior is undefined.
  * @tparam ForwardIt Forward iterator.
  * @param first Iterator to the first axis of the layout.
  * @param last Iterator to the past-the-end axis of the layout.
@@ -209,6 +211,24 @@ XMIPP4_CONSTEXPR_CPP20
 std::size_t compute_layout_volume(ForwardIt first,
                                   ForwardIt last ) noexcept;
 
+/**
+ * @brief Computes the last position referenced by the layout.
+ * 
+ * The last position of a layout is the sum of all axes' last
+ * position if none of them is -1. If at least one of them equals
+ * -1, -1 will be returned to signal an empty array.
+ * 
+ * @see get_axis_last_position
+ * @tparam ForwardIt Forward iterator
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return std::ptrdiff_t. The last position referenced by the layout.
+ * -1 if the layout has zero elements.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+std::ptrdiff_t compute_layout_last_position(ForwardIt first,
+                                            ForwardIt last ) noexcept;
 /**
  * @brief Computes the buffer size required to store a layout
  * 

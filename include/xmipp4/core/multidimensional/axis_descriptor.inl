@@ -134,6 +134,12 @@ std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
+std::size_t get_axis_length(const axis_descriptor &axis) noexcept
+{
+    return axis.get_unsigned_stride()*axis.get_extent();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_less(const axis_descriptor &lhs, 
                           const axis_descriptor &rhs ) noexcept
 {

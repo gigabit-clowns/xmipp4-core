@@ -38,23 +38,49 @@ namespace multidimensional
 {
 
 template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_max_stride(ForwardIt first, ForwardIt last) noexcept
+XMIPP4_INLINE_CONSTEXPR_CPP20
+ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
 {
-    return std::max_element(
-        first, last, 
-        compare_strides_less
-    );
+    // Start at the first non-zero stride
+    first = std::find_if(first, last, is_significant);
+
+    ForwardIt result = first;
+    if (first != last)
+    {
+        first = std::find_if(std::next(first), last, is_significant);
+        while(first != last)
+        {
+            if(compare_strides_less(*first, *result))
+                result = first;
+
+            first = std::find_if(std::next(first), last, is_significant);
+        }
+    }
+
+    return result;
 }
 
 template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt find_minor_axis(ForwardIt first, ForwardIt last) noexcept
 {
-    return std::min_element(
-        first, last, 
-        compare_strides_less
-    );
+    // Start at the first non-zero stride
+    first = std::find_if(first, last, check_nonzero_stride);
+ 
+    ForwardIt result = first;
+    if (first != last)
+    {
+        first = std::find_if(std::next(first), last, is_significant);
+        while(first != last)
+        {
+            if(compare_strides_less(*result, *first))
+                result = first;
+
+            first = std::find_if(std::next(first), last, is_significant);
+        }
+    }
+
+    return result;
 }
 
 namespace detail
@@ -65,7 +91,35 @@ XMIPP4_INLINE_CONSTEXPR_CPP20
 ForwardIt pack_layout_one(ForwardIt first, 
                           ForwardIt last,
                           axis_descriptor &packed,
-                          std::ptrdiff_t &offset ) noexcept
+                          std::ptrdiff_t &offset,
+                          column_major_tag ) noexcept
+{
+    std::size_t extent = first->get_extent();
+    offset -= get_reverse_axis_offset(*first);
+
+    auto prev = first;
+    first = std::find_if(std::next(first), last, is_significant);
+    while(first != last && is_regular(*first, *prev))
+    {
+        extent *= first->get_extent();
+        offset -= get_reverse_axis_offset(*first);
+
+        prev = first;
+        first = std::find_if(std::next(first), last, is_significant);
+    }
+
+    const auto stride = prev->get_unsigned_stride();
+    packed = axis_descriptor(extent, stride);
+    return first;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt pack_layout_one(ForwardIt first, 
+                          ForwardIt last,
+                          axis_descriptor &packed,
+                          std::ptrdiff_t &offset,
+                          row_major_tag ) noexcept
 {
     std::size_t extent = first->get_extent();
     const auto stride = first->get_unsigned_stride();
@@ -88,12 +142,13 @@ ForwardIt pack_layout_one(ForwardIt first,
 
 } // namespace detail
 
-template<typename ForwardIt, typename OutputIt>
+template<typename ForwardIt, typename OutputIt, typename OrderTag>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
                      ForwardIt last_from,
                      OutputIt first_to,
-                     std::ptrdiff_t &offset )
+                     std::ptrdiff_t &offset,
+                     OrderTag &&order )
 {
     // Start at a significant axis
     first_from = std::find_if(first_from, last_from, is_significant);
@@ -105,7 +160,8 @@ OutputIt pack_layout(ForwardIt first_from,
         axis_descriptor packed;
         first_from = detail::pack_layout_one(
             first_from, last_from, 
-            packed, offset
+            packed, offset,
+            std::forward<OrderTag>(order)
         );
 
         // Write a new axis to the output
@@ -116,51 +172,31 @@ OutputIt pack_layout(ForwardIt first_from,
     return first_to;
 }
 
-template<typename ForwardIt>
+template<typename ForwardIt, typename OrderTag>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt pack_layout_inplace(ForwardIt first, 
                               ForwardIt last,
-                              std::ptrdiff_t &offset )
+                              std::ptrdiff_t &offset,
+                              OrderTag &&order )
 {
     // It is safe to call the non-inplace version,
     // as it will write to already read positions.
-    return pack_layout(first, last, first, offset);
+    return pack_layout(
+        first, last, 
+        first, 
+        offset, 
+        std::forward<OrderTag>(order)
+    );
 }
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 bool is_contiguous_layout(ForwardIt first, ForwardIt last)
 {
-    // Start at a significant axis
-    first = std::find_if(first, last, is_significant);
-
-    bool result = true;
-    if (first == last)
-    {
-        result = true;
-    }
-    else if(!is_contiguous(*first))
-    {
-        result = false;
-    }
-    else
-    {
-        auto prev = first;
-        first = std::find_if(std::next(first), last, is_significant);
-        while(first != last)
-        {
-            if (!is_regular(*prev, *first))
-            {
-                result = false;
-                break;
-            }
-
-            prev = first;
-            first = std::find_if(std::next(first), last, is_significant);
-        }
-    }
-
-    return result;
+    const auto slow_axis = find_minor_axis(first, last);
+    const auto expected_size = (slow_axis != last) ? get_axis_length(*slow_axis) : 1;
+    const auto size = compute_layout_buffer_size(first, last);
+    return size == expected_size;
 }
 
 template<typename ForwardIt>
@@ -244,11 +280,11 @@ std::size_t compute_layout_volume(ForwardIt first,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::size_t compute_layout_buffer_size(ForwardIt first,
-                                       ForwardIt last ) noexcept
+std::ptrdiff_t compute_layout_last_position(ForwardIt first,
+                                            ForwardIt last ) noexcept
 {
-    std::size_t result = 0;
-    for(; first != last; ++first)
+    std::ptrdiff_t result = 0;
+    while(first != last)
     {
         const auto last_position = get_axis_last_position(*first);
         if (last_position >= 0)
@@ -259,14 +295,22 @@ std::size_t compute_layout_buffer_size(ForwardIt first,
         {
             // Zero sized axis found, no elements can be stored 
             // in this layout.
-            result = 0;
+            result = -1;
             break;
         }
+
+        ++first;
     }
 
-    // If no zero sized axis was found (reached the end), 
-    // add 1 to the result
-    return result + static_cast<std::size_t>(first==last);
+    return result;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+std::size_t compute_layout_buffer_size(ForwardIt first,
+                                       ForwardIt last ) noexcept
+{
+    return compute_layout_last_position(first, last) + 1;
 }
 
 template <typename ForwardIt>

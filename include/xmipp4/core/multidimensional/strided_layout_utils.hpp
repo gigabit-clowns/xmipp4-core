@@ -123,23 +123,6 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
                                             std::ptrdiff_t &offset );
 
 /**
- * @brief Check if a layout is contiguous
- *
- * A layout is contiguous if elements are tightly packed in
- * memory
- *  
- * @tparam ForwardIt Forward iterator.
- * @tparam OrderTag Order tag.
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @param order Hint about the layout ordering
- * @return bool True if the layout is contiguous. False otherwise
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool is_contiguous_layout(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
  * @brief Fill the strides of a layout such that it is contiguous
  * in column major ordering
  * 
@@ -211,7 +194,7 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt transpose_layout(BidirIt first_from,
 /**
  * @brief Computes the volume of a layout
  * 
- * This is equivalent to the product of all its axis sizes
+ * This is equivalent to the product of all its axis extents
  * 
  * @tparam ForwardIt Forward iterator
  * @param first Iterator to the first element in the range
@@ -283,11 +266,11 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt squeeze_layout(InputIt first_from,
  * 
  * @note All layouts must have the same rank (number of axes).
  * When broadcasting different sized layouts, the short ones
- * should be padded with phantom axes at the beginning before
- * calling this function.
+ * should be padded with phantom axes of extent 1 at the beginning 
+ * before calling this function.
  * @tparam ForwardIt Forward iterators.
  * @param rank Rank of the layouts.
- * @param first Iterators to the beginning of the layouts.
+ * @param firsts Iterators to the beginning of the layouts.
  * @return bool True if successful, false otherwise. 
  */
 template <typename... ForwardIt>

@@ -156,51 +156,6 @@ TEST_CASE("pack layout", "[memory_layout]")
     }
 }
 
-TEST_CASE("is contiguous layout", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(2, -1),
-        axis_descriptor(4, 2),
-        axis_descriptor(2, 8),
-        axis_descriptor(4, -16),
-        axis_descriptor(10, 0),
-        axis_descriptor(1, -64),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(2, 0),
-    };
-
-    SECTION("contiguous")
-    {
-        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
-        {
-            REQUIRE(is_contiguous_layout(layout.cbegin(), layout.cend()));
-        }
-    }
-    SECTION("first axis has not unit stride")
-    {
-        layout[1] = axis_descriptor(1, 2);
-
-        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
-        {
-            REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
-        }
-    }
-    SECTION("not packed")
-    {
-        layout[2] = axis_descriptor(2, -4);
-
-        std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-        while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
-        {
-            REQUIRE(!is_contiguous_layout(layout.cbegin(), layout.cend()));
-        }
-    }
-}
-
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {

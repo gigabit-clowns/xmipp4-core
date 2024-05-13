@@ -177,40 +177,6 @@ OutputIt pack_layout(ForwardIt first_from,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_contiguous_layout(ForwardIt first, ForwardIt last) noexcept
-{
-    auto ite = find_first_significant_axis(first, last);
-
-    bool result = true;
-    if(ite != last)
-    {
-        if(!is_contiguous(*ite))
-        {
-            result = false;
-        }
-        else
-        {
-            auto prev = ite;
-            ite = find_next_significant_axis(ite, first, last);
-            while(ite != last)
-            {
-                if (!is_packed(*prev, *ite))
-                {
-                    result = false;
-                    break;
-                }
-
-                prev = ite;
-                ite = find_next_significant_axis(ite, first, last);
-            }
-        }
-    }
-
-    return result;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
 std::size_t compute_contiguous_axis_strides(ForwardIt first,
                                             ForwardIt last,
                                             column_major_tag) noexcept

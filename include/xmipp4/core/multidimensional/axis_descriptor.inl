@@ -93,12 +93,6 @@ std::size_t axis_descriptor::get_unsigned_stride() const noexcept
     return math::abs(get_stride());
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-std::size_t axis_descriptor::get_width() const noexcept
-{
-    return get_unsigned_stride()*get_extent();
-}
-
 
 
 XMIPP4_INLINE_CONSTEXPR_CPP20
@@ -157,20 +151,6 @@ XMIPP4_INLINE_CONSTEXPR
 bool check_nonzero_stride(const axis_descriptor &axis) noexcept
 {
     return axis.get_stride() != 0;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool is_packed(const axis_descriptor &major,
-               const axis_descriptor &minor ) noexcept
-{
-    return major.get_width() == minor.get_unsigned_stride();
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool check_overlap(const axis_descriptor &major,
-                   const axis_descriptor &minor ) noexcept
-{
-    return major.get_width() > minor.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR

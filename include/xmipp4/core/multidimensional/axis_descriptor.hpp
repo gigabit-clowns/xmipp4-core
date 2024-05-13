@@ -98,18 +98,11 @@ public:
     XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
 
     /**
-     * @brief Get the unsigned stride between consecutive elements
+     * @brief Get the stride magnitude.
      * 
      * @return std::size_t Step between consecutive elements. In items
      */
     XMIPP4_CONSTEXPR std::size_t get_unsigned_stride() const noexcept;
-
-    /**
-     * @brief Get the total size of the axis. In items
-     * 
-     * @return std::size_t Axis size. In items
-     */
-    XMIPP4_CONSTEXPR std::size_t get_width() const noexcept;
 
 private:
     std::size_t m_extent; ///< Number of elements
@@ -190,34 +183,6 @@ bool compare_strides_equal(const axis_descriptor &lhs,
  */
 XMIPP4_CONSTEXPR
 bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
-
-/**
- * @brief Check if a pair of axes is packed.
- * 
- * A pair of axes is packed if the width of the major axis
- * is equal to the stride of the minor axis.
- * 
- * @param minor Minor (slow) axis.
- * @param major Major (fast) axis.
- * @return bool True if the pair of axes is packed.
- */
-XMIPP4_CONSTEXPR
-bool is_packed(const axis_descriptor &major,
-               const axis_descriptor &minor ) noexcept;
-
-/**
- * @brief Check if a pair of axes is overlapping.
- * 
- * A pair of axes is overlapping if the width of the major axis
- * is strictly greater than the stride of the minor axis.
- * 
- * @param minor Minor (slow) axis.
- * @param major Major (fast) axis.
- * @return bool True if the pair of axes is overlapping.
- */
-XMIPP4_CONSTEXPR
-bool check_overlap(const axis_descriptor &major,
-                   const axis_descriptor &minor ) noexcept;
 
 /**
  * @brief Check if an axis is contiguous.

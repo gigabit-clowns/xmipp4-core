@@ -68,6 +68,29 @@ template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first, 
                                                  ForwardIt last ) noexcept;
 
+/**
+ * @brief Sort the layout so that it is column major.
+ * 
+ * @tparam BidirIt Bidirectional iterator.
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ */
+template<typename BidirIt>
+XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
+                                                BidirIt last,
+                                                column_major_tag );
+
+/**
+ * @brief Sort the layout so that it is row major.
+ * 
+ * @tparam BidirIt Bidirectional iterator.
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ */
+template<typename BidirIt>
+XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
+                                                BidirIt last,
+                                                row_major_tag );
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
@@ -179,7 +202,8 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt fill_shape_from_axes(InputIt first,
  * @param last Iterator to the past-the-end element in the range
  */
 template <typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 void transpose_layout(BidirIt first, BidirIt last) noexcept;
+XMIPP4_CONSTEXPR_CPP20 
+void transpose_layout_inplace(BidirIt first, BidirIt last) noexcept;
 
 /**
  * @brief Reverses the ordering of a layout out-of-place
@@ -259,7 +283,8 @@ std::size_t compute_layout_buffer_size(ForwardIt first,
  * @return ForwardIt Iterator to the new end of the range
  */
 template <typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt squeeze_layout(ForwardIt first, ForwardIt last) noexcept;
+XMIPP4_CONSTEXPR_CPP20 
+ForwardIt squeeze_layout_inplace(ForwardIt first, ForwardIt last) noexcept;
 
 /**
  * @brief Squeezes a layout out-of-place

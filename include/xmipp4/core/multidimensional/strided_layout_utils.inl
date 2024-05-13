@@ -37,9 +37,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-template<typename ForwardIt>
+namespace detail
+{
+
+template<typename ForwardIt, typename Cmp>
 XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
+ForwardIt find_significant_min_stride(ForwardIt first, 
+                                      ForwardIt last, 
+                                      const Cmp &compare )
 {
     // Start at the first non-zero stride
     first = std::find_if(first, last, is_significant);
@@ -50,7 +55,7 @@ ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
         first = std::find_if(std::next(first), last, is_significant);
         while(first != last)
         {
-            if(compare_strides_less(*first, *result))
+            if(compare(*first, *result))
                 result = first;
 
             first = std::find_if(std::next(first), last, is_significant);
@@ -60,27 +65,44 @@ ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
     return result;
 }
 
+} // namespace detail
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20
+ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
+{
+    return detail::find_significant_min_stride(
+        first, last,
+        compare_strides_less
+    );
+}
+
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt find_minor_axis(ForwardIt first, ForwardIt last) noexcept
 {
-    // Start at the first non-zero stride
-    first = std::find_if(first, last, check_nonzero_stride);
- 
-    ForwardIt result = first;
-    if (first != last)
-    {
-        first = std::find_if(std::next(first), last, is_significant);
-        while(first != last)
-        {
-            if(compare_strides_less(*result, *first))
-                result = first;
+    return detail::find_significant_min_stride(
+        first, last,
+        compare_strides_greater
+    );
+}
 
-            first = std::find_if(std::next(first), last, is_significant);
-        }
-    }
+template<typename BidirIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+void sort_layout_inplace(BidirIt first, 
+                         BidirIt last,
+                         column_major_tag )
+{
+    std::sort(first, last, compare_strides_greater);
+}
 
-    return result;
+template<typename BidirIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+void sort_layout_inplace(BidirIt first, 
+                         BidirIt last,
+                         row_major_tag )
+{
+    std::sort(first, last, compare_strides_less);
 }
 
 namespace detail
@@ -247,7 +269,7 @@ OutputIt fill_shape_from_axes(InputIt first,
 
 template <typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-void transpose_layout(BidirIt first, BidirIt last) noexcept
+void transpose_layout_inplace(BidirIt first, BidirIt last) noexcept
 {
     std::reverse(first, last);
 }
@@ -315,7 +337,7 @@ std::size_t compute_layout_buffer_size(ForwardIt first,
 
 template <typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt squeeze_layout(ForwardIt first, ForwardIt last) noexcept
+ForwardIt squeeze_layout_inplace(ForwardIt first, ForwardIt last) noexcept
 {
     return std::remove_if(
         first, last,
@@ -336,6 +358,25 @@ OutputIt squeeze_layout(InputIt first_from,
     );
 }
 
+template <typename... ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool broadcast_layouts(std::size_t rank,
+                       ForwardIt... firsts )
+{
+    bool result = true;
+
+    for(std::size_t i = 0; i < rank; ++i)
+    {
+        if(!broadcast((*(firsts++))...))
+        {
+            // Failed to broadcast the current dimension
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+}
 
 namespace detail
 {
@@ -456,26 +497,6 @@ OutputIt apply_subscripts_to_layout(InputIt first,
         subscripts, 
         offset
     );
-}
-
-template <typename... ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool broadcast_layouts(std::size_t rank,
-                       ForwardIt... firsts )
-{
-    bool result = true;
-
-    for(std::size_t i = 0; i < rank; ++i)
-    {
-        if(!broadcast((*(firsts++))...))
-        {
-            // Failed to broadcast the current dimension
-            result = false;
-            break;
-        }
-    }
-
-    return result;
 }
 
 } // namespace multidimensional

@@ -250,7 +250,7 @@ TEST_CASE("transpose layout", "[memory_layout]")
     REQUIRE(std::equal(layout.crbegin(), layout.crend(), transposed_layout.cbegin(), transposed_layout.cend()));
 
     // Transpose the layout in-place
-    transpose_layout(layout.begin(), layout.end());
+    transpose_layout_inplace(layout.begin(), layout.end());
     REQUIRE(std::equal(layout.cbegin(), layout.cend(), transposed_layout.cbegin(), transposed_layout.cend()));
 }
 
@@ -272,14 +272,14 @@ TEST_CASE("squeeze layout", "[memory_layout]")
             axis_descriptor(4, 16),
 
         };
-        layout.erase(squeeze_layout(layout.begin(), layout.end()), layout.end());
+        layout.erase(squeeze_layout_inplace(layout.begin(), layout.end()), layout.end());
         REQUIRE(layout == squeezed_layout);
     }
     SECTION("out of place")
     {
         std::vector<axis_descriptor> squeezed_layout;
         squeeze_layout(layout.cbegin(), layout.cend(), std::back_inserter(squeezed_layout));
-        layout.erase(squeeze_layout(layout.begin(), layout.end()), layout.end());
+        layout.erase(squeeze_layout_inplace(layout.begin(), layout.end()), layout.end());
         REQUIRE(layout == squeezed_layout);
     }
 }

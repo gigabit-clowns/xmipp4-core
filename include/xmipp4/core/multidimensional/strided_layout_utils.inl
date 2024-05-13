@@ -37,8 +37,19 @@ namespace xmipp4
 namespace multidimensional
 {
 
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20
+ForwardIt find_first_significant_axis(ForwardIt first, 
+                                      ForwardIt last )
+{
+    return std::find_if(first, last, is_significant);
+}
+
+
+
 namespace detail
 {
+
 
 template<typename ForwardIt, typename Cmp>
 XMIPP4_INLINE_CONSTEXPR_CPP20
@@ -47,18 +58,18 @@ ForwardIt find_significant_min_stride(ForwardIt first,
                                       const Cmp &compare )
 {
     // Start at the first non-zero stride
-    first = std::find_if(first, last, is_significant);
+    first = find_first_significant_axis(first, last);
 
     ForwardIt result = first;
     if (first != last)
     {
-        first = std::find_if(std::next(first), last, is_significant);
+        first = find_first_significant_axis(std::next(first), last);
         while(first != last)
         {
             if(compare(*first, *result))
                 result = first;
 
-            first = std::find_if(std::next(first), last, is_significant);
+            first = find_first_significant_axis(std::next(first), last);
         }
     }
 
@@ -117,22 +128,23 @@ bool check_layout_order(ForwardIt first,
                         const Cmp &compare ) noexcept
 {
     // Start at the first non-zero stride
-    first = std::find_if(first, last, is_significant);
+    first = find_first_significant_axis(first, last);
 
     bool result = true;
     if (first != last)
     {
         auto prev = first;
-        first = std::find_if(std::next(first), last, is_significant);
+        first = find_first_significant_axis(std::next(first), last);
         while(first != last)
         {
-            if(!compare(*first, *result))
+            if(!compare(*prev, *first))
             {
                 result = false;
                 break;
             }
 
-            first = std::find_if(std::next(first), last, is_significant);
+            prev = first;
+            first = find_first_significant_axis(std::next(first), last);
         }
     }
 
@@ -177,14 +189,14 @@ ForwardIt pack_layout_one(ForwardIt first,
     offset -= get_reverse_axis_offset(*first);
 
     auto prev = first;
-    first = std::find_if(std::next(first), last, is_significant);
+    first = find_first_significant_axis(std::next(first), last);
     while(first != last && is_regular(*first, *prev))
     {
         extent *= first->get_extent();
         offset -= get_reverse_axis_offset(*first);
 
         prev = first;
-        first = std::find_if(std::next(first), last, is_significant);
+        first = find_first_significant_axis(std::next(first), last);
     }
 
     const auto stride = prev->get_unsigned_stride();
@@ -205,14 +217,14 @@ ForwardIt pack_layout_one(ForwardIt first,
     offset -= get_reverse_axis_offset(*first);
 
     auto prev = first;
-    first = std::find_if(std::next(first), last, is_significant);
+    first = find_first_significant_axis(std::next(first), last);
     while(first != last && is_regular(*prev, *first))
     {
         extent *= first->get_extent();
         offset -= get_reverse_axis_offset(*first);
 
         prev = first;
-        first = std::find_if(std::next(first), last, is_significant);
+        first = find_first_significant_axis(std::next(first), last);
     }
 
     packed = axis_descriptor(extent, stride);
@@ -230,7 +242,7 @@ OutputIt pack_layout(ForwardIt first_from,
                      OrderTag &&order )
 {
     // Start at a significant axis
-    first_from = std::find_if(first_from, last_from, is_significant);
+    first_from = find_first_significant_axis(first_from, last_from);
 
     // Pack contiguous runs of axes
     while(first_from != last_from)

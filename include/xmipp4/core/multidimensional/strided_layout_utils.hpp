@@ -40,15 +40,32 @@ namespace xmipp4
 {
 namespace multidimensional
 {
+
+/**
+ * @brief Find the first significant.
+ * 
+ * Finds the first item in the range [first, last) where is_significant
+ * returns true. If none is found, last is returned.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
+ * @return ForwardIt Iterator to the first significant axis.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+ForwardIt find_first_significant_axis(ForwardIt first, 
+                                      ForwardIt last );
+
 /**
  * @brief Finds the significant axis with the smallest stride magnitude.
  * 
  * If there are no significant axes in the range, last is returned.
  * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the smallest stride magnitude
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
+ * @return ForwardIt The axis with the smallest stride magnitude.
  */
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt find_major_axis(ForwardIt first, 
@@ -59,10 +76,10 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_major_axis(ForwardIt first,
  * 
  * If there are no significant axes in the range, last is returned.
  * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return ForwardIt The axis with the largest stride magnitude
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
+ * @return ForwardIt The axis with the largest stride magnitude.
  */
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first, 
@@ -72,8 +89,8 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first,
  * @brief Sort the layout so that it is column major.
  * 
  * @tparam BidirIt Bidirectional iterator.
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
  */
 template<typename BidirIt>
 XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
@@ -84,8 +101,8 @@ XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first,
  * @brief Sort the layout so that it is row major.
  * 
  * @tparam BidirIt Bidirectional iterator.
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
  */
 template<typename BidirIt>
 XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
@@ -96,8 +113,8 @@ XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first,
  * @brief Check if a layout has column major ordering.
  * 
  * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
  * @return bool True if the layout has column major ordering.
  */
 template<typename ForwardIt>
@@ -109,8 +126,8 @@ XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first,
  * @brief Check if a layout has row major ordering.
  * 
  * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
  * @return bool True if the layout has row major ordering.
  */
 template<typename ForwardIt>

@@ -35,6 +35,18 @@
 
 using namespace xmipp4::multidimensional;
 
+TEST_CASE("find first significant axis", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(4, 0),
+        axis_descriptor(1, 2),
+        axis_descriptor(3, -2),
+        axis_descriptor(2, 1),
+    };
+
+    REQUIRE(find_first_significant_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
+}
+
 TEST_CASE("find major axis", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
@@ -64,6 +76,61 @@ TEST_CASE("find minor axis", "[memory_layout]")
     };
 
     REQUIRE(find_minor_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 3));
+}
+
+TEST_CASE("sort layout", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(1, 2),
+        axis_descriptor(4, 0),
+        axis_descriptor(1, 512),
+        axis_descriptor(2, 1),
+        axis_descriptor(2, 8),
+        axis_descriptor(4, 0),
+        axis_descriptor(4, -2),
+        axis_descriptor(4, -128),
+        axis_descriptor(2, 64),
+        axis_descriptor(3, 0),
+    };
+
+    SECTION ("column major")
+    {
+        REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), column_major()) );
+        sort_layout_inplace(layout.begin(), layout.end(), column_major());
+        REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), column_major()) );
+    }
+
+    SECTION ("row major")
+    {
+        REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
+        sort_layout_inplace(layout.begin(), layout.end(), row_major());
+        REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
+    }
+}
+
+TEST_CASE("check layout order", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 1),
+        axis_descriptor(1, 2),
+        axis_descriptor(4, -2),
+        axis_descriptor(1, 2),
+        axis_descriptor(4, 0),
+        axis_descriptor(2, 8),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, 0),
+        axis_descriptor(4, -128),
+        axis_descriptor(3, 0),
+        axis_descriptor(1, 512),
+    };
+
+    REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
+    REQUIRE( check_layout_order(layout.crbegin(), layout.crend(), column_major()) );
+
+    std::swap(layout[0], layout[2]);
+
+    REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
+    REQUIRE( !check_layout_order(layout.crbegin(), layout.crend(), column_major()) );
 }
 
 TEST_CASE("pack layout", "[memory_layout]")

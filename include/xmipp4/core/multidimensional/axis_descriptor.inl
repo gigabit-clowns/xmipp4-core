@@ -93,12 +93,6 @@ std::size_t axis_descriptor::get_unsigned_stride() const noexcept
     return math::abs(get_stride());
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-std::size_t axis_descriptor::get_width() const noexcept
-{
-    return get_unsigned_stride()*get_extent();
-}
-
 
 
 XMIPP4_INLINE_CONSTEXPR_CPP20
@@ -140,10 +134,9 @@ std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-bool compare_strides_less(const axis_descriptor &lhs, 
-                          const axis_descriptor &rhs ) noexcept
+std::size_t get_axis_length(const axis_descriptor &axis) noexcept
 {
-    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
+    return axis.get_unsigned_stride()*axis.get_extent();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -153,6 +146,20 @@ bool compare_strides_equal(const axis_descriptor &lhs,
     return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
 }
 
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_less(const axis_descriptor &lhs, 
+                          const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_greater(const axis_descriptor &lhs, 
+                             const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() > rhs.get_unsigned_stride();
+}
+
 XMIPP4_INLINE_CONSTEXPR
 bool check_nonzero_stride(const axis_descriptor &axis) noexcept
 {
@@ -160,23 +167,17 @@ bool check_nonzero_stride(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool is_packed(const axis_descriptor &major,
-               const axis_descriptor &minor ) noexcept
-{
-    return major.get_width() == minor.get_unsigned_stride();
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool check_overlap(const axis_descriptor &major,
-                   const axis_descriptor &minor ) noexcept
-{
-    return major.get_width() > minor.get_unsigned_stride();
-}
-
-XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept
 {
     return axis.get_unsigned_stride() == 1;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_regular(const axis_descriptor &major,
+                const axis_descriptor &minor ) noexcept
+{
+    const auto expected = major.get_unsigned_stride()*major.get_extent();
+    return expected == minor.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR
@@ -248,23 +249,34 @@ bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
 }
 
 /// Broadcast N>2 axes.
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
 bool broadcast(axis_descriptor& first, 
                axis_descriptor& second,
-               AxisDescriptor&... others ) noexcept
+               axis_descriptor& third,
+               AxisDescriptors&... others ) noexcept
 {
-    // Try all combinations
-    return broadcast(first, second) && 
-           broadcast(first, others...) && 
-           broadcast(second, others...) ;
+    // This code recursively explores adjacent items in a ping-pong
+    // pattern, so that changes propagate back to the first element.
+    // For instance, when called with 4 arguments, it leads to the 
+    // comparing broadcast for the following combinations:
+    // (0, 1) (1, 2) (2, 3) (1, 2) (0, 1)
+
+    if(!broadcast(first, second)) // Forward propagate
+        return false;
+    if(!broadcast(second, third, others...)) // Recurse
+        return false;
+    if(!broadcast(first, second)) // Back propagate 
+        return false;
+
+    return true;
 }
 
 } // namespace detail
 
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast(AxisDescriptor&... axes) noexcept
+bool broadcast(AxisDescriptors&... axes) noexcept
 {
     return detail::broadcast(axes...);
 }

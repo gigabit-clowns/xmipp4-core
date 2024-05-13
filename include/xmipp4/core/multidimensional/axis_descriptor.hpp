@@ -167,6 +167,18 @@ std::size_t get_axis_length(const axis_descriptor &axis) noexcept;
  * 
  * @param lhs Left hand side operand.
  * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is equal to 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept;
+
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
  * @return bool True if left hand side's absolute stride is less than 
  * right hand side's stride.
  */
@@ -179,12 +191,12 @@ bool compare_strides_less(const axis_descriptor &lhs,
  * 
  * @param lhs Left hand side operand.
  * @param rhs Right hand side operand.
- * @return bool True if left hand side's absolute stride is equal to 
+ * @return bool True if left hand side's absolute stride is greater than 
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept;
+bool compare_strides_greater(const axis_descriptor &lhs, 
+                             const axis_descriptor &rhs ) noexcept;
 
 /**
  * @brief Check if an axis has a non zero stride.

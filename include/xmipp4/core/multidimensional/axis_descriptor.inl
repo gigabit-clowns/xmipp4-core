@@ -140,6 +140,13 @@ std::size_t get_axis_length(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept
+{
+    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_less(const axis_descriptor &lhs, 
                           const axis_descriptor &rhs ) noexcept
 {
@@ -147,10 +154,10 @@ bool compare_strides_less(const axis_descriptor &lhs,
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept
+bool compare_strides_greater(const axis_descriptor &lhs, 
+                             const axis_descriptor &rhs ) noexcept
 {
-    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
+    return lhs.get_unsigned_stride() > rhs.get_unsigned_stride();
 }
 
 XMIPP4_INLINE_CONSTEXPR

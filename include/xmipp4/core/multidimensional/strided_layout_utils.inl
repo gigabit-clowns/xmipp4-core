@@ -57,63 +57,6 @@ ForwardIt find_min_stride(ForwardIt first, ForwardIt last) noexcept
     );
 }
 
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_first_significant_axis(ForwardIt first, ForwardIt last) noexcept
-{
-    auto result = std::find_if(
-        first, last,
-        is_significant
-    );
-
-    if(result != last)
-    {
-        for(auto ite = std::next(result); ite != last; ++ite)
-        {
-            if(is_significant(*ite) &&
-               compare_strides_less(*ite, *result) )
-            {
-                result = ite;
-            }
-        }
-    }
-
-    return result;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_next_significant_axis(ForwardIt current,
-                                     ForwardIt first,
-                                     ForwardIt last ) noexcept
-{
-    // Find the first stride greater than current one
-    auto result = std::find_if(
-        first, last,
-        [current] (const axis_descriptor &desc)
-        {
-            return !check_squeeze(desc) && compare_strides_less(*current, desc);
-        }
-    );
-
-    // Try to minimize the stride
-    if (result != last)
-    {
-        for(auto ite = std::next(result); ite != last; ++ite)
-        {
-            // current < first < result
-            if (!check_squeeze(*ite) &&
-                compare_strides_less(*current, *ite) &&
-                compare_strides_less(*ite, *result) )
-            {
-                result = ite;
-            }
-        }
-    }
-
-    return result;
-}
-
 namespace detail
 {
 
@@ -121,28 +64,26 @@ template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt pack_layout_one(ForwardIt first, 
                           ForwardIt last,
-                          ForwardIt current,
                           axis_descriptor &packed,
                           std::ptrdiff_t &offset ) noexcept
 {
-    std::size_t extent = current->get_extent();
-    const auto stride = current->get_unsigned_stride();
-    offset -= get_reverse_axis_offset(*current);
+    std::size_t extent = first->get_extent();
+    const auto stride = first->get_unsigned_stride();
+    offset -= get_reverse_axis_offset(*first);
 
-    auto prev = current;
-    current = find_next_significant_axis(current, first, last);
-    while(current != last && is_packed(*prev, *current))
+    auto prev = first;
+    do
     {
-        extent *= current->get_extent();
-        offset -= get_reverse_axis_offset(*current);
+        extent *= first->get_extent();
+        offset -= get_reverse_axis_offset(*first);
 
-        prev = current;
-        current = find_next_significant_axis(current, first, last);
+        prev = first;
+        first = std::find_if(std::next(first), last, is_significant);
     }
+    while(first != last && is_regular(*prev, *first));
 
     packed = axis_descriptor(extent, stride);
-
-    return current;
+    return first;
 }
 
 } // namespace detail
@@ -154,16 +95,16 @@ OutputIt pack_layout(ForwardIt first_from,
                      OutputIt first_to,
                      std::ptrdiff_t &offset )
 {
-    auto ite = find_first_significant_axis(first_from, last_from);
+    // Start at a significant axis
+    first_from = std::find_if(first_from, last_from, is_significant);
 
     // Pack contiguous runs of axes
-    while(ite != last_from)
+    while(first_from != last_from)
     {
         // Pack a single run of the layout
         axis_descriptor packed;
-        ite = detail::pack_layout_one(
+        first_from = detail::pack_layout_one(
             first_from, last_from, 
-            ite,
             packed, offset
         );
 
@@ -173,6 +114,41 @@ OutputIt pack_layout(ForwardIt first_from,
     }
 
     return first_to;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+bool is_contiguous_layout(ForwardIt first, ForwardIt last)
+{
+    // Start at a significant axis
+    first = std::find_if(first, last, is_significant);
+
+    bool result = true;
+    if (first != last)
+    {
+        if(is_contiguous(*first))
+        {
+            auto prev = first;
+            first = std::find_if(std::next(first), last, is_significant);
+            while(first != last)
+            {
+                if (!is_regular(*prev, *first))
+                {
+                    result = false;
+                    break;
+                }
+
+                prev = first;
+                first = std::find_if(std::next(first), last, is_significant);
+            }
+        }
+        else
+        {
+            result = false;
+        }
+    }
+
+    return result;
 }
 
 template<typename ForwardIt>

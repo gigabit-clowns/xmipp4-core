@@ -160,6 +160,14 @@ bool is_contiguous(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
+bool is_regular(const axis_descriptor &major,
+                const axis_descriptor &minor ) noexcept
+{
+    const auto expected = major.get_unsigned_stride()*major.get_extent();
+    return expected == minor.get_unsigned_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
 bool is_reversed(const axis_descriptor &axis) noexcept
 {
     return axis.get_stride() < 0;

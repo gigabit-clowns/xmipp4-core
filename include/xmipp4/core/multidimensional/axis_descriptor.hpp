@@ -197,6 +197,20 @@ XMIPP4_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis pair is regular.
+ * 
+ * A pair of axes is regular if abs(stride)*extent of the
+ * major axis is equal to the abs(stride) of the minor axis.
+ * 
+ * @param major Fast axis (smallest stride).
+ * @param minor Slow axis (largest stride).
+ * @return bool True if the axes are regular.
+ */
+XMIPP4_CONSTEXPR
+bool is_regular(const axis_descriptor &major,
+                const axis_descriptor &minor ) noexcept;
+
+/**
  * @brief Check if an axis is reversed.
  * 
  * An axis is reversed if has negative stride.

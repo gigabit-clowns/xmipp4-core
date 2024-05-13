@@ -70,43 +70,11 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_min_stride(ForwardIt first,
                                                  ForwardIt last ) noexcept;
 
 /**
- * @brief Find the first significant axis in succession
- * 
- * The first axis is the significant axis with the smallest magnitude.
- * 
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element
- * @param last Iterator to the past-the-end element.
- * @return ForwardIt First axis.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_first_significant_axis(ForwardIt first,
-                                                             ForwardIt last ) noexcept;
-
-/**
- * @brief Find the next significant axis in succession.
- * 
- * The next axis is the axis which has the smallest stride magnitude but 
- * greater than the current one's. If none is found, last is returned.
- * 
- * @note This method has linear complexity. Repeatedly using it to iterate
- * over a range will lead to quadratic complexity. Only use it for small ranges.
- * Otherwise, consider sorting the range first and use specialized methods.
- * @tparam ForwardIt 
- * @param current Current iterator between [first, last). Note that it must be 
- * dereferenceable.
- * @param first First iterator.
- * @param last Past-the-end iterator.
- * @return ForwardIt Next axis in succession.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_next_significant_axis(ForwardIt current,
-                                                            ForwardIt first,
-                                                            ForwardIt last ) noexcept;
-
-/**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
+ * @note Input range must be sorted according to compare_strides_less criteria. 
+ * Otherwise behavior is undefined. The output range is guaranteed to be sorted 
+ * with the same criteria.
  * @tparam ForwardIt Forward iterator.
  * @tparam OutputIt Output iterator.
  * @tparam OrderTag Order tag.
@@ -121,6 +89,20 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
                                             ForwardIt last_from,
                                             OutputIt first_to,
                                             std::ptrdiff_t &offset );
+
+/**
+ * @brief Check if the layout is contiguous.
+ * 
+ * @note Input range must be sorted according to compare_strides_less criteria. 
+ * Otherwise behavior is undefined.
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first axis of the layout.
+ * @param last Iterator to the past-the-end axis of the layout.
+ * @return bool True if the layout is contiguous.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+bool is_contiguous_layout(ForwardIt first, ForwardIt last);
 
 /**
  * @brief Fill the strides of a layout such that it is contiguous

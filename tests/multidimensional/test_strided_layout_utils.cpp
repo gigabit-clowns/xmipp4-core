@@ -35,15 +35,6 @@
 
 using namespace xmipp4::multidimensional;
 
-XMIPP4_INLINE_CONSTEXPR
-bool lexicographic_axis_compare(const axis_descriptor &lhs, 
-                                const axis_descriptor &rhs) noexcept
-{
-    const auto lhs_tuple = std::make_tuple(lhs.get_extent(), lhs.get_stride());
-    const auto rhs_tuple = std::make_tuple(rhs.get_extent(), rhs.get_stride());
-    return lhs_tuple < rhs_tuple;
-}
-
 TEST_CASE("find max and min stride", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
@@ -57,61 +48,6 @@ TEST_CASE("find max and min stride", "[memory_layout]")
 
     REQUIRE(find_max_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
     REQUIRE(find_min_stride(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 4));
-}
-
-TEST_CASE("find first significant axis", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, -128),
-        axis_descriptor(4, 16),
-        axis_descriptor(1, -1),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, 0),
-        axis_descriptor(1, -16),
-        axis_descriptor(4, -2)
-    };
-
-    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
-    {
-        auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(2, 1) );
-    }
-}
-
-TEST_CASE("find next significant axis", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, -128),
-        axis_descriptor(4, 16),
-        axis_descriptor(4, 0),
-        axis_descriptor(1, -16),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, -2)
-    };
-
-    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
-    {
-        auto ite = find_first_significant_axis(layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(2, 1) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(4, -2) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(2, 8) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(4, 16) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(2, 64) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( *ite == axis_descriptor(4, -128) );
-        ite = find_next_significant_axis(ite, layout.cbegin(), layout.cend());
-        REQUIRE( ite == layout.cend() );
-    }
 }
 
 TEST_CASE("pack layout", "[memory_layout]")
@@ -131,28 +67,59 @@ TEST_CASE("pack layout", "[memory_layout]")
     };
 
     std::vector<axis_descriptor> packed;
-    std::ptrdiff_t offset;
+    std::ptrdiff_t offset = 0;
 
-    std::sort(layout.begin(), layout.end(), lexicographic_axis_compare);
-    while(std::next_permutation(layout.begin(), layout.end(), lexicographic_axis_compare))
+    // Prepare
+    std::sort(layout.begin(), layout.end(), compare_strides_less);
+
+    // Pack
+    pack_layout(
+        layout.cbegin(), layout.cend(),
+        std::back_inserter(packed),
+        offset
+    );
+
+    // Test
+    REQUIRE( packed.size() == 3 );
+    REQUIRE( packed[0] == axis_descriptor(8, 2) );
+    REQUIRE( packed[1] == axis_descriptor(12, 32) );
+    REQUIRE( packed[2] == axis_descriptor(9, 512) );
+    REQUIRE( offset == -(8*512+3*32) );
+}
+
+TEST_CASE("is contiguous layout", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(2, -1),
+        axis_descriptor(4, 2),
+        axis_descriptor(2, 8),
+        axis_descriptor(4, -16),
+        axis_descriptor(10, 0),
+        axis_descriptor(1, -64),
+        axis_descriptor(2, 64),
+        axis_descriptor(4, 128),
+        axis_descriptor(2, 0),
+    };
+
+    SECTION("contiguous")
     {
-        // Clear output
-        packed.clear();
-        offset = 0;
+        std::sort(layout.begin(), layout.end(), compare_strides_less);
+        REQUIRE( is_contiguous_layout(layout.cbegin(), layout.cend()) );
+    }
+    SECTION("first axis has not unit stride")
+    {
+        layout[1] = axis_descriptor(1, 2);
 
-        // Pack
-        pack_layout(
-            layout.cbegin(), layout.cend(),
-            std::back_inserter(packed),
-            offset
-        );
+        std::sort(layout.begin(), layout.end(), compare_strides_less);
+        REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
+    }
+    SECTION("not packed")
+    {
+        layout[2] = axis_descriptor(2, -4);
 
-        // Test
-        REQUIRE( packed.size() == 3 );
-        REQUIRE( packed[0] == axis_descriptor(8, 2) );
-        REQUIRE( packed[1] == axis_descriptor(12, 32) );
-        REQUIRE( packed[2] == axis_descriptor(9, 512) );
-        REQUIRE( offset == -(8*512+3*32) );
+        std::sort(layout.begin(), layout.end(), compare_strides_less);
+        REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
 }
 

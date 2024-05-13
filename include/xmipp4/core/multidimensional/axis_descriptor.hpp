@@ -53,9 +53,10 @@ public:
      * @param extent Number of elements in the axis. Defaults to 0
      * @param stride Step between consecutive elements. In items. Defaults to 1
      */
-    XMIPP4_CONSTEXPR explicit axis_descriptor(std::size_t extent = 0, 
-                                              std::ptrdiff_t stride = 1 ) noexcept;
+    XMIPP4_CONSTEXPR axis_descriptor(std::size_t extent, 
+                                     std::ptrdiff_t stride ) noexcept;
 
+    axis_descriptor() = default;
     axis_descriptor(const axis_descriptor& other) = default;
     axis_descriptor(axis_descriptor&& other) = default;
     ~axis_descriptor() = default;
@@ -97,18 +98,11 @@ public:
     XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
 
     /**
-     * @brief Get the unsigned stride between consecutive elements
+     * @brief Get the stride magnitude.
      * 
      * @return std::size_t Step between consecutive elements. In items
      */
     XMIPP4_CONSTEXPR std::size_t get_unsigned_stride() const noexcept;
-
-    /**
-     * @brief Get the total size of the axis. In items
-     * 
-     * @return std::size_t Axis size. In items
-     */
-    XMIPP4_CONSTEXPR std::size_t get_width() const noexcept;
 
 private:
     std::size_t m_extent; ///< Number of elements
@@ -158,6 +152,29 @@ XMIPP4_CONSTEXPR
 std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Compute the product of the stride magnitude and extent
+ * 
+ * @note This does not need to be confused with the number of elements 
+ * referenced by the axis. To do so, please refer to get_extent
+ * @param axis The axis.
+ * @return std::size_t The product of the stride magnitude and extent.
+ */
+XMIPP4_CONSTEXPR 
+std::size_t get_axis_length(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Compare the absolute strides of a given pair of axes.
+ * 
+ * @param lhs Left hand side operand.
+ * @param rhs Right hand side operand.
+ * @return bool True if left hand side's absolute stride is equal to 
+ * right hand side's stride.
+ */
+XMIPP4_CONSTEXPR 
+bool compare_strides_equal(const axis_descriptor &lhs, 
+                           const axis_descriptor &rhs ) noexcept;
+
+/**
  * @brief Compare the absolute strides of a given pair of axes.
  * 
  * @param lhs Left hand side operand.
@@ -174,12 +191,12 @@ bool compare_strides_less(const axis_descriptor &lhs,
  * 
  * @param lhs Left hand side operand.
  * @param rhs Right hand side operand.
- * @return bool True if left hand side's absolute stride is equal to 
+ * @return bool True if left hand side's absolute stride is greater than 
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept;
+bool compare_strides_greater(const axis_descriptor &lhs, 
+                             const axis_descriptor &rhs ) noexcept;
 
 /**
  * @brief Check if an axis has a non zero stride.
@@ -189,34 +206,6 @@ bool compare_strides_equal(const axis_descriptor &lhs,
  */
 XMIPP4_CONSTEXPR
 bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
-
-/**
- * @brief Check if a pair of axes is packed.
- * 
- * A pair of axes is packed if the width of the major axis
- * is equal to the stride of the minor axis.
- * 
- * @param minor Minor (slow) axis.
- * @param major Major (fast) axis.
- * @return bool True if the pair of axes is packed.
- */
-XMIPP4_CONSTEXPR
-bool is_packed(const axis_descriptor &major,
-               const axis_descriptor &minor ) noexcept;
-
-/**
- * @brief Check if a pair of axes is overlapping.
- * 
- * A pair of axes is overlapping if the width of the major axis
- * is strictly greater than the stride of the minor axis.
- * 
- * @param minor Minor (slow) axis.
- * @param major Major (fast) axis.
- * @return bool True if the pair of axes is overlapping.
- */
-XMIPP4_CONSTEXPR
-bool check_overlap(const axis_descriptor &major,
-                   const axis_descriptor &minor ) noexcept;
 
 /**
  * @brief Check if an axis is contiguous.
@@ -229,6 +218,20 @@ bool check_overlap(const axis_descriptor &major,
  */
 XMIPP4_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis pair is regular.
+ * 
+ * A pair of axes is regular if abs(stride)*extent of the
+ * major axis is equal to the abs(stride) of the minor axis.
+ * 
+ * @param major Fast axis (smallest stride).
+ * @param minor Slow axis (largest stride).
+ * @return bool True if the axes are regular.
+ */
+XMIPP4_CONSTEXPR
+bool is_regular(const axis_descriptor &major,
+                const axis_descriptor &minor ) noexcept;
 
 /**
  * @brief Check if an axis is reversed.
@@ -304,13 +307,13 @@ bool check_squeeze(const axis_descriptor &axis) noexcept;
  * Otherwise nothing can be performed to match axis extents and false 
  * is returned. In this case, axes are left in a valid but undefined state.
  * 
- * @tparam AxisDescriptor axis_descriptor types.
+ * @tparam AxisDescriptors axis_descriptor types.
  * @param descriptors Axis descriptors to be broadcasted
  * @return bool True when success, False otherwise.
  */
-template<typename... AxisDescriptor>
+template<typename... AxisDescriptors>
 XMIPP4_CONSTEXPR
-bool broadcast(AxisDescriptor&... descriptors) noexcept;
+bool broadcast(AxisDescriptors&... descriptors) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

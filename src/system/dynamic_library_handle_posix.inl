@@ -43,7 +43,7 @@ namespace system
 inline void* dynamic_library_open(const char* filename)
 {
     XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    const auto result = ::dlopen(filename, flags);
+    auto *const result = ::dlopen(filename, flags);
     if (result == NULL)
     {
         std::ostringstream oss;

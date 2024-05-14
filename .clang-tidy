@@ -1,6 +1,5 @@
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
-#              Martín Salinas Antón (ssalinasmartin@gmail.com)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,30 +20,11 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-name: clang-tidy
-
-on:
-  pull_request:
-    branches:
-      - devel
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: ZedThree/clang-tidy-review@v0.14.0
-      id: review
-      with:
-        build_dir: build/
-        include: "*.[ch],*.[ch]xx,*.[ch]pp,*.[ch]++,*.cc,*.hh,*inl"
-        cmake_command: "cmake -S . -B build/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-        clang_tidy_checks: "" # Use .clang-tidy
-
-    - uses: ZedThree/clang-tidy-review/upload@v0.14.0
-      id: upload-review
-
-    - if: steps.review.outputs.total_comments > 0
-      run: exit 1
+Checks: >
+  -*,
+  performance-*,
+  readability-*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  misc-*

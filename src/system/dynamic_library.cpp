@@ -94,7 +94,7 @@ void dynamic_library::open(const std::string& filename)
 
 void dynamic_library::close() noexcept
 {
-    if (m_handle)
+    if (m_handle != nullptr)
     {
         dynamic_library_close(m_handle);
         m_handle = nullptr;

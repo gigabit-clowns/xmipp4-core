@@ -44,6 +44,7 @@ jobs:
           cmake -S . -B build/ 
           -DBUILD_TESTING=OFF
           -DXMIPP4_CORE_BUILD_DOC=OFF 
+          -DXMIPP4_CORE_LINT_CLANG_TIDY=OFF
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         clang_tidy_checks: "" # Use .clang-tidy
 

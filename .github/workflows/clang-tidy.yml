@@ -40,7 +40,11 @@ jobs:
       with:
         build_dir: build/
         include: "*.[ch],*.[ch]xx,*.[ch]pp,*.[ch]++,*.cc,*.hh,*inl"
-        cmake_command: "cmake -S . -B build/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+        cmake_command: >
+          cmake -S . -B build/ 
+          -DBUILD_TESTING=OFF
+          -DXMIPP4_CORE_BUILD_DOC=OFF 
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         clang_tidy_checks: "" # Use .clang-tidy
 
     - uses: ZedThree/clang-tidy-review/upload@v0.14.0

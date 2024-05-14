@@ -28,9 +28,6 @@ on:
     branches:
       - devel
 
-permissions:
-  pull-requests: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,7 +39,6 @@ jobs:
       id: review
       with:
         build_dir: build/
-        include: "*.[ch],*.[ch]xx,*.[ch]pp,*.[ch]++,*.cc,*.hh,*inl"
         cmake_command: >
           cmake -S . -B build/ 
           -DBUILD_TESTING=OFF

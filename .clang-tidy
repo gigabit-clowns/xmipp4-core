@@ -20,7 +20,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-HeaderFilterRegex: (core|src)/.*(hpp|h|inl)
+HeaderFilterRegex: '.'
 Checks: >
   -*,
   performance-*,
@@ -29,3 +29,29 @@ Checks: >
   clang-analyzer-*,
   cppcoreguidelines-*,
   misc-*
+
+CheckOptions:
+  - key:    ClassCase
+    value:  lower_case
+  - key:    ConstantCase
+    value:  lower_case
+  - key:    EnumCase
+    value:  lower_case
+  - key:    EnumConstantCase
+    value:  lower_case
+  - key:    FunctionCase
+    value:  lower_case
+  - key:    MemberCase
+    value:  lower_case
+  - key:    MemberPrefix
+    value:  m_
+  - key:    ClassMethodCase
+    value:  lower_case
+  - key:    NamespaceCase
+    value:  lower_case
+  - key:    StructCase
+    value:  lower_case
+  - key:    TemplateParameterCase
+    value:  CamelCase
+  - key:    VariableCase
+    value:  lower_case

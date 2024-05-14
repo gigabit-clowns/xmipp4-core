@@ -21,12 +21,15 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-name: clang-tidy
+name: Clang-tidy
 
 on:
   pull_request:
     branches:
       - devel
+
+permissions:
+  pull-requests: write
 
 jobs:
   build:

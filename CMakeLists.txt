@@ -34,6 +34,7 @@ include(CTest)
 
 # Declare build options
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" ON)
+option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" ON)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)

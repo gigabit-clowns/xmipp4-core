@@ -67,6 +67,7 @@ jobs:
         options: |
           CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           XMIPP4_CORE_BUILD_DOC=OFF
+          XMIPP4_CORE_LINT_CLANG_TIDY=OFF
         run-build: true
         build-args: --config ${{ env.BUILD_TYPE }}
 

@@ -54,7 +54,7 @@ Homepage = "https://github.com/gigabit-clowns/xmipp4-core"
 experimental=true # For wheel.install-dir
 cmake.version = ">=3.16"
 cmake.args = []
-cmake.define = {XMIPP4_CORE_BUILD_DOC='OFF'}
+cmake.define = {XMIPP4_CORE_BUILD_DOC='OFF', XMIPP4_CORE_LINT_CLANG_TIDY='OFF'}
 cmake.verbose = false
 cmake.build-type = "Release"
 

@@ -1,0 +1,49 @@
+#***************************************************************************
+# Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#              Martín Salinas Antón (ssalinasmartin@gmail.com)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307  USA
+#
+#  All comments concerning this program package may be sent to the
+#  e-mail address 'xmipp@cnb.csic.es'
+# ***************************************************************************
+
+name: clang-tidy
+
+on:
+  pull_request:
+    branches:
+      - devel
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ZedThree/clang-tidy-review@v0.14.0
+      id: review
+      with:
+        build_dir: build/
+        include: "*.[ch],*.[ch]xx,*.[ch]pp,*.[ch]++,*.cc,*.hh,*inl"
+        cmake_command: "cmake -S . -B build/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"     
+
+    - uses: ZedThree/clang-tidy-review/upload@v0.14.0
+      id: upload-review
+
+    - if: steps.review.outputs.total_comments > 0
+      run: exit 1

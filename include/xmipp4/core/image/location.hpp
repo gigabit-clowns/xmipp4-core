@@ -122,7 +122,7 @@ private:
  * a location object. In case the path is not stack-like, it sets the filename
  * of the location and the position to no_position.
  * 
- * @param path Path of the stack. May be for a single image filename or a '@'
+ * @param path Path of the stack. May be a single image filename or a '@'
  * separated position-filename pair.
  * @param result Parsed location. Not modified on failure.
  * @return true On success.

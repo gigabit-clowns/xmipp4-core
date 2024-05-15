@@ -31,6 +31,7 @@
 #include "../platform/constexpr.hpp"
 
 #include <string>
+#include <ostream>
 
 namespace xmipp4 
 {
@@ -129,6 +130,9 @@ private:
  * @return false On failure.
  */
 bool parse_location(const std::string &path, location &result);
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc);
 
 } // namespace image
 } // namespace xmipp4

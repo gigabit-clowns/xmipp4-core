@@ -133,5 +133,19 @@ bool parse_location(const std::string &path, location &result)
     return success;
 }
 
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc)
+{
+    if(loc.get_position() != location::no_position)
+    {
+        XMIPP4_CONST_CONSTEXPR T separator = '@';
+        os << loc.get_position() << separator;
+
+    }
+
+    return os << loc.get_filename();
+}
+
 } // namespace image
 } // namespace xmipp4

@@ -31,10 +31,11 @@
 #include <xmipp4/core/image/location.hpp>
 
 #include <string>
+#include <sstream>
 
 using namespace xmipp4::image;
 
-TEST_CASE("parse image location", "[memory_layout]")
+TEST_CASE("parse image location", "[image location]")
 {
     SECTION("without position")
     {
@@ -64,5 +65,22 @@ TEST_CASE("parse image location", "[memory_layout]")
         REQUIRE( !parse_location(path, loc) );
         REQUIRE( loc.get_filename() == "previous/filename" );
         REQUIRE( loc.get_position() == 987 );
+    }
+}
+
+TEST_CASE("image location to ostream", "[image location]")
+{
+    std::ostringstream oss;
+
+    SECTION("without position")
+    {
+        oss << location("example/location", location::no_position);
+        REQUIRE( oss.str() == "example/location" );
+    }
+
+    SECTION("with position")
+    {
+        oss << location("example/location", 1234);
+        REQUIRE( oss.str() == "1234@example/location" );
     }
 }

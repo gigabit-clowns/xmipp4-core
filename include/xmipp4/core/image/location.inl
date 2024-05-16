@@ -72,21 +72,21 @@ std::size_t location::get_position() const noexcept
 
 
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator==(const location &lhs, const location &rhs) noexcept
 {
     return lhs.get_position() == rhs.get_position() &&
            lhs.get_filename() == rhs.get_filename() ;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator!=(const location &lhs, const location &rhs) noexcept
 {
     return lhs.get_position() != rhs.get_position() ||
            lhs.get_filename() != rhs.get_filename() ;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator<(const location &lhs, const location &rhs) noexcept
 {
     bool result = false;
@@ -103,7 +103,7 @@ bool operator<(const location &lhs, const location &rhs) noexcept
     return result;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator<=(const location &lhs, const location &rhs) noexcept
 {
     bool result = false;
@@ -120,13 +120,13 @@ bool operator<=(const location &lhs, const location &rhs) noexcept
     return result;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator>(const location &lhs, const location &rhs) noexcept
 {
     return rhs < lhs;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool operator>=(const location &lhs, const location &rhs) noexcept
 {
     return rhs <= lhs;
@@ -148,13 +148,13 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc
 
 
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool has_position(const location &loc) noexcept
 {
     return loc.get_position() != location::no_position;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 bool is_contiguous(const location &prev, const location &next) noexcept
 {
     bool result = false;
@@ -169,7 +169,7 @@ bool is_contiguous(const location &prev, const location &next) noexcept
 }
 
 template <typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
+inline
 ForwardIt find_contiguous_location_run(ForwardIt first,
                                        ForwardIt last )
 {

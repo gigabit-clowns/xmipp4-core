@@ -116,17 +116,11 @@ private:
 
 
 
-XMIPP4_CONSTEXPR 
 bool operator==(const location &lhs, const location &rhs) noexcept;
-XMIPP4_CONSTEXPR 
 bool operator!=(const location &lhs, const location &rhs) noexcept;
-XMIPP4_CONSTEXPR 
 bool operator<(const location &lhs, const location &rhs) noexcept;
-XMIPP4_CONSTEXPR 
 bool operator<=(const location &lhs, const location &rhs) noexcept;
-XMIPP4_CONSTEXPR 
 bool operator>(const location &lhs, const location &rhs) noexcept;
-XMIPP4_CONSTEXPR 
 bool operator>=(const location &lhs, const location &rhs) noexcept;
 
 template <typename T>
@@ -142,7 +136,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc
  * @param loc Location object.
  * @return bool True If a it has position.
  */
-XMIPP4_CONSTEXPR bool has_position(const location &loc) noexcept;
+bool has_position(const location &loc) noexcept;
 
 /**
  * @brief Check if a pair of location objects are contiguous in 
@@ -157,7 +151,6 @@ XMIPP4_CONSTEXPR bool has_position(const location &loc) noexcept;
  * @param next Next location.
  * @return bool True if they are contiguous.
  */
-XMIPP4_CONSTEXPR 
 bool is_contiguous(const location &prev, const location &next) noexcept;
 
 /**
@@ -173,7 +166,6 @@ bool is_contiguous(const location &prev, const location &next) noexcept;
  * last if no such element is found.
  */
 template <typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 
 ForwardIt find_contiguous_location_run(ForwardIt first,
                                        ForwardIt last );
 

@@ -116,6 +116,50 @@ private:
 
 
 /**
+ * @brief Check if a location has position in stack.
+ * 
+ * A location has position if its position value is different to
+ * location::no_position.
+ * 
+ * @param loc Location object.
+ * @return bool True If a it has position.
+ */
+XMIPP4_CONSTEXPR bool has_position(const location &loc) noexcept;
+
+/**
+ * @brief Check if a pair of location objects are contiguous in 
+ * a stack.
+ * 
+ * Two locations are contiguous in a stack if they have the same filename
+ * (this is, they refer to the same stack) and the position of the next
+ * object is the position of the previous object plus one. If the locations
+ * do not have a position, they cannot be contiguous.
+ * 
+ * @param prev Previous location.
+ * @param next Next location.
+ * @return bool True if they are contiguous.
+ */
+XMIPP4_CONSTEXPR 
+bool is_contiguous(const location &prev, const location &next) noexcept;
+
+/**
+ * @brief Find a contiguous run in a range.
+ * 
+ * Finds the longest span of locations where adjacent objects are
+ * contiguous starting from first.
+ * 
+ * @tparam ForwardIt Forward iterator to locations.
+ * @param first First element in the range.
+ * @param last Past-the-end element in the range.
+ * @return ForwardIt Element where the range stops being continuous.
+ * last if no such element is found.
+ */
+template <typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+ForwardIt find_contiguous_location_run(ForwardIt first,
+                                       ForwardIt last );
+
+/**
  * @brief Parse a location object from a path.
  * 
  * Traditionally image locations on a stack have been stored as the position

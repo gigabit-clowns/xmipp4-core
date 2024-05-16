@@ -71,6 +71,52 @@ std::size_t location::get_position() const noexcept
 
 
 
+XMIPP4_INLINE_CONSTEXPR 
+bool has_position(const location &loc) noexcept
+{
+    return loc.get_position() != location::no_position;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool is_contiguous(const location &prev, const location &next) noexcept
+{
+    bool result = false;
+
+    if (has_position(prev) && has_position(next))
+    {
+        result = (prev.get_position()+1) == next.get_position() &&
+                 prev.get_filename() == next.get_filename();
+    }
+
+    return result;
+}
+
+template <typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+ForwardIt find_contiguous_location_run(ForwardIt first,
+                                       ForwardIt last )
+{
+    if (first != last)
+    {
+        auto prev = first;
+        ++first;
+        while(first != last)
+        {
+            if(!is_contiguous(*prev, *first))
+            {
+                break;
+            }
+
+            prev = first;
+            ++first;
+        }
+    }
+
+    return first;
+}
+
+
+
 namespace detail
 {
 

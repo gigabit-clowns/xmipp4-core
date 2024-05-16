@@ -28,6 +28,7 @@
 
 #include "location.hpp"
 
+#include <tuple>
 #include <algorithm>
 #include <cctype>
 
@@ -67,6 +68,82 @@ inline
 std::size_t location::get_position() const noexcept
 {
     return m_position;
+}
+
+
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator==(const location &lhs, const location &rhs) noexcept
+{
+    return lhs.get_position() == rhs.get_position() &&
+           lhs.get_filename() == rhs.get_filename() ;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator!=(const location &lhs, const location &rhs) noexcept
+{
+    return lhs.get_position() != rhs.get_position() ||
+           lhs.get_filename() != rhs.get_filename() ;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator<(const location &lhs, const location &rhs) noexcept
+{
+    bool result = false;
+
+    if (lhs.get_filename() < rhs.get_filename())
+    {
+        result = true;
+    }
+    else if(lhs.get_filename() == rhs.get_filename())
+    {
+        result = lhs.get_position() < rhs.get_position();
+    }
+
+    return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator<=(const location &lhs, const location &rhs) noexcept
+{
+    bool result = false;
+
+    if (lhs.get_filename() < rhs.get_filename())
+    {
+        result = true;
+    }
+    else if(lhs.get_filename() == rhs.get_filename())
+    {
+        result = lhs.get_position() <= rhs.get_position();
+    }
+
+    return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator>(const location &lhs, const location &rhs) noexcept
+{
+    return rhs < lhs;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+bool operator>=(const location &lhs, const location &rhs) noexcept
+{
+    return rhs <= lhs;
+}
+
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc)
+{
+    if(loc.get_position() != location::no_position)
+    {
+        XMIPP4_CONST_CONSTEXPR T separator = '@';
+        os << loc.get_position() << separator;
+
+    }
+
+    return os << loc.get_filename();
 }
 
 
@@ -177,20 +254,6 @@ bool parse_location(const std::string &path, location &result)
     }
 
     return success;
-}
-
-template <typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc)
-{
-    if(loc.get_position() != location::no_position)
-    {
-        XMIPP4_CONST_CONSTEXPR T separator = '@';
-        os << loc.get_position() << separator;
-
-    }
-
-    return os << loc.get_filename();
 }
 
 } // namespace image

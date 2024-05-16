@@ -115,6 +115,24 @@ private:
 };
 
 
+
+XMIPP4_CONSTEXPR 
+bool operator==(const location &lhs, const location &rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator!=(const location &lhs, const location &rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator<(const location &lhs, const location &rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator<=(const location &lhs, const location &rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator>(const location &lhs, const location &rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator>=(const location &lhs, const location &rhs) noexcept;
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc);
+
+
 /**
  * @brief Check if a location has position in stack.
  * 
@@ -174,9 +192,6 @@ ForwardIt find_contiguous_location_run(ForwardIt first,
  * @return false On failure.
  */
 bool parse_location(const std::string &path, location &result);
-
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc);
 
 } // namespace image
 } // namespace xmipp4

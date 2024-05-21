@@ -28,6 +28,7 @@
 
 #include "location.hpp"
 
+#include <tuple>
 #include <algorithm>
 #include <cctype>
 
@@ -67,6 +68,128 @@ inline
 std::size_t location::get_position() const noexcept
 {
     return m_position;
+}
+
+
+
+inline
+bool operator==(const location &lhs, const location &rhs) noexcept
+{
+    return lhs.get_position() == rhs.get_position() &&
+           lhs.get_filename() == rhs.get_filename() ;
+}
+
+inline
+bool operator!=(const location &lhs, const location &rhs) noexcept
+{
+    return lhs.get_position() != rhs.get_position() ||
+           lhs.get_filename() != rhs.get_filename() ;
+}
+
+inline
+bool operator<(const location &lhs, const location &rhs) noexcept
+{
+    bool result = false;
+
+    if (lhs.get_filename() < rhs.get_filename())
+    {
+        result = true;
+    }
+    else if(lhs.get_filename() == rhs.get_filename())
+    {
+        result = lhs.get_position() < rhs.get_position();
+    }
+
+    return result;
+}
+
+inline
+bool operator<=(const location &lhs, const location &rhs) noexcept
+{
+    bool result = false;
+
+    if (lhs.get_filename() < rhs.get_filename())
+    {
+        result = true;
+    }
+    else if(lhs.get_filename() == rhs.get_filename())
+    {
+        result = lhs.get_position() <= rhs.get_position();
+    }
+
+    return result;
+}
+
+inline
+bool operator>(const location &lhs, const location &rhs) noexcept
+{
+    return rhs < lhs;
+}
+
+inline
+bool operator>=(const location &lhs, const location &rhs) noexcept
+{
+    return rhs <= lhs;
+}
+
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc)
+{
+    if(loc.get_position() != location::no_position)
+    {
+        XMIPP4_CONST_CONSTEXPR T separator = '@';
+        os << loc.get_position() << separator;
+
+    }
+
+    return os << loc.get_filename();
+}
+
+
+
+inline
+bool has_position(const location &loc) noexcept
+{
+    return loc.get_position() != location::no_position;
+}
+
+inline
+bool is_contiguous(const location &prev, const location &next) noexcept
+{
+    bool result = false;
+
+    if (has_position(prev) && has_position(next))
+    {
+        result = (prev.get_position()+1) == next.get_position() &&
+                 prev.get_filename() == next.get_filename();
+    }
+
+    return result;
+}
+
+template <typename ForwardIt>
+inline
+ForwardIt find_contiguous_location_run(ForwardIt first,
+                                       ForwardIt last )
+{
+    if (first != last)
+    {
+        auto prev = first;
+        ++first;
+        while(first != last)
+        {
+            if(!is_contiguous(*prev, *first))
+            {
+                break;
+            }
+
+            prev = first;
+            ++first;
+        }
+    }
+
+    return first;
 }
 
 
@@ -131,20 +254,6 @@ bool parse_location(const std::string &path, location &result)
     }
 
     return success;
-}
-
-template <typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc)
-{
-    if(loc.get_position() != location::no_position)
-    {
-        XMIPP4_CONST_CONSTEXPR T separator = '@';
-        os << loc.get_position() << separator;
-
-    }
-
-    return os << loc.get_filename();
 }
 
 } // namespace image

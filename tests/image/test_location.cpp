@@ -30,10 +30,64 @@
 
 #include <xmipp4/core/image/location.hpp>
 
+#include <vector>
 #include <string>
 #include <sstream>
 
 using namespace xmipp4::image;
+
+TEST_CASE("find contiguous location run", "[image location]")
+{
+    SECTION("no postion")
+    {
+        const std::vector<location> data = {
+            location("aaaa", location::no_position),
+            location("aaaa", location::no_position),
+            location("bbbbb", location::no_position),
+        };
+
+        REQUIRE( std::distance(data.begin(), find_contiguous_location_run(data.begin(), data.end())) == 1 );
+    }
+
+    SECTION("position jump")
+    {
+        const std::vector<location> data = {
+            location("aaaa", 1),
+            location("aaaa", 2),
+            location("aaaa", 3),
+            location("aaaa", 4),
+            location("aaaa", 6),
+        };
+
+        REQUIRE( std::distance(data.begin(), find_contiguous_location_run(data.begin(), data.end())) == 4 );
+    }
+    
+    SECTION("different file")
+    {
+        const std::vector<location> data = {
+            location("aaaa", 1),
+            location("aaaa", 2),
+            location("aaaa", 3),
+            location("bbbb", 4),
+        };
+
+        REQUIRE( std::distance(data.begin(), find_contiguous_location_run(data.begin(), data.end())) == 3 );
+    }
+
+    SECTION("fully contiguous")
+    {
+        const std::vector<location> data = {
+            location("aaaa", 12),
+            location("aaaa", 13),
+            location("aaaa", 14),
+            location("aaaa", 15),
+            location("aaaa", 16),
+            location("aaaa", 17),
+        };
+
+        REQUIRE( std::distance(data.begin(), find_contiguous_location_run(data.begin(), data.end())) == 6 );
+    }
+}
 
 TEST_CASE("parse image location", "[image location]")
 {

@@ -115,6 +115,60 @@ private:
 };
 
 
+
+bool operator==(const location &lhs, const location &rhs) noexcept;
+bool operator!=(const location &lhs, const location &rhs) noexcept;
+bool operator<(const location &lhs, const location &rhs) noexcept;
+bool operator<=(const location &lhs, const location &rhs) noexcept;
+bool operator>(const location &lhs, const location &rhs) noexcept;
+bool operator>=(const location &lhs, const location &rhs) noexcept;
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc);
+
+
+/**
+ * @brief Check if a location has position in stack.
+ * 
+ * A location has position if its position value is different to
+ * location::no_position.
+ * 
+ * @param loc Location object.
+ * @return bool True If a it has position.
+ */
+bool has_position(const location &loc) noexcept;
+
+/**
+ * @brief Check if a pair of location objects are contiguous in 
+ * a stack.
+ * 
+ * Two locations are contiguous in a stack if they have the same filename
+ * (this is, they refer to the same stack) and the position of the next
+ * object is the position of the previous object plus one. If the locations
+ * do not have a position, they cannot be contiguous.
+ * 
+ * @param prev Previous location.
+ * @param next Next location.
+ * @return bool True if they are contiguous.
+ */
+bool is_contiguous(const location &prev, const location &next) noexcept;
+
+/**
+ * @brief Find a contiguous run in a range.
+ * 
+ * Finds the longest span of locations where adjacent objects are
+ * contiguous starting from first.
+ * 
+ * @tparam ForwardIt Forward iterator to locations.
+ * @param first First element in the range.
+ * @param last Past-the-end element in the range.
+ * @return ForwardIt Element where the range stops being continuous.
+ * last if no such element is found.
+ */
+template <typename ForwardIt>
+ForwardIt find_contiguous_location_run(ForwardIt first,
+                                       ForwardIt last );
+
 /**
  * @brief Parse a location object from a path.
  * 
@@ -130,9 +184,6 @@ private:
  * @return false On failure.
  */
 bool parse_location(const std::string &path, location &result);
-
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const location &loc);
 
 } // namespace image
 } // namespace xmipp4

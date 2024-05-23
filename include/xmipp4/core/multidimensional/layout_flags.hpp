@@ -57,7 +57,7 @@ struct contiguous_tag {};
  * 
  * @return contiguous_tag
  */
-XMIPP4_CONSTEXPR contiguous_tag contigious() noexcept;
+XMIPP4_CONSTEXPR contiguous_tag contiguous() noexcept;
 
 struct column_major_tag {};
 

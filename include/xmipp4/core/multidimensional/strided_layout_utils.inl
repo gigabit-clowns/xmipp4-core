@@ -284,9 +284,13 @@ template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 bool is_contiguous_layout(ForwardIt first, ForwardIt last)
 {
-    const auto slow_axis = find_minor_axis(first, last);
-    const auto expected_size = (slow_axis != last) ? get_axis_length(*slow_axis) : 1;
+    // Compute the layout size expecting it is contiguous and compare it 
+    // with the actual size. If size matches, it we consider it to be
+    // contiguous.
+    const auto expected_size = 
+        compute_layout_buffer_size(first, last, contigious());
     const auto size = compute_layout_buffer_size(first, last);
+
     return size == expected_size;
 }
 
@@ -402,6 +406,16 @@ std::size_t compute_layout_buffer_size(ForwardIt first,
                                        ForwardIt last ) noexcept
 {
     return compute_layout_last_position(first, last) + 1;
+}
+
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+std::size_t compute_layout_buffer_size(ForwardIt first,
+                                       ForwardIt last,
+                                       contiguous_tag ) noexcept
+{
+    const auto minor_axis = find_minor_axis(first, last);
+    return (minor_axis != last) ? get_axis_length(*minor_axis) : 1UL;
 }
 
 template <typename ForwardIt>

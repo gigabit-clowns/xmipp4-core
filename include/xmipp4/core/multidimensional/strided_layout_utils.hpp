@@ -296,6 +296,7 @@ template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 
 std::ptrdiff_t compute_layout_last_position(ForwardIt first,
                                             ForwardIt last ) noexcept;
+
 /**
  * @brief Computes the buffer size required to store a layout
  * 
@@ -309,6 +310,23 @@ template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 
 std::size_t compute_layout_buffer_size(ForwardIt first,
                                        ForwardIt last ) noexcept;
+
+/**
+ * @brief Computes the buffer size required to store a layout assuming 
+ * that it is contiguous.
+ * 
+ * @note Behavior is undefined if a non-contiguous layout is provided.
+ * @tparam ForwardIt Forward iterator
+ * @param first Iterator to the first element in the range
+ * @param last Iterator to the past-the-end element in the range
+ * @return std::size_t The size of the buffer required to store the
+ * provided layout. In elements.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+std::size_t compute_layout_buffer_size(ForwardIt first,
+                                       ForwardIt last,
+                                       contiguous_tag ) noexcept;
 
 /**
  * @brief Squeezes a layout

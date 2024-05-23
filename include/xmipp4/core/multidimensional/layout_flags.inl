@@ -58,6 +58,11 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits fl
 
 
 
+XMIPP4_INLINE_CONSTEXPR contiguous_tag contiguous() noexcept
+{
+    return contiguous_tag();
+}
+
 XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
 {
     return column_major_tag();

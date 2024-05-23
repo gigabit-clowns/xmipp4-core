@@ -50,6 +50,15 @@ using layout_flags = utils::flagset<layout_flag_bits>;
 
 
 
+struct contiguous_tag {};
+
+/**
+ * @brief Construct a contiguous_tag
+ * 
+ * @return contiguous_tag
+ */
+XMIPP4_CONSTEXPR contiguous_tag contigious() noexcept;
+
 struct column_major_tag {};
 
 /**

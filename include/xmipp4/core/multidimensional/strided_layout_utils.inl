@@ -288,7 +288,7 @@ bool is_contiguous_layout(ForwardIt first, ForwardIt last)
     // with the actual size. If size matches, it we consider it to be
     // contiguous.
     const auto expected_size = 
-        compute_layout_buffer_size(first, last, contigious());
+        compute_layout_buffer_size(first, last, contiguous());
     const auto size = compute_layout_buffer_size(first, last);
 
     return size == expected_size;

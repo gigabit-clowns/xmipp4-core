@@ -95,3 +95,61 @@ TEST_CASE("broadcast", "[memory_layout]")
         REQUIRE( !broadcast(axis0, axis1, axis2, axis3) );
     }
 }
+
+TEST_CASE("broadcast_to", "[memory_layout]")
+{
+    SECTION("no axes to broadcast")
+    {
+        const auto to = make_contiguous_axis(30);
+        REQUIRE( broadcast_to(to) );
+    }
+
+    SECTION("one axis with same size")
+    {
+        const axis_descriptor to(3, 2);
+        axis_descriptor from(3, 4);
+        REQUIRE( broadcast_to(to, from) );
+        REQUIRE( to == axis_descriptor(3, 2) );
+        REQUIRE( from == axis_descriptor(3, 4) );
+    }
+
+    SECTION("one axis of size 1")
+    {
+        const axis_descriptor to(3, 2);
+        axis_descriptor from(1, 4);
+        REQUIRE( broadcast_to(to, from) );
+        REQUIRE( to == axis_descriptor(3, 2) );
+        REQUIRE( from == axis_descriptor(3, 0) );
+    }
+
+    SECTION("two axes with mismatching sizes")
+    {
+        const axis_descriptor to(3, 2);
+        axis_descriptor from(4, 3);
+        REQUIRE( !broadcast_to(to, from) );
+    }
+
+    SECTION("multiple axes")
+    {
+        const axis_descriptor to(3, 2);
+        axis_descriptor from0(1, 1);
+        axis_descriptor from1(3, 2);
+        axis_descriptor from2(1, 3);
+        axis_descriptor from3(3, 4);
+        REQUIRE( broadcast_to(to, from0, from1, from2, from3) );
+        REQUIRE( from0 == axis_descriptor(3, 0) );
+        REQUIRE( from1 == axis_descriptor(3, 2) );
+        REQUIRE( from2 == axis_descriptor(3, 0) );
+        REQUIRE( from3 == axis_descriptor(3, 4) );
+    }
+
+    SECTION("multiple axes with one mismatch")
+    {
+        const axis_descriptor to(3, 2);
+        axis_descriptor from0(1, 1);
+        axis_descriptor from1(3, 2);
+        axis_descriptor from2(2, 3);
+        axis_descriptor from3(3, 4);
+        REQUIRE( !broadcast_to(to, from0, from1, from2, from3) );
+    }
+}

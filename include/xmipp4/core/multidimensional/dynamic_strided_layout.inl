@@ -26,7 +26,7 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
+/*
 template <typename It>
 inline
 dynamic_strided_layout::dynamic_strided_layout(It first, It last)
@@ -78,7 +78,7 @@ std::size_t dynamic_strided_layout::get_required_storage_size() const noexcept
     if(size) size += m_offset;
     return size;
 }
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4
 

@@ -316,6 +316,25 @@ XMIPP4_CONSTEXPR
 bool broadcast(AxisDescriptors&... descriptors) noexcept;
 
 /**
+ * @brief Broadcast axes to another axis.
+ * 
+ * Similarly to broadcast, it tries to match axis extents without altering
+ * storage requirements. However, unlike broadcast, The first of the axes is
+ * not permitted to be modified. This is useful when the axis is ought to be
+ * written to.
+ * 
+ * @see broadcast
+ * @tparam AxisDescriptors axis_descriptor types.
+ * @param to Axis to be broadcasted to.
+ * @param descriptors Axes to be broadcasted.
+ * @return bool True when success, False otherwise.
+ */
+template<typename... AxisDescriptors>
+XMIPP4_CONSTEXPR
+bool broadcast_to(const axis_descriptor &to, 
+                  AxisDescriptors&... descriptors ) noexcept;
+
+/**
  * @brief Apply an index to an axis descriptor to increment the offset
  * 
  * @tparam I Index type.

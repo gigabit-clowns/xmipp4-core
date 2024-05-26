@@ -251,9 +251,9 @@ bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
 /// Broadcast N>2 axes.
 template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast(axis_descriptor& first, 
-               axis_descriptor& second,
-               axis_descriptor& third,
+bool broadcast(axis_descriptor &first, 
+               axis_descriptor &second,
+               axis_descriptor &third,
                AxisDescriptors&... others ) noexcept
 {
     // This code recursively explores adjacent items in a ping-pong
@@ -282,6 +282,58 @@ bool broadcast(AxisDescriptors&... axes) noexcept
 }
 
 
+
+namespace detail
+{
+
+// No axis to broadcast. Always succeed.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast_to(const axis_descriptor&) noexcept
+{
+    return true;
+}
+
+// Single axis to broadcast from.
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast_to(const axis_descriptor &to, axis_descriptor &from) noexcept
+{
+    bool result = true;
+
+    if (to.get_extent() != from.get_extent())
+    {
+        if (from.get_extent() == 1)
+        {
+            from = make_phantom_axis(to.get_extent());
+        }
+        else
+        {
+            result = false;
+        }
+    }
+
+    return result;
+}
+
+/// Broadcast N>2 axes.
+template<typename... AxisDescriptors>
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast_to(const axis_descriptor &to, 
+                  axis_descriptor &first,
+                  axis_descriptor &second,
+                  AxisDescriptors&... others ) noexcept
+{
+    return broadcast_to(to, first) && broadcast_to(to, second, others...);
+}
+
+} // namespace detail
+
+template<typename... AxisDescriptors>
+XMIPP4_CONSTEXPR
+bool broadcast_to(const axis_descriptor &to, 
+                  AxisDescriptors&... descriptors ) noexcept
+{
+    return detail::broadcast_to(to, descriptors...);
+}
 
 template <typename I>
 inline

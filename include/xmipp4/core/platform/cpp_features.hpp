@@ -49,7 +49,7 @@
  * 
  */
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    ((defined(__cpp_##feature) && (__cpp_##feature >= version)) || \
+    ((__cpp_##feature >= version) || \
     (XMIPP4_HAS_C_FEATURE(cxx_##feature) && XMIPP4_CPLUSPLUS >= version))
 
 /**

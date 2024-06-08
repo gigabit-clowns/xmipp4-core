@@ -84,16 +84,13 @@ jobs:
         run-build: true
         build-args: --config ${{ env.BUILD_TYPE }}
     
-    - name: Run tests
+    - name: Run tests without memcheck
+      if: matrix.os != 'ubuntu-latest'
       working-directory: "${{ github.workspace }}/build"
       run: ctest -C ${{env.BUILD_TYPE}}
 
-    # This step should be able to replace both test steps once it works on all OS
-    #- name: Run tests with memory check
-    #  working-directory: "${{ github.workspace }}/build"
-    #  run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
-    
-    - name: Run memcheck
+    # This step should be the only one used for running test once it works on all OS
+    - name: Run tests with memory check
       if: matrix.os == 'ubuntu-latest'
       working-directory: "${{ github.workspace }}/build"
-      run: ctest -T memcheck ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+      run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure

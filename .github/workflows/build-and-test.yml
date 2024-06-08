@@ -57,6 +57,20 @@ jobs:
     steps:
     - uses: actions/checkout@main
 
+    - name: Install dependencies on Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get install -y valgrind
+
+    - name: Install Valgrind on macOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew tap LouisBrunner/valgrind
+        brew install --HEAD LouisBrunner/valgrind/valgrind
+
+    - name: Install Dr. Memory on Windows
+      if: matrix.os == 'windows-latest'
+      run: choco install drmemory
+
     - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:

@@ -73,3 +73,7 @@ jobs:
     - name: Run tests
       working-directory: "${{ github.workspace }}/build"
       run: ctest -C ${{env.BUILD_TYPE}}
+    
+    - name: Run memcheck
+      working-directory: "${{ github.workspace }}/build"
+      run: ctest -T memcheck ${{env.BUILD_TYPE}}

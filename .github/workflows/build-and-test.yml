@@ -57,15 +57,15 @@ jobs:
     steps:
     - uses: actions/checkout@main
 
-    - name: Install dependencies on Ubuntu
+    - name: Install Valgrind on Ubuntu
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y valgrind
 
-    - name: Install Valgrind on macOS
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew tap LouisBrunner/valgrind
-        brew install --HEAD LouisBrunner/valgrind/valgrind
+    #- name: Install Valgrind on macOS
+    #  if: matrix.os == 'macos-latest'
+    #  run: |
+    #    brew tap LouisBrunner/valgrind
+    #    brew install --HEAD LouisBrunner/valgrind/valgrind
 
     - name: Install Dr. Memory on Windows
       if: matrix.os == 'windows-latest'
@@ -89,5 +89,6 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
     
     - name: Run memcheck
+      if: matrix.os != 'macos-latest'
       working-directory: "${{ github.workspace }}/build"
       run: ctest -T memcheck ${{env.BUILD_TYPE}} || RETCODE=$? && cat ./Testing/Temporary/LastTest.log && exit $RETCODE

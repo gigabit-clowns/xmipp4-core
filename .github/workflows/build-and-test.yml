@@ -91,4 +91,4 @@ jobs:
     - name: Run memcheck
       if: matrix.os != 'macos-latest'
       working-directory: "${{ github.workspace }}/build"
-      run: ctest -T memcheck ${{env.BUILD_TYPE}} || RETCODE=$? && cat ./Testing/Temporary/LastTest.log && exit $RETCODE
+      run: ctest -T memcheck ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

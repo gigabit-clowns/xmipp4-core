@@ -83,12 +83,17 @@ jobs:
           XMIPP4_CORE_BUILD_DOC=OFF
         run-build: true
         build-args: --config ${{ env.BUILD_TYPE }}
-
+    
     - name: Run tests
       working-directory: "${{ github.workspace }}/build"
       run: ctest -C ${{env.BUILD_TYPE}}
+
+    # This step should be able to replace both test steps once it works on all OS
+    #- name: Run tests with memory check
+    #  working-directory: "${{ github.workspace }}/build"
+    #  run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
     
     - name: Run memcheck
-      if: matrix.os != 'macos-latest'
+      if: matrix.os == 'ubuntu-latest'
       working-directory: "${{ github.workspace }}/build"
       run: ctest -T memcheck ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

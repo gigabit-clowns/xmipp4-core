@@ -51,5 +51,8 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         clang_tidy_checks: "" # Use .clang-tidy
 
+    - uses: ZedThree/clang-tidy-review/upload@v0.14.0
+      id: upload-review
+
     - if: steps.review.outputs.total_comments > 0
       run: exit 1

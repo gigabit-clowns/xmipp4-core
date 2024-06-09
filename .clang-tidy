@@ -31,27 +31,40 @@ Checks: >
   misc-*
 
 CheckOptions:
-  - key:    ClassCase
+  - key:    readability-identifier-naming.MacroDefinitionCase
+    value:  UPPER_CASE
+  - key:    readability-identifier-naming.MacroDefinitionPrefix
+    value:  XMIPP4_
+
+  - key:    readability-identifier-naming.NamespaceCase
     value:  lower_case
-  - key:    ConstantCase
+  - key:    readability-identifier-naming.FunctionCase
     value:  lower_case
-  - key:    EnumCase
+  - key:    readability-identifier-naming.ParameterCase
     value:  lower_case
-  - key:    EnumConstantCase
+  - key:    readability-identifier-naming.VariableCase
     value:  lower_case
-  - key:    FunctionCase
+  - key:    readability-identifier-naming.ConstantCase
     value:  lower_case
-  - key:    MemberCase
+
+  - key:    readability-identifier-naming.ClassCase
     value:  lower_case
-  - key:    MemberPrefix
+  - key:    readability-identifier-naming.StructCase
+    value:  lower_case
+  - key:    readability-identifier-naming.MemberCase
+    value:  lower_case
+  - key:    readability-identifier-naming.PrivateMemberPrefix
     value:  m_
-  - key:    ClassMethodCase
+  - key:    readability-identifier-naming.MethodCase
     value:  lower_case
-  - key:    NamespaceCase
+
+  - key:    readability-identifier-naming.TypedefCase
     value:  lower_case
-  - key:    StructCase
+
+  - key:    readability-identifier-naming.EnumCase
     value:  lower_case
-  - key:    TemplateParameterCase
+  - key:    readability-identifier-naming.EnumConstantCase
+    value:  lower_case
+
+  - key:    readability-identifier-naming.TemplateParameterCase
     value:  CamelCase
-  - key:    VariableCase
-    value:  lower_case

@@ -312,7 +312,7 @@ XMIPP4_INLINE_CONSTEXPR unsigned int
 count_trailing_zeros(unsigned int x) noexcept
 {
     // __builtin_ctz is not defined for zero
-    if(!x)
+    if(x == 0)
     {
         return std::numeric_limits<unsigned int>::digits;
     }
@@ -326,7 +326,7 @@ XMIPP4_INLINE_CONSTEXPR unsigned int
 count_trailing_zeros(unsigned long long x) noexcept
 {
     // __builtin_ctzll is not defined for zero
-    if(!x)
+    if(x == 0)
     {
         return std::numeric_limits<unsigned long long>::digits;
     }

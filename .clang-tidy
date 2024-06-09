@@ -20,7 +20,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-HeaderFilterRegex: '.'
+HeaderFilterRegex: 'xmipp4/core/.*'
 Checks: >
   -*,
   performance-*,

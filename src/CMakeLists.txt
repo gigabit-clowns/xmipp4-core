@@ -55,11 +55,7 @@ target_compile_definitions(
 		VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
 		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
-target_precompile_headers(
-	${PROJECT_NAME} 
-	PRIVATE
-		${HEADERS}
-)
+
 target_link_libraries(${PROJECT_NAME} half)
 if(MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
@@ -74,6 +70,13 @@ if(XMIPP4_CORE_LINT_CLANG_TIDY)
 		${PROJECT_NAME} 
 		PROPERTIES 
 			CXX_CLANG_TIDY ${CLANG_TIDY_EXE}
+	)
+else()
+	# Precompiler headers do not work with clang-tidy
+	target_precompile_headers(
+		${PROJECT_NAME} 
+		PRIVATE
+			${HEADERS}
 	)
 endif()
 

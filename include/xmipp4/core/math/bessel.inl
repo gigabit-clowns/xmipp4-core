@@ -62,7 +62,7 @@ typename std::enable_if<std::is_floating_point<F>::value, bool>::type
 is_small_for_cylindrical_bessel_j(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
-    return ax < x;
+    return ax < threshold;
 }
 
 template <typename F>
@@ -71,7 +71,7 @@ typename std::enable_if<std::is_floating_point<F>::value, bool>::type
 is_small_for_cylindrical_bessel_y(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
-    return ax < x;
+    return ax < threshold;
 }
 
 template <typename F>
@@ -80,7 +80,7 @@ typename std::enable_if<std::is_floating_point<F>::value, bool>::type
 is_small_for_cylindrical_bessel_i(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
-    return ax < x;
+    return ax < threshold;
 }
 
 template <typename F>
@@ -89,7 +89,7 @@ typename std::enable_if<std::is_floating_point<F>::value, bool>::type
 is_small_for_cylindrical_bessel_k(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 2;
-    return ax < x;
+    return ax < threshold;
 }
 
 } // namespace detail
@@ -106,7 +106,7 @@ inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_j0_small(F ax) noexcept
 {
-    const auto y = square(x);
+    const auto y = square(ax);
 
     static XMIPP4_CONST_CONSTEXPR std::array<F, 6> num_poly = {
         57568490574.0,
@@ -223,7 +223,7 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1_small(F ax) noexcept
+cylindrical_bessel_j1_small(F x) noexcept
 {
     const auto y = square(x);
 
@@ -253,7 +253,7 @@ cylindrical_bessel_j1_small(F ax) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1_large(F ax) noexcept
+cylindrical_bessel_j1_large(F x, F ax) noexcept
 {
     const auto z = F(8)/ax;
     const auto y = square(z);
@@ -280,8 +280,8 @@ cylindrical_bessel_j1_large(F ax) noexcept
     F s;
     F c;
     sincos(xx, s, c);
-    result = sqrt(F(0.636619772)/ax)*(c*a-z*s*b);
-    if (x < 0) result = -result;
+    auto result = sqrt(F(0.636619772)/ax)*(c*a-z*s*b);
+    return (x < 0) ? -result : result;
 }
 
 template <typename F>
@@ -293,8 +293,8 @@ cylindrical_bessel_j1(F x) noexcept
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     const auto ax = abs(x);
     return is_small_for_cylindrical_bessel_j(ax) ? 
-           cylindrical_bessel_j1_small(ax) : 
-           cylindrical_bessel_j1_large(ax) ;
+           cylindrical_bessel_j1_small(x) : 
+           cylindrical_bessel_j1_large(x, ax) ;
 }
 
 #if XMIPP4_HAS_BUILTIN(j1f)
@@ -533,11 +533,11 @@ cylindrical_bessel_y0(F x) noexcept
     }
     else if (is_small_for_cylindrical_bessel_y(x)) 
     {
-        result = cylindrical_bessel_y0_small(x)
+        result = cylindrical_bessel_y0_small(x);
     } 
     else 
     {
-        result = cylindrical_bessel_y0_large(x)
+        result = cylindrical_bessel_y0_large(x);
     }
 
     return result;

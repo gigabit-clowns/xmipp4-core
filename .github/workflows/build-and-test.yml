@@ -27,7 +27,6 @@ on:
   pull_request:
     branches:
       - main
-      - devel
 
   workflow_dispatch:
 

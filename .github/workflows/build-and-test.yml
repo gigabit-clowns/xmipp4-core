@@ -71,8 +71,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco install drmemory
-          refreshenv
           find /c/ -name "drmemory.exe"
+          false
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

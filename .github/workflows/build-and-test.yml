@@ -71,7 +71,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco install drmemory
-          find /c/ -name "drmemory.exe"
+          find "/c/Program Files (x86)/Dr. Memory/bin" -name "drmemory.exe"
           false
 
       - name: Configure and build with CMake

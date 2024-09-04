@@ -72,8 +72,7 @@ jobs:
         run: |
           choco install drmemory
           refreshenv
-          drmemory.exe -h
-          false
+          find /c/ -name "drmemory.exe"
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

@@ -72,7 +72,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco install drmemory
-          echo "drmemory="/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe" >> "$GITHUB_OUTPUT"
+          echo "drmemory=/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe" >> "$GITHUB_OUTPUT"
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

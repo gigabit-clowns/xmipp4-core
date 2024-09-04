@@ -69,7 +69,10 @@ jobs:
 
       - name: Install Dr. Memory (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install drmemory
+        run: |
+          choco install drmemory
+          drmemory -h
+          false
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

@@ -57,7 +57,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
 
-      - name: Install Valgrind on Ubuntu
+      - name: Install Valgrind (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y valgrind
 
@@ -67,9 +67,9 @@ jobs:
       #    brew tap LouisBrunner/valgrind
       #    brew install --HEAD LouisBrunner/valgrind/valgrind
 
-      #- name: Install Dr. Memory on Windows
-      #  if: matrix.os == 'windows-latest'
-      #  run: choco install drmemory
+      - name: Install Dr. Memory (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install drmemory
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main
@@ -85,12 +85,17 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests without memcheck
-        if: matrix.os != 'ubuntu-latest'
+        if: matrix.os == 'macos-latest'
         working-directory: "${{ github.workspace }}/build"
         run: ctest -C ${{env.BUILD_TYPE}}
 
       # This step should be the only one used for running test once it works on all OS
-      - name: Run tests with memory check
+      - name: Run tests with memory check (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         working-directory: "${{ github.workspace }}/build"
         run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
+      
+      - name: Run tests with Dr. Memory (Windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: "${{ github.workspace }}/build"
+        run: drmemory.exe -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

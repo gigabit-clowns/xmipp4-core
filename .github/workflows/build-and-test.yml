@@ -27,7 +27,6 @@ on:
   pull_request:
     branches:
       - main
-      - devel
 
   workflow_dispatch:
 
@@ -55,42 +54,43 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: actions/checkout@main
+      - name: Checkout repository
+        uses: actions/checkout@main
 
-    - name: Install Valgrind on Ubuntu
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install -y valgrind
+      - name: Install Valgrind on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y valgrind
 
-    #- name: Install Valgrind on macOS
-    #  if: matrix.os == 'macos-latest'
-    #  run: |
-    #    brew tap LouisBrunner/valgrind
-    #    brew install --HEAD LouisBrunner/valgrind/valgrind
+      #- name: Install Valgrind on macOS
+      #  if: matrix.os == 'macos-latest'
+      #  run: |
+      #    brew tap LouisBrunner/valgrind
+      #    brew install --HEAD LouisBrunner/valgrind/valgrind
 
-    #- name: Install Dr. Memory on Windows
-    #  if: matrix.os == 'windows-latest'
-    #  run: choco install drmemory
+      #- name: Install Dr. Memory on Windows
+      #  if: matrix.os == 'windows-latest'
+      #  run: choco install drmemory
 
-    - name: Configure and build with CMake
-      uses: threeal/cmake-action@main
-      with:
-        source-dir: ${{ github.workspace }}
-        build-dir: "${{ github.workspace }}/build"
-        c-compiler: ${{ matrix.compiler.cc }}
-        cxx-compiler: ${{ matrix.compiler.cxx }}
-        options: |
-          CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          XMIPP4_CORE_BUILD_DOC=OFF
-        run-build: true
-        build-args: --config ${{ env.BUILD_TYPE }}
-    
-    - name: Run tests without memcheck
-      if: matrix.os != 'ubuntu-latest'
-      working-directory: "${{ github.workspace }}/build"
-      run: ctest -C ${{env.BUILD_TYPE}}
+      - name: Configure and build with CMake
+        uses: threeal/cmake-action@main
+        with:
+          source-dir: ${{ github.workspace }}
+          build-dir: "${{ github.workspace }}/build"
+          c-compiler: ${{ matrix.compiler.cc }}
+          cxx-compiler: ${{ matrix.compiler.cxx }}
+          options: |
+            CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            XMIPP4_CORE_BUILD_DOC=OFF
+          run-build: true
+          build-args: --config ${{ env.BUILD_TYPE }}
 
-    # This step should be the only one used for running test once it works on all OS
-    - name: Run tests with memory check
-      if: matrix.os == 'ubuntu-latest'
-      working-directory: "${{ github.workspace }}/build"
-      run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
+      - name: Run tests without memcheck
+        if: matrix.os != 'ubuntu-latest'
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest -C ${{env.BUILD_TYPE}}
+
+      # This step should be the only one used for running test once it works on all OS
+      - name: Run tests with memory check
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure

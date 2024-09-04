@@ -27,7 +27,6 @@ on:
   pull_request:
     branches:
       - main
-      - devel
 
   workflow_dispatch:
 
@@ -55,22 +54,23 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: actions/checkout@main
+      - name: Checkout repository
+        uses: actions/checkout@main
 
-    - name: Configure and build with CMake
-      uses: threeal/cmake-action@main
-      with:
-        source-dir: ${{ github.workspace }}
-        build-dir: "${{ github.workspace }}/build"
-        c-compiler: ${{ matrix.compiler.cc }}
-        cxx-compiler: ${{ matrix.compiler.cxx }}
-        options: |
-          CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          XMIPP4_CORE_BUILD_DOC=OFF
-          XMIPP4_CORE_LINT_CLANG_TIDY=OFF
-        run-build: true
-        build-args: --config ${{ env.BUILD_TYPE }}
+      - name: Configure and build with CMake
+        uses: threeal/cmake-action@main
+        with:
+          source-dir: ${{ github.workspace }}
+          build-dir: "${{ github.workspace }}/build"
+          c-compiler: ${{ matrix.compiler.cc }}
+          cxx-compiler: ${{ matrix.compiler.cxx }}
+          options: |
+            CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            XMIPP4_CORE_BUILD_DOC=OFF
+            XMIPP4_CORE_LINT_CLANG_TIDY=OFF
+          run-build: true
+          build-args: --config ${{ env.BUILD_TYPE }}
 
-    - name: Run tests
-      working-directory: "${{ github.workspace }}/build"
-      run: ctest -C ${{env.BUILD_TYPE}}
+      - name: Run tests
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest -C ${{env.BUILD_TYPE}}

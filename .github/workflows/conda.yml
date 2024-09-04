@@ -45,10 +45,11 @@ jobs:
         shell: "bash -l {0}"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@main
 
-      - name: Get conda
-        uses: conda-incubator/setup-miniconda@v3.0.3
+      - name: Install Miniconda
+        uses: conda-incubator/setup-miniconda@main
         with:
           channels: conda-forge
           channel-priority: strict

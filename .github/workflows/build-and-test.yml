@@ -67,7 +67,7 @@ jobs:
             echo "memcheckflag=$MEMCHECKFLAG" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "windows-latest" ]; then
-            export MEMCHECKTOOL="\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- "
+            export MEMCHECKTOOL="\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\" -show_reachable -- "
             echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "macos-latest" ]; then

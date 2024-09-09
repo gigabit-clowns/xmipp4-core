@@ -64,18 +64,21 @@ jobs:
           echo "memcheckflag=" >> "$GITHUB_OUTPUT"
           if [ ${{ matrix.os }} = "ubuntu-latest" ]; then
             sudo apt-get install -y valgrind
-            echo "memcheckflag= -T memcheck" >> "$GITHUB_OUTPUT"
+            export MEMCHECKFLAG= -T memcheck
+            echo "memcheckflag=$MEMCHECKFLAG" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "windows-latest" ]; then
             choco install drmemory
-            echo "memchecktool=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- " >> "$GITHUB_OUTPUT"
+            export MEMCHECKTOOL=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- 
+            echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "macos-latest" ]; then
-            echo "memchecktool=leaks --fullContent --atExit -- " >> "$GITHUB_OUTPUT"
+            export MEMCHECKTOOL=leaks --fullContent --atExit -- 
+            echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
           echo "Detected OS: ${{ matrix.os }}"
-          echo "Defined memcheck tool: $memchecktool"
-          echo "Defined memcheck flag: $memcheckflag"
+          echo "Defined memcheck tool: $MEMCHECKTOOL"
+          echo "Defined memcheck flag: $MEMCHECKFLAG"
 
       - name: Install Valgrind (Ubuntu)
         if: matrix.os == 'ubuntu-latest'

@@ -79,7 +79,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             XMIPP4_CORE_BUILD_DOC=OFF
           run-build: true
-          build-args: --config ${{ env.BUILD_TYPE }} -g
+          build-args: --config ${{ env.BUILD_TYPE }}
 
       # This step should be the only one used for running test once it works on all OS
       - name: Run tests with memory check (Ubuntu)

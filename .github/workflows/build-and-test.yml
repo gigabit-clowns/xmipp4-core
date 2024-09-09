@@ -61,11 +61,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y valgrind
 
-      #- name: Install Valgrind on macOS
-      #  if: matrix.os == 'macos-latest'
-      #  run: |
-      #    brew tap LouisBrunner/valgrind
-      #    brew install --HEAD LouisBrunner/valgrind/valgrind
+      - name: Install Valgrind on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew tap LouisBrunner/valgrind
+          brew install --HEAD LouisBrunner/valgrind/valgrind
 
       - name: Install Dr. Memory (Windows)
         id: install-drmemory

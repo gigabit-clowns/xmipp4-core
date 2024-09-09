@@ -81,11 +81,6 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Run tests without memcheck
-        if: matrix.os == 'macos-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: ctest -C ${{env.BUILD_TYPE}}
-
       # This step should be the only one used for running test once it works on all OS
       - name: Run tests with memory check (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
@@ -101,6 +96,5 @@ jobs:
         if: matrix.os == 'macos-latest'
         working-directory: "${{ github.workspace }}/build"
         run: |
-          ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure &
-          sleep 2
-          leaks $(pgrep -f ctest)
+          export MallocStackLogging=1
+          leaks --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure &

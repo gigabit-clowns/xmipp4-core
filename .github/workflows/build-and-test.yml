@@ -100,4 +100,7 @@ jobs:
       - name: Run tests with Leaks (MacOS)
         if: matrix.os == 'macos-latest'
         working-directory: "${{ github.workspace }}/build"
-        run: leaks ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+        run: |
+          ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure &
+          sleep 2
+          leaks $(pgrep -f ctest)

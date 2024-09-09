@@ -61,10 +61,6 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y valgrind
 
-      - name: Install Valgrind on macOS
-        if: matrix.os == 'macos-latest'
-        run: sudo port install valgrind
-
       - name: Install Dr. Memory (Windows)
         id: install-drmemory
         if: matrix.os == 'windows-latest'
@@ -100,3 +96,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         working-directory: "${{ github.workspace }}/build"
         run: ${{ steps.install-drmemory.outputs.drmemory }} -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+
+      - name: Run tests with Leaks (MacOS)
+        if: matrix.os == 'macos-latest'
+        working-directory: "${{ github.workspace }}/build"
+        run: leaks ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

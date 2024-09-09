@@ -56,6 +56,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
+      
+      - name: Install memory check tool
+        id: memchek-setup
+        run: |
+          echo "memchecktool=\"\"" >> "$GITHUB_OUTPUT"
+          echo "memcheckflag=\"\"" >> "$GITHUB_OUTPUT"
+          if [ ${{ matrix.os }} -eq 'ubuntu-latest' ]; then
+            sudo apt-get install -y valgrind
+            echo "memcheckflag=\" -T memcheck\"" >> "$GITHUB_OUTPUT"
+          fi
+          if [ ${{ matrix.os }} -eq 'windows-latest' ]; then
+            choco install drmemory
+            echo "memchecktool=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe  -- \"" >> "$GITHUB_OUTPUT"
+          fi
+          if [ ${{ matrix.os }} -eq 'macos-latest' ]; then
+            echo "memchecktool=\"leaks --fullContent --atExit -- \"" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install Valgrind (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
@@ -80,21 +97,25 @@ jobs:
             XMIPP4_CORE_BUILD_DOC=OFF
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
+      
+      - name: Run tests with memory check
+        working-directory: "${{ github.workspace }}/build"
+        run: ${{ steps.memchek-setup.outputs.memchecktool }}ctest -C ${{env.BUILD_TYPE}}${{ steps.memchek-setup.outputs.memcheckflag }} --rerun-failed --output-on-failure
 
       # This step should be the only one used for running test once it works on all OS
-      - name: Run tests with memory check (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
-      
-      - name: Run tests with Dr. Memory (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: ${{ steps.install-drmemory.outputs.drmemory }} -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
-
-      - name: Run tests with Leaks (MacOS)
-        if: matrix.os == 'macos-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          export MallocStackLogging=1
-          leaks --fullContent --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+      #- name: Run tests with memory check (Ubuntu)
+      #  if: matrix.os == 'ubuntu-latest'
+      #  working-directory: "${{ github.workspace }}/build"
+      #  run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
+      #
+      #- name: Run tests with Dr. Memory (Windows)
+      #  if: matrix.os == 'windows-latest'
+      #  working-directory: "${{ github.workspace }}/build"
+      #  run: ${{ steps.install-drmemory.outputs.drmemory }} -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+#
+      #- name: Run tests with Leaks (MacOS)
+      #  if: matrix.os == 'macos-latest'
+      #  working-directory: "${{ github.workspace }}/build"
+      #  run: |
+      #    export MallocStackLogging=1
+      #    leaks --fullContent --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

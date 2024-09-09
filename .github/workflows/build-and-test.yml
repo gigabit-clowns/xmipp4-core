@@ -57,18 +57,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
       
-      - name: Setup memory check tool
+      - name: Define memory check tool
         id: memchek-setup
         run: |
           echo "memchecktool=" >> "$GITHUB_OUTPUT"
           echo "memcheckflag=" >> "$GITHUB_OUTPUT"
           if [ ${{ matrix.os }} = "ubuntu-latest" ]; then
-            sudo apt-get install -y valgrind
             export MEMCHECKFLAG=" -T memcheck"
             echo "memcheckflag=$MEMCHECKFLAG" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "windows-latest" ]; then
-            choco install drmemory
             export MEMCHECKTOOL="\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- "
             echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
@@ -79,6 +77,15 @@ jobs:
           echo "Detected OS: ${{ matrix.os }}"
           echo "Defined memcheck tool command: $MEMCHECKTOOL"
           echo "Defined memcheck flag: $MEMCHECKFLAG"
+
+      - name: Install Valgrind (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y valgrind
+
+      - name: Install Dr. Memory (Windows)
+        id: install-drmemory
+        if: matrix.os == 'windows-latest'
+        run: choco install drmemory
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

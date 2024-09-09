@@ -79,7 +79,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             XMIPP4_CORE_BUILD_DOC=OFF
           run-build: true
-          build-args: --config ${{ env.BUILD_TYPE }}
+          build-args: --config ${{ env.BUILD_TYPE }} -g
 
       # This step should be the only one used for running test once it works on all OS
       - name: Run tests with memory check (Ubuntu)
@@ -97,4 +97,4 @@ jobs:
         working-directory: "${{ github.workspace }}/build"
         run: |
           export MallocStackLogging=1
-          leaks --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure &
+          leaks --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

@@ -97,4 +97,4 @@ jobs:
         working-directory: "${{ github.workspace }}/build"
         run: |
           export MallocStackLogging=1
-          leaks --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+          leaks --fullContent --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

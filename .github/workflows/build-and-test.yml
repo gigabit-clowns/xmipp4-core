@@ -64,16 +64,16 @@ jobs:
           echo "memcheckflag=" >> "$GITHUB_OUTPUT"
           if [ ${{ matrix.os }} = "ubuntu-latest" ]; then
             sudo apt-get install -y valgrind
-            export MEMCHECKFLAG= -T memcheck
+            export MEMCHECKFLAG=" -T memcheck"
             echo "memcheckflag=$MEMCHECKFLAG" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "windows-latest" ]; then
             choco install drmemory
-            export MEMCHECKTOOL=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- 
+            export MEMCHECKTOOL="\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"  -- "
             echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
           if [ ${{ matrix.os }} = "macos-latest" ]; then
-            export MEMCHECKTOOL=leaks --fullContent --atExit -- 
+            export MEMCHECKTOOL="leaks --fullContent --atExit -- "
             echo "memchecktool=$MEMCHECKTOOL" >> "$GITHUB_OUTPUT"
           fi
           echo "Detected OS: ${{ matrix.os }}"

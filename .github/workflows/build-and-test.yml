@@ -63,9 +63,7 @@ jobs:
 
       - name: Install Valgrind on macOS
         if: matrix.os == 'macos-latest'
-        run: |
-          brew tap LouisBrunner/valgrind
-          brew install --HEAD LouisBrunner/valgrind/valgrind
+        run: sudo port install valgrind
 
       - name: Install Dr. Memory (Windows)
         id: install-drmemory

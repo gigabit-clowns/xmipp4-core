@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@main
       
       - name: Install memcheck tool
-        uses: .github/composites/install-memtool
+        uses: ./.github/composites/install-memtool
         with:
           os: ${{ matrix.os }}
 

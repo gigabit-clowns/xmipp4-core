@@ -59,6 +59,7 @@ jobs:
       
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
+        id: install-memtool
         with:
           os: ${{ matrix.os }}
 
@@ -75,19 +76,8 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Run tests with memory check (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: ctest -C ${{env.BUILD_TYPE}} -T memcheck --rerun-failed --output-on-failure
-      
-      - name: Run tests with memory check (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: ${{ steps.install-drmemory.outputs.drmemory }} -show_reachable -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
-
-      - name: Run tests with memory check (MacOS)
-        if: matrix.os == 'macos-latest'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          export MallocStackLogging=1
-          leaks --fullContent --atExit -- ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+      - name: Run tests with memory check
+        uses: ./.github/composites/run-memtool
+        with:
+          os: ${{ matrix.os }}
+          drmemory: ${{ steps.install-memtool.outputs.drmemory }}

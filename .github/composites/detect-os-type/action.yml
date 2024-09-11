@@ -26,4 +26,6 @@ runs:
         else
           export OS_TYPE=unkown
         fi
+        echo "Input OS: ${{ inputs.os }}"
+        echo "Detected OS type: $OS_TYPE"
         echo "os_type=$OS_TYPE" >> "$GITHUB_OUTPUT"

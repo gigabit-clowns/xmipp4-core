@@ -20,7 +20,7 @@ runs:
       with:
         os: ${{ inputs.os }}
     
-    - name: Install Valgrind (Ubuntu)
+    - name: Install Valgrind (Debian)
       if: steps.get-os-type.outputs.os_type == 'debian'
       shell: bash
       run: sudo apt-get install -y valgrind

@@ -27,7 +27,7 @@ runs:
     - name: Install Valgrind (Ubuntu)
       if: steps.get-os-type.outputs.os_type == 'debian'
       shell: bash
-      run: sudo apt install -y valgrind
+      run: sudo apt-get install -y valgrind
 
     - name: Install Dr. Memory (Windows)
       id: install-drmemory

@@ -19,6 +19,10 @@ runs:
       id: get-os-type
       with:
         os: ${{ inputs.os }}
+    
+    - name: test echo
+      shell: bash
+      run: echo "Received OS: ${{ steps.get-os-type.outputs.os_type }}"
 
     - name: Install Valgrind (Ubuntu)
       if: steps.get-os-type.outputs.os_type == 'debian'

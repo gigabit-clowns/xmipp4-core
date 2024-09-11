@@ -15,7 +15,9 @@ runs:
   using: "composite"
   steps:
     - name: Test
-      run: echo "OS: ${{ inputs.os }}"
+      env:
+        OS: ${{ inputs.os }}
+      run: echo "OS: $OS"
 
     - name: Install Valgrind (Ubuntu)
       if: ${{ inputs.os }} == 'ubuntu-latest'

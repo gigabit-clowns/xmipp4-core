@@ -13,19 +13,19 @@ runs:
   using: "composite"
   steps:
     - name: Run tests with memory check (Ubuntu)
-      if: ${{ inputs.os }} == 'ubuntu-latest'
+      if: inputs.os == 'ubuntu-latest'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
     
     - name: Run tests with memory check (Windows)
-      if: ${{ inputs.os }} == 'windows-latest'
+      if: inputs.os == 'windows-latest'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
     - name: Run tests with memory check (MacOS)
-      if: ${{ inputs.os }} == 'macos-latest'
+      if: inputs.os == 'macos-latest'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: |

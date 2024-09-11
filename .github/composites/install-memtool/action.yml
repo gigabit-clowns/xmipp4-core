@@ -1,0 +1,26 @@
+name: "Install Memcheck tool"
+description: "Installs the required memcheck tool for every OS"
+
+inputs:
+  os:
+    description: "OS the worker runs on"
+    required: true
+
+outputs:
+  drmemory:
+    description: "Full path to Dr. Memory executable"
+    value: ${{ steps.install-drmemory.outputs.drmemory }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Valgrind (Ubuntu)
+      if: ${{ inputs.os }} == 'ubuntu-latest'
+      run: sudo apt-get install -y valgrind
+
+    - name: Install Dr. Memory (Windows)
+      id: install-drmemory
+      if: ${{ inputs.os }} == 'windows-latest'
+      run: |
+        choco install drmemory
+        echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"" >> "$GITHUB_OUTPUT"

@@ -57,16 +57,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
       
-      - name: Install Valgrind (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y valgrind
-
-      - name: Install Dr. Memory (Windows)
-        id: install-drmemory
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco install drmemory
-          echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"" >> "$GITHUB_OUTPUT"
+      - name: Install memcheck tool
+        uses: ./.github/composites/install-memtool
+        with:
+          os: ${{ matrix.os }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

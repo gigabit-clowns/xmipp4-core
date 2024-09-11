@@ -12,20 +12,26 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run tests with memory check (Ubuntu)
-      if: inputs.os == 'ubuntu-latest'
+    - name: Get OS type
+      uses: ./.github/composites/detect-os-type
+      id: get-os-type
+      with:
+        os: ${{ inputs.os }}
+
+    - name: Run tests with memory check (Debian)
+      if: steps.get-os-type.outputs.os_type == 'debian'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
     
     - name: Run tests with memory check (Windows)
-      if: inputs.os == 'windows-latest'
+      if: steps.get-os-type.outputs.os_type == 'windows'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
     - name: Run tests with memory check (MacOS)
-      if: inputs.os == 'macos-latest'
+      if: steps.get-os-type.outputs.os_type == 'macos'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: |

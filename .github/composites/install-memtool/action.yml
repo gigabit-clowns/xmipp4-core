@@ -22,7 +22,7 @@ runs:
     
     - name: test echo
       shell: bash
-      run: echo "Received OS: ${{ steps.get-os-type.outputs.os_type }}"
+      run: echo "Received OS - ${{ steps.get-os-type.outputs.os_type }}"
 
     - name: Install Valgrind (Ubuntu)
       if: steps.get-os-type.outputs.os_type == 'debian'

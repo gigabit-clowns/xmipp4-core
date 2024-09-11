@@ -9,7 +9,7 @@ inputs:
 outputs:
   os_type:
     description: "Detected OS type"
-    value: ${{ steps.detect-os-type.outputs.drmemory }}
+    value: ${{ steps.detect-os-type.outputs.os_type }}
 
 runs:
   using: "composite"

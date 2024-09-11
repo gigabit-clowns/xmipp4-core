@@ -9,12 +9,13 @@ inputs:
 outputs:
   os_type:
     description: "Detected OS type"
-    value: ${{ steps.install-drmemory.outputs.drmemory }}
+    value: ${{ steps.detect-os-type.outputs.drmemory }}
 
 runs:
   using: "composite"
   steps:
     - name: Detect OS type
+      id: detect-os-type
       shell: bash
       run: |
         if [[ ${{ inputs.os }} == ubuntu* ]] ; then

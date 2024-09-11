@@ -14,14 +14,20 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Get OS type
+      uses: ./.github/composites/detect-os-type
+      id: get-os-type
+      with:
+        os: ${{ inputs.os }}
+
     - name: Install Valgrind (Ubuntu)
-      if: inputs.os == 'ubuntu-latest'
+      if: steps.get-os-type.outputs.os_type == 'debian'
       shell: bash
       run: sudo apt install -y valgrind
 
     - name: Install Dr. Memory (Windows)
       id: install-drmemory
-      if: inputs.os == 'windows-latest'
+      if: steps.get-os-type.outputs.os_type == 'windows'
       shell: bash
       run: |
         choco install drmemory

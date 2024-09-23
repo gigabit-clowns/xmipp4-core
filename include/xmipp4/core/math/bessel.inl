@@ -52,54 +52,17 @@ namespace xmipp4
 {
 namespace math
 {
-
 namespace detail
 {
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_j(F ax) noexcept
+is_small_for_cylindrical_bessel_j0(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
     return ax < threshold;
 }
-
-template <typename F>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_y(F ax) noexcept
-{
-    XMIPP4_CONST_CONSTEXPR F threshold = 8;
-    return ax < threshold;
-}
-
-template <typename F>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_i(F ax) noexcept
-{
-    XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
-    return ax < threshold;
-}
-
-template <typename F>
-XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_k(F ax) noexcept
-{
-    XMIPP4_CONST_CONSTEXPR F threshold = 2;
-    return ax < threshold;
-}
-
-} // namespace detail
-
-
-
-
-
-namespace detail
-{
 
 template <typename F>
 inline
@@ -172,7 +135,7 @@ cylindrical_bessel_j0(F x) noexcept
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     const auto ax = abs(x);
-    return is_small_for_cylindrical_bessel_j(ax) ? 
+    return is_small_for_cylindrical_bessel_j0(ax) ? 
            cylindrical_bessel_j0_small(ax) : 
            cylindrical_bessel_j0_large(ax) ;
 }
@@ -219,6 +182,15 @@ cylindrical_bessel_j0(F x) noexcept
 
 namespace detail
 {
+
+template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_j1(F ax) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 8;
+    return ax < threshold;
+}
 
 template <typename F>
 inline
@@ -292,7 +264,7 @@ cylindrical_bessel_j1(F x) noexcept
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     const auto ax = abs(x);
-    return is_small_for_cylindrical_bessel_j(ax) ? 
+    return is_small_for_cylindrical_bessel_j1(ax) ? 
            cylindrical_bessel_j1_small(x) : 
            cylindrical_bessel_j1_large(x, ax) ;
 }
@@ -452,6 +424,15 @@ namespace detail
 {
 
 template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_y0(F ax) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 8;
+    return ax < threshold;
+}
+
+template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y0_small(F x) noexcept
@@ -531,7 +512,7 @@ cylindrical_bessel_y0(F x) noexcept
     {
         result = -std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_y(x)) 
+    else if (is_small_for_cylindrical_bessel_y0(x)) 
     {
         result = cylindrical_bessel_y0_small(x);
     } 
@@ -585,6 +566,15 @@ cylindrical_bessel_y0(F x) noexcept
 
 namespace detail
 {
+
+template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_y1(F ax) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 8;
+    return ax < threshold;
+}
 
 template <typename F>
 inline
@@ -667,7 +657,7 @@ cylindrical_bessel_y1(F x) noexcept
     {
         result = -std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_y(x)) 
+    else if (is_small_for_cylindrical_bessel_y1(x)) 
     {
         result = cylindrical_bessel_y1_small(x);
     } 
@@ -823,52 +813,69 @@ namespace detail
 {
 
 template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_i0(F ax) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
+    return ax < threshold;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i0_small(F ax) noexcept
+{
+    const auto y = square(ax / F(3.75));
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        1.0,
+        3.5156229,
+        3.0899424,
+        1.2067492,
+        0.2659732,
+        0.360768e-1,
+        0.45813e-2
+    };
+
+    return evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i0_large(F ax) noexcept
+{
+    const auto y = F(3.75) / ax;
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
+        0.39894228, 
+        0.1328592e-1, 
+        0.225319e-2, 
+        -0.157565e-2, 
+        0.916281e-2, 
+        -0.2057706e-1, 
+        0.2635537e-1, 
+        -0.1647633e-1,
+        0.392377e-2
+    };
+
+    auto result = exp(ax) / sqrt(ax);
+    result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+    return result;
+}
+
+template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_i0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-    F result;
-
     const auto ax = abs(x);
-    if (ax < F(3.75))
-    {   
-        const auto y = square(x/F(3.75));
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            1.0,
-            3.5156229,
-            3.0899424,
-            1.2067492,
-            0.2659732,
-            0.360768e-1,
-            0.45813e-2
-        };
-
-        result = evaluate_polynomial(poly.cbegin(), poly.cend(), y);
-    }
-    else
-    {
-        const auto y = F(3.75) / ax;
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
-            0.39894228, 
-            0.1328592e-1, 
-            0.225319e-2, 
-            -0.157565e-2, 
-            0.916281e-2, 
-            -0.2057706e-1, 
-            0.2635537e-1, 
-            -0.1647633e-1,
-            0.392377e-2
-        };
-
-        result = exp(ax) / sqrt(ax);
-        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
-    }
-
-    return result;
+    return is_small_for_cylindrical_bessel_i0(ax) ?
+           cylindrical_bessel_i0_small(ax) :
+           cylindrical_bessel_i0_large(ax) ;
 }
 
 } // namespace detail
@@ -889,6 +896,59 @@ namespace detail
 {
 
 template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_i1(F ax) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
+    return ax < threshold;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i1_small(F ax) noexcept
+{
+    const auto y = square(ax/F(3.75));
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        0.5,
+        0.87890594,
+        0.51498869,
+        0.15084934,
+        0.2658733e-1,
+        0.301532e-2,
+        0.32411e-3
+    };
+
+    return ax * evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_i1_large(F ax) noexcept
+{
+    const auto y = F(3.75) / ax;
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
+        0.39894228,
+        -0.3988024e-1,
+        -0.362018e-2,
+        0.163801e-2,
+        -0.1031555e-1,
+        0.2282967e-1,
+        -0.2895312e-1,
+        0.1787654e-1,
+        -0.420059e-2
+    };
+
+    auto result = exp(ax) / sqrt(ax);
+    result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+    return result;
+}
+
+template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_i1(F x) noexcept
@@ -898,41 +958,9 @@ cylindrical_bessel_i1(F x) noexcept
     F result;
     
     const auto ax = math::abs(x);
-    if (ax < F(3.75))
-    {
-        const auto y = square(x/F(3.75));
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            0.5,
-            0.87890594,
-            0.51498869,
-            0.15084934,
-            0.2658733e-1,
-            0.301532e-2,
-            0.32411e-3
-        };
-
-        result = ax * evaluate_polynomial(poly.cbegin(), poly.cend(), y);
-    }
-    else
-    {
-        const auto y = F(3.75) / ax;
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 9> poly = {
-            0.39894228,
-            -0.3988024e-1,
-            -0.362018e-2,
-            0.163801e-2,
-            -0.1031555e-1,
-            0.2282967e-1,
-            -0.2895312e-1,
-            0.1787654e-1,
-            -0.420059e-2
-        };
-
-        result = exp(ax) / sqrt(ax);
-        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
-    }
+    result = is_small_for_cylindrical_bessel_i1(ax) ?
+             cylindrical_bessel_i1_small(ax) :
+             cylindrical_bessel_i1_large(ax) ;
 
     return x < 0 ? -result : result;
 }
@@ -1027,6 +1055,59 @@ namespace detail
 {
 
 template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_k0(F x) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 2;
+    return x < threshold;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0_small(F x) noexcept
+{
+    const auto y = square(x) / F(4);
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        -0.57721566, 
+        0.42278420, 
+        0.23069756, 
+        0.3488590e-1, 
+        0.262698e-2, 
+        0.10750e-3, 
+        0.74e-5
+    };
+
+    auto result = -log(x/F(2)) * cylindrical_bessel_i0(x);
+    result += evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+    return result;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0_large(F x) noexcept
+{
+    const auto y = F(2)/x;
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        1.25331414, 
+        -0.7832358e-1, 
+        0.2189568e-1, 
+        -0.1062446e-1, 
+        0.587872e-2, 
+        -0.251540e-2, 
+        0.53208e-3
+    };
+
+    auto result = exp(-x)/sqrt(x);
+    result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+    return result;
+}
+
+template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_k0(F x) noexcept
@@ -1043,39 +1124,13 @@ cylindrical_bessel_k0(F x) noexcept
     {
         result = std::numeric_limits<F>::infinity();
     }
-    else if (x <= F(2)) 
+    else if (is_small_for_cylindrical_bessel_k0(x)) 
     {
-        const auto y = square(x) / F(4);
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            -0.57721566, 
-            0.42278420, 
-            0.23069756, 
-            0.3488590e-1, 
-            0.262698e-2, 
-            0.10750e-3, 
-            0.74e-5
-        };
-
-        result = -log(x/F(2)) * cylindrical_bessel_i0(x);
-        result += evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+        result = cylindrical_bessel_k0_small(x);
     } 
     else 
     {
-        const auto y = F(2)/x;
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            1.25331414, 
-            -0.7832358e-1, 
-            0.2189568e-1, 
-            -0.1062446e-1, 
-            0.587872e-2, 
-            -0.251540e-2, 
-            0.53208e-3
-        };
-
-        result = exp(-x)/sqrt(x);
-        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+        result = cylindrical_bessel_k0_large(x);
     }
 
     return result;
@@ -1097,6 +1152,59 @@ cylindrical_bessel_k0(F x) noexcept
 
 namespace detail
 {
+    
+template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+typename std::enable_if<std::is_floating_point<F>::value, bool>::type
+is_small_for_cylindrical_bessel_k1(F x) noexcept
+{
+    XMIPP4_CONST_CONSTEXPR F threshold = 2;
+    return x < threshold;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1_small(F x) noexcept
+{
+    const auto y = square(x)/F(4);
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        1.0,
+        0.15443144, 
+        -0.67278579,
+        -0.18156897,
+        -0.1919402e-1,
+        -0.110404e-2,
+        -0.4686e-4
+    };
+
+    auto result = log(x/F(2))*cylindrical_bessel_i1(x);
+    result += evaluate_polynomial(poly.cbegin(), poly.cend(), y) / x;
+    return result;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1_large(F x) noexcept
+{
+    const auto y = F(2)/x;
+
+    static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
+        1.25331414,
+        0.23498619,
+        -0.3655620e-1,
+        0.1504268e-1,
+        -0.780353e-2,
+        0.325614e-2,
+        -0.68245e-3
+    };
+
+    auto result = exp(-x)/sqrt(x);
+    result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);
+    return result;
+}
 
 template <typename F>
 inline
@@ -1115,39 +1223,13 @@ cylindrical_bessel_k1(F x) noexcept
     {
         result = std::numeric_limits<F>::infinity();
     }
-    else if (x <= F(2)) 
+    else if (is_small_for_cylindrical_bessel_k1(x)) 
     {
-        const auto y = square(x)/F(4);
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            1.0,
-            0.15443144, 
-            -0.67278579,
-            -0.18156897,
-            -0.1919402e-1,
-            -0.110404e-2,
-            -0.4686e-4
-        };
-
-        result = log(x/F(2))*cylindrical_bessel_i1(x);
-        result += evaluate_polynomial(poly.cbegin(), poly.cend(), y) / x;  
+        result = cylindrical_bessel_k1_small(x);
     } 
     else 
     {
-        const auto y = F(2)/x;
-
-        static XMIPP4_CONST_CONSTEXPR std::array<F, 7> poly = {
-            1.25331414,
-            0.23498619,
-            -0.3655620e-1,
-            0.1504268e-1,
-            -0.780353e-2,
-            0.325614e-2,
-            -0.68245e-3
-        };
-
-        result = exp(-x)/sqrt(x);
-        result *= evaluate_polynomial(poly.cbegin(), poly.cend(), y);  
+        result = cylindrical_bessel_k1_large(x);
     }
 
     return result;

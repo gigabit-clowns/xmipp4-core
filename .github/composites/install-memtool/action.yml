@@ -14,20 +14,20 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Get OS type
-      uses: ./.github/composites/detect-os-type
-      id: get-os-type
-      with:
-        os: ${{ inputs.os }}
-    
-    - name: Install Valgrind (Debian)
-      if: steps.get-os-type.outputs.os_type == 'debian'
+    - name: Install Valgrind (Linux)
+      if: runner.os == 'Linux'
       shell: bash
-      run: sudo apt-get install -y valgrind
+      run: |
+        if which apt ; then
+          sudo apt install -y valgrind
+        else
+          echo "Could not find a package manager for this system"
+          exit 1
+        endif
 
     - name: Install Dr. Memory (Windows)
       id: install-drmemory
-      if: steps.get-os-type.outputs.os_type == 'windows'
+      if: runner.os == 'Windows'
       shell: bash
       run: |
         choco install drmemory

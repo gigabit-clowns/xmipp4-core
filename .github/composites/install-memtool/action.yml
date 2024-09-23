@@ -18,12 +18,12 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        if which apt ; then
+        if which apt; then
           sudo apt install -y valgrind
         else
           echo "Could not find a package manager for this system"
           exit 1
-        endif
+        fi
 
     - name: Install Dr. Memory (Windows)
       id: install-drmemory

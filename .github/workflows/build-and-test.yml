@@ -60,8 +60,6 @@ jobs:
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
         id: install-memtool
-        with:
-          os: ${{ matrix.os }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main
@@ -79,5 +77,4 @@ jobs:
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         with:
-          os: ${{ matrix.os }}
           drmemory: ${{ steps.install-memtool.outputs.drmemory }}

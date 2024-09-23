@@ -2,9 +2,6 @@ name: "Run test with memory checks"
 description: "Runs test with memcheck for every OS"
 
 inputs:
-  os:
-    description: "OS the worker runs on"
-    required: true
   drmemory:
     description: "Full path to Dr. Memory executable"
     required: false

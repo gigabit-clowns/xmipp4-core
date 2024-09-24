@@ -56,6 +56,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
+   
+      - name: Install memcheck tool
+        uses: ./.github/composites/install-memtool
+        id: install-memtool
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main
@@ -71,6 +75,7 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Run tests
-        working-directory: "${{ github.workspace }}/build"
-        run: ctest -C ${{env.BUILD_TYPE}}
+      - name: Run tests with memory check
+        uses: ./.github/composites/run-memtool
+        with:
+          drmemory: ${{ steps.install-memtool.outputs.drmemory }}

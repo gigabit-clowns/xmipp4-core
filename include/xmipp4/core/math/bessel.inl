@@ -498,28 +498,34 @@ cylindrical_bessel_y0_large(F x) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_y0_finite(F x) noexcept
+{
+    return  is_small_for_cylindrical_bessel_y0(x) ?
+            cylindrical_bessel_y0_small(x) :
+            cylindrical_bessel_y0_large(x) ;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     F result;
 
-    if(x < 0)
+    if (x<0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
         result = -std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_y0(x)) 
+    else
     {
-        result = cylindrical_bessel_y0_small(x);
+        result = cylindrical_bessel_y0_finite(x);
     } 
-    else 
-    {
-        result = cylindrical_bessel_y0_large(x);
-    }
 
     return result;
 }
@@ -643,27 +649,33 @@ cylindrical_bessel_y1_large(F x) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_y1_finite(F x) noexcept
+{
+    return  is_small_for_cylindrical_bessel_y1(x) ?
+            cylindrical_bessel_y1_small(x) :
+            cylindrical_bessel_y1_large(x) ;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_y1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     F result;
 
-    if(x < 0)
+    if(x < 0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
         result = -std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_y1(x)) 
-    {
-        result = cylindrical_bessel_y1_small(x);
-    } 
     else
     {
-        result = cylindrical_bessel_y1_large(x);
+        result = cylindrical_bessel_y1_finite(x);
     }
 
     return result;
@@ -715,6 +727,26 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_yn_iterative_finite(uint n, F x) noexcept
+{
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    F tox = F(2) / x;
+    F bym = cylindrical_bessel_y0(x);
+    F by = cylindrical_bessel_y1(x);
+    for(unsigned k = 1; k < static_cast<unsigned>(n); ++k)
+    {
+        const auto temp = k*tox*by-bym;
+        bym=by;
+        by=temp;
+    }
+
+    return by;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_yn_iterative(int n, F x) noexcept
 {
     int sign = 1;
@@ -725,9 +757,9 @@ cylindrical_bessel_yn_iterative(int n, F x) noexcept
     }
 
     F result;
-    if(x < 0)
+    if(x < 0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
@@ -735,19 +767,7 @@ cylindrical_bessel_yn_iterative(int n, F x) noexcept
     }
     else
     {
-        // Based on:
-        // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-        F tox = F(2) / x;
-        F bym = cylindrical_bessel_y0(x);
-        F by = cylindrical_bessel_y1(x);
-        for(unsigned k = 1; k < static_cast<unsigned>(n); ++k)
-        {
-            const auto temp = k*tox*by-bym;
-            bym=by;
-            by=temp;
-        }
-
-        result = by;
+        result = cylindrical_bessel_yn_iterative_finite(n, x);
     }
 
     return sign*result;
@@ -1110,27 +1130,33 @@ cylindrical_bessel_k0_large(F x) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k0_finite(F x) noexcept
+{
+    return  is_small_for_cylindrical_bessel_k0(x) ?
+            cylindrical_bessel_k0_small(x) :
+            cylindrical_bessel_k0_large(x) ;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_k0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     F result;
 
-    if(x < 0)
+    if(x < 0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
         result = std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_k0(x)) 
-    {
-        result = cylindrical_bessel_k0_small(x);
-    } 
     else 
     {
-        result = cylindrical_bessel_k0_large(x);
+        result = cylindrical_bessel_k0_finite(x);
     }
 
     return result;
@@ -1209,27 +1235,33 @@ cylindrical_bessel_k1_large(F x) noexcept
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_k1_finite(F x) noexcept
+{
+    return  is_small_for_cylindrical_bessel_k1(x) ?
+            cylindrical_bessel_k1_small(x) :
+            cylindrical_bessel_k1_large(x) ;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_k1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
     F result;
 
-    if(x < 0)
+    if(x < 0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
         result = std::numeric_limits<F>::infinity();
     }
-    else if (is_small_for_cylindrical_bessel_k1(x)) 
-    {
-        result = cylindrical_bessel_k1_small(x);
-    } 
     else 
     {
-        result = cylindrical_bessel_k1_large(x);
+        result = cylindrical_bessel_k1_finite(x);
     }
 
     return result;
@@ -1255,13 +1287,34 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
+cylindrical_bessel_kn_iterative_finite(int n, F x) noexcept
+{
+    n = math::abs(n);
+
+    // Based on:
+    // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
+    const F tox = F(2)/x;
+    F bkm = cylindrical_bessel_k0(x);
+    F bk = cylindrical_bessel_k1(x);
+    for (unsigned k=1; k<static_cast<unsigned>(n); k++) {
+        const auto temp = bkm+k*tox*bk;
+        bkm = bk;
+        bk = temp;
+    }
+    
+    return bk;
+}
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
 cylindrical_bessel_kn_iterative(int n, F x) noexcept
 {
     F result;
 
-    if (x < 0)
+    if (x < 0 || std::isnan(x))
     {
-        result = std::nan("");
+        result = std::numeric_limits<F>::quiet_NaN();
     }
     else if (x == 0)
     {
@@ -1269,20 +1322,7 @@ cylindrical_bessel_kn_iterative(int n, F x) noexcept
     }
     else
     {
-        n = math::abs(n);
-
-        // Based on:
-        // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
-        const F tox = F(2)/x;
-        F bkm = cylindrical_bessel_k0(x);
-        F bk = cylindrical_bessel_k1(x);
-        for (unsigned k=1; k<static_cast<unsigned>(n); k++) {
-            const auto temp = bkm+k*tox*bk;
-            bkm = bk;
-            bk = temp;
-        }
-        
-        result = bk;
+        result = cylindrical_bessel_kn_iterative_finite(n, x);
     }
 
     return result;

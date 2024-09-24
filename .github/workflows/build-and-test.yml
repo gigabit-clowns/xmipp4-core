@@ -56,7 +56,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
-   
+
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
         id: install-memtool

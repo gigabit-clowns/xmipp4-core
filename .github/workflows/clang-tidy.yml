@@ -50,6 +50,7 @@ jobs:
           -DXMIPP4_CORE_LINT_CLANG_TIDY=OFF
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         clang_tidy_checks: "" # Use .clang-tidy
+        lgtm_comment_body: ""
 
     - uses: ZedThree/clang-tidy-review/upload@v0.14.0
       id: upload-review

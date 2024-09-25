@@ -56,6 +56,8 @@ template <std::size_t N = XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE>
 class semaphore
 {
 public:
+    using implementation_type = XMIPP4_SEMAPHORE_IMPLEMENTATION(N);
+
     semaphore(std::size_t count);
     semaphore(const semaphore &other) = delete;
     semaphore(semaphore &&other) = delete;
@@ -75,7 +77,7 @@ public:
     static XMIPP4_CONSTEXPR std::size_t max() noexcept;
 
 private:
-    XMIPP4_SEMAPHORE_IMPLEMENTATION(N) m_impl;
+    implementation_type m_impl;
 };
 
 using binary_semaphore = semaphore<1>;

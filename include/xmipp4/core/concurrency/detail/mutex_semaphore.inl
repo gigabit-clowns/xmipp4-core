@@ -59,7 +59,7 @@ inline
 bool mutex_semaphore::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
 {
     // Fall back into wait_until
-    const auto now std::chrono::steady_clock::now();
+    const auto now = std::chrono::steady_clock::now();
     const auto limit = now + time;
     return try_acquire_until(limit);
 }
@@ -92,6 +92,7 @@ inline void mutex_semaphore::release()
 
 
 
+inline
 bool mutex_semaphore::try_acquire_implementation() noexcept
 {    
     const auto result = m_count > 0;

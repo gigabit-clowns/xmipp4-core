@@ -69,7 +69,7 @@ bool posix_semaphore::try_acquire_for(const std::chrono::duration<Rep, Period> &
 
     // Ensemble a timespec with the newly converted values
     timespec t;
-    t.tv_sec = seconds.count()
+    t.tv_sec = seconds.count();
     t.tv_nsec = nanoseconds.count();
 
     return sem_timedwait(&m_impl, &t) != -1;

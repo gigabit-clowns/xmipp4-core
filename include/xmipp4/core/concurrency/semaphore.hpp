@@ -25,15 +25,21 @@
 #include "../platform/cpp_features.hpp"
 #if XMIPP4_HAS_CPP_FEATURE(__cpp_lib_semaphore, 201907L)
     #include <semaphore>
-    #define XMIPP4_COUNTING_SEMAPHORE_IMPLEMENTATION std::counting_semaphore
+    #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) std::semaphore<n>
+    #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE (std::semaphore<>::max())
 #else 
+    #include <limits>
     #include "../platform/operating_system.h"
     #if XMIPP4_POSIX
         #include "detail/posix_semaphore.hpp"
-        #define XMIPP4_COUNTING_SEMAPHORE_IMPLEMENTATION detail::posix_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+            (std::numeric_limits<int>::max())
     #else
         #include "detail/mutex_semaphore.hpp"
-        #define XMIPP4_COUNTING_SEMAPHORE_IMPLEMENTATION detail::mutex_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::mutex_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+            (std::numeric_limits<std::size_t>::max())
     #endif
 #endif
 
@@ -46,16 +52,17 @@ namespace xmipp4
 namespace concurrency
 {
 
-class counting_semaphore
+template <std::ptrdiff_t N = XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE>
+class semaphore
 {
 public:
-    counting_semaphore(std::size_t count);
-    counting_semaphore(const counting_semaphore &other) = delete;
-    counting_semaphore(counting_semaphore &&other) = delete;
-    ~counting_semaphore() = default;
+    semaphore(std::size_t count);
+    semaphore(const semaphore &other) = delete;
+    semaphore(semaphore &&other) = delete;
+    ~semaphore() = default;
 
-    counting_semaphore& operator=(const counting_semaphore &other) = delete;
-    counting_semaphore& operator=(counting_semaphore &&other) = delete;
+    semaphore& operator=(const semaphore &other) = delete;
+    semaphore& operator=(semaphore &&other) = delete;
 
     void acquire();
     bool try_acquire() noexcept;
@@ -63,13 +70,16 @@ public:
     bool try_acquire_for(const std::chrono::duration<Rep, Period> &time);
     template <typename Clock, typename Duration>
     bool try_acquire_until(const std::chrono::time_point<Clock, Duration>& time);
-    void release();
+    void release(std::size_t n = 1);
 
 private:
-    XMIPP4_COUNTING_SEMAPHORE_IMPLEMENTATION m_impl;
+    XMIPP4_SEMAPHORE_IMPLEMENTATION(N) m_impl;
 };
+
+using binary_semaphore = semaphore<1>;
+using counting_semaphore = semaphore<>;
 
 } // namespace concurrency
 } // namespace xmipp4
 
-#include "counting_semaphore.inl"
+#include "semaphore.inl"

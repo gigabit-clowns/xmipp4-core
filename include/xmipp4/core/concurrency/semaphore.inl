@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,34 +20,56 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file counting_semaphore.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for concurrency/counting_semaphore.hpp
- * @date 2024-09-25
- * 
- */
+#include "semaphore.hpp"
 
-#include <catch2/catch_test_macros.hpp>
-
-#include <xmipp4/core/concurrency/counting_semaphore.hpp>
-
-TEST_CASE("try acquire without timeout", "[counting_semaphore]")
+namespace xmipp4 
 {
-    const auto n = 8;
-    xmipp4::concurrency::counting_semaphore sem(n);
-    
-    // Acquire as many times as the semaphore allows
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        REQUIRE( sem.try_acquire() );
-    }
+namespace concurrency
+{
 
-    // Try to acquire beyond limits
-    REQUIRE( !sem.try_acquire() );
-
-    // Release to enable future acquisitions
-    sem.release();
-
-    REQUIRE( sem.try_acquire() );
+template <std::ptrdiff_t N>
+inline
+semaphore<N>::semaphore(std::size_t count)
+    : m_impl(count)
+{
 }
+
+template <std::ptrdiff_t N>
+inline
+void semaphore<N>::acquire()
+{
+    m_impl.acquire();
+}
+
+template <std::ptrdiff_t N>
+inline
+bool semaphore<N>::try_acquire() noexcept
+{
+    return m_impl.try_acquire();
+}
+
+template <std::ptrdiff_t N>
+template <typename Rep, typename Period>
+inline
+bool semaphore<N>::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
+{
+    return m_impl.try_acquire_for(time);
+}
+
+template <std::ptrdiff_t N>
+template <typename Clock, typename Duration>
+inline
+bool semaphore<N>::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
+{
+    return m_impl.try_acquire_until(time);
+}
+
+template <std::ptrdiff_t N>
+inline
+void semaphore<N>::release(std::size_t n)
+{
+    m_impl.release(n);
+}
+
+} // namespace concurrency
+} // namespace xmipp4

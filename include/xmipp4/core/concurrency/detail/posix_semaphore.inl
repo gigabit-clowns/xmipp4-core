@@ -83,11 +83,14 @@ bool posix_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Dur
     return false;
 }
 
-inline void posix_semaphore::release()
+inline void posix_semaphore::release(std::size_t n)
 {
-    if(sem_post(&m_impl) == -1)
+    for (std::size_t i = 0; i < n; ++i)
     {
-        throw std::runtime_error("Error releasing the semaphore");
+        if(sem_post(&m_impl) == -1)
+        {
+            throw std::runtime_error("Error releasing the semaphore");
+        }
     }
 }
 

@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,50 +18,34 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "counting_semaphore.hpp"
+/**
+ * @file semaphore.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Tests for concurrency/semaphore.hpp
+ * @date 2024-09-25
+ * 
+ */
 
-namespace xmipp4 
-{
-namespace concurrency
-{
+#include <catch2/catch_test_macros.hpp>
 
-inline
-counting_semaphore::counting_semaphore(std::size_t count)
-    : m_impl(count)
+#include <xmipp4/core/concurrency/semaphore.hpp>
+
+TEST_CASE("try acquire semaphore without timeout", "[counting_semaphore]")
 {
+    const auto n = 8;
+    xmipp4::concurrency::counting_semaphore sem(n);
+    
+    // Acquire as many times as the semaphore allows
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        REQUIRE( sem.try_acquire() );
+    }
+
+    // Try to acquire beyond limits
+    REQUIRE( !sem.try_acquire() );
+
+    // Release to enable future acquisitions
+    sem.release();
+
+    REQUIRE( sem.try_acquire() );
 }
-
-inline
-void counting_semaphore::acquire()
-{
-    m_impl.acquire();
-}
-
-inline
-bool counting_semaphore::try_acquire() noexcept
-{
-    return m_impl.try_acquire();
-}
-
-template <typename Rep, typename Period>
-inline
-bool counting_semaphore::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
-{
-    return m_impl.try_acquire_for(time);
-}
-
-template <typename Clock, typename Duration>
-inline
-bool counting_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
-{
-    return m_impl.try_acquire_until(time);
-}
-
-inline
-void counting_semaphore::release()
-{
-    m_impl.release();
-}
-
-} // namespace concurrency
-} // namespace xmipp4

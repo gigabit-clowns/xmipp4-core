@@ -78,16 +78,23 @@ bool mutex_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Dur
     return try_acquire_implementation();
 }
 
-inline void mutex_semaphore::release()
+inline void mutex_semaphore::release(std::size_t n)
 {
 
     std::lock_guard<std::mutex> lock(m_mutex);
 
     // Release
-    ++m_count;
+    m_count += n;
 
     // Signal waiting threads (if any)
-    m_condition_variable.notify_one();
+    if (n > 1)
+    {
+        m_condition_variable.notify_all();
+    }
+    else
+    {
+        m_condition_variable.notify_one();
+    }
 }
 
 

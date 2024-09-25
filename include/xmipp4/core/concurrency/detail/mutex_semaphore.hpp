@@ -48,7 +48,7 @@ public:
     bool try_acquire_for(const std::chrono::duration<Rep, Period> &time);
     template <typename Clock, typename Duration>
     bool try_acquire_until(const std::chrono::time_point<Clock, Duration>& time);
-    void release();
+    void release(std::size_t n = 1);
 
 private:
     std::mutex m_mutex;

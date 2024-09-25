@@ -43,7 +43,7 @@
     #endif
 #endif
 
-
+#include "../platform/constexpr.hpp"
 
 #include <chrono>
 
@@ -52,7 +52,7 @@ namespace xmipp4
 namespace concurrency
 {
 
-template <std::ptrdiff_t N = XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE>
+template <std::size_t N = XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE>
 class semaphore
 {
 public:
@@ -71,6 +71,8 @@ public:
     template <typename Clock, typename Duration>
     bool try_acquire_until(const std::chrono::time_point<Clock, Duration>& time);
     void release(std::size_t n = 1);
+
+    static XMIPP4_CONSTEXPR std::size_t max() noexcept;
 
 private:
     XMIPP4_SEMAPHORE_IMPLEMENTATION(N) m_impl;

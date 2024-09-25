@@ -85,7 +85,7 @@ bool posix_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Dur
     
     return  delta.count() > 0 ?
             try_acquire_for(delta) :
-            try_acquire()
+            try_acquire() ;
 }
 
 inline void posix_semaphore::release(std::size_t n)

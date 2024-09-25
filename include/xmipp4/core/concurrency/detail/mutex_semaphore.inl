@@ -87,14 +87,7 @@ inline void mutex_semaphore::release(std::size_t n)
     m_count += n;
 
     // Signal waiting threads (if any)
-    if (n > 1)
-    {
-        m_condition_variable.notify_all();
-    }
-    else
-    {
-        m_condition_variable.notify_one();
-    }
+    m_condition_variable.notify_all();
 }
 
 

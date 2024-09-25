@@ -79,8 +79,13 @@ template <typename Clock, typename Duration>
 inline
 bool posix_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
 {
-    // TODO not implemented
-    return false;
+    // Fallback onto try_wait_for
+    const auto now = Clock::now();
+    const auto delta = time - now;
+    
+    return  delta.count() > 0 ?
+            try_acquire_for(delta) :
+            try_acquire()
 }
 
 inline void posix_semaphore::release(std::size_t n)

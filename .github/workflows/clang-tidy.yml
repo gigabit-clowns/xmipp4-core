@@ -26,7 +26,7 @@ name: Clang-tidy
 on:
   pull_request:
     branches:
-      - devel
+      - main
 
 permissions:
   contents: read

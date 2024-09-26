@@ -25,7 +25,7 @@
 
 #define XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION
 #define XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-    ((std::numeric_limits<int>::max)())
+    (std::numeric_limits<int>::max())
 
 extern "C"
 {

@@ -66,6 +66,11 @@ else()
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+
+if(MSVC)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX)
+endif()
+
 # Install library's binary files and headers
 install(
 	TARGETS ${PROJECT_NAME} 

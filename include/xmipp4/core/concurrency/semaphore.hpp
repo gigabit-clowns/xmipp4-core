@@ -76,7 +76,7 @@ public:
     bool try_acquire_until(const std::chrono::time_point<Clock, Duration>& time);
     void release(std::size_t n = 1);
 
-    static XMIPP4_CONSTEXPR std::size_t (max)() noexcept;
+    static XMIPP4_CONSTEXPR std::size_t max() noexcept;
 
 private:
     implementation_type m_impl;

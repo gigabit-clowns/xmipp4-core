@@ -30,17 +30,12 @@
     #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE (std::semaphore<>::max())
 #else 
     // Fall back to one of the manual implementations or wrappers
-    #include "detail/posix_semaphore.hpp"
     #include "detail/windows_semaphore.hpp"
     #include "detail/mutex_semaphore.hpp"
     #if defined(XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::windows_semaphore<n>
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
             XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE
-    #elif defined(XMIPP4_POSIX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
-        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
-        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-            XMIPP4_POSIX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE
     #elif defined(XMIPP4_MUTEX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::mutex_semaphore
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \

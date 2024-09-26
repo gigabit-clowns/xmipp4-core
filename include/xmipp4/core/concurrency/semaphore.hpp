@@ -35,6 +35,11 @@
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
             (std::numeric_limits<int>::max())
+    #elif XMIPP4_WINDOWS
+        #include "detail/windows_semaphore.hpp"
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::windows_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+            (std::numeric_limits<int>::max())
     #else
         #include "detail/mutex_semaphore.hpp"
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::mutex_semaphore

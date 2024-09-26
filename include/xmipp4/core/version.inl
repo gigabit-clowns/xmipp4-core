@@ -48,42 +48,6 @@ version::version(std::uint32_t major,
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-bool version::operator==(const version& other) noexcept
-{
-    return m_data == other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool version::operator!=(const version& other) noexcept
-{
-    return m_data != other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool version::operator<(const version& other) noexcept
-{
-    return m_data < other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool version::operator<=(const version& other) noexcept
-{
-    return m_data <= other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool version::operator>(const version& other) noexcept
-{
-    return m_data > other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool version::operator>=(const version& other) noexcept
-{
-    return m_data >= other.m_data;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
 void version::set_major(std::uint32_t major) noexcept
 {
     major <<= major_offset;
@@ -124,6 +88,50 @@ XMIPP4_INLINE_CONSTEXPR
 std::uint32_t version::get_patch() const noexcept
 {
     return m_data & patch_mask;
+}
+
+XMIPP4_INLINE_CONSTEXPR 
+std::uint32_t version::get_data() const noexcept
+{
+    return m_data;
+}
+
+
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator==(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() == rhs.get_data();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator!=(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() != rhs.get_data();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator<(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() < rhs.get_data();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator<=(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() <= rhs.get_data();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator>(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() > rhs.get_data();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator>=(const version& lhs, const version& rhs) noexcept
+{
+    return lhs.get_data() >= rhs.get_data();
 }
 
 

@@ -20,12 +20,15 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <chrono>
+#include "../../platform/operating_system.h"
+#if XMIPP4_POSIX
 
 extern "C"
 {
 #include <semaphore.h>
 }
+
+#include <chrono>
 
 namespace xmipp4 
 {
@@ -63,3 +66,5 @@ private:
 } // namespace xmipp4
 
 #include "posix_semaphore.inl"
+
+#endif // XMIPP4_POSIX

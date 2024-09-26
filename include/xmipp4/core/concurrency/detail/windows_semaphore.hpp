@@ -20,6 +20,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "../../platform/operating_system.h"
+#if XMIPP4_WINDOWS
+
 extern "C"
 {
     #include <windows.h>
@@ -67,3 +70,5 @@ private:
 } // namespace xmipp4
 
 #include "windows_semaphore.inl"
+
+#endif // XMIPP4_WINDOWS

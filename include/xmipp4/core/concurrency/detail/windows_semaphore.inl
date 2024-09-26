@@ -34,7 +34,7 @@ namespace detail
 template <std::size_t N>
 inline
 windows_semaphore<N>::windows_semaphore(std::size_t count)
-    m_handle(CreateSemaphore(NULL, count, N, NULL))
+    : m_handle(CreateSemaphore(NULL, count, N, NULL))
 {
     if (m_handle == nullptr)
     {

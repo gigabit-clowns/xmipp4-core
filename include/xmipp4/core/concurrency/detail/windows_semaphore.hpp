@@ -45,7 +45,6 @@ template <std::size_t N>
 class windows_semaphore
 {
 public:
-
     windows_semaphore(std::size_t count);
     windows_semaphore(const windows_semaphore &other) = delete;
     windows_semaphore(windows_semaphore &&other) = delete;

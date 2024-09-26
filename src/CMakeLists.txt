@@ -75,7 +75,7 @@ if(XMIPP4_CORE_LINT_CLANG_TIDY)
 		PROPERTIES 
 			CXX_CLANG_TIDY ${CLANG_TIDY_EXE}
 	)
-else()
+elseif(XMIPP4_CORE_PRECOMPILED_HEADERS)
 	# Precompiler headers do not work with clang-tidy
 	target_precompile_headers(
 		${PROJECT_NAME} 

@@ -72,7 +72,7 @@ bool mutex_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Dur
     std::unique_lock<std::mutex> lock(m_mutex);
 
     // Wait until acquisition or timeout
-    while (m_count == 0 || m_condition_variable.wait_until(time) == std::cv_status::no_timeout);
+    while (m_count == 0 || m_condition_variable.wait_until(lock, time) == std::cv_status::no_timeout);
 
     // Try to acquire
     return try_acquire_implementation();

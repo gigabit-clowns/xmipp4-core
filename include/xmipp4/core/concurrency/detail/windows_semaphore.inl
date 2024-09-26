@@ -78,7 +78,7 @@ bool windows_semaphore<N>::try_acquire_for(const std::chrono::duration<Rep, Peri
     }
     else
     {
-        result = try_acquire_implementation(0);
+        result = try_acquire_implementation(0L);
     }
     return result;
 }
@@ -86,7 +86,7 @@ bool windows_semaphore<N>::try_acquire_for(const std::chrono::duration<Rep, Peri
 template <std::size_t N>
 template <typename Clock, typename Duration>
 inline
-bool windows_semaphore<N>::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
+bool windows_semaphore<N>::try_acquire_until(const std::chrono::time_point<Clock, Duration> &time)
 {
     // Fall back into try_acquire_for
     const auto now = Clock::now();

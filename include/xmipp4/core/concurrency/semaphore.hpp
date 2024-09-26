@@ -80,6 +80,7 @@ public:
 
 private:
     implementation_type m_impl;
+
 };
 
 using binary_semaphore = semaphore<1>;

@@ -30,7 +30,7 @@
 #else 
     #include <limits>
     #include "../platform/operating_system.h"
-    #if XMIPP4_POSIX
+    #if XMIPP4_POSIX && !XMIPP4_APPLE
         #include "detail/posix_semaphore.hpp"
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \

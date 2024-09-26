@@ -61,18 +61,27 @@ template <typename Rep, typename Period>
 inline 
 bool posix_semaphore::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
 {
-    // Convert duration to timespec's units (seconds + nanoseconds)
-    const auto seconds = 
-        std::chrono::duration_cast<std::chrono::seconds>(time);
-    const auto nanoseconds = 
-        std::chrono::duration_cast<std::chrono::nanoseconds>(time - seconds);
+    bool result;
+    if (time.count() > 0)
+    {
+        // Convert duration to timespec's units (seconds + nanoseconds)
+        const auto seconds = 
+            std::chrono::duration_cast<std::chrono::seconds>(time);
+        const auto nanoseconds = 
+            std::chrono::duration_cast<std::chrono::nanoseconds>(time - seconds);
 
-    // Ensemble a timespec with the newly converted values
-    timespec t;
-    t.tv_sec = seconds.count();
-    t.tv_nsec = nanoseconds.count();
+        // Ensemble a timespec with the newly converted values
+        timespec t;
+        t.tv_sec = seconds.count();
+        t.tv_nsec = nanoseconds.count();
 
-    return sem_timedwait(&m_impl, &t) != -1;
+        result = sem_timedwait(&m_impl, &t) != -1;
+    }
+    else
+    {
+        result = try_acquire();
+    }
+    return result;
 }
 
 template <typename Clock, typename Duration>
@@ -82,10 +91,7 @@ bool posix_semaphore::try_acquire_until(const std::chrono::time_point<Clock, Dur
     // Fallback onto try_wait_for
     const auto now = Clock::now();
     const auto delta = time - now;
-    
-    return  delta.count() > 0 ?
-            try_acquire_for(delta) :
-            try_acquire() ;
+    return try_acquire_for(delta);
 }
 
 inline void posix_semaphore::release(std::size_t n)

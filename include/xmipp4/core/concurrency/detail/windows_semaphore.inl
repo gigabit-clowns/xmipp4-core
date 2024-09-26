@@ -69,8 +69,18 @@ template <typename Rep, typename Period>
 inline
 bool windows_semaphore<N>::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
 {
-    const auto ms = std::chrono::duration_cast<std::chrono::miliseconds>(time);
-    return try_acquire_implementation(ms.count());
+    bool result;
+    if (time.count() > 0)
+    {
+        const auto ms = 
+            std::chrono::duration_cast<std::chrono::milliseconds>(time);
+        result = try_acquire_implementation(ms.count());
+    }
+    else
+    {
+        result = try_acquire_implementation(0);
+    }
+    return result;
 }
 
 template <std::size_t N>
@@ -78,12 +88,10 @@ template <typename Clock, typename Duration>
 inline
 bool windows_semaphore<N>::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
 {
+    // Fall back into try_acquire_for
     const auto now = Clock::now();
     const auto delta = time - now;
-
-    return  delta.count() > 0 ?
-            try_acquire_for(delta) :
-            try_acquire() ;
+    return try_acquire_for(delta);
 }
 
 template <std::size_t N>

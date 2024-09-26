@@ -24,27 +24,29 @@
 // Detect underlying implementation
 #include "../platform/cpp_features.hpp"
 #if XMIPP4_HAS_CPP_FEATURE(__cpp_lib_semaphore, 201907L)
+    // Try with C++20 semaphore
     #include <semaphore>
     #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) std::semaphore<n>
     #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE (std::semaphore<>::max())
 #else 
-    #include <limits>
-    #include "../platform/operating_system.h"
-    #if XMIPP4_POSIX && !XMIPP4_APPLE
-        #include "detail/posix_semaphore.hpp"
-        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
-        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-            (std::numeric_limits<int>::max())
-    #elif XMIPP4_WINDOWS
-        #include "detail/windows_semaphore.hpp"
+    // Fall back to one of the manual implementations or wrappers
+    #include "detail/posix_semaphore.hpp"
+    #include "detail/windows_semaphore.hpp"
+    #include "detail/mutex_semaphore.hpp"
+    #if defined(XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::windows_semaphore
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-            (std::numeric_limits<int>::max())
-    #else
-        #include "detail/mutex_semaphore.hpp"
+            XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE
+    #elif defined(XMIPP4_POSIX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::posix_semaphore
+        #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+            XMIPP4_POSIX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE
+    #elif defined(XMIPP4_MUTEX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE)
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION(n) detail::mutex_semaphore
         #define XMIPP4_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-            (std::numeric_limits<std::size_t>::max())
+            XMIPP4_MUTEX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE
+    #else
+        #error "No implementation available for semaphore"
     #endif
 #endif
 

@@ -21,7 +21,10 @@
  ***************************************************************************/
 
 #include "../../platform/operating_system.h"
-#if XMIPP4_POSIX
+#if XMIPP4_POSIX && !XMIPP4_APPLE
+
+#define XMIPP4_POSIX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+    (std::numeric_limits<int>::max())
 
 extern "C"
 {
@@ -29,6 +32,7 @@ extern "C"
 }
 
 #include <chrono>
+#include <limits>
 
 namespace xmipp4 
 {

@@ -23,12 +23,16 @@
 #include "../../platform/operating_system.h"
 #if XMIPP4_WINDOWS
 
+#define XMIPP4_WINDOWS_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
+    (std::numeric_limits<int>::max())
+
 extern "C"
 {
     #include <windows.h>
 }
 
 #include <chrono>
+#include <limits>
 
 namespace xmipp4 
 {

@@ -1,0 +1,70 @@
+#***************************************************************************
+# Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307  USA
+#
+#  All comments concerning this program package may be sent to the
+#  e-mail address 'xmipp@cnb.csic.es'
+# ***************************************************************************
+
+HeaderFilterRegex: 'xmipp4/core/.*'
+Checks: >
+  -*,
+  performance-*,
+  readability-*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  misc-*
+
+CheckOptions:
+  - key:    readability-identifier-naming.MacroDefinitionCase
+    value:  UPPER_CASE
+  - key:    readability-identifier-naming.MacroDefinitionPrefix
+    value:  XMIPP4_
+
+  - key:    readability-identifier-naming.NamespaceCase
+    value:  lower_case
+  - key:    readability-identifier-naming.FunctionCase
+    value:  lower_case
+  - key:    readability-identifier-naming.ParameterCase
+    value:  lower_case
+  - key:    readability-identifier-naming.VariableCase
+    value:  lower_case
+  - key:    readability-identifier-naming.ConstantCase
+    value:  lower_case
+
+  - key:    readability-identifier-naming.ClassCase
+    value:  lower_case
+  - key:    readability-identifier-naming.StructCase
+    value:  lower_case
+  - key:    readability-identifier-naming.MemberCase
+    value:  lower_case
+  - key:    readability-identifier-naming.PrivateMemberPrefix
+    value:  m_
+  - key:    readability-identifier-naming.MethodCase
+    value:  lower_case
+
+  - key:    readability-identifier-naming.TypedefCase
+    value:  lower_case
+
+  - key:    readability-identifier-naming.EnumCase
+    value:  lower_case
+  - key:    readability-identifier-naming.EnumConstantCase
+    value:  lower_case
+
+  - key:    readability-identifier-naming.TemplateParameterCase
+    value:  CamelCase

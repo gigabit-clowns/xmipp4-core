@@ -1,5 +1,6 @@
 #***************************************************************************
 # Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+#              Martín Salinas Antón (ssalinasmartin@gmail.com)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,34 +21,43 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.16)
+name: Clang-tidy
 
-# Define the project
-project(
-  xmipp4-core
-	VERSION 0.1.0 
-	LANGUAGES C CXX
-)
+on:
+  pull_request:
+    branches:
+      - devel
 
-# Include CTest to provide BUILD_TESTING option
-include(CTest)
+permissions:
+  contents: read
+  pull-requests: write
 
-# Declare build options
-option(XMIPP4_CORE_BUILD_DOC "Build documentation" ON)
-option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" ON)
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-# Set the module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@main
 
-# Add sources
-add_subdirectory(src)
+    - name: Generate clang-tidy review
+      uses: ZedThree/clang-tidy-review@master
+      id: review
+      with:
+        build_dir: build/
+        cmake_command: >
+          cmake -S . -B build/ 
+          -DBUILD_TESTING=OFF
+          -DXMIPP4_CORE_BUILD_DOC=OFF 
+          -DXMIPP4_CORE_LINT_CLANG_TIDY=OFF
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        clang_tidy_checks: "" # Use .clang-tidy
+        lgtm_comment_body: ""
 
-# Only build docs if it is the main project
-if(XMIPP4_CORE_BUILD_DOC)
-	add_subdirectory(doc)
-endif()
+    - name: Upload clang-tidy review
+      uses: ZedThree/clang-tidy-review/upload@master
+      id: upload-review
 
-# Only build tests if it is the main project
-if(BUILD_TESTING)
-	add_subdirectory(tests)
-endif()
+    - name: Fail if review has comments to solve
+      if: steps.review.outputs.total_comments > 0
+      run: exit 1

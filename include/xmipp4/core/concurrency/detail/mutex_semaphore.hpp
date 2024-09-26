@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #define XMIPP4_MUTEX_SEMAPHORE_IMPLEMENTATION_MAX_VALUE \
-    (std::numeric_limits<std::size_t>::max())
+    ((std::numeric_limits<std::size_t>::max)())
 
 #include <mutex>
 #include <condition_variable>

@@ -36,10 +36,11 @@ file(GLOB_RECURSE INLINE_SOURCES ${PROJECT_SOURCE_DIR}/include/*.inl)
 # Create the shared library
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(
-	${PROJECT_NAME} PROPERTIES 
-	SOVERSION ${PROJECT_VERSION}
-	CXX_STANDARD 20
-	DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
+	${PROJECT_NAME} 
+	PROPERTIES 
+		SOVERSION ${PROJECT_VERSION}
+		CXX_STANDARD 20
+		DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
 )
 target_include_directories(
 	${PROJECT_NAME} 
@@ -50,15 +51,11 @@ target_include_directories(
 target_compile_definitions(
 	${PROJECT_NAME} 
 	PRIVATE
-	VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-	VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-	VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
+		VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
+		VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
+		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
-target_precompile_headers(
-	${PROJECT_NAME} 
-	PRIVATE
-	${HEADERS}
-)
+
 target_link_libraries(${PROJECT_NAME} half)
 if(MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
@@ -66,9 +63,25 @@ else()
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-
 if(MSVC)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX)
+endif()
+
+# Set up clang-tidy
+if(XMIPP4_CORE_LINT_CLANG_TIDY)
+	find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
+	set_target_properties(
+		${PROJECT_NAME} 
+		PROPERTIES 
+			CXX_CLANG_TIDY ${CLANG_TIDY_EXE}
+	)
+else()
+	# Precompiler headers do not work with clang-tidy
+	target_precompile_headers(
+		${PROJECT_NAME} 
+		PRIVATE
+			${HEADERS}
+	)
 endif()
 
 # Install library's binary files and headers

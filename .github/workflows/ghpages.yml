@@ -57,7 +57,9 @@ jobs:
       with:
         source-dir: ${{ github.workspace }}
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
-        options: BUILD_TESTING=OFF
+        options: |
+          XMIPP4_CORE_BUILD_DOC=ON
+          BUILD_TESTING=OFF
         run-build: true
         build-args: --target doxygen
 

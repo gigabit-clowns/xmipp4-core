@@ -54,7 +54,7 @@ template <std::size_t N>
 inline
 void windows_semaphore<N>::acquire()
 {
-    return try_acquire_implementation(INFINITE);
+    try_acquire_implementation(INFINITE);
 }
 
 template <std::size_t N>

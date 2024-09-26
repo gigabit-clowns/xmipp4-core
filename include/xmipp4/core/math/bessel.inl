@@ -727,7 +727,7 @@ namespace detail
 template <typename F>
 inline
 typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn_iterative_finite(uint n, F x) noexcept
+cylindrical_bessel_yn_iterative_finite(unsigned n, F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c

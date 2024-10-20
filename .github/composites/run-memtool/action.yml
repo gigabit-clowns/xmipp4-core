@@ -4,8 +4,8 @@ description: "Runs test with memcheck for every OS"
 runs:
   using: "composite"
   steps:
-    - name: Run tests with memory check (Linux)
-      if: runner.os == 'Linux' or runner.os == 'Windows'
+    - name: Run tests with memory check (Linux or Windows)
+      if: runner.os == 'Linux' || runner.os == 'Windows'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure

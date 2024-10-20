@@ -1,0 +1,44 @@
+name: "Compile project with CMake"
+description: "Compiles project with CMake for every OS"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure and build with CMake (GCC)
+      if: matrix.compiler.cc == 'gcc' && matrix.compiler.cxx == 'g++'
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: "${{ github.workspace }}/build"
+        c-compiler: ${{ matrix.compiler.cc }}
+        cxx-compiler: ${{ matrix.compiler.cxx }}
+        options: |
+          CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        run-build: true
+        build-args: --config ${{ env.BUILD_TYPE }}
+
+    - name: Configure and build with CMake (Clang)
+      if: matrix.compiler.cc == 'clang' && matrix.compiler.cxx == 'clang++'
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: "${{ github.workspace }}/build"
+        c-compiler: ${{ matrix.compiler.cc }}
+        cxx-compiler: ${{ matrix.compiler.cxx }}
+        options: |
+          CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          CMAKE_C_FLAGS=-gdwarf-4
+          CMAKE_CXX_FLAGS=-gdwarf-4
+        run-build: true
+        build-args: --config ${{ env.BUILD_TYPE }}
+    
+    - name: Configure and build with CMake (CL - Windows)
+      if: matrix.compiler.cc == 'cl' && matrix.compiler.cxx == 'cl'
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: "${{ github.workspace }}/build"
+        c-compiler: ${{ matrix.compiler.cc }}
+        cxx-compiler: ${{ matrix.compiler.cxx }}
+        run-build: true
+    

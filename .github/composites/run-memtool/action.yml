@@ -4,11 +4,17 @@ description: "Runs test with memcheck for every OS"
 runs:
   using: "composite"
   steps:
-    - name: Run tests with memory check (Linux or Windows)
-      if: runner.os == 'Linux' || runner.os == 'Windows'
+    - name: Run tests with memory check (Linux)
+      if: runner.os == 'Linux'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
+
+    - name: Run tests with memory check (Windows)
+      if: runner.os == 'Windows'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -T memcheck --rerun-failed --output-on-failure
 
     - name: Run tests with memory check (MacOS)
       if: runner.os == 'macOS'
@@ -16,4 +22,5 @@ runs:
       shell: bash
       run: |
         export MallocStackLogging=1
-        leaks --fullContent --atExit -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+        ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
+        

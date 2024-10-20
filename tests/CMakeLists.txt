@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-# Configure Dr. Memory in windows
+# Configure memory analyzer for CTest
 if(WIN32)
 	find_program(
 		DRMEMORY_EXE 
@@ -32,7 +32,14 @@ if(WIN32)
 	message(STATUS "Dr. Memory found in: ${DRMEMORY_EXE}")
 	if(DRMEMORY_EXE)
 		set(MEMORYCHECK_COMMAND ${DRMEMORY_EXE})
-		set(MEMORYCHECK_COMMAND_OPTIONS "--")
+		set(MEMORYCHECK_COMMAND_OPTIONS "-show_reachable --")
+	endif()
+elseif(APPLE)
+	find_program(LEAKS_EXE NAMES leaks)
+	message(STATUS "Leaks found in: ${LEAKS_EXE}")
+	if(LEAKS_EXE)
+		set(MEMORYCHECK_COMMAND ${LEAKS_EXE})
+		set(MEMORYCHECK_COMMAND_OPTIONS "--fullContent --atExit --")
 	endif()
 endif()
 

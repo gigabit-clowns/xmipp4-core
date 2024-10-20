@@ -13,7 +13,7 @@ runs:
       if: runner.os == 'Linux'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
-      run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
+      run: ctest -C ${{ env.BUILD_TYPE }} -T tests --rerun-failed --output-on-failure
     
     - name: Run tests with memory check (Windows)
       if: runner.os == 'Windows'

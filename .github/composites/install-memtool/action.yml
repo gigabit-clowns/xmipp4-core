@@ -13,8 +13,10 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        if which apt; then
-          sudo apt install -y valgrind
+        if which snap > /dev/null 2>&1; then
+          sudo snap install valgrind --classic
+        elif which apt > /dev/null 2>&1; then
+          sudo apt-get install -y valgrind
         else
           echo "Could not find a package manager for this system"
           exit 1

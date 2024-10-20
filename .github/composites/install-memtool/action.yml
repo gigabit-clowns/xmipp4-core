@@ -23,6 +23,7 @@ runs:
           echo "Could not find a package manager for this system"
           exit 1
         fi
+        valgrind --version
 
     - name: Install Dr. Memory (Windows)
       id: install-drmemory

@@ -22,6 +22,19 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+# Configure Dr. Memory in windows
+if(WIN32)
+	find_program(
+		DRMEMORY_EXE 
+		NAMES drmemory
+		HINTS "C:/Program Files (x86)/Dr. Memory/bin"
+	)
+	if(DRMEMORY_EXE)
+		set(MEMORYCHECK_COMMAND ${DRMEMORY_EXE})
+		set(MEMORYCHECK_COMMAND_OPTIONS "--")
+	endif()
+endif()
+
 include(CTest)
 include(FetchContent)
 

@@ -1,11 +1,6 @@
 name: "Install Memcheck tool"
 description: "Installs the required memcheck tool for every OS"
 
-outputs:
-  drmemory:
-    description: "Full path to Dr. Memory executable"
-    value: ${{ steps.install-drmemory.outputs.drmemory }}
-
 runs:
   using: "composite"
   steps:
@@ -28,6 +23,4 @@ runs:
       id: install-drmemory
       if: runner.os == 'Windows'
       shell: bash
-      run: |
-        choco install drmemory
-        echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"" >> "$GITHUB_OUTPUT"
+      run: choco install drmemory

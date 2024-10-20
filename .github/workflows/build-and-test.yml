@@ -59,12 +59,9 @@ jobs:
 
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
-        id: install-memtool
       
       - name: Configure and build with CMake
         uses: ./.github/composites/cmake-compile
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
-        with:
-          drmemory: ${{ steps.install-memtool.outputs.drmemory }}

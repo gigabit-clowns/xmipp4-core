@@ -63,6 +63,10 @@ else()
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+if(MSVC)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX)
+endif()
+
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)
 	find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)

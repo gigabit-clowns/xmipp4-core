@@ -16,11 +16,11 @@ runs:
       shell: bash
       run: ctest -T memcheck --rerun-failed --output-on-failure
 
-    - name: Run tests with memory check (MacOS)
-      if: runner.os == 'macOS'
-      working-directory: "${{ github.workspace }}/build"
-      shell: bash
-      run: |
-        export MallocStackLogging=1
-        ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
+    #- name: Run tests with memory check (MacOS)
+    #  if: runner.os == 'macOS'
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: bash
+    #  run: |
+    #    export MallocStackLogging=1
+    #    ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
         

@@ -79,6 +79,19 @@ const std::string& device_descriptor::get_model() const noexcept
     return m_model;
 }
 
+inline
+template <typename Str>
+void device_descriptor::set_physical_location(Str &&location)
+{
+    m_physical_location = std::forward<Str>(location);
+}
+
+inline
+const std::string& device_descriptor::get_physical_location() const noexcept
+{
+    return m_physical_location;
+}
+
 
 
 inline

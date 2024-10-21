@@ -56,11 +56,16 @@ public:
     void set_model(Str &&model);
     const std::string& get_model() const noexcept;
 
+    template <typename Str>
+    void set_physical_location(Str &&location);
+    const std::string& get_physical_location() const noexcept;
+
 private:
     uuid m_uuid;
     device_type m_type;
     std::string m_vendor;
     std::string m_model;
+    std::string m_physical_location;
 
 };
 

@@ -32,7 +32,7 @@ if(WIN32)
 	message(STATUS "Dr. Memory found in: ${DRMEMORY_EXE}")
 	if(DRMEMORY_EXE)
 		set(MEMORYCHECK_COMMAND ${DRMEMORY_EXE})
-		#set(MEMORYCHECK_COMMAND_OPTIONS "-show_reachable --")
+		set(MEMORYCHECK_COMMAND_OPTIONS "-show_reachable --")
 	endif()
 endif()
 

@@ -21,7 +21,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-name: Run tests with Valgrind
+name: Run tests with memcheck
 
 on:
   pull_request:
@@ -59,4 +59,4 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        run: ctest -C ${{ env.BUILD_TYPE }} -T memtest --rerun-failed --output-on-failure
+        run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure

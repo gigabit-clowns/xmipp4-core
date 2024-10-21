@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: Install valgrind
-        run: sudo apt install -y valgrind
+        run: sudo apt-get install -y valgrind
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main

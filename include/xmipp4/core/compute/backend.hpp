@@ -53,10 +53,10 @@ public:
 
     std::vector<device_descriptor> enumerate_devices() const;
     virtual void enumerate_devices(std::vector<device_descriptor>& out) const = 0;
-    virtual std::unique_ptr<device> create_device(std::size_t index) const = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t index) const = 0;
+    virtual std::unique_ptr<device> create_device(std::size_t index) = 0;
+    virtual std::shared_ptr<device> create_device_shared(std::size_t index) = 0;
 
-};
+}; 
 
 } // namespace compute
 } // namespace xmipp4

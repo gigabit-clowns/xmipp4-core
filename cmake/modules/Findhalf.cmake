@@ -53,10 +53,7 @@ else()
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
     )
-    FetchContent_GetProperties(half)
-    if(NOT half_POPULATED)
-        FetchContent_Populate(half)
-    endif()
+    FetchContent_MakeAvailable(half)
 
     set(half_INCLUDE_DIR ${half_SOURCE_DIR}/include)
     install(FILES ${half_INCLUDE_DIR}/half.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

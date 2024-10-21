@@ -75,5 +75,5 @@ jobs:
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
-        with:
-          drmemory: ${{ steps.install-memtool.outputs.drmemory }}
+        #with:
+        #  drmemory: ${{ steps.install-memtool.outputs.drmemory }}

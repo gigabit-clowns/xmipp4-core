@@ -31,25 +31,11 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os:
-        - ubuntu-latest
-        compiler: 
-        - {cc: gcc, cxx: g++}
-        - {cc: clang, cxx: clang++}
-
-        include:
-        - os: macos-latest
-          compiler: {cc: clang, cxx: clang++}
-        - os: windows-latest
-          compiler: {cc: cl, cxx: cl}
-  
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash -el {0}
@@ -57,17 +43,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
 
+      - name: Install valgrind
+        run: sudo apt install -y valgrind
+
       - name: Configure and build with CMake
         uses: threeal/cmake-action@main
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"
-          c-compiler: ${{ matrix.compiler.cc }}
-          cxx-compiler: ${{ matrix.compiler.cxx }}
+          c-compiler: gcc
+          cxx-compiler: g++
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+        run: ctest -C ${{ env.BUILD_TYPE }} -T memtest --rerun-failed --output-on-failure

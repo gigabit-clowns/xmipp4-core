@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +21,24 @@
  ***************************************************************************/
 
 /**
- * @file test_uuid.cpp
+ * @file distribute.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for uuid.hpp
- * @date 2024-04-29
+ * @brief Definition of work and resource distribution utilities 
+ * @date 2024-10-21
  * 
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include <cstddef>
 
-#include <xmipp4/core/uuid.hpp>
-
-#include <sstream>
-
-using namespace xmipp4;
-
-
-TEST_CASE( "output uuid to ostream", "[uuid]" ) 
+namespace xmipp4 
 {
-    std::ostringstream oss;
+namespace compute
+{
 
-    // Generate a pattern
-    std::array<uint8_t, 16> data;
-    for(std::size_t i = 0; i < data.size(); ++i)
-    {
-        data[i] = static_cast<uint8_t>((i<<4) | (15-i));
-    }
+class communicator;
 
-    // Create the UUID and output it
-    uuid id(data);
-    oss << id;
-    const auto uuid_as_str = oss.str();
+std::size_t distribute_work(communicator &comm, std::size_t count, 
+                            std::size_t &start, std::size_t &end );
 
-    XMIPP4_CONST_CONSTEXPR const char expected[] = 
-        "0F1E2D3C-4B5A-6978-8796-A5B4C3D2E1F0";
-    REQUIRE( uuid_as_str == expected );
-}
+} // namespace compute
+} // namespace xmipp4

@@ -37,8 +37,11 @@ namespace compute
 
 class communicator;
 
-std::size_t distribute_work(communicator &comm, std::size_t count, 
-                            std::size_t &start, std::size_t &end );
+std::size_t distribute_work(std::size_t work, std::size_t workers, 
+                            std::size_t index, std::size_t &start ) noexcept;
+
+std::size_t distribute_work(std::size_t work, communicator &comm,
+                            std::size_t &start );
 
 } // namespace compute
 } // namespace xmipp4

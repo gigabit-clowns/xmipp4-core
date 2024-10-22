@@ -30,34 +30,41 @@
 
 #include <xmipp4/core/compute/communicator.hpp>
 
+#include <cstdlib>
+
 namespace xmipp4
 {
 namespace compute
 {
 
-std::size_t distribute_work(communicator &comm, std::size_t count, 
-                            std::size_t &start, std::size_t &end )
+std::size_t distribute_work(std::size_t work, std::size_t workers, 
+                            std::size_t index, std::size_t &start ) noexcept
 {
-    const auto size = comm.get_size();
-    const auto rank = comm.get_rank();
-    
-    const auto quot = count / size;
-    const auto rem = count % size;
+    const auto division = std::div(static_cast<std::ptrdiff_t>(work), workers);
+    const std::size_t quotient = division.quot;
+    const std::size_t reminder = division.rem;
 
     std::size_t result;
-    if (rank < rem)
+    if (index < reminder)
     {
-        result = quot + 1;
-        start = rank*quot + rank;
+        result = quotient + 1;
+        start = index*quotient + index;
     }
     else
     {
-        result = quot;
-        start = rank*quot + rem;
+        result = quotient;
+        start = index*quotient + reminder;
     }
 
-    end = start + result;
     return result;
+}
+
+std::size_t distribute_work(std::size_t work, communicator &comm,
+                            std::size_t &start )
+{
+    const auto size = comm.get_size();
+    const auto rank = comm.get_rank();
+    return distribute_work(work, size, rank, start);    
 }
 
 } // namespace system

@@ -1,0 +1,42 @@
+name: "Run test with memory checks"
+description: "Runs test with memcheck for every OS"
+
+#inputs:
+#  drmemory:
+#    description: "Full path to Dr. Memory executable"
+#    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests with memory check (Linux)
+      if: runner.os == 'Linux'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure
+    
+    - name: Run tests without memory check (Windows)
+      if: runner.os == 'Windows'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -T test --rerun-failed --output-on-failure
+    
+    - name: Run tests without memory check (MacOS)
+      if: runner.os == 'macOS'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+    
+    #- name: Run tests with memory check (Windows)
+    #  if: runner.os == 'Windows'
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: bash
+    #  run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+
+    #- name: Run tests with memory check (MacOS)
+    #  if: runner.os == 'macOS'
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: bash
+    #  run: |
+    #    export MallocStackLogging=1
+    #    leaks --fullContent --atExit -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure

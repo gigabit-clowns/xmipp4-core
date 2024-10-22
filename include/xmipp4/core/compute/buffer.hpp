@@ -20,65 +20,33 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "device_descriptor.hpp"
+/**
+ * @file buffer.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Defines the compute::buffer interface
+ * @date 2024-10-22
+ * 
+ */
 
-#include <utility>
+#include <memory>
 
-namespace xmipp4
+namespace xmipp4 
 {
 namespace compute
 {
 
-inline
-void device_descriptor::set_type(device_type type) noexcept
+class buffer
 {
-	m_type = type;
-}
+public:
+    buffer() = default;
+    buffer(const buffer &other) = default;
+    buffer(buffer &&other) = default;
+    virtual ~buffer() = default;
 
-inline
-device_type device_descriptor::get_type() const noexcept
-{
-    return m_type;
-}
+    buffer& operator=(const buffer &other) = default;
+    buffer& operator=(buffer &&other) = default;
 
-template <typename Str>
-inline
-void device_descriptor::set_vendor(Str &&vendor)
-{
-    m_vendor = std::forward<Str>(vendor);
-}
-
-inline
-const std::string& device_descriptor::get_vendor() const noexcept
-{
-    return m_vendor;
-}
-
-template <typename Str>
-inline
-void device_descriptor::set_model(Str &&model)
-{
-    m_model = std::forward<Str>(model);
-}
-
-inline
-const std::string& device_descriptor::get_model() const noexcept
-{
-    return m_model;
-}
-
-template <typename Str>
-inline
-void device_descriptor::set_physical_location(Str &&location)
-{
-    m_physical_location = std::forward<Str>(location);
-}
-
-inline
-const std::string& device_descriptor::get_physical_location() const noexcept
-{
-    return m_physical_location;
-}
+}; 
 
 } // namespace compute
 } // namespace xmipp4

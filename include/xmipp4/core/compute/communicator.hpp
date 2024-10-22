@@ -41,6 +41,14 @@ class queue;
 class communicator
 {
 public:
+    communicator() = default;
+    communicator(const communicator &other) = default;
+    communicator(communicator &&other) = default;
+    virtual ~communicator() = default;
+
+    communicator& operator=(const communicator &other) = default;
+    communicator& operator=(communicator &&other) = default;
+
     virtual std::size_t get_size() const = 0;
     virtual std::size_t get_rank() const = 0;
 

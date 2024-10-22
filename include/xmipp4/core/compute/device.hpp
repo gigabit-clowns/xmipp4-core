@@ -20,20 +20,42 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "backend.hpp"
+/**
+ * @file device.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Defines the compute::device interface
+ * @date 2024-10-22
+ * 
+ */
 
-namespace xmipp4
+#include <memory>
+
+namespace xmipp4 
 {
 namespace compute
 {
 
-inline
-std::vector<device_descriptor> backend::enumerate_devices() const
-{
-    std::vector<device_descriptor> result;
-    enumerate_devices(result);
-    return result;
-}
+class queue;
+class buffer;
 
-}
+class device
+{
+public:
+    device() = default;
+    device(const device &other) = default;
+    device(device &&other) = default;
+    virtual ~device() = default;
+
+    device& operator=(const device &other) = default;
+    device& operator=(device &&other) = default;
+
+    virtual std::unique_ptr<queue> create_queue() = 0;
+    virtual std::shared_ptr<queue> create_queue_shared() = 0;
+
+    virtual std::unique_ptr<buffer> create_buffer() = 0;
+    virtual std::shared_ptr<buffer> create_buffer_shared() = 0;
+
+}; 
+
+} // namespace compute
 } // namespace xmipp4

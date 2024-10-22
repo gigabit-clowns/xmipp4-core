@@ -51,14 +51,15 @@ public:
     backend& operator=(const backend &other) = default;
     backend& operator=(backend &&other) = default;
 
-    std::vector<device_descriptor> enumerate_devices() const;
-    virtual void enumerate_devices(std::vector<device_descriptor>& out) const = 0;
-    virtual std::unique_ptr<device> create_device(std::size_t index) = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t index) = 0;
+    virtual const std::string& get_name() const noexcept = 0;
+
+    virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
+    virtual void get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
+
+    virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
+    virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
 
 }; 
 
 } // namespace compute
 } // namespace xmipp4
-
-#include "backend.inl"

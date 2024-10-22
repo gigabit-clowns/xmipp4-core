@@ -23,7 +23,7 @@
 /**
  * @file communicator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::communicator class
+ * @brief Definition of the compute::communicator class
  * @date 2024-10-21
  * 
  */

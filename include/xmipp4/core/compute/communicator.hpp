@@ -36,6 +36,7 @@ namespace compute
 {
 
 class buffer;
+class queue;
 
 class communicator
 {
@@ -49,13 +50,21 @@ public:
                                                        int rank_priority ) const = 0;
 
     virtual void barrier() = 0;
+
     virtual void send(int destination_rank, const buffer &buf) = 0;
+    virtual void send_async(int destination_rank, const buffer &buf, queue &q) = 0;
     virtual void receive(int source_rank, buffer &buf) = 0;
+    virtual void receive_async(int source_rank, buffer &buf, queue &q) = 0;
     virtual void broadcast(int root, buffer &buf) = 0;
+    virtual void broadcast_async(int root, buffer &buf, queue &q) = 0;
     virtual void scatter(int root, const buffer &send_buf, buffer &recv_buf) = 0;
+    virtual void scatter_async(int root, const buffer &send_buf, buffer &recv_buf, queue &q) = 0;
     virtual void gather(int root, const buffer &send_buf, buffer &recv_buf) = 0;
+    virtual void gather_async(int root, const buffer &send_buf, buffer &recv_buf, queue &q) = 0;
     virtual void all_gather(int count, const buffer &send_buf, buffer &recv_buf) = 0;
+    virtual void all_gather_async(int count, const buffer &send_buf, buffer &recv_buf, queue &q) = 0;
     virtual void all_to_all(const buffer &send_buf, buffer &recv_buf) = 0;
+    virtual void all_to_all_async(const buffer &send_buf, buffer &recv_buf, queue &q) = 0;
 
 };
 

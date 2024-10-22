@@ -52,6 +52,9 @@ enum class numerical_type
     complex_float32,
     complex_float64,
 
+    // Add here
+
+    count
 };
 
 XMIPP4_CONSTEXPR std::size_t get_size(numerical_type type) noexcept;
@@ -59,6 +62,8 @@ XMIPP4_CONSTEXPR bool is_unsigned(numerical_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_integer(numerical_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_float(numerical_type type) noexcept;
 XMIPP4_CONSTEXPR bool is_complex(numerical_type type) noexcept;
+
+XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
 
 XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
 bool from_string(std::string_view str, numerical_type& type) noexcept;

@@ -112,6 +112,18 @@ XMIPP4_INLINE_CONSTEXPR bool is_complex(numerical_type type) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
+numerical_type make_complex(numerical_type type) noexcept
+{
+    switch (type)
+    {
+    case numerical_type::float16: return numerical_type::complex_float16;
+    case numerical_type::float32: return numerical_type::complex_float32;
+    case numerical_type::float64: return numerical_type::complex_float64;
+    default: return numerical_type::unknown;
+    } 
+}
+
+XMIPP4_INLINE_CONSTEXPR 
 const char* to_string(numerical_type type) noexcept
 {
     switch (type)

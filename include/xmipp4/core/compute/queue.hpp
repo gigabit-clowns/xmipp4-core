@@ -46,6 +46,8 @@ public:
     queue& operator=(const queue &other) = default;
     queue& operator=(queue &&other) = default;
 
+    virtual void wait() = 0;
+
 }; 
 
 } // namespace compute

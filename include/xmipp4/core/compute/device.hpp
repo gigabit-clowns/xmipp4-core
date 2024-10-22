@@ -30,6 +30,8 @@
 
 #include <memory>
 
+#include "numerical_type.hpp"
+
 namespace xmipp4 
 {
 namespace compute
@@ -52,8 +54,10 @@ public:
     virtual std::unique_ptr<queue> create_queue() = 0;
     virtual std::shared_ptr<queue> create_queue_shared() = 0;
 
-    virtual std::unique_ptr<buffer> create_buffer() = 0;
-    virtual std::shared_ptr<buffer> create_buffer_shared() = 0;
+    virtual std::unique_ptr<buffer> create_buffer(numerical_type type,
+                                                  std::size_t count) = 0;
+    virtual std::shared_ptr<buffer> create_buffer_shared(numerical_type type,
+                                                         std::size_t count) = 0;
 
 }; 
 

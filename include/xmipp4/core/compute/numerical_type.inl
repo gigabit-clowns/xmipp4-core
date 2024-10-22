@@ -20,46 +20,41 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend interface
- * @date 2024-04-29
- * 
- */
+#include "numerical_type.hpp"
 
-#include "device_descriptor.hpp"
+#include <unordered_map>
 
-#include <memory>
-#include <vector>
-
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-class device;
-
-class backend
+XMIPP4_INLINE_CONSTEXPR 
+const char* to_string(numerical_type type) noexcept
 {
-public:
-    backend() = default;
-    backend(const backend &other) = default;
-    backend(backend &&other) = default;
-    virtual ~backend() = default;
+    switch (type)
+    {
+    case numerical_type::unknown: return "unknown";
 
-    backend& operator=(const backend &other) = default;
-    backend& operator=(backend &&other) = default;
+    }
+}
 
-    virtual std::string get_name() const noexcept = 0;
+inline
+bool from_string(std::string_view str, numerical_type& type) noexcept
+{
+    static const
+    std::unordered_map<std::string_view, numerical_type> str_2_numerical_type = 
+    {
+        { to_string(numerical_type::unknown), numerical_type::unknown },
 
-    virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
-    virtual void get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
+    };
 
-    virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
-
-}; 
+    const auto ite = str_2_numerical_type.find(str);
+    const bool result = ite != str_2_numerical_type.end();
+    if(result)
+        type = ite->second;
+    return result;
+}
 
 } // namespace compute
 } // namespace xmipp4

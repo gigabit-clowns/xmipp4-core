@@ -20,46 +20,43 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend interface
- * @date 2024-04-29
- * 
- */
+#include "../platform/constexpr.hpp"
 
-#include "device_descriptor.hpp"
+#include <string_view>
 
-#include <memory>
-#include <vector>
-
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-class device;
-
-class backend
+enum class numerical_type
 {
-public:
-    backend() = default;
-    backend(const backend &other) = default;
-    backend(backend &&other) = default;
-    virtual ~backend() = default;
+    unknown = -1,
 
-    backend& operator=(const backend &other) = default;
-    backend& operator=(backend &&other) = default;
+    int8,
+    uint8,
+    int16,
+    uint16,
+    int32,
+    uint32,
+    int64,
+    uint64,
 
-    virtual std::string get_name() const noexcept = 0;
+    float16,
+    brain_float16,
+    float32,
+    float64,
 
-    virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
-    virtual void get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
+    complex32,
+    complex64,
+    complex128,
 
-    virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
+};
 
-}; 
+XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
+bool from_string(std::string_view str, numerical_type& type) noexcept;
 
 } // namespace compute
 } // namespace xmipp4
+
+#include "numerical_type.inl"

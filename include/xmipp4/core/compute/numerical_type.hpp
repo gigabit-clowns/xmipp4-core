@@ -22,6 +22,7 @@
 
 #include "../platform/constexpr.hpp"
 
+#include <cstddef>
 #include <string_view>
 
 namespace xmipp4
@@ -47,11 +48,17 @@ enum class numerical_type
     float32,
     float64,
 
-    complex32,
-    complex64,
-    complex128,
+    complex_float16,
+    complex_float32,
+    complex_float64,
 
 };
+
+XMIPP4_CONSTEXPR std::size_t get_size(numerical_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_unsigned(numerical_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_integer(numerical_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_float(numerical_type type) noexcept;
+XMIPP4_CONSTEXPR bool is_complex(numerical_type type) noexcept;
 
 XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
 bool from_string(std::string_view str, numerical_type& type) noexcept;

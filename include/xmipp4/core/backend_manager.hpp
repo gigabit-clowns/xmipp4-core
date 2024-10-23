@@ -21,38 +21,27 @@
  ***************************************************************************/
 
 /**
- * @file plugin.hpp
+ * @file backend_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin class
- * @date 2024-03-11
+ * @brief Defines backend_manager class
+ * @date 2024-10-23
  * 
  */
-
-#include "version.hpp"
-
-#include <string>
 
 namespace xmipp4
 {
 
-class interface_manager;
-
-class plugin
+class backend_manager
 {
 public:
-    plugin() = default;
-    plugin(const plugin& other) = default;
-    plugin(plugin&& other) = default;
-    virtual ~plugin() = default;
+    backend_manager() = default;
+    backend_manager(const backend_manager& other) = default;
+    backend_manager(backend_manager&& other) = default;
+    virtual ~backend_manager() = default;
 
-    plugin& operator=(const plugin& other) = default;
-    plugin& operator=(plugin&& other) = default;
-
-    virtual const std::string& get_name() const noexcept = 0;
-    virtual version get_version() const noexcept = 0;
-    virtual void register_at(interface_manager& manager) const = 0;
-    virtual void deregister_at(interface_manager& manager) const = 0;
+    backend_manager& operator=(const backend_manager& other) = default;
+    backend_manager& operator=(backend_manager&& other) = default;
 
 };
 
-}
+} // namespace xmipp4

@@ -21,38 +21,40 @@
  ***************************************************************************/
 
 /**
- * @file plugin.hpp
+ * @file interface_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin class
- * @date 2024-03-11
+ * @brief Defines interface_manager class
+ * @date 2024-10-23
  * 
  */
 
-#include "version.hpp"
-
-#include <string>
+#include <unordered_map>
+#include <typeindex>
+#include <memory>
 
 namespace xmipp4
 {
 
-class interface_manager;
+class backend_manager;
 
-class plugin
+class interface_manager
 {
 public:
-    plugin() = default;
-    plugin(const plugin& other) = default;
-    plugin(plugin&& other) = default;
-    virtual ~plugin() = default;
+    interface_manager() = default;
+    interface_manager(const interface_manager& other) = default;
+    interface_manager(interface_manager&& other) = default;
+    ~interface_manager() = default;
 
-    plugin& operator=(const plugin& other) = default;
-    plugin& operator=(plugin&& other) = default;
+    interface_manager& operator=(const interface_manager& other) = default;
+    interface_manager& operator=(interface_manager&& other) = default;
 
-    virtual const std::string& get_name() const noexcept = 0;
-    virtual version get_version() const noexcept = 0;
-    virtual void register_at(interface_manager& manager) const = 0;
-    virtual void deregister_at(interface_manager& manager) const = 0;
+    template <typename T>
+    typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
+    get_interface();
+
+private:
+    std::unordered_map<std::type_index, std::unique_ptr<backend_manager>> m_interfaces;
 
 };
 
-}
+} // namespace xmipp4

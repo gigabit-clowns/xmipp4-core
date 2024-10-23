@@ -20,39 +20,37 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file plugin.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin class
- * @date 2024-03-11
- * 
- */
+#include "interface_manager.hpp"
 
-#include "version.hpp"
+#include "platform/constexpr.hpp"
+#include "platform/assert.hpp"
 
-#include <string>
-
-namespace xmipp4
+namespace xmipp4 
 {
 
-class interface_manager;
-
-class plugin
+template <typename T>
+inline
+typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
+interface_manager::get_interface()
 {
-public:
-    plugin() = default;
-    plugin(const plugin& other) = default;
-    plugin(plugin&& other) = default;
-    virtual ~plugin() = default;
+    XMIPP4_CONST_CONSTEXPR std::type_index key(typeid(T));
 
-    plugin& operator=(const plugin& other) = default;
-    plugin& operator=(plugin&& other) = default;
+    T* result;
+    const auto ite = m_interfaces.find(key);
+    if(ite == m_interfaces.end())
+    {
+        // Interface does not exist. Create it
+        auto new_interface = std::make_unique<T>()
+        result = new_interface.get();
+        m_interfaces.emplace(key, std::move(new_interface));
+    }
+    else
+    {
+        // Interface exists. Retrieve it
+        result = static_cast<T*>(ite->second.get());
+    }
 
-    virtual const std::string& get_name() const noexcept = 0;
-    virtual version get_version() const noexcept = 0;
-    virtual void register_at(interface_manager& manager) const = 0;
-    virtual void deregister_at(interface_manager& manager) const = 0;
-
-};
-
+    return *result;
 }
+
+} // namespace xmipp4

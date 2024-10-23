@@ -24,7 +24,7 @@
  * @file device_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Defines device_manager interface
- * @date 2024-04-29
+ * @date 2024-10-23
  * 
  */
 

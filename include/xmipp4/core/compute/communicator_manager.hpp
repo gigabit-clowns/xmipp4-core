@@ -24,7 +24,7 @@
  * @file communicator_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Defines communicator_manager interface
- * @date 2024-04-29
+ * @date 2024-10-23
  * 
  */
 

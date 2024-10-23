@@ -107,7 +107,7 @@ void memory_mapped_file::open(const std::string& filename,
 
 void memory_mapped_file::close() noexcept
 {
-    if (m_data)
+    if (m_data != nullptr)
     {
         memory_mapped_file_close(m_data, m_size);
         m_size = 0UL;

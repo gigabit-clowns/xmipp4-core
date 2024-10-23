@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,49 +21,55 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file layout_flags.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Declares layout_flags flagset
+ * @date 2024-05-01
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include "../utils/bit.hpp"
+#include "../utils/flagset.hpp"
+#include "../platform/constexpr.hpp"
 
-#include <xmipp4/core/platform/constexpr.hpp>
+#include <ostream>
 
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
-
-namespace xmipp4
+namespace xmipp4 
 {
-namespace system
+namespace multidimensional
 {
 
-inline void* dynamic_library_open(const char* filename)
+enum class layout_flag_bits
 {
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    auto *const result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
-}
+    contiguous = utils::bit(0),
+    column_major = utils::bit(1),
+    row_major = utils::bit(2)
+};
 
-inline void dynamic_library_close(void* handle) noexcept
-{
-    ::dlclose(handle);
-}
+using layout_flags = utils::flagset<layout_flag_bits>;
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
-{
-    return ::dlsym(handle, name);
-}
 
-} // namespace system
+
+struct column_major_tag {};
+
+/**
+ * @brief Construct a column major tag
+ * 
+ * @return column_major_tag
+ */
+XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
+
+
+struct row_major_tag {};
+
+/**
+ * @brief Construct a row major tag
+ * 
+ * @return row_major_tag
+ */
+XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
+
+} // namespace multidimensional
 } // namespace xmipp4
+
+#include "layout_flags.inl"

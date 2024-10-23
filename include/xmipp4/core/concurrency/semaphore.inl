@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,50 +20,65 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file dynamic_library_handle_posix.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
- * 
- */
+#include "semaphore.hpp"
 
-#include "dynamic_library_handle.hpp"
-
-#include <xmipp4/core/platform/constexpr.hpp>
-
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
-
-namespace xmipp4
+namespace xmipp4 
 {
-namespace system
+namespace concurrency
 {
 
-inline void* dynamic_library_open(const char* filename)
+template <std::size_t N>
+inline
+semaphore<N>::semaphore(std::size_t count)
+    : m_impl(count)
 {
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    auto *const result = ::dlopen(filename, flags);
-    if (result == NULL)
-    {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
-    }
-    return result;
 }
 
-inline void dynamic_library_close(void* handle) noexcept
+template <std::size_t N>
+inline
+void semaphore<N>::acquire()
 {
-    ::dlclose(handle);
+    m_impl.acquire();
 }
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
+template <std::size_t N>
+inline
+bool semaphore<N>::try_acquire() noexcept
 {
-    return ::dlsym(handle, name);
+    return m_impl.try_acquire();
 }
 
-} // namespace system
+template <std::size_t N>
+template <typename Rep, typename Period>
+inline
+bool semaphore<N>::try_acquire_for(const std::chrono::duration<Rep, Period> &time)
+{
+    return m_impl.try_acquire_for(time);
+}
+
+template <std::size_t N>
+template <typename Clock, typename Duration>
+inline
+bool semaphore<N>::try_acquire_until(const std::chrono::time_point<Clock, Duration>& time)
+{
+    return m_impl.try_acquire_until(time);
+}
+
+template <std::size_t N>
+inline
+void semaphore<N>::release(std::size_t n)
+{
+    m_impl.release(n);
+}
+
+
+
+template <std::size_t N>
+XMIPP4_INLINE_CONSTEXPR
+std::size_t semaphore<N>::max() noexcept
+{
+    return N;
+}
+
+} // namespace concurrency
 } // namespace xmipp4

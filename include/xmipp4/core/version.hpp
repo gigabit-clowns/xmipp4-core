@@ -49,13 +49,6 @@ public:
 
     version& operator=(const version& other) = default;
 
-    XMIPP4_CONSTEXPR bool operator==(const version& rhs) noexcept;
-    XMIPP4_CONSTEXPR bool operator!=(const version& rhs) noexcept;
-    XMIPP4_CONSTEXPR bool operator<(const version& rhs) noexcept;
-    XMIPP4_CONSTEXPR bool operator<=(const version& rhs) noexcept;
-    XMIPP4_CONSTEXPR bool operator>(const version& rhs) noexcept;
-    XMIPP4_CONSTEXPR bool operator>=(const version& rhs) noexcept;
-    
     XMIPP4_CONSTEXPR void set_major(std::uint32_t major) noexcept;
     XMIPP4_CONSTEXPR std::uint32_t get_major() const noexcept;
 
@@ -64,6 +57,8 @@ public:
 
     XMIPP4_CONSTEXPR void set_patch(std::uint32_t patch) noexcept;
     XMIPP4_CONSTEXPR std::uint32_t get_patch() const noexcept;
+
+    XMIPP4_CONSTEXPR std::uint32_t get_data() const noexcept;
 
 private:
     static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t patch_bits = 10;
@@ -85,7 +80,13 @@ private:
 
 };
 
-
+XMIPP4_CONSTEXPR bool operator==(const version& lhs, const version& rhs) noexcept;
+XMIPP4_CONSTEXPR bool operator!=(const version& lhs, const version& rhs) noexcept;
+XMIPP4_CONSTEXPR bool operator<(const version& lhs, const version& rhs) noexcept;
+XMIPP4_CONSTEXPR bool operator<=(const version& lhs, const version& rhs) noexcept;
+XMIPP4_CONSTEXPR bool operator>(const version& lhs, const version& rhs) noexcept;
+XMIPP4_CONSTEXPR bool operator>=(const version& lhs, const version& rhs) noexcept;
+    
 template<typename T>
 std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const version& ver);
 

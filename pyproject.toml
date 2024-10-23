@@ -34,18 +34,11 @@ classifiers = [
 	"Topic :: Scientific/Engineering :: Image Processing",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS",
+    "Operating System :: Windows",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-	"Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Typing :: Typed",
+    "Programming Language :: C++"
 ]
 
 readme = {file = "README.md", content-type = "text/markdown"}
@@ -58,8 +51,11 @@ dependencies = []
 Homepage = "https://github.com/gigabit-clowns/xmipp4-core"
 
 [tool.scikit-build]
+experimental=true # For wheel.install-dir
 cmake.version = ">=3.16"
 cmake.args = []
-cmake.define = {XMIPP4_CORE_BUILD_DOC='OFF'}
+cmake.define = {}
 cmake.verbose = false
 cmake.build-type = "Release"
+
+wheel.install-dir="/data"

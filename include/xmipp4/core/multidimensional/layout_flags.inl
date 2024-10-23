@@ -19,49 +19,54 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_library_handle_posix.inl
+ * @file layout_flags.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
+ * @brief Implementation of layout_flags.hpp
+ * @date 2024-05-01
  * 
  */
 
-#include "dynamic_library_handle.hpp"
+#include "layout_flags.hpp"
 
-#include <xmipp4/core/platform/constexpr.hpp>
+#include <unordered_map>
 
-#include <dlfcn.h>
-
-#include <stdexcept>
-#include <sstream>
-
-namespace xmipp4
+namespace xmipp4 
 {
-namespace system
+namespace multidimensional
 {
 
-inline void* dynamic_library_open(const char* filename)
+XMIPP4_INLINE_CONSTEXPR 
+const char* to_string(layout_flag_bits flag) noexcept
 {
-    XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
-    auto *const result = ::dlopen(filename, flags);
-    if (result == NULL)
+    switch (flag)
     {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
+    case layout_flag_bits::contiguous: return "contiguous";
+    case layout_flag_bits::column_major: return "column_major";
+    case layout_flag_bits::row_major: return "row_major";
+    default: return "";
     }
-    return result;
 }
 
-inline void dynamic_library_close(void* handle) noexcept
+template<typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits flag)
 {
-    ::dlclose(handle);
+    return os << to_string(flag);
 }
 
-inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
+
+
+
+
+XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
 {
-    return ::dlsym(handle, name);
+    return column_major_tag();
 }
 
-} // namespace system
+XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
+{
+    return row_major_tag();
+}
+
+} // namespace multidimensional
 } // namespace xmipp4

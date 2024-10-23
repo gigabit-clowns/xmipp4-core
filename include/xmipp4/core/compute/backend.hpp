@@ -60,8 +60,8 @@ public:
     virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
     virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
 
-    virtual std::unique_ptr<device> create_event() = 0;
-    virtual std::shared_ptr<device> create_event_shared() = 0;
+    virtual std::unique_ptr<event> create_event() = 0;
+    virtual std::shared_ptr<event> create_event_shared() = 0;
 
 }; 
 

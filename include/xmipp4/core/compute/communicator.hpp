@@ -50,7 +50,7 @@ public:
     communicator& operator=(communicator &&other) = default;
 
     virtual std::size_t get_size() const = 0;
-    virtual std::size_t get_rank() const = 0;
+    virtual int get_rank() const = 0;
 
     virtual std::unique_ptr<communicator> split(int group_id, 
                                                 int rank_priority ) const = 0;

@@ -51,10 +51,6 @@ enum class numerical_type
     complex_float16,
     complex_float32,
     complex_float64,
-
-    // Add here
-
-    count
 };
 
 XMIPP4_CONSTEXPR std::size_t get_size(numerical_type type) noexcept;

@@ -37,6 +37,7 @@ namespace xmipp4
 namespace compute
 {
 
+class backend;
 class queue;
 class buffer;
 
@@ -50,6 +51,8 @@ public:
 
     device& operator=(const device &other) = default;
     device& operator=(device &&other) = default;
+
+    virtual backend& get_backend() const noexcept = 0;
 
     virtual std::unique_ptr<queue> create_queue() = 0;
     virtual std::shared_ptr<queue> create_queue_shared() = 0;

@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file queue.hpp
+ * @file event.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::queue interface
+ * @brief Defines the compute::event interface
  * @date 2024-10-22
  * 
  */
@@ -33,23 +33,16 @@ namespace xmipp4
 namespace compute
 {
 
-class event;
-
-class queue
+class event
 {
 public:
-    queue() = default;
-    queue(const queue &other) = default;
-    queue(queue &&other) = default;
-    virtual ~queue() = default;
+    event() = default;
+    event(const event &other) = default;
+    event(event &&other) = default;
+    virtual ~event() = default;
 
-    queue& operator=(const queue &other) = default;
-    queue& operator=(queue &&other) = default;
-
-    virtual void synchronize() = 0;
-
-    virtual void record(event& event) = 0;
-    virtual void wait(event& event) = 0;
+    event& operator=(const event &other) = default;
+    event& operator=(event &&other) = default;
 
 }; 
 

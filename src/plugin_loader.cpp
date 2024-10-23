@@ -41,8 +41,8 @@ class plugin_loader::implementation
 public:
     explicit implementation(const std::string& path)
         : m_dynamic_library(path)
+        , m_plugin(query_plugin(m_dynamic_library))
     {
-        m_plugin = get_plugin(m_dynamic_library);
     }
 
     const plugin* get_plugin() const noexcept
@@ -55,7 +55,7 @@ private:
     system::dynamic_library m_dynamic_library;
     const plugin* m_plugin;
 
-    static const plugin* get_plugin(const system::dynamic_library& lib)
+    static const plugin* query_plugin(const system::dynamic_library& lib)
     {
         using get_plugin_function_type = const plugin* (*)();
         const char symbol_name[] = "xmipp4_get_plugin";

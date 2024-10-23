@@ -34,6 +34,8 @@
 namespace xmipp4
 {
 
+class interface_registry;
+
 class XMIPP4_CORE_API plugin_manager
 {
 public:
@@ -45,6 +47,14 @@ public:
 
     plugin_manager& operator=(const plugin_manager& other) = delete;
     plugin_manager& operator=(plugin_manager&& other);
+
+    std::size_t plugin_count();
+
+    void add_plugin(const plugin& plugin);
+    void load_plugin(const std::string &path);
+
+    void register_all_plugins_at(interface_registry &registry) const;
+    void deregister_all_plugins_at(interface_registry &registry) const;
 
 private:
     class implementation;

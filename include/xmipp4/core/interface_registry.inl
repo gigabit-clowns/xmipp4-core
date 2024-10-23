@@ -33,14 +33,14 @@ inline
 typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
 interface_registry::get_interface()
 {
-    XMIPP4_CONST_CONSTEXPR std::type_index key(typeid(T));
+    const std::type_index key(typeid(T));
 
     T* result;
     const auto ite = m_interfaces.find(key);
     if(ite == m_interfaces.end())
     {
         // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>()
+        auto new_interface = std::make_unique<T>();
         result = new_interface.get();
         m_interfaces.emplace(key, std::move(new_interface));
     }

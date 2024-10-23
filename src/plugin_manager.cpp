@@ -26,71 +26,40 @@
  * 
  */
 
-#include <xmipp4/plugin_manager.hpp>
+#include <xmipp4/core/plugin_manager.hpp>
 
-#include <xmipp4/plugin.hpp>
-#include <xmipp4/plugin_loader.hpp>
+#include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/plugin_loader.hpp>
 
 #include <vector>
 #include <cstdlib>
 
-#define XMIPP4_PLUGIN_PATH_ENV "XMIPP4_PLUGIN_PATH"
-#define XMIPP4_DEFAULT_PLUGIN_SUBDIRECTORY "xmipp4-plugins"
-
 namespace xmipp4
 {
-
-static const char* get_default_plugin_path() noexcept
-{
-    #if XMIPP4_CHECK_OS(LINUX)
-        return "/usr/local/lib/" XMIPP4_DEFAULT_PLUGIN_SUBDIRECTORY;
-    #elif XMIPP4_CHECK_OS(APPLE)
-
-    #elif XMIPP4_CHECK_OS(WINDOWS)
-
-    #else
-        #error "Unkown platform"
-    #endif
-}
-
-static const char* get_plugin_path() noexcept
-{
-    const char* result = std::getenv(XMIPP4_PLUGIN_PATH_ENV);
-    if (result == nullptr)
-    {
-        result = get_default_plugin_path();
-    }
-    return result;
-}
 
 class plugin_manager::implementation
 {
 public:
     implementation() = default;
 
-    void add_plugin(const plugin* plugin)
+    void add_plugin(const plugin& plugin)
     {
-        if (plugin)
-        {
-            m_plugins.push_back(plugin);
-        }
+        m_plugins.emplace_back(plugin);
     }
 
     void load_plugin(const std::string &path)
     {
         const auto ite = m_loaders.emplace(m_loaders.cend(), path);
-        auto first = ite->begin();
-        const auto last = ite->end();
-
-        for (; first != last; ++first)
+        const auto* plugin = ite->get_plugin();
+        if (plugin)
         {
-            add_plugin(*first);
+            add_plugin(*plugin);
         }
     }
 
 
 private:
-    std::vector<const plugin*> m_plugins;
+    std::vector<std::reference_wrapper<const plugin>> m_plugins;
     std::vector<plugin_loader> m_loaders;
 
 };

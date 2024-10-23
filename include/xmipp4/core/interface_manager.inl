@@ -30,7 +30,7 @@ namespace xmipp4
 
 template <typename T>
 inline
-typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
+typename std::enable_if<std::is_convertible<T*, managed_interface*>::value, T&>::type
 interface_manager::get_interface()
 {
     XMIPP4_CONST_CONSTEXPR std::type_index key(typeid(T));

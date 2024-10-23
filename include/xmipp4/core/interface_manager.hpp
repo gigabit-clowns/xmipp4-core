@@ -35,7 +35,7 @@
 namespace xmipp4
 {
 
-class backend_manager;
+class managed_interface;
 
 class interface_manager
 {
@@ -49,11 +49,11 @@ public:
     interface_manager& operator=(interface_manager&& other) = default;
 
     template <typename T>
-    typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
+    typename std::enable_if<std::is_convertible<T*, managed_interface*>::value, T&>::type
     get_interface();
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<backend_manager>> m_interfaces;
+    std::unordered_map<std::type_index, std::unique_ptr<managed_interface>> m_interfaces;
 
 };
 

@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file backend_manager.hpp
+ * @file managed_interface.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend_manager class
+ * @brief Defines managed_interface class
  * @date 2024-10-23
  * 
  */
@@ -31,16 +31,16 @@
 namespace xmipp4
 {
 
-class backend_manager
+class managed_interface
 {
 public:
-    backend_manager() = default;
-    backend_manager(const backend_manager& other) = default;
-    backend_manager(backend_manager&& other) = default;
-    virtual ~backend_manager() = default;
+    managed_interface() = default;
+    managed_interface(const managed_interface& other) = default;
+    managed_interface(managed_interface&& other) = default;
+    virtual ~managed_interface() = default;
 
-    backend_manager& operator=(const backend_manager& other) = default;
-    backend_manager& operator=(backend_manager&& other) = default;
+    managed_interface& operator=(const managed_interface& other) = default;
+    managed_interface& operator=(managed_interface&& other) = default;
 
 };
 

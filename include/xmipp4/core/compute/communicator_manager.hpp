@@ -21,43 +21,36 @@
  ***************************************************************************/
 
 /**
- * @file device_manager.hpp
+ * @file communicator_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_manager interface
+ * @brief Defines communicator_manager interface
  * @date 2024-04-29
  * 
  */
 
-#include "device_descriptor.hpp"
-
-#include <memory>
-#include <vector>
+#include <string>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class device;
+class communicator;
 
-class device_manager
+class communicator_manager
 {
 public:
-    device_manager() = default;
-    device_manager(const device_manager &other) = default;
-    device_manager(device_manager &&other) = default;
-    virtual ~device_manager() = default;
+    communicator_manager() = default;
+    communicator_manager(const communicator_manager &other) = default;
+    communicator_manager(communicator_manager &&other) = default;
+    virtual ~communicator_manager() = default;
 
-    device_manager& operator=(const device_manager &other) = default;
-    device_manager& operator=(device_manager &&other) = default;
+    communicator_manager& operator=(const communicator_manager &other) = default;
+    communicator_manager& operator=(communicator_manager &&other) = default;
 
     virtual const std::string& get_name() const noexcept = 0;
 
-    virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
-    virtual void get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
-
-    virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
-    virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
+    virtual communicator& get_world_communicator() const = 0;
 
 }; 
 

@@ -48,10 +48,7 @@ public:
     plugin_loader& operator=(const plugin_loader& other) = delete;
     plugin_loader& operator=(plugin_loader&& other);
 
-    const plugin* const* begin() const noexcept;
-    const plugin* const* end() const noexcept;
-
-    std::size_t count() const noexcept;
+    const plugin* get_plugin() const noexcept;
 
     bool is_open() const noexcept;
     void reset();

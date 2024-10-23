@@ -26,10 +26,10 @@
  * 
  */
 
-#include <xmipp4/plugin_loader.hpp>
+#include <xmipp4/core/plugin_loader.hpp>
 
-#include <xmipp4/plugin.hpp>
-#include <xmipp4/system/dynamic_library.hpp>
+#include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/system/dynamic_library.hpp>
 
 #include <stdexcept>
 
@@ -42,47 +42,36 @@ public:
     explicit implementation(const std::string& path)
         : m_dynamic_library(path)
     {
-        m_data = get_plugins(m_dynamic_library, m_count);
+        m_plugin = get_plugin(m_dynamic_library);
     }
 
-    std::size_t count() const noexcept
+    const plugin* get_plugin() const noexcept
     {
-        return m_count;
+        return m_plugin;
     }
 
-    const plugin* const* begin() const noexcept
-    {
-        return m_data;
-    }
-
-    const plugin* const* end() const noexcept
-    {
-        return begin() + count();
-    }
 
 private:
     system::dynamic_library m_dynamic_library;
-    const plugin* const* m_data;
-    std::size_t m_count;
+    const plugin* m_plugin;
 
-    static const plugin* const* get_plugins(const system::dynamic_library& lib,
-                                            std::size_t& count )
+    static const plugin* get_plugin(const system::dynamic_library& lib)
     {
-        using get_plugins_function_type = const plugin* const* (*)(std::size_t*);
-        const char symbol_name[] = "xmipp4_get_plugins";
+        using get_plugin_function_type = const plugin* (*)();
+        const char symbol_name[] = "xmipp4_get_plugin";
 
-        const auto func = reinterpret_cast<get_plugins_function_type>(
+        const auto func = reinterpret_cast<get_plugin_function_type>(
             lib.get_symbol(symbol_name)
         );
         
         if (!func)
         {
             throw std::runtime_error(
-                "xmipp4_get_plugins symbol could not be found"
+                "xmipp4_get_plugin symbol could not be found in shared object"
             );
         }
 
-        return func(&count);
+        return func();
     }
 
 };
@@ -107,19 +96,9 @@ plugin_loader& plugin_loader::operator=(plugin_loader&& other) = default;
 
 
 
-const plugin* const* plugin_loader::begin() const noexcept
+const plugin* plugin_loader::get_plugin() const noexcept
 {
-    return m_implementation ? m_implementation->begin() : nullptr;
-}
-
-const plugin* const* plugin_loader::end() const noexcept
-{
-    return m_implementation ? m_implementation->end() : nullptr;
-}
-
-std::size_t plugin_loader::count() const noexcept
-{
-    return m_implementation ? m_implementation->count() : 0;
+    return m_implementation ? m_implementation->get_plugin() : nullptr;
 }
 
 bool plugin_loader::is_open() const noexcept

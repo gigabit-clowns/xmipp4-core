@@ -37,6 +37,13 @@ namespace xmipp4
 
 class interface_registry;
 
+/**
+ * @brief Abstract class representing a plugin interface.
+ * 
+ * A concrete instance of this class may be used to connect a plugin
+ * to the core.
+ * 
+ */
 class plugin
 {
 public:
@@ -48,10 +55,26 @@ public:
     plugin& operator=(const plugin& other) = default;
     plugin& operator=(plugin&& other) = default;
 
+    /**
+     * @brief Get the name of the plugin.
+     * 
+     * @return const std::string& The name.
+     */
     virtual const std::string& get_name() const noexcept = 0;
+
+    /**
+     * @brief Get the version of the plugin.
+     * 
+     * @return version The version.
+     */
     virtual version get_version() const noexcept = 0;
+
+    /**
+     * @brief Register this plugin at a given interface registry.
+     * 
+     * @param registry The registry where this plugin will be registered.
+     */
     virtual void register_at(interface_registry& registry) const = 0;
-    virtual void deregister_at(interface_registry& registry) const = 0;
 
 };
 

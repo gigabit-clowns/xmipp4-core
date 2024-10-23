@@ -31,7 +31,7 @@ namespace xmipp4
 template <typename T>
 inline
 typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-interface_registry::get_interface()
+interface_registry::get_interface_manager()
 {
     const std::type_index key(typeid(T));
 

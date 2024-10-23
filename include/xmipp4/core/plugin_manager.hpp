@@ -36,9 +36,19 @@ namespace xmipp4
 
 class plugin;
 
+/**
+ * @brief Class managing a set of plugins.
+ * 
+ */
 class XMIPP4_CORE_API plugin_manager
 {
 public:
+    /**
+     * @brief Type representing a collection of plugins
+     * 
+     */
+    using plugin_registry = std::vector<std::reference_wrapper<const plugin>>;
+
     plugin_manager();
     plugin_manager(const std::string& name);
     plugin_manager(const plugin_manager& other) = delete;
@@ -51,8 +61,7 @@ public:
     void add_plugin(const plugin& plugin);
     const plugin* load_plugin(const std::string &path);
 
-    std::size_t count() const noexcept;
-    const plugin& get_plugin(std::size_t index) const;
+    const plugin_registry& get_plugins() const noexcept;
 
 private:
     class implementation;

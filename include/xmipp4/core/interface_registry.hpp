@@ -37,6 +37,14 @@ namespace xmipp4
 
 class interface_manager;
 
+/**
+ * @brief Stores a single instance of each type interface_manager.
+ * 
+ * The interface registry allows to centralize interface managers.
+ * 
+ * @see interface_manager
+ * 
+ */
 class interface_registry
 {
 public:
@@ -48,9 +56,19 @@ public:
     interface_registry& operator=(const interface_registry& other) = default;
     interface_registry& operator=(interface_registry&& other) = default;
 
+    /**
+     * @brief Get a concrete interface manager
+     * 
+     * When the method is called for the first time in a given instance with
+     * a given type, it constructs a new concrete interface manager of that
+     * type. If called previously, it returns the same instance.
+     * 
+     * @tparam T interface manager. Must be child class of interface_manager.
+     * @return T& the requested interface.
+     */
     template <typename T>
     typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-    get_interface();
+    get_interface_manager();
 
 private:
     std::unordered_map<std::type_index, std::unique_ptr<interface_manager>> m_interfaces;

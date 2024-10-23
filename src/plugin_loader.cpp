@@ -26,94 +26,61 @@
  * 
  */
 
-#include <xmipp4/core/plugin_loader.hpp>
-
-#include <xmipp4/core/plugin.hpp>
-#include <xmipp4/core/system/dynamic_library.hpp>
+#include "plugin_loader.hpp"
 
 #include <stdexcept>
+
+#define XMIPP4_PLUGIN_HOOK_SYMBOL_NAME "xmipp4_get_plugin"
 
 namespace xmipp4
 {
 
-class plugin_loader::implementation
+static const plugin* query_plugin(const system::dynamic_library& lib)
 {
-public:
-    explicit implementation(const std::string& path)
-        : m_dynamic_library(path)
-        , m_plugin(query_plugin(m_dynamic_library))
+    using get_plugin_function_type = const plugin* (*)();
+    const char symbol_name[] = XMIPP4_PLUGIN_HOOK_SYMBOL_NAME;
+
+    const auto func = reinterpret_cast<get_plugin_function_type>(
+        lib.get_symbol(symbol_name)
+    );
+    
+    if (!func)
     {
-    }
-
-    const plugin* get_plugin() const noexcept
-    {
-        return m_plugin;
-    }
-
-
-private:
-    system::dynamic_library m_dynamic_library;
-    const plugin* m_plugin;
-
-    static const plugin* query_plugin(const system::dynamic_library& lib)
-    {
-        using get_plugin_function_type = const plugin* (*)();
-        const char symbol_name[] = "xmipp4_get_plugin";
-
-        const auto func = reinterpret_cast<get_plugin_function_type>(
-            lib.get_symbol(symbol_name)
+        throw std::runtime_error(
+            XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
+            " symbol could not be found in shared object"
         );
-        
-        if (!func)
-        {
-            throw std::runtime_error(
-                "xmipp4_get_plugin symbol could not be found in shared object"
-            );
-        }
-
-        return func();
     }
 
-};
-
-
-
-plugin_loader::plugin_loader()
-    : m_implementation(memory::defer_construct)
-{
+    return func();
 }
+
+
 
 plugin_loader::plugin_loader(const std::string& path)
-    : m_implementation(path)
+    : m_dynamic_library(path)
+    , m_plugin(query_plugin(m_dynamic_library))
 {
 }
-
-plugin_loader::plugin_loader(plugin_loader&& other) = default;
-
-plugin_loader::~plugin_loader() = default;
-
-plugin_loader& plugin_loader::operator=(plugin_loader&& other) = default;
-
-
 
 const plugin* plugin_loader::get_plugin() const noexcept
 {
-    return m_implementation ? m_implementation->get_plugin() : nullptr;
+    return m_plugin;
 }
 
 bool plugin_loader::is_open() const noexcept
 {
-    return static_cast<bool>(m_implementation);
+    return m_dynamic_library.is_open();
 }
 
 void plugin_loader::reset()
 {
-    m_implementation.reset();
+    *this = plugin_loader();
 }
 
 void plugin_loader::load(const std::string& path)
 {
-    m_implementation.emplace(path);
+    *this = plugin_loader(path);
 }
 
-}
+} // namespace xmipp4

@@ -28,8 +28,9 @@
 
 #include <xmipp4/core/plugin_manager.hpp>
 
+#include "plugin_loader.hpp"
+
 #include <xmipp4/core/plugin.hpp>
-#include <xmipp4/core/plugin_loader.hpp>
 
 #include <vector>
 #include <cstdlib>
@@ -49,33 +50,28 @@ public:
 
     const plugin* load_plugin(const std::string &path)
     {
-        m_loaders.emplace_back(path);
-        const auto* plugin = m_loaders.back().get_plugin();
+        const auto ite = m_loaders.emplace(m_loaders.cend(), path);
+        const auto* plugin = ite->get_plugin();
         if (plugin)
         {
             add_plugin(*plugin);
         }
         else
         {
-            m_loaders.pop_back(); // Did not load anything
+            m_loaders.erase(ite); // Did not load anything
         }
 
         return plugin;
     }
 
-    std::size_t count() const noexcept
+    const plugin_registry& get_plugins() const noexcept
     {
-        return m_plugins.size();
-    }
-
-    const plugin& get_plugin(std::size_t index) const
-    {
-        return m_plugins.at(index);
+        return m_plugins;
     }
 
 private:
-    std::vector<std::reference_wrapper<const plugin>> m_plugins;
     std::vector<plugin_loader> m_loaders;
+    plugin_registry m_plugins;
 
 };
 
@@ -99,14 +95,10 @@ const plugin* plugin_manager::load_plugin(const std::string &path)
     return m_implementation->load_plugin(path);
 }
 
-std::size_t plugin_manager::count() const noexcept
+const plugin_manager::plugin_registry& 
+plugin_manager::get_plugins() const noexcept
 {
-    return m_implementation->count();
-}
-
-const plugin& plugin_manager::get_plugin(std::size_t index) const
-{
-    return m_implementation->get_plugin(index);
+    return m_implementation->get_plugins();
 }
 
 } // namespace xmipp4

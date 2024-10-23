@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file communicator_manager.hpp
+ * @file communicator_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines communicator_manager interface
+ * @brief Defines communicator_backend interface
  * @date 2024-10-23
  * 
  */
@@ -37,16 +37,16 @@ namespace compute
 
 class communicator;
 
-class communicator_manager
+class communicator_backend
 {
 public:
-    communicator_manager() = default;
-    communicator_manager(const communicator_manager &other) = default;
-    communicator_manager(communicator_manager &&other) = default;
-    virtual ~communicator_manager() = default;
+    communicator_backend() = default;
+    communicator_backend(const communicator_backend &other) = default;
+    communicator_backend(communicator_backend &&other) = default;
+    virtual ~communicator_backend() = default;
 
-    communicator_manager& operator=(const communicator_manager &other) = default;
-    communicator_manager& operator=(communicator_manager &&other) = default;
+    communicator_backend& operator=(const communicator_backend &other) = default;
+    communicator_backend& operator=(communicator_backend &&other) = default;
 
     virtual const std::string& get_name() const noexcept = 0;
 

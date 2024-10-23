@@ -21,19 +21,17 @@
  ***************************************************************************/
 
 /**
- * @file device_manager.hpp
+ * @file device_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_manager interface
+ * @brief Defines device_backend interface
  * @date 2024-10-23
  * 
  */
 
-#include "device_index.hpp"
 #include "device_descriptor.hpp"
 
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 namespace xmipp4 
 {
@@ -41,35 +39,25 @@ namespace compute
 {
 
 class device;
-class device_backend;
 
-class device_manager
+class device_backend
 {
 public:
-    device_manager() = default;
-    device_manager(const device_manager &other) = default;
-    device_manager(device_manager &&other) = default;
-    virtual ~device_manager() = default;
+    device_backend() = default;
+    device_backend(const device_backend &other) = default;
+    device_backend(device_backend &&other) = default;
+    virtual ~device_backend() = default;
 
-    device_manager& operator=(const device_manager &other) = default;
-    device_manager& operator=(device_manager &&other) = default;
+    device_backend& operator=(const device_backend &other) = default;
+    device_backend& operator=(device_backend &&other) = default;
 
-    bool register_backend(std::unique_ptr<device_backend> backend);
+    virtual const std::string& get_name() const noexcept = 0;
 
-    device_backend* get_backend(const std::string &name);
-    const device_backend* get_backend(const std::string &name) const;
+    virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
+    virtual bool get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
 
-    std::vector<device_index> enumerate_devices() const;
-    void enumerate_devices(std::vector<device_index>& indices) const;
-
-    bool get_device_descriptor(const device_index& index, 
-                               device_descriptor &desc ) const;
-
-    std::unique_ptr<device> create_device(const device_index& index);
-    std::shared_ptr<device> create_device_shared(const device_index& index);
-
-private:
-    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;
+    virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
+    virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
 
 }; 
 

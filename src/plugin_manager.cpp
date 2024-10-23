@@ -47,12 +47,20 @@ public:
         m_plugins.emplace_back(plugin);
     }
 
-    const plugin& load_plugin(const std::string &path)
+    const plugin* load_plugin(const std::string &path)
     {
-        const auto ite = m_loaders.emplace(m_loaders.cend(), path);
-        const auto* plugin = ite->get_plugin();
-        add_plugin(*plugin);
-        return *plugin;
+        m_loaders.emplace_back(path);
+        const auto* plugin = m_loaders.back().get_plugin();
+        if (plugin)
+        {
+            add_plugin(*plugin);
+        }
+        else
+        {
+            m_loaders.pop_back(); // Did not load anything
+        }
+
+        return plugin;
     }
 
     std::size_t count() const noexcept
@@ -86,7 +94,7 @@ void plugin_manager::add_plugin(const plugin& plugin)
     m_implementation->add_plugin(plugin);
 }
 
-const plugin& plugin_manager::load_plugin(const std::string &path)
+const plugin* plugin_manager::load_plugin(const std::string &path)
 {
     return m_implementation->load_plugin(path);
 }

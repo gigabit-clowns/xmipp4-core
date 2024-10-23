@@ -36,7 +36,7 @@ namespace xmipp4
 
 class plugin;
 
-class plugin_loader
+class XMIPP4_CORE_API plugin_loader
 {
 public:
     plugin_loader();

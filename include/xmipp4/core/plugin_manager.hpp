@@ -49,7 +49,7 @@ public:
     plugin_manager& operator=(plugin_manager&& other);
 
     void add_plugin(const plugin& plugin);
-    const plugin& load_plugin(const std::string &path);
+    const plugin* load_plugin(const std::string &path);
 
     std::size_t count() const noexcept;
     const plugin& get_plugin(std::size_t index) const;

@@ -20,37 +20,43 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_manager.hpp"
+/**
+ * @file interface_registry.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Defines interface_registry class
+ * @date 2024-10-23
+ * 
+ */
 
-#include "platform/constexpr.hpp"
-#include "platform/assert.hpp"
+#include <unordered_map>
+#include <typeindex>
+#include <memory>
 
-namespace xmipp4 
+namespace xmipp4
 {
 
-template <typename T>
-inline
-typename std::enable_if<std::is_convertible<T*, managed_interface*>::value, T&>::type
-interface_manager::get_interface()
+class interface_manager;
+
+class interface_registry
 {
-    XMIPP4_CONST_CONSTEXPR std::type_index key(typeid(T));
+public:
+    interface_registry() = default;
+    interface_registry(const interface_registry& other) = default;
+    interface_registry(interface_registry&& other) = default;
+    ~interface_registry() = default;
 
-    T* result;
-    const auto ite = m_interfaces.find(key);
-    if(ite == m_interfaces.end())
-    {
-        // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>()
-        result = new_interface.get();
-        m_interfaces.emplace(key, std::move(new_interface));
-    }
-    else
-    {
-        // Interface exists. Retrieve it
-        result = static_cast<T*>(ite->second.get());
-    }
+    interface_registry& operator=(const interface_registry& other) = default;
+    interface_registry& operator=(interface_registry&& other) = default;
 
-    return *result;
-}
+    template <typename T>
+    typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
+    get_interface();
+
+private:
+    std::unordered_map<std::type_index, std::unique_ptr<interface_manager>> m_interfaces;
+
+};
 
 } // namespace xmipp4
+
+#include "interface_registry.inl"

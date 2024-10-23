@@ -28,14 +28,8 @@
  * 
  */
 
-#include <unordered_map>
-#include <typeindex>
-#include <memory>
-
 namespace xmipp4
 {
-
-class managed_interface;
 
 class interface_manager
 {
@@ -43,17 +37,10 @@ public:
     interface_manager() = default;
     interface_manager(const interface_manager& other) = default;
     interface_manager(interface_manager&& other) = default;
-    ~interface_manager() = default;
+    virtual ~interface_manager() = default;
 
     interface_manager& operator=(const interface_manager& other) = default;
     interface_manager& operator=(interface_manager&& other) = default;
-
-    template <typename T>
-    typename std::enable_if<std::is_convertible<T*, managed_interface*>::value, T&>::type
-    get_interface();
-
-private:
-    std::unordered_map<std::type_index, std::unique_ptr<managed_interface>> m_interfaces;
 
 };
 

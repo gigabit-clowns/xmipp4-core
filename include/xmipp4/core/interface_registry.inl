@@ -20,28 +20,37 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/**
- * @file managed_interface.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines managed_interface class
- * @date 2024-10-23
- * 
- */
+#include "interface_registry.hpp"
 
-namespace xmipp4
+#include "platform/constexpr.hpp"
+#include "platform/assert.hpp"
+
+namespace xmipp4 
 {
 
-class managed_interface
+template <typename T>
+inline
+typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
+interface_registry::get_interface()
 {
-public:
-    managed_interface() = default;
-    managed_interface(const managed_interface& other) = default;
-    managed_interface(managed_interface&& other) = default;
-    virtual ~managed_interface() = default;
+    XMIPP4_CONST_CONSTEXPR std::type_index key(typeid(T));
 
-    managed_interface& operator=(const managed_interface& other) = default;
-    managed_interface& operator=(managed_interface&& other) = default;
+    T* result;
+    const auto ite = m_interfaces.find(key);
+    if(ite == m_interfaces.end())
+    {
+        // Interface does not exist. Create it
+        auto new_interface = std::make_unique<T>()
+        result = new_interface.get();
+        m_interfaces.emplace(key, std::move(new_interface));
+    }
+    else
+    {
+        // Interface exists. Retrieve it
+        result = static_cast<T*>(ite->second.get());
+    }
 
-};
+    return *result;
+}
 
 } // namespace xmipp4

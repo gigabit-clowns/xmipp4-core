@@ -35,7 +35,7 @@
 namespace xmipp4
 {
 
-class interface_manager;
+class interface_registry;
 
 class plugin
 {
@@ -50,9 +50,9 @@ public:
 
     virtual const std::string& get_name() const noexcept = 0;
     virtual version get_version() const noexcept = 0;
-    virtual void register_at(interface_manager& manager) const = 0;
-    virtual void deregister_at(interface_manager& manager) const = 0;
+    virtual void register_at(interface_registry& registry) const = 0;
+    virtual void deregister_at(interface_registry& registry) const = 0;
 
 };
 
-}
+} // namespace xmipp4

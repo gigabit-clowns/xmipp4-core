@@ -46,10 +46,10 @@ public:
     queue& operator=(const queue &other) = default;
     queue& operator=(queue &&other) = default;
 
-    virtual void synchronize() = 0;
-
     virtual void record(event& event) = 0;
     virtual void wait(event& event) = 0;
+
+    virtual void synchronize() const = 0;
 
 }; 
 

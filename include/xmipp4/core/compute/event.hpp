@@ -33,6 +33,8 @@ namespace xmipp4
 namespace compute
 {
 
+class device;
+
 class event
 {
 public:
@@ -43,6 +45,12 @@ public:
 
     event& operator=(const event &other) = default;
     event& operator=(event &&other) = default;
+
+    virtual device& get_device() const noexcept = 0;
+
+    virtual void signal() = 0;
+    virtual void wait() const = 0;
+    virtual bool query() const = 0;
 
 }; 
 

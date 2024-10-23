@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file backend.hpp
+ * @file device_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend interface
+ * @brief Defines device_manager interface
  * @date 2024-04-29
  * 
  */
@@ -39,18 +39,17 @@ namespace compute
 {
 
 class device;
-class event;
 
-class backend
+class device_manager
 {
 public:
-    backend() = default;
-    backend(const backend &other) = default;
-    backend(backend &&other) = default;
-    virtual ~backend() = default;
+    device_manager() = default;
+    device_manager(const device_manager &other) = default;
+    device_manager(device_manager &&other) = default;
+    virtual ~device_manager() = default;
 
-    backend& operator=(const backend &other) = default;
-    backend& operator=(backend &&other) = default;
+    device_manager& operator=(const device_manager &other) = default;
+    device_manager& operator=(device_manager &&other) = default;
 
     virtual std::string get_name() const noexcept = 0;
 
@@ -59,9 +58,6 @@ public:
 
     virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
     virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;
-
-    virtual std::unique_ptr<event> create_event() = 0;
-    virtual std::shared_ptr<event> create_event_shared() = 0;
 
 }; 
 

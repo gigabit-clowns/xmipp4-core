@@ -28,6 +28,7 @@
  * 
  */
 
+#include "reduction_operation.hpp"
 #include "numerical_type.hpp"
 
 #include <memory>
@@ -82,6 +83,12 @@ public:
 
     virtual void all_gather(const buffer &send_buf, buffer &recv_buf, 
                             queue &q) = 0;
+
+    virtual void reduce(int root, reduction_operation op,
+                        const buffer &send_buf, buffer &recv_buf ) = 0;
+
+    virtual void all_reduce(reduction_operation op,
+                            const buffer &send_buf, buffer &recv_buf ) = 0;
 
     virtual void all_to_all(const buffer &send_buf, buffer &recv_buf, 
                             queue &q) = 0;

@@ -81,13 +81,13 @@ bspline3(F x) noexcept
     F result = 0.0;
 
     const auto ax = abs(x);
-    if(x < F(0.5))
+    if(ax < F(1))
     {
         result = F(2.0/3.0) + F(0.5)*ax*ax*(ax - F(2.0));
     }
-    else if(x < F(2))
+    else if(ax < F(2))
     {
-        const auto y = ax - F(2.0);
+        const auto y = F(2.0) - ax;
         result = F(1.0/6.0)*y*y*y;
     }
 

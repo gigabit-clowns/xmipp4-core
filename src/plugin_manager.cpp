@@ -111,4 +111,18 @@ const plugin& plugin_manager::get_plugin(std::size_t index) const
     return m_implementation->get_plugin(index);
 }
 
+
+
+std::size_t register_all_plugins_at(const plugin_manager &manager, 
+                                    interface_registry &registry )
+{
+    const auto count = manager.get_plugin_count();
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        const auto &plugin = manager.get_plugin(i);
+        plugin.register_at(registry);
+    }
+    return count;
+}
+
 } // namespace xmipp4

@@ -35,6 +35,7 @@ namespace xmipp4
 {
 
 class plugin;
+class interface_registry;
 
 /**
  * @brief Class managing a set of plugins.
@@ -93,5 +94,10 @@ private:
     memory::pimpl<implementation> m_implementation;
 
 };
+
+
+
+std::size_t register_all_plugins_at(const plugin_manager &manager, 
+                                    interface_registry &registry );
 
 } // namespace xmipp4

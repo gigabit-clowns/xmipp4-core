@@ -53,12 +53,40 @@ public:
     plugin_manager& operator=(plugin_manager&& other);
 
     /**
-     * @brief Add a new plugin. 
+     * @brief Add a already loaded plugin.
      * 
-     * @param plugin 
+     * @param plugin The plugin to be added.
      */
     void add_plugin(const plugin& plugin);
+
+    /**
+     * @brief Load a plugin from a Shared Object and add it.
+     * 
+     * The path to the shared object can be provided without a extension,
+     * in which case it will be inferred from the platform. Relative paths
+     * will be searched in LD_LIBRARY_PATH.
+     * 
+     * @param path Path to the plugin. 
+     * @return const plugin* The loaded plugin. nullptr if it could not be 
+     * loaded.
+     */
     const plugin* load_plugin(const std::string &path);
+
+    /**
+     * @brief Get the number of plugins known by this manager.
+     * 
+     * @return std::size_t The number of plugins.
+     */
+    std::size_t get_plugin_count() const noexcept;
+
+    /**
+     * @brief Get the i-th plugin.
+     * 
+     * @param index The index of the requested plugin. Must be less than
+     * the plugin count.
+     * @return const plugin& The requested plugin.
+     */
+    const plugin& get_plugin(std::size_t index) const;
 
 private:
     class implementation;

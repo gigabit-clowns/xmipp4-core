@@ -33,6 +33,7 @@
 #include <xmipp4/core/plugin.hpp>
 
 #include <vector>
+#include <functional>
 #include <cstdlib>
 
 namespace xmipp4
@@ -64,14 +65,19 @@ public:
         return plugin;
     }
 
-    const plugin_registry& get_plugins() const noexcept
+    std::size_t get_plugin_count() const noexcept
     {
-        return m_plugins;
+        return m_plugins.size();
+    }
+
+    const plugin& get_plugin(std::size_t index) const
+    {
+        return m_plugins.at(index);
     }
 
 private:
     std::vector<plugin_loader> m_loaders;
-    plugin_registry m_plugins;
+    std::vector<std::reference_wrapper<const plugin>> m_plugins;
 
 };
 
@@ -95,10 +101,14 @@ const plugin* plugin_manager::load_plugin(const std::string &path)
     return m_implementation->load_plugin(path);
 }
 
-const plugin_manager::plugin_registry& 
-plugin_manager::get_plugins() const noexcept
+std::size_t plugin_manager::get_plugin_count() const noexcept
 {
-    return m_implementation->get_plugins();
+    return m_implementation->get_plugin_count();
+}
+
+const plugin& plugin_manager::get_plugin(std::size_t index) const
+{
+    return m_implementation->get_plugin(index);
 }
 
 } // namespace xmipp4

@@ -21,41 +21,47 @@
  ***************************************************************************/
 
 /**
- * @file communicator.hpp
+ * @file device_communicator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the compute::communicator class
+ * @brief Definition of the compute::device_communicator class
  * @date 2024-10-21
  * 
  */
 
+#include "numerical_type.hpp"
+
 #include <memory>
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
+class device;
 class buffer;
 class queue;
 
-class communicator
+class device_communicator
 {
 public:
-    communicator() = default;
-    communicator(const communicator &other) = default;
-    communicator(communicator &&other) = default;
-    virtual ~communicator() = default;
+    device_communicator() = default;
+    device_communicator(const device_communicator &other) = default;
+    device_communicator(device_communicator &&other) = default;
+    virtual ~device_communicator() = default;
 
-    communicator& operator=(const communicator &other) = default;
-    communicator& operator=(communicator &&other) = default;
+    device_communicator& operator=(const device_communicator &other) = default;
+    device_communicator& operator=(device_communicator &&other) = default;
 
     virtual std::size_t get_size() const = 0;
     virtual int get_rank() const = 0;
 
-    virtual std::unique_ptr<communicator> split(int group_id, 
-                                                int rank_priority ) const = 0;
-    virtual std::shared_ptr<communicator> split_shared(int group_id, 
-                                                       int rank_priority ) const = 0;
+    virtual device& get_device() const noexcept = 0;
+    
+    virtual std::unique_ptr<buffer> create_buffer(numerical_type type,
+                                                  std::size_t count) = 0;
+    virtual std::shared_ptr<buffer> create_buffer_shared(numerical_type type,
+                                                         std::size_t count) = 0;
 
     virtual void barrier() = 0;
 

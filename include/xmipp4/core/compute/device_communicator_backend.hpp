@@ -21,37 +21,47 @@
  ***************************************************************************/
 
 /**
- * @file communicator_backend.hpp
+ * @file device_communicator_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines communicator_backend interface
+ * @brief Defines device_communicator_backend interface
  * @date 2024-10-23
  * 
  */
 
 #include <string>
+#include <memory>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class communicator;
+class device;
+class device_communicator;
+class host_communicator;
 
-class communicator_backend
+class device_communicator_backend
 {
 public:
-    communicator_backend() = default;
-    communicator_backend(const communicator_backend &other) = default;
-    communicator_backend(communicator_backend &&other) = default;
-    virtual ~communicator_backend() = default;
+    device_communicator_backend() = default;
+    device_communicator_backend(const device_communicator_backend &other) = default;
+    device_communicator_backend(device_communicator_backend &&other) = default;
+    virtual ~device_communicator_backend() = default;
 
-    communicator_backend& operator=(const communicator_backend &other) = default;
-    communicator_backend& operator=(communicator_backend &&other) = default;
+    device_communicator_backend& operator=(const device_communicator_backend &other) = default;
+    device_communicator_backend& operator=(device_communicator_backend &&other) = default;
 
     virtual const std::string& get_name() const noexcept = 0;
 
-    virtual communicator& get_world_communicator() const = 0;
+    virtual bool is_available() const noexcept = 0;
 
+    virtual std::unique_ptr<device_communicator> 
+    create_device_communicator(device& dev,
+                               std::shared_ptr<host_communicator> comm ) = 0;
+
+    virtual std::shared_ptr<device_communicator>
+    create_device_communicator_shared(device& dev,
+                                      std::shared_ptr<host_communicator> comm ) = 0;
 }; 
 
 } // namespace compute

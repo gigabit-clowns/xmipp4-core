@@ -57,14 +57,14 @@ public:
     interface_registry& operator=(interface_registry&& other) = default;
 
     /**
-     * @brief Get a concrete interface manager
+     * @brief Get a concrete interface manager.
      * 
      * When the method is called for the first time in a given instance with
      * a given type, it constructs a new concrete interface manager of that
      * type. If called previously, it returns the same instance.
      * 
      * @tparam T interface manager. Must be child class of interface_manager.
-     * @return T& the requested interface.
+     * @return T& the requested interface manager.
      */
     template <typename T>
     typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type

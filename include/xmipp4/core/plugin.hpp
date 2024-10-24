@@ -76,6 +76,13 @@ public:
      */
     virtual void register_at(interface_registry& registry) const = 0;
 
+    /**
+     * @brief Deregister this plugin at a given interface registry.
+     * 
+     * @param registry The registry where this plugin will be deregistered.
+     */
+    virtual void deregister_at(interface_registry& registry) const = 0;
+
 };
 
 } // namespace xmipp4

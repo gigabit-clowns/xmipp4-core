@@ -43,12 +43,6 @@ class plugin;
 class XMIPP4_CORE_API plugin_manager
 {
 public:
-    /**
-     * @brief Type representing a collection of plugins
-     * 
-     */
-    using plugin_registry = std::vector<std::reference_wrapper<const plugin>>;
-
     plugin_manager();
     plugin_manager(const std::string& name);
     plugin_manager(const plugin_manager& other) = delete;
@@ -58,10 +52,13 @@ public:
     plugin_manager& operator=(const plugin_manager& other) = delete;
     plugin_manager& operator=(plugin_manager&& other);
 
+    /**
+     * @brief Add a new plugin. 
+     * 
+     * @param plugin 
+     */
     void add_plugin(const plugin& plugin);
     const plugin* load_plugin(const std::string &path);
-
-    const plugin_registry& get_plugins() const noexcept;
 
 private:
     class implementation;

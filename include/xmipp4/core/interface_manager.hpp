@@ -35,7 +35,7 @@ namespace xmipp4
  * @brief Abstract class defining the interface of an interface manager.
  * 
  * An interface manager keeps track of all known implementations of a given
- * interface and provides utilizes to access the most relevant implementation
+ * interface and provides utilities to access the most relevant implementation
  * for a given context. This is a base class for collecting them on an
  * interface_registry.
  * 

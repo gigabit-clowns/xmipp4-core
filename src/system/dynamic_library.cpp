@@ -115,15 +115,15 @@ void* dynamic_library::get_symbol(const std::string& name) const noexcept
 
 std::string dynamic_library::make_soname(const std::string& library_name)
 {
-    #if XMIPP4_CHECK_OS(LINUX)
+    #if XMIPP4_LINUX
         std::stringstream stream;
         stream << "lib" << library_name << ".so";
         return stream.str();
-    #elif XMIPP4_CHECK_OS(APPLE)
+    #elif XMIPP4_APPLE
         std::stringstream stream;
         stream << "lib" << library_name << ".dylib";
         return stream.str();
-    #elif XMIPP4_CHECK_OS(WINDOWS)
+    #elif XMIPP4_WINDOWS
         return library_name;
     #else
         #error "Unknown OS"
@@ -133,15 +133,15 @@ std::string dynamic_library::make_soname(const std::string& library_name)
 std::string dynamic_library::make_soname(const std::string& library_name, 
                                          version ver )
 {
-    #if XMIPP4_CHECK_OS(LINUX)
+    #if XMIPP4_LINUX
         std::stringstream stream;
         stream << "lib" << library_name << ".so" << '.' << ver;
         return stream.str();
-    #elif XMIPP4_CHECK_OS(APPLE)
+    #elif XMIPP4_APPLE
         std::stringstream stream;
         stream << "lib" << library_name << '.' << ver <<".dylib";
         return stream.str();
-    #elif XMIPP4_CHECK_OS(WINDOWS)
+    #elif XMIPP4_WINDOWS
         (void)(ver); // Ignore to prevent warnings
         return library_name;
     #else

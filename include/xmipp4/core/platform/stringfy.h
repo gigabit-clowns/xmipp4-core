@@ -21,23 +21,21 @@
  ***************************************************************************/
 
 /**
- * @file openmp.h
+ * @file stringfy.h
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides a cross-platform macro for accessing OpenMP functionality
- * when supported
+ * @brief Provides macro for stringfying literals.
  * @date 2024-10-25
  * 
  */
 
-#include "pragma.h"
-
 /**
- * @def XMIPP4_OMP
- * @brief Provide a OpenMP directive to the compiler.
+ * @brief Stringfy the literal x
  * 
  */
-#if _OPENMP
-    #define XMIPP4_OMP(x) XMIPP4_PRAGMA(omp x)
-#else
-    #define XMIPP4_OMP(x)
-#endif
+#define XMIPP4_STRINGFY(x) #x
+
+/**
+ * @brief Stringfy the value of x
+ * 
+ */
+#define XMIPP4_STRINGFY_VALUE(x) XMIPP4_STRINGFY(x)

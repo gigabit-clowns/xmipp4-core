@@ -57,8 +57,7 @@ public:
 
     bool register_backend(std::unique_ptr<device_backend> backend);
 
-    device_backend* get_backend(const std::string &name);
-    const device_backend* get_backend(const std::string &name) const;
+    device_backend* get_backend(const std::string &name) const;
 
     std::vector<device_index> enumerate_devices() const;
     void enumerate_devices(std::vector<device_index> &indices) const;
@@ -66,8 +65,10 @@ public:
     bool get_device_descriptor(const device_index &index, 
                                device_descriptor &desc ) const;
 
-    std::unique_ptr<device> create_device(const device_index &index);
-    std::shared_ptr<device> create_device_shared(const device_index &index);
+    std::unique_ptr<device> 
+    create_device(const device_index &index) const;
+    std::shared_ptr<device> 
+    create_device_shared(const device_index &index) const;
 
 private:
     std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;

@@ -51,25 +51,12 @@ bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
     return inserted;
 }
 
-device_backend* device_manager::get_backend(const std::string &name)
+device_backend* device_manager::get_backend(const std::string &name) const
 {
     const auto ite = m_registry.find(name);
 
     device_backend *result = nullptr;
     if (ite != m_registry.end())
-    {
-        result = ite->second.get();
-    }
-
-    return result;
-}
-
-const device_backend* device_manager::get_backend(const std::string &name) const
-{
-    const auto ite = m_registry.find(name);
-
-    const device_backend *result = nullptr;
-    if (ite != m_registry.cend())
     {
         result = ite->second.get();
     }
@@ -116,7 +103,7 @@ bool device_manager::get_device_descriptor(const device_index& index,
 }
 
 std::unique_ptr<device>
-device_manager::create_device(const device_index& index)
+device_manager::create_device(const device_index& index) const
 {
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
@@ -130,7 +117,7 @@ device_manager::create_device(const device_index& index)
 }
 
 std::shared_ptr<device> 
-device_manager::create_device_shared(const device_index& index)
+device_manager::create_device_shared(const device_index& index) const
 {
     auto *backend = get_backend(index.get_backend_name());
     if (backend)

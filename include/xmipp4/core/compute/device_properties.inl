@@ -67,5 +67,15 @@ const std::string& device_properties::get_physical_location() const noexcept
     return m_physical_location;
 }
 
+void device_properties::set_total_memory_bytes(std::size_t bytes) noexcept
+{
+    m_total_memory_bytes = bytes;
+}
+
+std::size_t device_properties::get_total_memory_bytes() const noexcept
+{
+    return m_total_memory_bytes;
+}
+
 } // namespace compute
 } // namespace xmipp4

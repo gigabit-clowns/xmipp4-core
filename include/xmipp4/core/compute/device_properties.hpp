@@ -52,10 +52,14 @@ public:
     void set_physical_location(Str &&location);
     const std::string& get_physical_location() const noexcept;
 
+    void set_total_memory_bytes(std::size_t bytes) noexcept;
+    std::size_t get_total_memory_bytes() const noexcept;
+
 private:
     device_type m_type;
     std::string m_name;
     std::string m_physical_location;
+    std::size_t m_total_memory_bytes;
 
 };
 

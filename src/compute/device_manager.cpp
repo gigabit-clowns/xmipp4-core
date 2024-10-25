@@ -105,29 +105,29 @@ bool device_manager::get_device_descriptor(const device_index& index,
 std::unique_ptr<device>
 device_manager::create_device(const device_index& index) const
 {
+    std::unique_ptr<device> result;
+
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
     {
-        return backend->create_device(index.get_device_id());
+        result = backend->create_device(index.get_device_id());
     }
-    else
-    {
-        return nullptr;
-    }
+
+    return result;
 }
 
 std::shared_ptr<device> 
 device_manager::create_device_shared(const device_index& index) const
 {
+    std::shared_ptr<device> result;
+
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
     {
-        return backend->create_device_shared(index.get_device_id());
+        result = backend->create_device_shared(index.get_device_id());
     }
-    else
-    {
-        return nullptr;
-    }
+
+    return result;
 }
 
 } // namespace system

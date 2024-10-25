@@ -41,16 +41,16 @@ namespace compute
 {
 
 template <typename T>
-class typed_communications_interface
+class host_communications_interface
 {
 public:
-    typed_communications_interface() = default;
-    typed_communications_interface(const typed_communications_interface &other) = default;
-    typed_communications_interface(typed_communications_interface &&other) = default;
-    virtual ~typed_communications_interface() = default;
+    host_communications_interface() = default;
+    host_communications_interface(const host_communications_interface &other) = default;
+    host_communications_interface(host_communications_interface &&other) = default;
+    virtual ~host_communications_interface() = default;
 
-    typed_communications_interface& operator=(const typed_communications_interface &other) = default;
-    typed_communications_interface& operator=(typed_communications_interface &&other) = default;
+    host_communications_interface& operator=(const host_communications_interface &other) = default;
+    host_communications_interface& operator=(host_communications_interface &&other) = default;
 
     virtual void send(int destination_rank, span<const T> buf) = 0;
 
@@ -78,18 +78,18 @@ public:
 };
 
 class host_communicator
-    : public typed_communications_interface<memory::byte>
-    , public typed_communications_interface<short>
-    , public typed_communications_interface<unsigned short>
-    , public typed_communications_interface<int>
-    , public typed_communications_interface<unsigned int>
-    , public typed_communications_interface<long>
-    , public typed_communications_interface<unsigned long>
-    , public typed_communications_interface<long long>
-    , public typed_communications_interface<unsigned long long>
-    , public typed_communications_interface<float>
-    , public typed_communications_interface<double>
-    , public typed_communications_interface<long double>
+    : public host_communications_interface<memory::byte>
+    , public host_communications_interface<short>
+    , public host_communications_interface<unsigned short>
+    , public host_communications_interface<int>
+    , public host_communications_interface<unsigned int>
+    , public host_communications_interface<long>
+    , public host_communications_interface<unsigned long>
+    , public host_communications_interface<long long>
+    , public host_communications_interface<unsigned long long>
+    , public host_communications_interface<float>
+    , public host_communications_interface<double>
+    , public host_communications_interface<long double>
 {
 public:
     host_communicator() = default;

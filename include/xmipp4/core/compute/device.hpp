@@ -41,6 +41,8 @@ class queue;
 class event;
 class buffer;
 class device_backend;
+class device_communicator;
+class host_communicator;
 
 class device
 {
@@ -66,6 +68,10 @@ public:
     virtual std::shared_ptr<buffer> create_buffer_shared(numerical_type type,
                                                          std::size_t count) = 0;
 
+    virtual std::unique_ptr<device_communicator>
+    create_communicator(std::shared_ptr<host_communicator> comm) = 0;
+    virtual std::shared_ptr<device_communicator>
+    create_communicator_shared(std::shared_ptr<host_communicator> comm) = 0;
 }; 
 
 } // namespace compute

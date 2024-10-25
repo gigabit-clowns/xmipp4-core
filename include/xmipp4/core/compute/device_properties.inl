@@ -43,9 +43,9 @@ device_type device_properties::get_type() const noexcept
 
 template <typename Str>
 inline
-void device_properties::set_name(Str &&model)
+void device_properties::set_name(Str &&name)
 {
-    m_model = std::forward<Str>(model);
+    m_name = std::forward<Str>(name);
 }
 
 inline

@@ -31,6 +31,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "../interface_manager.hpp"
+
 namespace xmipp4 
 {
 namespace compute
@@ -45,7 +47,7 @@ class host_communicator_backend;
  * 
  */
 class host_communicator_manager
-    // TODO inherit from interface_manager when merged.
+    : public interface_manager
 {
 public:
     host_communicator_manager() = default;

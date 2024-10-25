@@ -73,16 +73,6 @@ public:
      * @return host_communicator_backend* The backend. Nullptr if not found.
      */
     host_communicator_backend* 
-    get_backend(const std::string &name);
-
-    /**
-     * @brief Find a backend by its name.
-     * 
-     * @param name The name of the backend.
-     * @return const host_communicator_backend* The backend. 
-     * Nullptr if not found.
-     */
-    const host_communicator_backend* 
     get_backend(const std::string &name) const;
 
     /**

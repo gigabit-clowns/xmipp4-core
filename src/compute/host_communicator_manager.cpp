@@ -52,26 +52,12 @@ bool host_communicator_manager::register_backend(std::unique_ptr<host_communicat
 }
 
 host_communicator_backend* 
-host_communicator_manager::get_backend(const std::string &name)
+host_communicator_manager::get_backend(const std::string &name) const
 {
     const auto ite = m_registry.find(name);
 
     host_communicator_backend *result = nullptr;
     if (ite != m_registry.end())
-    {
-        result = ite->second.get();
-    }
-
-    return result;
-}
-
-const host_communicator_backend* 
-host_communicator_manager::get_backend(const std::string &name) const
-{
-    const auto ite = m_registry.find(name);
-
-    const host_communicator_backend *result = nullptr;
-    if (ite != m_registry.cend())
     {
         result = ite->second.get();
     }

@@ -45,64 +45,64 @@ namespace system
  * dynamic libraries
  * 
  */
-class dynamic_library
+class XMIPP4_CORE_API dynamic_library
 {
 public:
     /**
      * @brief Construct an empty dynamic_library object
      * 
      */
-    XMIPP4_CORE_API dynamic_library() noexcept;
+    dynamic_library() noexcept;
 
     /**
      * @brief Construct a new dynamic_library object from a file
      * 
      * @param filename Path of the dynamic library file
      */
-    XMIPP4_CORE_API explicit dynamic_library(const char* filename);
+    explicit dynamic_library(const char* filename);
 
     /**
      * @brief Construct a new dynamic_library object from a file
      * 
      * @param filename Path of the dynamic library file
      */
-    XMIPP4_CORE_API explicit dynamic_library(const std::string& filename);
+    explicit dynamic_library(const std::string& filename);
 
     dynamic_library(const dynamic_library& other) = delete;
-    XMIPP4_CORE_API dynamic_library(dynamic_library&& other) noexcept;
-    XMIPP4_CORE_API ~dynamic_library();
+    dynamic_library(dynamic_library&& other) noexcept;
+    ~dynamic_library();
 
     dynamic_library& operator=(const dynamic_library& other) = delete;
-    XMIPP4_CORE_API dynamic_library& operator=(dynamic_library&& other) noexcept;
+    dynamic_library& operator=(dynamic_library&& other) noexcept;
 
-    XMIPP4_CORE_API void swap(dynamic_library& other) noexcept;
+    void swap(dynamic_library& other) noexcept;
 
     /**
      * @brief Check if a dynamic library is loaded
      * 
      * @return bool Returns true if a library is loaded
      */
-    XMIPP4_CORE_API bool is_open() const noexcept;
+    bool is_open() const noexcept;
 
     /**
      * @brief Loads a dynamic library
      * 
      * @param filename Path to the dynamic library
      */
-    XMIPP4_CORE_API void open(const char* filename);
+    void open(const char* filename);
 
     /**
      * @brief Loads a dynamic library
      * 
      * @param filename Path to the dynamic library
      */
-    XMIPP4_CORE_API void open(const std::string& filename);
+    void open(const std::string& filename);
 
     /**
      * @brief Frees the stored dynamic library, if any
      * 
      */
-    XMIPP4_CORE_API void close() noexcept;
+    void close() noexcept;
 
     /**
      * @brief Get the address of a symbol
@@ -110,7 +110,7 @@ public:
      * @param name Name of the symbol
      * @return void* Pointer to the symbol. nullptr if not found
      */
-    XMIPP4_CORE_API void* get_symbol(const char* name) const noexcept; 
+    void* get_symbol(const char* name) const noexcept; 
 
     /**
      * @brief Get the address of a symbol
@@ -118,7 +118,7 @@ public:
      * @param name Name of the symbol
      * @return void* Pointer to the symbol. nullptr if not found
      */
-    XMIPP4_CORE_API void* get_symbol(const std::string& name) const noexcept; 
+    void* get_symbol(const std::string& name) const noexcept; 
 
     /**
      * @brief Obtain the platform specific soname for a library name
@@ -126,7 +126,7 @@ public:
      * @param library_name Name of the library
      * @return The soname
      */
-    static XMIPP4_CORE_API 
+    static 
     std::string make_soname(const std::string& library_name);
 
     /**
@@ -136,7 +136,7 @@ public:
      * @param ver Version of the library
      * @return The soname
      */
-    static XMIPP4_CORE_API 
+    static
     std::string make_soname(const std::string& library_name, version ver);
 
 private:

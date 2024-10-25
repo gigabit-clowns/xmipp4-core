@@ -35,7 +35,7 @@ namespace system
  * @brief RAII style class to memory map files
  * 
  */
-class memory_mapped_file
+class XMIPP4_CORE_API memory_mapped_file
 {
 public:
     /**
@@ -48,7 +48,7 @@ public:
      * @brief Construct an empty memory-mapped file
      * 
      */
-    XMIPP4_CORE_API memory_mapped_file() noexcept;
+    memory_mapped_file() noexcept;
 
     /**
      * @brief Construct with a file opened in memory.
@@ -60,7 +60,7 @@ public:
      * @param copy_on_write Do not write back changes to the file.
      * Has no effect if write access is not enabled.
      */
-    XMIPP4_CORE_API explicit memory_mapped_file(const char* filename, 
+    explicit memory_mapped_file(const char* filename, 
                                                 access_flags access = read_only,
                                                 std::size_t size = whole_file,
                                                 bool copy_on_write = false );
@@ -75,23 +75,23 @@ public:
      * @param copy_on_write Do not write back changes to the file.
      * Has no effect if write access is not enabled.
      */
-    XMIPP4_CORE_API explicit memory_mapped_file(const std::string& filename, 
+    explicit memory_mapped_file(const std::string& filename, 
                                                 access_flags access = read_only,
                                                 std::size_t size = whole_file,
                                                 bool copy_on_write = false );
     memory_mapped_file(const memory_mapped_file& other) = delete;
-    XMIPP4_CORE_API memory_mapped_file(memory_mapped_file&& other) noexcept;
-    XMIPP4_CORE_API ~memory_mapped_file();
+    memory_mapped_file(memory_mapped_file&& other) noexcept;
+    ~memory_mapped_file();
 
     memory_mapped_file& operator=(const memory_mapped_file& other) = delete;
-    XMIPP4_CORE_API memory_mapped_file& operator=(memory_mapped_file&& other) noexcept;
+    memory_mapped_file& operator=(memory_mapped_file&& other) noexcept;
 
     /**
      * @brief Check if there is a file opened
      * 
      * @return bool true if there is a file opened
      */
-    XMIPP4_CORE_API bool is_open() const noexcept;
+    bool is_open() const noexcept;
 
     /**
      * @brief Exchange the value with another instance
@@ -99,7 +99,7 @@ public:
      * @param other The other instance to be exchanged with
      * 
      */
-    XMIPP4_CORE_API void swap(memory_mapped_file& other) noexcept;
+    void swap(memory_mapped_file& other) noexcept;
 
     /**
      * @brief Opens a file in memory.
@@ -112,7 +112,7 @@ public:
      * @param copy_on_write Do not write back changes to the file.
      * Has no effect if write access is not enabled.
      */
-    XMIPP4_CORE_API void open(const char* filename, 
+    void open(const char* filename, 
                               access_flags access = read_only,
                               std::size_t size = whole_file,
                               bool copy_on_write = false );
@@ -128,7 +128,7 @@ public:
      * @param copy_on_write Do not write back changes to the file.
      * Has no effect if write access is not enabled.
      */
-    XMIPP4_CORE_API void open(const std::string& filename, 
+    void open(const std::string& filename, 
                               access_flags access = read_only,
                               std::size_t size = whole_file,
                               bool copy_on_write = false );
@@ -137,21 +137,21 @@ public:
      * @brief Close the opened file
      * Has no effect if it is not opened
      */
-    XMIPP4_CORE_API void close() noexcept;
+    void close() noexcept;
 
     /**
      * @brief Get the size of the memory mapped area
      * 
      * @return std::size_t Size in bytes
      */
-    XMIPP4_CORE_API std::size_t size() const noexcept;
+    std::size_t size() const noexcept;
 
     /**
      * @brief Get a pointer to the memory mapped area
      * 
      * @return void* Pointer to the data
      */
-    XMIPP4_CORE_API void* data() const noexcept;
+    void* data() const noexcept;
 
 private:
     std::size_t m_size;

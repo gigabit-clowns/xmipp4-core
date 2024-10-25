@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file buffer.hpp
+ * @file device_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::buffer interface
+ * @brief Defines the compute::device_buffer interface
  * @date 2024-10-22
  * 
  */
@@ -39,16 +39,16 @@ namespace compute
 
 class device;
 
-class buffer
+class device_buffer
 {
 public:
-    buffer() = default;
-    buffer(const buffer &other) = default;
-    buffer(buffer &&other) = default;
-    virtual ~buffer() = default;
+    device_buffer() = default;
+    device_buffer(const device_buffer &other) = default;
+    device_buffer(device_buffer &&other) = default;
+    virtual ~device_buffer() = default;
 
-    buffer& operator=(const buffer &other) = default;
-    buffer& operator=(buffer &&other) = default;
+    device_buffer& operator=(const device_buffer &other) = default;
+    device_buffer& operator=(device_buffer &&other) = default;
 
     virtual device& get_device() const noexcept = 0;
     virtual numerical_type get_type() const noexcept = 0;

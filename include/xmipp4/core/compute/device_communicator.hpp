@@ -40,7 +40,7 @@ namespace compute
 {
 
 class device;
-class buffer;
+class device_buffer;
 class queue;
 
 class device_communicator
@@ -59,38 +59,40 @@ public:
 
     virtual device& get_device() const noexcept = 0;
     
-    virtual std::unique_ptr<buffer> create_buffer(numerical_type type,
-                                                  std::size_t count) = 0;
-    virtual std::shared_ptr<buffer> create_buffer_shared(numerical_type type,
-                                                         std::size_t count) = 0;
+    virtual std::unique_ptr<device_buffer>
+    create_buffer(numerical_type type,
+                  std::size_t count) = 0;
+    virtual std::shared_ptr<device_buffer> 
+    create_buffer_shared(numerical_type type,
+                         std::size_t count) = 0;
 
     virtual void barrier() = 0;
 
     virtual void send(int destination_rank, 
-                      const buffer &buf, queue &q) = 0;
+                      const device_buffer &buf, queue &q) = 0;
 
-    virtual void receive(int source_rank, buffer &buf, queue &q) = 0;
+    virtual void receive(int source_rank, device_buffer &buf, queue &q) = 0;
 
-    virtual void broadcast(int root, buffer &buf, queue &q) = 0;
+    virtual void broadcast(int root, device_buffer &buf, queue &q) = 0;
 
     virtual void scatter(int root, 
-                         const buffer &send_buf, buffer &recv_buf, 
+                         const device_buffer &send_buf, device_buffer &recv_buf, 
                          queue &q ) = 0;
 
     virtual void gather(int root, 
-                        const buffer &send_buf, buffer &recv_buf, 
+                        const device_buffer &send_buf, device_buffer &recv_buf, 
                         queue &q ) = 0;
 
-    virtual void all_gather(const buffer &send_buf, buffer &recv_buf, 
+    virtual void all_gather(const device_buffer &send_buf, device_buffer &recv_buf, 
                             queue &q) = 0;
 
     virtual void reduce(int root, reduction_operation op,
-                        const buffer &send_buf, buffer &recv_buf ) = 0;
+                        const device_buffer &send_buf, device_buffer &recv_buf ) = 0;
 
     virtual void all_reduce(reduction_operation op,
-                            const buffer &send_buf, buffer &recv_buf ) = 0;
+                            const device_buffer &send_buf, device_buffer &recv_buf ) = 0;
 
-    virtual void all_to_all(const buffer &send_buf, buffer &recv_buf, 
+    virtual void all_to_all(const device_buffer &send_buf, device_buffer &recv_buf, 
                             queue &q) = 0;
 
 };

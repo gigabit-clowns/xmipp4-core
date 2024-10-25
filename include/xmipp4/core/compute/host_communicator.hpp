@@ -200,6 +200,13 @@ public:
 
 };
 
+
+
+/**
+ * @brief Abstract class to represent interprocess and inter-node 
+ * communications.
+ * 
+ */
 class host_communicator
     : public host_communications_interface<memory::byte>
     , public host_communications_interface<short>

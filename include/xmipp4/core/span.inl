@@ -41,13 +41,6 @@ namespace detail
 
 template <typename T, std::size_t S>
 XMIPP4_INLINE_CONSTEXPR 
-span_storage<T, S>::span_storage() noexcept
-    : data(nullptr)
-{
-}
-
-template <typename T, std::size_t S>
-XMIPP4_INLINE_CONSTEXPR 
 span_storage<T, S>::span_storage(T* ptr, std::size_t) noexcept
     : data(ptr)
 {
@@ -66,6 +59,12 @@ XMIPP4_INLINE_CONSTEXPR
 span_storage<T, dynamic_extent>::span_storage(T* ptr, std::size_t count) noexcept
     : data(ptr)
     , size(count)
+{
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR 
+span_storage<T, 0>::span_storage(T*, std::size_t) noexcept
 {
 }
 

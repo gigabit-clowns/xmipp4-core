@@ -76,23 +76,29 @@ public:
     virtual void broadcast(int root, device_buffer &buf, queue &q) = 0;
 
     virtual void scatter(int root, 
-                         const device_buffer &send_buf, device_buffer &recv_buf, 
+                         const device_buffer &send_buf, 
+                         device_buffer &recv_buf, 
                          queue &q ) = 0;
 
     virtual void gather(int root, 
-                        const device_buffer &send_buf, device_buffer &recv_buf, 
+                        const device_buffer &send_buf, 
+                        device_buffer &recv_buf, 
                         queue &q ) = 0;
 
-    virtual void all_gather(const device_buffer &send_buf, device_buffer &recv_buf, 
+    virtual void all_gather(const device_buffer &send_buf, 
+    device_buffer &recv_buf, 
                             queue &q) = 0;
 
     virtual void reduce(int root, reduction_operation op,
-                        const device_buffer &send_buf, device_buffer &recv_buf ) = 0;
+                        const device_buffer &send_buf, 
+                        device_buffer &recv_buf ) = 0;
 
     virtual void all_reduce(reduction_operation op,
-                            const device_buffer &send_buf, device_buffer &recv_buf ) = 0;
+                            const device_buffer &send_buf, 
+                            device_buffer &recv_buf ) = 0;
 
-    virtual void all_to_all(const device_buffer &send_buf, device_buffer &recv_buf, 
+    virtual void all_to_all(const device_buffer &send_buf, 
+                            device_buffer &recv_buf, 
                             queue &q) = 0;
 
 };

@@ -30,27 +30,23 @@ namespace xmipp4
 namespace compute
 {
 
-class device_descriptor
+class device_properties
 {
 public:
-    device_descriptor();
-    device_descriptor(const device_descriptor& other) = default;
-    device_descriptor(device_descriptor&& other) = default;
-    ~device_descriptor() = default;
+    device_properties();
+    device_properties(const device_properties& other) = default;
+    device_properties(device_properties&& other) = default;
+    ~device_properties() = default;
 
-    device_descriptor& operator=(const device_descriptor& other) = default;
-    device_descriptor& operator=(device_descriptor&& other) = default;
+    device_properties& operator=(const device_properties& other) = default;
+    device_properties& operator=(device_properties&& other) = default;
 
     void set_type(device_type type) noexcept;
     device_type get_type() const noexcept;
 
     template <typename Str>
-    void set_vendor(Str &&vendor);
-    const std::string& get_vendor() const noexcept;
-
-    template <typename Str>
-    void set_model(Str &&model);
-    const std::string& get_model() const noexcept;
+    void set_name(Str &&name);
+    const std::string& get_name() const noexcept;
 
     template <typename Str>
     void set_physical_location(Str &&location);
@@ -58,8 +54,7 @@ public:
 
 private:
     device_type m_type;
-    std::string m_vendor;
-    std::string m_model;
+    std::string m_name;
     std::string m_physical_location;
 
 };
@@ -67,4 +62,4 @@ private:
 } // namespace compute
 } // namespace xmipp4
 
-#include "device_descriptor.inl"
+#include "device_properties.inl"

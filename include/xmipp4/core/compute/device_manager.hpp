@@ -29,7 +29,7 @@
  */
 
 #include "device_index.hpp"
-#include "device_descriptor.hpp"
+#include "device_properties.hpp"
 
 #include <memory>
 #include <vector>
@@ -57,13 +57,15 @@ public:
 
     bool register_backend(std::unique_ptr<device_backend> backend);
 
+    std::vector<std::string> enumerate_backends() const;
+    void enumerate_backends(std::vector<std::string> &backends) const;
     device_backend* get_backend(const std::string &name) const;
 
     std::vector<device_index> enumerate_devices() const;
     void enumerate_devices(std::vector<device_index> &indices) const;
 
-    bool get_device_descriptor(const device_index &index, 
-                               device_descriptor &desc ) const;
+    bool get_device_properties(const device_index &index, 
+                               device_properties &desc ) const;
 
     std::unique_ptr<device> 
     create_device(const device_index &index) const;

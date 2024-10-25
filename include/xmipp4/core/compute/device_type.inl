@@ -37,6 +37,7 @@ const char* to_string(device_type type) noexcept
     case device_type::unknown: return "unknown";
     case device_type::cpu: return "cpu";
     case device_type::gpu: return "gpu";
+    case device_type::integrated_gpu: return "integrated_gpu";
     case device_type::tpu: return "tpu";
     case device_type::fpga: return "fpga";
     }
@@ -51,6 +52,7 @@ bool from_string(std::string_view str, device_type& type) noexcept
         { to_string(device_type::unknown), device_type::unknown },
         { to_string(device_type::cpu), device_type::cpu },
         { to_string(device_type::gpu), device_type::gpu },
+        { to_string(device_type::integrated_gpu), device_type::integrated_gpu },
         { to_string(device_type::tpu), device_type::tpu },
         { to_string(device_type::fpga), device_type::fpga },
     };

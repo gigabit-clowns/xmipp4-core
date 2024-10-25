@@ -20,7 +20,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "device_descriptor.hpp"
+#include "device_properties.hpp"
 
 #include <utility>
 
@@ -30,52 +30,39 @@ namespace compute
 {
 
 inline
-void device_descriptor::set_type(device_type type) noexcept
+void device_properties::set_type(device_type type) noexcept
 {
 	m_type = type;
 }
 
 inline
-device_type device_descriptor::get_type() const noexcept
+device_type device_properties::get_type() const noexcept
 {
     return m_type;
 }
 
 template <typename Str>
 inline
-void device_descriptor::set_vendor(Str &&vendor)
-{
-    m_vendor = std::forward<Str>(vendor);
-}
-
-inline
-const std::string& device_descriptor::get_vendor() const noexcept
-{
-    return m_vendor;
-}
-
-template <typename Str>
-inline
-void device_descriptor::set_model(Str &&model)
+void device_properties::set_name(Str &&model)
 {
     m_model = std::forward<Str>(model);
 }
 
 inline
-const std::string& device_descriptor::get_model() const noexcept
+const std::string& device_properties::get_name() const noexcept
 {
-    return m_model;
+    return m_name;
 }
 
 template <typename Str>
 inline
-void device_descriptor::set_physical_location(Str &&location)
+void device_properties::set_physical_location(Str &&location)
 {
     m_physical_location = std::forward<Str>(location);
 }
 
 inline
-const std::string& device_descriptor::get_physical_location() const noexcept
+const std::string& device_properties::get_physical_location() const noexcept
 {
     return m_physical_location;
 }

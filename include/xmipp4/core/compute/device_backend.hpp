@@ -28,7 +28,7 @@
  * 
  */
 
-#include "device_descriptor.hpp"
+#include "device_properties.hpp"
 #include "../version.hpp"
 
 #include <memory>
@@ -59,7 +59,7 @@ public:
     virtual bool is_available() const noexcept = 0;
 
     virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
-    virtual bool get_device_descriptor(std::size_t id, device_descriptor &desc) const = 0;
+    virtual bool get_device_properties(std::size_t id, device_properties &desc) const = 0;
 
     virtual std::unique_ptr<device> create_device(std::size_t id) = 0;
     virtual std::shared_ptr<device> create_device_shared(std::size_t id) = 0;

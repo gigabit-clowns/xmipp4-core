@@ -34,6 +34,7 @@ enum class device_type
     unknown = -1,
     cpu,
     gpu,
+    integrated_gpu,
     tpu,
     fpga
 };

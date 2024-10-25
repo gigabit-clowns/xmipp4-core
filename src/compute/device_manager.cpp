@@ -51,6 +51,22 @@ bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
     return inserted;
 }
 
+std::vector<std::string> device_manager::enumerate_backends() const
+{
+    std::vector<std::string> result;
+    enumerate_backends(result);
+    return result;
+}
+
+void device_manager::enumerate_backends(std::vector<std::string> &backends) const
+{
+    backends.clear();
+    for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
+    {
+        backends.push_back(ite->first);
+    }
+}
+
 device_backend* device_manager::get_backend(const std::string &name) const
 {
     const auto ite = m_registry.find(name);
@@ -88,15 +104,15 @@ void device_manager::enumerate_devices(std::vector<device_index>& indices) const
     }
 }
 
-bool device_manager::get_device_descriptor(const device_index& index, 
-                                           device_descriptor &desc ) const
+bool device_manager::get_device_properties(const device_index& index, 
+                                           device_properties &desc ) const
 {
     auto *backend = get_backend(index.get_backend_name());
 
     bool result = backend != nullptr;
     if (result)
     {
-        result = backend->get_device_descriptor(index.get_device_id(), desc);
+        result = backend->get_device_properties(index.get_device_id(), desc);
     }
 
     return result;

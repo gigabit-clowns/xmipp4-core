@@ -30,6 +30,11 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Description of the characteristics of a physical device
+ * in the host.
+ * 
+ */
 class device_properties
 {
 public:

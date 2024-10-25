@@ -26,11 +26,15 @@
  * @brief Provides span enumeration and utility functions
  * @date 2024-10-24
  * 
+ * Implementation based on:
+ * https://github.com/tcbrindle/span
+ * 
  */
 
 #include "platform/attributes.hpp"
 #include "platform/constexpr.hpp"
 
+#include <type_traits>
 #include <limits>
 
 namespace xmipp4 
@@ -57,7 +61,7 @@ struct span_storage
     T* data;
     static XMIPP4_CONST_CONSTEXPR std::size_t size = S;
 
-    XMIPP4_CONSTEXPR span_storage() noexcept;
+    span_storage() = delete;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
     span_storage(span_storage && other) = default;
@@ -87,6 +91,23 @@ struct span_storage<T, dynamic_extent>
 
     span_storage& operator=(const span_storage &other) = default;
     span_storage& operator=(span_storage && other) = default;
+};
+
+template <typename T>
+struct span_storage<T, 0>
+{
+    static XMIPP4_CONST_CONSTEXPR T* data = nullptr;
+    static XMIPP4_CONST_CONSTEXPR std::size_t size = 0;
+
+    span_storage() = default;
+    XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
+    span_storage(const span_storage &other) = default;
+    span_storage(span_storage && other) = default;
+    ~span_storage() = default;
+
+    span_storage& operator=(const span_storage &other) = default;
+    span_storage& operator=(span_storage && other) = default;
+
 };
 
 } // namespace detail
@@ -120,6 +141,7 @@ public:
 
     static constexpr size_type extent = Extent;
 
+
     /**
      * @brief Construct from a pointer and size.
      * 
@@ -136,6 +158,7 @@ public:
      */
     XMIPP4_CONSTEXPR span(pointer first, pointer last);
 
+    span() = default;
     span(const span &other) = default;
     span(span &&other) = default;
     ~span() = default;

@@ -29,6 +29,7 @@
  */
 
 #include "device_descriptor.hpp"
+#include "../version.hpp"
 
 #include <memory>
 #include <vector>
@@ -52,6 +53,8 @@ public:
     device_backend& operator=(device_backend &&other) = default;
 
     virtual const std::string& get_name() const noexcept = 0;
+
+    virtual version get_version() const noexcept;
 
     virtual bool is_available() const noexcept = 0;
 

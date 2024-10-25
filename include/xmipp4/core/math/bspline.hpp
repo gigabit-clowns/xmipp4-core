@@ -20,34 +20,40 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file bspline.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Provides B-Spline functions.
+ * @date 2024-10-24
+ * 
+ */
+
 #include "../platform/constexpr.hpp"
 
-#include <cstddef>
-#include <string_view>
+#include <type_traits>
 
 namespace xmipp4
 {
-namespace compute
+namespace math
 {
 
-/**
- * @brief Operation to be performed when reducing a vector into a scalar
- * value.
- * 
- */
-enum class reduction_operation
-{
-    sum, ///< Add all the elements of the vector.
-    product, ///< Multiply all the elements of the vector.
-    min, ///< Keep the smallest element of the vector.
-    max ///< Keep the largest element of the vector.
-};
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+bspline0(F x) noexcept;
 
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+bspline1(F x) noexcept;
 
-XMIPP4_CONSTEXPR const char* to_string(reduction_operation op) noexcept;
-bool from_string(std::string_view str, reduction_operation& op) noexcept;
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+bspline2(F x) noexcept;
 
-} // namespace compute
+template <typename F>
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+bspline3(F x) noexcept;
+
+} // namespace math
 } // namespace xmipp4
 
-#include "reduction_operation.inl"
+#include "bspline.inl"

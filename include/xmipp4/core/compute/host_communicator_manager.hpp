@@ -39,6 +39,11 @@ namespace compute
 class host_communicator;
 class host_communicator_backend;
 
+/**
+ * @brief Centralizes all known implementations of the host_communicator_backend
+ * interface.
+ * 
+ */
 class host_communicator_manager
     // TODO inherit from interface_manager when merged.
 {
@@ -51,14 +56,44 @@ public:
     host_communicator_manager& operator=(const host_communicator_manager &other) = default;
     host_communicator_manager& operator=(host_communicator_manager &&other) = default;
 
+    /**
+     * @brief Register a new implementation.
+     * 
+     * @param backend The backend to be registered.
+     * @return true Successfully registered.
+     * @return false Failed to register. I.e. an homonym implementation 
+     * already exists or nullptr was provided.
+     */
     bool register_backend(std::unique_ptr<host_communicator_backend> backend);
 
+    /**
+     * @brief Find a backend by its name.
+     * 
+     * @param name The name of the backend.
+     * @return host_communicator_backend* The backend. Nullptr if not found.
+     */
     host_communicator_backend* 
     get_backend(const std::string &name);
 
+    /**
+     * @brief Find a backend by its name.
+     * 
+     * @param name The name of the backend.
+     * @return const host_communicator_backend* The backend. 
+     * Nullptr if not found.
+     */
     const host_communicator_backend* 
     get_backend(const std::string &name) const;
 
+    /**
+     * @brief Get the world communicator of a backend.
+     * 
+     * The world communicator connects all known peers together.
+     * 
+     * @param name The name of the backend.
+     * @return std::shared_ptr<host_communicator> Reference to the world
+     * communicator.
+     */
     std::shared_ptr<host_communicator> 
     get_world_communicator(const std::string &name) const;
 

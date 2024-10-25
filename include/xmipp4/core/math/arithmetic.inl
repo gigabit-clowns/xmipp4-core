@@ -147,15 +147,16 @@ typename std::enable_if<std::is_floating_point<F>::value, F>::type
 evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
 {
     F y = 0;
-    if (std::distance(first, last) > 0)
+    if (first != last)
     {
         // Evaluate using Horner's method
         // Initialize with the last element
         auto ite = std::make_reverse_iterator(last);
         y = *ite;
         ++ite;
-
-        for(; ite != std::make_reverse_iterator(first); ++ite)
+        
+        const auto end = std::make_reverse_iterator(first);
+        for(; ite != end; ++ite)
         {
             y = multiply_add(y, x, *ite);
         } 

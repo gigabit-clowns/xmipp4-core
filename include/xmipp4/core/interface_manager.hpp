@@ -21,63 +21,38 @@
  ***************************************************************************/
 
 /**
- * @file operating_system.h
+ * @file interface_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides macros for detecting the target OS
- * @date 2023-08-08
+ * @brief Defines interface_manager class
+ * @date 2024-10-23
  * 
  */
 
-/**
- * @def XMIPP4_WINDOWS
- * @brief Defined if the target is Windows (32bit or 64bit)
- * 
- */
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
-    #define XMIPP4_WINDOWS 1
-#endif
+namespace xmipp4
+{
 
 /**
- * @def XMIPP4_APPLE
- * @brief Defined if the target is MacOS
+ * @brief Abstract class defining the interface of an interface manager.
+ * 
+ * An interface manager keeps track of all known implementations of a given
+ * interface and provides utilities to access the most relevant implementation
+ * for a given context. This is a base class for collecting them on an
+ * interface_registry.
+ * 
+ * @see interface_registry
  * 
  */
-#if defined(__APPLE__) || defined(__MACH__)
-    #define XMIPP4_APPLE 1
-#endif
+class interface_manager
+{
+public:
+    interface_manager() = default;
+    interface_manager(const interface_manager& other) = default;
+    interface_manager(interface_manager&& other) = default;
+    virtual ~interface_manager() = default;
 
-/**
- * @def XMIPP4_UNIX
- * @brief Defined if the target is Unix-like, including Linux and MacOS
- * 
- */
-#if defined(__unix__) || defined(__unix) || defined(XMIPP4_APPLE)
-    #define XMIPP4_UNIX 1
-#endif
+    interface_manager& operator=(const interface_manager& other) = default;
+    interface_manager& operator=(interface_manager&& other) = default;
 
-/**
- * @def XMIPP4_LINUX
- * @brief Defined if the target is Linux
- * 
- */
-#if defined(__linux__) || defined(__linux) || defined(__gnu_linux__)
-    #define XMIPP4_LINUX 1
-#endif
+};
 
-/**
- * @def XMIPP4_BSD
- * @brief Defined if the target is BSD
- * 
- */
-#if defined(BSD)
-    #define XMIPP4_BSD 1
-#endif
-
-/**
- * @def XMIPP4_POSIX
- * @brief Defined if the target is POSIX
- * 
- */
-#if defined(_POSIX_VERSION) || defined(XMIPP4_UNIX)
-    #define XMIPP4_POSIX 1
-#endif
+} // namespace xmipp4

@@ -33,7 +33,7 @@ namespace compute
 class device_properties
 {
 public:
-    device_properties();
+    device_properties() = default;
     device_properties(const device_properties& other) = default;
     device_properties(device_properties&& other) = default;
     ~device_properties() = default;

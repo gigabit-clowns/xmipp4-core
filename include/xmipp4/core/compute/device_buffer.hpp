@@ -24,7 +24,7 @@
  * @file device_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Defines the compute::device_buffer interface
- * @date 2024-10-22
+ * @date 2024-10-25
  * 
  */
 

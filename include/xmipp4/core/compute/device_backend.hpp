@@ -54,7 +54,7 @@ public:
 
     virtual const std::string& get_name() const noexcept = 0;
 
-    virtual version get_version() const noexcept;
+    virtual version get_version() const noexcept = 0;
 
     virtual bool is_available() const noexcept = 0;
 

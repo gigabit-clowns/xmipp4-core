@@ -29,6 +29,7 @@
  */
 
 #include <string>
+#include <memory>
 
 namespace xmipp4 
 {
@@ -52,7 +53,7 @@ public:
 
     virtual bool is_available() const noexcept = 0;
 
-    virtual host_communicator& get_world_host_communicator() const = 0;
+    virtual std::shared_ptr<host_communicator> get_world_communicator() const = 0;
 
 }; 
 

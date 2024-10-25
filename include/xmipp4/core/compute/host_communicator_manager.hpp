@@ -21,18 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file device_manager.hpp
+ * @file host_communicator_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_manager interface
- * @date 2024-10-23
+ * @brief Defines host_communicator_manager interface
+ * @date 2024-10-25
  * 
  */
 
-#include "device_index.hpp"
-#include "device_descriptor.hpp"
-
 #include <memory>
-#include <vector>
 #include <unordered_map>
 
 namespace xmipp4 
@@ -40,37 +36,37 @@ namespace xmipp4
 namespace compute
 {
 
-class device;
-class device_backend;
+class host_communicator;
+class host_communicator_backend;
 
-class device_manager
-{
+class host_communicator_manager
     // TODO inherit from interface_manager when merged.
+{
 public:
-    device_manager() = default;
-    device_manager(const device_manager &other) = default;
-    device_manager(device_manager &&other) = default;
-    virtual ~device_manager() = default;
+    host_communicator_manager() = default;
+    host_communicator_manager(const host_communicator_manager &other) = default;
+    host_communicator_manager(host_communicator_manager &&other) = default;
+    virtual ~host_communicator_manager() = default;
 
-    device_manager& operator=(const device_manager &other) = default;
-    device_manager& operator=(device_manager &&other) = default;
+    host_communicator_manager& operator=(const host_communicator_manager &other) = default;
+    host_communicator_manager& operator=(host_communicator_manager &&other) = default;
 
-    bool register_backend(std::unique_ptr<device_backend> backend);
+    bool register_backend(std::unique_ptr<host_communicator_backend> backend);
 
-    device_backend* get_backend(const std::string &name);
-    const device_backend* get_backend(const std::string &name) const;
+    host_communicator_backend* 
+    get_backend(const std::string &name);
 
-    std::vector<device_index> enumerate_devices() const;
-    void enumerate_devices(std::vector<device_index> &indices) const;
+    const host_communicator_backend* 
+    get_backend(const std::string &name) const;
 
-    bool get_device_descriptor(const device_index &index, 
-                               device_descriptor &desc ) const;
-
-    std::unique_ptr<device> create_device(const device_index &index);
-    std::shared_ptr<device> create_device_shared(const device_index &index);
+    std::shared_ptr<host_communicator> 
+    get_world_communicator(const std::string &name) const;
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;
+    using registry_type = 
+        std::unordered_map<std::string, std::unique_ptr<host_communicator_backend>>;
+
+    registry_type m_registry;
 
 }; 
 

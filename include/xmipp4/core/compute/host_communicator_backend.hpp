@@ -28,6 +28,8 @@
  * 
  */
 
+#include "../version.hpp"
+
 #include <string>
 #include <memory>
 
@@ -49,10 +51,36 @@ public:
     host_communicator_backend& operator=(const host_communicator_backend &other) = default;
     host_communicator_backend& operator=(host_communicator_backend &&other) = default;
 
+    /**
+     * @brief Get the name of the implementation.
+     * 
+     * @return const std::string& The name.
+     */
     virtual const std::string& get_name() const noexcept = 0;
 
+    /**
+     * @brief Get the version of the backend.
+     * 
+     * @return version The version of the implementation.
+     */
+    virtual version get_version() const noexcept;
+
+    /**
+     * @brief Check if the backend is usable.
+     * 
+     * @return true The backend is usable.
+     * @return false Backend initialization has failed and it can not be used.
+     */
     virtual bool is_available() const noexcept = 0;
 
+    /**
+     * @brief Get the world communicator.
+     * 
+     * The world communicator connects all known peers together.
+     * 
+     * @return std::shared_ptr<host_communicator> Reference to the world
+     * communicator.
+     */
     virtual std::shared_ptr<host_communicator> get_world_communicator() const = 0;
 
 }; 

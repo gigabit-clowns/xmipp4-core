@@ -30,12 +30,17 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Operation to be performed when reducing a vector into a scalar
+ * value.
+ * 
+ */
 enum class reduction_operation
 {
-    sum,
-    product,
-    min,
-    max
+    sum, ///< Add all the elements of the vector.
+    product, ///< Multiply all the elements of the vector.
+    min, ///< Keep the smallest element of the vector.
+    max ///< Keep the largest element of the vector.
 };
 
 

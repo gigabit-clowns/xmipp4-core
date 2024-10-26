@@ -87,6 +87,26 @@ public:
     virtual std::size_t receive(int source_rank, span<T> buf) = 0;
 
     /**
+     * @brief Send and receive a message.
+     * 
+     * @param destination_rank Rank of the receiver.
+     * @param send_buf The buffer to be sent.
+     * @param source_rank Rank of the sender.
+     * @param receive_buf The buffer where the received message will be written.
+     * @return std::size_t std::size_t Number of elements received.
+     * @note The size of the reception buffer argument indicates the maximum 
+     * length of a message; the actual length of the received message
+     * is determined by the return value.
+     * @note The destination rank should be calling receive(). This routine may 
+     * block until the message is received by the destination process. 
+     * @see send
+     * @see receive
+     *  
+     */
+    virtual std::size_t send_receive(int destination_rank, span<const T> send_buf,
+                                     int source_rank, span<T> receive_buf ) = 0;
+
+    /**
      * @brief Broadcasts a message to all peers.
      * 
      * The message is broadcasted from the root rank to the rest of the ranks.
@@ -203,23 +223,62 @@ public:
 
 
 /**
+ * @brief Gather multiple specializations of host_communications_interface
+ * in a single interface.
+ * 
+ * @tparam Ts Types to be used in the interface.
+ *  
+ */
+template <typename... Ts>
+class multitype_host_communications_interface
+    : public host_communications_interface<Ts>...
+{
+public:
+    multitype_host_communications_interface() = default;
+    multitype_host_communications_interface(const multitype_host_communications_interface &other) = default;
+    multitype_host_communications_interface(multitype_host_communications_interface &&other) = default;
+    virtual ~multitype_host_communications_interface() = default;
+
+    multitype_host_communications_interface& 
+    operator=(const multitype_host_communications_interface &other) = default;
+    multitype_host_communications_interface& 
+    operator=(multitype_host_communications_interface &&other) = default;
+    
+    using host_communications_interface<Ts>::send...;
+    using host_communications_interface<Ts>::receive...;
+    using host_communications_interface<Ts>::send_receive...;
+    using host_communications_interface<Ts>::broadcast...;
+    using host_communications_interface<Ts>::scatter...;
+    using host_communications_interface<Ts>::gather...;
+    using host_communications_interface<Ts>::all_gather...;
+    using host_communications_interface<Ts>::reduce...;
+    using host_communications_interface<Ts>::all_reduce...;
+    using host_communications_interface<Ts>::all_to_all...;
+
+};
+
+
+
+/**
  * @brief Abstract class to represent interprocess and inter-node 
  * communications.
  * 
  */
 class host_communicator
-    : public host_communications_interface<memory::byte>
-    , public host_communications_interface<short>
-    , public host_communications_interface<unsigned short>
-    , public host_communications_interface<int>
-    , public host_communications_interface<unsigned int>
-    , public host_communications_interface<long>
-    , public host_communications_interface<unsigned long>
-    , public host_communications_interface<long long>
-    , public host_communications_interface<unsigned long long>
-    , public host_communications_interface<float>
-    , public host_communications_interface<double>
-    , public host_communications_interface<long double>
+    : public multitype_host_communications_interface<memory::byte,
+                                                     char,
+                                                     unsigned char,
+                                                     short,
+                                                     unsigned short,
+                                                     int,
+                                                     unsigned int,
+                                                     long,
+                                                     unsigned long,
+                                                     long long,
+                                                     unsigned long long,
+                                                     float,
+                                                     double,
+                                                     long double>
 {
 public:
     host_communicator() = default;

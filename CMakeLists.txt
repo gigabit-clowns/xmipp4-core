@@ -121,7 +121,7 @@ endif()
 # Install library's binary files and headers
 install(
 	TARGETS ${PROJECT_NAME}
-	EXPORT ${PROJECT_NAME}-targets
+	EXPORT ${PROJECT_NAME}-config
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
@@ -129,7 +129,7 @@ install(
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(
-  	EXPORT ${PROJECT_NAME}-targets
+  	EXPORT ${PROJECT_NAME}-config
   	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 

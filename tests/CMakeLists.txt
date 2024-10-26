@@ -38,7 +38,12 @@ include(Catch)
 set(TESTS_NAME "${PROJECT_NAME}_tests")
 
 # Register all source and header files
-file(GLOB_RECURSE TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
+file(
+	GLOB_RECURSE 
+	TEST_SOURCES 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
+)
 
 # Add the test executable
 add_executable(
@@ -47,10 +52,14 @@ add_executable(
 )
 set_target_properties(
 	${TESTS_NAME} PROPERTIES 
-	CXX_STANDARD 17
-	CXX_FLAGS "-Wall -Wextra -Wpedantic"
+	CXX_STANDARD 20
 )
-target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
+target_link_libraries(
+	${TESTS_NAME} 
+	PRIVATE 
+		${PROJECT_NAME} 
+		Catch2::Catch2WithMain
+)
 
 # On windows targets, copy the library to the test directory
 if(WIN32)

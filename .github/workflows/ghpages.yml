@@ -24,9 +24,9 @@
 name: Deploy Doxygen to GitHub Pages
 
 on:
-  #push:
-  #  branches:
-  #    - main
+  push:
+    branches:
+      - main
   
   workflow_dispatch:
 

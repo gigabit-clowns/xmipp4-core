@@ -30,6 +30,8 @@
 
 #include "device_index.hpp"
 #include "device_properties.hpp"
+#include "device_backend.hpp"
+#include "../interface_manager.hpp"
 
 #include <memory>
 #include <vector>
@@ -41,11 +43,10 @@ namespace compute
 {
 
 class device;
-class device_backend;
 
 class device_manager
+    : public interface_manager
 {
-    // TODO inherit from interface_manager when merged.
 public:
     device_manager() = default;
     device_manager(const device_manager &other) = default;

@@ -31,6 +31,8 @@
 
 #include <xmipp4/core/platform/operating_system.h>
 
+#include <string>
+
 namespace xmipp4
 {
 namespace system
@@ -59,6 +61,15 @@ void dynamic_library_close(void* handle) noexcept;
  * @return void* Pointer to the queried symbol. NULL if not found
  */
 void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
+
+/**
+ * @brief Obtain the filename to the dynamic library from where the
+ * given symbol has been loaded.
+ * 
+ * @param symbol 
+ * @return std::string 
+ */
+std::string dynamic_library_symbol_filename_lookup(const void* symbol);
 
 } // namespace system
 } // namespace xmipp4

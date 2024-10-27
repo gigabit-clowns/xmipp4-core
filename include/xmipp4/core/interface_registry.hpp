@@ -28,14 +28,14 @@
  * 
  */
 
+#include "interface_manager.hpp"
+
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
 
 namespace xmipp4
 {
-
-class interface_manager;
 
 /**
  * @brief Stores a single instance of each type interface_manager.

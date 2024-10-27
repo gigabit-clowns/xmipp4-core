@@ -70,7 +70,6 @@ jobs:
           cxx-compiler: ${{ matrix.compiler.cxx }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-            XMIPP4_CORE_PRECOMPILED_HEADERS=OFF
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

@@ -52,7 +52,7 @@ jobs:
       id: strings
       run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Configure, and build with CMake
+    - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}

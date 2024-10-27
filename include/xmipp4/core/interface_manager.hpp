@@ -28,6 +28,8 @@
  * 
  */
 
+#include "platform/dynamic_shared_object.h"
+
 namespace xmipp4
 {
 
@@ -42,7 +44,7 @@ namespace xmipp4
  * @see interface_registry
  * 
  */
-class interface_manager
+class XMIPP4_CORE_API interface_manager
 {
 public:
     interface_manager() = default;

@@ -63,11 +63,6 @@ jobs:
         run-build: true
         build-args: --target doxygen
 
-    - name: Test
-      run: |
-        sudo apt install -y tree
-        tree ${{ github.workspace }}
-
     - name: Upload artifact
       uses: actions/upload-pages-artifact@main
       with:

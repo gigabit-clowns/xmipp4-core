@@ -31,6 +31,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "host_communicator_backend.hpp"
 #include "../interface_manager.hpp"
 
 namespace xmipp4 
@@ -39,7 +40,6 @@ namespace compute
 {
 
 class host_communicator;
-class host_communicator_backend;
 
 /**
  * @brief Centralizes all known implementations of the host_communicator_backend

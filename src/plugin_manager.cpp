@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <functional>
+#include <filesystem>
 #include <cstdlib>
 
 namespace xmipp4
@@ -112,6 +113,34 @@ const plugin& plugin_manager::get_plugin(std::size_t index) const
 }
 
 
+
+
+std::string get_default_plugin_directory()
+{
+    // Address of any core function
+    const void* symbol = 
+        reinterpret_cast<const void*>(&get_default_plugin_directory);
+
+    auto path = std::filesystem::path(
+        system::dynamic_library::query_symbol_filename(symbol)
+    );
+    path.replace_filename("plugins");
+    return path.string();
+}
+
+void discover_plugins(const std::string& directory, plugin_manager &manager)
+{
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+    {
+        manager.load_plugin(entry.path().string());
+    }
+}
+
+void discover_plugins(plugin_manager &manager)
+{
+    const auto default_directory = get_default_plugin_directory();
+    discover_plugins(default_directory, manager);
+}
 
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
                                     interface_registry &registry )

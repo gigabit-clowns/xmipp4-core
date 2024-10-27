@@ -96,6 +96,38 @@ private:
 };
 
 
+
+/**
+ * @brief Get the default plugin directory.
+ * 
+ * By default, plugins are searched in a directory named as "plugins" located
+ * in the same directory as the shared library of the core.
+ * 
+ * @return std::string Default plugin directory.
+ * 
+ */
+XMIPP4_CORE_API 
+std::string get_default_plugin_directory();
+
+/**
+ * @brief Discover and load all plugins in a directory.
+ * 
+ * @param directory Directory where plugins are searched.
+ * @param manager Plugin manager where plugins are loaded.
+ * 
+ */
+XMIPP4_CORE_API
+void discover_plugins(const std::string& directory, plugin_manager &manager);
+
+/**
+ * @brief Discover and load all plugins in the default directory.
+ * 
+ * @param manager Plugin manager where plugins are loaded.
+ * 
+ */
+XMIPP4_CORE_API
+void discover_plugins(plugin_manager &manager);
+
 /**
  * @brief Register all plugins from a plugin manager into an
  * interface registry.
@@ -105,6 +137,7 @@ private:
  * @param registry Interface registry where plugins will be registered.
  * @return std::size_t Number of plugins registered.
  */
+XMIPP4_CORE_API
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
                                     interface_registry &registry );
 

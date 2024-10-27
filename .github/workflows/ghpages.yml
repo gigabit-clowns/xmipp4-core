@@ -46,7 +46,7 @@ jobs:
       uses: actions/configure-pages@main
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y doxygen
+      run: sudo apt-get update && sudo apt-get install -y doxygen
     
     - name: Set reusable strings
       id: strings

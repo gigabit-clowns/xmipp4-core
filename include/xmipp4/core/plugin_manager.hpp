@@ -31,6 +31,8 @@
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
+#include <string>
+
 namespace xmipp4
 {
 
@@ -45,7 +47,6 @@ class XMIPP4_CORE_API plugin_manager
 {
 public:
     plugin_manager();
-    plugin_manager(const std::string& name);
     plugin_manager(const plugin_manager& other) = delete;
     plugin_manager(plugin_manager&& other);
     ~plugin_manager();

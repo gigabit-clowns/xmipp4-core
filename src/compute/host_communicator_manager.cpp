@@ -43,8 +43,7 @@ bool host_communicator_manager::register_backend(std::unique_ptr<host_communicat
     if (backend)
     {
         auto key = backend->get_name();
-        //std::tie(std::ignore, inserted) = 
-        m_registry.emplace(
+        std::tie(std::ignore, inserted) = m_registry.emplace(
             std::move(key), std::move(backend)
         );
     }

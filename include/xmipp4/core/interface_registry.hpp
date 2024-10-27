@@ -52,11 +52,11 @@ class XMIPP4_CORE_API interface_registry
 {
 public:
     interface_registry() = default;
-    interface_registry(const interface_registry& other) = default;
+    interface_registry(const interface_registry& other) = delete;
     interface_registry(interface_registry&& other) = default;
     ~interface_registry() = default;
 
-    interface_registry& operator=(const interface_registry& other) = default;
+    interface_registry& operator=(const interface_registry& other) = delete;
     interface_registry& operator=(interface_registry&& other) = default;
 
     /**

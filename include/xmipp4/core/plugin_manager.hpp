@@ -96,7 +96,15 @@ private:
 };
 
 
-
+/**
+ * @brief Register all plugins from a plugin manager into an
+ * interface registry.
+ * 
+ * @param manager The plugin_manager that contains the plugins to
+ * be registered.
+ * @param registry Interface registry where plugins will be registered.
+ * @return std::size_t Number of plugins registered.
+ */
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
                                     interface_registry &registry );
 

@@ -63,7 +63,7 @@ public:
      * 
      * @return version The version of the implementation.
      */
-    virtual version get_version() const noexcept;
+    virtual version get_version() const noexcept = 0;
 
     /**
      * @brief Check if the backend is usable.

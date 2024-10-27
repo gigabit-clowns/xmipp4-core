@@ -30,6 +30,8 @@
 
 #include "interface_manager.hpp"
 
+#include "platform/dynamic_shared_object.h"
+
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -45,7 +47,7 @@ namespace xmipp4
  * @see interface_manager
  * 
  */
-class interface_registry
+class XMIPP4_CORE_API interface_registry
 {
 public:
     interface_registry() = default;

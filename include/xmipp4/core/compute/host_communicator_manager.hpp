@@ -33,6 +33,7 @@
 
 #include "host_communicator_backend.hpp"
 #include "../interface_manager.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
 {
@@ -46,7 +47,7 @@ class host_communicator;
  * interface.
  * 
  */
-class host_communicator_manager
+class XMIPP4_CORE_API host_communicator_manager
     : public interface_manager
 {
 public:

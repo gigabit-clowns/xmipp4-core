@@ -32,6 +32,7 @@
 
 #include "platform/dynamic_shared_object.h"
 
+#include <type_traits>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>

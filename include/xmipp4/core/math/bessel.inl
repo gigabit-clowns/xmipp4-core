@@ -1022,7 +1022,7 @@ cylindrical_bessel_in_iterative(int n, F x) noexcept
         const F tox = F(2) / abs(x);
         F bip = F(0);
         F bi = F(1);
-        F ans;
+        F ans = F(0);
         const unsigned m = 2*(n + static_cast<unsigned>(sqrt(F(40.0)*n)));
         for(unsigned k=m; k>0; k--)
         {

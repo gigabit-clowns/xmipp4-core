@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +18,38 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_registry.hpp"
+/**
+ * @file test_interface_registry.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Tests for interface_registry.hpp
+ * @date 2024-10-28
+ * 
+ */
 
-#include "platform/constexpr.hpp"
-#include "platform/assert.hpp"
+#include <catch2/catch_test_macros.hpp>
 
-namespace xmipp4 
+#include <xmipp4/core/interface_registry.hpp>
+
+using namespace xmipp4;
+
+static const char sample_message[] = "Hi, I am a dummy interface manager";
+
+class dummy_interface_manager
+    : public interface_manager
 {
+public:
+    std::string message;
 
-template <typename T>
-inline
-typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-interface_registry::get_interface_manager()
+};
+
+TEST_CASE( "get interface manager", "[interface_registry]" ) 
 {
-    const std::type_index type(typeid(T));
+    interface_registry registry;
 
-    T* result = static_cast<T*>(get_interface_manager(type));
-    if(result == nullptr)
-    {
-        // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>();
-        result = new_interface.get();
-        create_interface_manager(type, std::move(new_interface));
-    }
+    auto& manager1 = registry.get_interface_manager<dummy_interface_manager>();
+    manager1.message = sample_message;
 
-    return *result;
+    auto& manager2 = registry.get_interface_manager<dummy_interface_manager>();
+    REQUIRE( &manager1 == &manager2 );
+    REQUIRE( manager2.message == sample_message );
 }
-
-} // namespace xmipp4

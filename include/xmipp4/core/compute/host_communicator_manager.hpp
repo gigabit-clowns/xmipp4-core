@@ -30,11 +30,11 @@
 
 #include <string>
 #include <memory>
-#include <unordered_map>
 
 #include "host_communicator_backend.hpp"
 #include "../interface_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
+#include "../memory/pimpl.hpp"
 
 namespace xmipp4 
 {
@@ -48,17 +48,20 @@ class host_communicator;
  * interface.
  * 
  */
-class XMIPP4_CORE_API host_communicator_manager
+class host_communicator_manager
     : public interface_manager
 {
 public:
-    host_communicator_manager() = default;
+    XMIPP4_CORE_API host_communicator_manager();
     host_communicator_manager(const host_communicator_manager &other) = delete;
-    host_communicator_manager(host_communicator_manager &&other) = default;
-    virtual ~host_communicator_manager() = default;
+    XMIPP4_CORE_API 
+    host_communicator_manager(host_communicator_manager &&other) noexcept;
+    XMIPP4_CORE_API virtual ~host_communicator_manager();
 
-    host_communicator_manager& operator=(const host_communicator_manager &other) = delete;
-    host_communicator_manager& operator=(host_communicator_manager &&other) = default;
+    host_communicator_manager& 
+    operator=(const host_communicator_manager &other) = delete;
+    XMIPP4_CORE_API host_communicator_manager& 
+    operator=(host_communicator_manager &&other) noexcept;
 
     /**
      * @brief Register a new implementation.
@@ -68,6 +71,7 @@ public:
      * @return false Failed to register. I.e. an homonym implementation 
      * already exists or nullptr was provided.
      */
+    XMIPP4_CORE_API 
     bool register_backend(std::unique_ptr<host_communicator_backend> backend);
 
     /**
@@ -76,6 +80,7 @@ public:
      * @param name The name of the backend.
      * @return host_communicator_backend* The backend. Nullptr if not found.
      */
+    XMIPP4_CORE_API
     host_communicator_backend* 
     get_backend(const std::string &name) const;
 
@@ -89,13 +94,11 @@ public:
      * communicator.
      */
     std::shared_ptr<host_communicator> 
-    get_world_communicator(const std::string &name) const;
+    XMIPP4_CORE_API get_world_communicator(const std::string &name) const;
 
 private:
-    using registry_type = 
-        std::unordered_map<std::string, std::unique_ptr<host_communicator_backend>>;
-
-    registry_type m_registry;
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
 
 }; 
 

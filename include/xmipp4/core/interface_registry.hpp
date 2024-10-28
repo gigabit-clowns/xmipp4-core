@@ -48,7 +48,7 @@ namespace xmipp4
  * @see interface_manager
  * 
  */
-class XMIPP4_CORE_API interface_registry
+class interface_registry
 {
 public:
     interface_registry() = default;

@@ -32,7 +32,7 @@
 
 using namespace xmipp4;
 
-#define SAMPLE_MESSAGE "Hi, I am a dummy interface manager"
+static const char sample_message[] = "Hi, I am a dummy interface manager";
 
 class dummy_interface_manager
     : public interface_manager
@@ -47,9 +47,9 @@ TEST_CASE( "get interface manager", "[interface_registry]" )
     interface_registry registry;
 
     auto& manager1 = registry.get_interface_manager<dummy_interface_manager>();
-    manager1.message = SAMPLE_MESSAGE;
+    manager1.message = sample_message;
 
     auto& manager2 = registry.get_interface_manager<dummy_interface_manager>();
     REQUIRE( &manager1 == &manager2 );
-    REQUIRE( manager2.message == SAMPLE_MESSAGE );
+    REQUIRE( manager2.message == sample_message );
 }

@@ -83,11 +83,12 @@ private:
 
 plugin_manager::plugin_manager() = default;
 
-plugin_manager::plugin_manager(plugin_manager&& other) = default;
+plugin_manager::plugin_manager(plugin_manager&& other) noexcept = default;
 
 plugin_manager::~plugin_manager() = default;
 
-plugin_manager& plugin_manager::operator=(plugin_manager&& other) = default;
+plugin_manager&
+plugin_manager::operator=(plugin_manager&& other) noexcept = default;
 
 
 

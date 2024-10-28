@@ -43,6 +43,7 @@ namespace compute
 class host_communicator;
 
 class XMIPP4_CORE_API host_communicator_backend
+    : public backend
 {
 public:
     host_communicator_backend() = default;

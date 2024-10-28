@@ -77,3 +77,9 @@ jobs:
         uses: ./.github/composites/run-memtool
         #with:
         #  drmemory: ${{ steps.install-memtool.outputs.drmemory }}
+      
+      - name: Check existance of logs
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        run: |
+          sudo apt install -y tree
+          tree ${{ github.workspace }}

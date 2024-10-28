@@ -49,13 +49,24 @@ inline std::string get_text_file_path()
     #endif
 }
 
+inline std::string get_plugin_directory()
+{
+    #if XMIPP4_WINDOWS
+        return get_asset_root() + "\\plugins";
+    #elif XMIPP4_APPLE || XMIPP4_LINUX
+        return get_asset_root() + "/plugins";
+    #else
+        #error "Unknown platform"
+    #endif
+}
+
 inline std::string get_mock_plugin_path(const std::string &name)
 {
 
     #if XMIPP4_WINDOWS
-        return get_asset_root() + "\\" + name + ".dll";
+        return get_asset_root() + "\\plugins\\" + name + ".dll";
     #elif XMIPP4_APPLE || XMIPP4_LINUX
-        return get_asset_root() + "/lib" + name + ".so";
+        return get_asset_root() + "/plugins/lib" + name + ".so";
     #else
         #error "Unknown platform"
     #endif

@@ -48,14 +48,29 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
     {
         throw std::runtime_error(
             XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
-            " symbol could not be found in shared object"
+            " symbol could not be found in shared object."
         );
     }
 
-    return func();
+    const auto *plugin = func();
+    if(!plugin)
+    {
+        std::runtime_error(
+            XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
+            " returned nullptr."
+        );
+    }
+
+    return plugin;
 }
 
 
+
+plugin_loader::plugin_loader()
+    : m_dynamic_library()
+    , m_plugin(nullptr)
+{
+}
 
 plugin_loader::plugin_loader(const std::string& path)
     : m_dynamic_library(path)

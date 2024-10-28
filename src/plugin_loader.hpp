@@ -44,7 +44,7 @@ class plugin;
 class plugin_loader
 {
 public:
-    plugin_loader() = default;
+    plugin_loader();
 
     /**
      * @brief Load a new plugin.

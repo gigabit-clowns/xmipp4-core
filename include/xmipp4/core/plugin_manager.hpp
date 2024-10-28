@@ -101,7 +101,7 @@ private:
 /**
  * @brief Get the default plugin directory.
  * 
- * By default, plugins are searched in a directory named as "plugins" located
+ * Returns the path to a sub-directory named as "plugins" located
  * in the same directory as the shared library of the core.
  * 
  * @return std::string Default plugin directory.
@@ -109,6 +109,19 @@ private:
  */
 XMIPP4_CORE_API 
 std::string get_default_plugin_directory();
+
+/**
+ * @brief Get the the configured plugin directory.
+ * 
+ * Returns the value of XMIPP4_PLUGINS_DIRECTORY environment variable,
+ * if set. Otherwise it returns the default plugin directory
+ * 
+ * @return std::string The plugin directory.
+ * @see get_default_plugin_directory
+ * 
+ */
+XMIPP4_CORE_API 
+std::string get_plugin_directory();
 
 /**
  * @brief Discover and load all plugins in a directory.

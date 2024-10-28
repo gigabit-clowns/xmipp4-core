@@ -99,12 +99,12 @@ private:
 
 host_communicator_manager::host_communicator_manager() = default;
 
-host_communicator_manager::host_communicator_manager(host_communicator_manager&& other) = default;
+host_communicator_manager::host_communicator_manager(host_communicator_manager&& other) noexcept = default;
 
 host_communicator_manager::~host_communicator_manager() = default;
 
 host_communicator_manager& 
-host_communicator_manager::operator=(host_communicator_manager&& other) = default;
+host_communicator_manager::operator=(host_communicator_manager&& other) noexcept = default;
 
 
 

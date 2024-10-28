@@ -48,11 +48,11 @@ class plugin_manager
 public:
     XMIPP4_CORE_API plugin_manager();
     plugin_manager(const plugin_manager& other) = delete;
-    XMIPP4_CORE_API plugin_manager(plugin_manager&& other);
+    XMIPP4_CORE_API plugin_manager(plugin_manager&& other) noexcept;
     XMIPP4_CORE_API ~plugin_manager();
 
     plugin_manager& operator=(const plugin_manager& other) = delete;
-    XMIPP4_CORE_API plugin_manager& operator=(plugin_manager&& other);
+    XMIPP4_CORE_API plugin_manager& operator=(plugin_manager&& other) noexcept;
 
     /**
      * @brief Add a already loaded plugin.

@@ -54,11 +54,14 @@ class host_communicator_manager
 public:
     XMIPP4_CORE_API host_communicator_manager();
     host_communicator_manager(const host_communicator_manager &other) = delete;
-    XMIPP4_CORE_API host_communicator_manager(host_communicator_manager &&other);
+    XMIPP4_CORE_API 
+    host_communicator_manager(host_communicator_manager &&other) noexcept;
     XMIPP4_CORE_API virtual ~host_communicator_manager();
 
-    host_communicator_manager& operator=(const host_communicator_manager &other) = delete;
-    XMIPP4_CORE_API host_communicator_manager& operator=(host_communicator_manager &&other);
+    host_communicator_manager& 
+    operator=(const host_communicator_manager &other) = delete;
+    XMIPP4_CORE_API host_communicator_manager& 
+    operator=(host_communicator_manager &&other) noexcept;
 
     /**
      * @brief Register a new implementation.
@@ -68,7 +71,8 @@ public:
      * @return false Failed to register. I.e. an homonym implementation 
      * already exists or nullptr was provided.
      */
-    XMIPP4_CORE_API bool register_backend(std::unique_ptr<host_communicator_backend> backend);
+    XMIPP4_CORE_API 
+    bool register_backend(std::unique_ptr<host_communicator_backend> backend);
 
     /**
      * @brief Find a backend by its name.

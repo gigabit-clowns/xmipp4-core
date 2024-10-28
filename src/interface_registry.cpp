@@ -76,12 +76,12 @@ private:
 
 interface_registry::interface_registry() = default;
 
-interface_registry::interface_registry(interface_registry&& other) = default;
+interface_registry::interface_registry(interface_registry&& other) noexcept = default;
 
 interface_registry::~interface_registry() = default;
 
 interface_registry& 
-interface_registry::operator=(interface_registry&& other) = default;
+interface_registry::operator=(interface_registry&& other) noexcept = default;
 
 
 interface_manager* 

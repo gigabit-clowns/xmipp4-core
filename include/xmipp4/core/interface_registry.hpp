@@ -53,11 +53,12 @@ class interface_registry
 public:
     XMIPP4_CORE_API interface_registry();
     interface_registry(const interface_registry& other) = delete;
-    XMIPP4_CORE_API interface_registry(interface_registry&& other);
+    XMIPP4_CORE_API interface_registry(interface_registry&& other) noexcept;
     XMIPP4_CORE_API ~interface_registry();
 
     interface_registry& operator=(const interface_registry& other) = delete;
-    XMIPP4_CORE_API interface_registry& operator=(interface_registry&& other);
+    XMIPP4_CORE_API 
+    interface_registry& operator=(interface_registry&& other) noexcept;
 
     /**
      * @brief Get a concrete interface manager.

@@ -107,6 +107,7 @@ private:
  * @param registry Interface registry where plugins will be registered.
  * @return std::size_t Number of plugins registered.
  */
+XMIPP4_CORE_API
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
                                     interface_registry &registry );
 

@@ -30,11 +30,11 @@
 
 #include <string>
 #include <memory>
-#include <unordered_map>
 
 #include "host_communicator_backend.hpp"
 #include "../interface_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
+#include "../memory/pimpl.hpp"
 
 namespace xmipp4 
 {
@@ -52,13 +52,13 @@ class XMIPP4_CORE_API host_communicator_manager
     : public interface_manager
 {
 public:
-    host_communicator_manager() = default;
+    host_communicator_manager();
     host_communicator_manager(const host_communicator_manager &other) = delete;
-    host_communicator_manager(host_communicator_manager &&other) = default;
-    virtual ~host_communicator_manager() = default;
+    host_communicator_manager(host_communicator_manager &&other);
+    virtual ~host_communicator_manager();
 
     host_communicator_manager& operator=(const host_communicator_manager &other) = delete;
-    host_communicator_manager& operator=(host_communicator_manager &&other) = default;
+    host_communicator_manager& operator=(host_communicator_manager &&other);
 
     /**
      * @brief Register a new implementation.
@@ -92,10 +92,8 @@ public:
     get_world_communicator(const std::string &name) const;
 
 private:
-    using registry_type = 
-        std::unordered_map<std::string, std::unique_ptr<host_communicator_backend>>;
-
-    registry_type m_registry;
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
 
 }; 
 

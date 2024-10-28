@@ -52,7 +52,16 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
         );
     }
 
-    return func();
+    const auto* result = func();
+    if(!result)
+    {
+        throw std::runtime_error(
+            XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
+            " returned NULL"
+        );
+    }
+
+    return result;
 }
 
 

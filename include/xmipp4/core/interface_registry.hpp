@@ -29,7 +29,6 @@
  */
 
 #include "interface_manager.hpp"
-
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 

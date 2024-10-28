@@ -38,12 +38,13 @@
 namespace xmipp4
 {
 
+static const std::string name = "dummy-plugin";
+
 class dummy_plugin final
     : public xmipp4::plugin
 {
     const std::string& get_name() const noexcept final
     {
-        static std::string name = "dummy-plugin";
         return name;
     }
 

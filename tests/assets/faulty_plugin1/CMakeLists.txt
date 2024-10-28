@@ -28,7 +28,7 @@ set_target_properties(
 	faulty_plugin1
 	PROPERTIES 
 		CXX_STANDARD 20
-		DEFINE_SYMBOL "XMIPP4_DUMMY_PLUGIN_EXPORTING"
+		DEFINE_SYMBOL "XMIPP4_FAULTY_PLUGIN1_EXPORTING"
 )
 target_link_libraries(
 	faulty_plugin1

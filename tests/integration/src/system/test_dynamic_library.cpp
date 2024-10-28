@@ -26,11 +26,11 @@
  * 
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include "../assets.hpp"
 
 #include <xmipp4/core/system/dynamic_library.hpp>
 
-#include <xmipp4/core/core_version.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <sstream>
 
@@ -38,22 +38,13 @@ using namespace xmipp4;
 
 TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
 {
-    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
-        "xmipp4-core",
-        get_core_version()
-    );
-    system::dynamic_library xmipp4_core(xmipp4_core_soname);
+    system::dynamic_library xmipp4_core(get_mock_plugin_path("dummy_plugin"));
 
     REQUIRE( xmipp4_core.is_open() );
-    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+    REQUIRE( xmipp4_core.get_symbol("lorem_ipsum") == nullptr );
 
-    using test_hook_function_ptr =  uint32_t (*)();
-    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
-        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
-    );
-
-    REQUIRE(test_hook != nullptr );
-    REQUIRE(test_hook() == 0xDEADBEEF );
+    const auto *symbol = xmipp4_core.get_symbol("xmipp4_get_plugin");
+    REQUIRE( symbol != nullptr );
 }
 
 TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 

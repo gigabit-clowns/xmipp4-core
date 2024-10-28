@@ -52,16 +52,16 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
         );
     }
 
-    const auto *plugin = func();
-    if(!plugin)
+    const auto* result = func();
+    if(!result)
     {
-        std::runtime_error(
+        throw std::runtime_error(
             XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
-            " returned nullptr."
+            " returned NULL"
         );
     }
 
-    return plugin;
+    return result;
 }
 
 

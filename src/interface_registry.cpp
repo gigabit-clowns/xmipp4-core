@@ -33,8 +33,8 @@
 #include <xmipp4/core/plugin.hpp>
 
 #include <vector>
-#include <functional>
 #include <cstdlib>
+#include <unordered_map>
 
 namespace xmipp4
 {

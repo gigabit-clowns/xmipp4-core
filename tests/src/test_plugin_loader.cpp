@@ -34,19 +34,31 @@
 
 using namespace xmipp4;
 
-static std::string make_sopath(const std::string &directory, const std::string &module)
+static const std::string asset_directory = "assets";
+
+static std::string get_text_file_path()
 {
     #if XMIPP4_WINDOWS
-        return directory + "/" + module;
+        return asset_directory + "\\" + "lorem_ipsum.txt";
     #elif XMIPP4_APPLE || XMIPP4_LINUX
-        return directory + "/lib" + module + ".so";
+        return asset_directory + "/" + "lorem_ipsum.txt";
+    #endif
+}
+
+static std::string get_mock_plugin_path(const std::string &name)
+{
+
+    #if XMIPP4_WINDOWS
+        return asset_directory + "\\" + name + "\\" + name + ".dll";
+    #elif XMIPP4_APPLE || XMIPP4_LINUX
+        return asset_directory + "/" + name + "/lib" + name + ".so";
     #endif
 }
 
 TEST_CASE( "load good plugin in the plugin manager", "[plugin_manager]" ) 
 {
     plugin_manager manager;
-    const auto* plugin = manager.load_plugin(make_sopath("assets/dummy_plugin", "dummy_plugin"));
+    const auto* plugin = manager.load_plugin(get_mock_plugin_path("dummy_plugin"));
     REQUIRE( plugin->get_name() == "dummy-plugin" );
     REQUIRE( plugin->get_version() == version(1, 2, 3) );
     REQUIRE( manager.get_plugin_count() == 1 );
@@ -56,12 +68,12 @@ TEST_CASE( "load good plugin in the plugin manager", "[plugin_manager]" )
 TEST_CASE( "load invalid plugin in the plugin manager", "[plugin_manager]" ) 
 {
     plugin_manager manager;
-    REQUIRE_THROWS( manager.load_plugin("path/to/nowhere") );
+    REQUIRE_THROWS( manager.load_plugin("path_to_nowhere") );
     REQUIRE( manager.get_plugin_count() == 0 );
-    REQUIRE_THROWS( manager.load_plugin("assets/lorem_ipsum.txt") );
+    REQUIRE_THROWS( manager.load_plugin(get_text_file_path()) );
     REQUIRE( manager.get_plugin_count() == 0 );
-    REQUIRE_THROWS( manager.load_plugin(make_sopath("assets/faulty_plugin1", "faulty_plugin1")) );
+    REQUIRE_THROWS( manager.load_plugin(get_mock_plugin_path("faulty_plugin1")) );
     REQUIRE( manager.get_plugin_count() == 0 );
-    REQUIRE_THROWS( manager.load_plugin(make_sopath("assets/faulty_plugin2", "faulty_plugin2")) );
+    REQUIRE_THROWS( manager.load_plugin(get_mock_plugin_path("faulty_plugin2")) );
     REQUIRE( manager.get_plugin_count() == 0 );
 }

@@ -32,5 +32,4 @@ set(DOXYGEN_HTML_COLORSTYLE_GAMMA 80)
 doxygen_add_docs(
     doxygen
     ${PROJECT_SOURCE_DIR}/include
-    CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
 )

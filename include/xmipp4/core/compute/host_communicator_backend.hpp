@@ -30,6 +30,8 @@
 
 #include "../backend.hpp"
 
+#include "../platform/dynamic_shared_object.h"
+
 #include <string>
 #include <memory>
 
@@ -40,8 +42,7 @@ namespace compute
 
 class host_communicator;
 
-class host_communicator_backend
-    : public backend
+class XMIPP4_CORE_API host_communicator_backend
 {
 public:
     host_communicator_backend() = default;

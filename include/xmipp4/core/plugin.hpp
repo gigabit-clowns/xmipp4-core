@@ -29,6 +29,7 @@
  */
 
 #include "version.hpp"
+#include "platform/dynamic_shared_object.h"
 
 #include <string>
 
@@ -44,7 +45,7 @@ class interface_registry;
  * to the core.
  * 
  */
-class plugin
+class XMIPP4_CORE_API plugin
 {
 public:
     plugin() = default;

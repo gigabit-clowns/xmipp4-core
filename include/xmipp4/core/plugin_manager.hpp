@@ -92,10 +92,10 @@ public:
 
 private:
     class implementation;
-    using pimpl_type = memory::pimpl<implementation>;
-    pimpl_type m_implementation;
+    memory::pimpl<implementation> m_implementation;
 
 };
+
 
 
 /**

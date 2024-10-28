@@ -74,7 +74,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
       
       - name: Ls
-        run: ls "${{ github.workspace }}/build/tests/assets/dummy_plugin"
+        run: ls "${{ github.workspace }}/build/tests/assets/dummy_plugin/Release"
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool

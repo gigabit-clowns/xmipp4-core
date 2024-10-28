@@ -99,6 +99,50 @@ private:
 
 
 /**
+ * @brief Get the default plugin directory.
+ * 
+ * Returns the path to a sub-directory named as "plugins" located
+ * in the same directory as the shared library of the core.
+ * 
+ * @return std::string Default plugin directory.
+ * 
+ */
+XMIPP4_CORE_API 
+std::string get_default_plugin_directory();
+
+/**
+ * @brief Get the the configured plugin directory.
+ * 
+ * Returns the value of XMIPP4_PLUGINS_DIRECTORY environment variable,
+ * if set. Otherwise it returns the default plugin directory
+ * 
+ * @return std::string The plugin directory.
+ * @see get_default_plugin_directory
+ * 
+ */
+XMIPP4_CORE_API 
+std::string get_plugin_directory();
+
+/**
+ * @brief Discover and load all plugins in a directory.
+ * 
+ * @param directory Directory where plugins are searched.
+ * @param manager Plugin manager where plugins are loaded.
+ * 
+ */
+XMIPP4_CORE_API
+void discover_plugins(const std::string& directory, plugin_manager &manager);
+
+/**
+ * @brief Discover and load all plugins in the default directory.
+ * 
+ * @param manager Plugin manager where plugins are loaded.
+ * 
+ */
+XMIPP4_CORE_API
+void discover_plugins(plugin_manager &manager);
+
+/**
  * @brief Register all plugins from a plugin manager into an
  * interface registry.
  * 

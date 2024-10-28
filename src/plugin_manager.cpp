@@ -34,7 +34,11 @@
 
 #include <vector>
 #include <functional>
+#include <filesystem>
 #include <cstdlib>
+
+static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "plugins";
+static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
 
 namespace xmipp4
 {
@@ -113,6 +117,63 @@ const plugin& plugin_manager::get_plugin(std::size_t index) const
 }
 
 
+
+
+std::string get_default_plugin_directory()
+{
+    // Address of any core function
+    const auto* symbol = 
+        reinterpret_cast<const void*>(&get_default_plugin_directory);
+
+    auto path = std::filesystem::path(
+        system::dynamic_library::query_symbol_filename(symbol)
+    );
+    if(path.empty())
+    {
+        throw std::runtime_error("Could not retrieve the default plugin directory");
+    }
+
+    path.replace_filename(XMIPP4_PLUGINS_DIRECTORY_NAME);
+    return path.string();
+}
+
+std::string get_plugin_directory()
+{
+    std::string result;
+
+    const char* environment_variable;
+    if((environment_variable = std::getenv(XMIPP4_PLUGINS_ENV_VARIABLE)))
+    {
+        result = environment_variable;
+    }
+    else
+    {
+        result = get_default_plugin_directory();
+    }
+
+    return result;
+}
+
+void discover_plugins(const std::string& directory, plugin_manager &manager)
+{
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+    {
+        try
+        {
+            manager.load_plugin(entry.path().string());
+        }
+        catch(...)
+        {
+            // TODO log a warning
+        }
+    }
+}
+
+void discover_plugins(plugin_manager &manager)
+{
+    const auto plugin_directory = get_plugin_directory();
+    discover_plugins(plugin_directory, manager);
+}
 
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
                                     interface_registry &registry )

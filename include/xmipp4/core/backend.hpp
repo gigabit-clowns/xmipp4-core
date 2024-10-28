@@ -21,50 +21,61 @@
  ***************************************************************************/
 
 /**
- * @file host_communicator_backend.hpp
+ * @file backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_communicator_backend interface
- * @date 2024-10-24
+ * @brief Defines basic backend interface
+ * @date 2024-10-29
  * 
  */
 
-#include "../backend.hpp"
-
-#include "../platform/dynamic_shared_object.h"
+#include "version.hpp"
+#include "platform/dynamic_shared_object.h"
 
 #include <string>
-#include <memory>
 
-namespace xmipp4 
-{
-namespace compute
+namespace xmipp4
 {
 
-class host_communicator;
-
-class XMIPP4_CORE_API host_communicator_backend
-    : public backend
+/**
+ * @brief Abstract class representing a backend.
+ * 
+ * A concrete instance of this class may be used to create objects and query
+ * an specific backend.
+ * 
+ */
+class XMIPP4_CORE_API backend
 {
 public:
-    host_communicator_backend() = default;
-    host_communicator_backend(const host_communicator_backend &other) = default;
-    host_communicator_backend(host_communicator_backend &&other) = default;
-    virtual ~host_communicator_backend() = default;
+    backend() = default;
+    backend(const backend& other) = default;
+    backend(backend&& other) = default;
+    virtual ~backend() = default;
 
-    host_communicator_backend& operator=(const host_communicator_backend &other) = default;
-    host_communicator_backend& operator=(host_communicator_backend &&other) = default;
+    backend& operator=(const backend& other) = default;
+    backend& operator=(backend&& other) = default;
 
     /**
-     * @brief Get the world communicator.
+     * @brief Get the name of the backend.
      * 
-     * The world communicator connects all known peers together.
-     * 
-     * @return std::shared_ptr<host_communicator> Reference to the world
-     * communicator.
+     * @return const std::string& The name.
      */
-    virtual std::shared_ptr<host_communicator> get_world_communicator() const = 0;
+    virtual const std::string& get_name() const noexcept = 0;
 
-}; 
+    /**
+     * @brief Get the version of the backend.
+     * 
+     * @return version The version.
+     */
+    virtual version get_version() const noexcept = 0;
 
-} // namespace compute
+    /**
+     * @brief Check if a backend is usable.
+     * 
+     * @return true Backend is usable.
+     * @return false Backend is not usable.
+     */
+    virtual bool is_available() const noexcept = 0;
+
+};
+
 } // namespace xmipp4

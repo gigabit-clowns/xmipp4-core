@@ -60,3 +60,22 @@ TEST_CASE( "load invalid plugin in the plugin manager", "[plugin_manager]" )
     REQUIRE_THROWS( manager.load_plugin(get_mock_plugin_path("faulty_plugin2")) );
     REQUIRE( manager.get_plugin_count() == 0 );
 }
+
+TEST_CASE( "query out out range plugin from plugin manager", "[plugin_manager]" ) 
+{
+    plugin_manager manager;
+    manager.load_plugin(get_mock_plugin_path("dummy_plugin"));
+    REQUIRE_THROWS( manager.get_plugin(1) );
+    REQUIRE_THROWS( manager.get_plugin(10) );
+}
+
+TEST_CASE( "discover plugins", "[plugin_manager]" ) 
+{
+    plugin_manager manager;
+    discover_plugins(get_test_plugin_directory(), manager);
+    REQUIRE( manager.get_plugin_count() == 1 );
+
+    const plugin& plugin = manager.get_plugin(0);
+    REQUIRE( plugin.get_name() == "dummy-plugin" );
+    REQUIRE( plugin.get_version() == version(1, 2, 3) );
+}

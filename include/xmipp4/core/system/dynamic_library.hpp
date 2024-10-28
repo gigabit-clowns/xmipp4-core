@@ -120,6 +120,16 @@ public:
      */
     void* get_symbol(const std::string& name) const noexcept; 
 
+    /**
+     * @brief Obtain the filename to the dynamic library from where the
+     * given symbol has been loaded.
+     * 
+     * @param symbol The symbol to be looked up.
+     * @return std::string The path to the dynamic library from where 
+     * the symbol has been loaded. Empty if no matching symbol was found. 
+     */
+    static std::string query_symbol_filename(const void* symbol);
+
 private:
     void* m_handle;
 

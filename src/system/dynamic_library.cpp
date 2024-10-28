@@ -113,6 +113,13 @@ void* dynamic_library::get_symbol(const std::string& name) const noexcept
 
 
 
+std::string dynamic_library::query_symbol_filename(const void* symbol)
+{
+    return dynamic_library_symbol_filename_lookup(symbol);
+}
+
+
+
 void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
 {
     lhs.swap(rhs);

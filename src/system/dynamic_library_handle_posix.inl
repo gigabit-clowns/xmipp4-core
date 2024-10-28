@@ -63,5 +63,18 @@ inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
     return ::dlsym(handle, name);
 }
 
+inline std::string dynamic_library_symbol_filename_lookup(const void* symbol)
+{
+    std::string result;
+
+    Dl_info info;
+    if (dladdr(symbol, &info))
+    {
+        result = std::string(info.dli_fname);
+    }
+
+    return result;
+}
+
 } // namespace system
 } // namespace xmipp4

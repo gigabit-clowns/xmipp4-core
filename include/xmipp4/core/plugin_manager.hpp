@@ -43,23 +43,23 @@ class interface_registry;
  * @brief Class managing a set of plugins.
  * 
  */
-class XMIPP4_CORE_API plugin_manager
+class plugin_manager
 {
 public:
-    plugin_manager();
+    XMIPP4_CORE_API plugin_manager();
     plugin_manager(const plugin_manager& other) = delete;
-    plugin_manager(plugin_manager&& other);
-    ~plugin_manager();
+    XMIPP4_CORE_API plugin_manager(plugin_manager&& other);
+    XMIPP4_CORE_API ~plugin_manager();
 
     plugin_manager& operator=(const plugin_manager& other) = delete;
-    plugin_manager& operator=(plugin_manager&& other);
+    XMIPP4_CORE_API plugin_manager& operator=(plugin_manager&& other);
 
     /**
      * @brief Add a already loaded plugin.
      * 
      * @param plugin The plugin to be added.
      */
-    void add_plugin(const plugin& plugin);
+    XMIPP4_CORE_API void add_plugin(const plugin& plugin);
 
     /**
      * @brief Load a plugin from a Shared Object and add it.
@@ -72,14 +72,14 @@ public:
      * @return const plugin* The loaded plugin. nullptr if it could not be 
      * loaded.
      */
-    const plugin* load_plugin(const std::string &path);
+    XMIPP4_CORE_API const plugin* load_plugin(const std::string &path);
 
     /**
      * @brief Get the number of plugins known by this manager.
      * 
      * @return std::size_t The number of plugins.
      */
-    std::size_t get_plugin_count() const noexcept;
+    XMIPP4_CORE_API std::size_t get_plugin_count() const noexcept;
 
     /**
      * @brief Get the i-th plugin.
@@ -88,7 +88,7 @@ public:
      * the plugin count.
      * @return const plugin& The requested plugin.
      */
-    const plugin& get_plugin(std::size_t index) const;
+    XMIPP4_CORE_API const plugin& get_plugin(std::size_t index) const;
 
 private:
     class implementation;

@@ -48,16 +48,16 @@ namespace xmipp4
  * @see interface_manager
  * 
  */
-class XMIPP4_CORE_API interface_registry
+class interface_registry
 {
 public:
-    interface_registry();
+    XMIPP4_CORE_API interface_registry();
     interface_registry(const interface_registry& other) = delete;
-    interface_registry(interface_registry&& other);
-    ~interface_registry();
+    XMIPP4_CORE_API interface_registry(interface_registry&& other);
+    XMIPP4_CORE_API ~interface_registry();
 
     interface_registry& operator=(const interface_registry& other) = delete;
-    interface_registry& operator=(interface_registry&& other);
+    XMIPP4_CORE_API interface_registry& operator=(interface_registry&& other);
 
     /**
      * @brief Get a concrete interface manager.
@@ -77,7 +77,10 @@ private:
     class implementation;
     memory::pimpl<implementation> m_implementation;
 
+    XMIPP4_CORE_API
     interface_manager* get_interface_manager(std::type_index type);
+
+    XMIPP4_CORE_API
     void create_interface_manager(std::type_index type,
                                   std::unique_ptr<interface_manager> manager );
 

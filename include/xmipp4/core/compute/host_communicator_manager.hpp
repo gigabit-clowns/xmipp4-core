@@ -48,17 +48,17 @@ class host_communicator;
  * interface.
  * 
  */
-class XMIPP4_CORE_API host_communicator_manager
+class host_communicator_manager
     : public interface_manager
 {
 public:
-    host_communicator_manager();
+    XMIPP4_CORE_API host_communicator_manager();
     host_communicator_manager(const host_communicator_manager &other) = delete;
-    host_communicator_manager(host_communicator_manager &&other);
-    virtual ~host_communicator_manager();
+    XMIPP4_CORE_API host_communicator_manager(host_communicator_manager &&other);
+    XMIPP4_CORE_API virtual ~host_communicator_manager();
 
     host_communicator_manager& operator=(const host_communicator_manager &other) = delete;
-    host_communicator_manager& operator=(host_communicator_manager &&other);
+    XMIPP4_CORE_API host_communicator_manager& operator=(host_communicator_manager &&other);
 
     /**
      * @brief Register a new implementation.
@@ -68,7 +68,7 @@ public:
      * @return false Failed to register. I.e. an homonym implementation 
      * already exists or nullptr was provided.
      */
-    bool register_backend(std::unique_ptr<host_communicator_backend> backend);
+    XMIPP4_CORE_API bool register_backend(std::unique_ptr<host_communicator_backend> backend);
 
     /**
      * @brief Find a backend by its name.
@@ -77,7 +77,7 @@ public:
      * @return host_communicator_backend* The backend. Nullptr if not found.
      */
     host_communicator_backend* 
-    get_backend(const std::string &name) const;
+    XMIPP4_CORE_API get_backend(const std::string &name) const;
 
     /**
      * @brief Get the world communicator of a backend.
@@ -89,7 +89,7 @@ public:
      * communicator.
      */
     std::shared_ptr<host_communicator> 
-    get_world_communicator(const std::string &name) const;
+    XMIPP4_CORE_API get_world_communicator(const std::string &name) const;
 
 private:
     class implementation;

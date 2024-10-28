@@ -22,17 +22,16 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-include(CTest)
-include(FetchContent)
-
-# Fetch Catch2
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.5.4
+set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/faulty_plugin1.cpp)
+add_library(faulty_plugin1 MODULE ${SOURCES})
+set_target_properties(
+	faulty_plugin1
+	PROPERTIES 
+		CXX_STANDARD 20
+		DEFINE_SYMBOL "XMIPP4_FAULTY_PLUGIN1_EXPORTING"
 )
-FetchContent_MakeAvailable(Catch2)
-include(Catch)
-
-add_subdirectory(unitary)
-add_subdirectory(integration)
+target_link_libraries(
+	faulty_plugin1
+	PRIVATE
+		xmipp4-core
+)

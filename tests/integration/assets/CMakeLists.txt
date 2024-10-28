@@ -20,19 +20,15 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.16)
+add_subdirectory(dummy_plugin)
+add_subdirectory(faulty_plugin1)
+add_subdirectory(faulty_plugin2)
 
-include(CTest)
-include(FetchContent)
-
-# Fetch Catch2
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.5.4
+set(TARGET_NAME "${PROJECT_NAME}_integration_test_assets")
+add_custom_target(
+    ${TARGET_NAME}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/lorem_ipsum.txt ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:dummy_plugin> ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:faulty_plugin1> ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:faulty_plugin2> ${CMAKE_CURRENT_BINARY_DIR}
 )
-FetchContent_MakeAvailable(Catch2)
-include(Catch)
-
-add_subdirectory(unitary)
-add_subdirectory(integration)

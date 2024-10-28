@@ -19,45 +19,54 @@
  ***************************************************************************/
 
 /**
- * @file test_dynamic_library.cpp
+ * @file dummy_plugin.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for system/dynamic_library.hpp
- * @date 2024-03-03
+ * @brief Exports a dummy plugin
+ * @date 2024-10-28
  * 
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
-#include <xmipp4/core/system/dynamic_library.hpp>
+#if defined(XMIPP4_DUMMY_PLUGIN_EXPORTING)
+    #define XMIPP4_DUMMY_PLUGIN_API XMIPP4_EXPORT
+#else
+    #define XMIPP4_DUMMY_PLUGIN_API XMIPP4_IMPORT
+#endif
 
-#include <xmipp4/core/core_version.hpp>
-
-#include <sstream>
-
-using namespace xmipp4;
-
-TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
+namespace xmipp4
 {
-    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
-        "xmipp4-core",
-        get_core_version()
-    );
-    system::dynamic_library xmipp4_core(xmipp4_core_soname);
 
-    REQUIRE( xmipp4_core.is_open() );
-    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+static const std::string name = "dummy-plugin";
 
-    using test_hook_function_ptr =  uint32_t (*)();
-    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
-        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
-    );
+class dummy_plugin final
+    : public xmipp4::plugin
+{
+    const std::string& get_name() const noexcept final
+    {
+        return name;
+    }
 
-    REQUIRE(test_hook != nullptr );
-    REQUIRE(test_hook() == 0xDEADBEEF );
+    version get_version() const noexcept final
+    {
+        return version(1, 2, 3);
+    }
+
+    void register_at(interface_registry&) const
+    {
+        // NO-OP
+    }
+};
+
+} // namespace xmipp4
+
+static const xmipp4::dummy_plugin instance;
+
+extern "C"
+{
+XMIPP4_DUMMY_PLUGIN_API const xmipp4::plugin* xmipp4_get_plugin() 
+{
+    return &instance;
 }
-
-TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
-{
-    system::dynamic_library lib;
-    REQUIRE( lib.is_open() == false );
 }

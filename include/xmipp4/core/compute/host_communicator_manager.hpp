@@ -76,8 +76,9 @@ public:
      * @param name The name of the backend.
      * @return host_communicator_backend* The backend. Nullptr if not found.
      */
+    XMIPP4_CORE_API
     host_communicator_backend* 
-    XMIPP4_CORE_API get_backend(const std::string &name) const;
+    get_backend(const std::string &name) const;
 
     /**
      * @brief Get the world communicator of a backend.

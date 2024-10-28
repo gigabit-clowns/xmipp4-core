@@ -30,6 +30,7 @@
 
 #include "interface_manager.hpp"
 
+#include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
 #include <type_traits>
@@ -51,13 +52,13 @@ namespace xmipp4
 class interface_registry
 {
 public:
-    interface_registry() = default;
+    interface_registry();
     interface_registry(const interface_registry& other) = delete;
-    interface_registry(interface_registry&& other) = default;
-    ~interface_registry() = default;
+    interface_registry(interface_registry&& other);
+    ~interface_registry();
 
     interface_registry& operator=(const interface_registry& other) = delete;
-    interface_registry& operator=(interface_registry&& other) = default;
+    interface_registry& operator=(interface_registry&& other);
 
     /**
      * @brief Get a concrete interface manager.
@@ -74,7 +75,12 @@ public:
     get_interface_manager();
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<interface_manager>> m_interfaces;
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
+
+    interface_manager* get_interface_manager(std::type_index type);
+    void create_interface_manager(std::type_index type,
+                                  std::unique_ptr<interface_manager> manager );
 
 };
 

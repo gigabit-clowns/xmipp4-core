@@ -21,10 +21,10 @@
  ***************************************************************************/
 
 /**
- * @file plugin.hpp
+ * @file backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin class
- * @date 2024-03-11
+ * @brief Defines basic backend interface
+ * @date 2024-10-29
  * 
  */
 
@@ -36,46 +36,45 @@
 namespace xmipp4
 {
 
-class interface_registry;
-
 /**
- * @brief Abstract class representing a plugin interface.
+ * @brief Abstract class representing a backend.
  * 
- * A concrete instance of this class may be used to connect a plugin
- * to the core.
+ * A concrete instance of this class may be used to create objects and query
+ * an specific backend.
  * 
  */
-class XMIPP4_CORE_API plugin
+class XMIPP4_CORE_API backend
 {
 public:
-    plugin() = default;
-    plugin(const plugin& other) = default;
-    plugin(plugin&& other) = default;
-    virtual ~plugin() = default;
+    backend() = default;
+    backend(const backend& other) = default;
+    backend(backend&& other) = default;
+    virtual ~backend() = default;
 
-    plugin& operator=(const plugin& other) = default;
-    plugin& operator=(plugin&& other) = default;
+    backend& operator=(const backend& other) = default;
+    backend& operator=(backend&& other) = default;
 
     /**
-     * @brief Get the name of the plugin.
+     * @brief Get the name of the backend.
      * 
      * @return const std::string& The name.
      */
     virtual const std::string& get_name() const noexcept = 0;
 
     /**
-     * @brief Get the version of the plugin.
+     * @brief Get the version of the backend.
      * 
      * @return version The version.
      */
     virtual version get_version() const noexcept = 0;
 
     /**
-     * @brief Register this plugin at a given interface registry.
+     * @brief Check if a backend is usable.
      * 
-     * @param registry The registry where this plugin will be registered.
+     * @return true Backend is usable.
+     * @return false Backend is not usable.
      */
-    virtual void register_at(interface_registry& registry) const = 0;
+    virtual bool is_available() const noexcept = 0;
 
 };
 

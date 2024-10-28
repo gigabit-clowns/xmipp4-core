@@ -51,7 +51,7 @@ TEST_CASE( "align floor", "[align]" )
 	void* pointer = reinterpret_cast<void*>(offset);
 	REQUIRE( memory::align_floor(pointer, 0x10) == pointer );
 	REQUIRE( memory::align_floor(pointer, 0x100) == pointer );
-	REQUIRE( memory::align_floor(pointer, 0x1000) == reinterpret_cast<void*>(0xA1010000) );
+	REQUIRE( memory::align_floor(pointer, 0x1000) == reinterpret_cast<void*>(uintptr_t(0xA1010000)) );
 }
 
 TEST_CASE( "align ceil", "[align]" ) 
@@ -64,5 +64,5 @@ TEST_CASE( "align ceil", "[align]" )
 	void* pointer = reinterpret_cast<void*>(offset);
 	REQUIRE( memory::align_ceil(pointer, 0x10) == pointer );
 	REQUIRE( memory::align_ceil(pointer, 0x100) == pointer );
-	REQUIRE( memory::align_ceil(pointer, 0x1000) == reinterpret_cast<void*>(0xA1011000) );
+	REQUIRE( memory::align_ceil(pointer, 0x1000) == reinterpret_cast<void*>(uintptr_t(0xA1011000)) );
 }

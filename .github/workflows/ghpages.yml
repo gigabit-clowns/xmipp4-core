@@ -24,9 +24,9 @@
 name: Deploy Doxygen to GitHub Pages
 
 on:
-  #push:
-  #  branches:
-  #    - main
+  push:
+    branches:
+      - main
   
   workflow_dispatch:
 
@@ -46,13 +46,13 @@ jobs:
       uses: actions/configure-pages@main
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y doxygen
+      run: sudo apt-get update && sudo apt-get install -y doxygen
     
     - name: Set reusable strings
       id: strings
       run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Configure, and build with CMake
+    - name: Configure and build with CMake
       uses: threeal/cmake-action@main
       with:
         source-dir: ${{ github.workspace }}

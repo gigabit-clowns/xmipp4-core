@@ -72,7 +72,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
-
+      
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         #with:

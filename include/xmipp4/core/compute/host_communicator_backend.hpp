@@ -28,7 +28,9 @@
  * 
  */
 
-#include "../version.hpp"
+#include "../backend.hpp"
+
+#include "../platform/dynamic_shared_object.h"
 
 #include <string>
 #include <memory>
@@ -40,7 +42,8 @@ namespace compute
 
 class host_communicator;
 
-class host_communicator_backend
+class XMIPP4_CORE_API host_communicator_backend
+    : public backend
 {
 public:
     host_communicator_backend() = default;
@@ -50,28 +53,6 @@ public:
 
     host_communicator_backend& operator=(const host_communicator_backend &other) = default;
     host_communicator_backend& operator=(host_communicator_backend &&other) = default;
-
-    /**
-     * @brief Get the name of the implementation.
-     * 
-     * @return const std::string& The name.
-     */
-    virtual const std::string& get_name() const noexcept = 0;
-
-    /**
-     * @brief Get the version of the backend.
-     * 
-     * @return version The version of the implementation.
-     */
-    virtual version get_version() const noexcept = 0;
-
-    /**
-     * @brief Check if the backend is usable.
-     * 
-     * @return true The backend is usable.
-     * @return false Backend initialization has failed and it can not be used.
-     */
-    virtual bool is_available() const noexcept = 0;
 
     /**
      * @brief Get the world communicator.

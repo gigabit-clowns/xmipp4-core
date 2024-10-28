@@ -22,17 +22,50 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-include(CTest)
-include(FetchContent)
+add_subdirectory(assets)
 
-# Fetch Catch2
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.5.4
+# Test excecutable name
+set(TESTS_NAME "${PROJECT_NAME}_integration_tests")
+
+# Register all source and header files
+file(
+	GLOB_RECURSE 
+	TEST_SOURCES 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
-FetchContent_MakeAvailable(Catch2)
-include(Catch)
 
-add_subdirectory(unitary)
-add_subdirectory(integration)
+# Add the test executable
+add_executable(
+    ${TESTS_NAME}
+    ${TEST_SOURCES}
+)
+set_target_properties(
+	${TESTS_NAME} PROPERTIES 
+	CXX_STANDARD 20
+)
+target_link_libraries(
+	${TESTS_NAME} 
+	PRIVATE 
+		${PROJECT_NAME} 
+		Catch2::Catch2WithMain
+)
+add_dependencies(${TESTS_NAME} ${PROJECT_NAME}_integration_test_assets)
+
+# On windows targets, copy the library to the test directory
+if(WIN32)
+	add_custom_command(TARGET ${TESTS_NAME}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_CURRENT_BINARY_DIR}"
+		COMMENT "Copy DLL file to ${CMAKE_CURRENT_BINARY_DIR} directory" VERBATIM
+	)
+endif()
+
+# Discover tests
+catch_discover_tests(${TESTS_NAME})
+
+# Install
+install(
+	TARGETS ${TESTS_NAME}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

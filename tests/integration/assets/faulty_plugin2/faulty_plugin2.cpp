@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +18,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_registry.hpp"
+/**
+ * @file dummy_plugin2.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Invalid plugin which does not export the plugin hook.
+ * @date 2024-10-28
+ * 
+ */
 
-#include "platform/constexpr.hpp"
-#include "platform/assert.hpp"
-
-namespace xmipp4 
-{
-
-template <typename T>
-inline
-typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-interface_registry::get_interface_manager()
-{
-    const std::type_index type(typeid(T));
-
-    T* result = static_cast<T*>(get_interface_manager(type));
-    if(result == nullptr)
-    {
-        // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>();
-        result = new_interface.get();
-        create_interface_manager(type, std::move(new_interface));
-    }
-
-    return *result;
-}
-
-} // namespace xmipp4
+// Empty on purpose

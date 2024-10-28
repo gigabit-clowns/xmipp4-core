@@ -20,16 +20,17 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 
-find_package(Doxygen REQUIRED)
-
-# Set color theme
-set(DOXYGEN_HTML_COLORSTYLE_HUE 220)
-set(DOXYGEN_HTML_COLORSTYLE_SAT 100)
-set(DOXYGEN_HTML_COLORSTYLE_GAMMA 80)
-
-doxygen_add_docs(
-    doxygen
-    ${PROJECT_SOURCE_DIR}/include
+set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/faulty_plugin2.cpp)
+add_library(faulty_plugin2 MODULE ${SOURCES})
+set_target_properties(
+	faulty_plugin2
+	PROPERTIES 
+		CXX_STANDARD 20
+)
+target_link_libraries(
+	faulty_plugin2
+	PRIVATE
+		xmipp4-core
 )

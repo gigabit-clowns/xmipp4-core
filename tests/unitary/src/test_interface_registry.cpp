@@ -19,45 +19,37 @@
  ***************************************************************************/
 
 /**
- * @file test_dynamic_library.cpp
+ * @file test_interface_registry.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for system/dynamic_library.hpp
- * @date 2024-03-03
+ * @brief Tests for interface_registry.hpp
+ * @date 2024-10-28
  * 
  */
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/system/dynamic_library.hpp>
-
-#include <xmipp4/core/core_version.hpp>
-
-#include <sstream>
+#include <xmipp4/core/interface_registry.hpp>
 
 using namespace xmipp4;
 
-TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
+static const char sample_message[] = "Hi, I am a dummy interface manager";
+
+class dummy_interface_manager
+    : public interface_manager
 {
-    std::string xmipp4_core_soname = system::dynamic_library::make_soname(
-        "xmipp4-core",
-        get_core_version()
-    );
-    system::dynamic_library xmipp4_core(xmipp4_core_soname);
+public:
+    std::string message;
 
-    REQUIRE( xmipp4_core.is_open() );
-    REQUIRE( xmipp4_core.get_symbol("Lorem_ipsum") == nullptr );
+};
 
-    using test_hook_function_ptr =  uint32_t (*)();
-    const auto test_hook= reinterpret_cast<test_hook_function_ptr>( 
-        xmipp4_core.get_symbol("xmipp4_dynamic_library_test_hook")
-    );
-
-    REQUIRE(test_hook != nullptr );
-    REQUIRE(test_hook() == 0xDEADBEEF );
-}
-
-TEST_CASE( "default construct dynamic_library", "[dynamic_library]" ) 
+TEST_CASE( "get interface manager", "[interface_registry]" ) 
 {
-    system::dynamic_library lib;
-    REQUIRE( lib.is_open() == false );
+    interface_registry registry;
+
+    auto& manager1 = registry.get_interface_manager<dummy_interface_manager>();
+    manager1.message = sample_message;
+
+    auto& manager2 = registry.get_interface_manager<dummy_interface_manager>();
+    REQUIRE( &manager1 == &manager2 );
+    REQUIRE( manager2.message == sample_message );
 }

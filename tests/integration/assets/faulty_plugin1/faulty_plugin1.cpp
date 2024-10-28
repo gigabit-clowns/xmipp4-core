@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +18,28 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_registry.hpp"
+/**
+ * @file faulty_plugin1.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief An invalid plugin which declares the hook
+ * but returns null
+ * @date 2024-10-28
+ * 
+ */
 
-#include "platform/constexpr.hpp"
-#include "platform/assert.hpp"
+#include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
-namespace xmipp4 
+#if defined(XMIPP4_FAULTY_PLUGIN1_EXPORTING)
+    #define XMIPP4_FAULTY_PLUGIN1_API XMIPP4_EXPORT
+#else
+    #define XMIPP4_FAULTY_PLUGIN1_API XMIPP4_IMPORT
+#endif
+
+extern "C"
 {
-
-template <typename T>
-inline
-typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-interface_registry::get_interface_manager()
+XMIPP4_FAULTY_PLUGIN1_API const xmipp4::plugin* xmipp4_get_plugin() 
 {
-    const std::type_index type(typeid(T));
-
-    T* result = static_cast<T*>(get_interface_manager(type));
-    if(result == nullptr)
-    {
-        // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>();
-        result = new_interface.get();
-        create_interface_manager(type, std::move(new_interface));
-    }
-
-    return *result;
+    return NULL;
 }
-
-} // namespace xmipp4
+}

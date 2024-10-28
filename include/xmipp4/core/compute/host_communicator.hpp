@@ -32,6 +32,7 @@
 #include "reduction_operation.hpp"
 #include "../span.hpp"
 #include "../memory/byte.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <cstddef>
@@ -50,7 +51,7 @@ namespace compute
  * @tparam T Type of the elements to be sent/received.
  */
 template <typename T>
-class host_communications_interface
+class XMIPP4_CORE_API host_communications_interface
 {
 public:
     host_communications_interface() = default;
@@ -230,7 +231,7 @@ public:
  *  
  */
 template <typename... Ts>
-class multitype_host_communications_interface
+class XMIPP4_CORE_API multitype_host_communications_interface
     : public host_communications_interface<Ts>...
 {
 public:

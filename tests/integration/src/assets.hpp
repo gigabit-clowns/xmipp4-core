@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,40 +19,57 @@
  ***************************************************************************/
 
 /**
- * @file interface_manager.hpp
+ * @file assets.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines interface_manager class
- * @date 2024-10-23
+ * @brief Functions to get the path to test assets
+ * @date 2024-10-28
  * 
  */
 
-#include "platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/operating_system.h>
+
+#include <string>
 
 namespace xmipp4
 {
 
-/**
- * @brief Abstract class defining the interface of an interface manager.
- * 
- * An interface manager keeps track of all known implementations of a given
- * interface and provides utilities to access the most relevant implementation
- * for a given context. This is a base class for collecting them on an
- * interface_registry.
- * 
- * @see interface_registry
- * 
- */
-class XMIPP4_CORE_API interface_manager
+inline std::string get_asset_root()
 {
-public:
-    interface_manager() = default;
-    interface_manager(const interface_manager& other) = default;
-    interface_manager(interface_manager&& other) = default;
-    virtual ~interface_manager() = default;
+    return "assets";
+}
 
-    interface_manager& operator=(const interface_manager& other) = default;
-    interface_manager& operator=(interface_manager&& other) = default;
+inline std::string get_text_file_path()
+{
+    #if XMIPP4_WINDOWS
+        return get_asset_root() + "\\" + "lorem_ipsum.txt";
+    #elif XMIPP4_APPLE || XMIPP4_LINUX
+        return get_asset_root() + "/" + "lorem_ipsum.txt";
+    #else
+        #error "Unknown platform"
+    #endif
+}
 
-};
+inline std::string get_test_plugin_directory()
+{
+    #if XMIPP4_WINDOWS
+        return get_asset_root() + "\\plugins";
+    #elif XMIPP4_APPLE || XMIPP4_LINUX
+        return get_asset_root() + "/plugins";
+    #else
+        #error "Unknown platform"
+    #endif
+}
+
+inline std::string get_mock_plugin_path(const std::string &name)
+{
+
+    #if XMIPP4_WINDOWS
+        return get_asset_root() + "\\plugins\\" + name + ".dll";
+    #elif XMIPP4_APPLE || XMIPP4_LINUX
+        return get_asset_root() + "/plugins/lib" + name + ".so";
+    #else
+        #error "Unknown platform"
+    #endif
+}
 
 } // namespace xmipp4

@@ -67,8 +67,7 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
 
 
 plugin_loader::plugin_loader()
-    : m_dynamic_library()
-    , m_plugin(nullptr)
+    : m_plugin(nullptr)
 {
 }
 

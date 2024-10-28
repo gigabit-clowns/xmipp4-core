@@ -37,8 +37,8 @@
 #include <filesystem>
 #include <cstdlib>
 
-#define XMIPP4_PLUGINS_DIRECTORY "plugins"
-#define XMIPP4_PLUGINS_ENV_VARIABLE "XMIPP4_PLUGINS_DIRECTORY"
+static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "plugins";
+static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
 
 namespace xmipp4
 {
@@ -122,7 +122,7 @@ const plugin& plugin_manager::get_plugin(std::size_t index) const
 std::string get_default_plugin_directory()
 {
     // Address of any core function
-    const void* symbol = 
+    const auto* symbol = 
         reinterpret_cast<const void*>(&get_default_plugin_directory);
 
     auto path = std::filesystem::path(
@@ -133,7 +133,7 @@ std::string get_default_plugin_directory()
         throw std::runtime_error("Could not retrieve the default plugin directory");
     }
 
-    path.replace_filename(XMIPP4_PLUGINS_DIRECTORY);
+    path.replace_filename(XMIPP4_PLUGINS_DIRECTORY_NAME);
     return path.string();
 }
 

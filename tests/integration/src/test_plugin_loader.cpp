@@ -49,9 +49,9 @@ static std::string get_mock_plugin_path(const std::string &name)
 {
 
     #if XMIPP4_WINDOWS
-        return asset_directory + "\\" + name + "\\" + "Release" + "\\" + name + ".dll";
+        return asset_directory + "\\" + name + ".dll";
     #elif XMIPP4_APPLE || XMIPP4_LINUX
-        return asset_directory + "/" + name + "/lib" + name + ".so";
+        return asset_directory + "/lib" + name + ".so";
     #endif
 }
 

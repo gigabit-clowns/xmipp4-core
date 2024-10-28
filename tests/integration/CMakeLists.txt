@@ -50,6 +50,7 @@ target_link_libraries(
 		${PROJECT_NAME} 
 		Catch2::Catch2WithMain
 )
+add_dependencies(${TESTS_NAME} ${PROJECT_NAME}_integration_test_assets)
 
 # On windows targets, copy the library to the test directory
 if(WIN32)

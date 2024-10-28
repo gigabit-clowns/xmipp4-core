@@ -75,7 +75,8 @@ public:
 
 private:
     class implementation;
-    memory::pimpl<implementation> m_implementation;
+    using pimpl_type = memory::pimpl<implementation>;
+    pimpl_type m_implementation;
 
     interface_manager* get_interface_manager(std::type_index type);
     void create_interface_manager(std::type_index type,

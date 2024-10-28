@@ -72,7 +72,7 @@ TEST_CASE( "query out out range plugin from plugin manager", "[plugin_manager]" 
 TEST_CASE( "discover plugins", "[plugin_manager]" ) 
 {
     plugin_manager manager;
-    discover_plugins(get_plugin_directory(), manager);
+    discover_plugins(get_test_plugin_directory(), manager);
     REQUIRE( manager.get_plugin_count() == 1 );
 
     const plugin& plugin = manager.get_plugin(0);

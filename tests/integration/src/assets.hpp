@@ -49,7 +49,7 @@ inline std::string get_text_file_path()
     #endif
 }
 
-inline std::string get_plugin_directory()
+inline std::string get_test_plugin_directory()
 {
     #if XMIPP4_WINDOWS
         return get_asset_root() + "\\plugins";

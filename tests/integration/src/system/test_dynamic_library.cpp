@@ -36,7 +36,7 @@
 
 using namespace xmipp4;
 
-TEST_CASE( "open xmipp4-core as dynamic library", "[dynamic_library]" ) 
+TEST_CASE( "open a dynamic library", "[dynamic_library]" ) 
 {
     system::dynamic_library xmipp4_core(get_mock_plugin_path("dummy_plugin"));
 

@@ -120,25 +120,6 @@ public:
      */
     void* get_symbol(const std::string& name) const noexcept; 
 
-    /**
-     * @brief Obtain the platform specific soname for a library name
-     * 
-     * @param library_name Name of the library
-     * @return The soname
-     */
-    static 
-    std::string make_soname(const std::string& library_name);
-
-    /**
-     * @brief Obtain the platform specific soname for a library name
-     * 
-     * @param library_name Name of the library
-     * @param ver Version of the library
-     * @return The soname
-     */
-    static
-    std::string make_soname(const std::string& library_name, version ver);
-
 private:
     void* m_handle;
 

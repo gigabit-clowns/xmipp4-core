@@ -26,6 +26,8 @@
  * 
  */
 
+#include "assets.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/plugin.hpp>
@@ -34,26 +36,7 @@
 
 using namespace xmipp4;
 
-static const std::string asset_directory = "assets";
 
-static std::string get_text_file_path()
-{
-    #if XMIPP4_WINDOWS
-        return asset_directory + "\\" + "lorem_ipsum.txt";
-    #elif XMIPP4_APPLE || XMIPP4_LINUX
-        return asset_directory + "/" + "lorem_ipsum.txt";
-    #endif
-}
-
-static std::string get_mock_plugin_path(const std::string &name)
-{
-
-    #if XMIPP4_WINDOWS
-        return asset_directory + "\\" + name + ".dll";
-    #elif XMIPP4_APPLE || XMIPP4_LINUX
-        return asset_directory + "/lib" + name + ".so";
-    #endif
-}
 
 TEST_CASE( "load good plugin in the plugin manager", "[plugin_manager]" ) 
 {

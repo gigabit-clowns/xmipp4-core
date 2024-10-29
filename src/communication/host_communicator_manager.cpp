@@ -19,32 +19,32 @@
  ***************************************************************************/
 
 /**
- * @file host_communicator_manager.cpp
+ * @file communicator_manager.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_communicator_manager.hpp
+ * @brief Implementation of communicator_manager.hpp
  * @date 2024-10-25
  * 
  */
 
-#include <xmipp4/core/compute/host_communicator_manager.hpp>
+#include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/compute/host_communicator_backend.hpp>
+#include <xmipp4/core/communication/communicator_backend.hpp>
 
 #include <tuple>
 #include <unordered_map>
 
 namespace xmipp4
 {
-namespace compute
+namespace communication
 {
 
-class host_communicator_manager::implementation
+class communicator_manager::implementation
 {
 public:
     implementation() = default;
     ~implementation() = default;
 
-    bool register_backend(std::unique_ptr<host_communicator_backend> backend)
+    bool register_backend(std::unique_ptr<communicator_backend> backend)
     {
         bool inserted = false;
         if (backend)
@@ -58,11 +58,11 @@ public:
         return inserted;
     }
 
-    host_communicator_backend* get_backend(const std::string &name) const
+    communicator_backend* get_backend(const std::string &name) const
     {
         const auto ite = m_registry.find(name);
 
-        host_communicator_backend *result = nullptr;
+        communicator_backend *result = nullptr;
         if (ite != m_registry.end())
         {
             result = ite->second.get();
@@ -71,10 +71,10 @@ public:
         return result;
     }
 
-    std::shared_ptr<host_communicator>
+    std::shared_ptr<communicator>
     get_world_communicator(const std::string &name) const
     {
-        std::shared_ptr<host_communicator> result;
+        std::shared_ptr<communicator> result;
         
         const auto* backend = get_backend(name);
         if (backend)
@@ -87,7 +87,7 @@ public:
 
 private:
     using registry_type = 
-        std::unordered_map<std::string, std::unique_ptr<host_communicator_backend>>;
+        std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
 
     registry_type m_registry;
 
@@ -97,33 +97,33 @@ private:
 
 
 
-host_communicator_manager::host_communicator_manager() = default;
+communicator_manager::communicator_manager() = default;
 
-host_communicator_manager::host_communicator_manager(host_communicator_manager&& other) noexcept = default;
+communicator_manager::communicator_manager(communicator_manager&& other) noexcept = default;
 
-host_communicator_manager::~host_communicator_manager() = default;
+communicator_manager::~communicator_manager() = default;
 
-host_communicator_manager& 
-host_communicator_manager::operator=(host_communicator_manager&& other) noexcept = default;
+communicator_manager& 
+communicator_manager::operator=(communicator_manager&& other) noexcept = default;
 
 
 
-bool host_communicator_manager::register_backend(std::unique_ptr<host_communicator_backend> backend)
+bool communicator_manager::register_backend(std::unique_ptr<communicator_backend> backend)
 {
     return m_implementation->register_backend(std::move(backend));
 }
 
-host_communicator_backend* 
-host_communicator_manager::get_backend(const std::string &name) const
+communicator_backend* 
+communicator_manager::get_backend(const std::string &name) const
 {
     return m_implementation->get_backend(name);
 }
 
-std::shared_ptr<host_communicator>
-host_communicator_manager::get_world_communicator(const std::string &name) const
+std::shared_ptr<communicator>
+communicator_manager::get_world_communicator(const std::string &name) const
 {
     return m_implementation->get_world_communicator(name);
 }
 
-} // namespace system
+} // namespace communication
 } // namespace xmipp4

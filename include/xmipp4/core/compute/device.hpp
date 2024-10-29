@@ -55,11 +55,9 @@ public:
     virtual std::shared_ptr<queue> create_queue_shared() = 0;
 
     virtual std::unique_ptr<device_buffer> 
-    create_buffer(numerical_type type,
-                  std::size_t count) = 0;
+    create_buffer(numerical_type type, std::size_t count) = 0;
     virtual std::shared_ptr<device_buffer> 
-    create_buffer_shared(numerical_type type,
-                         std::size_t count) = 0;
+    create_buffer_shared(numerical_type type, std::size_t count) = 0;
 
 }; 
 

@@ -52,11 +52,9 @@ public:
     std::shared_ptr<queue> create_queue_shared() final;
 
     std::unique_ptr<device_buffer> 
-    create_buffer(numerical_type type,
-                  std::size_t count) final;
+    create_buffer(numerical_type type, std::size_t count) final;
     std::shared_ptr<device_buffer> 
-    create_buffer_shared(numerical_type type,
-                         std::size_t count) final;
+    create_buffer_shared(numerical_type type, std::size_t count) final;
 
 }; 
 

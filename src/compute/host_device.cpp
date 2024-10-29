@@ -29,6 +29,7 @@
 #include <xmipp4/core/compute/host_device.hpp>
 
 #include <xmipp4/core/compute/host_device_backend.hpp>
+#include <xmipp4/core/compute/host_queue.hpp>
 
 namespace xmipp4
 {
@@ -47,12 +48,12 @@ device_backend& host_device::get_backend() const noexcept
 
 std::unique_ptr<queue> host_device::create_queue()
 {
-    return nullptr; // TODO
+    return std::make_unique<host_queue>(*this);
 }
 
 std::shared_ptr<queue> host_device::create_queue_shared()
 {
-    return nullptr; // TODO
+    return std::make_shared<host_queue>(*this);
 }
 
 std::unique_ptr<device_buffer> 

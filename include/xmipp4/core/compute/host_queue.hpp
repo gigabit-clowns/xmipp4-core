@@ -21,12 +21,16 @@
  ***************************************************************************/
 
 /**
- * @file queue.hpp
+ * @file host_queue.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::queue interface
- * @date 2024-10-22
+ * @brief Defines host_queue interface
+ * @date 2024-10-29
  * 
  */
+
+#include "queue.hpp"
+
+#include <functional>
 
 namespace xmipp4 
 {
@@ -34,34 +38,31 @@ namespace compute
 {
 
 class device;
+class host_device;
 
 /**
- * @brief Abstract class describing a command queue.
+ * @brief Special implementation of the queue interface to be able to send
+ * commands to the host.
  * 
  */
-class queue
+class host_queue final
+    : public queue
 {
 public:
-    queue() = default;
-    queue(const queue &other) = default;
-    queue(queue &&other) = default;
-    virtual ~queue() = default;
+    host_queue(host_device &device);
+    host_queue(const host_queue &other) = default;
+    host_queue(host_queue &&other) = default;
+    virtual ~host_queue() = default;
 
-    queue& operator=(const queue &other) = default;
-    queue& operator=(queue &&other) = default;
+    host_queue& operator=(const host_queue &other) = default;
+    host_queue& operator=(host_queue &&other) = default;
 
-    /**
-     * @brief Get the device associated to this queue
-     * 
-     * @return device& The device.
-     */
-    virtual device& get_device() const = 0;
+    device& get_device() const final;
 
-    /**
-     * @brief Wait until the queue is flushed.
-     * 
-     */
-    virtual void synchronize() const = 0;
+    void synchronize() const final;
+
+private:
+    std::reference_wrapper<host_device> m_device;
 
 }; 
 

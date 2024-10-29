@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,49 +19,36 @@
  ***************************************************************************/
 
 /**
- * @file queue.hpp
+ * @file host_queue.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::queue interface
- * @date 2024-10-22
+ * @brief Implementation of host_queue.hpp
+ * @date 2024-10-29
  * 
  */
 
-namespace xmipp4 
+#include <xmipp4/core/compute/host_queue.hpp>
+
+#include <xmipp4/core/compute/host_device.hpp>
+
+namespace xmipp4
 {
 namespace compute
 {
 
-class device;
-
-/**
- * @brief Abstract class describing a command queue.
- * 
- */
-class queue
+host_queue::host_queue(host_device &device)
+    : m_device(device)
 {
-public:
-    queue() = default;
-    queue(const queue &other) = default;
-    queue(queue &&other) = default;
-    virtual ~queue() = default;
+}
 
-    queue& operator=(const queue &other) = default;
-    queue& operator=(queue &&other) = default;
+device& host_queue::get_device() const
+{
+    return m_device;
+}
 
-    /**
-     * @brief Get the device associated to this queue
-     * 
-     * @return device& The device.
-     */
-    virtual device& get_device() const = 0;
+void host_queue::synchronize() const
+{
+    // NO-OP
+}
 
-    /**
-     * @brief Wait until the queue is flushed.
-     * 
-     */
-    virtual void synchronize() const = 0;
-
-}; 
-
-} // namespace compute
+} // namespace system
 } // namespace xmipp4

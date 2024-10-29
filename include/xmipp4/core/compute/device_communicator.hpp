@@ -28,7 +28,7 @@
  * 
  */
 
-#include "reduction_operation.hpp"
+#include "../communication/reduction_operation.hpp"
 #include "numerical_type.hpp"
 
 #include <memory>
@@ -89,11 +89,11 @@ public:
     device_buffer &recv_buf, 
                             queue &q) = 0;
 
-    virtual void reduce(int root, reduction_operation op,
+    virtual void reduce(int root, communication::reduction_operation op,
                         const device_buffer &send_buf, 
                         device_buffer &recv_buf ) = 0;
 
-    virtual void all_reduce(reduction_operation op,
+    virtual void all_reduce(communication::reduction_operation op,
                             const device_buffer &send_buf, 
                             device_buffer &recv_buf ) = 0;
 

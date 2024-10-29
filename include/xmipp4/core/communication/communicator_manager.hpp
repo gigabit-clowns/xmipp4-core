@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file host_communicator_manager.hpp
+ * @file communicator_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_communicator_manager interface
+ * @brief Defines communicator_manager interface
  * @date 2024-10-25
  * 
  */
@@ -32,37 +32,37 @@
 #include <vector>
 #include <memory>
 
-#include "host_communicator_backend.hpp"
+#include "communicator_backend.hpp"
 #include "../interface_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../memory/pimpl.hpp"
 
 namespace xmipp4 
 {
-namespace compute
+namespace communication
 {
 
-class host_communicator;
+class communicator;
 
 /**
- * @brief Centralizes all known implementations of the host_communicator_backend
+ * @brief Centralizes all known implementations of the communicator_backend
  * interface.
  * 
  */
-class host_communicator_manager
+class communicator_manager
     : public interface_manager
 {
 public:
-    XMIPP4_CORE_API host_communicator_manager();
-    host_communicator_manager(const host_communicator_manager &other) = delete;
+    XMIPP4_CORE_API communicator_manager();
+    communicator_manager(const communicator_manager &other) = delete;
     XMIPP4_CORE_API 
-    host_communicator_manager(host_communicator_manager &&other) noexcept;
-    XMIPP4_CORE_API virtual ~host_communicator_manager();
+    communicator_manager(communicator_manager &&other) noexcept;
+    XMIPP4_CORE_API virtual ~communicator_manager();
 
-    host_communicator_manager& 
-    operator=(const host_communicator_manager &other) = delete;
-    XMIPP4_CORE_API host_communicator_manager& 
-    operator=(host_communicator_manager &&other) noexcept;
+    communicator_manager& 
+    operator=(const communicator_manager &other) = delete;
+    XMIPP4_CORE_API communicator_manager& 
+    operator=(communicator_manager &&other) noexcept;
 
     /**
      * @brief Register a new implementation.
@@ -73,7 +73,7 @@ public:
      * already exists or nullptr was provided.
      */
     XMIPP4_CORE_API 
-    bool register_backend(std::unique_ptr<host_communicator_backend> backend);
+    bool register_backend(std::unique_ptr<communicator_backend> backend);
 
     /**
      * @brief Enumerate all available backends.
@@ -88,10 +88,10 @@ public:
      * @brief Find a backend by its name.
      * 
      * @param name The name of the backend.
-     * @return host_communicator_backend* The backend. Nullptr if not found.
+     * @return communicator_backend* The backend. Nullptr if not found.
      */
     XMIPP4_CORE_API
-    host_communicator_backend* 
+    communicator_backend* 
     get_backend(const std::string &name) const;
 
     /**
@@ -100,10 +100,10 @@ public:
      * The world communicator connects all known peers together.
      * 
      * @param name The name of the backend.
-     * @return std::shared_ptr<host_communicator> Reference to the world
+     * @return std::shared_ptr<communicator> Reference to the world
      * communicator.
      */
-    std::shared_ptr<host_communicator> 
+    std::shared_ptr<communicator> 
     XMIPP4_CORE_API get_world_communicator(const std::string &name) const;
 
 private:
@@ -112,5 +112,5 @@ private:
 
 }; 
 
-} // namespace compute
+} // namespace communication
 } // namespace xmipp4

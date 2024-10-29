@@ -19,30 +19,30 @@
  ***************************************************************************/
 
 /**
- * @file test_host_communicator_manager.cpp
+ * @file test_communicator_manager.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for host_communicator_manager.hpp
+ * @brief Test for communicator_manager.hpp
  * @date 2024-10-29
  */
 
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/compute/host_communicator_manager.hpp>
+#include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/compute/host_communicator_backend.hpp>
+#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/version.hpp>
 
 #include <algorithm>
 
 using namespace xmipp4;
-using namespace xmipp4::compute;
+using namespace xmipp4::communication;
 
-class test_host_communicator_backend
-    : public host_communicator_backend
+class test_communicator_backend
+    : public communicator_backend
 {
 public:
-    test_host_communicator_backend(std::string name)
+    test_communicator_backend(std::string name)
         : m_name(std::move(name))
     {
     }
@@ -62,7 +62,7 @@ public:
         return true;
     }
 
-    std::shared_ptr<host_communicator> 
+    std::shared_ptr<communicator> 
     get_world_communicator() const final
     {
         return nullptr;
@@ -74,11 +74,11 @@ private:
 };
 
 
-TEST_CASE( "register host communicator backend", "[host_communicator_manager]" ) 
+TEST_CASE( "register host communicator backend", "[communicator_manager]" ) 
 {
-    host_communicator_manager manager;
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test1"));
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test2"));
+    communicator_manager manager;
+    manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
+    manager.register_backend(std::make_unique<test_communicator_backend>("test2"));
 
     std::vector<std::string> backends;
     manager.enumerate_backends(backends);
@@ -89,13 +89,13 @@ TEST_CASE( "register host communicator backend", "[host_communicator_manager]" )
     REQUIRE( backends[1] == "test2" );
 }
 
-TEST_CASE( "query host communicator backend", "[host_communicator_manager]" ) 
+TEST_CASE( "query host communicator backend", "[communicator_manager]" ) 
 {
-    host_communicator_manager manager;
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test1"));
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test2"));
+    communicator_manager manager;
+    manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
+    manager.register_backend(std::make_unique<test_communicator_backend>("test2"));
 
-    host_communicator_backend* backend;
+    communicator_backend* backend;
     backend = manager.get_backend("test1");
     REQUIRE( backend != nullptr );
     REQUIRE( backend->get_name() == "test1" );
@@ -107,11 +107,11 @@ TEST_CASE( "query host communicator backend", "[host_communicator_manager]" )
     REQUIRE( manager.get_backend("not-a-backend") == nullptr );
 }
 
-TEST_CASE( "register the same host communicator backend twice", "[host_communicator_manager]" ) 
+TEST_CASE( "register the same host communicator backend twice", "[communicator_manager]" ) 
 {
-    host_communicator_manager manager;
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test"));
-    manager.register_backend(std::make_unique<test_host_communicator_backend>("test"));
+    communicator_manager manager;
+    manager.register_backend(std::make_unique<test_communicator_backend>("test"));
+    manager.register_backend(std::make_unique<test_communicator_backend>("test"));
 
     std::vector<std::string> backends;
     manager.enumerate_backends(backends);

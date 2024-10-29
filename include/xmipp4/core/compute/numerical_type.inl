@@ -178,5 +178,13 @@ bool from_string(std::string_view str, numerical_type& type) noexcept
     return result;
 }
 
+template<typename T>
+inline
+std::basic_ostream<T>& 
+operator<<(std::basic_ostream<T>& os, numerical_type type)
+{
+    return os << to_string(type);
+}
+
 } // namespace compute
 } // namespace xmipp4

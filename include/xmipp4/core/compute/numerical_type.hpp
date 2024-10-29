@@ -24,6 +24,7 @@
 
 #include <cstddef>
 #include <string_view>
+#include <ostream>
 
 namespace xmipp4
 {
@@ -63,6 +64,10 @@ XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
 
 XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
 bool from_string(std::string_view str, numerical_type& type) noexcept;
+
+template<typename T>
+std::basic_ostream<T>& 
+operator<<(std::basic_ostream<T>& os, numerical_type type);
 
 } // namespace compute
 } // namespace xmipp4

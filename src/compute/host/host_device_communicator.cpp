@@ -34,6 +34,7 @@
 #include <xmipp4/core/communication/communicator.hpp>
 
 #include <complex>
+#include <sstream>
 
 namespace xmipp4
 {
@@ -64,7 +65,31 @@ static span<const T> remove_complex(span<const std::complex<T>> buffer)
     );
 }
 
+static numerical_type check_buffer_types(const device_buffer &send_buffer,
+                                         const device_buffer &recv_buffer )
+{
+    numerical_type result;
 
+    const auto send_type = send_buffer.get_type();
+    const auto recv_type = recv_buffer.get_type();
+
+
+
+    if (send_type == recv_type)
+    {
+        result = send_type;
+    }
+    else
+    {
+        std::ostringstream oss;
+        oss << "send (" << send_type << ") and receive (" << recv_type 
+            << ") types mismatch";
+
+        throw std::invalid_argument(oss.str());
+    }
+
+    return result;
+}
 
 
 
@@ -153,29 +178,20 @@ void host_device_communicator::scatter(int root,
                                        device_buffer &recv_buf, 
                                        queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this, root] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->scatter(
-                    root, 
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this, root] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->scatter(
+                root, 
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
 }
 
 void host_device_communicator::gather(int root, 
@@ -183,57 +199,40 @@ void host_device_communicator::gather(int root,
                                       device_buffer &recv_buf, 
                                       queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this, root] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->gather(
-                    root, 
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this, root] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->gather(
+                root, 
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
 }
 
 void host_device_communicator::all_gather(const device_buffer &send_buf, 
                                           device_buffer &recv_buf, 
                                           queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->all_gather(
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->all_gather(
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
+
 }
 
 void host_device_communicator::reduce(int root, 
@@ -242,29 +241,20 @@ void host_device_communicator::reduce(int root,
                                       device_buffer &recv_buf,
                                       queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this, root, operation] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->reduce(
-                    root, operation,
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this, root, operation] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->reduce(
+                root, operation,
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
 }
 
 void host_device_communicator::all_reduce(reduction_operation operation,
@@ -272,57 +262,39 @@ void host_device_communicator::all_reduce(reduction_operation operation,
                                           device_buffer &recv_buf,
                                           queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this, operation] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->all_reduce(
-                    operation,
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this, operation] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->all_reduce(
+                operation,
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
 }
 
 void host_device_communicator::all_to_all(const device_buffer &send_buf, 
                                           device_buffer &recv_buf, 
                                           queue& )
 {
-    const auto type = send_buf.get_type();
-    if (type == recv_buf.get_type())
-    {
-        visit_same(
-            [this] (auto send_buf, auto recv_buf) -> void
-            {
-                m_communicator->all_to_all(
-                    remove_complex(send_buf),
-                    remove_complex(recv_buf)
-                );
-            },
-            type,
-            dynamic_cast<const host_buffer&>(send_buf),
-            dynamic_cast<host_buffer&>(recv_buf)
-        );
-    }
-    else
-    {
-        throw std::invalid_argument(
-            "Send and receive buffers don't have matching types"
-        );
-    }
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_same(
+        [this] (auto send_buf, auto recv_buf) -> void
+        {
+            m_communicator->all_to_all(
+                remove_complex(send_buf),
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
 }
 
 } // namespace system

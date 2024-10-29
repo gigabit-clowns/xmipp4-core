@@ -56,18 +56,68 @@ public:
     device_manager& operator=(const device_manager &other) = delete;
     device_manager& operator=(device_manager &&other);
 
+    /**
+     * @brief Register a new device backend.
+     * 
+     * @param backend The backend to be registered.
+     * @return true The backend was successfully registered.
+     * @return false The backend with the same name already exists.
+     * 
+     */
     bool register_backend(std::unique_ptr<device_backend> backend);
 
+    /**
+     * @brief Enumerate all registered backends.
+     * 
+     * @param backends Output list with the backend names.
+     * @note The output list is cleared before populating it.
+     * 
+     */
     void enumerate_backends(std::vector<std::string> &backends) const;
+
+    /**
+     * @brief Get a backend by its name.
+     * 
+     * @param name The name of the backend.
+     * @return device_backend* The requested backend. nullptr if not found.
+     */
     device_backend* get_backend(const std::string &name) const;
 
+    /**
+     * @brief Enumerate devices across all backends.
+     * 
+     * @param indices Output list of device indices.
+     * @note The output list is cleared before populating it.
+     * 
+     */
     void enumerate_devices(std::vector<device_index> &indices) const;
 
+    /**
+     * @brief Query the properties of a device.
+     * 
+     * @param index The index of the device.
+     * @param desc Output device properties.
+     * @return true Device exists and properties were written.
+     * @return false Device does not exist and properties were not written.
+     */
     bool get_device_properties(const device_index &index, 
                                device_properties &desc ) const;
 
+    /**
+     * @brief Create a device handle
+     * 
+     * @param index Index of the device.
+     * @return std::unique_ptr<device> The device handle.
+     */
     std::unique_ptr<device> 
     create_device(const device_index &index) const;
+
+    /**
+     * @brief Create a device handle
+     * 
+     * @param index Index of the device.
+     * @return std::shared_ptr<device> The device handle.
+     */
     std::shared_ptr<device> 
     create_device_shared(const device_index &index) const;
 

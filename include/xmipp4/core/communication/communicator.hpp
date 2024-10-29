@@ -28,8 +28,7 @@
  * 
  */
 
-
-#include "reduction_operation.hpp"
+#include "../reduction_operation.hpp"
 #include "../span.hpp"
 #include "../memory/byte.hpp"
 #include "../platform/dynamic_shared_object.h"

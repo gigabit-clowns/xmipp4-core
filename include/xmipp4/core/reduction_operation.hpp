@@ -28,14 +28,12 @@
  * 
  */
 
-#include "../platform/constexpr.hpp"
+#include "platform/constexpr.hpp"
 
 #include <cstddef>
 #include <string_view>
 
 namespace xmipp4
-{
-namespace communication
 {
 
 /**
@@ -55,7 +53,6 @@ enum class reduction_operation
 XMIPP4_CONSTEXPR const char* to_string(reduction_operation op) noexcept;
 bool from_string(std::string_view str, reduction_operation& op) noexcept;
 
-} // namespace communication
 } // namespace xmipp4
 
 #include "reduction_operation.inl"

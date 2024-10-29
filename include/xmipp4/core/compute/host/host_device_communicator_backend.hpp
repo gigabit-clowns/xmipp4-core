@@ -38,8 +38,9 @@ namespace compute
 class device_communicator_manager;
 
 /**
- * @brief Special implementation of the device_communicator_backend interface to be able 
- * to obtain a wrapper of communications::communicator as device_communicator.
+ * @brief Special implementation of the device_communicator_backend interface 
+ * to be able to obtain a wrapper of communications::communicator as a
+ * device_communicator.
  * 
  */
 class host_device_communicator_backend final

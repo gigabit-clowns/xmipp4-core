@@ -54,7 +54,7 @@ class device_communicator_manager
     : public interface_manager
 {
 public:
-    using host_communicator = xmipp4::communication::communicator;
+    using host_communicator = communication::communicator;
 
     device_communicator_manager();
     device_communicator_manager(const device_communicator_manager &other) = delete;

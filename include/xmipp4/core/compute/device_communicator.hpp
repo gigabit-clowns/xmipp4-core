@@ -85,7 +85,7 @@ public:
                         queue &q ) = 0;
 
     virtual void all_gather(const device_buffer &send_buf, 
-    device_buffer &recv_buf, 
+                            device_buffer &recv_buf, 
                             queue &q) = 0;
 
     virtual void reduce(int root, reduction_operation op,

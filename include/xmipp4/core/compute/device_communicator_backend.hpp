@@ -35,14 +35,15 @@
 
 namespace xmipp4 
 {
-namespace compute
-{
 namespace communication
 {
 
 class communicator;
 
 } // namespace communication
+
+namespace compute
+{
 
 class device;
 class device_communicator;
@@ -55,7 +56,7 @@ class device_communicator_backend
     : public backend
 {
 public:
-    using host_communicator = xmipp4::communication::communicator;
+    using host_communicator = communication::communicator;
 
     device_communicator_backend() = default;
     device_communicator_backend(const device_communicator_backend &other) = default;

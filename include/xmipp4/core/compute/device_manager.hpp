@@ -44,6 +44,10 @@ namespace compute
 class device;
 class device_backend;
 
+/**
+ * @brief Centralize multiple device_backends.
+ * 
+ */
 class device_manager
     : public interface_manager
 {

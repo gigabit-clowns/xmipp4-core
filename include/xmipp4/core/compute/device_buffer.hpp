@@ -37,8 +37,6 @@ namespace xmipp4
 namespace compute
 {
 
-class device;
-
 class device_buffer
 {
 public:

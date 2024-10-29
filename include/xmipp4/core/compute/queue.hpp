@@ -33,8 +33,6 @@ namespace xmipp4
 namespace compute
 {
 
-class device;
-
 /**
  * @brief Abstract class describing a command queue.
  * 

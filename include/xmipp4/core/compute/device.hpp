@@ -39,9 +39,6 @@ namespace compute
 
 class queue;
 class device_buffer;
-class device_backend;
-class device_communicator;
-class host_communicator;
 
 class device
 {

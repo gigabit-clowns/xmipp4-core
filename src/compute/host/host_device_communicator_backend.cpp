@@ -58,7 +58,7 @@ bool host_device_communicator_backend::is_available() const noexcept
 
 bool host_device_communicator_backend::supports_device(const device &dev) const noexcept
 {
-    return dynamic_cast<const host_device*>(&dev);
+    return dynamic_cast<const host_device*>(&dev) != nullptr;
 }
 
 std::unique_ptr<device_communicator> 

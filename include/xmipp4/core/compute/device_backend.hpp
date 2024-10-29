@@ -44,6 +44,9 @@ class device;
 /**
  * @brief Abstract class that represents a compute backend.
  * 
+ * This interface provides basic methods for querying and
+ * obtaining handles to compute devices.
+ * 
  */
 class device_backend
     : public backend

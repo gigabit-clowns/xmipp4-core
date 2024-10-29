@@ -88,13 +88,15 @@ public:
                             device_buffer &recv_buf, 
                             queue &q) = 0;
 
-    virtual void reduce(int root, reduction_operation op,
+    virtual void reduce(int root, reduction_operation operation,
                         const device_buffer &send_buf, 
-                        device_buffer &recv_buf ) = 0;
+                        device_buffer &recv_buf,
+                        queue &q ) = 0;
 
-    virtual void all_reduce(reduction_operation op,
+    virtual void all_reduce(reduction_operation operation,
                             const device_buffer &send_buf, 
-                            device_buffer &recv_buf ) = 0;
+                            device_buffer &recv_buf,
+                            queue &q ) = 0;
 
     virtual void all_to_all(const device_buffer &send_buf, 
                             device_buffer &recv_buf, 

@@ -267,6 +267,7 @@ public:
 class communicator
     : public multitype_communications_interface<memory::byte,
                                                      char,
+                                                     signed char,
                                                      unsigned char,
                                                      short,
                                                      unsigned short,

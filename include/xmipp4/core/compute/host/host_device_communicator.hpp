@@ -99,13 +99,15 @@ public:
                     device_buffer &recv_buf, 
                     queue &q ) final;
 
-    void reduce(int root, reduction_operation op,
+    void reduce(int root, reduction_operation operation,
                 const device_buffer &send_buf, 
-                device_buffer &recv_buf ) final;
+                device_buffer &recv_buf,
+                queue &q ) final;
 
-    void all_reduce(reduction_operation op,
+    void all_reduce(reduction_operation operation,
                     const device_buffer &send_buf, 
-                    device_buffer &recv_buf ) final;
+                    device_buffer &recv_buf,
+                    queue &q ) final;
 
     void all_to_all(const device_buffer &send_buf, 
                     device_buffer &recv_buf, 

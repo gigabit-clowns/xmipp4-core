@@ -45,10 +45,12 @@ template <typename T>
 span<const T> make_span(const host_buffer &buffer) noexcept;
 
 template <typename Func, typename... Buffers>
-auto visit(Func &&func, Buffers&&... buffers);
+auto visit_buffers(Func &&func, Buffers&&... buffers);
 
 template <typename Func, typename... Buffers>
-auto visit_same(Func &&func, numerical_type type, Buffers&&... buffers);
+auto visit_homogeneous_buffers(Func &&func, 
+                               numerical_type type, 
+                               Buffers&&... buffers );
 
 } // namespace compute
 } // namespace xmipp4

@@ -84,104 +84,107 @@ binder<typename std::decay<F>::type,
 }
     
 template <typename T, typename Func, typename Buffer, typename... Buffers>
-inline auto visit_helper(Func &&func, Buffer&& buffer, Buffers&&... rest)
+inline 
+auto visit_buffers_helper(Func &&func, Buffer&& buffer, Buffers&&... rest)
 {
-    return visit(
+    return visit_buffers(
         bind_first(std::forward<Func>(func), make_span<T>(buffer)),
         std::forward<Buffers>(rest)...
     );
 }
 
 template <typename Func>
-auto visit(Func &&func)
+inline
+auto visit_buffers(Func &&func)
 {
     return std::forward<Func>(func)();
 }
 
 template <typename Func, typename Buffer, typename... Buffers>
-auto visit(Func &&func, Buffer&& buffer, Buffers&&... rest)
+inline
+auto visit_buffers(Func &&func, Buffer&& buffer, Buffers&&... rest)
 {
     switch (buffer.get_type())
     {
     case numerical_type::int8:
-        return visit_helper<std::int8_t>(
+        return visit_buffers_helper<std::int8_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::uint8: 
-        return visit_helper<std::uint8_t>(
+        return visit_buffers_helper<std::uint8_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::int16: 
-        return visit_helper<std::int16_t>(
+        return visit_buffers_helper<std::int16_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::uint16: 
-        return visit_helper<std::uint16_t>(
+        return visit_buffers_helper<std::uint16_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::int32: 
-        return visit_helper<std::int32_t>(
+        return visit_buffers_helper<std::int32_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::uint32: 
-        return visit_helper<std::uint32_t>(
+        return visit_buffers_helper<std::uint32_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::int64: 
-        return visit_helper<std::int64_t>(
+        return visit_buffers_helper<std::int64_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::uint64: 
-        return visit_helper<std::uint64_t>(
+        return visit_buffers_helper<std::uint64_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::float32: 
-        return visit_helper<float>(
+        return visit_buffers_helper<float>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::float64: 
-        return visit_helper<double>(
+        return visit_buffers_helper<double>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
     
     case numerical_type::complex_float32: 
-        return visit_helper<std::complex<float>>(
+        return visit_buffers_helper<std::complex<float>>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::complex_float64: 
-        return visit_helper<std::complex<double>>(
+        return visit_buffers_helper<std::complex<double>>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
@@ -197,9 +200,10 @@ auto visit(Func &&func, Buffer&& buffer, Buffers&&... rest)
 
 
 template <typename Func, typename... Buffers>
-auto visit(Func &&func, Buffers&&... buffers)
+inline
+auto visit_buffers(Func &&func, Buffers&&... buffers)
 {
-    return detail::visit(
+    return detail::visit_buffers(
         std::forward<Func>(func),
         std::forward<Buffers>(buffers)...
     );
@@ -211,84 +215,89 @@ namespace detail
 {
 
 template <typename T, typename Func, typename... Buffers>
-inline auto visit_same_helper(Func &&func, Buffers&&... buffers)
+inline
+auto visit_homogeneous_buffers_helper(Func &&func, 
+                                           Buffers&&... buffers )
 {
     return std::forward<Func>(func)(make_span<T>(buffers)...);
 }
 
 template <typename Func, typename... Buffers>
-auto visit_same(Func &&func, numerical_type type, Buffers&&... buffers)
+inline
+auto visit_homogeneous_buffers(Func &&func, 
+                               numerical_type type, 
+                               Buffers&&... buffers )
 {
     switch (type)
     {
     case numerical_type::int8:
-        return visit_same_helper<std::int8_t>(
+        return visit_homogeneous_buffers_helper<std::int8_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::uint8: 
-        return visit_same_helper<std::uint8_t>(
+        return visit_homogeneous_buffers_helper<std::uint8_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::int16: 
-        return visit_same_helper<std::int16_t>(
+        return visit_homogeneous_buffers_helper<std::int16_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::uint16: 
-        return visit_same_helper<std::uint16_t>(
+        return visit_homogeneous_buffers_helper<std::uint16_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::int32: 
-        return visit_same_helper<std::int32_t>(
+        return visit_homogeneous_buffers_helper<std::int32_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::uint32: 
-        return visit_same_helper<std::uint32_t>(
+        return visit_homogeneous_buffers_helper<std::uint32_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::int64: 
-        return visit_same_helper<std::int64_t>(
+        return visit_homogeneous_buffers_helper<std::int64_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::uint64: 
-        return visit_same_helper<std::uint64_t>(
+        return visit_homogeneous_buffers_helper<std::uint64_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::float32: 
-        return visit_same_helper<float>(
+        return visit_homogeneous_buffers_helper<float>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::float64: 
-        return visit_same_helper<double>(
+        return visit_homogeneous_buffers_helper<double>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
     
     case numerical_type::complex_float32: 
-        return visit_same_helper<std::complex<float>>(
+        return visit_homogeneous_buffers_helper<std::complex<float>>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::complex_float64: 
-        return visit_same_helper<std::complex<double>>(
+        return visit_homogeneous_buffers_helper<std::complex<double>>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
@@ -301,9 +310,12 @@ auto visit_same(Func &&func, numerical_type type, Buffers&&... buffers)
 
 } // namespace detail
 template <typename Func, typename... Buffers>
-auto visit_same(Func &&func, numerical_type type, Buffers&&... buffers)
+inline
+auto visit_homogeneous_buffers(Func &&func, 
+                               numerical_type type, 
+                               Buffers&&... buffers)
 {
-    return detail::visit_same(
+    return detail::visit_homogeneous_buffers(
         std::forward<Func>(func),
         type,
         std::forward<Buffers>(buffers)...

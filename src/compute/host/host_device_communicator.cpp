@@ -135,7 +135,7 @@ void host_device_communicator::send(int destination_rank,
                                     const device_buffer &send_buf, 
                                     queue& )
 {
-    visit(
+    visit_buffers(
         [this, destination_rank] (auto send_buf) -> void
         {
             m_communicator->send(destination_rank, remove_complex(send_buf));
@@ -148,7 +148,7 @@ void host_device_communicator::receive(int source_rank,
                                        device_buffer &recv_buf, 
                                        queue& )
 {
-    visit(
+    visit_buffers(
         [this, source_rank] (auto recv_buf) -> std::size_t
         {
             return m_communicator->receive(
@@ -161,7 +161,7 @@ void host_device_communicator::receive(int source_rank,
 
 void host_device_communicator::broadcast(int root, device_buffer &buf, queue&)
 {
-    visit(
+    visit_buffers(
         [this, root] (auto buf) -> void
         {
             m_communicator->broadcast(
@@ -179,7 +179,7 @@ void host_device_communicator::scatter(int root,
                                        queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this, root] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->scatter(
@@ -200,7 +200,7 @@ void host_device_communicator::gather(int root,
                                       queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this, root] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->gather(
@@ -220,7 +220,7 @@ void host_device_communicator::all_gather(const device_buffer &send_buf,
                                           queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->all_gather(
@@ -242,7 +242,7 @@ void host_device_communicator::reduce(int root,
                                       queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this, root, operation] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->reduce(
@@ -263,7 +263,7 @@ void host_device_communicator::all_reduce(reduction_operation operation,
                                           queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this, operation] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->all_reduce(
@@ -283,7 +283,7 @@ void host_device_communicator::all_to_all(const device_buffer &send_buf,
                                           queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
-    visit_same(
+    visit_homogeneous_buffers(
         [this] (auto send_buf, auto recv_buf) -> void
         {
             m_communicator->all_to_all(

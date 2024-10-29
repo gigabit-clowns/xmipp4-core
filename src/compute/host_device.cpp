@@ -55,16 +55,6 @@ std::shared_ptr<queue> host_device::create_queue_shared()
     return nullptr; // TODO
 }
 
-std::unique_ptr<event> host_device::create_event()
-{
-    return nullptr; // TODO
-}
-
-std::shared_ptr<event> host_device::create_event_shared()
-{
-    return nullptr; // TODO
-}
-
 std::unique_ptr<device_buffer> 
 host_device::create_buffer(numerical_type type,
                            std::size_t count )

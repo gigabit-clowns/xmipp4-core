@@ -38,7 +38,6 @@ namespace compute
 {
 
 class queue;
-class event;
 class device_buffer;
 class device_backend;
 class device_communicator;
@@ -59,9 +58,6 @@ public:
 
     virtual std::unique_ptr<queue> create_queue() = 0;
     virtual std::shared_ptr<queue> create_queue_shared() = 0;
-
-    virtual std::unique_ptr<event> create_event() = 0;
-    virtual std::shared_ptr<event> create_event_shared() = 0;
 
     virtual std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type,

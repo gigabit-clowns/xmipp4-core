@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,48 +21,36 @@
  ***************************************************************************/
 
 /**
- * @file host_device.cpp
+ * @file host_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device.hpp
+ * @brief Defines the compute::host_buffer interface
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device.hpp>
+#include "../device_buffer.hpp"
 
-#include "default_host_buffer.hpp"
-
-#include <xmipp4/core/compute/host/host_device_backend.hpp>
-#include <xmipp4/core/compute/host/host_queue.hpp>
-
-namespace xmipp4
+namespace xmipp4 
 {
 namespace compute
 {
 
-std::unique_ptr<queue> host_device::create_queue()
+class host_buffer
+    : public device_buffer
 {
-    return std::make_unique<host_queue>();
-}
+public:
+    host_buffer() = default;
+    host_buffer(const host_buffer &other) = default;
+    host_buffer(host_buffer &&other) = default;
+    virtual ~host_buffer() = default;
 
-std::shared_ptr<queue> host_device::create_queue_shared()
-{
-    return std::make_shared<host_queue>();
-}
+    host_buffer& operator=(const host_buffer &other) = default;
+    host_buffer& operator=(host_buffer &&other) = default;
 
-std::unique_ptr<device_buffer> 
-host_device::create_buffer(numerical_type type,
-                           std::size_t count )
-{
-    return std::make_unique<default_host_buffer>(type, count);
-}
+    virtual void* get_data() noexcept = 0;
+    virtual const void* get_data() const noexcept = 0;
 
-std::shared_ptr<device_buffer> 
-host_device::create_buffer_shared(numerical_type type,
-                                  std::size_t count) 
-{
-    return std::make_shared<default_host_buffer>(type, count);
-}
+}; 
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

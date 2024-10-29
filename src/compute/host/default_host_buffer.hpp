@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,48 +21,48 @@
  ***************************************************************************/
 
 /**
- * @file host_device.cpp
+ * @file default_host_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device.hpp
+ * @brief Defines the compute::default_host_buffer class
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device.hpp>
+#include <xmipp4/core/compute/host/host_buffer.hpp>
 
-#include "default_host_buffer.hpp"
-
-#include <xmipp4/core/compute/host/host_device_backend.hpp>
-#include <xmipp4/core/compute/host/host_queue.hpp>
-
-namespace xmipp4
+namespace xmipp4 
 {
 namespace compute
 {
 
-std::unique_ptr<queue> host_device::create_queue()
+class default_host_buffer
+    : public host_buffer
 {
-    return std::make_unique<host_queue>();
-}
+public:
+    default_host_buffer() noexcept;
+    default_host_buffer(numerical_type type, std::size_t count);
+    default_host_buffer(const default_host_buffer &other) = delete;
+    default_host_buffer(default_host_buffer &&other) noexcept;
+    virtual ~default_host_buffer();
 
-std::shared_ptr<queue> host_device::create_queue_shared()
-{
-    return std::make_shared<host_queue>();
-}
+    default_host_buffer& operator=(const default_host_buffer &other) = delete;
+    default_host_buffer& operator=(default_host_buffer &&other) noexcept;
 
-std::unique_ptr<device_buffer> 
-host_device::create_buffer(numerical_type type,
-                           std::size_t count )
-{
-    return std::make_unique<default_host_buffer>(type, count);
-}
+    void swap(default_host_buffer &other) noexcept;
+    void reset() noexcept;
 
-std::shared_ptr<device_buffer> 
-host_device::create_buffer_shared(numerical_type type,
-                                  std::size_t count) 
-{
-    return std::make_shared<default_host_buffer>(type, count);
-}
+    numerical_type get_type() const noexcept final;
+    std::size_t get_count() const noexcept final;
 
-} // namespace system
+    void* get_data() noexcept final;
+    const void* get_data() const noexcept final;
+
+private:
+    numerical_type m_type;
+    std::size_t m_count;
+    void* m_data;
+
+}; 
+
+} // namespace compute
 } // namespace xmipp4

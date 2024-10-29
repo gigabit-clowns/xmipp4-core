@@ -125,7 +125,6 @@ private:
     class implementation;
     memory::pimpl<implementation> m_implementation;
 
-
 }; 
 
 } // namespace compute

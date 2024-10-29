@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file host_communicator.hpp
+ * @file communicator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the compute::host_communicator class
+ * @brief Definition of the communication::communicator class
  * @date 2024-10-24
  * 
  */
@@ -39,28 +39,28 @@
 
 namespace xmipp4 
 {
-namespace compute
+namespace communication
 {
 
 /**
  * @brief Interface for communication operations with typed buffers.
  * 
- * @note This is a helper class to build host_communicator. It should not be
+ * @note This is a helper class to build communicator. It should not be
  * used separately.
  * 
  * @tparam T Type of the elements to be sent/received.
  */
 template <typename T>
-class XMIPP4_CORE_API host_communications_interface
+class XMIPP4_CORE_API communications_interface
 {
 public:
-    host_communications_interface() = default;
-    host_communications_interface(const host_communications_interface &other) = default;
-    host_communications_interface(host_communications_interface &&other) = default;
-    virtual ~host_communications_interface() = default;
+    communications_interface() = default;
+    communications_interface(const communications_interface &other) = default;
+    communications_interface(communications_interface &&other) = default;
+    virtual ~communications_interface() = default;
 
-    host_communications_interface& operator=(const host_communications_interface &other) = default;
-    host_communications_interface& operator=(host_communications_interface &&other) = default;
+    communications_interface& operator=(const communications_interface &other) = default;
+    communications_interface& operator=(communications_interface &&other) = default;
 
     /**
      * @brief Send a message.
@@ -224,37 +224,37 @@ public:
 
 
 /**
- * @brief Gather multiple specializations of host_communications_interface
+ * @brief Gather multiple specializations of communications_interface
  * in a single interface.
  * 
  * @tparam Ts Types to be used in the interface.
  *  
  */
 template <typename... Ts>
-class XMIPP4_CORE_API multitype_host_communications_interface
-    : public host_communications_interface<Ts>...
+class XMIPP4_CORE_API multitype_communications_interface
+    : public communications_interface<Ts>...
 {
 public:
-    multitype_host_communications_interface() = default;
-    multitype_host_communications_interface(const multitype_host_communications_interface &other) = default;
-    multitype_host_communications_interface(multitype_host_communications_interface &&other) = default;
-    virtual ~multitype_host_communications_interface() = default;
+    multitype_communications_interface() = default;
+    multitype_communications_interface(const multitype_communications_interface &other) = default;
+    multitype_communications_interface(multitype_communications_interface &&other) = default;
+    virtual ~multitype_communications_interface() = default;
 
-    multitype_host_communications_interface& 
-    operator=(const multitype_host_communications_interface &other) = default;
-    multitype_host_communications_interface& 
-    operator=(multitype_host_communications_interface &&other) = default;
+    multitype_communications_interface& 
+    operator=(const multitype_communications_interface &other) = default;
+    multitype_communications_interface& 
+    operator=(multitype_communications_interface &&other) = default;
     
-    using host_communications_interface<Ts>::send...;
-    using host_communications_interface<Ts>::receive...;
-    using host_communications_interface<Ts>::send_receive...;
-    using host_communications_interface<Ts>::broadcast...;
-    using host_communications_interface<Ts>::scatter...;
-    using host_communications_interface<Ts>::gather...;
-    using host_communications_interface<Ts>::all_gather...;
-    using host_communications_interface<Ts>::reduce...;
-    using host_communications_interface<Ts>::all_reduce...;
-    using host_communications_interface<Ts>::all_to_all...;
+    using communications_interface<Ts>::send...;
+    using communications_interface<Ts>::receive...;
+    using communications_interface<Ts>::send_receive...;
+    using communications_interface<Ts>::broadcast...;
+    using communications_interface<Ts>::scatter...;
+    using communications_interface<Ts>::gather...;
+    using communications_interface<Ts>::all_gather...;
+    using communications_interface<Ts>::reduce...;
+    using communications_interface<Ts>::all_reduce...;
+    using communications_interface<Ts>::all_to_all...;
 
 };
 
@@ -265,8 +265,8 @@ public:
  * communications.
  * 
  */
-class host_communicator
-    : public multitype_host_communications_interface<memory::byte,
+class communicator
+    : public multitype_communications_interface<memory::byte,
                                                      char,
                                                      unsigned char,
                                                      short,
@@ -282,13 +282,13 @@ class host_communicator
                                                      long double>
 {
 public:
-    host_communicator() = default;
-    host_communicator(const host_communicator &other) = default;
-    host_communicator(host_communicator &&other) = default;
-    virtual ~host_communicator() = default;
+    communicator() = default;
+    communicator(const communicator &other) = default;
+    communicator(communicator &&other) = default;
+    virtual ~communicator() = default;
 
-    host_communicator& operator=(const host_communicator &other) = default;
-    host_communicator& operator=(host_communicator &&other) = default;
+    communicator& operator=(const communicator &other) = default;
+    communicator& operator=(communicator &&other) = default;
 
     /**
      * @brief Get the amount of peers in the communicator.
@@ -313,12 +313,12 @@ public:
      * 
      * @param colour The group where the current rank will be assigned to.
      * @param rank_priority Hint to assign the rank in the new communicator.
-     * @return std::unique_ptr<host_communicator> The communicator where
+     * @return std::unique_ptr<communicator> The communicator where
      * the current rank has been assigned to.
      * 
      */
-    virtual std::unique_ptr<host_communicator> split(int colour, 
-                                                     int rank_priority ) const = 0;
+    virtual std::unique_ptr<communicator> split(int colour, 
+                                                int rank_priority ) const = 0;
 
     /**
      * @brief Split the current communicator.
@@ -327,12 +327,12 @@ public:
      * 
      * @param colour The group where the current rank will be assigned to.
      * @param rank_priority Hint to assign the rank in the new communicator.
-     * @return std::shared_ptr<host_communicator> The communicator where
+     * @return std::shared_ptr<communicator> The communicator where
      * the current rank has been assigned to.
      * 
      */
-    virtual std::shared_ptr<host_communicator> split_shared(int colour, 
-                                                            int rank_priority ) const = 0;
+    virtual std::shared_ptr<communicator> split_shared(int colour, 
+                                                       int rank_priority ) const = 0;
 
     /**
      * @brief Synchronize all peers.
@@ -346,5 +346,5 @@ public:
 
 };
 
-} // namespace compute
+} // namespace communication
 } // namespace xmipp4

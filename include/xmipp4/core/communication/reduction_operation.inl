@@ -20,13 +20,21 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * @file reduction_operation.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of reduction_operation.inl
+ * @date 2024-10-24
+ * 
+ */
+
 #include "reduction_operation.hpp"
 
 #include <unordered_map>
 
 namespace xmipp4
 {
-namespace compute
+namespace communication
 {
 
 XMIPP4_INLINE_CONSTEXPR 
@@ -62,5 +70,5 @@ bool from_string(std::string_view str, reduction_operation& op) noexcept
     return result;
 }
 
-} // namespace compute
+} // namespace communication
 } // namespace xmipp4

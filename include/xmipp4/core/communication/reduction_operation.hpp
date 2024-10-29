@@ -21,50 +21,41 @@
  ***************************************************************************/
 
 /**
- * @file host_communicator_backend.hpp
+ * @file reduction_operation.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_communicator_backend interface
+ * @brief Defines the reduction_operation enum.
  * @date 2024-10-24
  * 
  */
 
-#include "../backend.hpp"
+#include "../platform/constexpr.hpp"
 
-#include "../platform/dynamic_shared_object.h"
+#include <cstddef>
+#include <string_view>
 
-#include <string>
-#include <memory>
-
-namespace xmipp4 
+namespace xmipp4
 {
-namespace compute
+namespace communication
 {
 
-class host_communicator;
-
-class XMIPP4_CORE_API host_communicator_backend
-    : public backend
+/**
+ * @brief Operation to be performed when reducing a vector into a scalar
+ * value.
+ * 
+ */
+enum class reduction_operation
 {
-public:
-    host_communicator_backend() = default;
-    host_communicator_backend(const host_communicator_backend &other) = default;
-    host_communicator_backend(host_communicator_backend &&other) = default;
-    virtual ~host_communicator_backend() = default;
+    sum, ///< Add all the elements of the vector.
+    product, ///< Multiply all the elements of the vector.
+    min, ///< Keep the smallest element of the vector.
+    max ///< Keep the largest element of the vector.
+};
 
-    host_communicator_backend& operator=(const host_communicator_backend &other) = default;
-    host_communicator_backend& operator=(host_communicator_backend &&other) = default;
 
-    /**
-     * @brief Get the world communicator.
-     * 
-     * The world communicator connects all known peers together.
-     * 
-     * @return std::shared_ptr<host_communicator> Reference to the world
-     * communicator.
-     */
-    virtual std::shared_ptr<host_communicator> get_world_communicator() const = 0;
+XMIPP4_CONSTEXPR const char* to_string(reduction_operation op) noexcept;
+bool from_string(std::string_view str, reduction_operation& op) noexcept;
 
-}; 
-
-} // namespace compute
+} // namespace communication
 } // namespace xmipp4
+
+#include "reduction_operation.inl"

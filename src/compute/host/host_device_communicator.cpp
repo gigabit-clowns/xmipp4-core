@@ -91,6 +91,29 @@ static numerical_type check_buffer_types(const device_buffer &send_buffer,
     return result;
 }
 
+void check_reduction_operation(numerical_type type, reduction_operation operation)
+{
+    if (is_complex(type))
+    {
+        switch (operation)
+        {
+        case reduction_operation::min:
+            throw std::invalid_argument(
+                "min reduction cannot performed on complex numerical types"
+            );
+
+        case reduction_operation::max:
+            throw std::invalid_argument(
+                "maxreduction cannot performed on complex numerical types"
+            );
+
+        default:
+            break;
+
+        }
+    }
+}
+
 
 
 host_device_communicator::host_device_communicator(std::shared_ptr<host_communicator> comm)
@@ -242,6 +265,8 @@ void host_device_communicator::reduce(int root,
                                       queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
+    check_reduction_operation(type, operation);
+
     visit_homogeneous_buffers(
         [this, root, operation] (auto send_buf, auto recv_buf) -> void
         {
@@ -263,6 +288,8 @@ void host_device_communicator::all_reduce(reduction_operation operation,
                                           queue& )
 {
     const auto type = check_buffer_types(send_buf, recv_buf);
+    check_reduction_operation(type, operation);
+
     visit_homogeneous_buffers(
         [this, operation] (auto send_buf, auto recv_buf) -> void
         {

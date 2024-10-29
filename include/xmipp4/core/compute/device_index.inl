@@ -173,7 +173,7 @@ ForwardIt parse_base10_size_t(ForwardIt first, ForwardIt last, std::size_t &resu
 } // namespace detail
 
 inline
-bool parse_device_index(const std::string &path, device_index &result)
+bool parse_device_index(std::string_view path, device_index &result)
 {
     bool success = false;
 
@@ -190,7 +190,12 @@ bool parse_device_index(const std::string &path, device_index &result)
             );
             success = true;
         }
-    }   
+    }
+    else
+    {
+        result = device_index(path);
+        success = true;
+    }
 
     return success;
 }

@@ -318,7 +318,7 @@ public:
      * 
      */
     virtual std::unique_ptr<communicator> split(int colour, 
-                                                     int rank_priority ) const = 0;
+                                                int rank_priority ) const = 0;
 
     /**
      * @brief Split the current communicator.
@@ -332,7 +332,7 @@ public:
      * 
      */
     virtual std::shared_ptr<communicator> split_shared(int colour, 
-                                                            int rank_priority ) const = 0;
+                                                       int rank_priority ) const = 0;
 
     /**
      * @brief Synchronize all peers.

@@ -26,9 +26,9 @@
  * 
  */
 
-#include <xmipp4/core/compute/host_device_backend.hpp>
+#include <xmipp4/core/compute/host/host_device_backend.hpp>
 
-#include <xmipp4/core/compute/host_device.hpp>
+#include <xmipp4/core/compute/host/host_device.hpp>
 #include <xmipp4/core/core_version.hpp>
 #include <xmipp4/core/system/host.hpp>
 

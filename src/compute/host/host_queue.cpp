@@ -26,9 +26,9 @@
  * 
  */
 
-#include <xmipp4/core/compute/host_queue.hpp>
+#include <xmipp4/core/compute/host/host_queue.hpp>
 
-#include <xmipp4/core/compute/host_device.hpp>
+#include <xmipp4/core/compute/host/host_device.hpp>
 
 namespace xmipp4
 {

@@ -28,7 +28,7 @@
  * 
  */
 
-#include "device_backend.hpp"
+#include "../device_backend.hpp"
 
 namespace xmipp4 
 {

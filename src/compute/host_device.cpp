@@ -67,14 +67,14 @@ std::shared_ptr<event> host_device::create_event_shared()
 
 std::unique_ptr<device_buffer> 
 host_device::create_buffer(numerical_type type,
-                std::size_t count )
+                           std::size_t count )
 {
     return nullptr; // TODO
 }
 
 std::shared_ptr<device_buffer> 
 host_device::create_buffer_shared(numerical_type type,
-                        std::size_t count) 
+                                  std::size_t count) 
 {
     return nullptr; // TODO
 }

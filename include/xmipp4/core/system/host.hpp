@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file hostname.hpp
+ * @file host.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Utilities to query the hostname
+ * @brief Utilities to query the host
  * @date 2024-10-29
  * 
  */
@@ -32,8 +32,22 @@
 
 namespace xmipp4 
 {
+namespace system
+{
 
+/**
+ * @brief Get the hostname of the machine.
+ * 
+ * @return std::string The hostname.
+ */
 std::string get_hostname();
 
-} // namespace xmipp4
+/**
+ * @brief Get the total memory available in the system.
+ * 
+ * @return std::size_t Total memory in bytes.
+ */
+std::size_t get_total_system_memory();
 
+} // namespace system
+} // namespace xmipp4

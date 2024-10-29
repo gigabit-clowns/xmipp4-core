@@ -19,23 +19,26 @@
  ***************************************************************************/
 
 /**
- * @file hostname.cpp
+ * @file host.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of hostname.hpp
+ * @brief Implementation of host.hpp
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/hostname.hpp>
+#include <xmipp4/core/system/host.hpp>
 #include <xmipp4/core/platform/operating_system.h>
 
 #if XMIPP4_POSIX
     #include <unistd.h>
 #elif XMIPP4_WINDOWS
+    #include <windows.h>
     #include <winbase.h>
 #endif
 
 namespace xmipp4
+{
+namespace system
 {
 
 std::string get_hostname()
@@ -49,11 +52,29 @@ std::string get_hostname()
         char hostname[MAX_COMPUTERNAME_LENGTH + 1];
         LPDWORD count = MAX_COMPUTERNAME_LENGTH + 1;
         gethostname(hostname, &count);
-        return std::string(hostname, count)
+        return std::string(hostname, count);
     #else
         #pragma message ("Cannot determine hostname for this platform")
         return "";
     #endif
 }
 
+std::size_t get_total_system_memory()
+{
+    #if XMIPP4_POSIX
+        long pages = sysconf(_SC_PHYS_PAGES);
+        long page_size = sysconf(_SC_PAGE_SIZE);
+        return pages * page_size;
+    #elif XMIPP4_WINDOWS
+        MEMORYSTATUSEX status;
+        status.dwLength = sizeof(status);
+        GlobalMemoryStatusEx(&status);
+        return status.ullTotalPhys;
+    #else
+        #pragma message ("Cannot determine hostname for this platform")
+        return "";
+    #endif
+}
+
+} // namespace system
 } // namespace xmipp4

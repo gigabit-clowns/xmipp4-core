@@ -30,7 +30,7 @@
 
 #include "host_device.hpp"
 #include <xmipp4/core/core_version.hpp>
-#include <xmipp4/core/hostname.hpp>
+#include <xmipp4/core/system/host.hpp>
 
 namespace xmipp4
 {
@@ -66,10 +66,10 @@ bool host_device_backend::get_device_properties(std::size_t id,
 
     if (id == 0)
     {
-        desc.set_name(get_hostname());
+        desc.set_name(system::get_hostname());
         desc.set_type(device_type::cpu);
         desc.set_physical_location("");
-        desc.set_total_memory_bytes(0); // TODO
+        desc.set_total_memory_bytes(system::get_total_system_memory());
         result = true;
     }
 

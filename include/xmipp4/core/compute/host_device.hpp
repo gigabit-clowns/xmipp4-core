@@ -28,7 +28,7 @@
  * 
  */
 
-#include <xmipp4/core/compute/device.hpp>
+#include "device.hpp"
 
 #include <functional>
 
@@ -41,7 +41,7 @@ class host_device_backend;
 
 /**
  * @brief Special implementation of the device interface to be able to use
- * the "host" as a device
+ * the "host" as a device.
  * 
  */
 class host_device final

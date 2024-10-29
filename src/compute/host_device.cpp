@@ -26,7 +26,7 @@
  * 
  */
 
-#include "host_device.hpp"
+#include <xmipp4/core/compute/host_device.hpp>
 
 #include <xmipp4/core/compute/host_device_backend.hpp>
 

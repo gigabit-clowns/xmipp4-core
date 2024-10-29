@@ -71,7 +71,7 @@ std::size_t get_total_system_memory()
         GlobalMemoryStatusEx(&status);
         return status.ullTotalPhys;
     #else
-        #pragma message ("Cannot determine hostname for this platform")
+        #pragma message ("Cannot get total memory for this platform")
         return "";
     #endif
 }

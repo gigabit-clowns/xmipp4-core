@@ -83,7 +83,7 @@ host_device_backend::create_device(std::size_t id)
     
     if (id == 0)
     {
-        result = std::make_unique<host_device>(*this);
+        result = std::make_unique<host_device>();
     }
 
     return result;
@@ -96,7 +96,7 @@ host_device_backend::create_device_shared(std::size_t id)
 
     if (id == 0)
     {
-        result = std::make_shared<host_device>(*this);
+        result = std::make_shared<host_device>();
     }
 
     return result;

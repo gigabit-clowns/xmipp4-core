@@ -48,16 +48,6 @@ class host_device final
     : public device
 {
 public:
-    host_device(host_device_backend &backend);
-    host_device(const host_device &other) = default;
-    host_device(host_device &&other) = default;
-    virtual ~host_device() = default;
-
-    host_device& operator=(const host_device &other) = default;
-    host_device& operator=(host_device &&other) = default;
-
-    device_backend& get_backend() const noexcept final;
-
     std::unique_ptr<queue> create_queue() final;
     std::shared_ptr<queue> create_queue_shared() final;
 
@@ -67,9 +57,6 @@ public:
     std::shared_ptr<device_buffer> 
     create_buffer_shared(numerical_type type,
                          std::size_t count) final;
-
-private:
-    std::reference_wrapper<host_device_backend> m_backend;
 
 }; 
 

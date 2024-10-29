@@ -28,7 +28,7 @@
  * 
  */
 
-#include "../communication/reduction_operation.hpp"
+#include "../reduction_operation.hpp"
 #include "numerical_type.hpp"
 
 #include <memory>
@@ -41,6 +41,7 @@ namespace compute
 
 class device;
 class device_buffer;
+class device_communicator_backend;
 class queue;
 
 class device_communicator
@@ -57,8 +58,6 @@ public:
     virtual std::size_t get_size() const = 0;
     virtual int get_rank() const = 0;
 
-    virtual device& get_device() const noexcept = 0;
-    
     virtual std::unique_ptr<device_buffer>
     create_buffer(numerical_type type,
                   std::size_t count) = 0;
@@ -66,7 +65,7 @@ public:
     create_buffer_shared(numerical_type type,
                          std::size_t count) = 0;
 
-    virtual void barrier() = 0;
+    virtual void barrier(queue &q) = 0;
 
     virtual void send(int destination_rank, 
                       const device_buffer &buf, queue &q) = 0;
@@ -89,11 +88,11 @@ public:
     device_buffer &recv_buf, 
                             queue &q) = 0;
 
-    virtual void reduce(int root, communication::reduction_operation op,
+    virtual void reduce(int root, reduction_operation op,
                         const device_buffer &send_buf, 
                         device_buffer &recv_buf ) = 0;
 
-    virtual void all_reduce(communication::reduction_operation op,
+    virtual void all_reduce(reduction_operation op,
                             const device_buffer &send_buf, 
                             device_buffer &recv_buf ) = 0;
 

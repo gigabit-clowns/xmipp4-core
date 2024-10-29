@@ -50,7 +50,6 @@ public:
     device_buffer& operator=(const device_buffer &other) = default;
     device_buffer& operator=(device_buffer &&other) = default;
 
-    virtual device& get_device() const noexcept = 0;
     virtual numerical_type get_type() const noexcept = 0;
     virtual std::size_t get_count() const noexcept = 0;
 

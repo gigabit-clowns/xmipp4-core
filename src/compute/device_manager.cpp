@@ -30,7 +30,7 @@
 
 #include <xmipp4/core/compute/device_backend.hpp>
 
-#include <tuple>
+#include <unordered_map>
 
 namespace xmipp4
 {

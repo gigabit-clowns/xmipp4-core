@@ -36,24 +36,14 @@ namespace xmipp4
 namespace compute
 {
 
-host_device::host_device(host_device_backend &backend)
-    : m_backend(backend)
-{
-}
-
-device_backend& host_device::get_backend() const noexcept
-{
-    return m_backend;
-}
-
 std::unique_ptr<queue> host_device::create_queue()
 {
-    return std::make_unique<host_queue>(*this);
+    return std::make_unique<host_queue>();
 }
 
 std::shared_ptr<queue> host_device::create_queue_shared()
 {
-    return std::make_shared<host_queue>(*this);
+    return std::make_shared<host_queue>();
 }
 
 std::unique_ptr<device_buffer> 

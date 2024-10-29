@@ -35,16 +35,6 @@ namespace xmipp4
 namespace compute
 {
 
-host_queue::host_queue(host_device &device)
-    : m_device(device)
-{
-}
-
-device& host_queue::get_device() const
-{
-    return m_device;
-}
-
 void host_queue::synchronize() const
 {
     // NO-OP

@@ -49,20 +49,7 @@ class host_queue final
     : public queue
 {
 public:
-    host_queue(host_device &device);
-    host_queue(const host_queue &other) = default;
-    host_queue(host_queue &&other) = default;
-    virtual ~host_queue() = default;
-
-    host_queue& operator=(const host_queue &other) = default;
-    host_queue& operator=(host_queue &&other) = default;
-
-    device& get_device() const final;
-
     void synchronize() const final;
-
-private:
-    std::reference_wrapper<host_device> m_device;
 
 }; 
 

@@ -21,40 +21,45 @@
  ***************************************************************************/
 
 /**
- * @file queue.hpp
+ * @file host_device_communicator_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::queue interface
- * @date 2024-10-22
+ * @brief Defines host_device_communicator_backend interface
+ * @date 2024-10-29
  * 
  */
+
+#include "../device_communicator_backend.hpp"
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class device;
+class device_communicator_manager;
 
 /**
- * @brief Abstract class describing a command queue.
+ * @brief Special implementation of the device_communicator_backend interface to be able 
+ * to obtain a wrapper of communications::communicator as device_communicator.
  * 
  */
-class queue
+class host_device_communicator_backend final
+    : public device_communicator_backend
 {
 public:
-    queue() = default;
-    queue(const queue &other) = default;
-    queue(queue &&other) = default;
-    virtual ~queue() = default;
+    const std::string& get_name() const noexcept final;
+    version get_version() const noexcept final;
+    bool is_available() const noexcept final;
 
-    queue& operator=(const queue &other) = default;
-    queue& operator=(queue &&other) = default;
+    bool supports_device(const device &dev) const noexcept final;
 
-    /**
-     * @brief Wait until the queue is flushed.
-     * 
-     */
-    virtual void synchronize() const = 0;
+    std::unique_ptr<device_communicator> 
+    create_communicator(device &dev,
+                        const std::shared_ptr<host_communicator> &comm) const final;
+    std::shared_ptr<device_communicator> 
+    create_communicator_shared(device &dev,
+                               const std::shared_ptr<host_communicator> &comm) const final;
+
+    static bool register_at(device_communicator_manager &manager);
 
 }; 
 

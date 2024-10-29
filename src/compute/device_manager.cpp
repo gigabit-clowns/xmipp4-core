@@ -37,18 +37,84 @@ namespace xmipp4
 namespace compute
 {
 
-bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
+class device_manager::implementation
 {
-    bool inserted = false;
-    if (backend)
+public:
+    bool register_backend(std::unique_ptr<device_backend> backend)
     {
-        auto key = backend->get_name();
-        std::tie(std::ignore, inserted) = m_registry.emplace(
-            std::move(key), std::move(backend)
-        );
+        bool inserted = false;
+        if (backend)
+        {
+            auto key = backend->get_name();
+            std::tie(std::ignore, inserted) = m_registry.emplace(
+                std::move(key), std::move(backend)
+            );
+        }
+
+        return inserted;
     }
 
-    return inserted;
+    void enumerate_backends(std::vector<std::string> &backends) const
+    {
+        backends.clear();
+        for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
+        {
+            backends.push_back(ite->first);
+        }
+    }
+
+    device_backend* get_backend(const std::string &name) const
+    {
+        const auto ite = m_registry.find(name);
+
+        device_backend *result = nullptr;
+        if (ite != m_registry.end())
+        {
+            result = ite->second.get();
+        }
+
+        return result;
+    }
+
+    void enumerate_devices(std::vector<device_index>& indices) const
+    {
+        indices.clear();
+        std::vector<std::size_t> ids;
+        for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
+        {
+            const auto &backend_name = ite->first;
+            const auto &backend = ite->second;
+
+            backend->enumerate_devices(ids);
+            for(const auto &id : ids)
+            {
+                indices.emplace_back(backend_name, id);
+            }
+        }
+    }
+
+private:
+    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;
+
+};
+
+
+
+
+
+device_manager::device_manager() = default;
+
+device_manager::device_manager(device_manager &&other) = default;
+
+device_manager::~device_manager() = default;
+
+device_manager& device_manager::operator=(device_manager &&other) = default;
+
+
+
+bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
+{
+    return m_implementation->register_backend(std::move(backend));
 }
 
 std::vector<std::string> device_manager::enumerate_backends() const
@@ -56,28 +122,16 @@ std::vector<std::string> device_manager::enumerate_backends() const
     std::vector<std::string> result;
     enumerate_backends(result);
     return result;
-}
+}    
 
 void device_manager::enumerate_backends(std::vector<std::string> &backends) const
 {
-    backends.clear();
-    for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
-    {
-        backends.push_back(ite->first);
-    }
+    m_implementation->enumerate_backends(backends);
 }
 
 device_backend* device_manager::get_backend(const std::string &name) const
 {
-    const auto ite = m_registry.find(name);
-
-    device_backend *result = nullptr;
-    if (ite != m_registry.end())
-    {
-        result = ite->second.get();
-    }
-
-    return result;
+    return m_implementation->get_backend(name);
 }
 
 std::vector<device_index> device_manager::enumerate_devices() const
@@ -87,24 +141,12 @@ std::vector<device_index> device_manager::enumerate_devices() const
     return result;
 }
 
-void device_manager::enumerate_devices(std::vector<device_index>& indices) const
+void device_manager::enumerate_devices(std::vector<device_index> &indices) const
 {
-    indices.clear();
-    std::vector<std::size_t> ids;
-    for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
-    {
-        const auto &backend_name = ite->first;
-        const auto &backend = ite->second;
-
-        backend->enumerate_devices(ids);
-        for(const auto &id : ids)
-        {
-            indices.emplace_back(backend_name, id);
-        }
-    }
+    m_implementation->enumerate_devices(indices);
 }
 
-bool device_manager::get_device_properties(const device_index& index, 
+bool device_manager::get_device_properties(const device_index &index, 
                                            device_properties &desc ) const
 {
     auto *backend = get_backend(index.get_backend_name());

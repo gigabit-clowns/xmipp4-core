@@ -30,12 +30,11 @@
 
 #include "device_index.hpp"
 #include "device_properties.hpp"
-#include "device_backend.hpp"
 #include "../interface_manager.hpp"
+#include "../memory/pimpl.hpp"
 
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 namespace xmipp4 
 {
@@ -43,18 +42,19 @@ namespace compute
 {
 
 class device;
+class device_backend;
 
 class device_manager
     : public interface_manager
 {
 public:
-    device_manager() = default;
-    device_manager(const device_manager &other) = default;
-    device_manager(device_manager &&other) = default;
-    virtual ~device_manager() = default;
+    device_manager();
+    device_manager(const device_manager &other) = delete;
+    device_manager(device_manager &&other);
+    virtual ~device_manager();
 
-    device_manager& operator=(const device_manager &other) = default;
-    device_manager& operator=(device_manager &&other) = default;
+    device_manager& operator=(const device_manager &other) = delete;
+    device_manager& operator=(device_manager &&other);
 
     bool register_backend(std::unique_ptr<device_backend> backend);
 
@@ -74,7 +74,9 @@ public:
     create_device_shared(const device_index &index) const;
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
+
 
 }; 
 

@@ -65,7 +65,7 @@ public:
 
         for (const auto &backend : m_registry)
         {
-            backends.emplace_back(backend.second->get_name());
+            backends.emplace_back(backend.first);
         }
     }
 

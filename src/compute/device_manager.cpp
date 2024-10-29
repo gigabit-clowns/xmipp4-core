@@ -57,9 +57,11 @@ public:
     void enumerate_backends(std::vector<std::string> &backends) const
     {
         backends.clear();
-        for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
+        backends.reserve(m_registry.size());
+
+        for(const auto &backend : m_registry)
         {
-            backends.push_back(ite->first);
+            backends.push_back(backend.first);
         }
     }
 
@@ -80,15 +82,12 @@ public:
     {
         indices.clear();
         std::vector<std::size_t> ids;
-        for(auto ite = m_registry.cbegin(); ite != m_registry.cend(); ++ite)
+        for(const auto &backend : m_registry)
         {
-            const auto &backend_name = ite->first;
-            const auto &backend = ite->second;
-
-            backend->enumerate_devices(ids);
+            backend.second->enumerate_devices(ids);
             for(const auto &id : ids)
             {
-                indices.emplace_back(backend_name, id);
+                indices.emplace_back(backend.first, id);
             }
         }
     }

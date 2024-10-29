@@ -58,6 +58,17 @@ public:
         return inserted;
     }
 
+    void enumerate_backends(std::vector<std::string> &backends) const
+    {
+        backends.clear();
+        backends.reserve(m_registry.size());
+
+        for (const auto &backend : m_registry)
+        {
+            backends.emplace_back(backend.second->get_name());
+        }
+    }
+
     host_communicator_backend* get_backend(const std::string &name) const
     {
         const auto ite = m_registry.find(name);
@@ -111,6 +122,11 @@ host_communicator_manager::operator=(host_communicator_manager&& other) noexcept
 bool host_communicator_manager::register_backend(std::unique_ptr<host_communicator_backend> backend)
 {
     return m_implementation->register_backend(std::move(backend));
+}
+
+void host_communicator_manager::enumerate_backends(std::vector<std::string> &backends) const
+{
+    m_implementation->enumerate_backends(backends);
 }
 
 host_communicator_backend* 

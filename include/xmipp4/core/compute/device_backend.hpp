@@ -29,7 +29,7 @@
  */
 
 #include "device_properties.hpp"
-#include "../version.hpp"
+#include "../backend.hpp"
 
 #include <memory>
 #include <vector>
@@ -42,6 +42,7 @@ namespace compute
 class device;
 
 class device_backend
+    : public backend
 {
 public:
     device_backend() = default;
@@ -51,12 +52,6 @@ public:
 
     device_backend& operator=(const device_backend &other) = default;
     device_backend& operator=(device_backend &&other) = default;
-
-    virtual const std::string& get_name() const noexcept = 0;
-
-    virtual version get_version() const noexcept = 0;
-
-    virtual bool is_available() const noexcept = 0;
 
     virtual void enumerate_devices(std::vector<std::size_t> &ids) const = 0;
     virtual bool get_device_properties(std::size_t id, device_properties &desc) const = 0;

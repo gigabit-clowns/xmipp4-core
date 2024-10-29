@@ -29,6 +29,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <memory>
 
 #include "host_communicator_backend.hpp"
@@ -73,6 +74,15 @@ public:
      */
     XMIPP4_CORE_API 
     bool register_backend(std::unique_ptr<host_communicator_backend> backend);
+
+    /**
+     * @brief Enumerate all available backends.
+     * 
+     * @param backends Output list with the names of the backends.
+     * @note The list is cleared before appending the backend names.
+     */
+    void enumerate_backends(std::vector<std::string> &backends) const;
+
 
     /**
      * @brief Find a backend by its name.

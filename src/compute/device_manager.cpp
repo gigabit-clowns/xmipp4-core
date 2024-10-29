@@ -117,13 +117,6 @@ bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
     return m_implementation->register_backend(std::move(backend));
 }
 
-std::vector<std::string> device_manager::enumerate_backends() const
-{
-    std::vector<std::string> result;
-    enumerate_backends(result);
-    return result;
-}    
-
 void device_manager::enumerate_backends(std::vector<std::string> &backends) const
 {
     m_implementation->enumerate_backends(backends);
@@ -132,13 +125,6 @@ void device_manager::enumerate_backends(std::vector<std::string> &backends) cons
 device_backend* device_manager::get_backend(const std::string &name) const
 {
     return m_implementation->get_backend(name);
-}
-
-std::vector<device_index> device_manager::enumerate_devices() const
-{
-    std::vector<device_index> result;
-    enumerate_devices(result);
-    return result;
 }
 
 void device_manager::enumerate_devices(std::vector<device_index> &indices) const

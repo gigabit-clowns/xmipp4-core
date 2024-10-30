@@ -39,11 +39,16 @@ namespace xmipp4
 namespace compute
 {
 
-class device;
 class device_buffer;
-class device_communicator_backend;
 class queue;
 
+
+
+/**
+ * @brief Abstract class to represent interprocess and inter-device
+ * communications.
+ * 
+ */
 class device_communicator
 {
 public:
@@ -108,7 +113,7 @@ public:
      * @param send_buffer The buffer to be sent.
      * @param queue Queue where the command is enqueued.
      * 
-     * @note The destination rank should be calling receive().
+     * @note The destination rank should be calling receive() or send_receive().
      * 
      */
     virtual void send(int destination_rank, 
@@ -121,11 +126,35 @@ public:
      * @param buffer The buffer where the received message will be written.
      * @param queue Queue where the command is enqueued.
      * 
-     * @note The source rank should be calling send().
+     * @note The source rank should be calling send() or send_receive().
      * 
      */
     virtual void receive(int source_rank, 
                          device_buffer &receive_buffer, queue &queue) = 0;
+
+    /**
+     * @brief Send and receive a message.
+     * 
+     * Simultaneously sends and receives a message.
+     * 
+     * @param destination_rank Rank of the receiver.
+     * @param send_buffer The buffer to be sent.
+     * @param source_rank Rank of the sender.
+     * @param receive_buffer The buffer where the received message 
+     * will be written.
+     * @param queue Queue where the command is enqueued.
+     * 
+     * @note The source rank should be calling send() or send_receive()
+     * @note The destination rank should be calling receive() or send_receive()
+     * @see send
+     * @see receive
+     *  
+     */
+    virtual std::size_t send_receive(int destination_rank, 
+                                     const device_buffer &send_buffer,
+                                     int source_rank, 
+                                     device_buffer &receive_buffer,
+                                     queue &queue ) = 0;
 
     /**
      * @brief Broadcasts a message to all peers.

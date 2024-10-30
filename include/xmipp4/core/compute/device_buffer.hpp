@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "numerical_type.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
 {
@@ -42,7 +43,7 @@ namespace compute
  * allocation.
  * 
  */
-class device_buffer
+class XMIPP4_CORE_API device_buffer
 {
 public:
     device_buffer() = default;

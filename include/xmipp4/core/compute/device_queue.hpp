@@ -28,6 +28,8 @@
  * 
  */
 
+#include "../platform/dynamic_shared_object.h"
+
 namespace xmipp4 
 {
 namespace compute
@@ -37,7 +39,7 @@ namespace compute
  * @brief Abstract class describing a command device_queue.
  * 
  */
-class device_queue
+class XMIPP4_CORE_API device_queue
 {
 public:
     device_queue() = default;

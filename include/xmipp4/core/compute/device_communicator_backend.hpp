@@ -30,6 +30,7 @@
 
 
 #include "../backend.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 
@@ -54,7 +55,7 @@ class device_communicator;
  * @brief Abstract class that represents a device communicator.
  * 
  */
-class device_communicator_backend
+class XMIPP4_CORE_API device_communicator_backend
     : public backend
 {
 public:

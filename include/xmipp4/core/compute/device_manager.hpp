@@ -32,6 +32,7 @@
 #include "device_properties.hpp"
 #include "../interface_manager.hpp"
 #include "../memory/pimpl.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <vector>
@@ -54,13 +55,13 @@ class device_manager
     : public interface_manager
 {
 public:
-    device_manager();
+    XMIPP4_CORE_API device_manager();
     device_manager(const device_manager &other) = delete;
-    device_manager(device_manager &&other);
-    virtual ~device_manager();
+    XMIPP4_CORE_API device_manager(device_manager &&other);
+    XMIPP4_CORE_API virtual ~device_manager();
 
     device_manager& operator=(const device_manager &other) = delete;
-    device_manager& operator=(device_manager &&other);
+    XMIPP4_CORE_API device_manager& operator=(device_manager &&other);
 
     /**
      * @brief Register a new device backend.
@@ -70,6 +71,7 @@ public:
      * @return false The backend with the same name already exists.
      * 
      */
+    XMIPP4_CORE_API
     bool register_backend(std::unique_ptr<device_backend> backend);
 
     /**
@@ -79,6 +81,7 @@ public:
      * @note The output list is cleared before populating it.
      * 
      */
+    XMIPP4_CORE_API
     void enumerate_backends(std::vector<std::string> &backends) const;
 
     /**
@@ -87,6 +90,7 @@ public:
      * @param name The name of the backend.
      * @return device_backend* The requested backend. nullptr if not found.
      */
+    XMIPP4_CORE_API
     device_backend* get_backend(const std::string &name) const;
 
     /**
@@ -96,6 +100,7 @@ public:
      * @note The output list is cleared before populating it.
      * 
      */
+    XMIPP4_CORE_API
     void enumerate_devices(std::vector<device_index> &indices) const;
 
     /**
@@ -106,6 +111,7 @@ public:
      * @return true Device exists and properties were written.
      * @return false Device does not exist and properties were not written.
      */
+    XMIPP4_CORE_API
     bool get_device_properties(const device_index &index, 
                                device_properties &desc ) const;
 
@@ -115,7 +121,7 @@ public:
      * @param index Index of the device.
      * @return std::unique_ptr<device> The device handle.
      */
-    std::unique_ptr<device> 
+    XMIPP4_CORE_API std::unique_ptr<device> 
     create_device(const device_index &index) const;
 
     /**
@@ -124,7 +130,7 @@ public:
      * @param index Index of the device.
      * @return std::shared_ptr<device> The device handle.
      */
-    std::shared_ptr<device> 
+    XMIPP4_CORE_API std::shared_ptr<device> 
     create_device_shared(const device_index &index) const;
 
 private:

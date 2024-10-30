@@ -28,8 +28,9 @@
  * 
  */
 
-#include "../reduction_operation.hpp"
 #include "numerical_type.hpp"
+#include "../reduction_operation.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <cstddef>
@@ -49,7 +50,7 @@ class queue;
  * communications.
  * 
  */
-class device_communicator
+class XMIPP4_CORE_API device_communicator
 {
 public:
     device_communicator() = default;

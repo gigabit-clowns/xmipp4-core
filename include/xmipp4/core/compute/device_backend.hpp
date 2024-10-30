@@ -30,6 +30,7 @@
 
 #include "device_properties.hpp"
 #include "../backend.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <vector>
@@ -48,7 +49,7 @@ class device;
  * obtaining handles to compute devices.
  * 
  */
-class device_backend
+class XMIPP4_CORE_API device_backend
     : public backend
 {
 public:

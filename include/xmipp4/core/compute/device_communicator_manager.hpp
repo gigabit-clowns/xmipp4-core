@@ -30,6 +30,7 @@
 
 #include "../interface_manager.hpp"
 #include "../memory/pimpl.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <vector>
@@ -61,13 +62,14 @@ class device_communicator_manager
 {
 public:
     using host_communicator = communication::communicator;
-
-    device_communicator_manager();
+    
+    XMIPP4_CORE_API device_communicator_manager();
     device_communicator_manager(const device_communicator_manager &other) = delete;
-    device_communicator_manager(device_communicator_manager &&other);
-    virtual ~device_communicator_manager();
+    XMIPP4_CORE_API device_communicator_manager(device_communicator_manager &&other);
+    XMIPP4_CORE_API virtual ~device_communicator_manager();
 
     device_communicator_manager& operator=(const device_communicator_manager &other) = delete;
+    XMIPP4_CORE_API
     device_communicator_manager& operator=(device_communicator_manager &&other);
 
     /**
@@ -78,6 +80,7 @@ public:
      * @return false The backend with the same name already exists.
      * 
      */
+    XMIPP4_CORE_API
     bool register_backend(std::unique_ptr<device_communicator_backend> backend);
 
     /**
@@ -87,6 +90,7 @@ public:
      * @note The output list is cleared before populating it.
      * 
      */
+    XMIPP4_CORE_API
     void enumerate_backends(std::vector<std::string> &backends) const;
 
     /**
@@ -96,6 +100,7 @@ public:
      * @return device_communicator_backend* The requested backend. 
      * nullptr if not found.
      */
+    XMIPP4_CORE_API
     device_communicator_backend* get_backend(const std::string &name) const;
 
     /**
@@ -105,6 +110,7 @@ public:
      * @return device_communicator_backend* A compatible backend.
      * nullptr if none is found.
      */
+    XMIPP4_CORE_API
     device_communicator_backend* find_compatible_backend(const device &dev) const;
 
     /**
@@ -119,6 +125,7 @@ public:
      * communicator.
      * 
      */
+    XMIPP4_CORE_API
     std::unique_ptr<device_communicator> 
     create_communicator(device &dev,
                         const std::shared_ptr<host_communicator> &comm) const;
@@ -135,6 +142,7 @@ public:
      * communicator.
      * 
      */
+    XMIPP4_CORE_API
     std::shared_ptr<device_communicator> 
     create_communicator_shared(device &dev,
                                const std::shared_ptr<host_communicator> &comm) const;

@@ -150,11 +150,11 @@ public:
      * @see receive
      *  
      */
-    virtual std::size_t send_receive(int destination_rank, 
-                                     const device_buffer &send_buffer,
-                                     int source_rank, 
-                                     device_buffer &receive_buffer,
-                                     queue &queue ) = 0;
+    virtual void send_receive(int destination_rank, 
+                              const device_buffer &send_buffer,
+                              int source_rank, 
+                              device_buffer &receive_buffer,
+                              queue &queue ) = 0;
 
     /**
      * @brief Broadcasts a message to all peers.

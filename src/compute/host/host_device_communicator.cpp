@@ -182,6 +182,29 @@ void host_device_communicator::receive(int source_rank,
     );
 }
 
+void host_device_communicator::send_receive(int destination_rank, 
+                                            const device_buffer &send_buf,
+                                            int source_rank,
+                                            device_buffer &recv_buf, 
+                                            queue& )
+{
+    const auto type = check_buffer_types(send_buf, recv_buf);
+    visit_homogeneous_buffers(
+        [this, destination_rank, source_rank] (auto send_buf, auto recv_buf)
+        {
+            m_communicator->send_receive(
+                destination_rank,
+                remove_complex(send_buf),
+                source_rank,
+                remove_complex(recv_buf)
+            );
+        },
+        type,
+        dynamic_cast<const host_buffer&>(send_buf),
+        dynamic_cast<host_buffer&>(recv_buf)
+    );
+}
+
 void host_device_communicator::broadcast(int root, device_buffer &buf, queue&)
 {
     visit_buffers(

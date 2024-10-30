@@ -35,8 +35,6 @@ namespace xmipp4
 namespace compute
 {
 
-class host_device_backend;
-
 /**
  * @brief Special implementation of the device interface to be able to use
  * the "host" as a device.

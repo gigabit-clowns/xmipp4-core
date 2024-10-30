@@ -43,7 +43,7 @@ class communicator;
 
 } // namespace communication
 
-class host_device;
+
 
 /**
  * @brief Special implementation of the device_communicator interface to be able 
@@ -81,6 +81,12 @@ public:
               const device_buffer &buf, queue &q) final;
 
     void receive(int source_rank, device_buffer &buf, queue &q) final;
+    
+    void send_receive(int destination_rank, 
+                      const device_buffer &send_buf,
+                      int source_rank,
+                      device_buffer &recv_buf, 
+                      queue &q ) final;
 
     void broadcast(int root, device_buffer &buf, queue &q) final;
 

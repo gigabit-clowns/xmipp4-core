@@ -69,6 +69,7 @@ public:
      * 
      * @note The destination rank should be calling receive(). This routine may 
      * block until the message is received by the destination process. 
+     * @note The destination rank should be calling receive() or send_receive()
      * 
      */
     virtual void send(int destination_rank, span<const T> buf) = 0;
@@ -79,9 +80,11 @@ public:
      * @param source_rank Rank of the sender.
      * @param buf The buffer where the received message will be written.
      * @return std::size_t Number of elements received.
+     * 
      * @note The size of the buffer argument indicates the maximum 
      * length of a message; the actual length of the received message
      * is determined by the return value.
+     * @note The source rank should be calling send() or send_receive()
      * 
      */
     virtual std::size_t receive(int source_rank, span<T> buf) = 0;
@@ -94,11 +97,14 @@ public:
      * @param source_rank Rank of the sender.
      * @param receive_buf The buffer where the received message will be written.
      * @return std::size_t std::size_t Number of elements received.
+     * 
      * @note The size of the reception buffer argument indicates the maximum 
      * length of a message; the actual length of the received message
      * is determined by the return value.
-     * @note The destination rank should be calling receive(). This routine may 
-     * block until the message is received by the destination process. 
+     * @note This routine may block until the message is received by the 
+     * destination process. 
+     * @note The source rank should be calling send() or send_receive()
+     * @note The destination rank should be calling receive() or send_receive()
      * @see send
      * @see receive
      *  
@@ -113,6 +119,7 @@ public:
      * 
      * @param root The rank that sends the message.
      * @param buf The buffer to send or receive.
+     * 
      * @note All calling processes should call it with the same root.
      * 
      */
@@ -129,6 +136,7 @@ public:
      * @param root The rank responsible of scattering the message.
      * @param send_buf The buffer to be sent. Ignored for all non-root ranks.
      * @param recv_buf The buffer where the received data will be written.
+     * 
      * @note All ranks of the communicator need to call this method with the
      * same root.
      * 
@@ -146,6 +154,7 @@ public:
      * @param send_buf The buffer to be sent.
      * @param recv_buf The buffer where the received message will be written.
      * Ignored for all non-root ranks.
+     * 
      * @note All ranks of the communicator need to call this method with the
      * same root.
      * 
@@ -161,6 +170,7 @@ public:
      * 
      * @param send_buf The buffer to be sent.
      * @param recv_buf The buffer where the received message is written.
+     * 
      * @note All ranks of the communicator need to call this method.
      * @see gather
      * 
@@ -177,6 +187,7 @@ public:
      * @param send_buf The buffer to be sent.
      * @param recv_buf The buffer where the messages will be combined.
      * Ignored for all non-root ranks.
+     * 
      * @note All ranks of the communicator need to call this method. send_buf 
      * may be equal to recv_buf, in which case the operation
      * is performed in-place.
@@ -193,6 +204,7 @@ public:
      * @param op The reduction operation to be performed.
      * @param send_buf The buffer to be sent.
      * @param recv_buf The buffer where the messages will be combined.
+     * 
      * @note All ranks of the communicator need to call this method. send_buf 
      * may be equal to recv_buf, in which case the operation is performed 
      * in-place.
@@ -211,6 +223,7 @@ public:
      * 
      * @param send_buf The buffer to be sent.
      * @param recv_buf The buffer where the messages will be combined.
+     * 
      * @note All ranks of the communicator need to call this method.
      * @see scatter
      * @see gather

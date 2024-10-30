@@ -48,6 +48,8 @@ namespace compute
 class device;
 class device_communicator;
 
+
+
 /**
  * @brief Abstract class that represents a device communicator.
  * 
@@ -66,11 +68,43 @@ public:
     device_communicator_backend& operator=(const device_communicator_backend &other) = default;
     device_communicator_backend& operator=(device_communicator_backend &&other) = default;
 
+    /**
+     * @brief Check if the provided class can be used with this backend.
+     * 
+     * @param dev The device to be checked.
+     * @return true The device is compatible with this buffer.
+     * @return false The device is not compatible with this buffer.
+     */
     virtual bool supports_device(const device &dev) const noexcept = 0;
 
+    /**
+     * @brief Create a communicator for a device.
+     * 
+     * @param dev The device that will be used in communications.
+     * @param comm Host communicator that may be used for supporting
+     * device communications. It may get copied.
+     * @return std::unique_ptr<device_communicator> The newly created device
+     * communicator.
+     * @note This method should be called from all ranks of the provided
+     * communicator.
+     * 
+     */
     virtual std::unique_ptr<device_communicator> 
     create_communicator(device &dev,
                         const std::shared_ptr<host_communicator> &comm) const = 0;
+
+    /**
+     * @brief Create a communicator for a device.
+     * 
+     * @param dev The device that will be used in communications.
+     * @param comm Host communicator that may be used for supporting
+     * device communications. It may get copied.
+     * @return std::shared_ptr<device_communicator> The newly created device
+     * communicator.
+     * @note This method should be called from all ranks of the provided
+     * communicator.
+     * 
+     */
     virtual std::shared_ptr<device_communicator> 
     create_communicator_shared(device &dev,
                                const std::shared_ptr<host_communicator> &comm) const = 0;

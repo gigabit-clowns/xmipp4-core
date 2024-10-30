@@ -40,6 +40,15 @@ namespace compute
 class device_queue;
 class device_buffer;
 
+
+
+/**
+ * @brief Abstract representation of a device handle.
+ * 
+ * This class enables basic interaction functionalities with
+ * a compute device.
+ * 
+ */
 class device
 {
 public:
@@ -51,11 +60,37 @@ public:
     device& operator=(const device &other) = default;
     device& operator=(device &&other) = default;
 
+    /**
+     * @brief Create a command queue for this device.
+     * 
+     * @return std::unique_ptr<device_queue> The queue.
+     */
     virtual std::unique_ptr<device_queue> create_queue() = 0;
+
+    /**
+     * @brief Create a command queue for this device.
+     * 
+     * @return std::shared_ptr<device_queue> The queue.
+     */
     virtual std::shared_ptr<device_queue> create_queue_shared() = 0;
 
+    /**
+     * @brief Allocate a buffer in this device.
+     * 
+     * @param type Numerical type of the buffer.
+     * @param count Number of elements in the buffer.
+     * @return std::unique_ptr<device_buffer> The buffer.
+     */
     virtual std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type, std::size_t count) = 0;
+
+    /**
+     * @brief Allocate a buffer in this device.
+     * 
+     * @param type Numerical type of the buffer.
+     * @param count Number of elements in the buffer.
+     * @return std::shared_ptr<device_buffer> The buffer.
+     */
     virtual std::shared_ptr<device_buffer> 
     create_buffer_shared(numerical_type type, std::size_t count) = 0;
 

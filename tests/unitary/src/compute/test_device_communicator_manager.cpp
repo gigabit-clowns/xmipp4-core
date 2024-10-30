@@ -32,6 +32,9 @@
 
 #include <xmipp4/core/compute/device_communicator_backend.hpp>
 #include <xmipp4/core/compute/device.hpp>
+#include <xmipp4/core/compute/device_buffer.hpp>
+#include <xmipp4/core/compute/device_queue.hpp>
+#include <xmipp4/core/compute/device_communicator.hpp>
 #include <xmipp4/core/version.hpp>
 
 #include <algorithm>

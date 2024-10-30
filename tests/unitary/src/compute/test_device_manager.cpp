@@ -25,13 +25,13 @@
  * @date 2024-10-29
  */
 
-
-#include <catch2/catch_test_macros.hpp>
-
 #include <xmipp4/core/compute/device_manager.hpp>
 
+#include <xmipp4/core/compute/device.hpp>
 #include <xmipp4/core/compute/device_backend.hpp>
 #include <xmipp4/core/version.hpp>
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::compute;

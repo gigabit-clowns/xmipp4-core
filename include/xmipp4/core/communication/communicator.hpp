@@ -277,7 +277,7 @@ public:
  * communications.
  * 
  */
-class communicator
+class XMIPP4_CORE_API communicator
     : public multitype_communications_interface<memory::byte,
                                                 char,
                                                 signed char,

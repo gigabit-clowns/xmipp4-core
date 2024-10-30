@@ -102,24 +102,32 @@ public:
     device_communicator_backend* find_compatible_backend(const device &dev) const;
 
     /**
-     * @brief Create a suitable communicator for the provided device.
+     * @brief Create a communicator for a device.
      * 
-     * @param dev The device.
-     * @param comm A host communicator used as a support.
-     * @return std::unique_ptr<device_communicator> The communicator
-     * associated to the device.
+     * @param dev The device that will be used in communications.
+     * @param comm Host communicator that may be used for supporting
+     * device communications. It may get copied.
+     * @return std::unique_ptr<device_communicator> The newly created device
+     * communicator.
+     * @note This method should be called from all ranks of the provided
+     * communicator.
+     * 
      */
     std::unique_ptr<device_communicator> 
     create_communicator(device &dev,
                         const std::shared_ptr<host_communicator> &comm) const;
 
     /**
-     * @brief Create a suitable communicator for the provided device.
+     * @brief Create a communicator for a device.
      * 
-     * @param dev The device.
-     * @param comm A host communicator used as a support.
-     * @return std::unique_ptr<device_communicator> The communicator
-     * associated to the device.
+     * @param dev The device that will be used in communications.
+     * @param comm Host communicator that may be used for supporting
+     * device communications. It may get copied.
+     * @return std::unique_ptr<device_communicator> The newly created device
+     * communicator.
+     * @note This method should be called from all ranks of the provided
+     * communicator.
+     * 
      */
     std::shared_ptr<device_communicator> 
     create_communicator_shared(device &dev,

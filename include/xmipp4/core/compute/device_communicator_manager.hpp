@@ -129,7 +129,7 @@ public:
      * @param dev The device that will be used in communications.
      * @param comm Host communicator that may be used for supporting
      * device communications. It may get copied.
-     * @return std::unique_ptr<device_communicator> The newly created device
+     * @return std::shared_ptr<device_communicator> The newly created device
      * communicator.
      * @note This method should be called from all ranks of the provided
      * communicator.

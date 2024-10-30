@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,37 +19,26 @@
  ***************************************************************************/
 
 /**
- * @file host_queue.hpp
+ * @file host_device_queue.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_queue interface
+ * @brief Implementation of host_device_queue.hpp
  * @date 2024-10-29
  * 
  */
 
-#include "../queue.hpp"
+#include <xmipp4/core/compute/host/host_device_queue.hpp>
 
-#include <functional>
+#include <xmipp4/core/compute/host/host_device.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-class device;
-class host_device;
-
-/**
- * @brief Special implementation of the queue interface to be able to send
- * commands to the host.
- * 
- */
-class host_queue final
-    : public queue
+void host_device_queue::synchronize() const
 {
-public:
-    void synchronize() const final;
+    // NO-OP
+}
 
-}; 
-
-} // namespace compute
+} // namespace system
 } // namespace xmipp4

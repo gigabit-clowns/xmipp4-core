@@ -31,21 +31,21 @@
 #include "default_host_buffer.hpp"
 
 #include <xmipp4/core/compute/host/host_device_backend.hpp>
-#include <xmipp4/core/compute/host/host_queue.hpp>
+#include <xmipp4/core/compute/host/host_device_queue.hpp>
 
 namespace xmipp4
 {
 namespace compute
 {
 
-std::unique_ptr<queue> host_device::create_queue()
+std::unique_ptr<device_queue> host_device::create_queue()
 {
-    return std::make_unique<host_queue>();
+    return std::make_unique<host_device_queue>();
 }
 
-std::shared_ptr<queue> host_device::create_queue_shared()
+std::shared_ptr<device_queue> host_device::create_queue_shared()
 {
-    return std::make_shared<host_queue>();
+    return std::make_shared<host_device_queue>();
 }
 
 std::unique_ptr<device_buffer> 

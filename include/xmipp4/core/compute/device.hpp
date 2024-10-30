@@ -37,7 +37,7 @@ namespace xmipp4
 namespace compute
 {
 
-class queue;
+class device_queue;
 class device_buffer;
 
 class device
@@ -51,8 +51,8 @@ public:
     device& operator=(const device &other) = default;
     device& operator=(device &&other) = default;
 
-    virtual std::unique_ptr<queue> create_queue() = 0;
-    virtual std::shared_ptr<queue> create_queue_shared() = 0;
+    virtual std::unique_ptr<device_queue> create_queue() = 0;
+    virtual std::shared_ptr<device_queue> create_queue_shared() = 0;
 
     virtual std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type, std::size_t count) = 0;

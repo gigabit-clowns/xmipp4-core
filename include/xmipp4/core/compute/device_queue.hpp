@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,26 +21,40 @@
  ***************************************************************************/
 
 /**
- * @file host_queue.cpp
+ * @file device_queue.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_queue.hpp
- * @date 2024-10-29
+ * @brief Defines the compute::device_queue interface
+ * @date 2024-10-22
  * 
  */
 
-#include <xmipp4/core/compute/host/host_queue.hpp>
-
-#include <xmipp4/core/compute/host/host_device.hpp>
-
-namespace xmipp4
+namespace xmipp4 
 {
 namespace compute
 {
 
-void host_queue::synchronize() const
+/**
+ * @brief Abstract class describing a command device_queue.
+ * 
+ */
+class device_queue
 {
-    // NO-OP
-}
+public:
+    device_queue() = default;
+    device_queue(const device_queue &other) = default;
+    device_queue(device_queue &&other) = default;
+    virtual ~device_queue() = default;
 
-} // namespace system
+    device_queue& operator=(const device_queue &other) = default;
+    device_queue& operator=(device_queue &&other) = default;
+
+    /**
+     * @brief Wait until the device_queue is flushed.
+     * 
+     */
+    virtual void synchronize() const = 0;
+
+}; 
+
+} // namespace compute
 } // namespace xmipp4

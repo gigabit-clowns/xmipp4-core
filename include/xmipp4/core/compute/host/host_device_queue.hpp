@@ -21,38 +21,35 @@
  ***************************************************************************/
 
 /**
- * @file queue.hpp
+ * @file host_device_queue.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::queue interface
- * @date 2024-10-22
+ * @brief Defines host_device_queue interface
+ * @date 2024-10-29
  * 
  */
+
+#include "../device_queue.hpp"
+
+#include <functional>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
+class device;
+class host_device;
+
 /**
- * @brief Abstract class describing a command queue.
+ * @brief Special implementation of the device_queue interface to be able to send
+ * commands to the host.
  * 
  */
-class queue
+class host_device_queue final
+    : public device_queue
 {
 public:
-    queue() = default;
-    queue(const queue &other) = default;
-    queue(queue &&other) = default;
-    virtual ~queue() = default;
-
-    queue& operator=(const queue &other) = default;
-    queue& operator=(queue &&other) = default;
-
-    /**
-     * @brief Wait until the queue is flushed.
-     * 
-     */
-    virtual void synchronize() const = 0;
+    void synchronize() const final;
 
 }; 
 

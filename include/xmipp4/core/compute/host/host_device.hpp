@@ -48,8 +48,8 @@ class host_device final
     : public device
 {
 public:
-    std::unique_ptr<queue> create_queue() final;
-    std::shared_ptr<queue> create_queue_shared() final;
+    std::unique_ptr<device_queue> create_queue() final;
+    std::shared_ptr<device_queue> create_queue_shared() final;
 
     std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type, std::size_t count) final;

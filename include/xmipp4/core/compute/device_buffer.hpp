@@ -37,6 +37,11 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Abstract class defining an in-device memory
+ * allocation.
+ * 
+ */
 class device_buffer
 {
 public:

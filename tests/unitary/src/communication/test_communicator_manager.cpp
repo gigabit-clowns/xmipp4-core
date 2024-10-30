@@ -74,7 +74,7 @@ private:
 };
 
 
-TEST_CASE( "register host communicator backend", "[communicator_manager]" ) 
+TEST_CASE( "register communicator backend", "[communicator_manager]" ) 
 {
     communicator_manager manager;
     manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
@@ -89,7 +89,7 @@ TEST_CASE( "register host communicator backend", "[communicator_manager]" )
     REQUIRE( backends[1] == "test2" );
 }
 
-TEST_CASE( "query host communicator backend", "[communicator_manager]" ) 
+TEST_CASE( "query communicator backend", "[communicator_manager]" ) 
 {
     communicator_manager manager;
     manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
@@ -107,7 +107,7 @@ TEST_CASE( "query host communicator backend", "[communicator_manager]" )
     REQUIRE( manager.get_backend("not-a-backend") == nullptr );
 }
 
-TEST_CASE( "register the same host communicator backend twice", "[communicator_manager]" ) 
+TEST_CASE( "register the same communicator backend twice", "[communicator_manager]" ) 
 {
     communicator_manager manager;
     manager.register_backend(std::make_unique<test_communicator_backend>("test"));

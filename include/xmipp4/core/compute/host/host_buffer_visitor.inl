@@ -64,31 +64,18 @@ inline span<const T> make_span(const host_buffer &buffer) noexcept
 namespace detail
 {
 
-template <typename F, typename T>
-struct binder
-{
-    F f; T t;
-    template <typename... Args>
-    auto operator()(Args&&... args) const
-        -> decltype(f(t, std::forward<Args>(args)...))
-    {
-        return f(t, std::forward<Args>(args)...);
-    }
-};
-
-template <typename F, typename T>
-binder<typename std::decay<F>::type,
-       typename std::decay<T>::type> bind_first(F&& f, T&& t)
-{
-    return { std::forward<F>(f), std::forward<T>(t) };
-}
-    
 template <typename T, typename Func, typename Buffer, typename... Buffers>
 inline 
 auto visit_buffers_helper(Func &&func, Buffer&& buffer, Buffers&&... rest)
 {
     return visit_buffers(
-        bind_first(std::forward<Func>(func), make_span<T>(buffer)),
+        [&func, &buffer] (auto&&... args) -> auto
+        {
+            return std::forward<Func>(func)(
+                make_span<T>(buffer),
+                std::forward<decltype(args)>(args)...
+            );
+        },
         std::forward<Buffers>(rest)...
     );
 }

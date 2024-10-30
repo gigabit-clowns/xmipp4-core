@@ -30,15 +30,10 @@
 
 #include "../device_queue.hpp"
 
-#include <functional>
-
 namespace xmipp4 
 {
 namespace compute
 {
-
-class device;
-class host_device;
 
 /**
  * @brief Special implementation of the device_queue interface to be able to send

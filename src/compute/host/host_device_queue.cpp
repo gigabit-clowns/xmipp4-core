@@ -28,8 +28,6 @@
 
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 
-#include <xmipp4/core/compute/host/host_device.hpp>
-
 namespace xmipp4
 {
 namespace compute

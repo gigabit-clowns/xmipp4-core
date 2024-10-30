@@ -30,7 +30,7 @@
 
 #include "../device_communicator.hpp"
 
-#include <functional>
+#include <memory>
 
 namespace xmipp4 
 {
@@ -44,7 +44,6 @@ class communicator;
 } // namespace communication
 
 class host_device;
-class host_device_communicator_backend;
 
 /**
  * @brief Special implementation of the device_communicator interface to be able 

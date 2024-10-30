@@ -30,8 +30,6 @@
 
 #include "../device.hpp"
 
-#include <functional>
-
 namespace xmipp4 
 {
 namespace compute

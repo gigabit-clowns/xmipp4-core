@@ -30,7 +30,6 @@
 
 #include "default_host_buffer.hpp"
 
-#include <xmipp4/core/compute/host/host_device_backend.hpp>
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 
 namespace xmipp4

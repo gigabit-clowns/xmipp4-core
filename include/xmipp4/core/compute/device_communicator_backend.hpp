@@ -48,6 +48,8 @@ namespace compute
 class device;
 class device_communicator;
 
+
+
 /**
  * @brief Abstract class that represents a device communicator.
  * 

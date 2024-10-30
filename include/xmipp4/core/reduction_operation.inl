@@ -34,8 +34,6 @@
 
 namespace xmipp4
 {
-namespace communication
-{
 
 XMIPP4_INLINE_CONSTEXPR 
 const char* to_string(reduction_operation op) noexcept
@@ -70,5 +68,4 @@ bool from_string(std::string_view str, reduction_operation& op) noexcept
     return result;
 }
 
-} // namespace communication
 } // namespace xmipp4

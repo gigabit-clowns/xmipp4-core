@@ -35,8 +35,6 @@
 
 namespace xmipp4
 {
-namespace communication
-{
 
 /**
  * @brief Operation to be performed when reducing a vector into a scalar
@@ -55,7 +53,6 @@ enum class reduction_operation
 XMIPP4_CONSTEXPR const char* to_string(reduction_operation op) noexcept;
 bool from_string(std::string_view str, reduction_operation& op) noexcept;
 
-} // namespace communication
 } // namespace xmipp4
 
 #include "reduction_operation.inl"

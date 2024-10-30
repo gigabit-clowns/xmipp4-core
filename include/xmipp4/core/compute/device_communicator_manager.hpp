@@ -50,6 +50,12 @@ class device;
 class device_communicator;
 class device_communicator_backend;
 
+
+
+/**
+ * @brief Centralize multiple device_communicator_backends.
+ * 
+ */
 class device_communicator_manager
     : public interface_manager
 {

@@ -38,15 +38,69 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Get a reference to the data of the buffer.
+ * 
+ * @tparam T Numerical type.
+ * @param buffer The buffer.
+ * @return span<T> span referencing the data of the provided buffer.
+ * @warning This method does not check if the numerical type of the
+ * buffer is compatible with T.
+ * 
+ */
 template <typename T>
 span<T> make_span(host_buffer &buffer) noexcept;
 
+/**
+ * @brief Get a reference to the data of the buffer.
+ * 
+ * @tparam T Numerical type.
+ * @param buffer The buffer.
+ * @return span<T> span referencing the data of the provided buffer.
+ * @warning This method does not check if the numerical type of the
+ * buffer is compatible with T.
+ * 
+ */
 template <typename T>
 span<const T> make_span(const host_buffer &buffer) noexcept;
 
+/**
+ * @brief Call a function with the typed data of the buffers.
+ * 
+ * Each of the provided buffers is converted into an appropiate
+ * span according to their type and constant qualification. Then,
+ * the provided function is invoked with these typed spans.
+ * 
+ * @tparam Func Function type.
+ * @tparam Buffers Possibly cv-qualified host_buffer-s.
+ * @param func The function to be evaluated with the typed buffers.
+ * Should accept as many span<T> as buffers passed to the function.
+ * @param buffers Buffers to be visited.
+ * @return auto Invoke result of func(make_span(buffers)...)
+ * 
+ */
 template <typename Func, typename... Buffers>
 auto visit_buffers(Func &&func, Buffers&&... buffers);
 
+/**
+ * @brief Call a function with homogeneously typed buffers.
+ * 
+ * Each of the provided buffers is converted into an appropiate
+ * span according to provided type and their constant qualification. 
+ * Then, the provided function is invoked with these typed spans.
+ * 
+ * @tparam Func Function type
+ * @tparam Buffers Possibly cv-qualified host_buffer-s.
+ * @param func The function to be evaluated with the typed buffers.
+ * @param type numerical_type that is assumed to be consistent across all
+ * buffers
+ * @param buffers Buffers to be visited.
+ * @return auto Invoke result of func(make_span(buffers)...)
+ * @warning This method does not check if the numerical type of each of the
+ * buffers is the same as the provided type. The caller should enforce this
+ * consistency before calling this function.
+ * 
+ */
 template <typename Func, typename... Buffers>
 auto visit_homogeneous_buffers(Func &&func, 
                                numerical_type type, 

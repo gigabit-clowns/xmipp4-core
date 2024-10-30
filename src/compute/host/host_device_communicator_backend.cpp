@@ -96,5 +96,5 @@ bool host_device_communicator_backend::register_at(device_communicator_manager &
     );
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

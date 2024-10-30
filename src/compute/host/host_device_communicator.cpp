@@ -347,5 +347,5 @@ void host_device_communicator::all_to_all(const device_buffer &send_buf,
     );
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

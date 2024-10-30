@@ -112,5 +112,5 @@ const void* default_host_buffer::get_data() const noexcept
     return m_data;
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

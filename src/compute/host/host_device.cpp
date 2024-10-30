@@ -61,5 +61,5 @@ host_device::create_buffer_shared(numerical_type type,
     return std::make_shared<default_host_buffer>(type, count);
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

@@ -107,5 +107,5 @@ bool host_device_backend::register_at(device_manager &manager)
     return manager.register_backend(std::make_unique<host_device_backend>());
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

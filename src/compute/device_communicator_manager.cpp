@@ -172,5 +172,5 @@ device_communicator_manager::create_communicator_shared(device &dev,
     return result;
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

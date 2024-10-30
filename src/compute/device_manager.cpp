@@ -173,5 +173,5 @@ device_manager::create_device_shared(const device_index& index) const
     return result;
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

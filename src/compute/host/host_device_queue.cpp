@@ -38,5 +38,5 @@ void host_device_queue::synchronize() const
     // NO-OP
 }
 
-} // namespace system
+} // namespace compute
 } // namespace xmipp4

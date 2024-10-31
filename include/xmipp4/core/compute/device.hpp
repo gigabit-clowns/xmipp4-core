@@ -30,7 +30,6 @@
 
 #include <memory>
 
-#include "numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -39,7 +38,7 @@ namespace compute
 {
 
 class device_queue;
-class device_buffer;
+class device_memory_pool;
 
 
 
@@ -76,24 +75,18 @@ public:
     virtual std::shared_ptr<device_queue> create_queue_shared() = 0;
 
     /**
-     * @brief Allocate a buffer in this device.
+     * @brief Create a memory pool for this device.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
-     * @return std::unique_ptr<device_buffer> The buffer.
+     * @return std::unique_ptr<device_memory_pool> 
      */
-    virtual std::unique_ptr<device_buffer> 
-    create_buffer(numerical_type type, std::size_t count) = 0;
+    virtual std::unique_ptr<device_memory_pool> create_memory_pool() = 0;
 
     /**
-     * @brief Allocate a buffer in this device.
+     * @brief Create a memory pool for this device.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
-     * @return std::shared_ptr<device_buffer> The buffer.
+     * @return std::shared_ptr<device_memory_pool> 
      */
-    virtual std::shared_ptr<device_buffer> 
-    create_buffer_shared(numerical_type type, std::size_t count) = 0;
+    virtual std::shared_ptr<device_memory_pool> create_memory_pool_shared() = 0;
 
 }; 
 

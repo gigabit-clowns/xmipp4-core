@@ -9,7 +9,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run tests with memory check (Linux)
+    - name: Show test with memory leaks (Linux)
       if: runner.os == 'Linux'
       working-directory: "${{ github.workspace }}/build/Testing/Temporary"
       shell: bash

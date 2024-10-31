@@ -247,16 +247,6 @@ class XMIPP4_CORE_API multitype_communications_interface
     : public communications_interface<Ts>...
 {
 public:
-    multitype_communications_interface() = default;
-    multitype_communications_interface(const multitype_communications_interface &other) = default;
-    multitype_communications_interface(multitype_communications_interface &&other) = default;
-    virtual ~multitype_communications_interface() = default;
-
-    multitype_communications_interface& 
-    operator=(const multitype_communications_interface &other) = default;
-    multitype_communications_interface& 
-    operator=(multitype_communications_interface &&other) = default;
-    
     using communications_interface<Ts>::send...;
     using communications_interface<Ts>::receive...;
     using communications_interface<Ts>::send_receive...;
@@ -277,7 +267,7 @@ public:
  * communications.
  * 
  */
-class communicator
+class XMIPP4_CORE_API communicator
     : public multitype_communications_interface<memory::byte,
                                                 char,
                                                 signed char,

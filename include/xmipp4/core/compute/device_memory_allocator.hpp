@@ -64,7 +64,7 @@ public:
      * 
      * @param type Numerical type of the buffer.
      * @param count Number of elements in the buffer.
-     * @param queue Queue where the allocation takes place.
+     * @param queue Queue where the allocation and deallocation takes place.
      * @return std::unique_ptr<device_buffer> The buffer.
      * 
      * @note Using the buffer in an queue other than the one
@@ -81,7 +81,7 @@ public:
      * 
      * @param type Numerical type of the buffer.
      * @param count Number of elements in the buffer.
-     * @param queue Queue where the allocation takes place.
+     * @param queue Queue where the allocation and deallocation takes place.
      * @return std::shared_ptr<device_buffer> The buffer.
 
      * @note Using the buffer in an queue other than the one

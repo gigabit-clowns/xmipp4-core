@@ -56,8 +56,10 @@ public:
     device_memory_allocator(device_memory_allocator &&other) = default;
     virtual ~device_memory_allocator() = default;
 
-    device_memory_allocator& operator=(const device_memory_allocator &other) = default;
-    device_memory_allocator& operator=(device_memory_allocator &&other) = default;
+    device_memory_allocator& 
+    operator=(const device_memory_allocator &other) = default;
+    device_memory_allocator& 
+    operator=(device_memory_allocator &&other) = default;
 
     /**
      * @brief Allocate a buffer in this device.

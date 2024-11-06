@@ -40,6 +40,7 @@ namespace compute
 class device_queue;
 class device_memory_allocator;
 class host_memory_allocator;
+class device_host_communicator;
 
 
 
@@ -100,12 +101,28 @@ public:
     create_host_memory_allocator() = 0;
 
     /**
-     * @brief Create a memory allocator for the host
+     * @brief Create a memory allocator for the host.
      * 
      * @return std::shared_ptr<host_memory_allocator> 
      */
     virtual std::shared_ptr<host_memory_allocator> 
     create_host_memory_allocator_shared() = 0;
+
+    /**
+     * @brief Create a device to host communicator.
+     * 
+     * @return std::unique_ptr<device_host_communicator> 
+     */
+    virtual std::unique_ptr<device_host_communicator> 
+    create_device_host_communicator() = 0;
+
+    /**
+     * @brief Create a device to host communicator.
+     * 
+     * @return std::shared_ptr<device_host_communicator> 
+     */
+    virtual std::shared_ptr<device_host_communicator> 
+    create_device_host_communicator_shared() = 0;
 
 }; 
 

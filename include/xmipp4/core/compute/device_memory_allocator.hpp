@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file device_memory_pool.hpp
+ * @file device_memory_allocator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_memory_pool interface
+ * @brief Defines the compute::device_memory_allocator interface
  * @date 2024-10-31
  * 
  */
@@ -39,44 +39,59 @@ namespace xmipp4
 namespace compute
 {
 
+class device_queue;
 class device_buffer;
 
 
 
 /**
- * @brief Abstract class defining an in-device memory pool.
+ * @brief Abstract class defining an in-device memory allocator.
  * 
  */
-class XMIPP4_CORE_API device_memory_pool
+class XMIPP4_CORE_API device_memory_allocator
 {
 public:
-    device_memory_pool() = default;
-    device_memory_pool(const device_memory_pool &other) = default;
-    device_memory_pool(device_memory_pool &&other) = default;
-    virtual ~device_memory_pool() = default;
+    device_memory_allocator() = default;
+    device_memory_allocator(const device_memory_allocator &other) = default;
+    device_memory_allocator(device_memory_allocator &&other) = default;
+    virtual ~device_memory_allocator() = default;
 
-    device_memory_pool& operator=(const device_memory_pool &other) = default;
-    device_memory_pool& operator=(device_memory_pool &&other) = default;
+    device_memory_allocator& operator=(const device_memory_allocator &other) = default;
+    device_memory_allocator& operator=(device_memory_allocator &&other) = default;
 
     /**
      * @brief Allocate a buffer in this device.
      * 
      * @param type Numerical type of the buffer.
      * @param count Number of elements in the buffer.
+     * @param queue Queue where the allocation takes place.
      * @return std::unique_ptr<device_buffer> The buffer.
+     * 
+     * @note Using the buffer in an queue other than the one
+     * used for allocation-deallocation requires explicit
+     * synchronization.
      */
     virtual std::unique_ptr<device_buffer> 
-    create_buffer(numerical_type type, std::size_t count) = 0;
+    create_buffer(numerical_type type, 
+                  std::size_t count, 
+                  device_queue &queue ) = 0;
 
     /**
      * @brief Allocate a buffer in this device.
      * 
      * @param type Numerical type of the buffer.
      * @param count Number of elements in the buffer.
+     * @param queue Queue where the allocation takes place.
      * @return std::shared_ptr<device_buffer> The buffer.
+
+     * @note Using the buffer in an queue other than the one
+     * used for allocation-deallocation requires explicit
+     * synchronization.
      */
     virtual std::shared_ptr<device_buffer> 
-    create_buffer_shared(numerical_type type, std::size_t count) = 0;
+    create_buffer_shared(numerical_type type, 
+                         std::size_t count, 
+                         device_queue &queue ) = 0;
 
 }; 
 

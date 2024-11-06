@@ -38,7 +38,7 @@ namespace compute
 {
 
 class device_queue;
-class device_memory_pool;
+class device_memory_allocator;
 
 
 
@@ -75,18 +75,20 @@ public:
     virtual std::shared_ptr<device_queue> create_queue_shared() = 0;
 
     /**
-     * @brief Create a memory pool for this device.
+     * @brief Create a memory allocator for this device.
      * 
-     * @return std::unique_ptr<device_memory_pool> 
+     * @return std::unique_ptr<device_memory_allocator> 
      */
-    virtual std::unique_ptr<device_memory_pool> create_memory_pool() = 0;
+    virtual std::unique_ptr<device_memory_allocator> 
+    create_memory_allocator() = 0;
 
     /**
-     * @brief Create a memory pool for this device.
+     * @brief Create a memory allocator for this device.
      * 
-     * @return std::shared_ptr<device_memory_pool> 
+     * @return std::shared_ptr<device_memory_allocator> 
      */
-    virtual std::shared_ptr<device_memory_pool> create_memory_pool_shared() = 0;
+    virtual std::shared_ptr<device_memory_allocator> 
+    create_memory_allocator_shared() = 0;
 
 }; 
 

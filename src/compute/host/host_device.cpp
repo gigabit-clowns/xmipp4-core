@@ -47,13 +47,24 @@ std::shared_ptr<device_queue> host_device::create_queue_shared()
 }
 
 std::unique_ptr<device_memory_allocator> 
-host_device::create_memory_allocator()
+host_device::create_device_memory_allocator()
 {
     return std::make_unique<host_device_memory_allocator>();
 }
 
 std::shared_ptr<device_memory_allocator> 
-host_device::create_memory_allocator_shared() 
+host_device::create_device_memory_allocator_shared() 
+{
+    return std::make_shared<host_device_memory_allocator>();
+}
+std::unique_ptr<host_memory_allocator> 
+host_device::create_host_memory_allocator()
+{
+    return std::make_unique<host_device_memory_allocator>();
+}
+
+std::shared_ptr<host_memory_allocator> 
+host_device::create_host_memory_allocator_shared() 
 {
     return std::make_shared<host_device_memory_allocator>();
 }

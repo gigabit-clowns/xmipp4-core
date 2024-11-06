@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file default_host_buffer.cpp
+ * @file host_device_buffer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of default_host_buffer.hpp
+ * @brief Implementation of host_device_buffer.hpp
  * @date 2024-10-29
  * 
  */
 
-#include "default_host_buffer.hpp"
+#include <xmipp4/core/compute/host/host_device_buffer.hpp>
 
 #include <stdexcept>
 #include <cstdlib>
@@ -36,14 +36,14 @@ namespace xmipp4
 namespace compute
 {
 
-default_host_buffer::default_host_buffer() noexcept
+host_device_buffer::host_device_buffer() noexcept
     : m_type(numerical_type::unknown)
     , m_count(0)
     , m_data(nullptr)
 {
 }
 
-default_host_buffer::default_host_buffer(numerical_type type, std::size_t count)
+host_device_buffer::host_device_buffer(numerical_type type, std::size_t count)
     : m_type(type)
     , m_count(count)
     , m_data(std::malloc(get_size(type)*count))
@@ -54,34 +54,34 @@ default_host_buffer::default_host_buffer(numerical_type type, std::size_t count)
     }
 }
 
-default_host_buffer::default_host_buffer(default_host_buffer &&other) noexcept
+host_device_buffer::host_device_buffer(host_device_buffer &&other) noexcept
     : m_type(other.m_type)
     , m_count(other.m_count)
     , m_data(nullptr)
 {
 }
 
-default_host_buffer::~default_host_buffer()
+host_device_buffer::~host_device_buffer()
 {
     reset();
 }
 
-default_host_buffer& 
-default_host_buffer::operator=(default_host_buffer &&other) noexcept
+host_device_buffer& 
+host_device_buffer::operator=(host_device_buffer &&other) noexcept
 {
     swap(other);
     other.reset();
     return *this;
 }
 
-void default_host_buffer::swap(default_host_buffer &other) noexcept
+void host_device_buffer::swap(host_device_buffer &other) noexcept
 {
     std::swap(m_type, other.m_type);
     std::swap(m_count, other.m_count);
     std::swap(m_data, other.m_data);
 }
 
-void default_host_buffer::reset() noexcept
+void host_device_buffer::reset() noexcept
 {
     if (m_data)
     {
@@ -92,22 +92,22 @@ void default_host_buffer::reset() noexcept
     }
 }
 
-numerical_type default_host_buffer::get_type() const noexcept
+numerical_type host_device_buffer::get_type() const noexcept
 {
     return m_type;
 }
 
-std::size_t default_host_buffer::get_count() const noexcept
+std::size_t host_device_buffer::get_count() const noexcept
 {
     return m_count;
 }
 
-void* default_host_buffer::get_data() noexcept
+void* host_device_buffer::get_data() noexcept
 {
     return m_data;
 }
 
-const void* default_host_buffer::get_data() const noexcept
+const void* host_device_buffer::get_data() const noexcept
 {
     return m_data;
 }

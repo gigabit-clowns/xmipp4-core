@@ -28,8 +28,7 @@
 
 #include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
 
-#include "default_host_buffer.hpp"
-
+#include <xmipp4/core/compute/host/host_device_buffer.hpp>
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 
 namespace xmipp4
@@ -43,7 +42,7 @@ host_device_memory_allocator::create_buffer(numerical_type type,
                                             device_queue &queue )
 {
     dynamic_cast<host_device_queue&>(queue); // Ensure valid queue
-    return std::make_unique<default_host_buffer>(type, count);
+    return std::make_unique<host_device_buffer>(type, count);
 }
 
 std::shared_ptr<device_buffer> 
@@ -52,7 +51,21 @@ host_device_memory_allocator::create_buffer_shared(numerical_type type,
                                                    device_queue &queue )
 {
     dynamic_cast<host_device_queue&>(queue); // Ensure valid queue
-    return std::make_shared<default_host_buffer>(type, count);
+    return std::make_shared<host_device_buffer>(type, count);
+}
+
+std::unique_ptr<host_buffer> 
+host_device_memory_allocator::create_buffer(numerical_type type, 
+                                            std::size_t count )
+{
+    return std::make_unique<host_device_buffer>(type, count);
+}
+
+std::shared_ptr<host_buffer> 
+host_device_memory_allocator::create_buffer_shared(numerical_type type, 
+                                                   std::size_t count )
+{
+    return std::make_shared<host_device_buffer>(type, count);
 }
 
 } // namespace compute

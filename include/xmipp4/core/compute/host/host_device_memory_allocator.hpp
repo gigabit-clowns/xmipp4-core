@@ -30,6 +30,7 @@
 
 
 #include "../device_memory_allocator.hpp"
+#include "../host_memory_allocator.hpp"
 
 
 namespace xmipp4 
@@ -39,6 +40,7 @@ namespace compute
 
 class host_device_memory_allocator
     : public device_memory_allocator
+    , public host_memory_allocator
 {
 public:
     host_device_memory_allocator() = default;
@@ -60,6 +62,13 @@ public:
     create_buffer_shared(numerical_type type, 
                          std::size_t count, 
                          device_queue &queue ) final;
+
+    std::unique_ptr<host_buffer> 
+    create_buffer(numerical_type type, std::size_t count ) final;
+
+    std::shared_ptr<host_buffer> 
+    create_buffer_shared(numerical_type type, 
+                         std::size_t count ) final;
 
 }; 
 

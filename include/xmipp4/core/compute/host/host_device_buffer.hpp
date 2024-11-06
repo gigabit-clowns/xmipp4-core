@@ -21,34 +21,48 @@
  ***************************************************************************/
 
 /**
- * @file host_buffer.hpp
+ * @file host_device_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_buffer interface
+ * @brief Defines the compute::host_device_buffer interface
  * @date 2024-10-29
  * 
  */
 
 #include "../device_buffer.hpp"
+#include "../host_buffer.hpp"
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class host_buffer
+class host_device_buffer final
     : public device_buffer
+    , public host_buffer
 {
 public:
-    host_buffer() = default;
-    host_buffer(const host_buffer &other) = default;
-    host_buffer(host_buffer &&other) = default;
-    virtual ~host_buffer() = default;
+    host_device_buffer() noexcept;
+    host_device_buffer(numerical_type type, std::size_t count);
+    host_device_buffer(const host_device_buffer &other) = delete;
+    host_device_buffer(host_device_buffer &&other) noexcept;
+    virtual ~host_device_buffer();
 
-    host_buffer& operator=(const host_buffer &other) = default;
-    host_buffer& operator=(host_buffer &&other) = default;
+    host_device_buffer& operator=(const host_device_buffer &other) = delete;
+    host_device_buffer& operator=(host_device_buffer &&other) noexcept;
 
-    virtual void* get_data() noexcept = 0;
-    virtual const void* get_data() const noexcept = 0;
+    void swap(host_device_buffer &other) noexcept;
+    void reset() noexcept;
+
+    numerical_type get_type() const noexcept final;
+    std::size_t get_count() const noexcept final;
+
+    void* get_data() noexcept final;
+    const void* get_data() const noexcept final;
+
+private:
+    numerical_type m_type;
+    std::size_t m_count;
+    void* m_data;
 
 }; 
 

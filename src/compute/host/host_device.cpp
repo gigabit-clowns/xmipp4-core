@@ -30,6 +30,7 @@
 
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 #include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
+#include <xmipp4/core/compute/host/host_device_host_communicator.hpp>
 
 namespace xmipp4
 {
@@ -67,6 +68,18 @@ std::shared_ptr<host_memory_allocator>
 host_device::create_host_memory_allocator_shared() 
 {
     return std::make_shared<host_device_memory_allocator>();
+}
+
+std::unique_ptr<device_host_communicator> 
+host_device::create_device_host_communicator()
+{
+    return std::make_unique<host_device_host_communicator>();
+}
+
+std::shared_ptr<device_host_communicator> 
+host_device::create_device_host_communicator_shared()
+{
+    return std::make_shared<host_device_host_communicator>();
 }
 
 } // namespace compute

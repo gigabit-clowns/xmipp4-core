@@ -56,6 +56,12 @@ public:
     create_host_memory_allocator() final;
     std::shared_ptr<host_memory_allocator> 
     create_host_memory_allocator_shared() final;
+
+    std::unique_ptr<device_host_communicator> 
+    create_device_host_communicator() final;
+    std::shared_ptr<device_host_communicator> 
+    create_device_host_communicator_shared() final;
+
 }; 
 
 } // namespace compute

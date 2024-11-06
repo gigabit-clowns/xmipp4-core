@@ -19,43 +19,40 @@
  ***************************************************************************/
 
 /**
- * @file host_device.cpp
+ * @file host_device_memory_allocator.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device.hpp
- * @date 2024-10-29
+ * @brief Implementation of host_device_memory_allocator.hpp
+ * @date 2024-11-06
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device.hpp>
+#include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
+
+#include "default_host_buffer.hpp"
 
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
-#include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
 
 namespace xmipp4
 {
 namespace compute
 {
 
-std::unique_ptr<device_queue> host_device::create_queue()
+std::unique_ptr<device_buffer> 
+host_device_memory_allocator::create_buffer(numerical_type type,
+                                            std::size_t count,
+                                            device_queue &queue )
 {
-    return std::make_unique<host_device_queue>();
+    dynamic_cast<host_device_queue&>(queue); // Ensure valid queue
+    return std::make_unique<default_host_buffer>(type, count);
 }
 
-std::shared_ptr<device_queue> host_device::create_queue_shared()
+std::shared_ptr<device_buffer> 
+host_device_memory_allocator::create_buffer_shared(numerical_type type,
+                                                   std::size_t count,
+                                                   device_queue &queue )
 {
-    return std::make_shared<host_device_queue>();
-}
-
-std::unique_ptr<device_memory_allocator> 
-host_device::create_memory_allocator()
-{
-    return std::make_unique<host_device_memory_allocator>();
-}
-
-std::shared_ptr<device_memory_allocator> 
-host_device::create_memory_allocator_shared() 
-{
-    return std::make_shared<host_device_memory_allocator>();
+    dynamic_cast<host_device_queue&>(queue); // Ensure valid queue
+    return std::make_shared<default_host_buffer>(type, count);
 }
 
 } // namespace compute

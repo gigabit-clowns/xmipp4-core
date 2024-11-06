@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,44 +21,47 @@
  ***************************************************************************/
 
 /**
- * @file host_device.cpp
+ * @file host_device_memory_allocator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device.hpp
- * @date 2024-10-29
+ * @brief Defines the compute::host_device_memory_allocator class
+ * @date 2024-11-06
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device.hpp>
 
-#include <xmipp4/core/compute/host/host_device_queue.hpp>
-#include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
+#include "../device_memory_allocator.hpp"
 
-namespace xmipp4
+
+namespace xmipp4 
 {
 namespace compute
 {
 
-std::unique_ptr<device_queue> host_device::create_queue()
+class host_device_memory_allocator
+    : public device_memory_allocator
 {
-    return std::make_unique<host_device_queue>();
-}
+public:
+    host_device_memory_allocator() = default;
+    host_device_memory_allocator(const host_device_memory_allocator &other) = default;
+    host_device_memory_allocator(host_device_memory_allocator &&other) = default;
+    virtual ~host_device_memory_allocator() = default;
 
-std::shared_ptr<device_queue> host_device::create_queue_shared()
-{
-    return std::make_shared<host_device_queue>();
-}
+    host_device_memory_allocator& 
+    operator=(const host_device_memory_allocator &other) = default;
+    host_device_memory_allocator& 
+    operator=(host_device_memory_allocator &&other) = default;
 
-std::unique_ptr<device_memory_allocator> 
-host_device::create_memory_allocator()
-{
-    return std::make_unique<host_device_memory_allocator>();
-}
+    std::unique_ptr<device_buffer> 
+    create_buffer(numerical_type type, 
+                  std::size_t count, 
+                  device_queue &queue ) final;
 
-std::shared_ptr<device_memory_allocator> 
-host_device::create_memory_allocator_shared() 
-{
-    return std::make_shared<host_device_memory_allocator>();
-}
+    std::shared_ptr<device_buffer> 
+    create_buffer_shared(numerical_type type, 
+                         std::size_t count, 
+                         device_queue &queue ) final;
+
+}; 
 
 } // namespace compute
 } // namespace xmipp4

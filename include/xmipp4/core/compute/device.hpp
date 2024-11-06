@@ -39,6 +39,7 @@ namespace compute
 
 class device_queue;
 class device_memory_allocator;
+class host_memory_allocator;
 
 
 
@@ -80,7 +81,7 @@ public:
      * @return std::unique_ptr<device_memory_allocator> 
      */
     virtual std::unique_ptr<device_memory_allocator> 
-    create_memory_allocator() = 0;
+    create_device_memory_allocator() = 0;
 
     /**
      * @brief Create a memory allocator for this device.
@@ -88,7 +89,23 @@ public:
      * @return std::shared_ptr<device_memory_allocator> 
      */
     virtual std::shared_ptr<device_memory_allocator> 
-    create_memory_allocator_shared() = 0;
+    create_device_memory_allocator_shared() = 0;
+
+    /**
+     * @brief Create a memory allocator for the host.
+     * 
+     * @return std::unique_ptr<host_memory_allocator> 
+     */
+    virtual std::unique_ptr<host_memory_allocator> 
+    create_host_memory_allocator() = 0;
+
+    /**
+     * @brief Create a memory allocator for the host
+     * 
+     * @return std::shared_ptr<host_memory_allocator> 
+     */
+    virtual std::shared_ptr<host_memory_allocator> 
+    create_host_memory_allocator_shared() = 0;
 
 }; 
 

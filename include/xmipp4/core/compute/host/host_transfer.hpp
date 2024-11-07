@@ -56,7 +56,7 @@ public:
                     device_queue &queue ) const final;
 
     void transfer(const device_buffer &src_buffer,
-                  host_buffer &dst_buffer, 
+                  const std::shared_ptr<host_buffer> &dst_buffer, 
                   device_queue &queue ) const final;
 
     std::shared_ptr<host_buffer> 

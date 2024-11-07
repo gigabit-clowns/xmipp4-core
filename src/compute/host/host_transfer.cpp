@@ -94,12 +94,17 @@ host_transfer::transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer,
 }
 
 void host_transfer::transfer(const device_buffer &src_buffer,
-                             host_buffer &dst_buffer, 
+                             const std::shared_ptr<host_buffer> &dst_buffer,
                              device_queue& ) const
 {
+    if (!dst_buffer)
+    {
+        throw std::invalid_argument("dst_buffer cannot be nullptr");
+    }
+
     copy_buffer(
         dynamic_cast<const host_device_buffer&>(src_buffer),
-        dynamic_cast<host_device_buffer&>(dst_buffer)
+        dynamic_cast<host_device_buffer&>(*dst_buffer)
     );
 }
 

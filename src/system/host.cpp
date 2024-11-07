@@ -50,7 +50,7 @@ std::string get_hostname()
         return std::string(hostname);
     #elif XMIPP4_WINDOWS
         char hostname[MAX_COMPUTERNAME_LENGTH + 1];
-        LPDWORD count = MAX_COMPUTERNAME_LENGTH + 1;
+        DWORD count = MAX_COMPUTERNAME_LENGTH + 1;
         gethostname(hostname, &count);
         return std::string(hostname, count);
     #else

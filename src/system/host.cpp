@@ -32,8 +32,8 @@
 #if XMIPP4_POSIX
     #include <unistd.h>
 #elif XMIPP4_WINDOWS
-    #include <windows.h>
-    #include <winbase.h>
+    #include <Windows.h>
+    #include <WinBase.h>
 #endif
 
 namespace xmipp4

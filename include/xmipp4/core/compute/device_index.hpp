@@ -50,11 +50,11 @@ public:
      * 
      * @tparam Str String type.
      * @param backend_name Name of the backend.
-     * @param device_id Unique ID of the device within the backend. 
-     * Defaults to 0.
+     * @param device_id Unique ID of the device within the backend.
+     * 
      */
     template <typename Str>
-    device_index(Str &&backend_name, std::size_t device_id = 0);
+    device_index(Str &&backend_name, std::size_t device_id);
 
     device_index() = default; 
     device_index(const device_index &other) = default; 

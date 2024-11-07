@@ -40,7 +40,8 @@ namespace compute
 class device_queue;
 class device_memory_allocator;
 class host_memory_allocator;
-class device_host_communicator;
+class device_to_host_transfer;
+class host_to_device_transfer;
 
 
 
@@ -109,20 +110,36 @@ public:
     create_host_memory_allocator_shared() = 0;
 
     /**
-     * @brief Create a device to host communicator.
+     * @brief Create a host to device transfer engine
      * 
-     * @return std::unique_ptr<device_host_communicator> 
+     * @return std::unique_ptr<host_to_device_transfer> 
      */
-    virtual std::unique_ptr<device_host_communicator> 
-    create_device_host_communicator() = 0;
+    virtual std::unique_ptr<host_to_device_transfer> 
+    create_host_to_device_transfer() = 0;
 
     /**
-     * @brief Create a device to host communicator.
+     * @brief Create a host to device transfer engine
      * 
-     * @return std::shared_ptr<device_host_communicator> 
+     * @return std::shared_ptr<host_to_device_transfer> 
      */
-    virtual std::shared_ptr<device_host_communicator> 
-    create_device_host_communicator_shared() = 0;
+    virtual std::shared_ptr<host_to_device_transfer> 
+    create_host_to_device_transfer_shared() = 0;
+
+    /**
+     * @brief Create a device to host transfer engine
+     * 
+     * @return std::unique_ptr<device_to_host_transfer> 
+     */
+    virtual std::unique_ptr<device_to_host_transfer> 
+    create_device_to_host_transfer() = 0;
+
+    /**
+     * @brief Create a device to host transfer engine
+     * 
+     * @return std::shared_ptr<device_to_host_transfer> 
+     */
+    virtual std::shared_ptr<device_to_host_transfer> 
+    create_device_to_host_transfer_shared() = 0;
 
 }; 
 

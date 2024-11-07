@@ -103,11 +103,12 @@ private:
 
 device_manager::device_manager() = default;
 
-device_manager::device_manager(device_manager &&other) = default;
+device_manager::device_manager(device_manager &&other) noexcept = default;
 
 device_manager::~device_manager() = default;
 
-device_manager& device_manager::operator=(device_manager &&other) = default;
+device_manager& 
+device_manager::operator=(device_manager &&other) noexcept = default;
 
 
 
@@ -134,7 +135,7 @@ void device_manager::enumerate_devices(std::vector<device_index> &indices) const
 bool device_manager::get_device_properties(const device_index &index, 
                                            device_properties &desc ) const
 {
-    auto *backend = get_backend(index.get_backend_name());
+    const auto *backend = get_backend(index.get_backend_name());
 
     bool result = backend != nullptr;
     if (result)

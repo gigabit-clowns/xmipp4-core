@@ -55,7 +55,7 @@ public:
                     device_memory_allocator &allocator,
                     device_queue &queue ) const final;
 
-    void transfer(const std::shared_ptr<const device_buffer> &src_buffer,
+    void transfer(const device_buffer &src_buffer,
                   host_buffer &dst_buffer, 
                   device_queue &queue ) const final;
 

@@ -66,6 +66,11 @@ void host_transfer::transfer(const std::shared_ptr<const host_buffer> &src_buffe
                              device_buffer &dst_buffer, 
                              device_queue& ) const
 {
+    if (!src_buffer)
+    {
+        throw std::invalid_argument("src_buffer cannot be nullptr");
+    }
+
     copy_buffer(
         dynamic_cast<const host_device_buffer&>(*src_buffer),
         dynamic_cast<host_device_buffer&>(dst_buffer)
@@ -88,12 +93,12 @@ host_transfer::transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer,
     return std::dynamic_pointer_cast<const device_buffer>(buffer); // Alias
 }
 
-void host_transfer::transfer(const std::shared_ptr<const device_buffer> &src_buffer, 
+void host_transfer::transfer(const device_buffer &src_buffer,
                              host_buffer &dst_buffer, 
                              device_queue& ) const
 {
     copy_buffer(
-        dynamic_cast<const host_device_buffer&>(*src_buffer),
+        dynamic_cast<const host_device_buffer&>(src_buffer),
         dynamic_cast<host_device_buffer&>(dst_buffer)
     );
 }

@@ -36,6 +36,8 @@
     #include <WinBase.h>
 #endif
 
+#include <array>
+
 namespace xmipp4
 {
 namespace system
@@ -43,20 +45,18 @@ namespace system
 
 std::string get_hostname()
 {
+    std::array<char, 512> hostname;
+
     #if XMIPP4_POSIX
-        char hostname[512];
-        int count = 512;
-        gethostname(hostname, count);
-        return std::string(hostname);
+        gethostname(hostname.data(), hostname.size());
     #elif XMIPP4_WINDOWS
-        char hostname[MAX_COMPUTERNAME_LENGTH + 1];
-        const int count = MAX_COMPUTERNAME_LENGTH + 1;
-        gethostname(hostname, count);
-        return std::string(hostname);
+        gethostname(hostname.data(), static_cast<int>(hostname.size()));
     #else
         #pragma message ("Cannot determine hostname for this platform")
         return "";
     #endif
+    
+    return std::string(hostname.data());
 }
 
 std::size_t get_total_system_memory()

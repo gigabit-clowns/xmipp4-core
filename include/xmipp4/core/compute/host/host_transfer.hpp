@@ -21,51 +21,56 @@
  ***************************************************************************/
 
 /**
- * @file host_device_host_communicator.hpp
+ * @file host_transfer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Implementation of device_host_communicator
  * @date 2024-11-06
  * 
  */
 
-#include "../device_host_communicator.hpp"
+#include "../device_to_host_transfer.hpp"
+#include "../host_to_device_transfer.hpp"
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class host_device_host_communicator final
-    : public device_host_communicator
+class host_transfer final
+    : public host_to_device_transfer
+    , public device_to_host_transfer
 {
 public:
-    void host_to_device(const host_buffer &src_buffer, 
-                        device_buffer &dst_buffer, 
-                        device_queue &queue ) const final;
+    void transfer(const std::shared_ptr<const host_buffer> &src_buffer,
+                  device_buffer &dst_buffer, 
+                  device_queue &queue ) const final;
 
     std::shared_ptr<device_buffer> 
-    host_to_device_nocopy(const std::shared_ptr<host_buffer> &buffer, 
-                          device_memory_allocator &allocator,
-                          device_queue &queue ) const final;
+    transfer_nocopy(const std::shared_ptr<host_buffer> &buffer, 
+                    device_memory_allocator &allocator,
+                    device_queue &queue ) const final;
 
     std::shared_ptr<const device_buffer> 
-    host_to_device_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
-                          device_memory_allocator &allocator,
-                          device_queue &queue ) const final;
+    transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
+                    device_memory_allocator &allocator,
+                    device_queue &queue ) const final;
 
-    void device_to_host(const device_buffer &src_buffer, 
-                        host_buffer &dst_buffer, 
-                        device_queue &queue ) const final;
+    void transfer(const std::shared_ptr<const device_buffer> &src_buffer,
+                  host_buffer &dst_buffer, 
+                  device_queue &queue ) const final;
 
     std::shared_ptr<host_buffer> 
-    device_to_host_nocopy(const std::shared_ptr<device_buffer> &buffer, 
-                          host_memory_allocator &allocator,
-                          device_queue &queue ) const final;
+    transfer_nocopy(const std::shared_ptr<device_buffer> &buffer, 
+                    host_memory_allocator &allocator,
+                    device_queue &queue ) const final;
 
     std::shared_ptr<const host_buffer> 
-    device_to_host_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
-                          host_memory_allocator &allocator,
-                          device_queue &queue ) const final;
+    transfer_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
+                    host_memory_allocator &allocator,
+                    device_queue &queue ) const final;
+
+    void wait() final;
+    void wait(device_queue &queue) final;
 
 }; 
 

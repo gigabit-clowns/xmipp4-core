@@ -19,14 +19,15 @@
  ***************************************************************************/
 
 /**
- * @file host_device_host_communicator.cpp
+ * @file host_transfer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device_host_communicator.hpp
+ * @brief Implementation of host_transfer.hpp
  * @date 2024-11-06
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device_host_communicator.hpp>
+#include <xmipp4/core/compute/host/host_transfer.hpp>
+
 #include <xmipp4/core/compute/host/host_device_buffer.hpp>
 #include <xmipp4/core/compute/numerical_type.hpp>
 
@@ -61,56 +62,66 @@ static void copy_buffer(const host_device_buffer &src_buffer,
 
 
 
-void host_device_host_communicator::host_to_device(const host_buffer &src_buffer, 
-                                                   device_buffer &dst_buffer, 
-                                                   device_queue& ) const
+void host_transfer::transfer(const std::shared_ptr<const host_buffer> &src_buffer, 
+                             device_buffer &dst_buffer, 
+                             device_queue& ) const
 {
     copy_buffer(
-        dynamic_cast<const host_device_buffer&>(src_buffer),
+        dynamic_cast<const host_device_buffer&>(*src_buffer),
         dynamic_cast<host_device_buffer&>(dst_buffer)
     );
 }
 
 std::shared_ptr<device_buffer> 
-host_device_host_communicator::host_to_device_nocopy(const std::shared_ptr<host_buffer> &buffer, 
-                                                     device_memory_allocator&,
-                                                     device_queue&) const 
+host_transfer::transfer_nocopy(const std::shared_ptr<host_buffer> &buffer, 
+                               device_memory_allocator&,
+                               device_queue&) const 
 {
     return std::dynamic_pointer_cast<device_buffer>(buffer); // Alias
 }
 
 std::shared_ptr<const device_buffer> 
-host_device_host_communicator::host_to_device_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
-                                                     device_memory_allocator&,
-                                                     device_queue& ) const
+host_transfer::transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
+                               device_memory_allocator&,
+                               device_queue& ) const
 {
     return std::dynamic_pointer_cast<const device_buffer>(buffer); // Alias
 }
 
-void host_device_host_communicator::device_to_host(const device_buffer &src_buffer, 
-                                                   host_buffer &dst_buffer, 
-                                                   device_queue& ) const
+void host_transfer::transfer(const std::shared_ptr<const device_buffer> &src_buffer, 
+                             host_buffer &dst_buffer, 
+                             device_queue& ) const
 {
     copy_buffer(
-        dynamic_cast<const host_device_buffer&>(src_buffer),
+        dynamic_cast<const host_device_buffer&>(*src_buffer),
         dynamic_cast<host_device_buffer&>(dst_buffer)
     );
 }
 
 std::shared_ptr<host_buffer> 
-host_device_host_communicator::device_to_host_nocopy(const std::shared_ptr<device_buffer> &buffer, 
-                                                     host_memory_allocator&,
-                                                     device_queue& ) const
+host_transfer::transfer_nocopy(const std::shared_ptr<device_buffer> &buffer, 
+                               host_memory_allocator&,
+                               device_queue& ) const
 {
     return std::dynamic_pointer_cast<host_buffer>(buffer); // Alias
 }
 
 std::shared_ptr<const host_buffer> 
-host_device_host_communicator::device_to_host_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
-                                                     host_memory_allocator&,
-                                                     device_queue& ) const
+host_transfer::transfer_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
+                               host_memory_allocator&,
+                               device_queue& ) const
 {
     return std::dynamic_pointer_cast<const host_buffer>(buffer); // Alias
+}
+
+void host_transfer::wait()
+{
+    // No-op, synchronous transfer.
+}
+
+void host_transfer::wait(device_queue&)
+{
+    // No-op, synchronous transfer.
 }
 
 } // namespace compute

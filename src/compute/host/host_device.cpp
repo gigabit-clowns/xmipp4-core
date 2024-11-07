@@ -30,7 +30,7 @@
 
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 #include <xmipp4/core/compute/host/host_device_memory_allocator.hpp>
-#include <xmipp4/core/compute/host/host_device_host_communicator.hpp>
+#include <xmipp4/core/compute/host/host_transfer.hpp>
 
 namespace xmipp4
 {
@@ -70,16 +70,28 @@ host_device::create_host_memory_allocator_shared()
     return std::make_shared<host_device_memory_allocator>();
 }
 
-std::unique_ptr<device_host_communicator> 
-host_device::create_device_host_communicator()
+std::unique_ptr<host_to_device_transfer> 
+host_device::create_host_to_device_transfer()
 {
-    return std::make_unique<host_device_host_communicator>();
+    return std::make_unique<host_transfer>();
 }
 
-std::shared_ptr<device_host_communicator> 
-host_device::create_device_host_communicator_shared()
+std::shared_ptr<host_to_device_transfer> 
+host_device::create_host_to_device_transfer_shared()
 {
-    return std::make_shared<host_device_host_communicator>();
+    return std::make_shared<host_transfer>();
+}
+
+std::unique_ptr<device_to_host_transfer> 
+host_device::create_device_to_host_transfer()
+{
+    return std::make_unique<host_transfer>();
+}
+
+std::shared_ptr<device_to_host_transfer> 
+host_device::create_device_to_host_transfer_shared()
+{
+    return std::make_shared<host_transfer>();
 }
 
 } // namespace compute

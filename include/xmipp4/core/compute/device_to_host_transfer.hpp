@@ -78,7 +78,7 @@ public:
      * 
      */
     virtual void
-    transfer(const std::shared_ptr<const device_buffer> &src_buffer,
+    transfer(const device_buffer &src_buffer,
              host_buffer &dst_buffer, 
              device_queue &queue ) const = 0;
 

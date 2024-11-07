@@ -81,6 +81,7 @@ public:
      * @param backends Output list with the names of the backends.
      * @note The list is cleared before appending the backend names.
      */
+    XMIPP4_CORE_API 
     void enumerate_backends(std::vector<std::string> &backends) const;
 
 
@@ -103,8 +104,9 @@ public:
      * @return std::shared_ptr<communicator> Reference to the world
      * communicator.
      */
+    XMIPP4_CORE_API
     std::shared_ptr<communicator> 
-    XMIPP4_CORE_API get_world_communicator(const std::string &name) const;
+    get_world_communicator(const std::string &name) const;
 
 private:
     class implementation;

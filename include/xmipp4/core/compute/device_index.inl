@@ -193,7 +193,7 @@ bool parse_device_index(std::string_view path, device_index &result)
     }
     else
     {
-        result = device_index(path);
+        result = device_index(path, 0);
         success = true;
     }
 

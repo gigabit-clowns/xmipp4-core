@@ -75,6 +75,9 @@ public:
      * @note Source buffer should not be modified until the operation has
      * been completed. Destination buffer should not be either read nor 
      * written until the transfer has completed.
+     * @note src_buffer is required to be a shared_ptr as host buffers are
+     * not stream synchronized. Thus, a copy of the buffer is retained
+     * until the transfer has completed to prevent premature deallocation.
      * 
      */
     virtual void

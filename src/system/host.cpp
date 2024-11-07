@@ -32,7 +32,7 @@
 #if XMIPP4_POSIX
     #include <unistd.h>
 #elif XMIPP4_WINDOWS
-    #include <Windows.h>
+    #include <Winsock.h>
     #include <WinBase.h>
 #endif
 
@@ -50,9 +50,9 @@ std::string get_hostname()
         return std::string(hostname);
     #elif XMIPP4_WINDOWS
         char hostname[MAX_COMPUTERNAME_LENGTH + 1];
-        DWORD count = MAX_COMPUTERNAME_LENGTH + 1;
-        gethostname(hostname, &count);
-        return std::string(hostname, count);
+        const int count = MAX_COMPUTERNAME_LENGTH + 1;
+        gethostname(hostname, count);
+        return std::string(hostname);
     #else
         #pragma message ("Cannot determine hostname for this platform")
         return "";

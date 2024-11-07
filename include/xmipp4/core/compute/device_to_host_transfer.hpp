@@ -128,6 +128,12 @@ public:
                     host_memory_allocator &allocator,
                     device_queue &queue ) const = 0;
 
+    /**
+     * @brief Block the current thread until the transfers have finished.
+     * 
+     */
+    virtual void wait() = 0;
+
 }; 
 
 } // namespace compute

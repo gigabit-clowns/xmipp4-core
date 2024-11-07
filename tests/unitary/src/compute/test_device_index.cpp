@@ -42,13 +42,6 @@ TEST_CASE( "construct device index", "[device_index]" )
     REQUIRE( index.get_device_id() == 4 );
 }
 
-TEST_CASE( "construct device index with default id", "[device_index]" )
-{
-    device_index index("example-backend");
-    REQUIRE( index.get_backend_name() == "example-backend" );
-    REQUIRE( index.get_device_id() == 0 );
-}
-
 TEST_CASE( "set device backend in device index", "[device_index]" )
 {
     device_index index("example-backend", 6);

@@ -81,9 +81,9 @@ public:
      * 
      */
     virtual void
-    transfer(const std::shared_ptr<const host_buffer> &src_buffer,
-             device_buffer &dst_buffer, 
-             device_queue &queue ) = 0;
+    transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+                  device_buffer &dst_buffer, 
+                  device_queue &queue ) = 0;
 
 
     /**
@@ -103,9 +103,9 @@ public:
      * 
      */
     virtual std::shared_ptr<device_buffer> 
-    transfer_nocopy(const std::shared_ptr<host_buffer> &buffer, 
-                    device_memory_allocator &allocator,
-                    device_queue &queue ) = 0;
+    transfer(const std::shared_ptr<host_buffer> &buffer, 
+             device_memory_allocator &allocator,
+             device_queue &queue ) = 0;
 
     /**
      * @brief Transfer a buffer from the host to the device.
@@ -124,9 +124,9 @@ public:
      * 
      */
     virtual std::shared_ptr<const device_buffer> 
-    transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
-                    device_memory_allocator &allocator,
-                    device_queue &queue ) = 0;
+    transfer(const std::shared_ptr<const host_buffer> &buffer, 
+             device_memory_allocator &allocator,
+             device_queue &queue ) = 0;
 
     /**
      * @brief Block the current thread until the transfers have finished.

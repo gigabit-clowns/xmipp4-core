@@ -62,9 +62,9 @@ static void copy_buffer(const host_device_buffer &src_buffer,
 
 
 
-void host_transfer::transfer(const std::shared_ptr<const host_buffer> &src_buffer, 
-                             device_buffer &dst_buffer, 
-                             device_queue& )
+void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
+                                  device_buffer &dst_buffer, 
+                                  device_queue& )
 {
     if (!src_buffer)
     {
@@ -78,24 +78,24 @@ void host_transfer::transfer(const std::shared_ptr<const host_buffer> &src_buffe
 }
 
 std::shared_ptr<device_buffer> 
-host_transfer::transfer_nocopy(const std::shared_ptr<host_buffer> &buffer, 
-                               device_memory_allocator&,
-                               device_queue&)
+host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer, 
+                        device_memory_allocator&,
+                        device_queue&)
 {
     return std::dynamic_pointer_cast<device_buffer>(buffer); // Alias
 }
 
 std::shared_ptr<const device_buffer> 
-host_transfer::transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
-                               device_memory_allocator&,
-                               device_queue& )
+host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer, 
+                        device_memory_allocator&,
+                        device_queue& )
 {
     return std::dynamic_pointer_cast<const device_buffer>(buffer); // Alias
 }
 
-void host_transfer::transfer(const device_buffer &src_buffer,
-                             const std::shared_ptr<host_buffer> &dst_buffer,
-                             device_queue& )
+void host_transfer::transfer_copy(const device_buffer &src_buffer,
+                                  const std::shared_ptr<host_buffer> &dst_buffer,
+                                  device_queue& )
 {
     if (!dst_buffer)
     {
@@ -109,17 +109,17 @@ void host_transfer::transfer(const device_buffer &src_buffer,
 }
 
 std::shared_ptr<host_buffer> 
-host_transfer::transfer_nocopy(const std::shared_ptr<device_buffer> &buffer, 
-                               host_memory_allocator&,
-                               device_queue& )
+host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer, 
+                        host_memory_allocator&,
+                        device_queue& )
 {
     return std::dynamic_pointer_cast<host_buffer>(buffer); // Alias
 }
 
 std::shared_ptr<const host_buffer> 
-host_transfer::transfer_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
-                               host_memory_allocator&,
-                               device_queue& )
+host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer, 
+                        host_memory_allocator&,
+                        device_queue& )
 {
     return std::dynamic_pointer_cast<const host_buffer>(buffer); // Alias
 }

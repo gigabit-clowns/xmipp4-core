@@ -150,14 +150,16 @@ bool parse_device_index(std::string_view text, device_index &result)
     XMIPP4_CONST_CONSTEXPR auto separator = 
         detail::get_device_index_separator();
 
-    const auto ite = std::find(text.cbegin(), text.cend(), separator);
+    const auto begin = text.data();
+    const auto end = begin + text.size();
+    const auto ite = std::find(begin, end, separator);
     if (ite != text.cend())
     {
         std::size_t id;
-        if (std::from_chars(std::next(ite), text.cend(), id, 10).ec == std::errc())
+        if (std::from_chars(std::next(ite), end, id, 10).ec == std::errc())
         {
             result = device_index(
-                std::string(text.cbegin(), ite), 
+                std::string(begin, ite), 
                 id
             );
             success = true;

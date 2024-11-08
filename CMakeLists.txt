@@ -114,7 +114,7 @@ endif()
 # Enable all warnings during compilation
 if(MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-	target_compile_options(${PROJECT_NAME} PRIVATE /WD4996) # getenv warning
+	target_compile_options(${PROJECT_NAME} PRIVATE /wd4996) # getenv warning
 else()
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()

@@ -35,10 +35,10 @@ const char* to_string(device_type type) noexcept
     switch (type)
     {
     case device_type::unknown: return "unknown";
-    case device_type::cpu: return "cpu";
-    case device_type::gpu: return "gpu";
-    case device_type::integrated_gpu: return "integrated_gpu";
-    case device_type::fpga: return "fpga";
+    case device_type::cpu: return "CPU";
+    case device_type::gpu: return "GPU";
+    case device_type::integrated_gpu: return "iGPU";
+    case device_type::fpga: return "FPGA";
     }
 }
 

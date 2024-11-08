@@ -33,21 +33,21 @@ XMIPP4_INLINE_CONSTEXPR std::size_t get_size(numerical_type type) noexcept
 {
     switch (type)
     {
-    case numerical_type::int8: return 1;
-    case numerical_type::uint8: return 1;
-    case numerical_type::int16: return 2;
-    case numerical_type::uint16: return 2;
-    case numerical_type::int32: return 4;
-    case numerical_type::uint32: return 4;
-    case numerical_type::int64: return 8;
-    case numerical_type::uint64: return 8;
-    case numerical_type::float16: return 2;
-    case numerical_type::brain_float16: return 2;
-    case numerical_type::float32: return 4;
-    case numerical_type::float64: return 8;
-    case numerical_type::complex_float16: return 4;
-    case numerical_type::complex_float32: return 8;
-    case numerical_type::complex_float64: return 16;
+    case numerical_type::int8: return sizeof(std::int8_t);
+    case numerical_type::uint8: return sizeof(std::uint8_t);
+    case numerical_type::int16: return sizeof(std::int16_t);
+    case numerical_type::uint16: return sizeof(std::uint16_t);
+    case numerical_type::int32: return sizeof(std::int32_t);
+    case numerical_type::uint32: return sizeof(std::uint32_t);
+    case numerical_type::int64: return sizeof(std::int64_t);
+    case numerical_type::uint64: return sizeof(std::uint64_t);
+    case numerical_type::float16: return 2; // Not available in C
+    case numerical_type::brain_float16: return 2; // Not available in C
+    case numerical_type::float32: return 4; // sizeof(float) not guaranteed to be 4
+    case numerical_type::float64: return 8; // sizeof(double) not guaranteed to be 8
+    case numerical_type::complex_float16: return 4; // Same reason as its real equivalent
+    case numerical_type::complex_float32: return 8; // Same reason as its real equivalent
+    case numerical_type::complex_float64: return 16; // Same reason as its real equivalent
     default: return 0;
     }
 }

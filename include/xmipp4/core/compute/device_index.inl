@@ -153,7 +153,7 @@ bool parse_device_index(std::string_view text, device_index &result)
     const auto begin = text.data();
     const auto end = begin + text.size();
     const auto ite = std::find(begin, end, separator);
-    if (ite != text.cend())
+    if (ite != end)
     {
         std::size_t id;
         if (std::from_chars(std::next(ite), end, id, 10).ec == std::errc())

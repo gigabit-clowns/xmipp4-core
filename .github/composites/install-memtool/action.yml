@@ -14,7 +14,7 @@ runs:
       shell: bash
       run: |
         if which apt; then
-          sudo apt install -y valgrind
+          sudo apt-get install -y valgrind
         else
           echo "Could not find a package manager for this system"
           exit 1

@@ -65,27 +65,11 @@ public:
     device_index& operator=(device_index &&other) = default; 
 
     /**
-     * @brief Set the name of the device backend
-     * 
-     * @tparam Str String type,
-     * @param backend_name Name of the backend.
-     */
-    template <typename Str>
-    void set_backend_name(Str &&backend_name);
-
-    /**
      * @brief Get the name of the device backend.
      * 
      * @return const std::string& The name.
      */
     const std::string& get_backend_name() const noexcept;
-
-    /**
-     * @brief Set the ID of the device within the backend.
-     * 
-     * @param device_id The device ID.
-     */
-    void set_device_id(std::size_t device_id) noexcept;
 
     /**
      * @brief Get the ID of the device within the backend.

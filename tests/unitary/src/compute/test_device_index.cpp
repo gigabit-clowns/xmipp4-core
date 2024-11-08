@@ -42,22 +42,6 @@ TEST_CASE( "construct device index", "[device_index]" )
     REQUIRE( index.get_device_id() == 4 );
 }
 
-TEST_CASE( "set device backend in device index", "[device_index]" )
-{
-    device_index index("example-backend", 6);
-    index.set_backend_name("new-backend");
-    REQUIRE( index.get_backend_name() == "new-backend" );
-    REQUIRE( index.get_device_id() == 6 );
-}
-
-TEST_CASE( "set device id in device index", "[device_index]" )
-{
-    device_index index("example-backend", 6);
-    index.set_device_id(9);
-    REQUIRE( index.get_backend_name() == "example-backend" );
-    REQUIRE( index.get_device_id() == 9 );
-}
-
 TEST_CASE( "parse device index", "[device_index]" )
 {
     device_index index;

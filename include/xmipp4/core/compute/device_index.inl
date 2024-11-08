@@ -45,23 +45,10 @@ device_index::device_index(Str &&backend_name, std::size_t device_id)
 {
 }
 
-template <typename Str>
-inline
-void device_index::set_backend_name(Str &&backend_name)
-{
-    m_backend_name = std::forward<Str>(backend_name);
-}
-
 inline
 const std::string& device_index::get_backend_name() const noexcept
 {
     return m_backend_name;
-}
-
-inline
-void device_index::set_device_id(std::size_t device_index) noexcept
-{
-    m_device_id = device_index;
 }
 
 inline

@@ -43,31 +43,31 @@ class host_transfer final
 public:
     void transfer(const std::shared_ptr<const host_buffer> &src_buffer,
                   device_buffer &dst_buffer, 
-                  device_queue &queue ) const final;
+                  device_queue &queue ) final;
 
     std::shared_ptr<device_buffer> 
     transfer_nocopy(const std::shared_ptr<host_buffer> &buffer, 
                     device_memory_allocator &allocator,
-                    device_queue &queue ) const final;
+                    device_queue &queue ) final;
 
     std::shared_ptr<const device_buffer> 
     transfer_nocopy(const std::shared_ptr<const host_buffer> &buffer, 
                     device_memory_allocator &allocator,
-                    device_queue &queue ) const final;
+                    device_queue &queue ) final;
 
     void transfer(const device_buffer &src_buffer,
                   const std::shared_ptr<host_buffer> &dst_buffer, 
-                  device_queue &queue ) const final;
+                  device_queue &queue ) final;
 
     std::shared_ptr<host_buffer> 
     transfer_nocopy(const std::shared_ptr<device_buffer> &buffer, 
                     host_memory_allocator &allocator,
-                    device_queue &queue ) const final;
+                    device_queue &queue ) final;
 
     std::shared_ptr<const host_buffer> 
     transfer_nocopy(const std::shared_ptr<const device_buffer> &buffer, 
                     host_memory_allocator &allocator,
-                    device_queue &queue ) const final;
+                    device_queue &queue ) final;
 
     void wait() final;
     void wait(device_queue &queue) final;

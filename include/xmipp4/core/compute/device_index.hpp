@@ -108,7 +108,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const device_index 
  * @return true The string was parsed successfully and the result was written.
  * @return false The string was not parsed and the result was not written.
  */
-bool parse_device_index(std::string_view path, device_index &result);
+bool parse_device_index(std::string_view text, device_index &result);
 
 } // namespace compute
 } // namespace xmipp4

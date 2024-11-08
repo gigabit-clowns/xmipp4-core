@@ -30,7 +30,7 @@
 
 #include <tuple>
 #include <algorithm>
-#include <cctype>
+#include <charconv>
 
 namespace xmipp4 
 {
@@ -119,60 +119,45 @@ bool operator>=(const device_index &lhs, const device_index &rhs) noexcept
     return rhs <= lhs;
 }
 
-template <typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const device_index &index)
-{
-    XMIPP4_CONST_CONSTEXPR T separator = ':';
-    return os << index.get_backend_name() << separator << index.get_device_id();
-}
+
 
 namespace detail
 {
 
-template <typename ForwardIt>
-inline
-ForwardIt parse_base10_size_t(ForwardIt first, ForwardIt last, std::size_t &result)
+XMIPP4_INLINE_CONSTEXPR char get_device_index_separator() noexcept
 {
-    XMIPP4_CONST_CONSTEXPR auto base = 10;
-
-    result = 0;
-    while(first != last)
-    {
-        if(!std::isdigit(*first))
-        {
-            break;
-        }
-        
-        // Obtain the digit from the character
-        const auto digit = static_cast<std::size_t>(*first - '0');
-
-        // Add to the result
-        result *= base;
-        result += digit;
-
-        ++first;
-    }
-
-    return first;
+    return ':';
 }
 
 } // namespace detail
 
+
+
+template <typename T>
 inline
-bool parse_device_index(std::string_view path, device_index &result)
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const device_index &index)
+{
+    XMIPP4_CONST_CONSTEXPR auto separator = 
+        detail::get_device_index_separator();
+    return os << index.get_backend_name() << separator << index.get_device_id();
+}
+
+inline
+bool parse_device_index(std::string_view text, device_index &result)
 {
     bool success = false;
 
-    XMIPP4_CONST_CONSTEXPR auto separator = ':';
-    const auto ite = std::find(path.cbegin(), path.cend(), separator);
-    if (ite != path.cend())
+    XMIPP4_CONST_CONSTEXPR auto separator = 
+        detail::get_device_index_separator();
+
+    const auto ite = std::find(text.cbegin(), text.cend(), separator);
+    if (ite != text.cend())
     {
         std::size_t id;
-        if (detail::parse_base10_size_t(std::next(ite), path.cend(), id) == path.cend())
+        if (std::from_chars(std::next(ite), text.cend(), id, 10).ec == std::errc())
         {
             result = device_index(
-                std::string(path.cbegin(), ite), 
+                std::string(text.cbegin(), ite), 
                 id
             );
             success = true;
@@ -180,7 +165,7 @@ bool parse_device_index(std::string_view path, device_index &result)
     }
     else
     {
-        result = device_index(path, 0);
+        result = device_index(text, 0);
         success = true;
     }
 

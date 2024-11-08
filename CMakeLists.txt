@@ -89,6 +89,11 @@ target_compile_definitions(
 		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
 
+# Link dependencies
+if(MSVC)
+	target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32) # Winsock
+endif()
+
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)
 	find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
@@ -109,6 +114,7 @@ endif()
 # Enable all warnings during compilation
 if(MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+	target_compile_options(${PROJECT_NAME} PRIVATE /wd4996) # getenv warning
 else()
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()

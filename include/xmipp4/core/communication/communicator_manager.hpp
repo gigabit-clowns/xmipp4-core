@@ -29,6 +29,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <memory>
 
 #include "communicator_backend.hpp"
@@ -75,6 +76,16 @@ public:
     bool register_backend(std::unique_ptr<communicator_backend> backend);
 
     /**
+     * @brief Enumerate all available backends.
+     * 
+     * @param backends Output list with the names of the backends.
+     * @note The list is cleared before appending the backend names.
+     */
+    XMIPP4_CORE_API 
+    void enumerate_backends(std::vector<std::string> &backends) const;
+
+
+    /**
      * @brief Find a backend by its name.
      * 
      * @param name The name of the backend.
@@ -93,8 +104,9 @@ public:
      * @return std::shared_ptr<communicator> Reference to the world
      * communicator.
      */
+    XMIPP4_CORE_API
     std::shared_ptr<communicator> 
-    XMIPP4_CORE_API get_world_communicator(const std::string &name) const;
+    get_world_communicator(const std::string &name) const;
 
 private:
     class implementation;

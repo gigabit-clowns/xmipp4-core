@@ -111,7 +111,7 @@ std::size_t get_available_system_memory()
         int err = host_statistics64(
             mach_host_self(), 
             HOST_VM_INFO64, 
-            static_cast<host_info64_t*>(&vm_info), 
+            reinterpret_cast<host_info64_t>(&vm_info), 
             &info_count
         );
         if (err != KERN_SUCCESS) 

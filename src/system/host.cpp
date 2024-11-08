@@ -72,6 +72,7 @@ std::size_t get_total_system_memory()
         struct sysinfo info;
         sysinfo(&info);
         return info.totalram * info.mem_unit;
+
     #elif XMIPP4_APPLE
         int mib[2] = { CTL_HW, HW_MEMSIZE };
         int64_t total_memory;
@@ -83,14 +84,16 @@ std::size_t get_total_system_memory()
         }
 
         return total_memory;
+
     #elif XMIPP4_WINDOWS
         MEMORYSTATUSEX status;
         status.dwLength = sizeof(status);
         GlobalMemoryStatusEx(&status);
         return status.ullTotalPhys;
+
     #else
         #pragma message ("Cannot get total memory for this platform")
-        return "";
+        return 0;
     #endif
 }
 
@@ -118,7 +121,7 @@ std::size_t get_available_system_memory()
 
         // Calculate available memory as free + inactive pages
         const auto page_size = getpagesize();
-        const auto free_memory = vm_info.free_count * page_size
+        const auto free_memory = vm_info.free_count * page_size;
         const auto inactive_memory = vm_info.inactive_count * page_size;
         return free_memory + inactive_memory; // Available memory in bytes
 
@@ -127,9 +130,10 @@ std::size_t get_available_system_memory()
         status.dwLength = sizeof(status);
         GlobalMemoryStatusEx(&status);
         return status.ullAvailPhys;
+
     #else
-        #pragma message ("Cannot get total memory for this platform")
-        return "";
+        #pragma message ("Cannot get available memory for this platform")
+        return 0;
     #endif
 }
 

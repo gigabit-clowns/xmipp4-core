@@ -137,22 +137,5 @@ std::size_t get_available_system_memory()
     #endif
 }
 
-std::size_t get_available_system_memory()
-{
-    #if XMIPP4_POSIX
-        long pages = sysconf(_SC_AVPHYS_PAGES);
-        long page_size = sysconf(_SC_PAGE_SIZE);
-        return pages * page_size;
-    #elif XMIPP4_WINDOWS
-        MEMORYSTATUSEX status;
-        status.dwLength = sizeof(status);
-        GlobalMemoryStatusEx(&status);
-        return status.ullAvailPhys;
-    #else
-        #pragma message ("Cannot get total memory for this platform")
-        return "";
-    #endif
-}
-
 } // namespace system
 } // namespace xmipp4

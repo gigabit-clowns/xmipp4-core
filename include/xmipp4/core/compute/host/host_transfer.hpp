@@ -36,6 +36,16 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Implementation of the host_to_device_transfer and 
+ * device_to_host_transfer interfaces to allow sending data 
+ * to the host acting as a compute device. 
+ * 
+ * @note Unless the method explicitly indicates a copy, all
+ * transfers a zero-copy operation, this is, the input buffer
+ * is casted to the output buffer, aliasing its contents.
+ * 
+ */
 class host_transfer final
     : public host_to_device_transfer
     , public device_to_host_transfer

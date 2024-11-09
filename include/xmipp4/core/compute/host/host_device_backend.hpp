@@ -39,7 +39,7 @@ class device_manager;
 
 /**
  * @brief Special implementation of the device_backend interface to be able 
- * to obtain the "host" as a device
+ * to obtain the "host" as a device..
  * 
  */
 class host_device_backend final

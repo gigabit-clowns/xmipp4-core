@@ -36,6 +36,11 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Special implementation of device_buffer that allows to 
+ * allocate memory in the host as if it were a device.
+ * 
+ */
 class host_device_buffer final
     : public device_buffer
     , public host_buffer

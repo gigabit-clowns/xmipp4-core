@@ -36,8 +36,8 @@ namespace compute
 {
 
 /**
- * @brief Special implementation of the device_queue interface to be able to send
- * commands to the host.
+ * @brief Special implementation of the device_queue interface to be 
+ * able to send commands to the host.
  * 
  */
 class host_device_queue final

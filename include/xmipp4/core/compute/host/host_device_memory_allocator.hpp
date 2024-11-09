@@ -38,6 +38,12 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Special implementation of device_memory_allocator and
+ * host_memory_allocator that allows to allocate memory in the host 
+ * as if it were a device.
+ * 
+ */
 class host_device_memory_allocator
     : public device_memory_allocator
     , public host_memory_allocator

@@ -37,37 +37,30 @@ namespace compute
 {
 
 /**
- * @brief Special implementation of device_buffer that allows to 
- * allocate memory in the host as if it were a device.
+ * @brief Interface merging the interfaces of host_buffer and device_buffer.
+ * 
+ * This interface unifies host_buffer and device_buffer interfaces, as
+ * when using the host as a compute device, both buffers types are 
+ * equivalent
  * 
  */
-class host_device_buffer final
+class host_device_buffer
     : public device_buffer
     , public host_buffer
 {
 public:
-    host_device_buffer() noexcept;
-    host_device_buffer(numerical_type type, std::size_t count);
-    host_device_buffer(const host_device_buffer &other) = delete;
-    host_device_buffer(host_device_buffer &&other) noexcept;
-    virtual ~host_device_buffer();
+    host_device_buffer() = default;
+    host_device_buffer(const host_device_buffer &other) = default;
+    host_device_buffer(host_device_buffer &&other) = default;
+    virtual ~host_device_buffer() = default;
 
-    host_device_buffer& operator=(const host_device_buffer &other) = delete;
-    host_device_buffer& operator=(host_device_buffer &&other) noexcept;
+    host_device_buffer& operator=(const host_device_buffer &other) = default;
+    host_device_buffer& operator=(host_device_buffer &&other) = default;
 
-    void swap(host_device_buffer &other) noexcept;
-    void reset() noexcept;
-
-    numerical_type get_type() const noexcept final;
-    std::size_t get_count() const noexcept final;
-
-    void* get_data() noexcept final;
-    const void* get_data() const noexcept final;
-
-private:
-    numerical_type m_type;
-    std::size_t m_count;
-    void* m_data;
+    virtual numerical_type get_type() const noexcept = 0;
+    virtual std::size_t get_count() const noexcept = 0;
+    virtual void* get_data() noexcept = 0;
+    virtual const void* get_data() const noexcept = 0;
 
 }; 
 

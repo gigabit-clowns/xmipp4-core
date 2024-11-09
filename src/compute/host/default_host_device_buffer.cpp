@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file host_device_buffer.cpp
+ * @file default_host_device_buffer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device_buffer.hpp
+ * @brief Implementation of default_host_device_buffer.hpp
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device_buffer.hpp>
+#include "default_host_device_buffer.hpp"
 
 #include <stdexcept>
 #include <cstdlib>
@@ -36,14 +36,14 @@ namespace xmipp4
 namespace compute
 {
 
-host_device_buffer::host_device_buffer() noexcept
+default_host_device_buffer::default_host_device_buffer() noexcept
     : m_type(numerical_type::unknown)
     , m_count(0)
     , m_data(nullptr)
 {
 }
 
-host_device_buffer::host_device_buffer(numerical_type type, std::size_t count)
+default_host_device_buffer::default_host_device_buffer(numerical_type type, std::size_t count)
     : m_type(type)
     , m_count(count)
     , m_data(std::malloc(get_size(type)*count))
@@ -54,34 +54,34 @@ host_device_buffer::host_device_buffer(numerical_type type, std::size_t count)
     }
 }
 
-host_device_buffer::host_device_buffer(host_device_buffer &&other) noexcept
+default_host_device_buffer::default_host_device_buffer(default_host_device_buffer &&other) noexcept
     : m_type(other.m_type)
     , m_count(other.m_count)
     , m_data(nullptr)
 {
 }
 
-host_device_buffer::~host_device_buffer()
+default_host_device_buffer::~default_host_device_buffer()
 {
     reset();
 }
 
-host_device_buffer& 
-host_device_buffer::operator=(host_device_buffer &&other) noexcept
+default_host_device_buffer& 
+default_host_device_buffer::operator=(default_host_device_buffer &&other) noexcept
 {
     swap(other);
     other.reset();
     return *this;
 }
 
-void host_device_buffer::swap(host_device_buffer &other) noexcept
+void default_host_device_buffer::swap(default_host_device_buffer &other) noexcept
 {
     std::swap(m_type, other.m_type);
     std::swap(m_count, other.m_count);
     std::swap(m_data, other.m_data);
 }
 
-void host_device_buffer::reset() noexcept
+void default_host_device_buffer::reset() noexcept
 {
     if (m_data)
     {
@@ -92,22 +92,22 @@ void host_device_buffer::reset() noexcept
     }
 }
 
-numerical_type host_device_buffer::get_type() const noexcept
+numerical_type default_host_device_buffer::get_type() const noexcept
 {
     return m_type;
 }
 
-std::size_t host_device_buffer::get_count() const noexcept
+std::size_t default_host_device_buffer::get_count() const noexcept
 {
     return m_count;
 }
 
-void* host_device_buffer::get_data() noexcept
+void* default_host_device_buffer::get_data() noexcept
 {
     return m_data;
 }
 
-const void* host_device_buffer::get_data() const noexcept
+const void* default_host_device_buffer::get_data() const noexcept
 {
     return m_data;
 }

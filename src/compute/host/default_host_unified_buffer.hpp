@@ -21,14 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file default_host_device_buffer.hpp
+ * @file default_host_unified_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::default_host_device_buffer interface
+ * @brief Defines the compute::default_host_unified_buffer interface
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device_buffer.hpp>
+#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
 
 namespace xmipp4 
 {
@@ -40,22 +40,22 @@ namespace compute
  * allocate memory in the host as if it were a device.
  * 
  */
-class default_host_device_buffer final
-    : public host_device_buffer
+class default_host_unified_buffer final
+    : public host_unified_buffer
 {
 public:
-    default_host_device_buffer() noexcept;
-    default_host_device_buffer(numerical_type type, std::size_t count);
-    default_host_device_buffer(const default_host_device_buffer &other) = delete;
-    default_host_device_buffer(default_host_device_buffer &&other) noexcept;
-    virtual ~default_host_device_buffer();
+    default_host_unified_buffer() noexcept;
+    default_host_unified_buffer(numerical_type type, std::size_t count);
+    default_host_unified_buffer(const default_host_unified_buffer &other) = delete;
+    default_host_unified_buffer(default_host_unified_buffer &&other) noexcept;
+    virtual ~default_host_unified_buffer();
 
-    default_host_device_buffer& 
-    operator=(const default_host_device_buffer &other) = delete;
-    default_host_device_buffer& 
-    operator=(default_host_device_buffer &&other) noexcept;
+    default_host_unified_buffer& 
+    operator=(const default_host_unified_buffer &other) = delete;
+    default_host_unified_buffer& 
+    operator=(default_host_unified_buffer &&other) noexcept;
 
-    void swap(default_host_device_buffer &other) noexcept;
+    void swap(default_host_unified_buffer &other) noexcept;
     void reset() noexcept;
 
     numerical_type get_type() const noexcept final;

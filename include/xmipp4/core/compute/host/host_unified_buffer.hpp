@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file host_device_buffer.hpp
+ * @file host_unified_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_device_buffer interface
+ * @brief Defines the compute::host_unified_buffer interface
  * @date 2024-10-29
  * 
  */
@@ -44,18 +44,18 @@ namespace compute
  * equivalent
  * 
  */
-class host_device_buffer
+class host_unified_buffer
     : public device_buffer
     , public host_buffer
 {
 public:
-    host_device_buffer() = default;
-    host_device_buffer(const host_device_buffer &other) = default;
-    host_device_buffer(host_device_buffer &&other) = default;
-    virtual ~host_device_buffer() = default;
+    host_unified_buffer() = default;
+    host_unified_buffer(const host_unified_buffer &other) = default;
+    host_unified_buffer(host_unified_buffer &&other) = default;
+    virtual ~host_unified_buffer() = default;
 
-    host_device_buffer& operator=(const host_device_buffer &other) = default;
-    host_device_buffer& operator=(host_device_buffer &&other) = default;
+    host_unified_buffer& operator=(const host_unified_buffer &other) = default;
+    host_unified_buffer& operator=(host_unified_buffer &&other) = default;
 
     virtual numerical_type get_type() const noexcept = 0;
     virtual std::size_t get_count() const noexcept = 0;

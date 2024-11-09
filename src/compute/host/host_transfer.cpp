@@ -28,7 +28,7 @@
 
 #include <xmipp4/core/compute/host/host_transfer.hpp>
 
-#include <xmipp4/core/compute/host/host_device_buffer.hpp>
+#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
 #include <xmipp4/core/compute/numerical_type.hpp>
 
 #include <stdexcept>
@@ -39,8 +39,8 @@ namespace xmipp4
 namespace compute
 {
 
-static void copy_buffer(const host_device_buffer &src_buffer, 
-                        host_device_buffer &dst_buffer)
+static void copy_buffer(const host_buffer &src_buffer, 
+                        host_buffer &dst_buffer)
 {
     if (src_buffer.get_type() != dst_buffer.get_type())
     {
@@ -72,8 +72,8 @@ void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_
     }
 
     copy_buffer(
-        dynamic_cast<const host_device_buffer&>(*src_buffer),
-        dynamic_cast<host_device_buffer&>(dst_buffer)
+        *src_buffer,
+        dynamic_cast<host_unified_buffer&>(dst_buffer)
     );
 }
 
@@ -103,8 +103,8 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
     }
 
     copy_buffer(
-        dynamic_cast<const host_device_buffer&>(src_buffer),
-        dynamic_cast<host_device_buffer&>(*dst_buffer)
+        dynamic_cast<const host_unified_buffer&>(src_buffer),
+        *dst_buffer
     );
 }
 

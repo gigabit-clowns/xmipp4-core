@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file host_device_memory_allocator.hpp
+ * @file host_unified_memory_allocator.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_device_memory_allocator class
+ * @brief Defines the compute::host_unified_memory_allocator class
  * @date 2024-11-06
  * 
  */
@@ -44,20 +44,20 @@ namespace compute
  * as if it were a device.
  * 
  */
-class host_device_memory_allocator
+class host_unified_memory_allocator
     : public device_memory_allocator
     , public host_memory_allocator
 {
 public:
-    host_device_memory_allocator() = default;
-    host_device_memory_allocator(const host_device_memory_allocator &other) = default;
-    host_device_memory_allocator(host_device_memory_allocator &&other) = default;
-    virtual ~host_device_memory_allocator() = default;
+    host_unified_memory_allocator() = default;
+    host_unified_memory_allocator(const host_unified_memory_allocator &other) = default;
+    host_unified_memory_allocator(host_unified_memory_allocator &&other) = default;
+    virtual ~host_unified_memory_allocator() = default;
 
-    host_device_memory_allocator& 
-    operator=(const host_device_memory_allocator &other) = default;
-    host_device_memory_allocator& 
-    operator=(host_device_memory_allocator &&other) = default;
+    host_unified_memory_allocator& 
+    operator=(const host_unified_memory_allocator &other) = default;
+    host_unified_memory_allocator& 
+    operator=(host_unified_memory_allocator &&other) = default;
 
     std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type, 

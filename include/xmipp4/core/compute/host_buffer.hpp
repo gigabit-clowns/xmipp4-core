@@ -86,7 +86,20 @@ public:
      */
     virtual const void* get_data() const noexcept = 0;
 
-}; 
+};
+
+
+/**
+ * @brief Copy the contents of one buffer to another.
+ * 
+ * @param src_buffer Buffer from which elements are copied.
+ * @param dst_buffer Buffer to which elements are copied.
+ * 
+ * @note Both buffers must have the same numerical type
+ * and element counts.
+ * 
+ */
+void copy(const host_buffer &src_buffer, host_buffer &dst_buffer);
 
 } // namespace compute
 } // namespace xmipp4

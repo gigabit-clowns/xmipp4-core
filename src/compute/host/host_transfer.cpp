@@ -39,29 +39,6 @@ namespace xmipp4
 namespace compute
 {
 
-static void copy_buffer(const host_buffer &src_buffer, 
-                        host_buffer &dst_buffer)
-{
-    if (src_buffer.get_type() != dst_buffer.get_type())
-    {
-        throw std::invalid_argument("Both buffers must have the same numerical type");
-    }
-    
-    if (src_buffer.get_count() != dst_buffer.get_count())
-    {
-        throw std::invalid_argument("Both buffers must have the same element count");
-    }
-
-    const auto element_size = get_size(src_buffer.get_type());
-    std::memcpy(
-        dst_buffer.get_data(),
-        src_buffer.get_data(),
-        element_size*src_buffer.get_count()
-    );
-}
-
-
-
 void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   device_queue& )
@@ -71,10 +48,7 @@ void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_
         throw std::invalid_argument("src_buffer cannot be nullptr");
     }
 
-    copy_buffer(
-        *src_buffer,
-        dynamic_cast<host_unified_buffer&>(dst_buffer)
-    );
+    copy(*src_buffer, dynamic_cast<host_unified_buffer&>(dst_buffer));
 }
 
 std::shared_ptr<device_buffer> 
@@ -102,10 +76,7 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
         throw std::invalid_argument("dst_buffer cannot be nullptr");
     }
 
-    copy_buffer(
-        dynamic_cast<const host_unified_buffer&>(src_buffer),
-        *dst_buffer
-    );
+    copy(dynamic_cast<const host_unified_buffer&>(src_buffer), *dst_buffer);
 }
 
 std::shared_ptr<host_buffer> 

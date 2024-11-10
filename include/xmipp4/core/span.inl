@@ -86,6 +86,21 @@ XMIPP4_INLINE_CONSTEXPR span<T, Extent>::span(pointer first, pointer last)
 {
 }
 
+template <typename T, std::size_t Extent>
+template <std::size_t Extent2>
+XMIPP4_INLINE_CONSTEXPR span<T, Extent>
+::span(const span<value_type, Extent2> &other)
+    : span(other.data(), other.size())
+{
+}
+
+template <typename T, std::size_t Extent>
+template <std::size_t Extent2>
+XMIPP4_INLINE_CONSTEXPR span<T, Extent>
+::span(const span<const value_type, Extent2> &other)
+    : span(other.data(), other.size())
+{
+}
 
 template <typename T, std::size_t Extent>
 XMIPP4_INLINE_CONSTEXPR 
@@ -165,6 +180,36 @@ typename span<T, Extent>::reverse_iterator
 span<T, Extent>::rend() const noexcept
 {
     return reverse_iterator(begin());
+}
+
+
+
+
+
+template <typename T, std::size_t N>
+XMIPP4_INLINE_CONSTEXPR span<T, N> make_span(std::array<T, N> &array) noexcept
+{
+    return span<T, N>(array.data(), array.size());
+}
+
+template <typename T, std::size_t N>
+XMIPP4_INLINE_CONSTEXPR span<const T, N> 
+make_span(const std::array<T, N> &array) noexcept
+{
+    return span<const T, N>(array.data(), array.size());
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR span<T> make_span(std::vector<T> &array) noexcept
+{
+    return span<T>(array.data(), array.size());
+}
+
+template <typename T>
+XMIPP4_INLINE_CONSTEXPR span<const T> 
+make_span(const std::vector<T> &array) noexcept
+{
+    return span<const T>(array.data(), array.size());
 }
 
 } // namespace xmipp4

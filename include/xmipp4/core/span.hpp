@@ -36,6 +36,8 @@
 
 #include <type_traits>
 #include <limits>
+#include <vector>
+#include <array>
 
 namespace xmipp4 
 {
@@ -158,6 +160,28 @@ public:
      */
     XMIPP4_CONSTEXPR span(pointer first, pointer last);
 
+    /**
+     * @brief Construct span from another span
+     * 
+     * @tparam Extent2 The extent of the other span. Must be compatible
+     * with the current extent.
+     * @param other The other span.
+     * 
+     */
+    template <std::size_t Extent2>
+    XMIPP4_CONSTEXPR span(const span<value_type, Extent2> &other);
+
+    /**
+     * @brief Construct span from another span
+     * 
+     * @tparam Extent2 The extent of the other span. Must be compatible
+     * with the current extent.
+     * @param other The other span.
+     * 
+     */
+    template <std::size_t Extent2>
+    XMIPP4_CONSTEXPR span(const span<const value_type, Extent2> &other);
+
     span() = default;
     span(const span &other) = default;
     span(span &&other) = default;
@@ -255,6 +279,22 @@ private:
     storage_type m_storage;
 
 };
+
+
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<T, N> make_span(std::array<T, N> &array) noexcept;
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<const T, N> 
+make_span(const std::array<T, N> &array) noexcept;
+
+template <typename T>
+XMIPP4_CONSTEXPR span<T> make_span(std::vector<T> &array) noexcept;
+
+template <typename T>
+XMIPP4_CONSTEXPR span<const T> 
+make_span(const std::vector<T> &array) noexcept;
 
 } // namespace xmipp4
 

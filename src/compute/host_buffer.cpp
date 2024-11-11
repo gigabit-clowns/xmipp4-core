@@ -71,15 +71,15 @@ void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
         {
             throw std::invalid_argument("Source region is out of bounds");
         }
-        if (region.get_destination_offset()+region.get_count() > src_buffer.get_count())
+        if (region.get_destination_offset()+region.get_count() > dst_buffer.get_count())
         {
             throw std::invalid_argument("Destination region is out of bounds");
         }
 
         const auto region_bytes = as_bytes(region, element_size);
         std::memcpy(
-            dst_buffer.get_data() + region_bytes.get_source_offset(),
-            src_buffer.get_data() + region_bytes.get_destination_offset(),
+            dst_buffer.get_data() + region_bytes.get_destination_offset(),
+            src_buffer.get_data() + region_bytes.get_source_offset(),
             region_bytes.get_count()
         );
     }

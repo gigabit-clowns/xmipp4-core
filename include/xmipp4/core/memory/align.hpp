@@ -135,6 +135,22 @@ std::uintptr_t align_ceil(std::uintptr_t address, std::size_t alignment) noexcep
 XMIPP4_CONSTEXPR 
 std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignment) noexcept;
 
+/**
+ * @brief Offset an address by a given amount of bytes
+ * 
+ * @tparam T Pointed type.
+ * @param ptr Pointer to offset.
+ * @param count Number of bytes to add.
+ * @return void* Pointer with offset.
+ * 
+ * @warning This may break alignment requirements. Of the underlying type.
+ * Use it under your own risk 
+ * 
+ */
+template <typename T>
+XMIPP4_NODISCARD
+T* offset_bytes(T* address, std::ptrdiff_t count);
+
 } // namespace memory
 } // namespace xmipp4
 

@@ -45,6 +45,8 @@ class host_buffer;
 /**
  * @brief Abstract class defining an in-host memory allocator.
  * 
+ * @note Allocations and deallocations are thread safe.
+ * 
  */
 class XMIPP4_CORE_API host_memory_allocator
 {

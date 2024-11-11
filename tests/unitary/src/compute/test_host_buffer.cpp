@@ -31,6 +31,7 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 
 using namespace xmipp4;
@@ -101,6 +102,7 @@ TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
     test_host_buffer dst(8);
 
     REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same element count" ); 
 }
 
 TEST_CASE( "copy host buffer regions", "[host_buffer]" )
@@ -144,9 +146,11 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
         copy_region(1024, 0, 1),
     };
     REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Source region is out of bounds" ); 
 
     regions = {
         copy_region(0, 512, 1),
     };
     REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Destination region is out of bounds" ); 
 }

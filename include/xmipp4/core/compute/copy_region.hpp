@@ -37,6 +37,16 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Represents a region in a buffer to be copied. 
+ * 
+ * This is expressed in terms of an offset in the source and destination
+ * buffers together with an element count. 
+ * 
+ * @note Unless otherwise specified, these offsets and counts 
+ * represent numbers of elements, not bytes.
+ * 
+ */
 class copy_region
 {
 public:
@@ -63,6 +73,15 @@ private:
 
 };
 
+
+
+/**
+ * @brief Multiply all components by the element size.
+ * 
+ * @param region Region representing elements.
+ * @param element_size Size of each element.
+ * @return copy_region. Region representing bytes.
+ */
 XMIPP4_CONSTEXPR 
 copy_region as_bytes(const copy_region &region,
                      std::size_t element_size ) noexcept;

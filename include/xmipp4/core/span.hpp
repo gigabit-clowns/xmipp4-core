@@ -105,11 +105,11 @@ struct span_storage<T, 0>
     span_storage() = default;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 
 };
 

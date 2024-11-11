@@ -31,6 +31,8 @@
 #include <memory>
 
 #include "numerical_type.hpp"
+#include "copy_region.hpp"
+#include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -99,7 +101,27 @@ public:
  * and element counts.
  * 
  */
+XMIPP4_CORE_API
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer);
+
+/**
+ * @brief Copy regions of one buffer to another.
+ * 
+ * @param src_buffer Buffer from which elements are copied.
+ * @param dst_buffer Buffer to which elements are copied.
+ * @param regions Regions to be copied.
+ * 
+ * @note All values in regions are expressed in terms of element counts
+ * @note Both buffers must have the same numerical type.
+ * @note For all regions, source_offset+count must not be greater
+ * than the source buffer size and destination_offset+count
+ * must not be greater than the destination buffer size.
+ * @note Regions should not overlap within a domain.
+ * 
+ */
+XMIPP4_CORE_API
+void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
+          span<const copy_region> regions );
 
 } // namespace compute
 } // namespace xmipp4

@@ -28,16 +28,15 @@
 
 #include <xmipp4/core/compute/host_buffer.hpp>
 
-#include <xmipp4/core/compute/host/host_numerical_type.hpp>
-
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 
+using namespace xmipp4;
 using namespace xmipp4::compute;
 
-template <typename T>
 class test_host_buffer final
     : public host_buffer
 {
@@ -49,7 +48,7 @@ public:
 
     numerical_type get_type() const noexcept final
     {
-        return host_numerical_type<T>::value();
+        return numerical_type::int32;
     }
 
     std::size_t get_count() const noexcept final
@@ -68,7 +67,7 @@ public:
     }
 
 private:
-    std::vector<T> m_data;
+    std::vector<std::int32_t> m_data;
 
 };
 
@@ -77,15 +76,15 @@ private:
 TEST_CASE( "copy host buffer", "[host_buffer]" )
 {
     const std::size_t n = 1024;
-    test_host_buffer<std::uint32_t> src(n);   
-    test_host_buffer<std::uint32_t> dst(n);
+    test_host_buffer src(n);   
+    test_host_buffer dst(n);
     auto* src_data = static_cast<std::uint32_t*>(src.get_data());
     auto* dst_data = static_cast<std::uint32_t*>(dst.get_data());
 
     // populate
     for (std::size_t i = 0; i < n; ++i)
     {
-        src_data[i] = i;
+        src_data[i] = i*i + 2*i + 1;
     }
 
     copy(src, dst);
@@ -93,22 +92,65 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     // check
     for (std::size_t i = 0; i < n; ++i)
     {
-        REQUIRE( dst_data[i] == i );
+        REQUIRE( dst_data[i] == src_data[i] );
     }
 }
 
 TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
 {
-    test_host_buffer<std::uint32_t> src(1024);   
-    test_host_buffer<std::uint32_t> dst(8);
+    test_host_buffer src(1024);   
+    test_host_buffer dst(8);
 
-    REQUIRE_THROWS( copy(src, dst) ); 
+    REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same element count" ); 
 }
 
-TEST_CASE( "copy host buffer with different type", "[host_buffer]" )
+TEST_CASE( "copy host buffer regions", "[host_buffer]" )
 {
-    test_host_buffer<std::uint32_t> src(8);   
-    test_host_buffer<std::int32_t> dst(8);
+    test_host_buffer src(1024);   
+    test_host_buffer dst(2048);
+    auto* src_data = static_cast<std::uint32_t*>(src.get_data());
+    auto* dst_data = static_cast<std::uint32_t*>(dst.get_data());
+    std::array<copy_region, 2> regions = {
+        copy_region(512, 0, 512),
+        copy_region(0, 1536, 512),
+    };
 
-    REQUIRE_THROWS( copy(src, dst) ); 
+    // populate
+    for (std::size_t i = 0; i < 1024; ++i)
+    {
+        src_data[i] = 4*i*i + i + 2;
+    }
+
+    copy(src, dst, make_span(regions));
+
+    // check
+    for (std::size_t i = 0; i < 512; ++i)
+    {
+        REQUIRE( dst_data[i] == src_data[i+512] );
+    }
+    for (std::size_t i = 0; i < 512; ++i)
+    {
+        REQUIRE( dst_data[i+1536] == src_data[i] );
+    }
+}
+
+TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
+{
+    test_host_buffer src(1024);   
+    test_host_buffer dst(512);
+
+    std::array<copy_region, 1> regions;
+    
+    regions = {
+        copy_region(1024, 0, 1),
+    };
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Source region is out of bounds" ); 
+
+    regions = {
+        copy_region(0, 512, 1),
+    };
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Destination region is out of bounds" ); 
 }

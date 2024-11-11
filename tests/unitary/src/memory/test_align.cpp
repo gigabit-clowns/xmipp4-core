@@ -66,3 +66,10 @@ TEST_CASE( "align ceil", "[align]" )
 	REQUIRE( memory::align_ceil(pointer, 0x100) == pointer );
 	REQUIRE( memory::align_ceil(pointer, 0x1000) == reinterpret_cast<void*>(uintptr_t(0xA1011000)) );
 }
+
+TEST_CASE( "offset_bytes", "[align]" ) 
+{
+	std::uint32_t data;
+	std::uint32_t* next = memory::offset_bytes(&data, sizeof(std::uint32_t));
+	REQUIRE( next == &data+1 );
+}

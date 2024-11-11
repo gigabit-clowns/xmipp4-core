@@ -28,6 +28,8 @@
 
 #include <xmipp4/core/compute/host_buffer.hpp>
 
+#include <xmipp4/core/memory/align.hpp>
+
 #include <stdexcept>
 #include <cstring>
 
@@ -56,6 +58,36 @@ void copy(const host_buffer &src_buffer, host_buffer &dst_buffer)
     );
 }
 
+void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
+          span<const copy_region> regions )
+{
+    if (src_buffer.get_type() != dst_buffer.get_type())
+    {
+        throw std::invalid_argument("Both buffers must have the same numerical type");
+    }
+
+    const auto* src_data = src_buffer.get_data();
+    auto* dst_data = dst_buffer.get_data();
+    const auto element_size = get_size(src_buffer.get_type());
+    for (const copy_region &region : regions)
+    {
+        if (region.get_source_offset()+region.get_count() > src_buffer.get_count())
+        {
+            throw std::invalid_argument("Source region is out of bounds");
+        }
+        if (region.get_destination_offset()+region.get_count() > dst_buffer.get_count())
+        {
+            throw std::invalid_argument("Destination region is out of bounds");
+        }
+
+        const auto region_bytes = as_bytes(region, element_size);
+        std::memcpy(
+            memory::offset_bytes(dst_data, region_bytes.get_destination_offset()),
+            memory::offset_bytes(src_data, region_bytes.get_source_offset()),
+            region_bytes.get_count()
+        );
+    }
+}
 
 } // namespace compute
 } // namespace xmipp4

@@ -31,6 +31,7 @@
  * 
  */
 
+#include "memory/byte.hpp"
 #include "platform/attributes.hpp"
 #include "platform/constexpr.hpp"
 
@@ -66,11 +67,11 @@ struct span_storage
     span_storage() = delete;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 
 };
 
@@ -88,11 +89,11 @@ struct span_storage<T, dynamic_extent>
     XMIPP4_CONSTEXPR span_storage() noexcept;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 };
 
 template <typename T>
@@ -104,11 +105,11 @@ struct span_storage<T, 0>
     span_storage() = default;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 
 };
 
@@ -279,6 +280,24 @@ private:
     storage_type m_storage;
 
 };
+
+
+
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<memory::byte> as_bytes(const span<T> &other) noexcept;
+
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<const memory::byte> as_bytes(const span<const T> &other) noexcept;
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<memory::byte, N*sizeof(T)> 
+as_bytes(const span<T, N> &other) noexcept;
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<const memory::byte, N*sizeof(T)> 
+as_bytes(const span<const T, N> &other) noexcept;
 
 
 

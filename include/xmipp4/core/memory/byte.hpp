@@ -34,6 +34,7 @@
 #include <type_traits>
 #include <cstdint>
 #include <functional>
+#include <iostream>
 
 namespace xmipp4
 {

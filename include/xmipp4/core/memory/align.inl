@@ -85,5 +85,14 @@ std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignmen
     return align_floor_inplace(address, alignment);
 }
 
+template <typename T>
+XMIPP4_NODISCARD inline
+T* offset_bytes(T* address, std::ptrdiff_t count)
+{
+    auto &value = reinterpret_cast<std::uintptr_t&>(address);
+    value += count;
+    return address;
+}
+
 } // namespace memory
 } // namespace xmipp4

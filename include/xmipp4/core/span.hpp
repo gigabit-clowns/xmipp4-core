@@ -31,6 +31,7 @@
  * 
  */
 
+#include "memory/byte.hpp"
 #include "platform/attributes.hpp"
 #include "platform/constexpr.hpp"
 
@@ -279,6 +280,24 @@ private:
     storage_type m_storage;
 
 };
+
+
+
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<memory::byte> as_bytes(const span<T> &other) noexcept;
+
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<const memory::byte> as_bytes(const span<const T> &other) noexcept;
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<memory::byte, N*sizeof(T)> 
+as_bytes(const span<T, N> &other) noexcept;
+
+template <typename T, std::size_t N>
+XMIPP4_CONSTEXPR span<const memory::byte, N*sizeof(T)> 
+as_bytes(const span<const T, N> &other) noexcept;
 
 
 

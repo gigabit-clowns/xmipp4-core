@@ -71,7 +71,7 @@ struct span_storage
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 
 };
 
@@ -93,7 +93,7 @@ struct span_storage<T, dynamic_extent>
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
-    span_storage& operator=(span_storage && other) = default;
+    span_storage& operator=(span_storage &&other) = default;
 };
 
 template <typename T>

@@ -52,8 +52,8 @@ TEST_CASE( "convert region to bytes", "[copy_region]" )
 {
     const copy_region region(4, 6, 10);
     const auto region_bytes = as_bytes(region, 8U);
-    REQUIRE( region.get_source_offset() == 32 );
-    REQUIRE( region.get_destination_offset() == 48 );
-    REQUIRE( region.get_count() == 80 );
+    REQUIRE( region_bytes.get_source_offset() == 32 );
+    REQUIRE( region_bytes.get_destination_offset() == 48 );
+    REQUIRE( region_bytes.get_count() == 80 );
 }
 

@@ -51,6 +51,19 @@ void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_
     copy(*src_buffer, dynamic_cast<host_unified_buffer&>(dst_buffer));
 }
 
+void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
+                                  device_buffer &dst_buffer, 
+                                  span<const copy_region> regions, 
+                                  device_queue& )
+{
+    if (!src_buffer)
+    {
+        throw std::invalid_argument("src_buffer cannot be nullptr");
+    }
+
+    copy(*src_buffer, dynamic_cast<host_unified_buffer&>(dst_buffer), regions);
+}
+
 std::shared_ptr<device_buffer> 
 host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer, 
                         device_memory_allocator&,
@@ -77,6 +90,19 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
     }
 
     copy(dynamic_cast<const host_unified_buffer&>(src_buffer), *dst_buffer);
+}
+
+void host_transfer::transfer_copy(const device_buffer &src_buffer,
+                                  const std::shared_ptr<host_buffer> &dst_buffer,
+                                  span<const copy_region> regions, 
+                                  device_queue& )
+{
+    if (!dst_buffer)
+    {
+        throw std::invalid_argument("dst_buffer cannot be nullptr");
+    }
+
+    copy(dynamic_cast<const host_unified_buffer&>(src_buffer), *dst_buffer, regions);
 }
 
 std::shared_ptr<host_buffer> 

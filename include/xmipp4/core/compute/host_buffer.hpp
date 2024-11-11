@@ -102,6 +102,7 @@ public:
  * and element counts.
  * 
  */
+XMIPP4_CORE_API
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer);
 
 /**
@@ -119,6 +120,7 @@ void copy(const host_buffer &src_buffer, host_buffer &dst_buffer);
  * @note Regions should not overlap within a domain.
  * 
  */
+XMIPP4_CORE_API
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
           span<const copy_region> regions );
 

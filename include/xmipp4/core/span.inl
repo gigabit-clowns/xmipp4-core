@@ -189,7 +189,7 @@ XMIPP4_INLINE_CONSTEXPR
 span<memory::byte> as_bytes(const span<T> &other) noexcept
 {
     return span<memory::byte>(
-        reinterpret_cast<memory::byte*>(other.data()),
+        as_bytes(other.data()),
         other.size_bytes()
     );
 }
@@ -199,7 +199,7 @@ XMIPP4_INLINE_CONSTEXPR
 span<const memory::byte> as_bytes(const span<const T> &other) noexcept
 {
     return span<const memory::byte>(
-        reinterpret_cast<const memory::byte*>(other.data()),
+        as_bytes(other.data()),
         other.size_bytes()
     );
 }
@@ -209,7 +209,7 @@ XMIPP4_INLINE_CONSTEXPR
 span<memory::byte, N*sizeof(T)> as_bytes(const span<T, N> &other) noexcept
 {
     return span<memory::byte, N*sizeof(T)>(
-        reinterpret_cast<memory::byte*>(other.data()),
+        as_bytes(other.data()),
         other.size_bytes()
     );
 }
@@ -219,7 +219,7 @@ XMIPP4_INLINE_CONSTEXPR
 span<const memory::byte, N*sizeof(T)> as_bytes(const span<const T, N> &other) noexcept
 {
     return span<const memory::byte, N*sizeof(T)>(
-        reinterpret_cast<const memory::byte*>(other.data()),
+        as_bytes(other.data()),
         other.size_bytes()
     );
 }

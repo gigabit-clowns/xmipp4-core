@@ -83,7 +83,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     // populate
     for (std::size_t i = 0; i < n; ++i)
     {
-        src_data[i] = i;
+        src_data[i] = i*i + 2*i + 1;
     }
 
     copy(src, dst);
@@ -91,7 +91,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     // check
     for (std::size_t i = 0; i < n; ++i)
     {
-        REQUIRE( dst_data[i] == i );
+        REQUIRE( dst_data[i] == src_data[i] );
     }
 }
 
@@ -100,7 +100,7 @@ TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
     test_host_buffer src(1024);   
     test_host_buffer dst(8);
 
-    REQUIRE_THROWS( copy(src, dst) ); 
+    REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
 }
 
 TEST_CASE( "copy host buffer regions", "[host_buffer]" )
@@ -117,7 +117,7 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
     // populate
     for (std::size_t i = 0; i < 1024; ++i)
     {
-        src_data[i] = i;
+        src_data[i] = 4*i*i + i + 2;
     }
 
     copy(src, dst, make_span(regions));
@@ -125,11 +125,11 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
     // check
     for (std::size_t i = 0; i < 512; ++i)
     {
-        REQUIRE( dst_data[i] == i+512 );
+        REQUIRE( dst_data[i] == src_data[i+512] );
     }
     for (std::size_t i = 0; i < 512; ++i)
     {
-        REQUIRE( dst_data[i+1536] == i );
+        REQUIRE( dst_data[i+1536] == src_data[i] );
     }
 }
 
@@ -143,10 +143,10 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
     regions = {
         copy_region(1024, 0, 1),
     };
-    REQUIRE_THROWS( copy(src, dst, make_span(regions)) ); 
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
 
     regions = {
         copy_region(0, 512, 1),
     };
-    REQUIRE_THROWS( copy(src, dst, make_span(regions)) ); 
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
 }

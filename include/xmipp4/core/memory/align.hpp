@@ -139,9 +139,9 @@ std::uintptr_t& align_ceil_inplace(std::uintptr_t& address, std::size_t alignmen
  * @brief Offset an address by a given amount of bytes
  * 
  * @tparam T Pointed type.
- * @param ptr Pointer to offset.
+ * @param address Pointer to be modified.
  * @param count Number of bytes to add.
- * @return void* Pointer with offset.
+ * @return T* Pointer with offset.
  * 
  * @warning This may break alignment requirements. Of the underlying type.
  * Use it under your own risk 

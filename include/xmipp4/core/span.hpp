@@ -67,7 +67,7 @@ struct span_storage
     span_storage() = delete;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;
@@ -89,7 +89,7 @@ struct span_storage<T, dynamic_extent>
     XMIPP4_CONSTEXPR span_storage() noexcept;
     XMIPP4_CONSTEXPR span_storage(T* ptr, std::size_t count) noexcept;
     span_storage(const span_storage &other) = default;
-    span_storage(span_storage && other) = default;
+    span_storage(span_storage &&other) = default;
     ~span_storage() = default;
 
     span_storage& operator=(const span_storage &other) = default;

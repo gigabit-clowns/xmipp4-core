@@ -28,6 +28,7 @@
 
 #include <xmipp4/core/compute/host_buffer.hpp>
 
+#include <xmipp4/core/compute/checks.hpp>
 #include <xmipp4/core/memory/align.hpp>
 
 #include <stdexcept>
@@ -40,46 +41,34 @@ namespace compute
 
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer)
 {
-    if (src_buffer.get_type() != dst_buffer.get_type())
-    {
-        throw std::invalid_argument("Both buffers must have the same numerical type");
-    }
-    
-    if (src_buffer.get_count() != dst_buffer.get_count())
-    {
-        throw std::invalid_argument("Both buffers must have the same element count");
-    }
-
-    const auto element_size = get_size(src_buffer.get_type());
+    const auto type = require_same_type(
+        src_buffer.get_type(), dst_buffer.get_type()
+    );
+    const auto count = require_same_count(
+        src_buffer.get_count(), dst_buffer.get_count()
+    );
+    const auto element_size = get_size(type);
     std::memcpy(
         dst_buffer.get_data(),
         src_buffer.get_data(),
-        element_size*src_buffer.get_count()
+        count*element_size
     );
 }
 
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
           span<const copy_region> regions )
 {
-    if (src_buffer.get_type() != dst_buffer.get_type())
-    {
-        throw std::invalid_argument("Both buffers must have the same numerical type");
-    }
-
+    const auto type = require_same_type(
+        src_buffer.get_type(), dst_buffer.get_type()
+    );
+    const auto element_size = get_size(type);
     const auto* src_data = src_buffer.get_data();
     auto* dst_data = dst_buffer.get_data();
-    const auto element_size = get_size(src_buffer.get_type());
+    const auto src_count = src_buffer.get_count();
+    const auto dst_count = dst_buffer.get_count();
     for (const copy_region &region : regions)
     {
-        if (region.get_source_offset()+region.get_count() > src_buffer.get_count())
-        {
-            throw std::invalid_argument("Source region is out of bounds");
-        }
-        if (region.get_destination_offset()+region.get_count() > dst_buffer.get_count())
-        {
-            throw std::invalid_argument("Destination region is out of bounds");
-        }
-
+        require_valid_region(region, src_count, dst_count);
         const auto region_bytes = as_bytes(region, element_size);
         std::memcpy(
             memory::offset_bytes(dst_data, region_bytes.get_destination_offset()),

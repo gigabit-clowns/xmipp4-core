@@ -144,6 +144,7 @@ const char* to_string(numerical_type type) noexcept
     case numerical_type::complex_float16: return "complex_float16";
     case numerical_type::complex_float32: return "complex_float32";
     case numerical_type::complex_float64: return "complex_float64";
+    default: return "";
     }
 }
 

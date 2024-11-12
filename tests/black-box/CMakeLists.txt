@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(INTERFACE_TESTS_NAME ${PROJECT_NAME}-interface-testing)
+set(INTERFACE_TESTS_NAME ${PROJECT_NAME}-black-box-tests)
 
 # Register all source and header files
 file(
@@ -33,7 +33,7 @@ file(
 )
 
 # Create the library
-add_library(${INTERFACE_TESTS_NAME} SHARED ${SOURCES})
+add_library(${INTERFACE_TESTS_NAME} STATIC ${SOURCES})
 set_target_properties(
 	${INTERFACE_TESTS_NAME} PROPERTIES 
 	CXX_STANDARD 20

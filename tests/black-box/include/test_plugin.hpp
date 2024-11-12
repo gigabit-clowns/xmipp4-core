@@ -29,6 +29,7 @@
  */
 
 #include <string>
+#include <xmipp4/core/version.hpp>
 
 namespace xmipp4
 {

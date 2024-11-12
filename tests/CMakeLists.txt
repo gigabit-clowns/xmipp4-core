@@ -34,6 +34,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 include(Catch)
 
-add_subdirectory(interface-testing)
+add_subdirectory(black-box)
 add_subdirectory(unitary)
 add_subdirectory(integration)

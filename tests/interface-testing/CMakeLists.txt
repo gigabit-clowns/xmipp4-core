@@ -22,18 +22,30 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-include(CTest)
-include(FetchContent)
+set(INTERFACE_TESTS_NAME ${PROJECT_NAME}-interface-testing)
 
-# Fetch Catch2
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.5.4
+# Register all source and header files
+file(
+	GLOB_RECURSE 
+	SOURCES 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
-FetchContent_MakeAvailable(Catch2)
-include(Catch)
 
-add_subdirectory(interface-testing)
-add_subdirectory(unitary)
-add_subdirectory(integration)
+# Create the library
+add_library(${INTERFACE_TESTS_NAME} SHARED ${SOURCES})
+set_target_properties(
+	${INTERFACE_TESTS_NAME} PROPERTIES 
+	CXX_STANDARD 20
+)
+target_link_libraries(
+	${INTERFACE_TESTS_NAME} 
+	PRIVATE 
+		${PROJECT_NAME} 
+		Catch2::Catch2
+)
+target_include_directories(
+	${INTERFACE_TESTS_NAME} 
+	PUBLIC 
+	  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)

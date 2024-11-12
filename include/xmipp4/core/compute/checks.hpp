@@ -36,14 +36,58 @@ namespace xmipp4
 namespace compute
 {
 
+/**
+ * @brief Check that both numerical types are equal.
+ * 
+ * @param type1 First numerical type.
+ * @param type2 Second numerical type.
+ * @return numerical_type The common value.
+ * @throws std::invalid_argument if unequal.
+ * 
+ */
 numerical_type require_same_type(numerical_type type1, numerical_type type2);
 
+/**
+ * @brief Check that both counts are equal.
+ * 
+ * 
+ * @param count1 First count.
+ * @param count2 Second count.
+ * @return std::size_t The common count.
+ * @throws std::invalid_argument if unequal.
+ * 
+ */
 std::size_t require_same_count(std::size_t count1, std::size_t count2);
 
+/**
+ * @brief Check that the source copy region is within bounds.
+ * 
+ * @param region Region to be copied.
+ * @param count Element count in the source buffer.
+ * @throws std::out_of_range if out of range.
+ * 
+ */
 void require_valid_source_region(const copy_region &region, std::size_t count);
 
+/**
+ * @brief Check that the destination copy region is within bounds.
+ * 
+ * @param region Region to be copied.
+ * @param count Element count in the destination buffer.
+ * @throws std::out_of_range if out of range.
+ * 
+ */
 void require_valid_destination_region(const copy_region &region, std::size_t count);
 
+/**
+ * @brief Check that copy region is within bounds.
+ * 
+ * @param region Region to be copied.
+ * @param src_count Element count in the source buffer.
+ * @param dst_count Element count in the destination buffer.
+ * @throws std::out_of_range if out of range.
+ * 
+ */
 void require_valid_region(const copy_region &region, 
                           std::size_t src_count, 
                           std::size_t dst_count );

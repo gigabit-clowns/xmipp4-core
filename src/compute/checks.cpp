@@ -40,7 +40,7 @@ numerical_type require_same_type(numerical_type type1, numerical_type type2)
     if (type1 != type2)
     {
         throw std::invalid_argument(
-            "All buffers must have the same numerical type"
+            "Both buffers must have the same numerical type"
         );
     }
     return type1;
@@ -51,7 +51,7 @@ std::size_t require_same_count(std::size_t count1, std::size_t count2)
     if (count1 != count2)
     {
         throw std::invalid_argument(
-            "All buffers must have the same element count"
+            "Both buffers must have the same element count"
         );
     }
     return count1;
@@ -61,7 +61,7 @@ void require_valid_source_region(const copy_region &region, std::size_t count)
 {
     if ((region.get_source_offset() + region.get_count()) > count)
     {
-        throw std::invalid_argument(
+        throw std::out_of_range(
             "Source region must be within buffer bounds"
         );
     }
@@ -71,7 +71,7 @@ void require_valid_destination_region(const copy_region &region, std::size_t cou
 {
     if ((region.get_destination_offset() + region.get_count()) > count)
     {
-        throw std::invalid_argument(
+        throw std::out_of_range(
             "Destination region must be within buffer bounds"
         );
     }

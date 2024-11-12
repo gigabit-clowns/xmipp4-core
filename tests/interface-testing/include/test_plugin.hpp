@@ -35,7 +35,7 @@ namespace xmipp4
 namespace testing
 {
 
-void test_plugin_load(const std::string &name);
+void test_plugin_load(const std::string &name, version version);
 
 } // namespace testing
 } // namespace xmipp4

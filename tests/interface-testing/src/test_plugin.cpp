@@ -50,15 +50,15 @@ static std::string get_plugin_path(const std::string &plugin_name)
     #endif
 }
 
-void test_plugin_load(const std::string &name)
+void test_plugin_load(const std::string &name, version version)
 {
     plugin_manager manager;
-
     const auto* plugin = 
         manager.load_plugin(get_plugin_path(name));
 
     REQUIRE( plugin != nullptr );
     REQUIRE( plugin->get_name() == name );
+    REQUIRE( plugin->get_version() == version );
 }
 
 } // namespace testing

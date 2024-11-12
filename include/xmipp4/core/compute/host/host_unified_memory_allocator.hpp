@@ -62,19 +62,19 @@ public:
     std::unique_ptr<device_buffer> 
     create_buffer(numerical_type type, 
                   std::size_t count, 
-                  device_queue &queue ) final;
+                  device_queue &queue ) override;
 
     std::shared_ptr<device_buffer> 
     create_buffer_shared(numerical_type type, 
                          std::size_t count, 
-                         device_queue &queue ) final;
+                         device_queue &queue ) override;
 
     std::unique_ptr<host_buffer> 
-    create_buffer(numerical_type type, std::size_t count ) final;
+    create_buffer(numerical_type type, std::size_t count ) override;
 
     std::shared_ptr<host_buffer> 
     create_buffer_shared(numerical_type type, 
-                         std::size_t count ) final;
+                         std::size_t count ) override;
 
 }; 
 

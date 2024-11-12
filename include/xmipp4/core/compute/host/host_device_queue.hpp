@@ -44,7 +44,7 @@ class host_device_queue final
     : public device_queue
 {
 public:
-    void synchronize() const final;
+    void synchronize() const override;
 
 }; 
 

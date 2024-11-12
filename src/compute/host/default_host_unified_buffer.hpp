@@ -48,7 +48,7 @@ public:
     default_host_unified_buffer(numerical_type type, std::size_t count);
     default_host_unified_buffer(const default_host_unified_buffer &other) = delete;
     default_host_unified_buffer(default_host_unified_buffer &&other) noexcept;
-    virtual ~default_host_unified_buffer();
+    virtual ~default_host_unified_buffer() override;
 
     default_host_unified_buffer& 
     operator=(const default_host_unified_buffer &other) = delete;
@@ -58,11 +58,11 @@ public:
     void swap(default_host_unified_buffer &other) noexcept;
     void reset() noexcept;
 
-    numerical_type get_type() const noexcept final;
-    std::size_t get_count() const noexcept final;
+    numerical_type get_type() const noexcept override;
+    std::size_t get_count() const noexcept override;
 
-    void* get_data() noexcept final;
-    const void* get_data() const noexcept final;
+    void* get_data() noexcept override;
+    const void* get_data() const noexcept override;
 
 private:
     numerical_type m_type;

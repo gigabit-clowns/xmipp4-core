@@ -28,6 +28,7 @@
  * 
  */
 
+#include <string>
 
 namespace xmipp4
 {
@@ -39,7 +40,7 @@ class device_backend;
 namespace testing
 {
 
-void test_device_backend(device_backend &backend);
+void test_device_backend(device_backend &backend, const std::string &name);
 
 } // namespace testing
 } // namespace compute

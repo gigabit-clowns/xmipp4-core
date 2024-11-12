@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,40 +21,32 @@
  ***************************************************************************/
 
 /**
- * @file test_copy_region.cpp
+ * @file checks.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for copy_region.hpp
- * @date 2024-11-11
+ * @brief Declaration of precondition handling routines.
+ * @date 2024-11-12
  * 
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include "numerical_type.hpp"
+#include "copy_region.hpp"
 
-#include <xmipp4/core/compute/copy_region.hpp>
-
-using namespace xmipp4::compute;
-
-TEST_CASE( "construct copy region", "[copy_region]" )
+namespace xmipp4 
 {
-    const copy_region region(4, 6, 10);
-    REQUIRE( region.get_source_offset() == 4 );
-    REQUIRE( region.get_destination_offset() == 6 );
-    REQUIRE( region.get_count() == 10 );
-}
-
-TEST_CASE( "default construct copy region", "[copy_region]" )
+namespace compute
 {
-    const copy_region region;
-    REQUIRE( region.get_source_offset() == 0 );
-    REQUIRE( region.get_destination_offset() == 0 );
-    REQUIRE( region.get_count() == 0 );
-}
 
-TEST_CASE( "convert region to bytes", "[copy_region]" )
-{
-    const copy_region region(4, 6, 10);
-    const auto region_bytes = as_bytes(region, 8U);
-    REQUIRE( region_bytes.get_source_offset() == 32 );
-    REQUIRE( region_bytes.get_destination_offset() == 48 );
-    REQUIRE( region_bytes.get_count() == 80 );
-}
+numerical_type require_same_type(numerical_type type1, numerical_type type2);
+
+std::size_t require_same_count(std::size_t count1, std::size_t count2);
+
+void require_valid_source_region(const copy_region &region, std::size_t count);
+
+void require_valid_destination_region(const copy_region &region, std::size_t count);
+
+void require_valid_region(const copy_region &region, 
+                          std::size_t src_count, 
+                          std::size_t dst_count );
+
+} // namespace compute
+} // namespace xmipp4

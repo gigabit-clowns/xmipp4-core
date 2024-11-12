@@ -52,7 +52,7 @@ public:
     host_unified_memory_allocator() = default;
     host_unified_memory_allocator(const host_unified_memory_allocator &other) = default;
     host_unified_memory_allocator(host_unified_memory_allocator &&other) = default;
-    virtual ~host_unified_memory_allocator() = default;
+    ~host_unified_memory_allocator() override = default;
 
     host_unified_memory_allocator& 
     operator=(const host_unified_memory_allocator &other) = default;

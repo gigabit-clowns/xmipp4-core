@@ -48,7 +48,7 @@ public:
     default_host_unified_buffer(numerical_type type, std::size_t count);
     default_host_unified_buffer(const default_host_unified_buffer &other) = delete;
     default_host_unified_buffer(default_host_unified_buffer &&other) noexcept;
-    virtual ~default_host_unified_buffer() override;
+    ~default_host_unified_buffer() override;
 
     default_host_unified_buffer& 
     operator=(const default_host_unified_buffer &other) = delete;

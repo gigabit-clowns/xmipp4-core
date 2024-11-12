@@ -52,15 +52,15 @@ public:
     host_unified_buffer() = default;
     host_unified_buffer(const host_unified_buffer &other) = default;
     host_unified_buffer(host_unified_buffer &&other) = default;
-    virtual ~host_unified_buffer() = default;
+    ~host_unified_buffer() override = default;
 
     host_unified_buffer& operator=(const host_unified_buffer &other) = default;
     host_unified_buffer& operator=(host_unified_buffer &&other) = default;
 
-    virtual numerical_type get_type() const noexcept = 0;
-    virtual std::size_t get_count() const noexcept = 0;
-    virtual void* get_data() noexcept = 0;
-    virtual const void* get_data() const noexcept = 0;
+    numerical_type get_type() const noexcept override = 0;
+    std::size_t get_count() const noexcept override = 0;
+    void* get_data() noexcept override = 0;
+    const void* get_data() const noexcept override = 0;
 
 }; 
 

@@ -45,6 +45,7 @@ namespace compute
  * @throws std::invalid_argument if unequal.
  * 
  */
+XMIPP4_CORE_API
 numerical_type require_same_type(numerical_type type1, numerical_type type2);
 
 /**
@@ -57,6 +58,7 @@ numerical_type require_same_type(numerical_type type1, numerical_type type2);
  * @throws std::invalid_argument if unequal.
  * 
  */
+XMIPP4_CORE_API
 std::size_t require_same_count(std::size_t count1, std::size_t count2);
 
 /**
@@ -67,6 +69,7 @@ std::size_t require_same_count(std::size_t count1, std::size_t count2);
  * @throws std::out_of_range if out of range.
  * 
  */
+XMIPP4_CORE_API
 void require_valid_source_region(const copy_region &region, std::size_t count);
 
 /**
@@ -77,6 +80,7 @@ void require_valid_source_region(const copy_region &region, std::size_t count);
  * @throws std::out_of_range if out of range.
  * 
  */
+XMIPP4_CORE_API
 void require_valid_destination_region(const copy_region &region, std::size_t count);
 
 /**
@@ -88,6 +92,7 @@ void require_valid_destination_region(const copy_region &region, std::size_t cou
  * @throws std::out_of_range if out of range.
  * 
  */
+XMIPP4_CORE_API
 void require_valid_region(const copy_region &region, 
                           std::size_t src_count, 
                           std::size_t dst_count );

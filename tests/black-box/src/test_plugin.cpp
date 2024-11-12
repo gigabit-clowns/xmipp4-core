@@ -26,7 +26,7 @@
  * 
  */
 
-#include <test_plugin.hpp>
+#include <xmipp4/core-black-box-tests/test_plugin.hpp>
 
 #include <xmipp4/core/plugin.hpp>
 #include <xmipp4/core/plugin_manager.hpp>

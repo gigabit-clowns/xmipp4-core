@@ -39,7 +39,7 @@ namespace compute
 std::unique_ptr<device_buffer> 
 host_unified_memory_allocator::create_buffer(numerical_type type,
                                              std::size_t count,
-                                             device_queue &queue )
+                                             device_queue& )
 {
     return std::make_unique<default_host_unified_buffer>(type, count);
 }
@@ -47,7 +47,7 @@ host_unified_memory_allocator::create_buffer(numerical_type type,
 std::shared_ptr<device_buffer> 
 host_unified_memory_allocator::create_buffer_shared(numerical_type type,
                                                     std::size_t count,
-                                                    device_queue &queue )
+                                                    device_queue& )
 {
     return std::make_shared<default_host_unified_buffer>(type, count);
 }

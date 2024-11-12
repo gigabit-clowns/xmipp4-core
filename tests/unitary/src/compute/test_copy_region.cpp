@@ -56,3 +56,4 @@ TEST_CASE( "convert region to bytes", "[copy_region]" )
     REQUIRE( region_bytes.get_destination_offset() == 48 );
     REQUIRE( region_bytes.get_count() == 80 );
 }
+

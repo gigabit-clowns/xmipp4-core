@@ -145,12 +145,12 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
     regions = {
         copy_region(1024, 0, 1),
     };
-    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::out_of_range ); 
-    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Source region must be within buffer bounds" ); 
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Source region is out of bounds" ); 
 
     regions = {
         copy_region(0, 512, 1),
     };
-    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::out_of_range ); 
-    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Destination region must be within buffer bounds" ); 
+    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::invalid_argument ); 
+    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Destination region is out of bounds" ); 
 }

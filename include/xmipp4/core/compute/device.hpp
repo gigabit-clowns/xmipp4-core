@@ -42,6 +42,9 @@ class device_memory_allocator;
 class host_memory_allocator;
 class device_to_host_transfer;
 class host_to_device_transfer;
+class device_event;
+class device_to_host_event;
+class host_to_device_event;
 
 
 
@@ -140,6 +143,54 @@ public:
      */
     virtual std::shared_ptr<device_to_host_transfer> 
     create_device_to_host_transfer_shared() = 0;
+
+    /**
+     * @brief Create an intra-device synchronization primitive.
+     * 
+     * @return std::unique_ptr<device_event> 
+     */
+    virtual std::unique_ptr<device_event>
+    create_device_event() = 0;
+
+    /**
+     * @brief Create an intra-device synchronization primitive.
+     * 
+     * @return std::shared_ptr<device_event> 
+     */
+    virtual std::shared_ptr<device_event>
+    create_device_event_shared() = 0;
+
+    /**
+     * @brief Create a device to host synchronization primitive.
+     * 
+     * @return std::unique_ptr<device_to_host_event> 
+     */
+    virtual std::unique_ptr<device_to_host_event>
+    create_device_to_host_event() = 0;
+
+    /**
+     * @brief Create a device to host synchronization primitive.
+     * 
+     * @return std::shared_ptr<device_to_host_event> 
+     */
+    virtual std::shared_ptr<device_to_host_event>
+    create_device_to_host_event_shared() = 0;
+
+    /**
+     * @brief Create a host to device synchronization primitive.
+     * 
+     * @return std::unique_ptr<host_to_device_event> 
+     */
+    virtual std::unique_ptr<host_to_device_event>
+    create_host_to_device_event() = 0;
+
+    /**
+     * @brief Create a host to device synchronization primitive.
+     * 
+     * @return std::unique_ptr<host_to_device_event> 
+     */
+    virtual std::shared_ptr<host_to_device_event>
+    create_host_to_device_event_shared() = 0;
 
 }; 
 

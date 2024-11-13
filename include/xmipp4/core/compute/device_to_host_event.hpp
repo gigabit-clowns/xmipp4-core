@@ -84,7 +84,7 @@ public:
      * @brief Wait until the last recorded event is signaled by the queue.
      * 
      */
-    virtual void wait() = 0;
+    virtual void wait() const = 0;
 
 }; 
 

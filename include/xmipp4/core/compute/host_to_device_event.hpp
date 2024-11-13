@@ -72,7 +72,7 @@ public:
      * @param queue The queue to be blocked until the event is signaled.
      * 
      */
-    virtual void wait(device_queue &queue) = 0;
+    virtual void wait(device_queue &queue) const = 0;
 
 }; 
 

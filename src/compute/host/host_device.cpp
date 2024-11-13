@@ -31,6 +31,7 @@
 #include <xmipp4/core/compute/host/host_device_queue.hpp>
 #include <xmipp4/core/compute/host/host_unified_memory_allocator.hpp>
 #include <xmipp4/core/compute/host/host_transfer.hpp>
+#include <xmipp4/core/compute/host/host_event.hpp>
 
 namespace xmipp4
 {
@@ -92,6 +93,40 @@ std::shared_ptr<device_to_host_transfer>
 host_device::create_device_to_host_transfer_shared()
 {
     return std::make_shared<host_transfer>();
+}
+
+std::unique_ptr<device_event> host_device::create_device_event()
+{
+    return std::make_unique<host_event>();
+}
+
+std::shared_ptr<device_event> host_device::create_device_event_shared()
+{
+    return std::make_shared<host_event>();
+}
+
+std::unique_ptr<device_to_host_event> 
+host_device::create_device_to_host_event()
+{
+    return std::make_unique<host_event>();
+}
+
+std::shared_ptr<device_to_host_event> 
+host_device::create_device_to_host_event_shared()
+{
+    return std::make_shared<host_event>();
+}
+
+std::unique_ptr<host_to_device_event> 
+host_device::create_host_to_device_event()
+{
+    return std::make_unique<host_event>();
+}
+
+std::shared_ptr<host_to_device_event> 
+host_device::create_host_to_device_event_shared()
+{
+    return std::make_shared<host_event>();
 }
 
 } // namespace compute

@@ -95,6 +95,18 @@ host_device::create_device_to_host_transfer_shared()
     return std::make_shared<host_transfer>();
 }
 
+std::unique_ptr<device_buffer_copy> 
+host_device::create_device_buffer_copy()
+{
+    return std::make_unique<host_transfer>();
+}
+
+std::shared_ptr<device_buffer_copy> 
+host_device::create_device_buffer_copy_shared()
+{
+    return std::make_shared<host_transfer>();
+}
+
 std::unique_ptr<device_event> host_device::create_device_event()
 {
     return std::make_unique<host_event>();

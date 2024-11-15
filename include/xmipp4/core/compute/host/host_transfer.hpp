@@ -30,6 +30,7 @@
 
 #include "../device_to_host_transfer.hpp"
 #include "../host_to_device_transfer.hpp"
+#include "../device_buffer_copy.hpp"
 
 namespace xmipp4 
 {
@@ -49,6 +50,7 @@ namespace compute
 class host_transfer final
     : public host_to_device_transfer
     , public device_to_host_transfer
+    , public device_buffer_copy
 {
 public:
     void transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
@@ -88,6 +90,15 @@ public:
     transfer(const std::shared_ptr<const device_buffer> &buffer, 
              host_memory_allocator &allocator,
              device_queue &queue ) override;
+
+    void copy(const device_buffer_copy &src_buffer,
+              device_buffer &dst_buffer, 
+              device_queue &queue ) override;
+
+    void copy(const device_buffer &src_buffer,
+              device_buffer &dst_buffer,
+              span<const copy_region> regions,
+              device_queue &queue ) override;
 
     void wait() override;
     void wait(device_queue &queue) override;

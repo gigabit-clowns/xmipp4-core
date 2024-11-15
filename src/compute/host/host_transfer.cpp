@@ -136,7 +136,7 @@ host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer,
 }
 
 
-void host_transfer::copy(const device_buffer_copy &src_buffer,
+void host_transfer::copy(const device_buffer &src_buffer,
                          device_buffer &dst_buffer, 
                          device_queue& )
 {

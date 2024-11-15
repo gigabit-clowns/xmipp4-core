@@ -91,7 +91,7 @@ public:
              host_memory_allocator &allocator,
              device_queue &queue ) override;
 
-    void copy(const device_buffer_copy &src_buffer,
+    void copy(const device_buffer &src_buffer,
               device_buffer &dst_buffer, 
               device_queue &queue ) override;
 

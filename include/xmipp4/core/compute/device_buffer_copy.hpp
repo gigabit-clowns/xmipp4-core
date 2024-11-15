@@ -46,23 +46,23 @@ class device_memory_allocator;
 
 
 /**
- * @brief Abstract representation of a host to device transfer engine.
+ * @brief Abstract representation of an intra-device transfer engine.
  * 
- * This class enables transferring data from host to device.
+ * This class enables transferring data inside a device.
  * 
  */
-class XMIPP4_CORE_API device_copy
+class XMIPP4_CORE_API device_buffer_copy
 {
 public:
-    device_copy() = default;
-    device_copy(const device_copy &other) = default;
-    device_copy(device_copy &&other) = default;
-    virtual ~device_copy() = default;
+    device_buffer_copy() = default;
+    device_buffer_copy(const device_buffer_copy &other) = default;
+    device_buffer_copy(device_buffer_copy &&other) = default;
+    virtual ~device_buffer_copy() = default;
 
-    device_copy&
-    operator=(const device_copy &other) = default;
-    device_copy&
-    operator=(device_copy &&other) = default;
+    device_buffer_copy&
+    operator=(const device_buffer_copy &other) = default;
+    device_buffer_copy&
+    operator=(device_buffer_copy &&other) = default;
 
 
 
@@ -80,7 +80,7 @@ public:
      * 
      */
     virtual void
-    copy(const device_copy &src_buffer,
+    copy(const device_buffer_copy &src_buffer,
          device_buffer &dst_buffer, 
          device_queue &queue ) = 0;
 

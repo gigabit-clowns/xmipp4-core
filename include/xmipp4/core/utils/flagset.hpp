@@ -116,14 +116,14 @@ public:
      * 
      * @param other The set to be copied from
      */
-    flagset(const flagset& other) = default;
+    flagset(const flagset &other) = default;
 
     /**
      * @brief Move constructor. Same behaviour as copy constructor
      * 
      * @param other The set to be copied from
      */
-    flagset(flagset&& other) = default;
+    flagset(flagset &&other) = default;
 
     /**
      * @brief Destroy the flagset object
@@ -137,7 +137,7 @@ public:
      * @param other The set to be copied from
      * @return flagset& *this
      */
-    flagset& operator=(const flagset& other) = default;
+    flagset& operator=(const flagset &other) = default;
     
     /**
      * @brief Move assign operator. Same behaviour as copy constructor
@@ -145,7 +145,7 @@ public:
      * @param other The set to be copied from
      * @return flagset& *this
      */
-    flagset& operator=(flagset&& other) = default;
+    flagset& operator=(flagset &&other) = default;
 
 
     /**
@@ -165,31 +165,6 @@ public:
     explicit XMIPP4_CONSTEXPR operator underlying_type() const noexcept;
 
 
-
-    /**
-     * @brief Union with another flagset
-     * 
-     * @param rhs The other flagset
-     * @return flagset The result of the union
-     */
-    XMIPP4_CONSTEXPR flagset operator|(const flagset& rhs) const noexcept;
-
-    /**
-     * @brief Intersection with another flagset
-     * 
-     * @param rhs The other flagset
-     * @return flagset The result of the intersection
-     */
-    XMIPP4_CONSTEXPR flagset operator&(const flagset& rhs) const noexcept;
-
-    /**
-     * @brief XOR with another flagset
-     * 
-     * 
-     * @param rhs The other flagset
-     * @return flagset The result of the XOR
-     */
-    XMIPP4_CONSTEXPR flagset operator^(const flagset& rhs) const noexcept;
 
     /**
      * @brief In-place union with another flagset
@@ -234,6 +209,13 @@ public:
     XMIPP4_CONSTEXPR bool operator!=(const flagset& rhs) const noexcept;
     
 
+
+    /**
+     * @brief Obtain the underlying integer representation of the flags.
+     * 
+     * @return underlying_type Unsigned integer with the data.
+     */
+    XMIPP4_CONSTEXPR underlying_type get_bits() const noexcept;
 
     /**
      * @brief Checks if all of a set of flags are present in this
@@ -347,6 +329,20 @@ private:
     unsigned_type m_data;
 
 };
+
+
+
+template<typename B>
+XMIPP4_CONSTEXPR 
+flagset<B> operator|(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
+
+template<typename B>
+XMIPP4_CONSTEXPR 
+flagset<B> operator&(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
+
+template<typename B>
+XMIPP4_CONSTEXPR 
+flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
 
 } // namespace utils
 } // namespace xmipp4

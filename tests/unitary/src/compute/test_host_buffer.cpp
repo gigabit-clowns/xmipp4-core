@@ -64,7 +64,8 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     REQUIRE_CALL(src_buffer, get_type())
         .RETURN(numerical_type::int32)
         .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(const_cast<const mock_host_buffer&>(src_buffer), get_data())
+    const mock_host_buffer &const_src_buffer = src_buffer;
+    REQUIRE_CALL(const_src_buffer, get_data())
         .RETURN(src_ptr)
         .TIMES(AT_LEAST(1));
 
@@ -147,7 +148,8 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
     REQUIRE_CALL(src_buffer, get_type())
         .RETURN(numerical_type::int32)
         .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(const_cast<const mock_host_buffer&>(src_buffer), get_data())
+    const mock_host_buffer &const_src_buffer = src_buffer;
+    REQUIRE_CALL(const_src_buffer, get_data())
         .RETURN(src_ptr)
         .TIMES(AT_LEAST(1));
 
@@ -196,7 +198,8 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
         .TIMES(AT_LEAST(1));
     ALLOW_CALL(src, get_type())
         .RETURN(numerical_type::int32);
-    ALLOW_CALL(const_cast<const mock_host_buffer&>(src), get_data())
+    const mock_host_buffer &const_src = src;
+    ALLOW_CALL(const_src, get_data())
         .RETURN(nullptr);
 
     mock_host_buffer dst;

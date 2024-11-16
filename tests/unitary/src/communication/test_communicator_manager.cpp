@@ -56,13 +56,13 @@ TEST_CASE( "register communicator backend", "[communicator_manager]" )
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name1)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name2)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // Test
     communicator_manager manager;
@@ -85,13 +85,13 @@ TEST_CASE( "query communicator backend", "[communicator_manager]" )
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name1)
-        .TIMES(AT_LEAST(2));
+        .TIMES(2);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name2)
-        .TIMES(AT_LEAST(2));
+        .TIMES(2);
 
     // Test
     communicator_manager manager;
@@ -117,12 +117,12 @@ TEST_CASE( "register the same communicator backend twice", "[communicator_manage
     auto mock1 = std::make_unique<mock_communicator_backend>();
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // Test
     communicator_manager manager;

@@ -60,27 +60,27 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_count())
         .RETURN(n)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(src_buffer, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     const mock_host_buffer &const_src_buffer = src_buffer;
     REQUIRE_CALL(const_src_buffer, get_data())
         .RETURN(src_ptr)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     std::vector<std::uint32_t> dst_data(n);
     void* dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_count())
         .RETURN(n)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(dst_buffer, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(dst_buffer, get_data())
         .RETURN(dst_ptr)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // populate
     for (std::size_t i = 0; i < n; ++i)
@@ -100,18 +100,14 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
 TEST_CASE( "copy host buffer with different type", "[host_buffer]" )
 {
     mock_host_buffer src;
-    ALLOW_CALL(src, get_count())
-        .RETURN(100);
     REQUIRE_CALL(src, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(2);
 
     mock_host_buffer dst;
-    ALLOW_CALL(dst, get_count())
-        .RETURN(100);
     REQUIRE_CALL(dst, get_type())
         .RETURN(numerical_type::int16)
-        .TIMES(AT_LEAST(1));
+        .TIMES(2);
 
     REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
     REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same numerical type" ); 
@@ -122,16 +118,18 @@ TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
     mock_host_buffer src;
     REQUIRE_CALL(src, get_count())
         .RETURN(8)
-        .TIMES(AT_LEAST(1));
-    ALLOW_CALL(src, get_type())
-        .RETURN(numerical_type::int32);
+        .TIMES(2);
+    REQUIRE_CALL(src, get_type())
+        .RETURN(numerical_type::int32)
+        .TIMES(2);
 
     mock_host_buffer dst;
     REQUIRE_CALL(dst, get_count())
         .RETURN(10)
-        .TIMES(AT_LEAST(1));
-    ALLOW_CALL(dst, get_type())
-        .RETURN(numerical_type::int32);
+        .TIMES(2);
+    REQUIRE_CALL(dst, get_type())
+        .RETURN(numerical_type::int32)
+        .TIMES(2);
 
     REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
     REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same element count" ); 
@@ -144,27 +142,27 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_count())
         .RETURN(1024)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(src_buffer, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     const mock_host_buffer &const_src_buffer = src_buffer;
     REQUIRE_CALL(const_src_buffer, get_data())
         .RETURN(src_ptr)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     std::vector<std::uint32_t> dst_data(2048);
     void* dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_count())
         .RETURN(2048)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(dst_buffer, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(dst_buffer, get_data())
         .RETURN(dst_ptr)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     std::array<copy_region, 2> regions = {
         copy_region(512, 0, 512),
@@ -195,21 +193,25 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
     mock_host_buffer src;
     REQUIRE_CALL(src, get_count())
         .RETURN(1024)
-        .TIMES(AT_LEAST(1));
-    ALLOW_CALL(src, get_type())
-        .RETURN(numerical_type::int32);
+        .TIMES(4);
+    REQUIRE_CALL(src, get_type())
+        .RETURN(numerical_type::int32)
+        .TIMES(4);
     const mock_host_buffer &const_src = src;
-    ALLOW_CALL(const_src, get_data())
-        .RETURN(nullptr);
+    REQUIRE_CALL(const_src, get_data())
+        .RETURN(nullptr)
+        .TIMES(4);
 
     mock_host_buffer dst;
     REQUIRE_CALL(dst, get_count())
         .RETURN(512)
-        .TIMES(AT_LEAST(1));
-    ALLOW_CALL(dst, get_type())
-        .RETURN(numerical_type::int32);
-    ALLOW_CALL(dst, get_data())
-        .RETURN(nullptr);
+        .TIMES(4);
+    REQUIRE_CALL(dst, get_type())
+        .RETURN(numerical_type::int32)
+        .TIMES(4);
+    REQUIRE_CALL(dst, get_data())
+        .RETURN(nullptr)
+        .TIMES(4);
 
     std::array<copy_region, 1> regions;
     
@@ -229,18 +231,14 @@ TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
 TEST_CASE( "copy host buffer regions with different type", "[host_buffer]" )
 {
     mock_host_buffer src;
-    ALLOW_CALL(src, get_count())
-        .RETURN(256);
     REQUIRE_CALL(src, get_type())
         .RETURN(numerical_type::int32)
-        .TIMES(AT_LEAST(1));
+        .TIMES(2);
 
     mock_host_buffer dst;
-    ALLOW_CALL(dst, get_count())
-        .RETURN(128);
     REQUIRE_CALL(dst, get_type())
         .RETURN(numerical_type::int16)
-        .TIMES(AT_LEAST(1));
+        .TIMES(2);
 
     std::array<copy_region, 1> regions = {
         copy_region(16, 32, 64),

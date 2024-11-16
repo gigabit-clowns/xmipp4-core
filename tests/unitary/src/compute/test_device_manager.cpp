@@ -61,13 +61,13 @@ TEST_CASE( "register device backend", "[device_manager]" )
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name1)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_device_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name2)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // Test
     device_manager manager;
@@ -90,13 +90,13 @@ TEST_CASE( "query device backend", "[device_manager]" )
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name1)
-        .TIMES(AT_LEAST(2));
+        .TIMES(2);
 
     auto mock2 = std::make_unique<mock_device_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name2)
-        .TIMES(AT_LEAST(2));
+        .TIMES(2);
 
     // Test
     device_manager manager;
@@ -122,12 +122,12 @@ TEST_CASE( "register the same device backend twice", "[device_manager]" )
     auto mock1 = std::make_unique<mock_device_backend>();
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_device_backend>();
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // Test
     device_manager manager;
@@ -148,19 +148,19 @@ TEST_CASE( "enumerate devices", "[device_manager]" )
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
         .RETURN(name1)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(*mock1, enumerate_devices(ANY(std::vector<std::size_t>&)))
         .SIDE_EFFECT(_1 = {0, 1, 2, 3, 4})   
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_device_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
         .RETURN(name2)
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
     REQUIRE_CALL(*mock2, enumerate_devices(ANY(std::vector<std::size_t>&)))
         .SIDE_EFFECT(_1 = {6, 7, 8, 9})
-        .TIMES(AT_LEAST(1));
+        .TIMES(1);
 
     // Test
     device_manager manager;

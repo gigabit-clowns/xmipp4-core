@@ -25,16 +25,15 @@
  * @date 2024-10-29
  */
 
-
-#include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
-
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/version.hpp>
 
 #include <algorithm>
+
+#include <catch2/catch_test_macros.hpp>
+#include <trompeloeil.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;

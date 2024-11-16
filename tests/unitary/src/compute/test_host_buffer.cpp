@@ -42,10 +42,10 @@ class mock_host_buffer final
     : public host_buffer
 {
 public:
-    MAKE_MOCK(get_type, auto () -> numerical_type, const noexcept override);
-    MAKE_MOCK(get_count, auto () -> std::size_t, const noexcept override);
-    MAKE_MOCK(get_data, auto () -> void*, noexcept override);
-    MAKE_CONST_MOCK(get_data, auto () -> const void*, noexcept override);
+    MAKE_MOCK0(get_type, numerical_type (), const noexcept override);
+    MAKE_MOCK0(get_count, std::size_t (), const noexcept override);
+    MAKE_MOCK0(get_data, void* (), noexcept override);
+    MAKE_CONST_MOCK0(get_data, const void* (), noexcept override);
 
 };
 

@@ -42,10 +42,10 @@ class mock_communicator_backend final
     : public communicator_backend
 {
 public:
-    MAKE_MOCK(get_name, auto () -> const std::string&, const noexcept override);
-    MAKE_MOCK(get_version, auto () -> version, const noexcept override);
-    MAKE_MOCK(is_available, auto () -> bool, const noexcept override);
-    MAKE_MOCK(get_world_communicator, auto () -> std::shared_ptr<communicator>, const override);
+    MAKE_MOCK0(get_name, const std::string& (), const noexcept override);
+    MAKE_MOCK0(get_version, version (), const noexcept override);
+    MAKE_MOCK0(is_available, bool (), const noexcept override);
+    MAKE_MOCK0(get_world_communicator, std::shared_ptr<communicator> (), const override);
 
 };
 

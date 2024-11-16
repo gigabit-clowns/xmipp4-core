@@ -43,13 +43,13 @@ class mock_device_backend final
     : public device_backend
 {
 public:
-    MAKE_MOCK(get_name, auto () -> const std::string&, const noexcept override);
-    MAKE_MOCK(get_version, auto () -> version, const noexcept override);
-    MAKE_MOCK(is_available, auto () -> bool, const noexcept override);
-    MAKE_MOCK(enumerate_devices, auto (std::vector<std::size_t>&) -> void, const override);
-    MAKE_MOCK(get_device_properties, auto (std::size_t, device_properties&) -> bool, const override);
-    MAKE_MOCK(create_device, auto (std::size_t) -> std::unique_ptr<device>, override);
-    MAKE_MOCK(create_device_shared, auto (std::size_t) -> std::shared_ptr<device>, override);
+    MAKE_MOCK0(get_name, const std::string& (), const noexcept override);
+    MAKE_MOCK0(get_version, version (), const noexcept override);
+    MAKE_MOCK0(is_available, bool (), const noexcept override);
+    MAKE_MOCK1(enumerate_devices, void (std::vector<std::size_t>&), const override);
+    MAKE_MOCK2(get_device_properties, bool (std::size_t, device_properties&), const override);
+    MAKE_MOCK1(create_device, std::unique_ptr<device> (std::size_t), override);
+    MAKE_MOCK1(create_device_shared, std::shared_ptr<device> (std::size_t), override);
 
 };
 

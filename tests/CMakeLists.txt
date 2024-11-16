@@ -32,6 +32,15 @@ FetchContent_Declare(
   GIT_TAG        v3.5.4
 )
 FetchContent_MakeAvailable(Catch2)
+
+# Fetch Trompeloeil
+FetchContent_Declare(
+  Trompeloeil
+  GIT_REPOSITORY https://github.com/rollbear/trompeloeil.git
+  GIT_TAG        v49
+)
+FetchContent_MakeAvailable(Trompeloeil)
+
 include(Catch)
 
 add_subdirectory(unitary)

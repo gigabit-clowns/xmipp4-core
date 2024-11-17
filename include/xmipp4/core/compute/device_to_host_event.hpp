@@ -66,7 +66,7 @@ public:
      * @brief Signal the event when the current point in the execution 
      * queue is reached.
      * 
-     * @param queue The queue were the event is recorded.
+     * @param queue The queue where the event is recorded.
      * 
      */
     virtual void record(device_queue &queue) = 0;

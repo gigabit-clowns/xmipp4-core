@@ -85,28 +85,7 @@ XMIPP4_INLINE_CONSTEXPR flagset<B>::operator bool() const noexcept
 template<typename B>
 XMIPP4_CONSTEXPR flagset<B>::operator underlying_type() const noexcept
 {
-    return m_data;
-}
-
-template<typename B>
-XMIPP4_INLINE_CONSTEXPR flagset<B> 
-flagset<B>::operator|(const flagset& rhs) const noexcept
-{
-    return flagset(m_data | rhs.m_data);
-}
-
-template<typename B>
-XMIPP4_INLINE_CONSTEXPR flagset<B> 
-flagset<B>::operator&(const flagset& rhs) const noexcept
-{
-    return flagset(m_data & rhs.m_data);
-}
-
-template<typename B>
-XMIPP4_INLINE_CONSTEXPR flagset<B> 
-flagset<B>::operator^(const flagset& rhs) const noexcept
-{
-    return flagset(m_data ^ rhs.m_data);
+    return get_bits();
 }
 
 template<typename B>
@@ -149,7 +128,13 @@ flagset<B>::operator!=(const flagset& rhs) const noexcept
 
 
 
-
+template<typename B>
+XMIPP4_INLINE_CONSTEXPR 
+typename flagset<B>::underlying_type
+flagset<B>::get_bits() const noexcept
+{
+    return m_data;
+}
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR bool 
@@ -246,6 +231,29 @@ XMIPP4_INLINE_CONSTEXPR flagset<B>&
 flagset<B>::toggle(const flagset& other) noexcept
 {
     return *this ^= other;
+}
+
+
+
+template<typename B>
+XMIPP4_INLINE_CONSTEXPR 
+flagset<B> operator|(const flagset<B>& lhs, const flagset<B>& rhs) noexcept
+{
+    return flagset<B>(lhs.get_bits() | rhs.get_bits());
+}
+
+template<typename B>
+XMIPP4_INLINE_CONSTEXPR 
+flagset<B> operator&(const flagset<B>& lhs, const flagset<B>& rhs) noexcept
+{
+    return flagset<B>(lhs.get_bits() & rhs.get_bits());
+}
+
+template<typename B>
+XMIPP4_INLINE_CONSTEXPR 
+flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept
+{
+    return flagset<B>(lhs.get_bits() ^ rhs.get_bits());
 }
 
 } // namespace utils

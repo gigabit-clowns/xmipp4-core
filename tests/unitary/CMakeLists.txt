@@ -47,6 +47,7 @@ target_link_libraries(
 	PRIVATE 
 		${PROJECT_NAME} 
 		Catch2::Catch2WithMain
+		trompeloeil::trompeloeil
 )
 
 # On windows targets, copy the library to the test directory

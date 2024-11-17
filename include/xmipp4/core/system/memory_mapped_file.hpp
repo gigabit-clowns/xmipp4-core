@@ -42,7 +42,7 @@ public:
      * @brief Constant meaning to map the whole file
      * 
      */
-    static inline XMIPP4_CONST_CONSTEXPR std::size_t whole_file = 0;
+    static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t whole_file = 0;
 
     /**
      * @brief Construct an empty memory-mapped file
@@ -61,9 +61,9 @@ public:
      * Has no effect if write access is not enabled.
      */
     explicit memory_mapped_file(const char* filename, 
-                                                access_flags access = read_only,
-                                                std::size_t size = whole_file,
-                                                bool copy_on_write = false );
+                                access_flags access = read_only,
+                                std::size_t size = whole_file,
+                                bool copy_on_write = false );
 
     /**
      * @brief Construct with a file opened in memory.
@@ -76,9 +76,9 @@ public:
      * Has no effect if write access is not enabled.
      */
     explicit memory_mapped_file(const std::string& filename, 
-                                                access_flags access = read_only,
-                                                std::size_t size = whole_file,
-                                                bool copy_on_write = false );
+                                access_flags access = read_only,
+                                std::size_t size = whole_file,
+                                bool copy_on_write = false );
     memory_mapped_file(const memory_mapped_file& other) = delete;
     memory_mapped_file(memory_mapped_file&& other) noexcept;
     ~memory_mapped_file();
@@ -113,9 +113,9 @@ public:
      * Has no effect if write access is not enabled.
      */
     void open(const char* filename, 
-                              access_flags access = read_only,
-                              std::size_t size = whole_file,
-                              bool copy_on_write = false );
+              access_flags access = read_only,
+              std::size_t size = whole_file,
+              bool copy_on_write = false );
 
     /**
      * @brief Opens a file in memory.
@@ -129,9 +129,9 @@ public:
      * Has no effect if write access is not enabled.
      */
     void open(const std::string& filename, 
-                              access_flags access = read_only,
-                              std::size_t size = whole_file,
-                              bool copy_on_write = false );
+              access_flags access = read_only,
+              std::size_t size = whole_file,
+              bool copy_on_write = false );
 
     /**
      * @brief Close the opened file

@@ -51,7 +51,7 @@ public:
      * 
      * @param path Path to the Shared Object
      */
-    plugin_loader(const std::string& path);
+    explicit plugin_loader(const std::string& path);
     
     plugin_loader(const plugin_loader& other) = delete;
     plugin_loader(plugin_loader&& other) = default;

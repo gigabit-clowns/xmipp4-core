@@ -45,7 +45,6 @@ class host_to_device_transfer;
 class device_buffer_copy;
 class device_event;
 class device_to_host_event;
-class host_to_device_event;
 
 
 
@@ -192,22 +191,6 @@ public:
      */
     virtual std::shared_ptr<device_to_host_event>
     create_device_to_host_event_shared() = 0;
-
-    /**
-     * @brief Create a host to device synchronization primitive.
-     * 
-     * @return std::unique_ptr<host_to_device_event> 
-     */
-    virtual std::unique_ptr<host_to_device_event>
-    create_host_to_device_event() = 0;
-
-    /**
-     * @brief Create a host to device synchronization primitive.
-     * 
-     * @return std::unique_ptr<host_to_device_event> 
-     */
-    virtual std::shared_ptr<host_to_device_event>
-    create_host_to_device_event_shared() = 0;
 
 }; 
 

@@ -25,9 +25,6 @@
  * @date 2024-10-29
  */
 
-
-#include <catch2/catch_test_macros.hpp>
-
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/communication/communicator_backend.hpp>
@@ -35,87 +32,106 @@
 
 #include <algorithm>
 
+#include <catch2/catch_test_macros.hpp>
+#include <trompeloeil.hpp>
+
 using namespace xmipp4;
 using namespace xmipp4::communication;
 
-class test_communicator_backend
+class mock_communicator_backend final
     : public communicator_backend
 {
 public:
-    test_communicator_backend(std::string name)
-        : m_name(std::move(name))
-    {
-    }
-
-    const std::string& get_name() const noexcept final
-    {
-        return m_name;
-    }
-
-    version get_version() const noexcept final
-    {
-        return version(2, 4, 5);
-    }
-
-    bool is_available() const noexcept final
-    {
-        return true;
-    }
-
-    std::shared_ptr<communicator> 
-    get_world_communicator() const final
-    {
-        return nullptr;
-    }
-
-private:
-    std::string m_name;
+    MAKE_MOCK0(get_name, const std::string& (), const noexcept override);
+    MAKE_MOCK0(get_version, version (), const noexcept override);
+    MAKE_MOCK0(is_available, bool (), const noexcept override);
+    MAKE_MOCK0(get_world_communicator, std::shared_ptr<communicator> (), const override);
 
 };
 
-
 TEST_CASE( "register communicator backend", "[communicator_manager]" ) 
 {
+    // Setup mocks
+    auto mock1 = std::make_unique<mock_communicator_backend>();
+    const std::string name1 = "mock1";
+    REQUIRE_CALL(*mock1, get_name())
+        .RETURN(name1)
+        .TIMES(1);
+
+    auto mock2 = std::make_unique<mock_communicator_backend>();
+    const std::string name2 = "mock2";
+    REQUIRE_CALL(*mock2, get_name())
+        .RETURN(name2)
+        .TIMES(1);
+
+    // Test
     communicator_manager manager;
-    manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
-    manager.register_backend(std::make_unique<test_communicator_backend>("test2"));
+    manager.register_backend(std::move(mock1));
+    manager.register_backend(std::move(mock2));
 
     std::vector<std::string> backends;
     manager.enumerate_backends(backends);
 
     REQUIRE( backends.size() == 2 );
     std::sort(backends.begin(), backends.end()); // Ordering not defined
-    REQUIRE( backends[0] == "test1" );
-    REQUIRE( backends[1] == "test2" );
+    REQUIRE( backends[0] == name1 );
+    REQUIRE( backends[1] == name2 );
 }
 
 TEST_CASE( "query communicator backend", "[communicator_manager]" ) 
 {
+    // Setup mocks
+    auto mock1 = std::make_unique<mock_communicator_backend>();
+    const std::string name1 = "mock1";
+    REQUIRE_CALL(*mock1, get_name())
+        .RETURN(name1)
+        .TIMES(2);
+
+    auto mock2 = std::make_unique<mock_communicator_backend>();
+    const std::string name2 = "mock2";
+    REQUIRE_CALL(*mock2, get_name())
+        .RETURN(name2)
+        .TIMES(2);
+
+    // Test
     communicator_manager manager;
-    manager.register_backend(std::make_unique<test_communicator_backend>("test1"));
-    manager.register_backend(std::make_unique<test_communicator_backend>("test2"));
+    manager.register_backend(std::move(mock1));
+    manager.register_backend(std::move(mock2));
 
     communicator_backend* backend;
-    backend = manager.get_backend("test1");
+    backend = manager.get_backend(name1);
     REQUIRE( backend != nullptr );
-    REQUIRE( backend->get_name() == "test1" );
+    REQUIRE( backend->get_name() == name1 );
 
-    backend = manager.get_backend("test2");
+    backend = manager.get_backend(name2);
     REQUIRE( backend != nullptr );
-    REQUIRE( backend->get_name() == "test2" );
+    REQUIRE( backend->get_name() == name2 );
 
     REQUIRE( manager.get_backend("not-a-backend") == nullptr );
 }
 
 TEST_CASE( "register the same communicator backend twice", "[communicator_manager]" ) 
 {
+    // Setup mocks
+    const std::string name = "mock1";
+    auto mock1 = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock1, get_name())
+        .RETURN(name)
+        .TIMES(1);
+
+    auto mock2 = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock2, get_name())
+        .RETURN(name)
+        .TIMES(1);
+
+    // Test
     communicator_manager manager;
-    manager.register_backend(std::make_unique<test_communicator_backend>("test"));
-    manager.register_backend(std::make_unique<test_communicator_backend>("test"));
+    manager.register_backend(std::move(mock1));
+    manager.register_backend(std::move(mock2));
 
     std::vector<std::string> backends;
     manager.enumerate_backends(backends);
 
     REQUIRE( backends.size() == 1 );
-    REQUIRE( backends[0] == "test" );
+    REQUIRE( backends[0] == name );
 }

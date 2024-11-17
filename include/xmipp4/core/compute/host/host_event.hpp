@@ -30,7 +30,6 @@
 
 #include "../device_event.hpp"
 #include "../device_to_host_event.hpp"
-#include "../host_to_device_event.hpp"
 
 namespace xmipp4 
 {
@@ -40,10 +39,8 @@ namespace compute
 class host_event final
     : public device_event
     , public device_to_host_event
-    , public host_to_device_event
 {
 public:
-    void record() override;
     void record(device_queue &queue) override;
 
     void wait() const override;

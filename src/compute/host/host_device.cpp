@@ -129,17 +129,5 @@ host_device::create_device_to_host_event_shared()
     return std::make_shared<host_event>();
 }
 
-std::unique_ptr<host_to_device_event> 
-host_device::create_host_to_device_event()
-{
-    return std::make_unique<host_event>();
-}
-
-std::shared_ptr<host_to_device_event> 
-host_device::create_host_to_device_event_shared()
-{
-    return std::make_shared<host_event>();
-}
-
 } // namespace compute
 } // namespace xmipp4

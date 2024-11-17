@@ -34,11 +34,6 @@ namespace xmipp4
 namespace compute
 {
 
-void host_event::record()
-{
-    // No-op
-}
-
 void host_event::record(device_queue&)
 {
     // No-op

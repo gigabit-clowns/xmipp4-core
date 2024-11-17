@@ -40,7 +40,7 @@ class device_queue;
 
 
 /**
- * @brief Abstract class describing a device to event.
+ * @brief Abstract class describing a device to host synchronization primitive.
  * 
  * Instances of this inteface may be used to query or ensure
  * that a certain point in the execution pipeline has

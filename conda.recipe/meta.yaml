@@ -34,19 +34,26 @@ about:
 source:
   path: ../
 
+build:
+  number: 0
+  script:
+    # C++17 features marked as not available
+    # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
+    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - python -m pip install . --no-deps -v --no-build-isolation
+
 requirements:
+  build:
+    - python                                 # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+    - {{ compiler('cxx') }}
+    - cmake>=3.16
+    - make # [unix]
+
   host:
     - python
     - pip
     - scikit-build-core>=0.10
 
-  build:
-    - python                              # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake>=3.16
-    - make          # [not win]
-
-build:
-  number: 0

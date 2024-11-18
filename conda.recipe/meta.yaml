@@ -42,12 +42,10 @@ requirements:
 
   build:
     - {{ compiler('c') }}
-    - {{ stdlib('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
-    - {{ stdlib('cxx') }}
     - cmake>=3.16
     - make          # [not win]
-    - ninja         # [win]
 
 build:
   number: 0

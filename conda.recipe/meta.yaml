@@ -44,7 +44,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - ninja
+    - make          # [not win]
+    - ninja         # [win]
 
 build:
   number: 0

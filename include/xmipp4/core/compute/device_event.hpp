@@ -67,7 +67,7 @@ public:
      * @param queue The queue where the event is recorded.
      * 
      */
-    virtual void record(device_queue &queue) = 0;
+    virtual void signal(device_queue &queue) = 0;
 
     /**
      * @brief Wait until the last recorded event is signaled by the queue.

@@ -21,7 +21,6 @@
 [build-system]
 requires = [
     "scikit-build-core[pyproject]>=0.5",
-    "cmake>=3.16"
 ]
 build-backend = "scikit_build_core.build"
 

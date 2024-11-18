@@ -150,7 +150,7 @@ public:
      * @return std::unique_ptr<device_copy> 
      */
     virtual std::unique_ptr<device_copy> 
-    create_device_buffer_copy() = 0;
+    create_device_copy() = 0;
 
     /**
      * @brief Create a device buffer copy engine.
@@ -158,7 +158,7 @@ public:
      * @return std::shared_ptr<device_copy> 
      */
     virtual std::shared_ptr<device_copy> 
-    create_device_buffer_copy_shared() = 0;
+    create_device_copy_shared() = 0;
 
     /**
      * @brief Create an intra-device synchronization primitive.

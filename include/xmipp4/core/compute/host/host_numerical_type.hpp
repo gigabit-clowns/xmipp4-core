@@ -163,4 +163,3 @@ struct host_numerical_type<std::enable_if<sizeof(double)==8, std::complex<double
 
 } // namespace compute
 } // namespace xmipp4
-

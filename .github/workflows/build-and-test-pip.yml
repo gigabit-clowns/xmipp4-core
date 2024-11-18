@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  pip-build:
     strategy:
       matrix:
         os:
@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@main
         with:
           python-version: ${{ matrix.python }}
 

@@ -43,7 +43,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake>=3.18
+    - cmake>=3.16
     - make          # [not win]
     - ninja         # [win]
 

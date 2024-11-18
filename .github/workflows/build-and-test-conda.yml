@@ -15,8 +15,6 @@ jobs:
         - ubuntu-latest
         - macos-latest
         - windows-latest
-        python:
-        - '3.10'
   
     runs-on: ${{ matrix.os }}
     defaults:
@@ -30,13 +28,12 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
-          conda-solver: "classic"
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify
         run: conda install -y conda-build conda-verify
 
       - name: Build with conda
-        run: conda-build conda.recipe --python=${{ matrix.python }}
+        run: conda-build conda.recipe
 
       # TODO run tests

@@ -42,7 +42,7 @@ class device_memory_allocator;
 class host_memory_allocator;
 class device_to_host_transfer;
 class host_to_device_transfer;
-class device_buffer_copy;
+class device_copy;
 class device_event;
 class device_to_host_event;
 
@@ -149,7 +149,7 @@ public:
      * 
      * @return std::unique_ptr<device_copy> 
      */
-    virtual std::unique_ptr<device_buffer_copy> 
+    virtual std::unique_ptr<device_copy> 
     create_device_buffer_copy() = 0;
 
     /**
@@ -157,7 +157,7 @@ public:
      * 
      * @return std::shared_ptr<device_copy> 
      */
-    virtual std::shared_ptr<device_buffer_copy> 
+    virtual std::shared_ptr<device_copy> 
     create_device_buffer_copy_shared() = 0;
 
     /**

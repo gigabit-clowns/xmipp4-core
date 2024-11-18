@@ -30,7 +30,7 @@
 
 #include "../device_to_host_transfer.hpp"
 #include "../host_to_device_transfer.hpp"
-#include "../device_buffer_copy.hpp"
+#include "../device_copy.hpp"
 
 namespace xmipp4 
 {
@@ -50,7 +50,7 @@ namespace compute
 class host_transfer final
     : public host_to_device_transfer
     , public device_to_host_transfer
-    , public device_buffer_copy
+    , public device_copy
 {
 public:
     void transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,

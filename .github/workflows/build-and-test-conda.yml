@@ -30,6 +30,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
+          conda-solver: "classic"
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify

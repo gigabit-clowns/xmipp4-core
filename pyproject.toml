@@ -19,7 +19,10 @@
 # ***************************************************************************
 
 [build-system]
-requires = ["scikit-build-core"]
+requires = [
+    "scikit-build-core[pyproject]>=0.5",
+    "cmake>=3.18"
+]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -53,7 +56,7 @@ Homepage = "https://github.com/gigabit-clowns/xmipp4-core"
 
 [tool.scikit-build]
 experimental=true # For wheel.install-dir
-cmake.version = ">=3.16"
+cmake.version = ">=3.18"
 cmake.args = []
 cmake.define = {}
 cmake.build-type = "Release"

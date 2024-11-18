@@ -37,6 +37,8 @@ source:
 
 build:
   number: 0
+  script_env:
+  - CMAKE_GENERATOR=Ninja
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
@@ -50,7 +52,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - make # [unix]
+    - ninja
 
   host:
     - python

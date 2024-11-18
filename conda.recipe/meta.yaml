@@ -38,12 +38,12 @@ source:
 build:
   number: 0
   script_env:
-  - CMAKE_GENERATOR=Ninja
+  - CMAKE_GENERATOR="Ninja" # [win]
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    - python -m pip install . -vvv --no-deps --no-build-isolation
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
 
 requirements:
   build:
@@ -52,7 +52,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - ninja
+    - make # [unix]
+    - ninja # [win]
 
   host:
     - python

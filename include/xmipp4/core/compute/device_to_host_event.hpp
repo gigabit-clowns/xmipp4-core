@@ -40,7 +40,7 @@ class device_queue;
 
 
 /**
- * @brief Abstract class describing a device to event.
+ * @brief Abstract class describing a device to host synchronization primitive.
  * 
  * Instances of this inteface may be used to query or ensure
  * that a certain point in the execution pipeline has
@@ -66,10 +66,10 @@ public:
      * @brief Signal the event when the current point in the execution 
      * queue is reached.
      * 
-     * @param queue The queue were the event is recorded.
+     * @param queue The queue where the event is recorded.
      * 
      */
-    virtual void record(device_queue &queue) = 0;
+    virtual void signal(device_queue &queue) = 0;
 
     /**
      * @brief Check if the last recorded event is signaled by the queue.

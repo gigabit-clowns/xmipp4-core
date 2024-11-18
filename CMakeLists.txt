@@ -47,6 +47,9 @@ if(XMIPP4_CORE_BUILD_DOC)
 	add_subdirectory(doc)
 endif()
 
+# Find dependencies
+find_package(Threads REQUIRED)
+
 # Find all source and header files
 file(
 	GLOB_RECURSE 
@@ -93,6 +96,14 @@ target_compile_definitions(
 if(MSVC)
 	target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32) # Winsock
 endif()
+
+target_link_libraries(
+	${PROJECT_NAME} 
+	PUBLIC
+		Threads::Threads
+	PRIVATE
+		${CMAKE_DL_LIBS}
+)
 
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)

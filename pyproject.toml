@@ -56,7 +56,6 @@ experimental=true # For wheel.install-dir
 cmake.version = ">=3.16"
 cmake.args = []
 cmake.define = {}
-cmake.verbose = false
 cmake.build-type = "Release"
 
 wheel.install-dir="/data"

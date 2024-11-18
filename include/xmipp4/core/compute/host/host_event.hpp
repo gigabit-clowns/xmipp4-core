@@ -41,7 +41,7 @@ class host_event final
     , public device_to_host_event
 {
 public:
-    void record(device_queue &queue) override;
+    void signal(device_queue &queue) override;
 
     void wait() const override;
     void wait(device_queue &queue) const override;

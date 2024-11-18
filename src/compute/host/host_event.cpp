@@ -34,7 +34,7 @@ namespace xmipp4
 namespace compute
 {
 
-void host_event::record(device_queue&)
+void host_event::signal(device_queue&)
 {
     // No-op
 }

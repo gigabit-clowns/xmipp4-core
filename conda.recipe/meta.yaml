@@ -42,6 +42,7 @@ build:
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
     - python -m pip install . -vvv --no-deps --no-build-isolation
+  activate_in_script: true
 
 requirements:
   build:

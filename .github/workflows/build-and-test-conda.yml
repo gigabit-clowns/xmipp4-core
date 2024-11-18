@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@main
         with:
           auto-activate-base: true
           activate-environment: "" # Base is required for conda-build

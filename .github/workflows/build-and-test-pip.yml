@@ -36,3 +36,5 @@ jobs:
 
       - name: Install xmipp4-core with pip
         run: pip install . -vvv
+
+      # TODO run tests

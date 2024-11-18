@@ -20,5 +20,5 @@
 ::  e-mail address 'xmipp@cnb.csic.es'
 :: ***************************************************************************
 
-%PYTHON% -m pip install . -vvv --no-deps
+%PYTHON% -m pip install . -vvv
 exit errorlevel

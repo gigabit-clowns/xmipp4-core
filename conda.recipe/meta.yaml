@@ -38,7 +38,7 @@ requirements:
   host:
     - python
     - pip
-    - scikit-build-core
+    - scikit-build-core>=0.10
 
   build:
     - {{ compiler('c') }}

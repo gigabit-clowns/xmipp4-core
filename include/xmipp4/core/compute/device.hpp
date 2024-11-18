@@ -144,7 +144,7 @@ public:
     virtual std::shared_ptr<device_to_host_transfer> 
     create_device_to_host_transfer_shared() = 0;
 
-    /*
+    /**
      * @brief Create a device buffer copy engine.
      * 
      * @return std::unique_ptr<device_copy> 

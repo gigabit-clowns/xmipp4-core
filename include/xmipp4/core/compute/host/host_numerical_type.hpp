@@ -43,6 +43,7 @@ namespace compute
 template <typename T>
 struct host_numerical_type
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::unknown;
@@ -52,6 +53,7 @@ struct host_numerical_type
 template <>
 struct host_numerical_type<std::int8_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::int8;
@@ -61,6 +63,7 @@ struct host_numerical_type<std::int8_t>
 template <>
 struct host_numerical_type<std::uint8_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::uint8;
@@ -70,6 +73,7 @@ struct host_numerical_type<std::uint8_t>
 template <>
 struct host_numerical_type<std::int16_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::int16;
@@ -79,6 +83,7 @@ struct host_numerical_type<std::int16_t>
 template <>
 struct host_numerical_type<std::uint16_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::uint16;
@@ -88,6 +93,7 @@ struct host_numerical_type<std::uint16_t>
 template <>
 struct host_numerical_type<std::int32_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::int32;
@@ -97,6 +103,7 @@ struct host_numerical_type<std::int32_t>
 template <>
 struct host_numerical_type<std::uint32_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::uint32;
@@ -106,6 +113,7 @@ struct host_numerical_type<std::uint32_t>
 template <>
 struct host_numerical_type<std::int64_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::int64;
@@ -115,6 +123,7 @@ struct host_numerical_type<std::int64_t>
 template <>
 struct host_numerical_type<std::uint64_t>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::uint64;
@@ -125,6 +134,7 @@ struct host_numerical_type<std::uint64_t>
 template <>
 struct host_numerical_type<std::enable_if<sizeof(float)==4, float>::type>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::float32;
@@ -135,6 +145,7 @@ struct host_numerical_type<std::enable_if<sizeof(float)==4, float>::type>
 template <>
 struct host_numerical_type<std::enable_if<sizeof(double)==8, double>::type>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::float64;
@@ -145,6 +156,7 @@ struct host_numerical_type<std::enable_if<sizeof(double)==8, double>::type>
 template <>
 struct host_numerical_type<std::enable_if<sizeof(float)==4, std::complex<float>>::type>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::complex_float32;
@@ -155,6 +167,7 @@ struct host_numerical_type<std::enable_if<sizeof(float)==4, std::complex<float>>
 template <>
 struct host_numerical_type<std::enable_if<sizeof(double)==8, std::complex<double>>::type>
 {
+    XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
     {
         return numerical_type::complex_float64;

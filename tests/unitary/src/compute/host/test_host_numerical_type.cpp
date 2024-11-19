@@ -48,5 +48,9 @@ TEST_CASE( "check host numerical types", "[host_numerical_type]" )
     REQUIRE( host_numerical_type<std::uint32_t>::value() == numerical_type::uint32 );
     REQUIRE( host_numerical_type<std::int64_t>::value() == numerical_type::int64 );
     REQUIRE( host_numerical_type<std::uint64_t>::value() == numerical_type::uint64 );
+    REQUIRE( host_numerical_type<float>::value() == numerical_type::float32 );
+    REQUIRE( host_numerical_type<double>::value() == numerical_type::float64 );
+    REQUIRE( host_numerical_type<std::complex<float>>::value() == numerical_type::complex_float32 );
+    REQUIRE( host_numerical_type<std::complex<double>>::value() == numerical_type::complex_float64 );
     REQUIRE( host_numerical_type<invalid_numerical_type>::value() == numerical_type::unknown );
 }

@@ -39,14 +39,21 @@ namespace xmipp4
 namespace compute
 {
 
+static void require_nonnull(const host_buffer *buffer, const char *param)
+{
+    if (!buffer)
+    {
+        std::string message = param;
+        message += " cannot be null";
+        throw std::invalid_argument(message);
+    }
+}
+
 void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   device_queue& )
 {
-    if (!src_buffer)
-    {
-        throw std::invalid_argument("src_buffer cannot be nullptr");
-    }
+    require_nonnull(src_buffer.get(), "src_buffer");
 
     compute::copy(
         *src_buffer, 
@@ -59,10 +66,7 @@ void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
-    if (!src_buffer)
-    {
-        throw std::invalid_argument("src_buffer cannot be nullptr");
-    }
+    require_nonnull(src_buffer.get(), "src_buffer");
 
     compute::copy(
         *src_buffer, 
@@ -91,10 +95,7 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
                                   const std::shared_ptr<host_buffer> &dst_buffer,
                                   device_queue& )
 {
-    if (!dst_buffer)
-    {
-        throw std::invalid_argument("dst_buffer cannot be nullptr");
-    }
+    require_nonnull(dst_buffer.get(), "dst_buffer");
 
     compute::copy(
         dynamic_cast<const host_unified_buffer&>(src_buffer), 
@@ -107,10 +108,7 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
-    if (!dst_buffer)
-    {
-        throw std::invalid_argument("dst_buffer cannot be nullptr");
-    }
+    require_nonnull(dst_buffer.get(), "dst_buffer");
 
     compute::copy(
         dynamic_cast<const host_unified_buffer&>(src_buffer), 

@@ -39,11 +39,11 @@ namespace xmipp4
 namespace compute
 {
 
-static void require_nonnull(const host_buffer *buffer, const char *param)
+static void require_nonnull(const host_buffer *buffer, const char *buffer_name)
 {
     if (!buffer)
     {
-        std::string message = param;
+        std::string message = buffer_name;
         message += " cannot be null";
         throw std::invalid_argument(message);
     }

@@ -192,7 +192,6 @@ public:
     virtual std::shared_ptr<device_to_host_event>
     create_device_to_host_event_shared() = 0;
 
-
 }; 
 
 } // namespace compute

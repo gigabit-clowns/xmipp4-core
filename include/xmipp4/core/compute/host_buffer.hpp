@@ -91,7 +91,6 @@ public:
 };
 
 
-
 /**
  * @brief Copy the contents of one buffer to another.
  * 

@@ -80,7 +80,8 @@ host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer,
                         device_memory_allocator&,
                         device_queue&)
 {
-    return std::dynamic_pointer_cast<device_buffer>(buffer); // Alias
+    // Returned buffer is an alias of the one received, not a copy
+    return std::dynamic_pointer_cast<device_buffer>(buffer);
 }
 
 std::shared_ptr<const device_buffer> 
@@ -88,7 +89,8 @@ host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer,
                         device_memory_allocator&,
                         device_queue& )
 {
-    return std::dynamic_pointer_cast<const device_buffer>(buffer); // Alias
+    // Returned buffer is an alias of the one received, not a copy
+    return std::dynamic_pointer_cast<const device_buffer>(buffer);
 }
 
 void host_transfer::transfer_copy(const device_buffer &src_buffer,
@@ -122,7 +124,8 @@ host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer,
                         host_memory_allocator&,
                         device_queue& )
 {
-    return std::dynamic_pointer_cast<host_buffer>(buffer); // Alias
+    // Returned buffer is an alias of the one received, not a copy
+    return std::dynamic_pointer_cast<host_buffer>(buffer); 
 }
 
 std::shared_ptr<const host_buffer> 
@@ -130,7 +133,8 @@ host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer,
                         host_memory_allocator&,
                         device_queue& )
 {
-    return std::dynamic_pointer_cast<const host_buffer>(buffer); // Alias
+    // Returned buffer is an alias of the one received, not a copy
+    return std::dynamic_pointer_cast<const host_buffer>(buffer);
 }
 
 

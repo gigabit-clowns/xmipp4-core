@@ -127,7 +127,7 @@ public:
      * @see get_preferred_backend
      */
     XMIPP4_CORE_API
-    std::shared_ptr<communicator> get_world_communicator() const;
+    std::shared_ptr<communicator> get_preferred_world_communicator() const;
 
 private:
     class implementation;

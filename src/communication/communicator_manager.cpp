@@ -150,6 +150,20 @@ private:
 
 
 
+static 
+std::shared_ptr<communicator> 
+obtain_communicator(communicator_backend* backend)
+{
+    std::shared_ptr<communicator> result;
+    
+    if (backend)
+    {
+        result = backend->get_world_communicator();
+    }
+
+    return result;
+}
+
 
 
 communicator_manager::communicator_manager() = default;
@@ -188,29 +202,13 @@ communicator_manager::get_preferred_backend() const
 std::shared_ptr<communicator>
 communicator_manager::get_world_communicator(const std::string &name) const
 {
-    std::shared_ptr<communicator> result;
-    
-    const auto* backend = get_backend(name);
-    if (backend)
-    {
-        result = backend->get_world_communicator();
-    }
-
-    return result;
+    return obtain_communicator(get_backend(name));
 }
 
 std::shared_ptr<communicator>
-communicator_manager::get_world_communicator() const
+communicator_manager::get_preferred_world_communicator() const
 {
-    std::shared_ptr<communicator> result;
-    
-    const auto* backend = get_preferred_backend();
-    if (backend)
-    {
-        result = backend->get_world_communicator();
-    }
-
-    return result;
+    return obtain_communicator(get_preferred_backend());
 }
 
 } // namespace communication

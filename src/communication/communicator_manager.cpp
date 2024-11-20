@@ -145,20 +145,6 @@ private:
 
     registry_type m_registry;
 
-    static 
-    registry_type::const_iterator 
-    find_first_available_backend(registry_type::const_iterator first,
-                                 registry_type::const_iterator last )
-    {
-        return std::find_if(
-            first, last,
-            [] (const auto &item) -> bool
-            {
-                return item.second->is_available();
-            }
-        );
-    }
-
 };
 
 

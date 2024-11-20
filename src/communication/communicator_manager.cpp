@@ -29,6 +29,7 @@
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/communication/communicator_backend.hpp>
+#include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 
 #include <tuple>
 #include <unordered_map>
@@ -110,12 +111,20 @@ public:
             while(ite != m_registry.end())
             {
                 const auto priority = ite->second->get_priority();
-                if (priority >= highest_priority)
+                if (priority > highest_priority)
                 {
                     result = ite->second.get();
                     highest_priority = priority;
                 }
-
+                else if (priority == highest_priority)
+                {
+                    throw ambiguous_backend_error(
+                        "Could not disambiguate multiple among multiple "
+                        "communicator_backend-s. Ensure that only one has "
+                        "been installed"
+                    );
+                }
+                
                 ite = find_first_available_backend(
                     std::next(ite), 
                     m_registry.end()

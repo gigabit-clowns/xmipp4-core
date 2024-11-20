@@ -129,7 +129,7 @@ public:
                 throw ambiguous_backend_error(
                     "Could not disambiguate multiple among multiple "
                     "communicator_backend-s. Ensure that only one has "
-                    "been installed"
+                    "been installed."
                 );
             }
 

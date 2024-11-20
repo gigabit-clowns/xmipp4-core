@@ -98,7 +98,7 @@ public:
     /**
      * @brief Find the most suitable backend
      *
-     * The most suitable backend the available backend with the highest
+     * The most suitable backend is an available backend with the highest
      * priority.
      *  
      * @return communicator_backend* The backend. Nullptr if none is available.

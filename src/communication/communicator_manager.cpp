@@ -106,11 +106,14 @@ public:
 
             while (ite != m_registry.end())
             {
-                if (ite->second->is_available() && 
-                    ite->second->get_priority() > highest_priority)
+                if (ite->second->is_available() )
                 {
-                    result = ite->second.get();
-                    highest_priority = result->get_priority();
+                    const auto priority = ite->second->get_priority();
+                    if (priority >= highest_priority)
+                    {
+                        result = ite->second.get();
+                        highest_priority = priority;
+                    }
                 }
 
                 ++ite;

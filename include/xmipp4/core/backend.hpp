@@ -81,11 +81,10 @@ public:
      * @brief Get the priority of this backend.
      * 
      * This attribute can be used to break a tie when multiple backends
-     * can be used. Thus, implementations should be honest when
-     * providing a value.
+     * can be used. In general prefer using backend_priority::normal unless 
+     * there is a strong reason.
      * 
      * @return backend_priority The priority of this backend.
-     * 
      */
     virtual backend_priority get_priority() const noexcept = 0;
 

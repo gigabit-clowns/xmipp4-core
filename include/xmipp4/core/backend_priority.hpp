@@ -38,16 +38,14 @@ namespace xmipp4
 {
 
 /**
- * @brief Enumeration defining numerous degrees of faith that can be
- * placed on a backend.
+ * @brief Enumeration defining the preference over the selection of a
+ * particular backend.
  * 
  */
 enum class backend_priority
 {
     fallback = -1024, ///< Used for dummy implementations.
-    low = -1, ///< Low priority. Used when low faith is placed at an implementation.
     normal = 0, ///< Normal priority. Use by default.
-    high = +1, ///< High priority. Used when a lot of faith is placed at an implementation.
 };
 
 

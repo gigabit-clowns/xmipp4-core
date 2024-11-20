@@ -54,7 +54,7 @@ bool host_device_backend::is_available() const noexcept
 
 backend_priority host_device_backend::get_priority() const noexcept
 {
-    return backend_priority::low;
+    return backend_priority::normal;
 }
 
 void host_device_backend::enumerate_devices(std::vector<std::size_t> &ids) const

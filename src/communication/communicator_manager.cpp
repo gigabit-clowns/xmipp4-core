@@ -32,6 +32,7 @@
 
 #include <tuple>
 #include <unordered_map>
+#include <algorithm>
 
 namespace xmipp4
 {
@@ -87,11 +88,10 @@ public:
         communicator_backend* result;
 
         // Find the first available backend
-        auto ite = m_registry.begin();
-        while(ite != m_registry.end() && !ite->second->is_available())
-        {
-            ++ite;
-        }
+        auto ite = find_first_available_backend(
+            m_registry.begin(),
+            m_registry.end()
+        );
 
         // Get the available backend with the highest priority
         if (ite == m_registry.end())
@@ -102,21 +102,24 @@ public:
         {
             result = ite->second.get();
             auto highest_priority = result->get_priority();
-            ++ite;
+            ite = find_first_available_backend(
+                std::next(ite), 
+                m_registry.end()
+            );
 
-            while (ite != m_registry.end())
+            while(ite != m_registry.end())
             {
-                if (ite->second->is_available() )
+                const auto priority = ite->second->get_priority();
+                if (priority >= highest_priority)
                 {
-                    const auto priority = ite->second->get_priority();
-                    if (priority >= highest_priority)
-                    {
-                        result = ite->second.get();
-                        highest_priority = priority;
-                    }
+                    result = ite->second.get();
+                    highest_priority = priority;
                 }
 
-                ++ite;
+                ite = find_first_available_backend(
+                    std::next(ite), 
+                    m_registry.end()
+                );
             }
         }
 
@@ -128,6 +131,20 @@ private:
         std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
 
     registry_type m_registry;
+
+    static 
+    registry_type::const_iterator 
+    find_first_available_backend(registry_type::const_iterator first,
+                                 registry_type::const_iterator last )
+    {
+        return std::find_if(
+            first, last,
+            [] (const auto &item) -> bool
+            {
+                return item.second->is_available();
+            }
+        );
+    }
 
 };
 

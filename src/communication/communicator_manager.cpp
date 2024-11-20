@@ -152,7 +152,7 @@ private:
 
 static 
 std::shared_ptr<communicator> 
-obtain_communicator(communicator_backend* backend)
+obtain_communicator(const communicator_backend* backend)
 {
     std::shared_ptr<communicator> result;
     

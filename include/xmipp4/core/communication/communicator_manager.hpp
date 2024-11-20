@@ -94,6 +94,17 @@ public:
     XMIPP4_CORE_API
     communicator_backend* 
     get_backend(const std::string &name) const;
+    
+    /**
+     * @brief Find the most suitable backend
+     *
+     * The most suitable backend the available backend with the highest
+     * priority.
+     *  
+     * @return communicator_backend* The backend. Nullptr if none is available.
+     */
+    XMIPP4_CORE_API
+    communicator_backend* get_preferred_backend() const;
 
     /**
      * @brief Get the world communicator of a backend.
@@ -107,6 +118,16 @@ public:
     XMIPP4_CORE_API
     std::shared_ptr<communicator> 
     get_world_communicator(const std::string &name) const;
+
+    /**
+     * @brief Get the world communicator from the preferred backend.
+     * 
+     * @return std::shared_ptr<communicator> Reference to the world
+     * communicator.
+     * @see get_preferred_backend
+     */
+    XMIPP4_CORE_API
+    std::shared_ptr<communicator> get_world_communicator() const;
 
 private:
     class implementation;

@@ -82,15 +82,39 @@ public:
         return result;
     }
 
-    std::shared_ptr<communicator>
-    get_world_communicator(const std::string &name) const
+    communicator_backend* get_preferred_backend() const
     {
-        std::shared_ptr<communicator> result;
-        
-        const auto* backend = get_backend(name);
-        if (backend)
+        communicator_backend* result;
+
+        // Find the first available backend
+        auto ite = m_registry.begin();
+        while(ite != m_registry.end() && !ite->second->is_available())
         {
-            result = backend->get_world_communicator();
+            ++ite;
+        }
+
+        // Get the available backend with the highest priority
+        if (ite == m_registry.end())
+        {
+            result = nullptr;
+        }
+        else
+        {
+            result = ite->second.get();
+            auto highest_priority = result->get_priority();
+            ++ite;
+
+            while (ite != m_registry.end())
+            {
+                if (ite->second->is_available() && 
+                    ite->second->get_priority() > highest_priority)
+                {
+                    result = ite->second.get();
+                    highest_priority = result->get_priority();
+                }
+
+                ++ite;
+            }
         }
 
         return result;
@@ -135,10 +159,38 @@ communicator_manager::get_backend(const std::string &name) const
     return m_implementation->get_backend(name);
 }
 
+communicator_backend* 
+communicator_manager::get_preferred_backend() const
+{
+    return m_implementation->get_preferred_backend();
+}
+
 std::shared_ptr<communicator>
 communicator_manager::get_world_communicator(const std::string &name) const
 {
-    return m_implementation->get_world_communicator(name);
+    std::shared_ptr<communicator> result;
+    
+    const auto* backend = get_backend(name);
+    if (backend)
+    {
+        result = backend->get_world_communicator();
+    }
+
+    return result;
+}
+
+std::shared_ptr<communicator>
+communicator_manager::get_world_communicator() const
+{
+    std::shared_ptr<communicator> result;
+    
+    const auto* backend = get_preferred_backend();
+    if (backend)
+    {
+        result = backend->get_world_communicator();
+    }
+
+    return result;
 }
 
 } // namespace communication

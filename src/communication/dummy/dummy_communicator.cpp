@@ -64,14 +64,14 @@ static std::size_t require_same_count(std::size_t send_count,
 template<typename T, typename... Ts>
 void dummy_communicator_helper<T, Ts...>::send(int, span<const T>)
 {
-    throw std::logic_error("send cannot be called with a single rank");
+    throw std::domain_error("send cannot be called with a single rank");
 }
 
 template<typename T, typename... Ts>
 std::size_t 
 dummy_communicator_helper<T, Ts...>::receive(int, span<T>)
 {
-    throw std::logic_error("receive cannot be called with a single rank");
+    throw std::domain_error("receive cannot be called with a single rank");
 }
 
 template<typename T, typename... Ts>
@@ -81,7 +81,7 @@ dummy_communicator_helper<T, Ts...>::send_receive(int,
                                                   int, 
                                                   span<T> )
 {
-    throw std::logic_error("send_receive cannot be called with a single rank");
+    throw std::domain_error("send_receive cannot be called with a single rank");
 }
 
 template<typename T, typename... Ts>

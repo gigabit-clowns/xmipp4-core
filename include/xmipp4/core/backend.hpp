@@ -29,6 +29,7 @@
  */
 
 #include "version.hpp"
+#include "backend_priority.hpp"
 #include "platform/dynamic_shared_object.h"
 
 #include <string>
@@ -57,9 +58,9 @@ public:
     /**
      * @brief Get the name of the backend.
      * 
-     * @return const std::string& The name.
+     * @return std::string The name.
      */
-    virtual const std::string& get_name() const noexcept = 0;
+    virtual std::string get_name() const noexcept = 0;
 
     /**
      * @brief Get the version of the backend.
@@ -75,6 +76,18 @@ public:
      * @return false Backend is not usable.
      */
     virtual bool is_available() const noexcept = 0;
+
+    /**
+     * @brief Get the priority of this backend.
+     * 
+     * This attribute can be used to break a tie when multiple backends
+     * can be used. Thus, implementations should be honest when
+     * providing a value.
+     * 
+     * @return backend_priority The priority of this backend.
+     * 
+     */
+    virtual backend_priority get_priority() const noexcept = 0;
 
 };
 

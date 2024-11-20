@@ -37,11 +37,9 @@ namespace xmipp4
 namespace compute
 {
 
-static const std::string name = "host";
-
-const std::string& host_device_backend::get_name() const noexcept
+std::string host_device_backend::get_name() const noexcept
 {
-    return name;
+    return "host";
 }
 
 version host_device_backend::get_version() const noexcept
@@ -52,6 +50,11 @@ version host_device_backend::get_version() const noexcept
 bool host_device_backend::is_available() const noexcept
 {
     return true;
+}
+
+backend_priority host_device_backend::get_priority() const noexcept
+{
+    return backend_priority::low;
 }
 
 void host_device_backend::enumerate_devices(std::vector<std::size_t> &ids) const

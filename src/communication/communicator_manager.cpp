@@ -32,6 +32,7 @@
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 
 #include <tuple>
+#include <vector>
 #include <unordered_map>
 #include <algorithm>
 
@@ -85,51 +86,54 @@ public:
     }
 
     communicator_backend* get_preferred_backend() const
-    {
+    {   
         communicator_backend* result;
 
-        // Find the first available backend
-        auto ite = find_first_available_backend(
-            m_registry.begin(),
-            m_registry.end()
-        );
+        // Filter available backends
+        std::vector<communicator_backend*> available_backends;
+        available_backends.reserve(m_registry.size());
+        for (auto &item : m_registry)
+        {   
+            if (item.second->is_available())
+            {
+                available_backends.emplace_back(item.second.get());
+            }
+        }
 
-        // Get the available backend with the highest priority
-        if (ite == m_registry.end())
+        if( available_backends.size() == 0)
         {
             result = nullptr;
         }
-        else
+        else if (available_backends.size() == 1)
         {
-            result = ite->second.get();
-            auto highest_priority = result->get_priority();
-            ite = find_first_available_backend(
-                std::next(ite), 
-                m_registry.end()
+            result = available_backends[0];
+        }
+        else // available_backends.size() > 1
+        {
+            // Get the best two
+            std::partial_sort(
+                available_backends.begin(),
+                std::next(available_backends.begin(), 2),
+                available_backends.end(),
+                [] (const communicator_backend *lhs, 
+                    const communicator_backend *rhs ) -> bool
+                {
+                    return lhs->get_priority() > rhs->get_priority();
+                }
             );
 
-            while(ite != m_registry.end())
+            // Ensure the second is worse
+            if (available_backends[0]->get_priority() == 
+                available_backends[1]->get_priority() )
             {
-                const auto priority = ite->second->get_priority();
-                if (priority > highest_priority)
-                {
-                    result = ite->second.get();
-                    highest_priority = priority;
-                }
-                else if (priority == highest_priority)
-                {
-                    throw ambiguous_backend_error(
-                        "Could not disambiguate multiple among multiple "
-                        "communicator_backend-s. Ensure that only one has "
-                        "been installed"
-                    );
-                }
-                
-                ite = find_first_available_backend(
-                    std::next(ite), 
-                    m_registry.end()
+                throw ambiguous_backend_error(
+                    "Could not disambiguate multiple among multiple "
+                    "communicator_backend-s. Ensure that only one has "
+                    "been installed"
                 );
             }
+
+            result = available_backends[0];
         }
 
         return result;

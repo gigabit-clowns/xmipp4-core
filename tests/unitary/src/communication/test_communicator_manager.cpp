@@ -147,7 +147,7 @@ TEST_CASE( "get_preferred_backend should return the best available backend", "[c
         .TIMES(2);
     REQUIRE_CALL(*mock1, get_priority())
         .RETURN(backend_priority::normal)
-        .TIMES(1);
+        .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
         .RETURN(true)
         .TIMES(1);
@@ -159,7 +159,7 @@ TEST_CASE( "get_preferred_backend should return the best available backend", "[c
         .TIMES(1);
     REQUIRE_CALL(*mock2, get_priority())
         .RETURN(backend_priority::fallback)
-        .TIMES(1);
+        .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
         .RETURN(true)
         .TIMES(1);
@@ -210,7 +210,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(1);
     REQUIRE_CALL(*mock1, get_priority())
         .RETURN(backend_priority::normal)
-        .TIMES(1);
+        .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
         .RETURN(true)
         .TIMES(1);
@@ -222,7 +222,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(1);
     REQUIRE_CALL(*mock2, get_priority())
         .RETURN(backend_priority::normal)
-        .TIMES(1);
+        .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
         .RETURN(true)
         .TIMES(1);

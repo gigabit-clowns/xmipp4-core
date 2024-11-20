@@ -85,6 +85,9 @@ public:
     void all_to_all(span<const T> send_buf, span<T> recv_buf) final;
 
 private:
+    void dummy_collective_operation(int root, 
+                                    span<const T> send_buf, 
+                                    span<T> recv_buf );
     void dummy_collective_operation(span<const T> send_buf, span<T> recv_buf);
 
 };

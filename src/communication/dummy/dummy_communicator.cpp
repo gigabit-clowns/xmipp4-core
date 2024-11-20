@@ -96,8 +96,7 @@ void dummy_communicator_helper<T, Ts...>::scatter(int root,
                                                   span<const T> send_buf, 
                                                   span<T> recv_buf )
 {
-    require_root_0(root);
-    dummy_collective_operation(send_buf, recv_buf);
+    dummy_collective_operation(root, send_buf, recv_buf);
 }
 
 template<typename T, typename... Ts>
@@ -106,7 +105,7 @@ void dummy_communicator_helper<T, Ts...>::gather(int root,
                                                  span<T> recv_buf )
 {
     require_root_0(root);
-    dummy_collective_operation(send_buf, recv_buf);
+    dummy_collective_operation(root, send_buf, recv_buf);
 }
 
 template<typename T, typename... Ts>
@@ -138,6 +137,15 @@ template<typename T, typename... Ts>
 void dummy_communicator_helper<T, Ts...>::all_to_all(span<const T> send_buf, 
                                                      span<T> recv_buf )
 {
+    dummy_collective_operation(send_buf, recv_buf);
+}
+
+template<typename T, typename... Ts>
+void dummy_communicator_helper<T, Ts...>::dummy_collective_operation(int root,
+                                                                     span<const T> send_buf, 
+                                                                     span<T> recv_buf )
+{
+    require_root_0(root);
     dummy_collective_operation(send_buf, recv_buf);
 }
 

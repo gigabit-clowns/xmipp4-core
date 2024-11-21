@@ -47,6 +47,7 @@ jobs:
           cxx-compiler: ${{ matrix.compiler.cxx }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            XMIPP4_CORE_USE_SPDLOG=OFF
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
       

@@ -38,7 +38,7 @@ namespace xmipp4
 namespace communication
 {
 
-const std::string dummy_communicator_backend::get_name() const noexcept
+std::string dummy_communicator_backend::get_name() const noexcept
 {
     return "dummy";
 }

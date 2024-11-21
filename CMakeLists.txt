@@ -117,7 +117,7 @@ target_link_libraries(
 	${PROJECT_NAME} 
 	PUBLIC
 		Threads::Threads
-		spdlog::spdlog
+		spdlog::spdlog_header_only
 	PRIVATE
 		${CMAKE_DL_LIBS}
 )

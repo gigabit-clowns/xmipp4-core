@@ -36,6 +36,7 @@
 #include <vector>
 #include <functional>
 #include <filesystem>
+#include <system_error>
 #include <cstdlib>
 
 static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "plugins";

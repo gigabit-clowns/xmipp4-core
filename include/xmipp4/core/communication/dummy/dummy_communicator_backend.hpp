@@ -46,6 +46,7 @@ public:
     std::string get_name() const noexcept override;
     version get_version() const noexcept override;
     bool is_available() const noexcept override;
+    backend_priority get_priority() const noexcept override;
     std::shared_ptr<communicator> get_world_communicator() const override;
 
     static bool register_at(communicator_manager &manager);

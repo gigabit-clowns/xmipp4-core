@@ -53,6 +53,11 @@ bool dummy_communicator_backend::is_available() const noexcept
     return true;
 }
 
+backend_priority dummy_communicator_backend::get_priority() const noexcept
+{
+    return backend_priority::fallback;
+}
+
 std::shared_ptr<communicator> 
 dummy_communicator_backend::get_world_communicator() const
 {

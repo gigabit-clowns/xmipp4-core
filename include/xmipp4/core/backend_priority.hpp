@@ -21,37 +21,52 @@
  ***************************************************************************/
 
 /**
- * @file dummy_communicator_backend.hpp
+ * @file backend_priority.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::dummy_communicator_backend class
- * @date 2024-11-20
+ * @brief Provides backend_priority enumeration and utility functions
+ * @date 2023-11-20
  * 
  */
 
-#include "../communicator_backend.hpp"
+#include "platform/constexpr.hpp"
+#include "platform/attributes.hpp"
 
-#include <memory>
+#include <string_view>
+#include <ostream>
 
 namespace xmipp4 
 {
-namespace communication
+
+/**
+ * @brief Enumeration defining the preference over the selection of a
+ * particular backend.
+ * 
+ */
+enum class backend_priority
 {
-
-class communicator_manager;
-
-class dummy_communicator_backend final
-    : public communicator_backend
-{
-public:
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
-    std::shared_ptr<communicator> get_world_communicator() const override;
-
-    static bool register_at(communicator_manager &manager);
-
+    fallback = -1024, ///< Used for dummy implementations.
+    normal = 0, ///< Normal priority. Use by default.
 };
 
-} // namespace communication
+
+
+XMIPP4_CONSTEXPR 
+bool operator<(backend_priority lhs, backend_priority rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator<=(backend_priority lhs, backend_priority rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator>(backend_priority lhs, backend_priority rhs) noexcept;
+XMIPP4_CONSTEXPR 
+bool operator>=(backend_priority lhs, backend_priority rhs) noexcept;
+
+
+
+XMIPP4_CONSTEXPR const char* to_string(backend_priority priority) noexcept;
+
+template<typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, 
+                                  backend_priority priority );
+
 } // namespace xmipp4
+
+#include "backend_priority.inl"

@@ -21,37 +21,28 @@
  ***************************************************************************/
 
 /**
- * @file dummy_communicator_backend.hpp
+ * @file ambiguous_backend_exception.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::dummy_communicator_backend class
+ * @brief Definition of ambiguous_backend_error
  * @date 2024-11-20
  * 
  */
 
-#include "../communicator_backend.hpp"
-
-#include <memory>
+#include <stdexcept>
 
 namespace xmipp4 
 {
-namespace communication
+
+/**
+ * @brief Exception indicating that could not disambiguate among multiple
+ * backend candidates.
+ * 
+ */
+class ambiguous_backend_error
+    : public std::runtime_error
 {
-
-class communicator_manager;
-
-class dummy_communicator_backend final
-    : public communicator_backend
-{
-public:
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
-    std::shared_ptr<communicator> get_world_communicator() const override;
-
-    static bool register_at(communicator_manager &manager);
-
+    using runtime_error::runtime_error;
 };
 
-} // namespace communication
 } // namespace xmipp4
+

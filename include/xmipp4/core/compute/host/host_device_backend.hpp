@@ -46,9 +46,10 @@ class host_device_backend final
     : public device_backend
 {
 public:
-    const std::string& get_name() const noexcept override;
+    std::string get_name() const noexcept override;
     version get_version() const noexcept override;
     bool is_available() const noexcept override;
+    backend_priority get_priority() const noexcept override;
 
     void enumerate_devices(std::vector<std::size_t> &ids) const override;
     bool get_device_properties(std::size_t id, 

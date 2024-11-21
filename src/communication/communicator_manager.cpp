@@ -127,7 +127,7 @@ public:
                 available_backends[1]->get_priority() )
             {
                 throw ambiguous_backend_error(
-                    "Could not disambiguate multiple among multiple "
+                    "Could not disambiguate among multiple "
                     "communicator_backend-s. Ensure that only one has "
                     "been installed."
                 );

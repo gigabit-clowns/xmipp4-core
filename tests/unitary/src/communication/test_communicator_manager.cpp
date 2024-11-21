@@ -34,6 +34,7 @@
 #include <algorithm>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <trompeloeil.hpp>
 
 using namespace xmipp4;
@@ -213,7 +214,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
         .RETURN(true)
-        .TIMES(1);
+        .TIMES(2);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
@@ -225,13 +226,18 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
         .RETURN(true)
-        .TIMES(1);
+        .TIMES(2);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));
     manager.register_backend(std::move(mock2));
 
+    const std::string message = 
+        "Could not disambiguate among multiple "
+        "communicator_backend-s. Ensure that only one has "
+        "been installed.";
     REQUIRE_THROWS_AS( manager.get_preferred_backend(), ambiguous_backend_error );
+    REQUIRE_THROWS_WITH( manager.get_preferred_backend(), message );
 }
 
 

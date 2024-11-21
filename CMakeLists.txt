@@ -54,6 +54,7 @@ find_package(Threads REQUIRED)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	set(SPDLOG_INSTALL ON)
+	set(SPDLOG_BUILD_SHARED ON)
 	FetchContent_Declare(
 		spdlog
 		GIT_REPOSITORY https://github.com/gabime/spdlog.git

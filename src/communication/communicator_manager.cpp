@@ -100,7 +100,7 @@ public:
             }
         }
 
-        if( available_backends.size() == 0)
+        if( available_backends.empty())
         {
             result = nullptr;
         }
@@ -116,7 +116,7 @@ public:
                 std::next(available_backends.begin(), 2),
                 available_backends.end(),
                 [] (const communicator_backend *lhs, 
-                    const communicator_backend *rhs ) -> bool
+                    const communicator_backend *rhs )
                 {
                     return lhs->get_priority() > rhs->get_priority();
                 }

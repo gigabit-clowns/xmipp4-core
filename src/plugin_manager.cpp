@@ -36,6 +36,7 @@
 #include <vector>
 #include <functional>
 #include <filesystem>
+#include <system_error>
 #include <cstdlib>
 
 static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "plugins";
@@ -168,6 +169,11 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         catch(const plugin_load_error& error)
         {
             std::cerr << "Failed to load plugin from " << entry.path() << ":" <<
+            error.what() << std::endl;
+        }
+        catch(const std::system_error& error)
+        {
+            std::cerr << "Failed to load shared library " << entry.path() << ": " <<
             error.what() << std::endl;
         }
     }

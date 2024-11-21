@@ -28,9 +28,7 @@
 
 #include "plugin_loader.hpp"
 
-#include <stdexcept>
-
-#define XMIPP4_PLUGIN_HOOK_SYMBOL_NAME "xmipp4_get_plugin"
+#include <xmipp4/core/exceptions/plugin_load_error.hpp>
 
 namespace xmipp4
 {
@@ -38,16 +36,16 @@ namespace xmipp4
 static const plugin* query_plugin(const system::dynamic_library& lib)
 {
     using get_plugin_function_type = const plugin* (*)();
-    const char symbol_name[] = XMIPP4_PLUGIN_HOOK_SYMBOL_NAME;
+    const std::string symbol_name = "xmipp4_get_plugin";
 
     const auto func = reinterpret_cast<get_plugin_function_type>(
-        lib.get_symbol(symbol_name)
+        lib.get_symbol(symbol_name.c_str())
     );
     
     if (!func)
     {
-        throw std::runtime_error(
-            XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
+        throw plugin_load_error(
+            symbol_name +
             " symbol could not be found in shared object."
         );
     }
@@ -55,10 +53,7 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
     const auto* result = func();
     if(!result)
     {
-        throw std::runtime_error(
-            XMIPP4_PLUGIN_HOOK_SYMBOL_NAME
-            " returned NULL"
-        );
+        throw plugin_load_error(symbol_name + " returned NULL");
     }
 
     return result;

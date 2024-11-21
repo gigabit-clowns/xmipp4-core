@@ -31,6 +31,7 @@
 #include "plugin_loader.hpp"
 
 #include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/exceptions/plugin_load_error.hpp>
 
 #include <vector>
 #include <functional>
@@ -130,7 +131,9 @@ std::string get_default_plugin_directory()
     );
     if(path.empty())
     {
-        throw std::runtime_error("Could not retrieve the default plugin directory");
+        throw plugin_load_error(
+            "Could not retrieve the default plugin directory"
+        );
     }
 
     path.replace_filename(XMIPP4_PLUGINS_DIRECTORY_NAME);
@@ -162,9 +165,10 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         {
             manager.load_plugin(entry.path().string());
         }
-        catch(...)
+        catch(const plugin_load_error& error)
         {
-            // TODO log a warning
+            std::cerr << "Failed to load plugin from " << entry.path() << ":" <<
+            error.what() << std::endl;
         }
     }
 }

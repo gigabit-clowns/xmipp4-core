@@ -20,8 +20,7 @@
 
 [build-system]
 requires = [
-    "scikit-build-core>=0.10",
-    "spdlog"
+    "scikit-build-core>=0.10"
 ]
 build-backend = "scikit_build_core.build"
 
@@ -49,18 +48,17 @@ readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
 
 requires-python = ">=3.7"
-dependencies = [
-    "spdlog"
-]
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/gigabit-clowns/xmipp4-core"
 
 [tool.scikit-build]
 experimental=true # For wheel.install-dir
+wheel.install-dir="/data"
 cmake.version = ">=3.16"
 cmake.args = []
-cmake.define = {}
 cmake.build-type = "Release"
 
-wheel.install-dir="/data"
+[tool.scikit-build.cmake.define]
+XMIPP4_CORE_BUILD_SPDLOG = {env="XMIPP4_CORE_BUILD_SPDLOG", default="ON"}

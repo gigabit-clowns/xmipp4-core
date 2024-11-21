@@ -42,17 +42,17 @@
 
     #include <spdlog/spdlog.h>
 
-    #define XMIPP4_TRACE(...) SPDLOG_TRACE(__VA_ARGS__)
-    #define XMIPP4_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
-    #define XMIPP4_INFO(...) SPDLOG_INFO(__VA_ARGS__)
-    #define XMIPP4_WARN(...) SPDLOG_WARN(__VA_ARGS__)
-    #define XMIPP4_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
-    #define XMIPP4_CRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
+    #define XMIPP4_LOG_TRACE(...) SPDLOG_TRACE(__VA_ARGS__)
+    #define XMIPP4_LOG_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
+    #define XMIPP4_LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
+    #define XMIPP4_LOG_WARN(...) SPDLOG_WARN(__VA_ARGS__)
+    #define XMIPP4_LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
+    #define XMIPP4_LOG_CRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 #else
-    #define XMIPP4_TRACE(...) (void)0
-    #define XMIPP4_DEBUG(...) (void)0
-    #define XMIPP4_INFO(...) (void)0
-    #define XMIPP4_WARN(...) (void)0
-    #define XMIPP4_ERROR(...) (void)0
-    #define XMIPP4_CRITICAL(...) (void)0
+    #define XMIPP4_LOG_TRACE(...) (void)0
+    #define XMIPP4_LOG_DEBUG(...) (void)0
+    #define XMIPP4_LOG_INFO(...) (void)0
+    #define XMIPP4_LOG_WARN(...) (void)0
+    #define XMIPP4_LOG_ERROR(...) (void)0
+    #define XMIPP4_LOG_CRITICAL(...) (void)0
 #endif

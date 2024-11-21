@@ -169,7 +169,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         }
         catch(const plugin_load_error& error)
         {
-            XMIPP4_ERROR(
+            XMIPP4_LOG_ERROR(
                 "Failed to load plugin from {}: {}", 
                 entry.path().string(), 
                 error.what()
@@ -177,7 +177,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         }
         catch(const std::system_error& error)
         {
-            XMIPP4_ERROR(
+            XMIPP4_LOG_ERROR(
                 "Failed to load shared library {}: {}", 
                 entry.path().string(), 
                 error.what()

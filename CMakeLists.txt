@@ -38,7 +38,7 @@ include(CMakePackageConfigHelpers)
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" OFF)
 option(XMIPP4_CORE_PRECOMPILED_HEADERS "Use precompiled headers for faster compilation times" ON)
-option(XMIPP4_CORE_USE_SPDLOG "Compile with spdlog" ON)
+option(XMIPP4_CORE_USE_SPDLOG "Compile with spdlog logging" ON)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -51,7 +51,7 @@ endif()
 # Find dependencies
 find_package(Threads REQUIRED)
 if (XMIPP4_CORE_USE_SPDLOG)
-	find_package(spdlog 1 CONFIG)
+	find_package(spdlog REQUIRED)
 endif()
 
 # Find all source and header files

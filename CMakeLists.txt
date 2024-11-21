@@ -163,11 +163,11 @@ install(
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# Create and install config files
+# Create and install CMake config files
 configure_package_config_file(
-  ${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  	${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
+  	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+  	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 write_basic_package_version_file(
 	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
@@ -175,15 +175,15 @@ write_basic_package_version_file(
 )
 
 install(
-  EXPORT ${PROJECT_NAME}-targets
-  FILE ${PROJECT_NAME}-targets.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  	EXPORT ${PROJECT_NAME}-targets
+  	FILE ${PROJECT_NAME}-targets.cmake
+  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 install(
-  FILES 
+  	FILES 
 		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
 		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 # Only build tests if it is the main project

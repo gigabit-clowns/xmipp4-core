@@ -173,7 +173,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         }
         catch(const std::system_error& error)
         {
-            std::cerr << "Failed to shared library " << entry.path() << ": " <<
+            std::cerr << "Failed to load shared library " << entry.path() << ": " <<
             error.what() << std::endl;
         }
     }

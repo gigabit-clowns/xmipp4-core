@@ -31,6 +31,7 @@
 #include "plugin_loader.hpp"
 
 #include <xmipp4/core/plugin.hpp>
+#include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/exceptions/plugin_load_error.hpp>
 
 #include <vector>
@@ -168,13 +169,19 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
         }
         catch(const plugin_load_error& error)
         {
-            std::cerr << "Failed to load plugin from " << entry.path() << ":" <<
-            error.what() << std::endl;
+            XMIPP4_ERROR(
+                "Failed to load plugin from {}: {}", 
+                entry.path().string(), 
+                error.what()
+            );
         }
         catch(const std::system_error& error)
         {
-            std::cerr << "Failed to load shared library " << entry.path() << ": " <<
-            error.what() << std::endl;
+            XMIPP4_ERROR(
+                "Failed to load shared library {}: {}", 
+                entry.path().string(), 
+                error.what()
+            );
         }
     }
 }

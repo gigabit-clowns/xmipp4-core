@@ -32,8 +32,7 @@
 
 #include <dlfcn.h>
 
-#include <stdexcept>
-#include <sstream>
+#include <system_error>
 
 namespace xmipp4
 {
@@ -46,9 +45,7 @@ inline void* dynamic_library_open(const char* filename)
     auto *const result = ::dlopen(filename, flags);
     if (result == NULL)
     {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library: " << dlerror();
-        throw std::runtime_error(oss.str());
+        throw std::system_error(std::error_code(), dlerror());
     }
     return result;
 }

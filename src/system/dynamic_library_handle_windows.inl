@@ -30,8 +30,7 @@
 
 #include <windows.h>
 
-#include <stdexcept>
-#include <sstream>
+#include <system_error>
 
 namespace xmipp4
 {
@@ -43,9 +42,9 @@ inline void* dynamic_library_open(const char* filename)
     const auto result = static_cast<void*>(::LoadLibrary(filename));
     if (result == NULL)
     {
-        std::ostringstream oss;
-        oss << "Error loading dynamic library " << filename;
-        throw std::runtime_error(oss.str());
+        throw std::system_error(
+            std::error_code(::GetLastError(), std::system_category())
+        );
     }
     return result;
 }

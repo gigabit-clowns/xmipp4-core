@@ -53,7 +53,7 @@ static const plugin* query_plugin(const system::dynamic_library& lib)
     const auto* result = func();
     if(!result)
     {
-        throw plugin_load_error(symbol_name + " returned NULL");
+        throw plugin_load_error(symbol_name + " returned NULL.");
     }
 
     return result;

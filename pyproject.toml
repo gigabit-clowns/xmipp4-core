@@ -21,6 +21,7 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.10",
+    "spdlog"
 ]
 build-backend = "scikit_build_core.build"
 

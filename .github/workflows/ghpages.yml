@@ -59,6 +59,7 @@ jobs:
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
         options: |
           XMIPP4_CORE_BUILD_DOC=ON
+          XMIPP4_CORE_BUILD_SPDLOG=ON
           BUILD_TESTING=OFF
         run-build: true
         build-args: --target doxygen

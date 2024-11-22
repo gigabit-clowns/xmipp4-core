@@ -38,7 +38,7 @@ source:
 build:
   number: 0
   script_env:
-    - XMIPP4_CORE_BUILD_SPDLOG: "OFF"
+    - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk

@@ -31,6 +31,7 @@ project(
 
 # Include CMake packages
 include(CTest)
+include(FetchContent)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -38,6 +39,7 @@ include(CMakePackageConfigHelpers)
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" OFF)
 option(XMIPP4_CORE_PRECOMPILED_HEADERS "Use precompiled headers for faster compilation times" ON)
+option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" OFF)
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -49,6 +51,20 @@ endif()
 
 # Find dependencies
 find_package(Threads REQUIRED)
+
+if (XMIPP4_CORE_BUILD_SPDLOG)
+	set(SPDLOG_INSTALL ON)
+	set(SPDLOG_BUILD_SHARED ON)
+	FetchContent_Declare(
+		spdlog
+		GIT_REPOSITORY https://github.com/gabime/spdlog.git
+		GIT_TAG         v1.15.0
+	)
+
+	FetchContent_MakeAvailable(spdlog)
+else()
+	find_package(spdlog REQUIRED)
+endif()
 
 # Find all source and header files
 file(
@@ -101,6 +117,7 @@ target_link_libraries(
 	${PROJECT_NAME} 
 	PUBLIC
 		Threads::Threads
+		spdlog::spdlog_header_only
 	PRIVATE
 		${CMAKE_DL_LIBS}
 )
@@ -138,15 +155,33 @@ endif()
 # Install library's binary files and headers
 install(
 	TARGETS ${PROJECT_NAME}
-	EXPORT ${PROJECT_NAME}-config
+	EXPORT ${PROJECT_NAME}-targets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/xmipp4/
 )
 install(
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ 
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+# Create and install CMake config files
+configure_package_config_file(
+  	${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
+  	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+  	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+	COMPATIBILITY SameMinorVersion
+)
 install(
-  	EXPORT ${PROJECT_NAME}-config
+  	EXPORT ${PROJECT_NAME}-targets
+  	FILE ${PROJECT_NAME}-targets.cmake
+  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+install(
+  	FILES 
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
   	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 

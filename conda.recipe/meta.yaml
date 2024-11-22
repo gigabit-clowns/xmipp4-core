@@ -38,6 +38,7 @@ source:
 build:
   number: 0
   script_env:
+    - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
@@ -45,6 +46,9 @@ build:
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
 
 requirements:
+  run:
+    - spdlog
+
   build:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
@@ -52,6 +56,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake>=3.16
     - make # [unix]
+    - spdlog
 
   host:
     - python

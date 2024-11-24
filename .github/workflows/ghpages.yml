@@ -40,10 +40,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
     - name: Setup Pages
-      uses: actions/configure-pages@main
+      uses: actions/configure-pages@v5
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y doxygen
@@ -53,7 +53,7 @@ jobs:
       run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure and build with CMake
-      uses: threeal/cmake-action@main
+      uses: threeal/cmake-action@v2
       with:
         source-dir: ${{ github.workspace }}
         build-dir: ${{ steps.strings.outputs.build-output-dir }}
@@ -65,7 +65,7 @@ jobs:
         build-args: --target doxygen
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@main
+      uses: actions/upload-pages-artifact@v3
       with:
         path: ${{github.workspace}}/build/doc/doxygen/html
 
@@ -78,4 +78,4 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@main
+      uses: actions/deploy-pages@v4

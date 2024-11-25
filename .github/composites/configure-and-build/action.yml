@@ -1,0 +1,31 @@
+name: "Configure and build project"
+description: "Configures and builds the project with CMake"
+
+inputs:
+  c-compiler:
+    description: "C compiler to build the project with."
+    required: true
+  cxx-compiler:
+    description: "C++ compiler to build the project with."
+    required: true
+  build-type:
+    description: "Type of build for the project (Debug, Release...)."
+    required: false
+    default: "Release"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure and build with CMake
+      uses: threeal/cmake-action@v2
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: "${{ github.workspace }}/build"
+        c-compiler: ${{ inputs.c-compiler }}
+        cxx-compiler: ${{ inputs.cxx-compiler }}
+        options: |
+          CMAKE_BUILD_TYPE=${{ inputs.build-type }}
+          XMIPP4_CORE_BUILD_SPDLOG=ON
+          XMIPP4_CORE_BUILD_HALF=ON
+        run-build: true
+        build-args: --config ${{ inputs.build-type }}

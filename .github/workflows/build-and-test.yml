@@ -37,21 +37,14 @@ jobs:
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
         id: install-memtool
-
-      - name: Configure and build with CMake
-        uses: threeal/cmake-action@v2
+      
+      - name: Configure and build project
+        uses: ./.github/composites/configure-and-build
         with:
-          source-dir: ${{ github.workspace }}
-          build-dir: "${{ github.workspace }}/build"
           c-compiler: ${{ matrix.compiler.cc }}
           cxx-compiler: ${{ matrix.compiler.cxx }}
-          options: |
-            CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-            XMIPP4_CORE_BUILD_SPDLOG=ON
-            XMIPP4_CORE_BUILD_HALF=ON
-          run-build: true
-          build-args: --config ${{ env.BUILD_TYPE }}
-      
+          build-type: ${{ env.BUILD_TYPE }}
+
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         id: run-memtool

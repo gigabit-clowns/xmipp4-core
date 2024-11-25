@@ -29,6 +29,7 @@
 #include "host_buffer_visitor.hpp"
 
 #include "host_buffer.hpp"
+#include "../fixed_float.hpp"
 
 #include <type_traits>
 #include <utility>
@@ -149,29 +150,43 @@ auto visit_buffers(Func &&func, Buffer&& buffer, Buffers&&... rest)
             std::forward<Buffers>(rest)...
         );
 
+    case numerical_type::float16: 
+        return visit_buffers_helper<float16_t>(
+            std::forward<Func>(func), 
+            std::forward<Buffer>(buffer),
+            std::forward<Buffers>(rest)...
+        );
+
     case numerical_type::float32: 
-        return visit_buffers_helper<float>(
+        return visit_buffers_helper<float32_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::float64: 
-        return visit_buffers_helper<double>(
+        return visit_buffers_helper<float32_t>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
     
+    case numerical_type::complex_float16: 
+        return visit_buffers_helper<std::complex<float16_t>>(
+            std::forward<Func>(func), 
+            std::forward<Buffer>(buffer),
+            std::forward<Buffers>(rest)...
+        );
+
     case numerical_type::complex_float32: 
-        return visit_buffers_helper<std::complex<float>>(
+        return visit_buffers_helper<std::complex<float32_t>>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
         );
 
     case numerical_type::complex_float64: 
-        return visit_buffers_helper<std::complex<double>>(
+        return visit_buffers_helper<std::complex<float64_t>>(
             std::forward<Func>(func), 
             std::forward<Buffer>(buffer),
             std::forward<Buffers>(rest)...
@@ -265,26 +280,38 @@ auto visit_homogeneous_buffers(Func &&func,
             std::forward<Buffers>(buffers)...
         );
 
+    case numerical_type::float16: 
+        return visit_homogeneous_buffers_helper<float16_t>(
+            std::forward<Func>(func), 
+            std::forward<Buffers>(buffers)...
+        );
+
     case numerical_type::float32: 
-        return visit_homogeneous_buffers_helper<float>(
+        return visit_homogeneous_buffers_helper<float32_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::float64: 
-        return visit_homogeneous_buffers_helper<double>(
+        return visit_homogeneous_buffers_helper<float64_t>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
     
+    case numerical_type::complex_float16: 
+        return visit_homogeneous_buffers_helper<std::complex<float16_t>>(
+            std::forward<Func>(func), 
+            std::forward<Buffers>(buffers)...
+        );
+
     case numerical_type::complex_float32: 
-        return visit_homogeneous_buffers_helper<std::complex<float>>(
+        return visit_homogeneous_buffers_helper<std::complex<float32_t>>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );
 
     case numerical_type::complex_float64: 
-        return visit_homogeneous_buffers_helper<std::complex<double>>(
+        return visit_homogeneous_buffers_helper<std::complex<float64_t>>(
             std::forward<Func>(func), 
             std::forward<Buffers>(buffers)...
         );

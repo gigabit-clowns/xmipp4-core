@@ -53,14 +53,6 @@ class XMIPP4_CORE_API device_backend
     : public backend
 {
 public:
-    device_backend() = default;
-    device_backend(const device_backend &other) = default;
-    device_backend(device_backend &&other) = default;
-    virtual ~device_backend() = default;
-
-    device_backend& operator=(const device_backend &other) = default;
-    device_backend& operator=(device_backend &&other) = default;
-
     /**
      * @brief Enumerate available in devices within this backend.
      * 

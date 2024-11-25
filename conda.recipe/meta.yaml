@@ -39,7 +39,6 @@ build:
   number: 0
   script_env:
     - XMIPP4_CORE_BUILD_SPDLOG=OFF
-    - XMIPP4_CORE_BUILD_HALF=OFF
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
@@ -49,7 +48,6 @@ build:
 requirements:
   run:
     - spdlog
-    - cpp-half>=2
 
   build:
     - python                                 # [build_platform != target_platform]
@@ -59,7 +57,6 @@ requirements:
     - cmake>=3.16
     - make # [unix]
     - spdlog
-    - cpp-half>=2
 
   host:
     - python

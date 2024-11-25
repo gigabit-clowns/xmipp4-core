@@ -33,8 +33,8 @@ project(
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" OFF)
 option(XMIPP4_CORE_PRECOMPILED_HEADERS "Use precompiled headers for faster compilation times" ON)
-option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" OFF)
-option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" OFF)
+option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" ON)
+option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" ON)
 
 # Set the CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)

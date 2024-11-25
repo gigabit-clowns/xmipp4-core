@@ -54,7 +54,7 @@ public:
      * @brief Wait until the device_queue is flushed.
      * 
      */
-    virtual void synchronize() const = 0;
+    virtual void wait_until_completed() const = 0;
 
 }; 
 

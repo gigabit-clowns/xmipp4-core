@@ -33,7 +33,7 @@ namespace xmipp4
 namespace compute
 {
 
-void host_device_queue::synchronize() const
+void host_device_queue::wait_until_completed() const
 {
     // NO-OP
 }

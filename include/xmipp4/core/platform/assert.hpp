@@ -28,7 +28,6 @@
  * 
  */
 
-#include "attributes.hpp"
 #include <cassert>
 
 /**
@@ -36,8 +35,4 @@
  * in release builds
  * 
  */
-#if defined(NDEBUG)
-    #define XMIPP4_ASSERT(expr) XMIPP4_ASSUME(expr)
-#else
-    #define XMIPP4_ASSERT(expr) assert(expr)
-#endif
+#define XMIPP4_ASSERT(expr) assert(expr)

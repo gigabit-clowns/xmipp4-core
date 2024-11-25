@@ -29,20 +29,22 @@ project(
 	LANGUAGES C CXX
 )
 
-# Include CMake packages
-include(CTest)
-include(FetchContent)
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
 # Declare build options
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_LINT_CLANG_TIDY "Lint with clang-tidy" OFF)
 option(XMIPP4_CORE_PRECOMPILED_HEADERS "Use precompiled headers for faster compilation times" ON)
 option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" OFF)
+option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" OFF)
 
-# Set the module path
+# Set the CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
+# Include CMake packages
+include(CTest)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+include(fetch_spdlog)
+include(fetch_half)
 
 # Only build docs if it is the main project
 if(XMIPP4_CORE_BUILD_DOC)
@@ -53,17 +55,15 @@ endif()
 find_package(Threads REQUIRED)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
-	set(SPDLOG_INSTALL ON)
-	set(SPDLOG_BUILD_SHARED ON)
-	FetchContent_Declare(
-		spdlog
-		GIT_REPOSITORY https://github.com/gabime/spdlog.git
-		GIT_TAG         v1.15.0
-	)
-
-	FetchContent_MakeAvailable(spdlog)
+	fetch_spdlog(1.15.0)
 else()
 	find_package(spdlog REQUIRED)
+endif()
+
+if (XMIPP4_CORE_BUILD_HALF)
+	fetch_half(2.2.0)
+else()
+	find_package(half 2 REQUIRED)
 endif()
 
 # Find all source and header files
@@ -98,7 +98,7 @@ target_include_directories(
 	${PROJECT_NAME} 
 	PUBLIC 
 	  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(
 	${PROJECT_NAME} 
@@ -118,6 +118,7 @@ target_link_libraries(
 	PUBLIC
 		Threads::Threads
 		spdlog::spdlog_header_only
+		half
 	PRIVATE
 		${CMAKE_DL_LIBS}
 )
@@ -162,10 +163,16 @@ install(
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ 
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+install(
+	FILES 
+		${PROJECT_SOURCE_DIR}/cmake/modules/Findhalf.cmake
+	DESTINATION 
+		${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/modules
+)
 
 # Create and install CMake config files
 configure_package_config_file(
-  	${PROJECT_SOURCE_DIR}/cmake/config/Config.cmake.in
+  	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
   	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
   	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )

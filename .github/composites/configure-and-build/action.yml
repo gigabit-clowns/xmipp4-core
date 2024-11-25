@@ -12,6 +12,10 @@ inputs:
     description: "Type of build for the project (Debug, Release...)."
     required: false
     default: "Release"
+  build-dir:
+    description: "Directory inside the workspace where the project will be built."
+    required: false
+    default: "build"
 
 runs:
   using: "composite"
@@ -20,7 +24,7 @@ runs:
       uses: threeal/cmake-action@v2
       with:
         source-dir: ${{ github.workspace }}
-        build-dir: "${{ github.workspace }}/build"
+        build-dir: "${{ github.workspace }}/${{ inputs.build-dir }}"
         c-compiler: ${{ inputs.c-compiler }}
         cxx-compiler: ${{ inputs.cxx-compiler }}
         options: |

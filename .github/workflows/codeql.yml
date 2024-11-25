@@ -82,6 +82,7 @@ jobs:
       with:
         c-compiler: gcc
         cxx-compiler: g++
+        build-dir: _codeql_build_dir
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

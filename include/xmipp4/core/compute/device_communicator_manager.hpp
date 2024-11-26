@@ -123,7 +123,7 @@ public:
     XMIPP4_CORE_API
     bool create_device_communicators(node_communicator &node_communicator,
                                      span<device*> devices,
-                                     span<std::unique_ptr<device_communicator>> &result ) const;
+                                     span<std::unique_ptr<device_communicator>> result ) const;
     
     /**
      * @brief Create a device communicators from the most suitable backend.
@@ -139,7 +139,7 @@ public:
     XMIPP4_CORE_API
     bool create_device_communicators_shared(node_communicator &node_communicator,
                                             span<device*> devices,
-                                            span<std::shared_ptr<device_communicator>> &result ) const;
+                                            span<std::shared_ptr<device_communicator>> result ) const;
 
 private:
     class implementation;

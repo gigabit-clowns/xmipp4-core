@@ -33,10 +33,26 @@
 #include <xmipp4/core/communication/communicator.hpp>
 #include <xmipp4/core/compute/fallback/fallback_device_communicator.hpp>
 
+#include <stdexcept>
+
 namespace xmipp4
 {
 namespace compute
 {
+
+static std::size_t require_same_size(std::size_t size1, std::size_t size2)
+{
+    if (size1 != size2)
+    {
+        throw std::invalid_argument(
+            "Result array must have the same size of the device array"
+        );
+    }
+
+    return size1;
+}
+
+
 
 std::string fallback_device_communicator_backend::get_name() const noexcept
 {
@@ -67,10 +83,11 @@ bool fallback_device_communicator_backend
 void fallback_device_communicator_backend
 ::create_device_communicators(node_communicator &node_communicator,
                               span<device*> devices,
-                              span<std::unique_ptr<device_communicator>> &result ) const
+                              span<std::unique_ptr<device_communicator>> result ) const
 {
+    const auto count = require_same_size(devices.size(), result.size());
     auto node_communicator_copy = node_communicator.clone_shared();
-    for(std::size_t i = 0; i < devices.size(); ++i)
+    for(std::size_t i = 0; i < count; ++i)
     {
         result[i] = std::make_unique<fallback_device_communicator>(
             node_communicator_copy,
@@ -82,10 +99,11 @@ void fallback_device_communicator_backend
 void fallback_device_communicator_backend
 ::create_device_communicators_shared(node_communicator &node_communicator,
                                      span<device*> devices,
-                                     span<std::shared_ptr<device_communicator>> &result ) const
+                                     span<std::shared_ptr<device_communicator>> result ) const
 {
+    const auto count = require_same_size(devices.size(), result.size());
     auto node_communicator_copy = node_communicator.clone_shared();
-    for(std::size_t i = 0; i < devices.size(); ++i)
+    for(std::size_t i = 0; i < count; ++i)
     {
         result[i] = std::make_shared<fallback_device_communicator>(
             node_communicator_copy,

@@ -110,7 +110,8 @@ device_communicator_manager::operator=(device_communicator_manager &&other) noex
 
 
 
-bool device_communicator_manager::register_backend(std::unique_ptr<device_communicator_backend> backend)
+bool device_communicator_manager
+::register_backend(std::unique_ptr<device_communicator_backend> backend)
 {
     return m_implementation->register_backend(std::move(backend));
 }
@@ -127,9 +128,10 @@ device_communicator_manager::find_supported_backend(span<device*> devices) const
     return m_implementation->find_supported_backend(devices);
 }
 
-bool device_communicator_manager::create_device_communicators(node_communicator &node_communicator,
-                                                              span<device*> devices,
-                                                              span<std::unique_ptr<device_communicator>> &result ) const
+bool device_communicator_manager
+::create_device_communicators(node_communicator &node_communicator,
+                              span<device*> devices,
+                              span<std::unique_ptr<device_communicator>> result ) const
 {
     const auto* backend = find_supported_backend(devices);
     if(backend)
@@ -143,9 +145,10 @@ bool device_communicator_manager::create_device_communicators(node_communicator 
     return backend;
 }
 
-bool device_communicator_manager::create_device_communicators_shared(node_communicator &node_communicator,
-                                                                     span<device*> devices,
-                                                                     span<std::shared_ptr<device_communicator>> &result ) const
+bool device_communicator_manager
+::create_device_communicators_shared(node_communicator &node_communicator,
+                                     span<device*> devices,
+                                     span<std::shared_ptr<device_communicator>> result ) const
 {
     const auto* backend = find_supported_backend(devices);
     if(backend)

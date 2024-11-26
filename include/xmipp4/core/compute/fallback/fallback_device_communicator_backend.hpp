@@ -48,11 +48,11 @@ public:
 
     void create_device_communicators(node_communicator &node_communicator,
                                      span<device*> devices,
-                                     span<std::unique_ptr<device_communicator>> &result ) const override;
+                                     span<std::unique_ptr<device_communicator>> result ) const override;
     
     void create_device_communicators_shared(node_communicator &node_communicator,
                                             span<device*> devices,
-                                            span<std::shared_ptr<device_communicator>> &result ) const override;
+                                            span<std::shared_ptr<device_communicator>> result ) const override;
 
 }; 
 

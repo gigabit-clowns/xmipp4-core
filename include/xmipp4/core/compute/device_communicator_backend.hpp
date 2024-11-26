@@ -85,7 +85,7 @@ public:
     virtual 
     void create_device_communicators(node_communicator &node_communicator,
                                      span<device*> devices,
-                                     span<std::unique_ptr<device_communicator>> &result ) const = 0;
+                                     span<std::unique_ptr<device_communicator>> result ) const = 0;
     
     /**
      * @brief Create a device communicators object
@@ -98,7 +98,7 @@ public:
     virtual 
     void create_device_communicators_shared(node_communicator &node_communicator,
                                             span<device*> devices,
-                                            span<std::shared_ptr<device_communicator>> &result ) const = 0;
+                                            span<std::shared_ptr<device_communicator>> result ) const = 0;
 
 }; 
 

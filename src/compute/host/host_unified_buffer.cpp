@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,45 +19,41 @@
  ***************************************************************************/
 
 /**
- * @file host_unified_buffer.hpp
+ * @file host_unified_buffer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_unified_buffer interface
- * @date 2024-10-29
+ * @brief Implementation of default_host_unified_buffer.hpp
+ * @date 2024-11-26
  * 
  */
 
-#include "../device_buffer.hpp"
-#include "../host_buffer.hpp"
+#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-/**
- * @brief Interface merging the interfaces of host_buffer and device_buffer.
- * 
- * This interface unifies host_buffer and device_buffer interfaces, as
- * when using the host as a compute device, both buffers types are 
- * equivalent
- * 
- */
-class host_unified_buffer
-    : public device_buffer
-    , public host_buffer
+device_buffer* host_unified_buffer::get_device_accessible_alias() noexcept
 {
-public:
-    numerical_type get_type() const noexcept override = 0;
-    std::size_t get_count() const noexcept override = 0;
-    void* get_data() noexcept override = 0;
-    const void* get_data() const noexcept override = 0;
+    return this;
+}
 
-    device_buffer* get_device_accessible_alias() noexcept final;
-    const device_buffer* get_device_accessible_alias() const noexcept final;
-    host_buffer* get_host_accessible_alias() noexcept final;
-    const host_buffer* get_host_accessible_alias() const noexcept final;
+const device_buffer* 
+host_unified_buffer::get_device_accessible_alias() const noexcept
+{
+    return this;
+}
 
-}; 
+host_buffer* host_unified_buffer::get_host_accessible_alias() noexcept
+{
+    return this;
+}
+
+const host_buffer* 
+host_unified_buffer::get_host_accessible_alias() const noexcept
+{
+    return this;
+}
 
 } // namespace compute
 } // namespace xmipp4

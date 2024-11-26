@@ -37,6 +37,8 @@ namespace xmipp4
 namespace compute
 {
 
+class device_memory_allocator;
+
 class XMIPP4_CORE_API device_communicator
 {
 public:
@@ -48,8 +50,43 @@ public:
     device_communicator& operator=(const device_communicator &other) = default;
     device_communicator& operator=(device_communicator &&other) = default;
 
+    /**
+     * @brief Get the amount of peers in the communicator.
+     * 
+     * @return std::size_t The number of peers.
+     * 
+     */
     virtual std::size_t get_size() const noexcept = 0;
+
+    /**
+     * @brief Get the rank of the local process.
+     * 
+     * @return int The rank.
+     * 
+     */
     virtual int get_rank() const noexcept = 0;
+
+    /**
+     * @brief Create a device memory allocator optimized for this
+     * communicator.
+     * 
+     * @return std::unique_ptr<device_memory_allocator> The newly created
+     * allocator.
+     */
+    virtual 
+    std::unique_ptr<device_memory_allocator>
+    create_device_memory_allocator() = 0;
+
+    /**
+     * @brief Create a device memory allocator optimized for this
+     * communicator.
+     * 
+     * @return std::shared_ptr<device_memory_allocator> The newly created
+     * allocator.
+     */
+    virtual 
+    std::shared_ptr<device_memory_allocator>
+    create_device_memory_allocator_shared() = 0;
 
 }; 
 

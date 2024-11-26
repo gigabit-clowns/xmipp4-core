@@ -33,7 +33,6 @@
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
-#include <vector>
 
 namespace xmipp4 
 {namespace communication
@@ -62,19 +61,43 @@ class XMIPP4_CORE_API device_communicator_backend
 public:
     using node_communicator = communication::communicator;
 
+    /**
+     * @brief Check if this backend supports creating communicators 
+     * for the provided devices.
+     * 
+     * @param devices The devices to be checked.
+     * @return true This backend can create communicators for 
+     * all provided devices.
+     * @return false This backend cannot create communicators for one
+     * or more devices.
+     */
     virtual bool supports_devices(span<device*> devices) const noexcept = 0;
 
-    virtual void create_device_communicators(
-        const std::shared_ptr<node_communicator> &node_communicator,
-        span<device*> devices,
-        std::vector<std::unique_ptr<device_communicator>> &result
-    ) const = 0;
+    /**
+     * @brief Create a device communicators object
+     * 
+     * @param node_communicator Node communicator used during the creation.
+     * @param devices Devices for which the communicators are created.
+     * @param result Output list with the newly created communicators. Must 
+     * have the same size as the device array.
+     */
+    virtual 
+    void create_device_communicators(node_communicator &node_communicator,
+                                     span<device*> devices,
+                                     span<std::unique_ptr<device_communicator>> &result ) const = 0;
     
-    virtual void create_device_communicators_shared(
-        const std::shared_ptr<node_communicator> &node_communicator,
-        span<device*> devices,
-        std::vector<std::shared_ptr<device_communicator>> &result 
-    ) const = 0;
+    /**
+     * @brief Create a device communicators object
+     * 
+     * @param node_communicator Node communicator used during the creation.
+     * @param devices Devices for which the communicators are created.
+     * @param result Output list with the newly created communicators. Must 
+     * have the same size as the device array.
+     */
+    virtual 
+    void create_device_communicators_shared(node_communicator &node_communicator,
+                                            span<device*> devices,
+                                            span<std::shared_ptr<device_communicator>> &result ) const = 0;
 
 }; 
 

@@ -96,7 +96,7 @@ public:
     get_backend(const std::string &name) const;
     
     /**
-     * @brief Find the most suitable backend
+     * @brief Find the most suitable backend.
      *
      * The most suitable backend is an available backend with the highest
      * priority.

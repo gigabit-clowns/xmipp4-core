@@ -69,8 +69,10 @@ public:
     XMIPP4_CORE_API device_communicator_manager(device_communicator_manager &&other) noexcept;
     XMIPP4_CORE_API virtual ~device_communicator_manager() override;
 
-    device_communicator_manager& operator=(const device_communicator_manager &other) = delete;
-    XMIPP4_CORE_API device_communicator_manager& operator=(device_communicator_manager &&other) noexcept;
+    device_communicator_manager& 
+    operator=(const device_communicator_manager &other) = delete;
+    XMIPP4_CORE_API device_communicator_manager& 
+    operator=(device_communicator_manager &&other) noexcept;
 
     /**
      * @brief Register a new device communicator backend.
@@ -83,26 +85,61 @@ public:
     XMIPP4_CORE_API
     bool register_backend(std::unique_ptr<device_communicator_backend> backend);
 
+    /**
+     * @brief Get a backend by its name.
+     * 
+     * @param name The name of the backend.
+     * @return device_communicator_backend* The requested backend. 
+     * nullptr if not found.
+     */
     XMIPP4_CORE_API
     device_communicator_backend* get_backend(const std::string &name) const;
 
+    /**
+     * @brief Find the most suitable backend that supports a set of devices.
+     * 
+     * The most suitable backend is an available backend with the highest
+     * priority that supports the provided device set.
+     * 
+     * @param devices 
+     * @return device_communicator_backend* The requested backend. 
+     * nullptr if not found.
+     */
     XMIPP4_CORE_API
     device_communicator_backend* 
     find_supported_backend(span<device*> devices) const;
 
+    /**
+     * @brief Create a device communicators from the most suitable backend.
+     * 
+     * @param node_communicator Node communicator used during the creation.
+     * @param devices Devices for which the communicators are created. 
+     * Must be supported.
+     * @param result Output list with the newly created communicators. Must 
+     * have the same size as the device array.
+     * @return true Communicators were successfully created.
+     * @return false No suitable backend was found.
+     */
     XMIPP4_CORE_API
-    bool create_device_communicators(
-        const std::shared_ptr<node_communicator> &node_communicator,
-        span<device*> devices,
-        std::vector<std::unique_ptr<device_communicator>> &result
-    ) const;
+    bool create_device_communicators(node_communicator &node_communicator,
+                                     span<device*> devices,
+                                     span<std::unique_ptr<device_communicator>> &result ) const;
     
+    /**
+     * @brief Create a device communicators from the most suitable backend.
+     * 
+     * @param node_communicator Node communicator used during the creation.
+     * @param devices Devices for which the communicators are created.
+     * Must be supported.
+     * @param result Output list with the newly created communicators. Must 
+     * have the same size as the device array.
+     * @return true Communicators were successfully created.
+     * @return false No suitable backend was found.
+     */
     XMIPP4_CORE_API
-    bool create_device_communicators_shared(
-        const std::shared_ptr<node_communicator> &node_communicator,
-        span<device*> devices,
-        std::vector<std::shared_ptr<device_communicator>> &result 
-    ) const;
+    bool create_device_communicators_shared(node_communicator &node_communicator,
+                                            span<device*> devices,
+                                            span<std::shared_ptr<device_communicator>> &result ) const;
 
 private:
     class implementation;

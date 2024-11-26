@@ -128,7 +128,7 @@ device_communicator_manager::find_supported_backend(span<device*> devices) const
 }
 
 bool device_communicator_manager::create_device_communicators(
-    const std::shared_ptr<communication::communicator> &node_communicator,
+    const std::shared_ptr<node_communicator> &node_communicator,
     span<device*> devices,
     std::vector<std::unique_ptr<device_communicator>> &result
 ) const
@@ -146,7 +146,7 @@ bool device_communicator_manager::create_device_communicators(
 }
 
 bool device_communicator_manager::create_device_communicators_shared(
-    const std::shared_ptr<communication::communicator> &node_communicator,
+    const std::shared_ptr<node_communicator> &node_communicator,
     span<device*> devices,
     std::vector<std::shared_ptr<device_communicator>> &result 
 ) const
@@ -161,7 +161,6 @@ bool device_communicator_manager::create_device_communicators_shared(
         );
     }
     return backend;
-
 }
 
 } // namespace compute

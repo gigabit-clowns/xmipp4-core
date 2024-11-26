@@ -62,6 +62,8 @@ class device_communicator_manager final
     : public interface_manager
 {
 public:
+    using node_communicator = communication::communicator;
+
     XMIPP4_CORE_API device_communicator_manager();
     device_communicator_manager(const device_communicator_manager &other) = delete;
     XMIPP4_CORE_API device_communicator_manager(device_communicator_manager &&other) noexcept;
@@ -90,14 +92,14 @@ public:
 
     XMIPP4_CORE_API
     bool create_device_communicators(
-        const std::shared_ptr<communication::communicator> &node_communicator,
+        const std::shared_ptr<node_communicator> &node_communicator,
         span<device*> devices,
         std::vector<std::unique_ptr<device_communicator>> &result
     ) const;
     
     XMIPP4_CORE_API
     bool create_device_communicators_shared(
-        const std::shared_ptr<communication::communicator> &node_communicator,
+        const std::shared_ptr<node_communicator> &node_communicator,
         span<device*> devices,
         std::vector<std::shared_ptr<device_communicator>> &result 
     ) const;

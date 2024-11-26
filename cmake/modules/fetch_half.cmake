@@ -24,11 +24,18 @@ cmake_minimum_required(VERSION 3.12)
 
 include(FetchContent)
 
-function(fetch_half version)
+function(fetch_half)
+    set(options)
+    set(oneValueArgs VERSION)
+    set(multiValueArgs)
+    cmake_parse_arguments(PARSE_ARGV 0 arg
+        "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    )
+
 	cmake_policy(SET CMP0135 NEW) # To avoid warnings
     FetchContent_Declare(
         half
-        URL https://kumisystems.dl.sourceforge.net/project/half/half/${version}/half-${version}.zip
+        URL https://kumisystems.dl.sourceforge.net/project/half/half/${arg_VERSION}/half-${arg_VERSION}.zip
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""

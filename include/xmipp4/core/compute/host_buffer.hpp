@@ -40,6 +40,8 @@ namespace xmipp4
 namespace compute
 {
 
+class device_buffer;
+
 /**
  * @brief Abstract class defining an in-host memory
  * allocation.
@@ -87,6 +89,26 @@ public:
      * @return const void* The data.
      */
     virtual const void* get_data() const noexcept = 0;
+
+    /**
+     * @brief Get a device accessible alias of this buffer.
+     * 
+     * If this buffer is not device accessible, this method returns null.
+     * 
+     * @return device_buffer* Device accessible alias of this buffer.
+     * 
+     */
+    virtual device_buffer* get_device_accessible_alias() noexcept = 0;
+
+    /**
+     * @brief Get a device accessible alias of this buffer.
+     * 
+     * If this buffer is not device accessible, this method returns null.
+     * 
+     * @return const device_buffer* Device accessible alias of this buffer.
+     */
+    virtual 
+    const device_buffer* get_device_accessible_alias() const noexcept = 0;
 
 };
 

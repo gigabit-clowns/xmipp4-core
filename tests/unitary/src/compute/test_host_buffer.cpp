@@ -46,6 +46,8 @@ public:
     MAKE_MOCK0(get_count, std::size_t (), const noexcept override);
     MAKE_MOCK0(get_data, void* (), noexcept override);
     MAKE_CONST_MOCK0(get_data, const void* (), noexcept override);
+    MAKE_MOCK0(get_device_accessible_alias, device_buffer* (), noexcept override);
+    MAKE_CONST_MOCK0(get_device_accessible_alias, const device_buffer* (), noexcept override);
 
 };
 

@@ -38,6 +38,8 @@ namespace xmipp4
 namespace compute
 {
 
+class host_buffer;
+
 /**
  * @brief Abstract class defining an in-device memory
  * allocation.
@@ -71,6 +73,24 @@ public:
      * 
      */
     virtual std::size_t get_count() const noexcept = 0;
+
+    /**
+     * @brief Get a host accessible alias of this buffer.
+     * 
+     * If this buffer is not host accessible, this method returns null.
+     * 
+     * @return host_buffer* Host accessible alias of this buffer.
+     */
+    virtual host_buffer* get_host_accessible_alias() noexcept = 0;
+
+    /**
+     * @brief Get a host accessible alias of this buffer.
+     * 
+     * If this buffer is not host accessible, this method returns null.
+     * 
+     * @return const host_buffer* Host accessible alias of this buffer.
+     */
+    virtual const host_buffer* get_host_accessible_alias() const noexcept = 0;
 
 }; 
 

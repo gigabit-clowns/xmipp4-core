@@ -331,6 +331,20 @@ public:
                                                        int rank_priority ) const = 0;
 
     /**
+     * @brief Clone this communicator.
+     * 
+     * @return std::unique_ptr<communicator> The new communicator.
+     */
+    virtual std::unique_ptr<communicator> clone() const = 0;
+
+    /**
+     * @brief Clone this communicator.
+     * 
+     * @return std::shared_ptr<communicator> The new communicator.
+     */
+    virtual std::shared_ptr<communicator> clone_shared() const = 0;
+
+    /**
      * @brief Synchronize all peers.
      * 
      * Wait until all peers have reached this call.

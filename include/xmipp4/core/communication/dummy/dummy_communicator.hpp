@@ -132,6 +132,9 @@ public:
     std::shared_ptr<communicator> split_shared(int colour, 
                                                int rank_priority ) const override;
 
+    std::unique_ptr<communicator> clone() const override;
+    std::shared_ptr<communicator> clone_shared() const override;
+    
     void barrier() override;
 
 };

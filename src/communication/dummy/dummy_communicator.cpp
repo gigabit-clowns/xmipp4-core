@@ -194,6 +194,15 @@ dummy_communicator::split_shared(int, int) const
     return std::make_shared<dummy_communicator>();
 }
 
+std::unique_ptr<communicator> dummy_communicator::clone() const
+{
+    return std::make_unique<dummy_communicator>();
+}
+
+std::shared_ptr<communicator> dummy_communicator::clone_shared() const
+{
+    return std::make_shared<dummy_communicator>();
+}
 
 void dummy_communicator::barrier()
 {

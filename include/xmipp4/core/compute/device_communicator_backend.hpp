@@ -35,7 +35,8 @@
 #include <memory>
 
 namespace xmipp4 
-{namespace communication
+{
+namespace communication
 {
 
 class communicator;

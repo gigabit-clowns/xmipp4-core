@@ -30,6 +30,7 @@
 
 #include "../platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
@@ -59,7 +60,7 @@ public:
     virtual std::size_t get_size() const noexcept = 0;
 
     /**
-     * @brief Get the rank of the local process.
+     * @brief Get the rank of the device in the communicator.
      * 
      * @return int The rank.
      * 

@@ -33,12 +33,13 @@ function(fetch_half)
     )
 
 	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+    set(NO_OP_COMMAND "${CMAKE_COMMAND} -E true")
     FetchContent_Declare(
         half
         URL https://kumisystems.dl.sourceforge.net/project/half/half/${arg_VERSION}/half-${arg_VERSION}.zip
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
+        CONFIGURE_COMMAND ${NO_OP_COMMAND}
+        BUILD_COMMAND ${NO_OP_COMMAND}
+        INSTALL_COMMAND ${NO_OP_COMMAND}
     )
     FetchContent_MakeAvailable(half)
 

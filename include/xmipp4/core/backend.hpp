@@ -28,6 +28,7 @@
  * 
  */
 
+#include "span.hpp"
 #include "version.hpp"
 #include "backend_priority.hpp"
 #include "platform/dynamic_shared_object.h"
@@ -89,5 +90,20 @@ public:
     virtual backend_priority get_priority() const noexcept = 0;
 
 };
+
+
+
+/**
+ * @brief Get the highest priority backend among multiple candidates.
+ * 
+ * Obtain the highest priority backend among multiple candidates. If two
+ * candidates have the highest priority, this throws an ambiguous_backend_error.
+ * 
+ * @param backends Backend candidates. No item may be null.
+ * @return backend* Highest priority backend among the candidates. Null if
+ * candidate list is empty.
+ */
+XMIPP4_CORE_API
+backend* get_highest_priority_backend(span<backend*> backends);
 
 } // namespace xmipp4

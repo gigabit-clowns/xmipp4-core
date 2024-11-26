@@ -21,22 +21,24 @@
  ***************************************************************************/
 
 /**
- * @file device_communicator_backend.hpp
+ * @file device_communicator_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_communicator_backend interface
- * @date 2024-11-25
+ * @brief Defines device_communicator_manager interface
+ * @date 2024-11-27
  * 
  */
 
-#include "../backend.hpp"
+#include "../interface_manager.hpp"
 #include "../span.hpp"
+#include "../memory/pimpl.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
 #include <vector>
 
 namespace xmipp4 
-{namespace communication
+{
+namespace communication
 {
 
 class communicator;
@@ -48,31 +50,61 @@ namespace compute
 
 class device;
 class device_communicator;
+class device_communicator_backend;
+
+
 
 /**
- * @brief Abstract class that represents a device communications backend.
- * 
- * This interface provides allows obtaining a device_communicator object
- * for a device group.
+ * @brief Centralize multiple device_communicator_backends.
  * 
  */
-class XMIPP4_CORE_API device_communicator_backend
-    : public backend
+class device_communicator_manager final
+    : public interface_manager
 {
 public:
-    virtual bool supports_devices(span<device*> devices) const noexcept = 0;
+    XMIPP4_CORE_API device_communicator_manager();
+    device_communicator_manager(const device_communicator_manager &other) = delete;
+    XMIPP4_CORE_API device_communicator_manager(device_communicator_manager &&other) noexcept;
+    XMIPP4_CORE_API virtual ~device_communicator_manager() override;
 
-    virtual void create_device_communicators(
+    device_communicator_manager& operator=(const device_communicator_manager &other) = delete;
+    XMIPP4_CORE_API device_communicator_manager& operator=(device_communicator_manager &&other) noexcept;
+
+    /**
+     * @brief Register a new device communicator backend.
+     * 
+     * @param backend The backend to be registered.
+     * @return true The backend was successfully registered.
+     * @return false The backend with the same name already exists.
+     * 
+     */
+    XMIPP4_CORE_API
+    bool register_backend(std::unique_ptr<device_communicator_backend> backend);
+
+    XMIPP4_CORE_API
+    device_communicator_backend* get_backend(const std::string &name) const;
+
+    XMIPP4_CORE_API
+    device_communicator_backend* 
+    find_supported_backend(span<device*> devices) const;
+
+    XMIPP4_CORE_API
+    bool create_device_communicators(
         const std::shared_ptr<communication::communicator> &node_communicator,
         span<device*> devices,
         std::vector<std::unique_ptr<device_communicator>> &result
-    ) const = 0;
+    ) const;
     
-    virtual void create_device_communicators_shared(
+    XMIPP4_CORE_API
+    bool create_device_communicators_shared(
         const std::shared_ptr<communication::communicator> &node_communicator,
         span<device*> devices,
         std::vector<std::shared_ptr<device_communicator>> &result 
-    ) const = 0;
+    ) const;
+
+private:
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
 
 }; 
 

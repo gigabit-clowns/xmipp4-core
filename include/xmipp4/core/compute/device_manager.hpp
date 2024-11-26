@@ -51,7 +51,7 @@ class device_backend;
  * @brief Centralize multiple device_backends.
  * 
  */
-class device_manager
+class device_manager final
     : public interface_manager
 {
 public:

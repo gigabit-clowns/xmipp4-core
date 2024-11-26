@@ -29,11 +29,10 @@
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/communication/communicator_backend.hpp>
-#include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 
+#include <map>
 #include <tuple>
 #include <vector>
-#include <unordered_map>
 #include <algorithm>
 
 namespace xmipp4
@@ -85,12 +84,10 @@ public:
         return result;
     }
 
-    communicator_backend* get_preferred_backend() const
+    communicator_backend* find_preferred_backend() const
     {   
-        communicator_backend* result;
-
         // Filter available backends
-        std::vector<communicator_backend*> available_backends;
+        std::vector<backend*> available_backends;
         available_backends.reserve(m_registry.size());
         for (auto &item : m_registry)
         {   
@@ -100,48 +97,14 @@ public:
             }
         }
 
-        if( available_backends.empty())
-        {
-            result = nullptr;
-        }
-        else if (available_backends.size() == 1)
-        {
-            result = available_backends[0];
-        }
-        else // available_backends.size() > 1
-        {
-            // Get the best two
-            std::partial_sort(
-                available_backends.begin(),
-                std::next(available_backends.begin(), 2),
-                available_backends.end(),
-                [] (const communicator_backend *lhs, 
-                    const communicator_backend *rhs )
-                {
-                    return lhs->get_priority() > rhs->get_priority();
-                }
-            );
-
-            // Ensure the second is worse
-            if (available_backends[0]->get_priority() == 
-                available_backends[1]->get_priority() )
-            {
-                throw ambiguous_backend_error(
-                    "Could not disambiguate among multiple "
-                    "communicator_backend-s. Ensure that only one has "
-                    "been installed."
-                );
-            }
-
-            result = available_backends[0];
-        }
-
-        return result;
+        return static_cast<communicator_backend*>(
+            get_highest_priority_backend(make_span(available_backends))
+        );
     }
 
 private:
     using registry_type = 
-        std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
+        std::map<std::string, std::unique_ptr<communicator_backend>>;
 
     registry_type m_registry;
 
@@ -193,9 +156,9 @@ communicator_manager::get_backend(const std::string &name) const
 }
 
 communicator_backend* 
-communicator_manager::get_preferred_backend() const
+communicator_manager::find_preferred_backend() const
 {
-    return m_implementation->get_preferred_backend();
+    return m_implementation->find_preferred_backend();
 }
 
 std::shared_ptr<communicator>
@@ -205,9 +168,9 @@ communicator_manager::get_world_communicator(const std::string &name) const
 }
 
 std::shared_ptr<communicator>
-communicator_manager::get_preferred_world_communicator() const
+communicator_manager::find_preferred_world_communicator() const
 {
-    return obtain_communicator(get_preferred_backend());
+    return obtain_communicator(find_preferred_backend());
 }
 
 } // namespace communication

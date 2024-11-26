@@ -104,7 +104,7 @@ public:
      * @return communicator_backend* The backend. Nullptr if none is available.
      */
     XMIPP4_CORE_API
-    communicator_backend* get_preferred_backend() const;
+    communicator_backend* find_preferred_backend() const;
 
     /**
      * @brief Get the world communicator of a backend.
@@ -127,7 +127,7 @@ public:
      * @see get_preferred_backend
      */
     XMIPP4_CORE_API
-    std::shared_ptr<communicator> get_preferred_world_communicator() const;
+    std::shared_ptr<communicator> find_preferred_world_communicator() const;
 
 private:
     class implementation;

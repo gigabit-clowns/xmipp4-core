@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,33 +19,39 @@
  ***************************************************************************/
 
 /**
- * @file host_device_queue.hpp
+ * @file host_device_queue_pool.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_device_queue interface
- * @date 2024-10-29
+ * @brief Implementation of host_device_queue_pool.hpp
+ * @date 2024-11-27
  * 
  */
 
-#include "../device_queue.hpp"
+#include <xmipp4/core/compute/host/host_device_queue_pool.hpp>
 
-namespace xmipp4 
+#include <stdexcept>
+
+namespace xmipp4
 {
 namespace compute
 {
 
-/**
- * @brief Special implementation of the device_queue interface to be 
- * able to send commands to the host.
- * 
- */
-class host_device_queue final
-    : public device_queue
-{
-public:
-    void wait_until_completed() const override;
-    bool is_idle() const noexcept override;
 
-}; 
+std::size_t host_device_queue_pool::get_size() const noexcept
+{
+    return 1;
+}
+
+host_device_queue& host_device_queue_pool::get_queue(std::size_t index)
+{
+    if (index > 0)
+    {
+        throw std::out_of_range(
+            "queue index is out of range"
+        );
+    }
+
+    return m_queue;
+}
 
 } // namespace compute
 } // namespace xmipp4

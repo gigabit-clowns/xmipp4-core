@@ -24,11 +24,13 @@
  * @file host_device_queue.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Defines host_device_queue interface
- * @date 2024-10-29
+ * @date 2024-11-27
  * 
  */
 
-#include "../device_queue.hpp"
+#include "../device_queue_pool.hpp"
+
+#include "host_device_queue.hpp"
 
 namespace xmipp4 
 {
@@ -36,16 +38,19 @@ namespace compute
 {
 
 /**
- * @brief Special implementation of the device_queue interface to be 
- * able to send commands to the host.
+ * @brief Special implementation of the device_queue_pool interface to be 
+ * able to obtain host device queues.
  * 
  */
-class host_device_queue final
-    : public device_queue
+class host_device_queue_pool final
+    : public device_queue_pool
 {
 public:
-    void wait_until_completed() const override;
-    bool is_idle() const noexcept override;
+    std::size_t get_size() const noexcept override;
+    host_device_queue& get_queue(std::size_t index) override;
+
+private:
+    host_device_queue m_queue;
 
 }; 
 

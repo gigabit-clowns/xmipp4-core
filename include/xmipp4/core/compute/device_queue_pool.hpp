@@ -21,33 +21,44 @@
  ***************************************************************************/
 
 /**
- * @file host_device_queue.hpp
+ * @file device_queue_pool.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_device_queue interface
- * @date 2024-10-29
+ * @brief Defines the compute::device_queue_pool interface
+ * @date 2024-11-27
  * 
  */
 
-#include "../device_queue.hpp"
+#include "../platform/dynamic_shared_object.h"
+
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
+class device_queue;
+
 /**
- * @brief Special implementation of the device_queue interface to be 
- * able to send commands to the host.
+ * @brief Abstract class describing a pool of device_queues.
  * 
  */
-class host_device_queue final
-    : public device_queue
+class XMIPP4_CORE_API device_queue_pool
 {
 public:
-    void wait_until_completed() const override;
-    bool is_idle() const noexcept override;
+    device_queue_pool() = default;
+    device_queue_pool(const device_queue_pool &other) = default;
+    device_queue_pool(device_queue_pool &&other) = default;
+    virtual ~device_queue_pool() = default;
+
+    device_queue_pool& operator=(const device_queue_pool &other) = default;
+    device_queue_pool& operator=(device_queue_pool &&other) = default;
+
+    virtual std::size_t get_size() const noexcept = 0;
+    virtual device_queue& get_queue(std::size_t index) = 0;
 
 }; 
 
 } // namespace compute
 } // namespace xmipp4
+

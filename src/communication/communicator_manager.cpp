@@ -33,7 +33,6 @@
 #include <map>
 #include <tuple>
 #include <vector>
-#include <algorithm>
 
 namespace xmipp4
 {
@@ -88,14 +87,7 @@ public:
     {   
         // Filter available backends
         std::vector<backend*> available_backends;
-        available_backends.reserve(m_registry.size());
-        for (auto &item : m_registry)
-        {   
-            if (item.second->is_available())
-            {
-                available_backends.emplace_back(item.second.get());
-            }
-        }
+        get_available_backends(available_backends);
 
         return static_cast<communicator_backend*>(
             get_highest_priority_backend(make_span(available_backends))
@@ -107,6 +99,18 @@ private:
         std::map<std::string, std::unique_ptr<communicator_backend>>;
 
     registry_type m_registry;
+
+    void get_available_backends(std::vector<backend*> &result) const
+    {
+        result.clear();
+        for (auto &item : m_registry)
+        {   
+            if (item.second->is_available())
+            {
+                result.emplace_back(item.second.get());
+            }
+        }
+    }
 
 };
 

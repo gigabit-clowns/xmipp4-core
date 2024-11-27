@@ -30,6 +30,7 @@
 
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 
+#include <stdexcept>
 #include <algorithm>
 
 namespace xmipp4
@@ -38,6 +39,17 @@ namespace xmipp4
 backend* get_highest_priority_backend(span<backend*> backends)
 {
     backend* result;
+
+    for(const auto *backend : backends)
+    {
+        if(!backend)
+        {
+            throw std::invalid_argument(
+                "Null backend was provided. All backends must "
+                "be dereferenceable"
+            );
+        }
+    }
 
     if( backends.empty())
     {

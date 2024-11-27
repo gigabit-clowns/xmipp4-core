@@ -74,13 +74,7 @@ public:
     find_supported_backend(span<device*> devices) const
     {   
         std::vector<backend*> available_backends;
-        for (auto &item : m_registry)
-        {   
-            if (item.second->supports_devices(devices))
-            {
-                available_backends.emplace_back(item.second.get());
-            }
-        }
+        get_supported_backends(devices, available_backends);
 
         return static_cast<device_communicator_backend*>(
             get_highest_priority_backend(make_span(available_backends))
@@ -92,6 +86,20 @@ private:
         std::map<std::string, std::unique_ptr<device_communicator_backend>>;
     
     registry_type m_registry;
+
+    void get_supported_backends(span<device*> devices,
+                                std::vector<backend*> &result ) const
+    {
+        result.clear();
+        for (auto &item : m_registry)
+        {
+            auto* backend = item.second.get();
+            if (backend->is_available() && backend->supports_devices(devices))
+            {
+                result.emplace_back(backend);
+            }
+        }
+    }
 
 };
 

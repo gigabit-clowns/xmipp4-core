@@ -38,8 +38,12 @@ namespace compute
 {
 
 /**
- * @brief Special implementation of the device_queue_pool interface to be 
- * able to obtain host device queues.
+ * @brief Implementation of the device_queue_pool interface to be 
+ * able to obtain host_device_queue-s.
+ * 
+ * As host_device_queue-s are synchronous, it does not make sense to
+ * instantiate multiple of them. Thus, this pool always has a size of
+ * one.
  * 
  */
 class host_device_queue_pool final

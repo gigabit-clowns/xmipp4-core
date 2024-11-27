@@ -38,14 +38,9 @@ namespace xmipp4
 namespace compute
 {
 
-std::unique_ptr<device_queue> host_device::create_queue()
+host_device_queue_pool& host_device::get_queue_pool()
 {
-    return std::make_unique<host_device_queue>();
-}
-
-std::shared_ptr<device_queue> host_device::create_queue_shared()
-{
-    return std::make_shared<host_device_queue>();
+    return m_queue_pool;
 }
 
 std::unique_ptr<device_memory_allocator> 

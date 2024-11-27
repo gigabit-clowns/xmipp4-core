@@ -38,5 +38,10 @@ void host_device_queue::wait_until_completed() const
     // NO-OP
 }
 
+bool host_device_queue::is_idle() const noexcept
+{
+    return true;
+}
+
 } // namespace compute
 } // namespace xmipp4

@@ -37,7 +37,7 @@ namespace xmipp4
 namespace compute
 {
 
-class device_queue;
+class device_queue_pool;
 class device_memory_allocator;
 class host_memory_allocator;
 class device_to_host_transfer;
@@ -67,18 +67,11 @@ public:
     device& operator=(device &&other) = default;
 
     /**
-     * @brief Create a command queue for this device.
+     * @brief Get a reference to the queue pool.
      * 
-     * @return std::unique_ptr<device_queue> The queue.
+     * @return device_queue_pool& The queue pool.
      */
-    virtual std::unique_ptr<device_queue> create_queue() = 0;
-
-    /**
-     * @brief Create a command queue for this device.
-     * 
-     * @return std::shared_ptr<device_queue> The queue.
-     */
-    virtual std::shared_ptr<device_queue> create_queue_shared() = 0;
+    virtual device_queue_pool& get_queue_pool() = 0;
 
     /**
      * @brief Create a memory allocator for this device.

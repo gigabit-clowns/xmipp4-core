@@ -30,6 +30,8 @@
 
 #include "../device.hpp"
 
+#include "host_device_queue_pool.hpp"
+
 namespace xmipp4 
 {
 namespace compute
@@ -44,8 +46,7 @@ class host_device final
     : public device
 {
 public:
-    std::unique_ptr<device_queue> create_queue() override;
-    std::shared_ptr<device_queue> create_queue_shared() override;
+    host_device_queue_pool& get_queue_pool() override;
 
     std::unique_ptr<device_memory_allocator> 
     create_device_memory_allocator() override;
@@ -79,6 +80,9 @@ public:
     create_device_to_host_event() override;
     std::shared_ptr<device_to_host_event> 
     create_device_to_host_event_shared() override;
+
+private:
+    host_device_queue_pool m_queue_pool;
 
 }; 
 

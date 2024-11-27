@@ -21,50 +21,44 @@
  ***************************************************************************/
 
 /**
- * @file host_device_backend.hpp
+ * @file device_queue_pool.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_device_backend interface
- * @date 2024-10-29
+ * @brief Defines the compute::device_queue_pool interface
+ * @date 2024-11-27
  * 
  */
 
-#include "../device_backend.hpp"
+#include "../platform/dynamic_shared_object.h"
+
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class device_manager;
+class device_queue;
 
 /**
- * @brief Special implementation of the device_backend interface to be able 
- * to obtain the "host" as a device..
+ * @brief Abstract class describing a pool of device_queues.
  * 
  */
-class host_device_backend final
-    : public device_backend
+class XMIPP4_CORE_API device_queue_pool
 {
 public:
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
+    device_queue_pool() = default;
+    device_queue_pool(const device_queue_pool &other) = default;
+    device_queue_pool(device_queue_pool &&other) = default;
+    virtual ~device_queue_pool() = default;
 
-    void enumerate_devices(std::vector<std::size_t> &ids) const override;
-    bool get_device_properties(std::size_t id, 
-                               device_properties &desc) const override;
+    device_queue_pool& operator=(const device_queue_pool &other) = default;
+    device_queue_pool& operator=(device_queue_pool &&other) = default;
 
-    std::unique_ptr<device> 
-    create_device(std::size_t id, 
-                  const device_create_parameters &params ) override;
-    std::shared_ptr<device>
-    create_device_shared(std::size_t id,
-                         const device_create_parameters &params ) override;
-
-    static bool register_at(device_manager &manager);
+    virtual std::size_t get_size() const noexcept = 0;
+    virtual device_queue& get_queue(std::size_t index) = 0;
 
 }; 
 
 } // namespace compute
 } // namespace xmipp4
+

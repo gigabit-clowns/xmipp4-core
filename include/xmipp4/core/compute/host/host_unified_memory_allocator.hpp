@@ -59,6 +59,12 @@ public:
     host_unified_memory_allocator& 
     operator=(host_unified_memory_allocator &&other) = default;
 
+    std::unique_ptr<host_unified_buffer> 
+    create_unified_buffer(numerical_type type, std::size_t count );
+
+    std::shared_ptr<host_unified_buffer> 
+    create_unified_buffer_shared(numerical_type type, std::size_t count );
+
     std::unique_ptr<device_buffer> 
     create_device_buffer(numerical_type type, 
                          std::size_t count, 

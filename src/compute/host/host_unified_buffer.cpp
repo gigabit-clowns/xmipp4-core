@@ -33,23 +33,23 @@ namespace xmipp4
 namespace compute
 {
 
-device_buffer* host_unified_buffer::get_device_accessible_alias() noexcept
+host_unified_buffer* host_unified_buffer::get_device_accessible_alias() noexcept
 {
     return this;
 }
 
-const device_buffer* 
+const host_unified_buffer* 
 host_unified_buffer::get_device_accessible_alias() const noexcept
 {
     return this;
 }
 
-host_buffer* host_unified_buffer::get_host_accessible_alias() noexcept
+host_unified_buffer* host_unified_buffer::get_host_accessible_alias() noexcept
 {
     return this;
 }
 
-const host_buffer* 
+const host_unified_buffer* 
 host_unified_buffer::get_host_accessible_alias() const noexcept
 {
     return this;

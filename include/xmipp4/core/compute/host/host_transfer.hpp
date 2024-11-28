@@ -100,9 +100,6 @@ public:
               span<const copy_region> regions,
               device_queue &queue ) override;
 
-    void wait() override;
-    void wait(device_queue &queue) override;
-
 }; 
 
 } // namespace compute

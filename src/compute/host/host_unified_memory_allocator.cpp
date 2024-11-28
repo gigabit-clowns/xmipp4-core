@@ -37,31 +37,47 @@ namespace compute
 {
 
 std::unique_ptr<device_buffer> 
-host_unified_memory_allocator::create_buffer(numerical_type type,
-                                             std::size_t count,
-                                             device_queue& )
+host_unified_memory_allocator::create_device_buffer(numerical_type type,
+                                                    std::size_t count,
+                                                    device_queue& )
 {
     return std::make_unique<default_host_unified_buffer>(type, count);
 }
 
 std::shared_ptr<device_buffer> 
-host_unified_memory_allocator::create_buffer_shared(numerical_type type,
-                                                    std::size_t count,
-                                                    device_queue& )
+host_unified_memory_allocator::create_device_buffer_shared(numerical_type type,
+                                                           std::size_t count,
+                                                           device_queue& )
 {
     return std::make_shared<default_host_unified_buffer>(type, count);
 }
 
 std::unique_ptr<host_buffer> 
-host_unified_memory_allocator::create_buffer(numerical_type type, 
-                                             std::size_t count )
+host_unified_memory_allocator::create_host_buffer(numerical_type type,
+                                                  std::size_t count,
+                                                  device_queue& )
 {
     return std::make_unique<default_host_unified_buffer>(type, count);
 }
 
 std::shared_ptr<host_buffer> 
-host_unified_memory_allocator::create_buffer_shared(numerical_type type, 
-                                                    std::size_t count )
+host_unified_memory_allocator::create_host_buffer_shared(numerical_type type,
+                                                         std::size_t count,
+                                                         device_queue& )
+{
+    return std::make_shared<default_host_unified_buffer>(type, count);
+}
+
+std::unique_ptr<host_buffer> 
+host_unified_memory_allocator::create_host_buffer(numerical_type type, 
+                                                  std::size_t count )
+{
+    return std::make_unique<default_host_unified_buffer>(type, count);
+}
+
+std::shared_ptr<host_buffer> 
+host_unified_memory_allocator::create_host_buffer_shared(numerical_type type, 
+                                                         std::size_t count )
 {
     return std::make_shared<default_host_unified_buffer>(type, count);
 }

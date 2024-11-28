@@ -83,7 +83,7 @@ public:
      * 
      */
     virtual void
-    transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    transfer_copy(const host_buffer &src_buffer,
                   device_buffer &dst_buffer, 
                   device_queue &queue ) = 0;
 
@@ -110,7 +110,7 @@ public:
      * 
      */
     virtual void
-    transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    transfer_copy(const host_buffer &src_buffer,
                   device_buffer &dst_buffer,
                   span<const copy_region> regions,
                   device_queue &queue ) = 0;

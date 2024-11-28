@@ -39,37 +39,23 @@ namespace xmipp4
 namespace compute
 {
 
-static void require_nonnull(const host_buffer *buffer, const char *buffer_name)
-{
-    if (!buffer)
-    {
-        std::string message = buffer_name;
-        message += " cannot be null";
-        throw std::invalid_argument(message);
-    }
-}
-
-void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
+void host_transfer::transfer_copy(const host_buffer &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   device_queue& )
 {
-    require_nonnull(src_buffer.get(), "src_buffer");
-
     compute::copy(
-        *src_buffer, 
+        src_buffer, 
         dynamic_cast<host_unified_buffer&>(dst_buffer)
     );
 }
 
-void host_transfer::transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer, 
+void host_transfer::transfer_copy(const host_buffer &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
-    require_nonnull(src_buffer.get(), "src_buffer");
-
     compute::copy(
-        *src_buffer, 
+        src_buffer, 
         dynamic_cast<host_unified_buffer&>(dst_buffer), 
         regions
     );
@@ -94,27 +80,23 @@ host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer,
 }
 
 void host_transfer::transfer_copy(const device_buffer &src_buffer,
-                                  const std::shared_ptr<host_buffer> &dst_buffer,
+                                  host_buffer &dst_buffer,
                                   device_queue& )
 {
-    require_nonnull(dst_buffer.get(), "dst_buffer");
-
     compute::copy(
         dynamic_cast<const host_unified_buffer&>(src_buffer), 
-        *dst_buffer
+        dst_buffer
     );
 }
 
 void host_transfer::transfer_copy(const device_buffer &src_buffer,
-                                  const std::shared_ptr<host_buffer> &dst_buffer,
+                                  host_buffer &dst_buffer,
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
-    require_nonnull(dst_buffer.get(), "dst_buffer");
-
     compute::copy(
         dynamic_cast<const host_unified_buffer&>(src_buffer), 
-        *dst_buffer,
+        dst_buffer,
         regions
     );
 }

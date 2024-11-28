@@ -66,12 +66,55 @@ public:
      * 
      * @param type Numerical type of the buffer.
      * @param count Number of elements in the buffer.
+     * @param queue Queue where the allocation and deallocation takes place.
      * @return std::unique_ptr<host_buffer> The buffer.
      * 
+     * @note Using the buffer in an queue other than the one
+     * used for allocation-deallocation requires explicit
+     * synchronization.
+     * @note Memory allocated here is not available to the host
+     * until the queue has been executed until this point. Use
+     * device_to_host synchronization primitives to assure that
+     * the buffer is accessible.
      */
     virtual std::unique_ptr<host_buffer> 
-    create_buffer(numerical_type type, 
-                  std::size_t count ) = 0;
+    create_host_buffer(numerical_type type, 
+                       std::size_t count,
+                       device_queue& queue ) = 0;
+
+    /**
+     * @brief Allocate a buffer in this host.
+     * 
+     * @param type Numerical type of the buffer.
+     * @param count Number of elements in the buffer.
+     * @param queue Queue where the allocation and deallocation takes place.
+     * @return std::shared_ptr<host_buffer> The buffer.
+     * 
+     * @note Using the buffer in an queue other than the one
+     * used for allocation-deallocation requires explicit
+     * synchronization.
+     * @note Memory allocated here is not available to the host
+     * until the queue has been executed until this point. Use
+     * device_to_host synchronization primitives to assure that
+     * the buffer is accessible.
+     */
+    virtual std::shared_ptr<host_buffer> 
+    create_host_buffer_shared(numerical_type type, 
+                              std::size_t count,
+                              device_queue &queue ) = 0;
+
+    /**
+     * @brief Allocate a buffer in this host.
+     * 
+     * @param type Numerical type of the buffer.
+     * @param count Number of elements in the buffer.
+     * @return std::unique_ptr<host_buffer> The buffer.
+     * 
+     * @note Unlike the previous functions, the memory allocated here
+     * is inmediafly available to the host.
+     */
+    virtual std::unique_ptr<host_buffer> 
+    create_host_buffer(numerical_type type, std::size_t count) = 0;
 
     /**
      * @brief Allocate a buffer in this host.
@@ -80,10 +123,12 @@ public:
      * @param count Number of elements in the buffer.
      * @return std::shared_ptr<host_buffer> The buffer.
      * 
+     * @note Unlike the previous functions, the memory allocated here
+     * is inmediafly available to the host.
      */
     virtual std::shared_ptr<host_buffer> 
-    create_buffer_shared(numerical_type type, 
-                         std::size_t count ) = 0;
+    create_host_buffer_shared(numerical_type type, std::size_t count) = 0;
+
 
 }; 
 

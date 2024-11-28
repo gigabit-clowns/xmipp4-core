@@ -74,9 +74,9 @@ public:
      * synchronization.
      */
     virtual std::unique_ptr<device_buffer> 
-    create_buffer(numerical_type type, 
-                  std::size_t count, 
-                  device_queue &queue ) = 0;
+    create_device_buffer(numerical_type type, 
+                         std::size_t count, 
+                         device_queue &queue ) = 0;
 
     /**
      * @brief Allocate a buffer in this device.
@@ -91,9 +91,9 @@ public:
      * synchronization.
      */
     virtual std::shared_ptr<device_buffer> 
-    create_buffer_shared(numerical_type type, 
-                         std::size_t count, 
-                         device_queue &queue ) = 0;
+    create_device_buffer_shared(numerical_type type, 
+                                std::size_t count, 
+                                device_queue &queue ) = 0;
 
 }; 
 

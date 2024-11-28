@@ -157,25 +157,6 @@ public:
              device_memory_allocator &allocator,
              device_queue &queue ) = 0;
 
-    /**
-     * @brief Block the current thread until the transfers have finished.
-     * 
-     */
-    virtual void wait() = 0;
-
-    /**
-     * @brief Block the provided queue until the transfer has finished 
-     * 
-     * @param queue The queue to be blocked.
-     * 
-     * @note The queue provided to the transfer is implicitly blocked.
-     * This function may not be used with the same queue used for the 
-     * transfer. Instead, this function is meant to be used with other
-     * queues that await the transferred data.
-     * 
-     */
-    virtual void wait(device_queue &queue) = 0;
-
 }; 
 
 } // namespace compute

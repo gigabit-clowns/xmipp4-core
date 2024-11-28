@@ -142,15 +142,5 @@ void host_transfer::copy(const device_buffer &src_buffer,
     );
 }
 
-void host_transfer::wait()
-{
-    // No-op, synchronous transfer.
-}
-
-void host_transfer::wait(device_queue&)
-{
-    // No-op, synchronous transfer.
-}
-
 } // namespace compute
 } // namespace xmipp4

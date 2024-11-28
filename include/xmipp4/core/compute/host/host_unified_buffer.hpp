@@ -54,10 +54,10 @@ public:
     void* get_data() noexcept override = 0;
     const void* get_data() const noexcept override = 0;
 
-    device_buffer* get_device_accessible_alias() noexcept final;
-    const device_buffer* get_device_accessible_alias() const noexcept final;
-    host_buffer* get_host_accessible_alias() noexcept final;
-    const host_buffer* get_host_accessible_alias() const noexcept final;
+    host_unified_buffer* get_device_accessible_alias() noexcept final;
+    const host_unified_buffer* get_device_accessible_alias() const noexcept final;
+    host_unified_buffer* get_host_accessible_alias() noexcept final;
+    const host_unified_buffer* get_host_accessible_alias() const noexcept final;
 
 }; 
 

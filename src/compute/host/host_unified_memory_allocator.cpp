@@ -36,12 +36,26 @@ namespace xmipp4
 namespace compute
 {
 
+std::unique_ptr<host_unified_buffer> 
+host_unified_memory_allocator::create_unified_buffer(numerical_type type, 
+                                                     std::size_t count )
+{
+    return std::make_unique<default_host_unified_buffer>(type, count);
+}
+
+std::shared_ptr<host_unified_buffer> 
+host_unified_memory_allocator::create_unified_buffer_shared(numerical_type type, 
+                                                            std::size_t count )
+{
+    return std::make_shared<default_host_unified_buffer>(type, count);
+}
+
 std::unique_ptr<device_buffer> 
 host_unified_memory_allocator::create_device_buffer(numerical_type type,
                                                     std::size_t count,
                                                     device_queue& )
 {
-    return std::make_unique<default_host_unified_buffer>(type, count);
+    return create_unified_buffer(type, count);
 }
 
 std::shared_ptr<device_buffer> 
@@ -49,7 +63,7 @@ host_unified_memory_allocator::create_device_buffer_shared(numerical_type type,
                                                            std::size_t count,
                                                            device_queue& )
 {
-    return std::make_shared<default_host_unified_buffer>(type, count);
+    return create_unified_buffer_shared(type, count);
 }
 
 std::unique_ptr<host_buffer> 
@@ -57,7 +71,7 @@ host_unified_memory_allocator::create_host_buffer(numerical_type type,
                                                   std::size_t count,
                                                   device_queue& )
 {
-    return std::make_unique<default_host_unified_buffer>(type, count);
+    return create_unified_buffer(type, count);
 }
 
 std::shared_ptr<host_buffer> 
@@ -65,21 +79,21 @@ host_unified_memory_allocator::create_host_buffer_shared(numerical_type type,
                                                          std::size_t count,
                                                          device_queue& )
 {
-    return std::make_shared<default_host_unified_buffer>(type, count);
+    return create_unified_buffer_shared(type, count);
 }
 
 std::unique_ptr<host_buffer> 
 host_unified_memory_allocator::create_host_buffer(numerical_type type, 
                                                   std::size_t count )
 {
-    return std::make_unique<default_host_unified_buffer>(type, count);
+    return create_unified_buffer(type, count);
 }
 
 std::shared_ptr<host_buffer> 
 host_unified_memory_allocator::create_host_buffer_shared(numerical_type type, 
                                                          std::size_t count )
 {
-    return std::make_shared<default_host_unified_buffer>(type, count);
+    return create_unified_buffer_shared(type, count);
 }
 
 } // namespace compute

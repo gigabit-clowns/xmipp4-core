@@ -97,6 +97,10 @@ public:
      * @brief Acknowledge that the buffer is being used in a queue other than
      * the one used for allocation.
      * 
+     * This will prevent premature deallocation before the provided queue
+     * has completed execution until the point where it can be safely 
+     * deallocated.
+     * 
      * @param queue The queue where the buffer is being used.
      * 
      */

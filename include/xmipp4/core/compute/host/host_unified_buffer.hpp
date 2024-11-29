@@ -59,7 +59,7 @@ public:
     host_unified_buffer* get_host_accessible_alias() noexcept final;
     const host_unified_buffer* get_host_accessible_alias() const noexcept final;
     
-    void record_queue(device_queue &queue) = 0;
+    void record_queue(device_queue &queue) override = 0;
 
 }; 
 

@@ -58,6 +58,8 @@ public:
     const host_unified_buffer* get_device_accessible_alias() const noexcept final;
     host_unified_buffer* get_host_accessible_alias() noexcept final;
     const host_unified_buffer* get_host_accessible_alias() const noexcept final;
+    
+    void record_queue(device_queue &queue) = 0;
 
 }; 
 

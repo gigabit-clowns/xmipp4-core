@@ -116,5 +116,10 @@ const void* default_host_unified_buffer::get_data() const noexcept
     return m_data;
 }
 
+void default_host_unified_buffer::record_queue(device_queue&)
+{
+    // No-op
+}
+
 } // namespace compute
 } // namespace xmipp4

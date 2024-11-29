@@ -27,6 +27,7 @@
  */
 
 #include <xmipp4/core/compute/host_buffer.hpp>
+#include <xmipp4/core/compute/device_queue.hpp>
 
 #include <vector>
 
@@ -48,6 +49,7 @@ public:
     MAKE_CONST_MOCK0(get_data, const void* (), noexcept override);
     MAKE_MOCK0(get_device_accessible_alias, device_buffer* (), noexcept override);
     MAKE_CONST_MOCK0(get_device_accessible_alias, const device_buffer* (), noexcept override);
+    MAKE_MOCK1(record_queue, void (device_queue&), override);
 
 };
 

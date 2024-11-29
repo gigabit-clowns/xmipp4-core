@@ -64,6 +64,8 @@ public:
     void* get_data() noexcept override;
     const void* get_data() const noexcept override;
 
+    void record_queue(device_queue &queue) override;
+
 private:
     numerical_type m_type;
     std::size_t m_count;

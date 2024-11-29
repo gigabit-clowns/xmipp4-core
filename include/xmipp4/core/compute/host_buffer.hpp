@@ -41,6 +41,7 @@ namespace compute
 {
 
 class device_buffer;
+class device_queue;
 
 /**
  * @brief Abstract class defining an in-host memory
@@ -109,6 +110,15 @@ public:
      */
     virtual 
     const device_buffer* get_device_accessible_alias() const noexcept = 0;
+
+    /**
+     * @brief Acknowledge that the buffer is being used in a queue other than
+     * the one used for allocation.
+     * 
+     * @param queue The queue where the buffer is being used.
+     * 
+     */
+    virtual void record_queue(device_queue &queue) = 0;
 
 };
 

@@ -70,18 +70,5 @@ std::size_t copy_region::get_count() const noexcept
     return m_count;
 }
 
-
-
-XMIPP4_INLINE_CONSTEXPR
-copy_region as_bytes(const copy_region &region,
-                     std::size_t element_size ) noexcept
-{
-    return copy_region(
-        region.get_source_offset()*element_size,
-        region.get_destination_offset()*element_size,
-        region.get_count()*element_size
-    );
-}
-
 } // namespace compute
 } // namespace xmipp4

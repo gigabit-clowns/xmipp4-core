@@ -44,7 +44,7 @@ namespace compute
  * buffers together with an element count. 
  * 
  * @note Unless otherwise specified, these offsets and counts 
- * represent numbers of elements, not bytes.
+ * represent in bytes.
  * 
  */
 class copy_region
@@ -72,19 +72,6 @@ private:
     std::size_t m_count;
 
 };
-
-
-
-/**
- * @brief Multiply all components by the element size.
- * 
- * @param region Region representing elements.
- * @param element_size Size of each element.
- * @return copy_region. Region representing bytes.
- */
-XMIPP4_CONSTEXPR 
-copy_region as_bytes(const copy_region &region,
-                     std::size_t element_size ) noexcept;
 
 } // namespace compute
 } // namespace xmipp4

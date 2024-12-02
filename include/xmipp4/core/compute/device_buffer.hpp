@@ -30,6 +30,8 @@
 
 #include "../platform/dynamic_shared_object.h"
 
+#include <cstddef>
+
 namespace xmipp4 
 {
 namespace compute

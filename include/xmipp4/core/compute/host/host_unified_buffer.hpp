@@ -49,8 +49,7 @@ class host_unified_buffer
     , public host_buffer
 {
 public:
-    numerical_type get_type() const noexcept override = 0;
-    std::size_t get_count() const noexcept override = 0;
+    std::size_t get_size() const noexcept override = 0;
     void* get_data() noexcept override = 0;
     const void* get_data() const noexcept override = 0;
 

@@ -60,35 +60,35 @@ public:
     operator=(host_unified_memory_allocator &&other) = default;
 
     std::unique_ptr<host_unified_buffer> 
-    create_unified_buffer(numerical_type type, std::size_t count );
+    create_unified_buffer(std::size_t size, std::size_t alignment);
 
     std::shared_ptr<host_unified_buffer> 
-    create_unified_buffer_shared(numerical_type type, std::size_t count );
+    create_unified_buffer_shared(std::size_t size, std::size_t alignment);
 
     std::unique_ptr<device_buffer> 
-    create_device_buffer(numerical_type type, 
-                         std::size_t count, 
+    create_device_buffer(std::size_t size, 
+                         std::size_t alignment, 
                          device_queue &queue ) override;
 
     std::shared_ptr<device_buffer> 
-    create_device_buffer_shared(numerical_type type, 
-                                std::size_t count, 
+    create_device_buffer_shared(std::size_t size, 
+                                std::size_t alignment,
                                 device_queue &queue ) override;
 
     std::unique_ptr<host_buffer> 
-    create_host_buffer(numerical_type type, 
-                       std::size_t count, 
+    create_host_buffer(std::size_t size, 
+                       std::size_t alignment,
                        device_queue &queue ) override;
 
     std::shared_ptr<host_buffer> 
-    create_host_buffer_shared(numerical_type type, 
-                              std::size_t count, 
+    create_host_buffer_shared(std::size_t size, 
+                              std::size_t alignment,
                               device_queue &queue ) override;
     std::unique_ptr<host_buffer> 
-    create_host_buffer(numerical_type type, std::size_t count ) override;
+    create_host_buffer(std::size_t size, std::size_t alignment) override;
 
     std::shared_ptr<host_buffer> 
-    create_host_buffer_shared(numerical_type type, std::size_t count ) override;
+    create_host_buffer_shared(std::size_t size, std::size_t alignment) override;
 
 }; 
 

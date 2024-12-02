@@ -28,9 +28,6 @@
  * 
  */
 
-#include <memory>
-
-#include "numerical_type.hpp"
 #include "copy_region.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
@@ -60,22 +57,12 @@ public:
     host_buffer& operator=(host_buffer &&other) = default;
 
     /**
-     * @brief Get the numeric type of the data in the buffer.
+     * @brief Get the number of bytes in the buffer.
      * 
-     * @return numerical_type The numeric type.
-     * 
-     */
-    virtual numerical_type get_type() const noexcept = 0;
-
-    /**
-     * @brief Get the number of elements in the buffer.
-     * 
-     * @return std::size_t The number of elements.
-     * @note This does not need to be confused with the number of
-     * bytes that occupies this buffer.
+     * @return std::size_t The size of the buffer.
      * 
      */
-    virtual std::size_t get_count() const noexcept = 0;
+    virtual std::size_t get_size() const noexcept = 0;
 
     /**
      * @brief Get the data.
@@ -129,8 +116,7 @@ public:
  * @param src_buffer Buffer from which elements are copied.
  * @param dst_buffer Buffer to which elements are copied.
  * 
- * @note Both buffers must have the same numerical type
- * and element counts.
+ * @note Both buffers must have the same size.
  * 
  */
 XMIPP4_CORE_API
@@ -143,8 +129,7 @@ void copy(const host_buffer &src_buffer, host_buffer &dst_buffer);
  * @param dst_buffer Buffer to which elements are copied.
  * @param regions Regions to be copied.
  * 
- * @note All values in regions are expressed in terms of element counts
- * @note Both buffers must have the same numerical type.
+ * @note All values in regions are expressed in terms of bytes.
  * @note For all regions, source_offset+count must not be greater
  * than the source buffer size and destination_offset+count
  * must not be greater than the destination buffer size.

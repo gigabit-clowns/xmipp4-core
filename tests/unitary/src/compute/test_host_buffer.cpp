@@ -94,7 +94,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     }
 }
 
-TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
+TEST_CASE( "copy host buffer with different size should throw", "[host_buffer]" )
 {
     mock_host_buffer src;
     REQUIRE_CALL(src, get_size())
@@ -107,7 +107,7 @@ TEST_CASE( "copy host buffer with different size", "[host_buffer]" )
         .TIMES(2);
 
     REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
-    REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same element count" ); 
+    REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same size" ); 
 }
 
 TEST_CASE( "copy host buffer regions", "[host_buffer]" )

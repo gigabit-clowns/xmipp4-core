@@ -38,29 +38,17 @@ namespace compute
 {
 
 /**
- * @brief Check that both numerical types are equal.
+ * @brief Check that both buffer sizes are equal.
  * 
- * @param type1 First numerical type.
- * @param type2 Second numerical type.
- * @return numerical_type The common value.
+ * 
+ * @param count1 First buffer's size.
+ * @param count2 Second buffer's size.
+ * @return std::size_t The common size.
  * @throws std::invalid_argument if unequal.
  * 
  */
 XMIPP4_CORE_API
-numerical_type require_same_type(numerical_type type1, numerical_type type2);
-
-/**
- * @brief Check that both counts are equal.
- * 
- * 
- * @param count1 First count.
- * @param count2 Second count.
- * @return std::size_t The common count.
- * @throws std::invalid_argument if unequal.
- * 
- */
-XMIPP4_CORE_API
-std::size_t require_same_count(std::size_t count1, std::size_t count2);
+std::size_t require_same_buffer_size(std::size_t size1, std::size_t size2);
 
 /**
  * @brief Check that the source copy region is within bounds.

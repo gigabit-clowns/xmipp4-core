@@ -38,14 +38,21 @@ using namespace xmipp4;
 TEST_CASE( "aligned_alloc should produce aligned allocations", "[aligned_alloc]" ) 
 {
 	const std::size_t repetitions = 8192;
-	const std::size_t alignment = 2048; // Large enough power of two.
-	const std::size_t size = 1024;
+	const std::size_t alignment = 512; // Large enough power of two.
+	const std::size_t size = 10*alignment;
 
 	for (std::size_t i = 0; i < repetitions; ++i)
 	{
-		auto* data = memory::aligned_alloc(size, alignment);
+		char* data = static_cast<char*>(memory::aligned_alloc(size, alignment));
 		REQUIRE( data != nullptr ); // Assuming no OOM situation. 
 		REQUIRE( memory::get_alignment(data) >= alignment );
+
+		// Test that it can be written (no segfault)
+		for(std::size_t j = 0; j < size; ++j)
+		{
+			data[j] = 0xAA;
+		}
+
 		memory::aligned_free(data);
 	}
 

@@ -29,6 +29,7 @@
  */
 
 #include "../platform/attributes.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <cstddef>
 
@@ -45,6 +46,7 @@ namespace memory
  * @param alignment The alignment of the data. Must be power of two.
  * @return void* The allocated memory area. nullptr on failure.
  */
+XMIPP4_CORE_API
 void* aligned_alloc(std::size_t size, std::size_t alignment) noexcept;
 
 /**
@@ -52,6 +54,7 @@ void* aligned_alloc(std::size_t size, std::size_t alignment) noexcept;
  * 
  * @param ptr Pointer to the data to be freed.
  */
+XMIPP4_CORE_API
 void aligned_free(void* ptr) noexcept;
 
 } // namespace memory

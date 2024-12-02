@@ -37,17 +37,15 @@ namespace compute
 {
 
 default_host_unified_buffer::default_host_unified_buffer() noexcept
-    : m_type(numerical_type::unknown)
-    , m_count(0)
+    : m_size(0)
     , m_data(nullptr)
 {
 }
 
 default_host_unified_buffer
-::default_host_unified_buffer(numerical_type type, std::size_t count)
-    : m_type(type)
-    , m_count(count)
-    , m_data(std::malloc(get_size(type)*count))
+::default_host_unified_buffer(std::size_t size)
+    : m_size(size)
+    , m_data(std::malloc(size))
 {
     if(m_data == nullptr)
     {
@@ -57,8 +55,7 @@ default_host_unified_buffer
 
 default_host_unified_buffer
 ::default_host_unified_buffer(default_host_unified_buffer &&other) noexcept
-    : m_type(other.m_type)
-    , m_count(other.m_count)
+    : m_size(other.m_size)
     , m_data(nullptr)
 {
 }
@@ -80,8 +77,7 @@ default_host_unified_buffer
 void default_host_unified_buffer
 ::swap(default_host_unified_buffer &other) noexcept
 {
-    std::swap(m_type, other.m_type);
-    std::swap(m_count, other.m_count);
+    std::swap(m_size, other.m_size);
     std::swap(m_data, other.m_data);
 }
 
@@ -90,20 +86,14 @@ void default_host_unified_buffer::reset() noexcept
     if (m_data)
     {
         free(m_data);
-        m_type = numerical_type::unknown;
-        m_count = 0;
+        m_size = 0;
         m_data = nullptr;
     }
 }
 
-numerical_type default_host_unified_buffer::get_type() const noexcept
+std::size_t default_host_unified_buffer::get_size() const noexcept
 {
-    return m_type;
-}
-
-std::size_t default_host_unified_buffer::get_count() const noexcept
-{
-    return m_count;
+    return m_size;
 }
 
 void* default_host_unified_buffer::get_data() noexcept

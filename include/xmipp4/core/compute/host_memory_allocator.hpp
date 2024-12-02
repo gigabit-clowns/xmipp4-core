@@ -28,7 +28,6 @@
  * 
  */
 
-#include "numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -64,8 +63,8 @@ public:
     /**
      * @brief Allocate a buffer in this host.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @param queue Queue where the allocation and deallocation takes place.
      * @return std::unique_ptr<host_buffer> The buffer.
      * 
@@ -78,15 +77,15 @@ public:
      * the buffer is accessible.
      */
     virtual std::unique_ptr<host_buffer> 
-    create_host_buffer(numerical_type type, 
-                       std::size_t count,
+    create_host_buffer(std::size_t size,
+                       std::size_t alignment,
                        device_queue& queue ) = 0;
 
     /**
      * @brief Allocate a buffer in this host.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @param queue Queue where the allocation and deallocation takes place.
      * @return std::shared_ptr<host_buffer> The buffer.
      * 
@@ -99,36 +98,41 @@ public:
      * the buffer is accessible.
      */
     virtual std::shared_ptr<host_buffer> 
-    create_host_buffer_shared(numerical_type type, 
-                              std::size_t count,
+    create_host_buffer_shared(std::size_t size, 
+                              std::size_t alignment,
                               device_queue &queue ) = 0;
 
     /**
      * @brief Allocate a buffer in this host.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @return std::unique_ptr<host_buffer> The buffer.
      * 
      * @note Unlike the previous functions, the memory allocated here
-     * is inmediafly available to the host.
+     * is inmediafly available to the host. Likewise, the memory is
+     * immediately deallocated upon buffer destruction. If used on a queue
+     * remember recording the queue onto the buffer to prevent premature
+     * deallocation.
      */
     virtual std::unique_ptr<host_buffer> 
-    create_host_buffer(numerical_type type, std::size_t count) = 0;
+    create_host_buffer(std::size_t size, std::size_t alignment) = 0;
 
     /**
      * @brief Allocate a buffer in this host.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @return std::shared_ptr<host_buffer> The buffer.
      * 
      * @note Unlike the previous functions, the memory allocated here
-     * is inmediafly available to the host.
+     * is inmediafly available to the host. Likewise, the memory is
+     * immediately deallocated upon buffer destruction. If used on a queue
+     * remember recording the queue onto the buffer to prevent premature
+     * deallocation.
      */
     virtual std::shared_ptr<host_buffer> 
-    create_host_buffer_shared(numerical_type type, std::size_t count) = 0;
-
+    create_host_buffer_shared(std::size_t size, std::size_t alignment) = 0;
 
 }; 
 

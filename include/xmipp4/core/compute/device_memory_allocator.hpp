@@ -28,7 +28,6 @@
  * 
  */
 
-#include "numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -64,8 +63,8 @@ public:
     /**
      * @brief Allocate a buffer in this device.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @param queue Queue where the allocation and deallocation takes place.
      * @return std::unique_ptr<device_buffer> The buffer.
      * 
@@ -74,15 +73,15 @@ public:
      * synchronization.
      */
     virtual std::unique_ptr<device_buffer> 
-    create_device_buffer(numerical_type type, 
-                         std::size_t count, 
+    create_device_buffer(std::size_t size,
+                         std::size_t alignment,
                          device_queue &queue ) = 0;
 
     /**
      * @brief Allocate a buffer in this device.
      * 
-     * @param type Numerical type of the buffer.
-     * @param count Number of elements in the buffer.
+     * @param size Number of bytes in the buffer.
+     * @param alignment Alignment requirements for the data in the buffer.
      * @param queue Queue where the allocation and deallocation takes place.
      * @return std::shared_ptr<device_buffer> The buffer.
 
@@ -91,8 +90,8 @@ public:
      * synchronization.
      */
     virtual std::shared_ptr<device_buffer> 
-    create_device_buffer_shared(numerical_type type, 
-                                std::size_t count, 
+    create_device_buffer_shared(std::size_t size, 
+                                std::size_t alignment,
                                 device_queue &queue ) = 0;
 
 }; 

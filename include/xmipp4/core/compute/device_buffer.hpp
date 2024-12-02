@@ -28,9 +28,6 @@
  * 
  */
 
-#include <memory>
-
-#include "numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -56,24 +53,14 @@ public:
 
     device_buffer& operator=(const device_buffer &other) = default;
     device_buffer& operator=(device_buffer &&other) = default;
-
+    
     /**
-     * @brief Get the numeric type of the data in the buffer.
+     * @brief Get the number of bytes in the buffer.
      * 
-     * @return numerical_type The numeric type.
+     * @return std::size_t The size of the buffer.
      * 
      */
-    virtual numerical_type get_type() const noexcept = 0;
-
-    /**
-     * @brief Get the number of elements in the buffer.
-     * 
-     * @return std::size_t The number of elements.
-     * @note This does not need to be confused with the number of
-     * bytes that occupies this buffer.
-     * 
-     */
-    virtual std::size_t get_count() const noexcept = 0;
+    virtual std::size_t get_size() const noexcept = 0;
 
     /**
      * @brief Get a host accessible alias of this buffer.

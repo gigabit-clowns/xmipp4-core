@@ -28,8 +28,9 @@
 
 #include "default_host_unified_buffer.hpp"
 
+#include <xmipp4/core/memory/aligned_alloc.hpp>
+
 #include <stdexcept>
-#include <cstdlib>
 
 namespace xmipp4
 {
@@ -45,7 +46,7 @@ default_host_unified_buffer::default_host_unified_buffer() noexcept
 default_host_unified_buffer
 ::default_host_unified_buffer(std::size_t size, std::size_t alignment)
     : m_size(size)
-    , m_data(std::aligned_alloc(alignment, size))
+    , m_data(memory::aligned_alloc(size, alignment))
 {
     if(m_data == nullptr)
     {
@@ -85,7 +86,7 @@ void default_host_unified_buffer::reset() noexcept
 {
     if (m_data)
     {
-        free(m_data);
+        memory::aligned_free(m_data);
         m_size = 0;
         m_data = nullptr;
     }

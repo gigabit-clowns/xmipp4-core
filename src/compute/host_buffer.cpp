@@ -41,7 +41,7 @@ namespace compute
 
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer)
 {
-    const auto count = require_same_count(
+    const auto count = require_same_buffer_size(
         src_buffer.get_size(), dst_buffer.get_size()
     );
     std::memcpy(

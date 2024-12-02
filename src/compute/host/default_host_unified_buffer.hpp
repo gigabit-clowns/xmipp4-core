@@ -45,7 +45,7 @@ class default_host_unified_buffer final
 {
 public:
     default_host_unified_buffer() noexcept;
-    default_host_unified_buffer(std::size_t size);
+    default_host_unified_buffer(std::size_t size, std::size_t alignment);
     default_host_unified_buffer(const default_host_unified_buffer &other) = delete;
     default_host_unified_buffer(default_host_unified_buffer &&other) noexcept;
     ~default_host_unified_buffer() override;

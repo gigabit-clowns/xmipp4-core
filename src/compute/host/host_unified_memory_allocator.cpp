@@ -38,16 +38,16 @@ namespace compute
 
 std::unique_ptr<host_unified_buffer> 
 host_unified_memory_allocator::create_unified_buffer(std::size_t size, 
-                                                     std::size_t )
+                                                     std::size_t alignment )
 {
-    return std::make_unique<default_host_unified_buffer>(size);
+    return std::make_unique<default_host_unified_buffer>(size, alignment);
 }
 
 std::shared_ptr<host_unified_buffer> 
 host_unified_memory_allocator::create_unified_buffer_shared(std::size_t size, 
-                                                            std::size_t )
+                                                            std::size_t alignment )
 {
-    return std::make_shared<default_host_unified_buffer>(size);
+    return std::make_shared<default_host_unified_buffer>(size, alignment);
 }
 
 std::unique_ptr<device_buffer> 

@@ -44,6 +44,7 @@ TEST_CASE( "aligned_alloc should produce aligned allocations", "[aligned_alloc]"
 	for (std::size_t i = 0; i < repetitions; ++i)
 	{
 		auto* data = memory::aligned_alloc(size, alignment);
+		REQUIRE( data != nullptr ); // Assuming no OOM situation. 
 		REQUIRE( memory::get_alignment(data) >= alignment );
 		memory::aligned_free(data);
 	}

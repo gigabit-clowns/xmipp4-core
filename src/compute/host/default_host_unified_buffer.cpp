@@ -46,7 +46,7 @@ default_host_unified_buffer::default_host_unified_buffer() noexcept
 default_host_unified_buffer
 ::default_host_unified_buffer(std::size_t size, std::size_t alignment)
     : m_size(size)
-    , m_data(memory::aligned_alloc(size, alignment))
+    , m_data(memory::aligned_alloc(memory::align_ceil(size, alignment), alignment))
 {
     if(m_data == nullptr)
     {

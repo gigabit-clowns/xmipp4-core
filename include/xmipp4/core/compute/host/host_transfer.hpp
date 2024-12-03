@@ -65,11 +65,13 @@ public:
     std::shared_ptr<device_buffer> 
     transfer(const std::shared_ptr<host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     std::shared_ptr<const device_buffer> 
     transfer(const std::shared_ptr<const host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     void transfer_copy(const device_buffer &src_buffer,
@@ -84,11 +86,13 @@ public:
     std::shared_ptr<host_buffer> 
     transfer(const std::shared_ptr<device_buffer> &buffer, 
              host_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     std::shared_ptr<const host_buffer> 
     transfer(const std::shared_ptr<const device_buffer> &buffer, 
              host_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     void copy(const device_buffer &src_buffer,

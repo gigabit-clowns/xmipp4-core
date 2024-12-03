@@ -64,6 +64,7 @@ void host_transfer::transfer_copy(const host_buffer &src_buffer,
 std::shared_ptr<device_buffer> 
 host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer, 
                         device_memory_allocator&,
+                        std::size_t,
                         device_queue&)
 {
     // Returned buffer is an alias of the one received, not a copy
@@ -73,6 +74,7 @@ host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer,
 std::shared_ptr<const device_buffer> 
 host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer, 
                         device_memory_allocator&,
+                        std::size_t,
                         device_queue& )
 {
     // Returned buffer is an alias of the one received, not a copy
@@ -104,6 +106,7 @@ void host_transfer::transfer_copy(const device_buffer &src_buffer,
 std::shared_ptr<host_buffer> 
 host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer, 
                         host_memory_allocator&,
+                        std::size_t,
                         device_queue& )
 {
     // Returned buffer is an alias of the one received, not a copy
@@ -113,6 +116,7 @@ host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer,
 std::shared_ptr<const host_buffer> 
 host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer, 
                         host_memory_allocator&,
+                        std::size_t,
                         device_queue& )
 {
     // Returned buffer is an alias of the one received, not a copy

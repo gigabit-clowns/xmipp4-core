@@ -120,6 +120,7 @@ public:
      * 
      * @param buffer Buffer to be transferred.
      * @param allocator Allocator from which host memory will be requested.
+     * @param alignment Alignment used for allocating a new buffer.
      * @param queue Queue where the task will be enqueued.
      * @return std::shared_ptr<host_buffer> Device buffer copied to the host.
      * 
@@ -134,6 +135,7 @@ public:
     virtual std::shared_ptr<device_buffer> 
     transfer(const std::shared_ptr<host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) = 0;
 
     /**
@@ -141,6 +143,7 @@ public:
      * 
      * @param buffer Buffer to be transferred.
      * @param allocator Allocator from which host memory will be requested.
+     * @param alignment Alignment used for allocating a new buffer.
      * @param queue Queue where the task will be enqueued.
      * @return std::shared_ptr<host_buffer> Device buffer copied to the host.
      * 
@@ -155,6 +158,7 @@ public:
     virtual std::shared_ptr<const device_buffer> 
     transfer(const std::shared_ptr<const host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) = 0;
 
 }; 

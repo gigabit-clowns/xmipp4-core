@@ -126,7 +126,7 @@ public:
      * @return std::shared_ptr<host_buffer> The buffer.
      * 
      * @note Unlike the previous functions, the memory allocated here
-     * is inmediafly available to the host. Likewise, the memory is
+     * is immediately available to the host. Likewise, the memory is
      * immediately deallocated upon buffer destruction. If used on a queue
      * remember recording the queue onto the buffer to prevent premature
      * deallocation.

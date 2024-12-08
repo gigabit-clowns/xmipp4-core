@@ -51,7 +51,7 @@ public:
      * @brief Constructor
      * 
      * @param extent Number of elements in the axis. Defaults to 0
-     * @param stride Step between consecutive elements. In items. Defaults to 1
+     * @param stride Step between consecutive elements. In items.
      */
     XMIPP4_CONSTEXPR axis_descriptor(std::size_t extent, 
                                      std::ptrdiff_t stride ) noexcept;

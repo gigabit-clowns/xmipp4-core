@@ -30,6 +30,7 @@
 
 #include "../platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
@@ -95,7 +96,35 @@ public:
      */
     virtual void record_queue(device_queue &queue) = 0;
 
-}; 
+};
+
+
+
+/**
+ * @brief Get a host accessible alias of a device_buffer.
+ * 
+ * If this buffer is not host accessible, this method returns null.
+ * 
+ * @param buffer Buffer to be aliased. May be null, in which case null is
+ * returned.
+ * @return std::shared<host_buffer> Host accessible alias of the
+ * provided buffer.
+ */
+std::shared_ptr<host_buffer> 
+get_host_accessible_alias(const std::shared_ptr<device_buffer> &buffer) noexcept;
+
+/**
+ * @brief Get a host accessible alias of a device_buffer.
+ * 
+ * If this buffer is not host accessible, this method returns null.
+ * 
+ * @param buffer Buffer to be aliased. May be null, in which case null is
+ * returned.
+ * @return std::shared<const host_buffer> Host accessible alias of the
+ * provided buffer.
+ */
+std::shared_ptr<const host_buffer> 
+get_host_accessible_alias(const std::shared_ptr<const device_buffer> &buffer) noexcept;
 
 } // namespace compute
 } // namespace xmipp4

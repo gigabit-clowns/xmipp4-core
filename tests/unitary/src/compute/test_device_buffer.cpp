@@ -57,7 +57,7 @@ TEST_CASE( "get_host_accessible_alias should return null when null is provided",
     REQUIRE( get_host_accessible_alias(const_buffer) == nullptr );
 }
 
-TEST_CASE( "get_host_accessible_alias should return null when buffer is not aliasble", "[device_buffer]" )
+TEST_CASE( "get_host_accessible_alias should return null when buffer is not aliasable", "[device_buffer]" )
 {
     auto mock = std::make_shared<mock_device_buffer>();
 
@@ -74,7 +74,7 @@ TEST_CASE( "get_host_accessible_alias should return null when buffer is not alia
     REQUIRE( get_host_accessible_alias(const_buffer) == nullptr );
 }
 
-TEST_CASE( "get_host_accessible_alias should return the alias when buffer is aliasble", "[device_buffer]" )
+TEST_CASE( "get_host_accessible_alias should return the alias when buffer is aliasable", "[device_buffer]" )
 {
     auto mock = std::make_shared<mock_device_buffer>();
     auto* alias = reinterpret_cast<host_buffer*>(std::uintptr_t(0xDEADBEEF)); 

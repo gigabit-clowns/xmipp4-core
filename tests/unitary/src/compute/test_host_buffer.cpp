@@ -62,7 +62,7 @@ TEST_CASE( "get_device_accessible_alias should return null when null is provided
     REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
 }
 
-TEST_CASE( "get_device_accessible_alias should return null when buffer is not aliasble", "[host_buffer]" )
+TEST_CASE( "get_device_accessible_alias should return null when buffer is not aliasable", "[host_buffer]" )
 {
     auto mock = std::make_shared<mock_host_buffer>();
 
@@ -79,7 +79,7 @@ TEST_CASE( "get_device_accessible_alias should return null when buffer is not al
     REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
 }
 
-TEST_CASE( "get_device_accessible_alias should return the alias when buffer is aliasble", "[host_buffer]" )
+TEST_CASE( "get_device_accessible_alias should return the alias when buffer is aliasable", "[host_buffer]" )
 {
     auto mock = std::make_shared<mock_host_buffer>();
     auto* alias = reinterpret_cast<device_buffer*>(std::uintptr_t(0xDEADBEEF)); 

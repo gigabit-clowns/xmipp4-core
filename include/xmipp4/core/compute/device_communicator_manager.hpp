@@ -99,7 +99,8 @@ public:
      * @brief Find the most suitable backend that supports a set of devices.
      * 
      * The most suitable backend is an available backend with the highest
-     * priority that supports the provided device set.
+     * priority that supports the provided device set. This backend will be 
+     * consensuated across all ranks of the provided communicator.
      * 
      * @param devices 
      * @return device_communicator_backend* The requested backend. 
@@ -107,7 +108,8 @@ public:
      */
     XMIPP4_CORE_API
     device_communicator_backend* 
-    find_supported_backend(span<device*> devices) const;
+    find_supported_backend(node_communicator &comm,
+                           span<device*> devices) const;
 
     /**
      * @brief Create a device communicators from the most suitable backend.

@@ -28,6 +28,7 @@
 
 #include <xmipp4/core/compute/device_communicator_manager.hpp>
 
+#include <xmipp4/core/communication/communicator.hpp>
 #include <xmipp4/core/compute/device_communicator_backend.hpp>
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 
@@ -71,14 +72,27 @@ public:
     }
     
     device_communicator_backend* 
-    find_supported_backend(span<device*> devices) const
+    find_supported_backend(node_communicator &node_communicator, 
+                           span<device*> devices ) const
     {   
-        std::vector<backend*> available_backends;
-        get_supported_backends(devices, available_backends);
+        device_communicator_backend *result;
 
-        return static_cast<device_communicator_backend*>(
-            get_highest_priority_backend(make_span(available_backends))
-        );
+        if (node_communicator.get_rank() == 0)
+        {
+            result = find_supported_backend_primary(
+                node_communicator, 
+                devices
+            );
+        }
+        else
+        {
+            result = find_supported_backend_secondary(
+                node_communicator, 
+                devices
+            );
+        }
+
+        return result;
     }
 
 private:
@@ -99,6 +113,20 @@ private:
                 result.emplace_back(backend);
             }
         }
+    }
+
+    device_communicator_backend* 
+    find_supported_backend_primary(node_communicator &node_communicator, 
+                                   span<device*> devices ) const
+    {
+
+    }
+
+    device_communicator_backend* 
+    find_supported_backend_secondary(node_communicator &node_communicator, 
+                                     span<device*> devices ) const
+    {   
+
     }
 
 };
@@ -131,9 +159,10 @@ device_communicator_manager::get_backend(const std::string &name) const
 }
 
 device_communicator_backend* 
-device_communicator_manager::find_supported_backend(span<device*> devices) const
+device_communicator_manager::find_supported_backend(node_communicator &node_communicator, 
+                                                    span<device*> devices) const
 {
-    return m_implementation->find_supported_backend(devices);
+    return m_implementation->find_supported_backend(node_communicator, devices);
 }
 
 bool device_communicator_manager
@@ -141,7 +170,7 @@ bool device_communicator_manager
                               span<device*> devices,
                               span<std::unique_ptr<device_communicator>> result ) const
 {
-    const auto* backend = find_supported_backend(devices);
+    const auto* backend = find_supported_backend(node_communicator, devices);
     if(backend)
     {
         backend->create_device_communicators(
@@ -158,7 +187,7 @@ bool device_communicator_manager
                                      span<device*> devices,
                                      span<std::shared_ptr<device_communicator>> result ) const
 {
-    const auto* backend = find_supported_backend(devices);
+    const auto* backend = find_supported_backend(node_communicator, devices);
     if(backend)
     {
         backend->create_device_communicators_shared(

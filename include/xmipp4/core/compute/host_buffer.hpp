@@ -32,6 +32,7 @@
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
@@ -111,6 +112,35 @@ public:
 
 };
 
+
+
+/**
+ * @brief Get a device accessible alias of a host_buffer.
+ * 
+ * If this buffer is not device accessible, this method returns null.
+ * 
+ * @param buffer Buffer to be aliased. May be null, in which case null is
+ * returned.
+ * @return std::shared<device_buffer> Device accessible alias of the
+ * provided buffer.
+ */
+XMIPP4_CORE_API
+std::shared_ptr<device_buffer> 
+get_device_accessible_alias(const std::shared_ptr<host_buffer> &buffer) noexcept;
+
+/**
+ * @brief Get a device accessible alias of a host_buffer.
+ * 
+ * If this buffer is not device accessible, this method returns null.
+ * 
+ * @param buffer Buffer to be aliased. May be null, in which case null is
+ * returned.
+ * @return std::shared<const device_buffer> Device accessible alias of the
+ * provided buffer.
+ */
+XMIPP4_CORE_API
+std::shared_ptr<const device_buffer> 
+get_device_accessible_alias(const std::shared_ptr<const host_buffer> &buffer) noexcept;
 
 /**
  * @brief Copy the contents of one buffer to another.

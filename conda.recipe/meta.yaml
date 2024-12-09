@@ -55,7 +55,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - ninja
+    - ninja # [win]
+    - make # [unix]
     - spdlog
 
   host:

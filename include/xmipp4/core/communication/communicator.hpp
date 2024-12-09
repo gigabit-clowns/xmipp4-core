@@ -356,5 +356,10 @@ public:
 
 };
 
+
+
+XMIPP4_CORE_API
+std::size_t broadcast_string(communicator &comm, int root, std::string &message);
+
 } // namespace communication
 } // namespace xmipp4

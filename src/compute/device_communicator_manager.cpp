@@ -119,14 +119,102 @@ private:
     find_supported_backend_primary(node_communicator &node_communicator, 
                                    span<device*> devices ) const
     {
+        std::vector<backend*> supported_backends;
 
+        std::string backend_name;
+        for (auto &item : m_registry)
+        {
+            auto *backend = item.second.get();
+            if (check_local_support(backend, devices))
+            {
+                backend_name = item.first;
+                communication::broadcast_string(
+                    node_communicator, 
+                    0, 
+                    backend_name
+                );
+
+                int support = 1; // Self
+                node_communicator.reduce(
+                    0, 
+                    reduction_operation::sum,
+                    span<int>(&support, 1),
+                    span<int>(&support, 1)
+                );
+
+                if (support == node_communicator.get_size())
+                {
+                    supported_backends.emplace_back(backend);
+                }
+            }
+        }
+
+        backend_name.clear();
+        communication::broadcast_string(
+            node_communicator, 
+            0, 
+            backend_name
+        );
+
+        auto *backend = get_highest_priority_backend(make_span(supported_backends));
+        if (backend)
+        {
+            backend_name = backend->get_name();
+        }
+
+        communication::broadcast_string(
+            node_communicator, 
+            0, 
+            backend_name
+        );
+
+        return static_cast<device_communicator_backend*>(backend);
     }
 
     device_communicator_backend* 
     find_supported_backend_secondary(node_communicator &node_communicator, 
                                      span<device*> devices ) const
-    {   
+    {
+        device_communicator_backend *result;
 
+        std::string backend_name;
+        while (communication::broadcast_string(node_communicator, 0, backend_name))
+        {
+            int support;
+
+            auto *backend = get_backend(backend_name);
+            if (backend)
+            {
+                support = check_local_support(backend, devices);
+            }
+            else
+            {
+                support = false;
+            }
+
+            node_communicator.reduce(
+                0, 
+                reduction_operation::sum,
+                span<int>(&support, 1),
+                {}
+            );
+        }
+
+        // Get the elected backend
+        communication::broadcast_string(
+            node_communicator, 
+            0, 
+            backend_name
+        );
+
+        result = m_registry.at(backend_name).get();
+        
+    }
+
+    static bool check_local_support(const device_communicator_backend *backend,
+                                    span<device*> devices )
+    {
+        return backend->is_available() && backend->supports_devices(devices);
     }
 
 };

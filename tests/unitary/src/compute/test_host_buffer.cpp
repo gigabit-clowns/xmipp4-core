@@ -82,7 +82,7 @@ TEST_CASE( "get_device_accessible_alias should return null when buffer is not al
 TEST_CASE( "get_device_accessible_alias should return the alias when buffer is aliasable", "[host_buffer]" )
 {
     auto mock = std::make_shared<mock_host_buffer>();
-    auto* alias = reinterpret_cast<device_buffer*>(std::uintptr_t(0xDEADBEEF)); 
+    auto *alias = reinterpret_cast<device_buffer*>(std::uintptr_t(0xDEADBEEF)); 
 
     REQUIRE_CALL(*mock, get_device_accessible_alias())
         .RETURN(alias)
@@ -102,7 +102,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
     const std::size_t n = 1024;
 
     std::vector<std::uint8_t> src_data(n);
-    const void* src_ptr = src_data.data();
+    const void *src_ptr = src_data.data();
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_size())
         .RETURN(n)
@@ -113,7 +113,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
         .TIMES(1);
 
     std::vector<std::uint8_t> dst_data(n);
-    void* dst_ptr = dst_data.data();
+    void *dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_size())
         .RETURN(n)
@@ -156,7 +156,7 @@ TEST_CASE( "copy host buffer with different size should throw", "[host_buffer]" 
 TEST_CASE( "copy host buffer regions", "[host_buffer]" )
 {
     std::vector<std::uint8_t> src_data(1024);
-    const void* src_ptr = src_data.data();
+    const void *src_ptr = src_data.data();
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_size())
         .RETURN(1024)
@@ -167,7 +167,7 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
         .TIMES(1);
 
     std::vector<std::uint8_t> dst_data(2048);
-    void* dst_ptr = dst_data.data();
+    void *dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_size())
         .RETURN(2048)

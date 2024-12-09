@@ -77,7 +77,7 @@ TEST_CASE( "get_host_accessible_alias should return null when buffer is not alia
 TEST_CASE( "get_host_accessible_alias should return the alias when buffer is aliasable", "[device_buffer]" )
 {
     auto mock = std::make_shared<mock_device_buffer>();
-    auto* alias = reinterpret_cast<host_buffer*>(std::uintptr_t(0xDEADBEEF)); 
+    auto *alias = reinterpret_cast<host_buffer*>(std::uintptr_t(0xDEADBEEF)); 
 
     REQUIRE_CALL(*mock, get_host_accessible_alias())
         .RETURN(alias)

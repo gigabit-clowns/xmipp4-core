@@ -124,6 +124,7 @@ public:
  * @return std::shared<device_buffer> Device accessible alias of the
  * provided buffer.
  */
+XMIPP4_CORE_API
 std::shared_ptr<device_buffer> 
 get_device_accessible_alias(const std::shared_ptr<host_buffer> &buffer) noexcept;
 
@@ -137,6 +138,7 @@ get_device_accessible_alias(const std::shared_ptr<host_buffer> &buffer) noexcept
  * @return std::shared<const device_buffer> Device accessible alias of the
  * provided buffer.
  */
+XMIPP4_CORE_API
 std::shared_ptr<const device_buffer> 
 get_device_accessible_alias(const std::shared_ptr<const host_buffer> &buffer) noexcept;
 

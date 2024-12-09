@@ -72,7 +72,7 @@ TEST_CASE( "get_device_accessible_alias should return null when buffer is not al
     std::shared_ptr<host_buffer> buffer = mock;
     REQUIRE( get_device_accessible_alias(buffer) == nullptr );
 
-    REQUIRE_CALL(const_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
+    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
         .RETURN(nullptr)
         .TIMES(1);
     std::shared_ptr<const host_buffer> const_buffer = mock;
@@ -90,7 +90,7 @@ TEST_CASE( "get_device_accessible_alias should return the alias when buffer is a
     std::shared_ptr<host_buffer> buffer = mock;
     REQUIRE( get_device_accessible_alias(buffer).get() == alias );
 
-    REQUIRE_CALL(const_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
+    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
         .RETURN(alias)
         .TIMES(1);
     std::shared_ptr<const host_buffer> const_buffer = mock;

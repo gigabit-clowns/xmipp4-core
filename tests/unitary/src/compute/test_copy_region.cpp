@@ -47,12 +47,3 @@ TEST_CASE( "default construct copy region", "[copy_region]" )
     REQUIRE( region.get_destination_offset() == 0 );
     REQUIRE( region.get_count() == 0 );
 }
-
-TEST_CASE( "convert region to bytes", "[copy_region]" )
-{
-    const copy_region region(4, 6, 10);
-    const auto region_bytes = as_bytes(region, 8U);
-    REQUIRE( region_bytes.get_source_offset() == 32 );
-    REQUIRE( region_bytes.get_destination_offset() == 48 );
-    REQUIRE( region_bytes.get_count() == 80 );
-}

@@ -19,56 +19,44 @@
  ***************************************************************************/
 
 /**
- * @file copy_region.inl
+ * @file aligned_alloc.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of copy_region.hpp
- * @date 2024-11-11
+ * @brief Implementation of aligned_alloc.hpp
+ * @date 2024-12-02
  * 
  */
 
-#include "copy_region.hpp"
+#include <xmipp4/core/memory/aligned_alloc.hpp>
 
-namespace xmipp4 
+#include <xmipp4/core/platform/operating_system.h>
+
+#include <cstdlib>
+
+namespace xmipp4
 {
-namespace compute
+namespace memory
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region() noexcept
-    : m_source_offset(0)
-    , m_destination_offset(0)
-    , m_count(0)
+void* aligned_alloc(std::size_t size, std::size_t alignment) noexcept
 {
+    #if XMIPP4_WINDOWS
+        return _aligned_malloc(size, alignment);
+    #else
+        return std::aligned_alloc(alignment, size);
+    #endif
+
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region(std::size_t source_offset, 
-                         std::size_t destination_offset,
-                         std::size_t count ) noexcept
-    : m_source_offset(source_offset)
-    , m_destination_offset(destination_offset)
-    , m_count(count)
+void aligned_free(void* ptr) noexcept
 {
+    #if XMIPP4_WINDOWS
+        return _aligned_free(ptr);
+    #else
+        return std::free(ptr);
+    #endif
 }
 
 
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_source_offset() const noexcept
-{
-    return m_source_offset;
-}
 
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_destination_offset() const noexcept
-{
-    return m_destination_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_count() const noexcept
-{
-    return m_count;
-}
-
-} // namespace compute
+} // namespace memory
 } // namespace xmipp4

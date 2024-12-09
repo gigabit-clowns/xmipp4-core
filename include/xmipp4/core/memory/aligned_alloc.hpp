@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,56 +21,41 @@
  ***************************************************************************/
 
 /**
- * @file copy_region.inl
+ * @file aligned_alloc.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of copy_region.hpp
- * @date 2024-11-11
+ * @brief Allocate memory with alignment specifications.
+ * @date 2024-12-02
  * 
  */
 
-#include "copy_region.hpp"
+#include "../platform/attributes.hpp"
+#include "../platform/dynamic_shared_object.h"
 
-namespace xmipp4 
+#include <cstddef>
+
+namespace xmipp4
 {
-namespace compute
+namespace memory
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region() noexcept
-    : m_source_offset(0)
-    , m_destination_offset(0)
-    , m_count(0)
-{
-}
+/**
+ * @brief Allocate memory with an alignment specification.
+ * 
+ * @param size Number of bytes to allocate. 
+ * It must be multiple of the alignment.
+ * @param alignment The alignment of the data. Must be power of two.
+ * @return void* The allocated memory area. nullptr on failure.
+ */
+XMIPP4_CORE_API
+void* aligned_alloc(std::size_t size, std::size_t alignment) noexcept;
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region(std::size_t source_offset, 
-                         std::size_t destination_offset,
-                         std::size_t count ) noexcept
-    : m_source_offset(source_offset)
-    , m_destination_offset(destination_offset)
-    , m_count(count)
-{
-}
+/**
+ * @brief Release a memory block previously allocated with aligned_alloc
+ * 
+ * @param ptr Pointer to the data to be freed.
+ */
+XMIPP4_CORE_API
+void aligned_free(void* ptr) noexcept;
 
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_source_offset() const noexcept
-{
-    return m_source_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_destination_offset() const noexcept
-{
-    return m_destination_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_count() const noexcept
-{
-    return m_count;
-}
-
-} // namespace compute
+} // namespace memory
 } // namespace xmipp4

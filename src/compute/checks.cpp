@@ -35,26 +35,15 @@ namespace xmipp4
 namespace compute
 {
 
-numerical_type require_same_type(numerical_type type1, numerical_type type2)
+std::size_t require_same_buffer_size(std::size_t size1, std::size_t size2)
 {
-    if (type1 != type2)
+    if (size1 != size2)
     {
         throw std::invalid_argument(
-            "Both buffers must have the same numerical type"
+            "Both buffers must have the same size"
         );
     }
-    return type1;
-}
-
-std::size_t require_same_count(std::size_t count1, std::size_t count2)
-{
-    if (count1 != count2)
-    {
-        throw std::invalid_argument(
-            "Both buffers must have the same element count"
-        );
-    }
-    return count1;
+    return size1;
 }
 
 void require_valid_source_region(const copy_region &region, std::size_t count)

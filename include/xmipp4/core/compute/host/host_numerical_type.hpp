@@ -29,6 +29,7 @@
  */
 
 #include "../numerical_type.hpp"
+#include "../../fixed_float.hpp"
 #include "../../platform/constexpr.hpp"
 
 #include <complex>
@@ -130,9 +131,18 @@ struct host_numerical_type<std::uint64_t>
     }
 };
 
-// TODO use guaranteed types.
 template <>
-struct host_numerical_type<std::enable_if<sizeof(float)==4, float>::type>
+struct host_numerical_type<float16_t>
+{
+    XMIPP4_CONSTEXPR
+    static numerical_type value() noexcept
+    {
+        return numerical_type::float16;
+    }
+};
+
+template <>
+struct host_numerical_type<float32_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -141,9 +151,8 @@ struct host_numerical_type<std::enable_if<sizeof(float)==4, float>::type>
     }
 };
 
-// TODO use guaranteed types.
 template <>
-struct host_numerical_type<std::enable_if<sizeof(double)==8, double>::type>
+struct host_numerical_type<float64_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -152,9 +161,18 @@ struct host_numerical_type<std::enable_if<sizeof(double)==8, double>::type>
     }
 };
 
-// TODO use guaranteed types.
 template <>
-struct host_numerical_type<std::enable_if<sizeof(float)==4, std::complex<float>>::type>
+struct host_numerical_type<std::complex<float16_t>>
+{
+    XMIPP4_CONSTEXPR
+    static numerical_type value() noexcept
+    {
+        return numerical_type::complex_float16;
+    }
+};
+
+template <>
+struct host_numerical_type<std::complex<float32_t>>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -163,9 +181,8 @@ struct host_numerical_type<std::enable_if<sizeof(float)==4, std::complex<float>>
     }
 };
 
-// TODO use guaranteed types.
 template <>
-struct host_numerical_type<std::enable_if<sizeof(double)==8, std::complex<double>>::type>
+struct host_numerical_type<std::complex<float64_t>>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept

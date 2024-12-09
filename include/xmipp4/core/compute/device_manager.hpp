@@ -44,6 +44,7 @@ namespace compute
 
 class device;
 class device_backend;
+class device_create_parameters;
 
 
 
@@ -116,22 +117,26 @@ public:
                                device_properties &desc ) const;
 
     /**
-     * @brief Create a device handle
+     * @brief Create a device handle.
      * 
      * @param index Index of the device.
+     * @param params Parameters used for device instantiation.
      * @return std::unique_ptr<device> The device handle.
      */
     XMIPP4_CORE_API std::unique_ptr<device> 
-    create_device(const device_index &index) const;
+    create_device(const device_index &index, 
+                  const device_create_parameters &params ) const;
 
     /**
-     * @brief Create a device handle
+     * @brief Create a device handle.
      * 
      * @param index Index of the device.
+     * @param params Parameters used for device instantiation.
      * @return std::shared_ptr<device> The device handle.
      */
     XMIPP4_CORE_API std::shared_ptr<device> 
-    create_device_shared(const device_index &index) const;
+    create_device_shared(const device_index &index,
+                         const device_create_parameters &params ) const;
 
 private:
     class implementation;

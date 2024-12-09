@@ -56,6 +56,14 @@ public:
      */
     virtual void wait_until_completed() const = 0;
 
+    /**
+     * @brief Check if the queue has completed processing.
+     * 
+     * @return true Queue has finished processing.
+     * @return false Queue is busy processing.
+     */
+    virtual bool is_idle() const noexcept = 0;
+
 }; 
 
 } // namespace compute

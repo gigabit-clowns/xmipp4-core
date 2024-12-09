@@ -28,15 +28,17 @@
  * 
  */
 
-#include <memory>
-
-#include "numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
+
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace compute
 {
+
+class host_buffer;
+class device_queue;
 
 /**
  * @brief Abstract class defining an in-device memory
@@ -53,24 +55,45 @@ public:
 
     device_buffer& operator=(const device_buffer &other) = default;
     device_buffer& operator=(device_buffer &&other) = default;
-
+    
     /**
-     * @brief Get the numeric type of the data in the buffer.
+     * @brief Get the number of bytes in the buffer.
      * 
-     * @return numerical_type The numeric type.
+     * @return std::size_t The size of the buffer.
      * 
      */
-    virtual numerical_type get_type() const noexcept = 0;
+    virtual std::size_t get_size() const noexcept = 0;
 
     /**
-     * @brief Get the number of elements in the buffer.
+     * @brief Get a host accessible alias of this buffer.
      * 
-     * @return std::size_t The number of elements.
-     * @note This does not need to be confused with the number of
-     * bytes that occupies this buffer.
+     * If this buffer is not host accessible, this method returns null.
+     * 
+     * @return host_buffer* Host accessible alias of this buffer.
+     */
+    virtual host_buffer* get_host_accessible_alias() noexcept = 0;
+
+    /**
+     * @brief Get a host accessible alias of this buffer.
+     * 
+     * If this buffer is not host accessible, this method returns null.
+     * 
+     * @return const host_buffer* Host accessible alias of this buffer.
+     */
+    virtual const host_buffer* get_host_accessible_alias() const noexcept = 0;
+
+    /**
+     * @brief Acknowledge that the buffer is being used in a queue other than
+     * the one used for allocation.
+     * 
+     * This will prevent premature deallocation before the provided queue
+     * has completed execution until the point where it can be safely 
+     * deallocated.
+     * 
+     * @param queue The queue where the buffer is being used.
      * 
      */
-    virtual std::size_t get_count() const noexcept = 0;
+    virtual void record_queue(device_queue &queue) = 0;
 
 }; 
 

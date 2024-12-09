@@ -83,7 +83,7 @@ public:
      * 
      */
     virtual void
-    transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    transfer_copy(const host_buffer &src_buffer,
                   device_buffer &dst_buffer, 
                   device_queue &queue ) = 0;
 
@@ -110,7 +110,7 @@ public:
      * 
      */
     virtual void
-    transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    transfer_copy(const host_buffer &src_buffer,
                   device_buffer &dst_buffer,
                   span<const copy_region> regions,
                   device_queue &queue ) = 0;
@@ -120,6 +120,7 @@ public:
      * 
      * @param buffer Buffer to be transferred.
      * @param allocator Allocator from which host memory will be requested.
+     * @param alignment Alignment used for allocating a new buffer.
      * @param queue Queue where the task will be enqueued.
      * @return std::shared_ptr<host_buffer> Device buffer copied to the host.
      * 
@@ -134,6 +135,7 @@ public:
     virtual std::shared_ptr<device_buffer> 
     transfer(const std::shared_ptr<host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) = 0;
 
     /**
@@ -141,6 +143,7 @@ public:
      * 
      * @param buffer Buffer to be transferred.
      * @param allocator Allocator from which host memory will be requested.
+     * @param alignment Alignment used for allocating a new buffer.
      * @param queue Queue where the task will be enqueued.
      * @return std::shared_ptr<host_buffer> Device buffer copied to the host.
      * 
@@ -155,26 +158,8 @@ public:
     virtual std::shared_ptr<const device_buffer> 
     transfer(const std::shared_ptr<const host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) = 0;
-
-    /**
-     * @brief Block the current thread until the transfers have finished.
-     * 
-     */
-    virtual void wait() = 0;
-
-    /**
-     * @brief Block the provided queue until the transfer has finished 
-     * 
-     * @param queue The queue to be blocked.
-     * 
-     * @note The queue provided to the transfer is implicitly blocked.
-     * This function may not be used with the same queue used for the 
-     * transfer. Instead, this function is meant to be used with other
-     * queues that await the transferred data.
-     * 
-     */
-    virtual void wait(device_queue &queue) = 0;
 
 }; 
 

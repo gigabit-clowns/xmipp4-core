@@ -49,18 +49,16 @@ class host_unified_buffer
     , public host_buffer
 {
 public:
-    host_unified_buffer() = default;
-    host_unified_buffer(const host_unified_buffer &other) = default;
-    host_unified_buffer(host_unified_buffer &&other) = default;
-    ~host_unified_buffer() override = default;
-
-    host_unified_buffer& operator=(const host_unified_buffer &other) = default;
-    host_unified_buffer& operator=(host_unified_buffer &&other) = default;
-
-    numerical_type get_type() const noexcept override = 0;
-    std::size_t get_count() const noexcept override = 0;
+    std::size_t get_size() const noexcept override = 0;
     void* get_data() noexcept override = 0;
     const void* get_data() const noexcept override = 0;
+
+    host_unified_buffer* get_device_accessible_alias() noexcept final;
+    const host_unified_buffer* get_device_accessible_alias() const noexcept final;
+    host_unified_buffer* get_host_accessible_alias() noexcept final;
+    const host_unified_buffer* get_host_accessible_alias() const noexcept final;
+    
+    void record_queue(device_queue &queue) override = 0;
 
 }; 
 

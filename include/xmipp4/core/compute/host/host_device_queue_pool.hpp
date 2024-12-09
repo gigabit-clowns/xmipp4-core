@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,56 +21,42 @@
  ***************************************************************************/
 
 /**
- * @file copy_region.inl
+ * @file host_device_queue.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of copy_region.hpp
- * @date 2024-11-11
+ * @brief Defines host_device_queue interface
+ * @date 2024-11-27
  * 
  */
 
-#include "copy_region.hpp"
+#include "../device_queue_pool.hpp"
+
+#include "host_device_queue.hpp"
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region() noexcept
-    : m_source_offset(0)
-    , m_destination_offset(0)
-    , m_count(0)
+/**
+ * @brief Implementation of the device_queue_pool interface to be 
+ * able to obtain host_device_queue-s.
+ * 
+ * As host_device_queue-s are synchronous, it does not make sense to
+ * instantiate multiple of them. Thus, this pool always has a size of
+ * one.
+ * 
+ */
+class host_device_queue_pool final
+    : public device_queue_pool
 {
-}
+public:
+    std::size_t get_size() const noexcept override;
+    host_device_queue& get_queue(std::size_t index) override;
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region(std::size_t source_offset, 
-                         std::size_t destination_offset,
-                         std::size_t count ) noexcept
-    : m_source_offset(source_offset)
-    , m_destination_offset(destination_offset)
-    , m_count(count)
-{
-}
+private:
+    host_device_queue m_queue;
 
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_source_offset() const noexcept
-{
-    return m_source_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_destination_offset() const noexcept
-{
-    return m_destination_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_count() const noexcept
-{
-    return m_count;
-}
+}; 
 
 } // namespace compute
 } // namespace xmipp4

@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,56 +21,44 @@
  ***************************************************************************/
 
 /**
- * @file copy_region.inl
+ * @file device_queue_pool.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of copy_region.hpp
- * @date 2024-11-11
+ * @brief Defines the compute::device_queue_pool interface
+ * @date 2024-11-27
  * 
  */
 
-#include "copy_region.hpp"
+#include "../platform/dynamic_shared_object.h"
+
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region() noexcept
-    : m_source_offset(0)
-    , m_destination_offset(0)
-    , m_count(0)
-{
-}
+class device_queue;
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region(std::size_t source_offset, 
-                         std::size_t destination_offset,
-                         std::size_t count ) noexcept
-    : m_source_offset(source_offset)
-    , m_destination_offset(destination_offset)
-    , m_count(count)
+/**
+ * @brief Abstract class describing a pool of device_queues.
+ * 
+ */
+class XMIPP4_CORE_API device_queue_pool
 {
-}
+public:
+    device_queue_pool() = default;
+    device_queue_pool(const device_queue_pool &other) = default;
+    device_queue_pool(device_queue_pool &&other) = default;
+    virtual ~device_queue_pool() = default;
 
+    device_queue_pool& operator=(const device_queue_pool &other) = default;
+    device_queue_pool& operator=(device_queue_pool &&other) = default;
 
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_source_offset() const noexcept
-{
-    return m_source_offset;
-}
+    virtual std::size_t get_size() const noexcept = 0;
+    virtual device_queue& get_queue(std::size_t index) = 0;
 
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_destination_offset() const noexcept
-{
-    return m_destination_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_count() const noexcept
-{
-    return m_count;
-}
+}; 
 
 } // namespace compute
 } // namespace xmipp4
+

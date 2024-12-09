@@ -19,55 +19,40 @@
  ***************************************************************************/
 
 /**
- * @file copy_region.inl
+ * @file host_unified_buffer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of copy_region.hpp
- * @date 2024-11-11
+ * @brief Implementation of default_host_unified_buffer.hpp
+ * @date 2024-11-26
  * 
  */
 
-#include "copy_region.hpp"
+#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace compute
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region() noexcept
-    : m_source_offset(0)
-    , m_destination_offset(0)
-    , m_count(0)
+host_unified_buffer* host_unified_buffer::get_device_accessible_alias() noexcept
 {
+    return this;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-copy_region::copy_region(std::size_t source_offset, 
-                         std::size_t destination_offset,
-                         std::size_t count ) noexcept
-    : m_source_offset(source_offset)
-    , m_destination_offset(destination_offset)
-    , m_count(count)
+const host_unified_buffer* 
+host_unified_buffer::get_device_accessible_alias() const noexcept
 {
+    return this;
 }
 
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_source_offset() const noexcept
+host_unified_buffer* host_unified_buffer::get_host_accessible_alias() noexcept
 {
-    return m_source_offset;
+    return this;
 }
 
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_destination_offset() const noexcept
+const host_unified_buffer* 
+host_unified_buffer::get_host_accessible_alias() const noexcept
 {
-    return m_destination_offset;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t copy_region::get_count() const noexcept
-{
-    return m_count;
+    return this;
 }
 
 } // namespace compute

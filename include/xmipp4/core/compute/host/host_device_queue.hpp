@@ -45,6 +45,7 @@ class host_device_queue final
 {
 public:
     void wait_until_completed() const override;
+    bool is_idle() const noexcept override;
 
 }; 
 

@@ -147,28 +147,30 @@ bool device_manager::get_device_properties(const device_index &index,
 }
 
 std::unique_ptr<device>
-device_manager::create_device(const device_index& index) const
+device_manager::create_device(const device_index& index,
+                              const device_create_parameters &params ) const
 {
     std::unique_ptr<device> result;
 
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
     {
-        result = backend->create_device(index.get_device_id());
+        result = backend->create_device(index.get_device_id(), params);
     }
 
     return result;
 }
 
 std::shared_ptr<device> 
-device_manager::create_device_shared(const device_index& index) const
+device_manager::create_device_shared(const device_index& index,
+                                     const device_create_parameters &params ) const
 {
     std::shared_ptr<device> result;
 
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
     {
-        result = backend->create_device_shared(index.get_device_id());
+        result = backend->create_device_shared(index.get_device_id(), params);
     }
 
     return result;

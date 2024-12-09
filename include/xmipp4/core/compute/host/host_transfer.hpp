@@ -53,11 +53,11 @@ class host_transfer final
     , public device_copy
 {
 public:
-    void transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    void transfer_copy(const host_buffer &src_buffer,
                        device_buffer &dst_buffer, 
                        device_queue &queue ) override;
     
-    void transfer_copy(const std::shared_ptr<const host_buffer> &src_buffer,
+    void transfer_copy(const host_buffer &src_buffer,
                        device_buffer &dst_buffer, 
                        span<const copy_region> regions, 
                        device_queue &queue ) override;
@@ -65,30 +65,34 @@ public:
     std::shared_ptr<device_buffer> 
     transfer(const std::shared_ptr<host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     std::shared_ptr<const device_buffer> 
     transfer(const std::shared_ptr<const host_buffer> &buffer, 
              device_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     void transfer_copy(const device_buffer &src_buffer,
-                       const std::shared_ptr<host_buffer> &dst_buffer, 
+                       host_buffer &dst_buffer, 
                        device_queue &queue ) override;
 
     void transfer_copy(const device_buffer &src_buffer,
-                       const std::shared_ptr<host_buffer> &dst_buffer, 
+                       host_buffer &dst_buffer, 
                        span<const copy_region> regions, 
                        device_queue &queue ) override;
 
     std::shared_ptr<host_buffer> 
     transfer(const std::shared_ptr<device_buffer> &buffer, 
              host_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     std::shared_ptr<const host_buffer> 
     transfer(const std::shared_ptr<const device_buffer> &buffer, 
              host_memory_allocator &allocator,
+             std::size_t alignment,
              device_queue &queue ) override;
 
     void copy(const device_buffer &src_buffer,
@@ -99,9 +103,6 @@ public:
               device_buffer &dst_buffer,
               span<const copy_region> regions,
               device_queue &queue ) override;
-
-    void wait() override;
-    void wait(device_queue &queue) override;
 
 }; 
 

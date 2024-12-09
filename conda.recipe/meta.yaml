@@ -43,7 +43,7 @@ build:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-setting="--cmake-args=-G Ninja"
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-setting="cmake.args=-G Ninja"
 
 requirements:
   run:

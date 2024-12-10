@@ -27,30 +27,18 @@
 
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
 #include <xmipp4/core/version.hpp>
 
 #include <algorithm>
 
+#include "mock/mock_communicator_backend.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <trompeloeil.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
-
-class mock_communicator_backend final
-    : public communicator_backend
-{
-public:
-    MAKE_MOCK0(get_name, std::string (), const noexcept override);
-    MAKE_MOCK0(get_version, version (), const noexcept override);
-    MAKE_MOCK0(is_available, bool (), const noexcept override);
-    MAKE_MOCK0(get_priority, backend_priority (), const noexcept override);
-    MAKE_MOCK0(get_world_communicator, std::shared_ptr<communicator> (), const override);
-
-};
 
 TEST_CASE( "register communicator backend", "[communicator_manager]" ) 
 {

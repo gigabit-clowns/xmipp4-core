@@ -31,28 +31,13 @@
 
 #include <vector>
 
+#include "mock/mock_host_buffer.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <trompeloeil.hpp>
-
 
 using namespace xmipp4;
 using namespace xmipp4::compute;
-
-class mock_host_buffer final
-    : public host_buffer
-{
-public:
-    MAKE_MOCK0(get_size, std::size_t (), const noexcept override);
-    MAKE_MOCK0(get_data, void* (), noexcept override);
-    MAKE_CONST_MOCK0(get_data, const void* (), noexcept override);
-    MAKE_MOCK0(get_device_accessible_alias, device_buffer* (), noexcept override);
-    MAKE_CONST_MOCK0(get_device_accessible_alias, const device_buffer* (), noexcept override);
-    MAKE_MOCK1(record_queue, void (device_queue&), override);
-
-};
-
-
 
 TEST_CASE( "get_device_accessible_alias should return null when null is provided", "[host_buffer]" )
 {

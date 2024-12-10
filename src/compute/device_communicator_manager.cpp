@@ -77,16 +77,16 @@ public:
     {   
         device_communicator_backend *result;
 
-        if (node_communicator.get_rank() == 0)
+        if (node_communicator.get_rank() == main_rank)
         {
-            result = find_supported_backend_primary(
+            result = find_supported_backend_main(
                 node_communicator, 
                 devices
             );
         }
         else
         {
-            result = find_supported_backend_secondary(
+            result = find_supported_backend_replica(
                 node_communicator, 
                 devices
             );
@@ -101,23 +101,11 @@ private:
     
     registry_type m_registry;
 
-    void get_supported_backends(span<device*> devices,
-                                std::vector<backend*> &result ) const
-    {
-        result.clear();
-        for (auto &item : m_registry)
-        {
-            auto* backend = item.second.get();
-            if (backend->is_available() && backend->supports_devices(devices))
-            {
-                result.emplace_back(backend);
-            }
-        }
-    }
+    static XMIPP4_CONST_CONSTEXPR int main_rank = 0;
 
     device_communicator_backend* 
-    find_supported_backend_primary(node_communicator &node_communicator, 
-                                   span<device*> devices ) const
+    find_supported_backend_main(node_communicator &node_communicator, 
+                                span<device*> devices ) const
     {
         std::vector<backend*> supported_backends;
 
@@ -125,46 +113,48 @@ private:
         for (auto &item : m_registry)
         {
             auto *backend = item.second.get();
-            if (check_local_support(backend, devices))
+            const auto local_support = check_local_support(backend, devices);
+            if (local_support)
             {
                 backend_name = item.first;
                 communication::broadcast_string(
                     node_communicator, 
-                    0, 
+                    main_rank, 
                     backend_name
                 );
 
-                int support = 1; // Self
-                node_communicator.reduce(
-                    0, 
-                    reduction_operation::sum,
-                    span<int>(&support, 1),
-                    span<int>(&support, 1)
+                const auto supported = collect_backend_support(
+                    node_communicator,
+                    main_rank,
+                    local_support
                 );
-
-                if (support == node_communicator.get_size())
+                if (supported)
                 {
                     supported_backends.emplace_back(backend);
                 }
             }
         }
 
+        // Terminate replica loops.
         backend_name.clear();
         communication::broadcast_string(
             node_communicator, 
-            0, 
+            main_rank, 
             backend_name
         );
 
-        auto *backend = get_highest_priority_backend(make_span(supported_backends));
+        // Elect a backend.
+        auto *backend = 
+            get_highest_priority_backend(make_span(supported_backends));
         if (backend)
         {
             backend_name = backend->get_name();
         }
 
+        // Inform the replicas about the election.
         communication::broadcast_string(
             node_communicator, 
-            0, 
+            main_rank, 
             backend_name
         );
 
@@ -172,49 +162,84 @@ private:
     }
 
     device_communicator_backend* 
-    find_supported_backend_secondary(node_communicator &node_communicator, 
-                                     span<device*> devices ) const
+    find_supported_backend_replica(node_communicator &node_communicator, 
+                                   span<device*> devices ) const
     {
-        device_communicator_backend *result;
-
+        device_communicator_backend* result;
         std::string backend_name;
-        while (communication::broadcast_string(node_communicator, 0, backend_name))
-        {
-            int support;
 
+        // Answer requests
+        while (communication::broadcast_string(node_communicator, main_rank, backend_name))
+        {
+            bool local_support;
             auto *backend = get_backend(backend_name);
             if (backend)
             {
-                support = check_local_support(backend, devices);
+                local_support = check_local_support(backend, devices);
             }
             else
             {
-                support = false;
+                local_support = false;
             }
-
-            node_communicator.reduce(
-                0, 
-                reduction_operation::sum,
-                span<int>(&support, 1),
-                {}
+            
+            send_backend_support(
+                node_communicator, 
+                main_rank, 
+                local_support
             );
         }
 
         // Get the elected backend
         communication::broadcast_string(
             node_communicator, 
-            0, 
+            main_rank, 
             backend_name
         );
 
-        result = m_registry.at(backend_name).get();
-        
+        if (backend_name.empty())
+        {
+            result = nullptr;
+        }
+        else
+        {
+            result = m_registry.at(backend_name).get();
+        }
+
+        return result;
     }
 
     static bool check_local_support(const device_communicator_backend *backend,
                                     span<device*> devices )
     {
         return backend->is_available() && backend->supports_devices(devices);
+    }
+
+    static void send_backend_support(node_communicator &node_communicator,
+                                     int root,
+                                     bool local_support )
+    {
+        auto support = static_cast<int>(local_support); // 0 or 1
+        node_communicator.reduce(
+            root, 
+            reduction_operation::sum,
+            span<int>(&support, 1),
+            {}
+        );
+
+    }
+    static bool collect_backend_support(node_communicator &node_communicator,
+                                        int root,
+                                        bool local_support )
+    {
+        auto support = static_cast<int>(local_support); // 0 or 1
+        node_communicator.reduce(
+            root, 
+            reduction_operation::sum,
+            span<int>(&support, 1),
+            span<int>(&support, 1)
+        );
+
+        return support == node_communicator.get_size();
     }
 
 };

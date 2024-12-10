@@ -26,28 +26,14 @@
  * 
  */
 
-#include <xmipp4/core/compute/device_buffer.hpp>
 #include <xmipp4/core/compute/device_queue.hpp>
 
-#include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
+#include "mock/mock_device_buffer.hpp"
 
+#include <catch2/catch_test_macros.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::compute;
-
-class mock_device_buffer final
-    : public device_buffer
-{
-public:
-    MAKE_MOCK0(get_size, std::size_t (), const noexcept override);
-    MAKE_MOCK0(get_host_accessible_alias, host_buffer* (), noexcept override);
-    MAKE_CONST_MOCK0(get_host_accessible_alias, const host_buffer* (), noexcept override);
-    MAKE_MOCK1(record_queue, void (device_queue&), override);
-
-};
-
-
 
 TEST_CASE( "get_host_accessible_alias should return null when null is provided", "[device_buffer]" )
 {

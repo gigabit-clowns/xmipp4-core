@@ -21,18 +21,18 @@
  ***************************************************************************/
 
 /**
- * @file host_storage.hpp
+ * @file dynamic_layout.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_storage class
- * @date 2024-12-08
+ * @brief Defines dynamic_layout class
+ * @date 2025-02-03
  * 
  */
 
-#include <xmipp4/core/compute/host_memory_allocator.hpp>
-#include <xmipp4/core/compute/host_buffer.hpp>
-
+#include <vector>
 #include <memory>
-#include <typeindex>
+#include <cstddef>
+
+#include "axis_descriptor.hpp"
 
 namespace xmipp4 
 {
@@ -40,35 +40,25 @@ namespace multidimensional
 {
 
 template <typename T>
-class host_storage
+struct storage_traits;
+
+template <typename T>
+struct layout_traits;
+
+
+
+template <typename Storage, typename Layout>
+class array
 {
 public:
-    using value_type = T;
-    using pointer_type = value_type*;
-    using const_pointer_type = const value_type*;
-
-    explicit host_storage(compute::host_memory_allocator &allocator);
-    host_storage(std::size_t size, compute::host_memory_allocator &allocator);
-
-    compute::host_memory_allocator& get_allocator() const noexcept;
-
-    void resize(std::size_t size);
-    std::size_t get_size() const noexcept;
-
-    pointer_type get_data() noexcept;
-    const_pointer_type get_data() const noexcept;
-
-    static std::type_index get_data_type() noexcept;
+    using storage_type = Storage;
+    using layout_type = Layout;
 
 private:
-    compute::host_memory_allocator* m_allocator;
-    std::size_t m_size;
-    std::size_t m_offset_bytes;
-    std::shared_ptr<compute::host_buffer> m_buffer;
+    storage_type m_storage;
+    layout_type m_layout;
 
 };
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "host_storage.inl"

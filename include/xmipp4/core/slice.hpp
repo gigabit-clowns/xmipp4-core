@@ -193,6 +193,14 @@ struct is_slice<slice<Start, Stop, Step>>
 
 
 /**
+ * @brief Specialization of slice where all its components are dynamic.
+ * 
+ */
+using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
+
+
+
+/**
  * @brief Tag defining the beginning on an axis
  * 
  */

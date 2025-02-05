@@ -124,8 +124,12 @@ inline
 layout_reference<T>& 
 layout_reference<T>::slice_inplace(span<const dynamic_slice> slices)
 {
-    copy_on_write();
-    m_layout->slice_inplace(slices);
+    if (m_layout)
+    {
+        copy_on_write();
+        m_layout->slice_inplace(slices);
+    }
+
     return *this;
 }
 
@@ -147,8 +151,12 @@ template <typename T>
 inline
 layout_reference<T>& layout_reference<T>::transpose_inplace() noexcept
 {
-    copy_on_write();
-    m_layout->transpose_inplace();
+    if (m_layout)
+    {
+        copy_on_write();
+        m_layout->transpose_inplace();
+    }
+
     return *this;
 }
 
@@ -170,8 +178,12 @@ template <typename T>
 inline
 layout_reference<T>& layout_reference<T>::matrix_transpose_inplace() noexcept
 {
-    copy_on_write();
-    m_layout->matrix_transpose_inplace();
+    if (m_layout)
+    {
+        copy_on_write();
+        m_layout->matrix_transpose_inplace();
+    }
+
     return *this;
 }
 

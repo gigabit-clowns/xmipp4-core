@@ -50,7 +50,6 @@ ForwardIt find_first_significant_axis(ForwardIt first,
 namespace detail
 {
 
-
 template<typename ForwardIt, typename Cmp>
 XMIPP4_INLINE_CONSTEXPR_CPP20
 ForwardIt find_significant_min_stride(ForwardIt first, 
@@ -100,32 +99,14 @@ ForwardIt find_minor_axis(ForwardIt first, ForwardIt last) noexcept
 
 template<typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-void sort_layout_inplace(BidirIt first, 
-                         BidirIt last,
-                         column_major_tag )
+void sort_layout_inplace(BidirIt first, BidirIt last)
 {
     std::sort(first, last, compare_strides_greater);
 }
 
-template<typename BidirIt>
+template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-void sort_layout_inplace(BidirIt first, 
-                         BidirIt last,
-                         row_major_tag )
-{
-    std::sort(first, last, compare_strides_less);
-}
-
-
-
-namespace detail
-{
-
-template<typename ForwardIt, typename Cmp>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_order(ForwardIt first, 
-                        ForwardIt last,
-                        const Cmp &compare ) noexcept
+bool is_layout_sorted(ForwardIt first, ForwardIt last)
 {
     // Start at the first non-zero stride
     first = find_first_significant_axis(first, last);
@@ -137,7 +118,7 @@ bool check_layout_order(ForwardIt first,
         first = find_first_significant_axis(std::next(first), last);
         while(first != last)
         {
-            if(!compare(*prev, *first))
+            if(compare_strides_less(*prev, *first))
             {
                 result = false;
                 break;
@@ -149,27 +130,6 @@ bool check_layout_order(ForwardIt first,
     }
 
     return result;
-
-}
-
-} // namespace detail
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_order(ForwardIt first, 
-                        ForwardIt last,
-                        column_major_tag ) noexcept
-{
-    return detail::check_layout_order(first, last, compare_strides_greater);
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool check_layout_order(ForwardIt first, 
-                        ForwardIt last,
-                        row_major_tag ) noexcept
-{
-    return detail::check_layout_order(first, last, compare_strides_less);
 }
 
 
@@ -182,8 +142,7 @@ XMIPP4_INLINE_CONSTEXPR_CPP20
 ForwardIt pack_layout_one(ForwardIt first, 
                           ForwardIt last,
                           axis_descriptor &packed,
-                          std::ptrdiff_t &offset,
-                          column_major_tag ) noexcept
+                          std::ptrdiff_t &offset ) noexcept
 {
     std::size_t extent = first->get_extent();
     offset -= get_reverse_axis_offset(*first);
@@ -204,42 +163,14 @@ ForwardIt pack_layout_one(ForwardIt first,
     return first;
 }
 
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt pack_layout_one(ForwardIt first, 
-                          ForwardIt last,
-                          axis_descriptor &packed,
-                          std::ptrdiff_t &offset,
-                          row_major_tag ) noexcept
-{
-    std::size_t extent = first->get_extent();
-    const auto stride = first->get_unsigned_stride();
-    offset -= get_reverse_axis_offset(*first);
-
-    auto prev = first;
-    first = find_first_significant_axis(std::next(first), last);
-    while(first != last && is_regular(*prev, *first))
-    {
-        extent *= first->get_extent();
-        offset -= get_reverse_axis_offset(*first);
-
-        prev = first;
-        first = find_first_significant_axis(std::next(first), last);
-    }
-
-    packed = axis_descriptor(extent, stride);
-    return first;
-}
-
 } // namespace detail
 
-template<typename ForwardIt, typename OutputIt, typename OrderTag>
+template<typename ForwardIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 OutputIt pack_layout(ForwardIt first_from, 
                      ForwardIt last_from,
                      OutputIt first_to,
-                     std::ptrdiff_t &offset,
-                     OrderTag &&order )
+                     std::ptrdiff_t &offset )
 {
     // Start at a significant axis
     first_from = find_first_significant_axis(first_from, last_from);
@@ -251,8 +182,7 @@ OutputIt pack_layout(ForwardIt first_from,
         axis_descriptor packed;
         first_from = detail::pack_layout_one(
             first_from, last_from, 
-            packed, offset,
-            std::forward<OrderTag>(order)
+            packed, offset
         );
 
         // Write a new axis to the output
@@ -263,21 +193,15 @@ OutputIt pack_layout(ForwardIt first_from,
     return first_to;
 }
 
-template<typename ForwardIt, typename OrderTag>
+template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt pack_layout_inplace(ForwardIt first, 
                               ForwardIt last,
-                              std::ptrdiff_t &offset,
-                              OrderTag &&order )
+                              std::ptrdiff_t &offset )
 {
     // It is safe to call the non-inplace version,
     // as it will write to already read positions.
-    return pack_layout(
-        first, last, 
-        first, 
-        offset, 
-        std::forward<OrderTag>(order)
-    );
+    return pack_layout(first, last, first, offset);
 }
 
 template<typename ForwardIt>
@@ -293,8 +217,7 @@ bool is_contiguous_layout(ForwardIt first, ForwardIt last)
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 std::size_t compute_contiguous_axis_strides(ForwardIt first,
-                                            ForwardIt last,
-                                            column_major_tag) noexcept
+                                            ForwardIt last ) noexcept
 {
     std::size_t volume = 1;
     std::for_each(
@@ -306,19 +229,6 @@ std::size_t compute_contiguous_axis_strides(ForwardIt first,
         }
     );
     return volume;
-}
-
-template<typename BidirIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::size_t compute_contiguous_axis_strides(BidirIt first,
-                                            BidirIt last,
-                                            row_major_tag) noexcept
-{
-    return compute_contiguous_axis_strides(
-        std::make_reverse_iterator(last),
-        std::make_reverse_iterator(first),
-        column_major()
-    );
 }
 
 template<typename InputIt, typename OutputIt>
@@ -445,127 +355,6 @@ bool broadcast_layouts(std::size_t rank,
     }
 
     return result;
-}
-
-namespace detail
-{
-
-template<typename InputIt, typename OutputIt>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<>&,
-                                    std::ptrdiff_t &)
-{
-    // No more subscripts to be processed.
-    // Copy the remaining axes
-    return std::copy(first, last, out);
-}
-
-template<typename InputIt, typename OutputIt, typename I, typename... Subscripts>
-inline
-typename std::enable_if<is_index<I>::value, OutputIt>::type
-apply_subscripts_to_layout(InputIt first, 
-                           InputIt last,
-                           OutputIt out,
-                           const subscript_sequence<I, Subscripts...>& subscripts,
-                           std::ptrdiff_t &offset)
-{
-    // Consume index
-    apply_index(*first, subscripts.head(), offset);
-    ++first;
-
-    return apply_subscripts_to_layout(
-        first, last,
-        out,
-        subscripts.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename S, typename... Subscripts>
-typename std::enable_if<is_slice<S>::value, OutputIt>::type
-apply_subscripts_to_layout(InputIt first, 
-                           InputIt last,
-                           OutputIt out,
-                           const subscript_sequence<S, Subscripts...>& subscripts,
-                           std::ptrdiff_t &offset)
-{
-    *out = apply_slice(*first, subscripts.head(), offset);
-    ++out;
-    ++first;
-
-    return apply_subscripts_to_layout(
-        first, last,
-        out,
-        subscripts.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename... Subscripts>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<new_axis_tag, Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset )
-{
-    *out = make_phantom_axis(); // Add an axis
-    ++out;
-
-    return apply_subscripts_to_layout(
-        first, last,
-        out,
-        subscripts.tail(),
-        offset
-    );
-}
-
-template<typename InputIt, typename OutputIt, typename... Subscripts>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<ellipsis_tag, Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset )
-{
-    using tail_type = typename decltype(subscripts)::tail_type;
-    XMIPP4_CONST_CONSTEXPR auto remaining_subscripts = tail_type::consumption();
-    const auto remaining_axes = std::distance(first, last);
-    const auto padding_axes = remaining_axes - remaining_subscripts;
-    
-    // Copy padding axes
-    for (decltype(padding_axes) i = 0; i < padding_axes; ++i, ++first, ++out)
-    {
-        *out = *first;
-    }
-
-    return apply_subscripts_to_layout(
-        first, last,
-        out,
-        subscripts.tail(),
-        offset
-    );
-}
-
-} // namespace detail
-
-template<typename InputIt, typename OutputIt, typename... Subscripts>
-inline
-OutputIt apply_subscripts_to_layout(InputIt first, 
-                                    InputIt last,
-                                    OutputIt out,
-                                    const subscript_sequence<Subscripts...>& subscripts,
-                                    std::ptrdiff_t &offset )
-{
-    return detail::apply_subscripts_to_layout(
-        first, last, 
-        out,
-        subscripts, 
-        offset
-    );
 }
 
 } // namespace multidimensional

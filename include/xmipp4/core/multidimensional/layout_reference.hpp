@@ -32,6 +32,7 @@
 #include <cstddef>
 
 #include "axis_descriptor.hpp"
+#include "layout_flags.hpp"
 #include "../slice.hpp"
 #include "../span.hpp"
 
@@ -44,7 +45,8 @@ namespace multidimensional
  * @brief Class describing a reference to a layout.adjacent
  * 
  * This reference uses Copy on Write (CoW) semantics, so that the underlying
- * layout is copied on write operations.
+ * layout is copied on write operations. When empty, it represents a
+ * default constructed layout, this is, no axes and zero offset.
  * 
  */
 template <typename T>
@@ -56,46 +58,13 @@ public:
     layout_reference() = default;
 
     /**
-     * @brief Construct a new dynamic layout from its components.
+     * @brief Construct a new layout reference and the undelying layout.
      * 
-     * @param extents Array with the extents of the layout. The first rank
-     * elements must be dereferenceable.
-     * @param strides Array with the strides of the layout. The first rank
-     * elements must be dereferenceable.
-     * @param rank Number of elements in the arrays.
-     * @param offset Offset of the layout. Defaults to zero.
-     * 
+     * @tparam Args Types of the arguments used with the constructor.
+     * @param args Arguments forwarded to the underlying layout's constructor.
      */
-    layout_reference(const std::size_t *extents, 
-                     const std::ptrdiff_t *strides, 
-                     std::size_t rank,
-                     std::ptrdiff_t offset = 0 );
-
-    /**
-     * @brief Construct a new dynamic layout from a list of axes.
-     * 
-     * @param axes Array with axis descriptors.
-     * @param rank Number of elements in the array.
-     * @param offset Offset of the layout. Defaults to zero.
-     * 
-     */
-    layout_reference(const axis_descriptor *axes, 
-                     std::size_t rank,
-                     std::ptrdiff_t offset = 0 );
-
-    /**
-     * @brief Construct a new layout reference as a copy of an undelying layout.
-     * 
-     * @param other The layout to be copied.
-     */
-    explicit layout_reference(const layout_type &other);
-
-    /**
-     * @brief Construct a new layout reference moving the undelying layout.
-     * 
-     * @param other The layout to be moved.
-     */
-    explicit layout_reference(layout_type &&other);
+    template <typename... Args>
+    explicit layout_reference(Args&& ...args);
 
     layout_reference(const layout_reference &other) = default;
     layout_reference(layout_reference &&other) = default;
@@ -132,6 +101,13 @@ public:
      */
     std::ptrdiff_t get_offset() const noexcept;
 
+    /**
+     * @brief Get the flags for this layout.
+     * 
+     * @return layout_flags The flags.
+     */
+    layout_flags get_flags() const noexcept;
+
 
 
     /**
@@ -147,20 +123,6 @@ public:
      * @return layout_reference& *this
      */
     layout_reference& transpose_inplace() noexcept;
-
-    /**
-     * @brief Reverse the order of the last two axes.
-     * 
-     * @return layout_reference The resulting layout.
-     */
-    layout_reference matrix_transpose() const;
-
-    /**
-     * @brief Reverse the order of the last two axes in-place.
-     * 
-     * @return layout_reference& *this
-     */
-    layout_reference& matrix_transpose_inplace() noexcept;
 
     /**
      * @brief Remove insignificant axes of the layout.
@@ -180,6 +142,11 @@ private:
     std::shared_ptr<layout_type> m_layout;
 
     void copy_on_write();
+
+    template <typename Func, typename... Args>
+    layout_reference apply(Func &&func, Args&& ...args);
+    template <typename Func, typename... Args>
+    layout_reference& apply_inplace(Func &&func, Args&& ...args);
 
 };
 

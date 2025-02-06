@@ -31,7 +31,6 @@
 
 #include "axis_descriptor.hpp"
 #include "layout_flags.hpp"
-#include "subscript_sequence.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <cstddef>
@@ -88,17 +87,8 @@ XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first,
 /**
  * @brief Sort the layout so that it is column major.
  * 
- * @tparam BidirIt Bidirectional iterator.
- * @param first Iterator to the first element in the range.
- * @param last Iterator to the past-the-end element in the range.
- */
-template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
-                                                BidirIt last,
-                                                column_major_tag );
-
-/**
- * @brief Sort the layout so that it is row major.
+ * After this operation, the provided layout's axes will be ordered 
+ * with increasing strides.
  * 
  * @tparam BidirIt Bidirectional iterator.
  * @param first Iterator to the first element in the range.
@@ -106,80 +96,68 @@ XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first,
  */
 template<typename BidirIt>
 XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first, 
-                                                BidirIt last,
-                                                row_major_tag );
+                                                BidirIt last );
 
 /**
- * @brief Check if a layout has column major ordering.
+ * @brief Check if the layout is sorted in column major.
+ * 
+ * Note that ordering is only tested for significant axes.
  * 
  * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range.
- * @param last Iterator to the past-the-end element in the range.
- * @return bool True if the layout has column major ordering.
+ * @param first Iterator to the first axis of the layout.
+ * @param last Iterator to the past-the-end axis of the layout.
+ * @return bool True if the layout is sorted.
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first, 
-                                               ForwardIt last,
-                                               column_major_tag ) noexcept;
-
-/**
- * @brief Check if a layout has row major ordering.
- * 
- * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range.
- * @param last Iterator to the past-the-end element in the range.
- * @return bool True if the layout has row major ordering.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 bool check_layout_order(ForwardIt first, 
-                                               ForwardIt last,
-                                               row_major_tag ) noexcept;
+XMIPP4_CONSTEXPR_CPP20 
+bool is_layout_sorted(ForwardIt first, ForwardIt last);
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
- * @note Input range must be ordered according to the criteria specified by
- * order. Otherwise behavior is undefined. Output will be ordered accordingly.
  * @tparam ForwardIt Forward iterator.
  * @tparam OutputIt Output iterator.
- * @tparam OrderTag Order tag.
  * @param first_from Iterator to the first input axis.
  * @param last_from Iterator to the past-the-end input axis.
  * @param first_to Iterator to the first output axis.
  * @param offset Offset to be modified to account negative strides.
  * @param order Ordering of the axes.
  * @return OutputIt Iterator to the past-the-end output axis.
+ * 
+ * @note Input range must be sorted. Otherwise behavior is undefined. 
+ * Output will be ordered accordingly.
+ * 
  */
-template<typename ForwardIt, typename OutputIt, typename OrderTag>
+template<typename ForwardIt, typename OutputIt>
 XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
                                             ForwardIt last_from,
                                             OutputIt first_to,
-                                            std::ptrdiff_t &offset,
-                                            OrderTag &&order );
+                                            std::ptrdiff_t &offset );
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
  * This function operates in-place, meaning that axes are modified and the new
  * past-the-end iterator is returned. Items contained between the new end 
- * and the previous end should be removed.
+ * and the previous end should be erased.
  * 
- * @note Input range must be ordered according to the criteria specified by
- * order. Otherwise behavior is undefined. Output will be ordered accordingly.
  * @see pack_layout
  * @tparam ForwardIt Forward iterator.
  * @tparam OrderTag Order tag.
  * @param first Iterator to the first input axis.
  * @param last Iterator to the past-the-end input axis.
  * @param offset Offset to be modified to account negative strides.
- * @param order Ordering of the axes.
  * @return ForwardIt Iterator to the new past-the-end axis.
+ * 
+ * @note Input range must be sorted. Otherwise behavior is undefined. 
+ * Output will be ordered accordingly.
+ * 
+ * 
  */
-template<typename ForwardIt, typename OrderTag>
+template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 ForwardIt pack_layout_inplace(ForwardIt first, 
                                                      ForwardIt last,
-                                                     std::ptrdiff_t &offset,
-                                                     OrderTag &&order );
+                                                     std::ptrdiff_t &offset );
 
 /**
  * @brief Check if the layout is contiguous.
@@ -203,39 +181,9 @@ bool is_contiguous_layout(ForwardIt first, ForwardIt last);
  * @return std::size_t The volume, this is, the product of all sizes
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_strides(ForwardIt first,
-                                                                   ForwardIt last,
-                                                                   column_major_tag) noexcept;
-
-/**
- * @brief Fill the strides of a layout such that it is contiguous
- * in row major ordering
- * 
- * @tparam BidirIt Bidirectional iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return std::size_t The volume, this is, the product of all sizes
- */
-template<typename BidirIt>
-XMIPP4_CONSTEXPR_CPP20 std::size_t compute_contiguous_axis_strides(BidirIt first,
-                                                                   BidirIt last,
-                                                                   row_major_tag) noexcept;
-
-/**
- * @brief Copy the sizes of a layout to another range
- * 
- * @tparam InputIt Input iterator to a axis_descriptor
- * @tparam OutputIt Output iterator to a std::size_t
- * @param first First element in the input range
- * @param last Past-the-end element in the input range
- * @param out First element in the output range. 
- * Must be incrementable (last-first) times
- * @return OutputIt Iterator to the past-the-end element in the output range
- */
-template<typename InputIt, typename OutputIt>
-XMIPP4_CONSTEXPR_CPP20 OutputIt fill_shape_from_axes(InputIt first, 
-                                                     InputIt last,
-                                                     OutputIt out );
+XMIPP4_CONSTEXPR_CPP20 
+std::size_t compute_contiguous_axis_strides(ForwardIt first,
+                                            ForwardIt last ) noexcept;
 
 /**
  * @brief Reverses the ordering of a layout

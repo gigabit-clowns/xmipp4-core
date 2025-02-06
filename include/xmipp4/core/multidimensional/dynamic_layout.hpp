@@ -51,6 +51,18 @@ public:
     dynamic_layout() = default;
 
     /**
+     * @brief Construct a new column-major dynamic layout.
+     * 
+     * @param extents Array with the extents of the layout. The first rank
+     * elements must be dereferenceable.
+     * @param rank Number of elements in the arrays.
+     * @param offset Offset of the layout. Defaults to zero.
+     * 
+     */
+    dynamic_layout(const std::size_t *extents, 
+                   std::size_t rank,
+                   std::ptrdiff_t offset = 0 );
+    /**
      * @brief Construct a new dynamic layout from its components.
      * 
      * @param extents Array with the extents of the layout. The first rank
@@ -137,20 +149,6 @@ public:
     dynamic_layout& transpose_inplace() noexcept;
 
     /**
-     * @brief Reverse the order of the last two axes.
-     * 
-     * @return dynamic_layout The resulting layout.
-     */
-    dynamic_layout matrix_transpose() const;
-
-    /**
-     * @brief Reverse the order of the last two axes in-place.
-     * 
-     * @return dynamic_layout& *this
-     */
-    dynamic_layout& matrix_transpose_inplace() noexcept;
-
-    /**
      * @brief Remove insignificant axes of the layout.
      * 
      * @return dynamic_layout The resulting layout.
@@ -167,6 +165,7 @@ public:
 private:
     std::vector<axis_descriptor> m_axes;
     std::ptrdiff_t m_offset;
+    layout_flags m_flags;
 
     void update_flags() noexcept;
 

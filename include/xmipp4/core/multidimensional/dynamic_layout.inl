@@ -39,6 +39,26 @@ namespace multidimensional
 
 inline
 dynamic_layout::dynamic_layout(const std::size_t *extents, 
+                               std::size_t rank,
+                               std::ptrdiff_t offset )
+    : m_offset(offset)
+{
+    m_axes.reserve(rank);
+    for (std::size_t i = 0; i < rank; ++i)
+    {
+        m_axes.emplace_back(extents[i], 0);
+    }
+
+    compute_contiguous_axis_strides(
+        m_axes.rbegin(), 
+        m_axes.rend()
+    );
+
+    update_flags();
+}
+
+inline
+dynamic_layout::dynamic_layout(const std::size_t *extents, 
                                const std::ptrdiff_t *strides, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
@@ -49,6 +69,8 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
     {
         m_axes.emplace_back(extents[i], strides[i]);
     }
+
+    update_flags();
 }
 
 inline
@@ -58,6 +80,7 @@ dynamic_layout::dynamic_layout(const axis_descriptor *axes,
     : m_axes(axes, axes + rank)
     , m_offset(offset)
 {
+    update_flags();
 }
 
 inline
@@ -84,6 +107,12 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
     return m_offset;
 }
 
+inline
+layout_flags dynamic_layout::get_flags() const noexcept
+{
+    return m_flags;
+}
+
 
 
 inline
@@ -98,24 +127,6 @@ inline
 dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 {
     transpose_layout_inplace(m_axes.begin(), m_axes.end());
-    update_flags();
-    return *this;
-}
-
-inline
-dynamic_layout dynamic_layout::matrix_transpose() const
-{
-    dynamic_layout result = *this;
-    result.matrix_transpose_inplace();
-    return result;
-}
-
-inline
-dynamic_layout& dynamic_layout::matrix_transpose_inplace() noexcept
-{
-    const auto index0 = m_axes.size() - 1;
-    const auto index1 = index0 - 1;
-    std::swap(m_axes[index0], m_axes[index1]);
     update_flags();
     return *this;
 }
@@ -136,8 +147,28 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
         m_axes.end()
     );
     update_flags();
-
     return *this;
+}
+
+inline
+void dynamic_layout::update_flags()
+{
+    layout_flags flags;
+
+    flags.set(
+        layout_flag_bits::contiguous, 
+        is_contiguous_layout(m_axes.cbegin(), m_axes.cend())
+    );
+    flags.set(
+        layout_flag_bits::column_major, 
+        is_layout_sorted(m_axes.cbegin(), m_axes.cend())
+    );
+    flags.set(
+        layout_flag_bits::row_major, 
+        is_layout_sorted(m_axes.crbegin(), m_axes.crend())
+    );
+
+    m_flags = flags;
 }
 
 } // namespace multidimensional

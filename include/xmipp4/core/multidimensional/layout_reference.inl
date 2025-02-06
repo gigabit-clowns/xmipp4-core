@@ -36,36 +36,12 @@ namespace multidimensional
 {
 
 template <typename T>
+template <typename... Args>
 inline
-layout_reference<T>::layout_reference(const std::size_t *extents, 
-                                      const std::ptrdiff_t *strides, 
-                                      std::size_t rank,
-                                      std::ptrdiff_t offset )
-    : m_layout(std::make_shared<layout_type>(extents, strides, rank, offset))
+layout_reference<T>::layout_reference(Args&& ...args)
+    : m_layout(std::make_shared<layout_type>(std::forward<Args>(args)...))
 {
-}
 
-template <typename T>
-inline
-layout_reference<T>::layout_reference(const axis_descriptor *axes, 
-                                      std::size_t rank,
-                                      std::ptrdiff_t offset )
-    : m_layout(std::make_shared<layout_type>(axes, rank, offset))
-{
-}
-
-template <typename T>
-inline
-layout_reference<T>::layout_reference(const layout_type &other)
-    : m_layout(std::make_shared<layout_type>(other))
-{
-}
-
-template <typename T>
-inline
-layout_reference<T>::layout_reference(layout_type &&other)
-    : m_layout(std::make_shared<layout_type>(std::move(other)))
-{
 }
 
 
@@ -103,83 +79,46 @@ std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
     return m_layout ? m_layout->get_offset() : 0;
 }
 
+template <typename T>
+inline
+layout_flags layout_reference<T>::get_flags() const noexcept
+{
+    XMIPP4_CONST_CONSTEXPR auto empty_flags = 
+        layout_flag_bits::contiguous |
+        layout_flag_bits::column_major |
+        layout_flag_bits::row_major ;
+
+    return m_layout ? m_layout->get_flags() : empty_flags;
+}
+
 
 
 template <typename T>
 inline
 layout_reference<T> layout_reference<T>::transpose() const
 {
-    layout_reference result;
-
-    if (m_layout)
-    {
-        result = layout_reference(m_layout->transpose());
-    }
-
-    return result;
+    return apply(std::mem_fn(&layout_type::transpose));
 }
 
 template <typename T>
 inline
 layout_reference<T>& layout_reference<T>::transpose_inplace() noexcept
 {
-    if (m_layout)
-    {
-        copy_on_write();
-        m_layout->transpose_inplace();
-    }
-
-    return *this;
-}
-
-template <typename T>
-inline
-layout_reference<T> layout_reference<T>::matrix_transpose() const
-{
-    layout_reference result;
-
-    if (m_layout)
-    {
-        result = layout_reference(m_layout->matrix_transpose());
-    }
-
-    return result;
-}
-
-template <typename T>
-inline
-layout_reference<T>& layout_reference<T>::matrix_transpose_inplace() noexcept
-{
-    if (m_layout)
-    {
-        copy_on_write();
-        m_layout->matrix_transpose_inplace();
-    }
-
-    return *this;
+    return apply_inplace(std::mem_fn(&layout_type::transpose_inplace));
 }
 
 template <typename T>
 inline
 layout_reference<T> layout_reference<T>::squeeze() const
 {
-    layout_reference result;
-
-    if (m_layout)
-    {
-        result = layout_reference(m_layout->squeeze());
-    }
-
-    return result;
+    return apply(std::mem_fn(&layout_type::squeeze));
 }
 
 template <typename T>
 inline
 layout_reference<T>& layout_reference<T>::squeeze_inplace() noexcept
 {
-    copy_on_write();
-    m_layout->squeeze_inplace();
-    return *this;
+    return apply_inplace(std::mem_fn(&layout_type::squeeze_inplace));
 }
 
 
@@ -192,6 +131,38 @@ void layout_reference<T>::copy_on_write()
     {
         m_layout = std::make_shared<layout_type>(*m_layout);
     }
+}
+
+template <typename T>
+template <typename Func, typename... Args>
+inline
+layout_reference<T> layout_reference<T>::apply(Func &&func, Args&& ...args)
+{
+    layout_reference result;
+
+    if (m_layout)
+    {
+        result = layout_reference(
+            std::forward<Func>(func)(*m_layout, std::forward<Args>(args)...)
+        );
+    }
+
+    return result;
+}
+
+template <typename T>
+template <typename Func, typename... Args>
+inline
+layout_reference<T>& 
+layout_reference<T>::apply_inplace(Func &&func, Args&& ...args)
+{
+    if (m_layout)
+    {
+        copy_on_write();
+        std::forward<Func>(func)(*m_layout, std::forward<Args>(args)...);
+    }
+
+    return *this;
 }
 
 } // namespace multidimensional

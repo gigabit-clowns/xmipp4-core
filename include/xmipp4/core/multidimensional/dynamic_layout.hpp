@@ -149,6 +149,44 @@ public:
     dynamic_layout& transpose_inplace() noexcept;
 
     /**
+     * @brief Permute the order of the axes.
+     * 
+     * @param order Order acquired by the new layout. Must have the same 
+     * size as the amount of dimensions and it must feature strictly one
+     * instance of each number in [0, rank).
+     * @return dynamic_layout Permuted layout.
+     */
+    dynamic_layout permute(span<std::size_t> order) const;
+
+    /**
+     * @brief Permute the order of the axes in-place.
+     * 
+     * @param order Order acquired by the new layout. Must have the same 
+     * size as the amount of dimensions and it must feature strictly one
+     * instance of each number in [0, rank).
+     * @return dynamic_layout& *this
+     */
+    dynamic_layout& permute_inplace(span<std::size_t> order);
+
+    /**
+     * @brief Swap two axes.
+     * 
+     * @param axis1 Index of the first axis. Must be in [0, rank).
+     * @param axis2 Index of the second axis. Must be in [0, rank).
+     * @return dynamic_layout Permuted layout.
+     */
+    dynamic_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
+
+    /**
+     * @brief Swap two axes.
+     * 
+     * @param axis1 Index of the first axis. Must be in [0, rank).
+     * @param axis2 Index of the second axis. Must be in [0, rank).
+     * @return dynamic_layout& *this
+     */
+    dynamic_layout& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
+
+    /**
      * @brief Remove insignificant axes of the layout.
      * 
      * @return dynamic_layout The resulting layout.

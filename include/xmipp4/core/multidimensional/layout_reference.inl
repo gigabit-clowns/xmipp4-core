@@ -121,7 +121,58 @@ layout_reference<T>& layout_reference<T>::squeeze_inplace() noexcept
     return apply_inplace(std::mem_fn(&layout_type::squeeze_inplace));
 }
 
+template <typename T>
+inline
+layout_reference<T> layout_reference<T>::permute(span<std::size_t> order) const
+{
+    if (!m_layout && !order.empty())
+    {
+        throw std::invalid_argument("cannot permute empty layout");
+    }
 
+    return apply(std::mem_fn(&layout_type::permute, order));
+}
+
+template <typename T>
+inline
+layout_reference<T>& 
+layout_reference<T>::permute_inplace(span<std::size_t> order)
+{
+    if (!m_layout && !order.empty())
+    {
+        throw std::invalid_argument("cannot permute empty layout");
+    }
+
+    return apply_inplace(std::mem_fn(&layout_type::permute_inplace, order));
+}
+
+template <typename T>
+inline
+layout_reference<T> 
+layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
+{
+    if (!m_layout)
+    {
+        throw std::invalid_argument("cannot swap axes on empty layout");
+    }
+
+    return apply(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
+}
+
+template <typename T>
+inline
+layout_reference<T>& 
+layout_reference<T>::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
+{
+    if (!m_layout)
+    {
+        throw std::invalid_argument("cannot swap axes on empty layout");
+    }
+
+    return apply_inplace(
+        std::mem_fn(&layout_type::swap_axes_inplace, axis1, axis2)
+    );
+}
 
 template <typename T>
 inline

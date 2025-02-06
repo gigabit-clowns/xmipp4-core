@@ -131,6 +131,59 @@ dynamic_layout& dynamic_layout::transpose_inplace() noexcept
     return *this;
 }
 
+dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
+{
+    dynamic_layout result = *this;
+    result.permute_inplace(order);
+    return result;
+}
+
+dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
+{
+    if (order.size() != m_axes.size())
+    {
+        throw std::invalid_argument(
+            "order must have the same length as the rank"
+        );
+    }
+
+    std::vector<axis_descriptor> tmp;
+    tmp.reserve(m_axes.size());
+    for(std::size_t i = 0; i < order.size(); ++i)
+    {
+        tmp.push_back(m_axes[order[i]]);
+    }
+
+    m_axes = std::move(tmp);
+    update_flags();
+    return *this;
+}
+
+dynamic_layout 
+dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
+{
+    dynamic_layout result = *this;
+    result.swap_axes_inplace(axis1, axis2);
+    return result;
+}
+
+dynamic_layout& 
+dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
+{
+    if (axis1 >= m_axes.size())
+    {
+        throw std::invalid_argument("axis1 exceeds bounds");
+    }
+    if (axis2 >= m_axes.size())
+    {
+        throw std::invalid_argument("axis2 exceeds bounds");
+    }
+
+    std::swap(m_axes[axis1], m_axes[axis2]);
+    update_flags();
+    return *this;
+}
+
 inline
 dynamic_layout dynamic_layout::squeeze() const
 {

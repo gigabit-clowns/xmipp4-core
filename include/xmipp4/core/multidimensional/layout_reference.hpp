@@ -135,28 +135,6 @@ public:
 
 
     /**
-     * @brief Apply slices to the first dimensions.
-     * 
-     * @param slices Sequence of slice objects. Must be less or equal
-     * than the rank of this layout.
-     * 
-     * @return layout_reference Sliced layout
-     * 
-     */
-    layout_reference slice(span<const dynamic_slice> slices);
-
-    /**
-     * @brief Apply slices to the first dimensions in-place.
-     * 
-     * @param slices Sequence of slice objects. Must be less or equal
-     * than the rank of this layout.
-     * 
-     * @return layout_reference& *this
-     * 
-     */
-    layout_reference& slice_inplace(span<const dynamic_slice> slices);
-
-    /**
      * @brief Reverse the order of the axes.
      * 
      * @return layout_reference The resulting layout.

@@ -32,6 +32,7 @@
 #include <cstddef>
 
 #include "axis_descriptor.hpp"
+#include "layout_flags.hpp"
 #include "../slice.hpp"
 #include "../span.hpp"
 
@@ -112,29 +113,14 @@ public:
      */
     std::ptrdiff_t get_offset() const noexcept;
 
-
-
     /**
-     * @brief Apply slices to the first dimensions.
+     * @brief Get the flags for this layout.
      * 
-     * @param slices Sequence of slice objects. Must be less or equal
-     * than the rank of this layout.
-     * 
-     * @return dynamic_layout Sliced layout
-     * 
+     * @return layout_flags The flags.
      */
-    dynamic_layout slice(span<const dynamic_slice> slices);
+    layout_flags get_flags() const noexcept;
 
-    /**
-     * @brief Apply slices to the first dimensions in-place.
-     * 
-     * @param slices Sequence of slice objects. Must be less or equal
-     * than the rank of this layout.
-     * 
-     * @return dynamic_layout& *this
-     * 
-     */
-    dynamic_layout& slice_inplace(span<const dynamic_slice> slices);
+
 
     /**
      * @brief Reverse the order of the axes.
@@ -181,6 +167,8 @@ public:
 private:
     std::vector<axis_descriptor> m_axes;
     std::ptrdiff_t m_offset;
+
+    void update_flags() noexcept;
 
 };
 

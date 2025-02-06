@@ -107,34 +107,6 @@ std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
 
 template <typename T>
 inline
-layout_reference<T> layout_reference<T>::slice(span<const dynamic_slice> slices)
-{
-    layout_reference result;
-
-    if (m_layout)
-    {
-        result = layout_reference(m_layout->slice(slices));
-    }
-
-    return result;
-}
-
-template <typename T>
-inline
-layout_reference<T>& 
-layout_reference<T>::slice_inplace(span<const dynamic_slice> slices)
-{
-    if (m_layout)
-    {
-        copy_on_write();
-        m_layout->slice_inplace(slices);
-    }
-
-    return *this;
-}
-
-template <typename T>
-inline
 layout_reference<T> layout_reference<T>::transpose() const
 {
     layout_reference result;

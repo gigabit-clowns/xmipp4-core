@@ -54,19 +54,5 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits fl
     return os << to_string(flag);
 }
 
-
-
-
-
-XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
-{
-    return column_major_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
-{
-    return row_major_tag();
-}
-
 } // namespace multidimensional
 } // namespace xmipp4

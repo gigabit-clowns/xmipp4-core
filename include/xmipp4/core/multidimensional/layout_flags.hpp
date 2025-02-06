@@ -48,26 +48,9 @@ enum class layout_flag_bits
 
 using layout_flags = utils::flagset<layout_flag_bits>;
 
-
-
-struct column_major_tag {};
-
-/**
- * @brief Construct a column major tag
- * 
- * @return column_major_tag
- */
-XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
-
-
-struct row_major_tag {};
-
-/**
- * @brief Construct a row major tag
- * 
- * @return row_major_tag
- */
-XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
+template <typename T>
+std::basic_ostream<T>& 
+operator<<(std::basic_ostream<T>& os, layout_flag_bits flag);
 
 } // namespace multidimensional
 } // namespace xmipp4

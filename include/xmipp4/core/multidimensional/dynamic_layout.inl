@@ -87,32 +87,6 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
 
 
 inline
-dynamic_layout dynamic_layout::slice(span<const dynamic_slice> slices)
-{
-    dynamic_layout result = *this;
-    result.slice_inplace(slices);
-    return result;
-}
-
-inline
-dynamic_layout& dynamic_layout::slice_inplace(span<const dynamic_slice> slices)
-{
-    if (slices.size() >= get_rank())
-    {
-        throw std::invalid_argument(
-            "The number of slices exceeds the number of dimensions"
-        );
-    }
-
-    for (std::size_t i = 0; i < slices.size(); ++i)
-    {
-        apply_slice(m_axes[i], slices[i], m_offset);
-    }
-
-    return *this;
-}
-
-inline
 dynamic_layout dynamic_layout::transpose() const
 {
     dynamic_layout result = *this;
@@ -124,6 +98,7 @@ inline
 dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 {
     transpose_layout_inplace(m_axes.begin(), m_axes.end());
+    update_flags();
     return *this;
 }
 
@@ -141,6 +116,7 @@ dynamic_layout& dynamic_layout::matrix_transpose_inplace() noexcept
     const auto index0 = m_axes.size() - 1;
     const auto index1 = index0 - 1;
     std::swap(m_axes[index0], m_axes[index1]);
+    update_flags();
     return *this;
 }
 
@@ -159,10 +135,10 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
         squeeze_layout_inplace(m_axes.begin(), m_axes.end()), 
         m_axes.end()
     );
+    update_flags();
 
     return *this;
 }
 
 } // namespace multidimensional
 } // namespace xmipp4
-

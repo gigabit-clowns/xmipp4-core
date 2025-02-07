@@ -47,7 +47,7 @@ layout_reference<T>::layout_reference(Args&& ...args)
 
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 std::size_t layout_reference<T>::get_rank() const noexcept
 {
     return m_layout ? m_layout->get_rank() : 0UL;
@@ -73,14 +73,14 @@ bool layout_reference<T>::get_axis(std::size_t index,
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
 {
     return m_layout ? m_layout->get_offset() : 0;
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_flags layout_reference<T>::get_flags() const noexcept
 {
     XMIPP4_CONST_CONSTEXPR auto empty_flags = 
@@ -94,7 +94,7 @@ layout_flags layout_reference<T>::get_flags() const noexcept
 
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_reference<T> layout_reference<T>::transpose() const
 {
     return apply(std::mem_fn(&layout_type::transpose));
@@ -108,7 +108,7 @@ layout_reference<T>& layout_reference<T>::transpose_inplace() noexcept
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_reference<T> layout_reference<T>::permute(span<std::size_t> order) const
 {
     if (!m_layout && !order.empty())
@@ -133,7 +133,7 @@ layout_reference<T>::permute_inplace(span<std::size_t> order)
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
@@ -161,7 +161,7 @@ layout_reference<T>::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_reference<T> layout_reference<T>::squeeze() const
 {
     return apply(std::mem_fn(&layout_type::squeeze));
@@ -175,7 +175,7 @@ layout_reference<T>& layout_reference<T>::squeeze_inplace() noexcept
 }
 
 template <typename T>
-inline
+XMIPP4_NODISCARD inline
 layout_reference<T> layout_reference<T>::ravel() const
 {
     return apply(std::mem_fn(&layout_type::ravel));

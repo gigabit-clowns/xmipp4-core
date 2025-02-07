@@ -46,7 +46,7 @@ array<Storage, Layout>::array(storage_type storage, layout_type layout)
 
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 const typename array<Storage, Layout>::storage_type& 
 array<Storage, Layout>::get_storage() const noexcept
 {
@@ -54,7 +54,7 @@ array<Storage, Layout>::get_storage() const noexcept
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 const typename array<Storage, Layout>::layout_type& 
 array<Storage, Layout>::get_layout() const noexcept
 {
@@ -62,14 +62,14 @@ array<Storage, Layout>::get_layout() const noexcept
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 std::size_t array<Storage, Layout>::get_rank() const noexcept
 {
     return m_layout.get_rank();
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::transpose() const
 {
@@ -86,7 +86,7 @@ array<Storage, Layout>::transpose_inplace() noexcept
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::permute(span<std::size_t> order) const
 {
@@ -103,7 +103,7 @@ array<Storage, Layout>::permute_inplace(span<std::size_t> order)
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
@@ -120,7 +120,7 @@ array<Storage, Layout>::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::squeeze() const
 {
@@ -137,7 +137,7 @@ array<Storage, Layout>::squeeze_inplace() noexcept
 }
 
 template <typename Storage, typename Layout>
-inline
+XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::ravel() const
 {

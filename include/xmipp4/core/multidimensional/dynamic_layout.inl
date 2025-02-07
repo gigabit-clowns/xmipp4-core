@@ -84,7 +84,7 @@ dynamic_layout::dynamic_layout(const axis_descriptor *axes,
     update_flags();
 }
 
-inline
+XMIPP4_NODISCARD inline
 std::size_t dynamic_layout::get_rank() const noexcept
 {
     return m_axes.size();
@@ -102,13 +102,13 @@ bool dynamic_layout::get_axis(std::size_t index,
     return result;
 }
 
-inline
+XMIPP4_NODISCARD inline
 std::ptrdiff_t dynamic_layout::get_offset() const noexcept
 {
     return m_offset;
 }
 
-inline
+XMIPP4_NODISCARD inline
 layout_flags dynamic_layout::get_flags() const noexcept
 {
     return m_flags;
@@ -116,7 +116,7 @@ layout_flags dynamic_layout::get_flags() const noexcept
 
 
 
-inline
+XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::transpose() const
 {
     dynamic_layout result = *this;
@@ -132,6 +132,7 @@ dynamic_layout& dynamic_layout::transpose_inplace() noexcept
     return *this;
 }
 
+XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
 {
     dynamic_layout result = *this;
@@ -139,6 +140,7 @@ dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
     return result;
 }
 
+inline
 dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
 {
     check_axis_permutation(order.begin(), order.end(), m_axes.size());
@@ -155,6 +157,7 @@ dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
     return *this;
 }
 
+XMIPP4_NODISCARD inline
 dynamic_layout 
 dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
@@ -163,6 +166,7 @@ dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
     return result;
 }
 
+inline
 dynamic_layout& 
 dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
 {
@@ -180,7 +184,7 @@ dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
     return *this;
 }
 
-inline
+XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::squeeze() const
 {
     dynamic_layout result = *this;
@@ -199,7 +203,7 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
     return *this;
 }
 
-inline
+XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::ravel() const
 {
     dynamic_layout result = *this;

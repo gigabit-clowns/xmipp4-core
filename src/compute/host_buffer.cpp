@@ -39,6 +39,39 @@ namespace xmipp4
 namespace compute
 {
 
+template <typename DstBuffer, typename SrcBuffer>
+static
+std::shared_ptr<DstBuffer> 
+get_device_accessible_alias_impl(const std::shared_ptr<SrcBuffer> &buffer) noexcept
+{
+    std::shared_ptr<DstBuffer> result;
+
+    if (buffer)
+    {
+        auto *alias = buffer->get_device_accessible_alias();
+        if (alias)
+        {
+            result = std::shared_ptr<DstBuffer>(buffer, alias);
+        }
+    }
+
+    return result;
+}
+
+
+
+std::shared_ptr<device_buffer> 
+get_device_accessible_alias(const std::shared_ptr<host_buffer> &buffer) noexcept
+{
+    return get_device_accessible_alias_impl<device_buffer>(buffer);
+}
+
+std::shared_ptr<const device_buffer> 
+get_device_accessible_alias(const std::shared_ptr<const host_buffer> &buffer) noexcept
+{
+    return get_device_accessible_alias_impl<const device_buffer>(buffer);
+}
+
 void copy(const host_buffer &src_buffer, host_buffer &dst_buffer)
 {
     const auto count = require_same_buffer_size(

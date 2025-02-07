@@ -31,35 +31,63 @@
 
 #include <vector>
 
+#include "mock/mock_host_buffer.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <trompeloeil.hpp>
-
 
 using namespace xmipp4;
 using namespace xmipp4::compute;
 
-class mock_host_buffer final
-    : public host_buffer
+TEST_CASE( "get_device_accessible_alias should return null when null is provided", "[host_buffer]" )
 {
-public:
-    MAKE_MOCK0(get_size, std::size_t (), const noexcept override);
-    MAKE_MOCK0(get_data, void* (), noexcept override);
-    MAKE_CONST_MOCK0(get_data, const void* (), noexcept override);
-    MAKE_MOCK0(get_device_accessible_alias, device_buffer* (), noexcept override);
-    MAKE_CONST_MOCK0(get_device_accessible_alias, const device_buffer* (), noexcept override);
-    MAKE_MOCK1(record_queue, void (device_queue&), override);
+    std::shared_ptr<host_buffer> buffer;
+    REQUIRE( get_device_accessible_alias(buffer) == nullptr );
+    std::shared_ptr<const host_buffer> const_buffer;
+    REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
+}
 
-};
+TEST_CASE( "get_device_accessible_alias should return null when buffer is not aliasable", "[host_buffer]" )
+{
+    auto mock = std::make_shared<mock_host_buffer>();
 
+    REQUIRE_CALL(*mock, get_device_accessible_alias())
+        .RETURN(nullptr)
+        .TIMES(1);
+    std::shared_ptr<host_buffer> buffer = mock;
+    REQUIRE( get_device_accessible_alias(buffer) == nullptr );
 
+    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
+        .RETURN(nullptr)
+        .TIMES(1);
+    std::shared_ptr<const host_buffer> const_buffer = mock;
+    REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
+}
+
+TEST_CASE( "get_device_accessible_alias should return the alias when buffer is aliasable", "[host_buffer]" )
+{
+    auto mock = std::make_shared<mock_host_buffer>();
+    auto *alias = reinterpret_cast<device_buffer*>(std::uintptr_t(0xDEADBEEF)); 
+
+    REQUIRE_CALL(*mock, get_device_accessible_alias())
+        .RETURN(alias)
+        .TIMES(1);
+    std::shared_ptr<host_buffer> buffer = mock;
+    REQUIRE( get_device_accessible_alias(buffer).get() == alias );
+
+    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
+        .RETURN(alias)
+        .TIMES(1);
+    std::shared_ptr<const host_buffer> const_buffer = mock;
+    REQUIRE( get_device_accessible_alias(const_buffer).get() == alias );
+}
 
 TEST_CASE( "copy host buffer", "[host_buffer]" )
 {
     const std::size_t n = 1024;
 
     std::vector<std::uint8_t> src_data(n);
-    const void* src_ptr = src_data.data();
+    const void *src_ptr = src_data.data();
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_size())
         .RETURN(n)
@@ -70,7 +98,7 @@ TEST_CASE( "copy host buffer", "[host_buffer]" )
         .TIMES(1);
 
     std::vector<std::uint8_t> dst_data(n);
-    void* dst_ptr = dst_data.data();
+    void *dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_size())
         .RETURN(n)
@@ -113,7 +141,7 @@ TEST_CASE( "copy host buffer with different size should throw", "[host_buffer]" 
 TEST_CASE( "copy host buffer regions", "[host_buffer]" )
 {
     std::vector<std::uint8_t> src_data(1024);
-    const void* src_ptr = src_data.data();
+    const void *src_ptr = src_data.data();
     mock_host_buffer src_buffer;
     REQUIRE_CALL(src_buffer, get_size())
         .RETURN(1024)
@@ -124,7 +152,7 @@ TEST_CASE( "copy host buffer regions", "[host_buffer]" )
         .TIMES(1);
 
     std::vector<std::uint8_t> dst_data(2048);
-    void* dst_ptr = dst_data.data();
+    void *dst_ptr = dst_data.data();
     mock_host_buffer dst_buffer;
     REQUIRE_CALL(dst_buffer, get_size())
         .RETURN(2048)

@@ -89,9 +89,9 @@ template <typename T>
 XMIPP4_NODISCARD inline
 T* offset_bytes(T* address, std::ptrdiff_t count)
 {
-    auto &value = reinterpret_cast<std::uintptr_t&>(address);
+    auto value = reinterpret_cast<std::uintptr_t>(address);
     value += count;
-    return address;
+    return reinterpret_cast<T*>(value);
 }
 
 } // namespace memory

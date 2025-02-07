@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_layout.hpp
+ * @file array.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines dynamic_layout class
+ * @brief Defines array class
  * @date 2025-02-03
  * 
  */
@@ -32,7 +32,7 @@
 #include <memory>
 #include <cstddef>
 
-#include "axis_descriptor.hpp"
+#include "../span.hpp"
 
 namespace xmipp4 
 {
@@ -54,6 +54,99 @@ public:
     using storage_type = Storage;
     using layout_type = Layout;
 
+    /**
+     * @brief Construct a new array object from components.
+     * 
+     * @param storage The storage used with the new array. 
+     * @param layout The layout of the new array.
+     */
+    array(storage_type storage, layout_type layout);
+
+
+
+    /**
+     * @brief Get the storage for this array.
+     * 
+     * @return const storage_type& Storage of this array.
+     */
+    const storage_type& get_storage() const noexcept;
+
+    /**
+     * @brief Get the layout for this array.
+     * 
+     * @return const layout_type& Layout of this array.
+     */
+    const layout_type& get_layout() const noexcept;
+
+
+
+    /**
+     * @brief Reverse the order of the axes.
+     * 
+     * @return array The resulting layout.
+     */
+    array transpose() const;
+
+    /**
+     * @brief Reverse the order of the axes in-place.
+     * 
+     * @return array& *this
+     */
+    array& transpose_inplace() noexcept;
+
+    /**
+     * @brief Permute the order of the axes.
+     * 
+     * @param order Order acquired by the new layout. Must have the same 
+     * size as the amount of dimensions and it must feature strictly one
+     * instance of each number in [0, rank).
+     * @return array Permuted layout.
+     */
+    array permute(span<std::size_t> order) const;
+
+    /**
+     * @brief Permute the order of the axes in-place.
+     * 
+     * @param order Order acquired by the new layout. Must have the same 
+     * size as the amount of dimensions and it must feature strictly one
+     * instance of each number in [0, rank).
+     * @return array& *this
+     */
+    array& permute_inplace(span<std::size_t> order);
+
+    /**
+     * @brief Swap two axes.
+     * 
+     * @param axis1 Index of the first axis. Must be in [0, rank).
+     * @param axis2 Index of the second axis. Must be in [0, rank).
+     * @return array Permuted layout.
+     */
+    array swap_axes(std::size_t axis1, std::size_t axis2) const;
+
+    /**
+     * @brief Swap two axes.
+     * 
+     * @param axis1 Index of the first axis. Must be in [0, rank).
+     * @param axis2 Index of the second axis. Must be in [0, rank).
+     * @return array& *this
+     */
+    array& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
+
+    /**
+     * @brief Remove insignificant axes of the layout.
+     * 
+     * @return array The resulting layout.
+     */
+    array squeeze() const;
+
+    /**
+     * @brief Remove insignificant axes of the layout in-place.
+     * 
+     * @return array& *this
+     */
+    array& squeeze_inplace() noexcept;
+    
+
 private:
     storage_type m_storage;
     layout_type m_layout;
@@ -62,3 +155,5 @@ private:
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+#include "array.inl"

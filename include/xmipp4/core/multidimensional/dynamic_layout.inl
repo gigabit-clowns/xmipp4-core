@@ -31,6 +31,7 @@
 #include "dynamic_layout.hpp"
 
 #include "strided_layout_utils.hpp"
+#include "checks.hpp"
 
 namespace xmipp4 
 {
@@ -140,12 +141,7 @@ dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
 
 dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
 {
-    if (order.size() != m_axes.size())
-    {
-        throw std::invalid_argument(
-            "order must have the same length as the rank"
-        );
-    }
+    check_axis_permutation(order.begin(), order.end(), m_axes.size());
 
     std::vector<axis_descriptor> tmp;
     tmp.reserve(m_axes.size());
@@ -206,22 +202,7 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
 inline
 void dynamic_layout::update_flags()
 {
-    layout_flags flags;
-
-    flags.set(
-        layout_flag_bits::contiguous, 
-        is_contiguous_layout(m_axes.cbegin(), m_axes.cend())
-    );
-    flags.set(
-        layout_flag_bits::column_major, 
-        is_layout_sorted(m_axes.cbegin(), m_axes.cend())
-    );
-    flags.set(
-        layout_flag_bits::row_major, 
-        is_layout_sorted(m_axes.crbegin(), m_axes.crend())
-    );
-
-    m_flags = flags;
+    m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());
 }
 
 } // namespace multidimensional

@@ -113,6 +113,18 @@ XMIPP4_CONSTEXPR_CPP20
 bool is_layout_sorted(ForwardIt first, ForwardIt last);
 
 /**
+ * @brief Obtain the flags of this layout.
+ * 
+ * @tparam ForwardIt Forward iterator.
+ * @param first Iterator to the first axis of the layout.
+ * @param last Iterator to the past-the-end axis of the layout.
+ * @return layout_flags The flags.
+ */
+template<typename ForwardIt>
+XMIPP4_CONSTEXPR_CPP20 
+layout_flags compute_layout_flags(ForwardIt first, ForwardIt last);
+
+/**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
  * 
  * @tparam ForwardIt Forward iterator.

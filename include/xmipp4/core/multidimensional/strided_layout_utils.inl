@@ -216,6 +216,13 @@ bool is_contiguous_layout(ForwardIt first, ForwardIt last)
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
+layout_flags compute_layout_flags(ForwardIt first, ForwardIt last)
+{
+    // TODO
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
 std::size_t compute_contiguous_axis_strides(ForwardIt first,
                                             ForwardIt last ) noexcept
 {

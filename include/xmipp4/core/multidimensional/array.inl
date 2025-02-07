@@ -126,6 +126,7 @@ array<Storage, Layout>&
 array<Storage, Layout>::squeeze_inplace() noexcept
 {
     m_layout.squeeze_inplace();
+    return *this;
 }
 
 } // namespace multidimensional

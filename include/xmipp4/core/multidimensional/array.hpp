@@ -54,6 +54,8 @@ public:
     using storage_type = Storage;
     using layout_type = Layout;
 
+    array() = default;
+
     /**
      * @brief Construct a new array object from components.
      * 
@@ -61,6 +63,13 @@ public:
      * @param layout The layout of the new array.
      */
     array(storage_type storage, layout_type layout);
+
+    array(const array &other) = default;
+    array(array&& other) = default;
+    ~array() = default;
+
+    array& operator=(const array &other) = default;
+    array& operator=(array&& other) = default;
 
 
 
@@ -79,6 +88,16 @@ public:
     const layout_type& get_layout() const noexcept;
 
 
+
+    /**
+     * @brief Get the rank of the array.
+     * 
+     * The rank of the array is the number of dimensions.
+     * 
+     * @return std::size_t The rank.
+     * 
+     */
+    std::size_t get_rank() const noexcept;
 
     /**
      * @brief Reverse the order of the axes.

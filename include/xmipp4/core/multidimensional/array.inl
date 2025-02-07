@@ -63,6 +63,13 @@ array<Storage, Layout>::get_layout() const noexcept
 
 template <typename Storage, typename Layout>
 inline
+std::size_t array<Storage, Layout>::get_rank() const noexcept
+{
+    return m_layout.get_rank();
+}
+
+template <typename Storage, typename Layout>
+inline
 array<Storage, Layout> 
 array<Storage, Layout>::transpose() const
 {

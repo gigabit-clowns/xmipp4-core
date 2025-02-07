@@ -200,6 +200,26 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
 }
 
 inline
+dynamic_layout dynamic_layout::ravel() const
+{
+    dynamic_layout result = *this;
+    result.ravel_inplace();
+    return result;
+}
+
+inline
+dynamic_layout& dynamic_layout::ravel_inplace()
+{
+    sort_layout_inplace(m_axes.begin(), m_axes.end());
+    m_axes.erase(
+        ravel_layout_inplace(m_axes.begin(), m_axes.end(), m_offset), 
+        m_axes.end()
+    );
+    update_flags();
+    return *this;
+}
+
+inline
 void dynamic_layout::update_flags()
 {
     m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());

@@ -141,10 +141,10 @@ layout_flags compute_layout_flags(ForwardIt first, ForwardIt last);
  * 
  */
 template<typename ForwardIt, typename OutputIt>
-XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from, 
-                                            ForwardIt last_from,
-                                            OutputIt first_to,
-                                            std::ptrdiff_t &offset );
+XMIPP4_CONSTEXPR_CPP20 OutputIt ravel_layout(ForwardIt first_from, 
+                                             ForwardIt last_from,
+                                             OutputIt first_to,
+                                             std::ptrdiff_t &offset );
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
@@ -153,7 +153,7 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
  * past-the-end iterator is returned. Items contained between the new end 
  * and the previous end should be erased.
  * 
- * @see pack_layout
+ * @see ravel_layout
  * @tparam ForwardIt Forward iterator.
  * @tparam OrderTag Order tag.
  * @param first Iterator to the first input axis.
@@ -167,9 +167,9 @@ XMIPP4_CONSTEXPR_CPP20 OutputIt pack_layout(ForwardIt first_from,
  * 
  */
 template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt pack_layout_inplace(ForwardIt first, 
-                                                     ForwardIt last,
-                                                     std::ptrdiff_t &offset );
+XMIPP4_CONSTEXPR_CPP20 ForwardIt ravel_layout_inplace(ForwardIt first, 
+                                                      ForwardIt last,
+                                                      std::ptrdiff_t &offset );
 
 /**
  * @brief Check if the layout is contiguous.

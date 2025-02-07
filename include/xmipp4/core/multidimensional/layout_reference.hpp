@@ -35,6 +35,7 @@
 #include "layout_flags.hpp"
 #include "../slice.hpp"
 #include "../span.hpp"
+#include "../platform/attributes.hpp"
 
 namespace xmipp4 
 {
@@ -81,6 +82,7 @@ public:
      * @return std::size_t The rank.
      * 
      */
+    XMIPP4_NODISCARD
     std::size_t get_rank() const noexcept;
 
     /**
@@ -99,6 +101,7 @@ public:
      * 
      * @return std::size_t The offset.
      */
+    XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
     /**
@@ -106,6 +109,7 @@ public:
      * 
      * @return layout_flags The flags.
      */
+    XMIPP4_NODISCARD
     layout_flags get_flags() const noexcept;
 
 
@@ -115,6 +119,7 @@ public:
      * 
      * @return layout_reference The resulting layout.
      */
+    XMIPP4_NODISCARD
     layout_reference transpose() const;
 
     /**
@@ -132,6 +137,7 @@ public:
      * instance of each number in [0, rank).
      * @return layout_reference Permuted layout.
      */
+    XMIPP4_NODISCARD
     layout_reference permute(span<std::size_t> order) const;
 
     /**
@@ -151,6 +157,7 @@ public:
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return layout_reference Permuted layout.
      */
+    XMIPP4_NODISCARD
     layout_reference swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
@@ -167,6 +174,7 @@ public:
      * 
      * @return layout_reference The resulting layout.
      */
+    XMIPP4_NODISCARD
     layout_reference squeeze() const;
 
     /**
@@ -175,6 +183,21 @@ public:
      * @return layout_reference& *this
      */
     layout_reference& squeeze_inplace() noexcept;
+
+    /**
+     * @brief Merge contiguous axes.
+     * 
+     * @return layout_reference Raveled layout.
+     */
+    XMIPP4_NODISCARD
+    layout_reference ravel() const;
+
+    /**
+     * @brief Merge contiguous axes in-place.
+     * 
+     * @return layout_reference& Raveled layout.
+     */
+    layout_reference& ravel_inplace();
 
 private:
     std::shared_ptr<layout_type> m_layout;

@@ -139,10 +139,10 @@ namespace detail
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt pack_layout_one(ForwardIt first, 
-                          ForwardIt last,
-                          axis_descriptor &packed,
-                          std::ptrdiff_t &offset ) noexcept
+ForwardIt ravel_layout_one(ForwardIt first, 
+                           ForwardIt last,
+                           axis_descriptor &ravelled,
+                           std::ptrdiff_t &offset ) noexcept
 {
     std::size_t extent = first->get_extent();
     offset -= get_reverse_axis_offset(*first);
@@ -159,7 +159,7 @@ ForwardIt pack_layout_one(ForwardIt first,
     }
 
     const auto stride = prev->get_unsigned_stride();
-    packed = axis_descriptor(extent, stride);
+    ravelled = axis_descriptor(extent, stride);
     return first;
 }
 
@@ -167,26 +167,26 @@ ForwardIt pack_layout_one(ForwardIt first,
 
 template<typename ForwardIt, typename OutputIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-OutputIt pack_layout(ForwardIt first_from, 
-                     ForwardIt last_from,
-                     OutputIt first_to,
-                     std::ptrdiff_t &offset )
+OutputIt ravel_layout(ForwardIt first_from, 
+                      ForwardIt last_from,
+                      OutputIt first_to,
+                      std::ptrdiff_t &offset )
 {
     // Start at a significant axis
     first_from = find_first_significant_axis(first_from, last_from);
 
-    // Pack contiguous runs of axes
+    // Ravel contiguous runs of axes
     while(first_from != last_from)
     {
-        // Pack a single run of the layout
-        axis_descriptor packed;
-        first_from = detail::pack_layout_one(
+        // Ravel a single run of the layout
+        axis_descriptor ravelled;
+        first_from = detail::ravel_layout_one(
             first_from, last_from, 
-            packed, offset
+            ravelled, offset
         );
 
         // Write a new axis to the output
-        *first_to = packed;
+        *first_to = ravelled;
         ++first_to;
     }
 
@@ -195,13 +195,13 @@ OutputIt pack_layout(ForwardIt first_from,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt pack_layout_inplace(ForwardIt first, 
+ForwardIt ravel_layout_inplace(ForwardIt first, 
                               ForwardIt last,
                               std::ptrdiff_t &offset )
 {
     // It is safe to call the non-inplace version,
     // as it will write to already read positions.
-    return pack_layout(first, last, first, offset);
+    return ravel_layout(first, last, first, offset);
 }
 
 template<typename ForwardIt>

@@ -136,5 +136,22 @@ array<Storage, Layout>::squeeze_inplace() noexcept
     return *this;
 }
 
+template <typename Storage, typename Layout>
+inline
+array<Storage, Layout> 
+array<Storage, Layout>::ravel() const
+{
+    return array(m_storage, m_layout.ravel());
+}
+
+template <typename Storage, typename Layout>
+inline
+array<Storage, Layout>& 
+array<Storage, Layout>::ravel_inplace() noexcept
+{
+    m_layout.ravel_inplace();
+    return *this;
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

@@ -35,6 +35,7 @@
 #include "layout_flags.hpp"
 #include "../slice.hpp"
 #include "../span.hpp"
+#include "../platform/attributes.hpp"
 
 namespace xmipp4 
 {
@@ -105,6 +106,7 @@ public:
      * @return std::size_t The rank.
      * 
      */
+    XMIPP4_NODISCARD
     std::size_t get_rank() const noexcept;
 
     /**
@@ -123,6 +125,7 @@ public:
      * 
      * @return std::size_t The offset.
      */
+    XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
     /**
@@ -130,6 +133,7 @@ public:
      * 
      * @return layout_flags The flags.
      */
+    XMIPP4_NODISCARD
     layout_flags get_flags() const noexcept;
 
 
@@ -139,6 +143,7 @@ public:
      * 
      * @return dynamic_layout The resulting layout.
      */
+    XMIPP4_NODISCARD
     dynamic_layout transpose() const;
 
     /**
@@ -156,6 +161,7 @@ public:
      * instance of each number in [0, rank).
      * @return dynamic_layout Permuted layout.
      */
+    XMIPP4_NODISCARD
     dynamic_layout permute(span<std::size_t> order) const;
 
     /**
@@ -175,6 +181,7 @@ public:
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return dynamic_layout Permuted layout.
      */
+    XMIPP4_NODISCARD
     dynamic_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
@@ -191,6 +198,7 @@ public:
      * 
      * @return dynamic_layout The resulting layout.
      */
+    XMIPP4_NODISCARD
     dynamic_layout squeeze() const;
 
     /**
@@ -199,6 +207,21 @@ public:
      * @return dynamic_layout& *this
      */
     dynamic_layout& squeeze_inplace() noexcept;
+
+    /**
+     * @brief Merge contiguous axes.
+     * 
+     * @return dynamic_layout Raveled layout.
+     */
+    XMIPP4_NODISCARD
+    dynamic_layout ravel() const;
+
+    /**
+     * @brief Merge contiguous axes in-place.
+     * 
+     * @return dynamic_layout& Raveled layout.
+     */
+    dynamic_layout& ravel_inplace();
 
 private:
     std::vector<axis_descriptor> m_axes;

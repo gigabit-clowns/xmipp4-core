@@ -109,20 +109,6 @@ layout_reference<T>& layout_reference<T>::transpose_inplace() noexcept
 
 template <typename T>
 inline
-layout_reference<T> layout_reference<T>::squeeze() const
-{
-    return apply(std::mem_fn(&layout_type::squeeze));
-}
-
-template <typename T>
-inline
-layout_reference<T>& layout_reference<T>::squeeze_inplace() noexcept
-{
-    return apply_inplace(std::mem_fn(&layout_type::squeeze_inplace));
-}
-
-template <typename T>
-inline
 layout_reference<T> layout_reference<T>::permute(span<std::size_t> order) const
 {
     if (!m_layout && !order.empty())
@@ -173,6 +159,36 @@ layout_reference<T>::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
         std::mem_fn(&layout_type::swap_axes_inplace, axis1, axis2)
     );
 }
+
+template <typename T>
+inline
+layout_reference<T> layout_reference<T>::squeeze() const
+{
+    return apply(std::mem_fn(&layout_type::squeeze));
+}
+
+template <typename T>
+inline
+layout_reference<T>& layout_reference<T>::squeeze_inplace() noexcept
+{
+    return apply_inplace(std::mem_fn(&layout_type::squeeze_inplace));
+}
+
+template <typename T>
+inline
+layout_reference<T> layout_reference<T>::ravel() const
+{
+    return apply(std::mem_fn(&layout_type::ravel));
+}
+
+template <typename T>
+inline
+layout_reference<T>& layout_reference<T>::ravel_inplace() noexcept
+{
+    return apply_inplace(std::mem_fn(&layout_type::ravel_inplace));
+}
+
+
 
 template <typename T>
 inline

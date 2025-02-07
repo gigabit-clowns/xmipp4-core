@@ -145,7 +145,6 @@ public:
      * @return array& *this
      */
     array& squeeze_inplace() noexcept;
-    
 
 private:
     storage_type m_storage;

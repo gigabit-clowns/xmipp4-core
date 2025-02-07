@@ -38,9 +38,12 @@ namespace multidimensional
 template <typename Storage, typename Layout>
 inline
 array<Storage, Layout>::array(storage_type storage, layout_type layout)
+    : m_storage(std::move(storage))
+    , m_layout(std::move(layout))
 {
-
 }
+
+
 
 template <typename Storage, typename Layout>
 inline

@@ -212,6 +212,12 @@ public:
      * @brief Merge contiguous axes.
      * 
      * @return dynamic_layout Raveled layout.
+     * 
+     * @note Unlike numpy's ravel, this function is not guaranteed to produce
+     * a single axis. Instead, it reduces the layout to its most compact form.
+     * For column major contiguous layouts, this function produces the same
+     * output as numpy's ravel function.
+     * 
      */
     XMIPP4_NODISCARD
     dynamic_layout ravel() const;
@@ -220,6 +226,12 @@ public:
      * @brief Merge contiguous axes in-place.
      * 
      * @return dynamic_layout& Raveled layout.
+     * 
+     * @note Unlike numpy's ravel, this function is not guaranteed to produce
+     * a single axis. Instead, it reduces the layout to its most compact form.
+     * For column major contiguous layouts, this function produces the same
+     * output as numpy's ravel function.
+     * 
      */
     dynamic_layout& ravel_inplace();
 

@@ -217,6 +217,7 @@ public:
      * a single axis. Instead, it reduces the layout to its most compact form.
      * For column major contiguous layouts, this function produces the same
      * output as numpy's ravel function.
+     * @note Similarly to squeeze, non-significant axes are removed.
      * 
      */
     XMIPP4_NODISCARD
@@ -231,6 +232,7 @@ public:
      * a single axis. Instead, it reduces the layout to its most compact form.
      * For column major contiguous layouts, this function produces the same
      * output as numpy's ravel function.
+     * @note Similarly to squeeze, non-significant axes are removed.
      * 
      */
     dynamic_layout& ravel_inplace();

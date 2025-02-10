@@ -32,6 +32,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR 
@@ -748,4 +750,5 @@ std::size_t compute_slice_pivot(std::size_t start,
     return (step < 0 && start > 0) ? (start-1) : start;
 }
 
+} // namespace multidimensional
 } // namespace xmipp4

@@ -37,6 +37,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 /**
  * @brief Class representing an slice of an array.
@@ -587,6 +589,7 @@ XMIPP4_CONSTEXPR
 std::size_t compute_slice_pivot(std::size_t start, 
                                 std::ptrdiff_t step ) noexcept;
 
+} // namespace multidimensional
 } // namespace xmipp4
 
 #include "slice.inl"

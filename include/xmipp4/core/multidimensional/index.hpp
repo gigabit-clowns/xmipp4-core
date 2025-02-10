@@ -25,6 +25,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 template <typename T, typename=void>
 struct is_index
@@ -60,6 +62,7 @@ class subscript_traits<T, typename std::enable_if<is_index<T>::value>::type>
 template <typename I>
 std::size_t sanitize_index(I index, std::size_t length);
 
+} // namespace multidimensional
 } // namespace xmipp4
 
 #include "index.inl"

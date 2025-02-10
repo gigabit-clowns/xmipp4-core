@@ -27,6 +27,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 namespace detail
 {
@@ -87,4 +89,5 @@ std::size_t sanitize_index(I index, std::size_t length)
     return detail::sanitize_index(index, length);
 }
 
+} // namespace multidimensional
 } // namespace xmipp4

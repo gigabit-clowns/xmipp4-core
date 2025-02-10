@@ -20,33 +20,32 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <type_traits>
-#include <cstddef>
+/**
+ * @file subscript_tags.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation of subscript_tags.hpp
+ * @date 2025-02-03
+ * 
+ */
+
+#include "subscript_tags.hpp"
 
 namespace xmipp4 
 {
-
-template <typename T, typename=void>
-struct is_index
-	: std::false_type
+namespace multidimensional
 {
-};
 
-template <typename I>
-struct is_index<I, typename std::enable_if<std::is_integral<I>::value>::type>
-	: std::true_type
+XMIPP4_INLINE_CONSTEXPR
+ellipsis_tag ellipsis() noexcept
 {
-};
+    return ellipsis_tag();
+}
 
-template <typename I, I value>
-struct is_index<std::integral_constant<I, value>>
-	: std::true_type
+XMIPP4_INLINE_CONSTEXPR
+new_axis_tag new_axis() noexcept
 {
-};
+    return new_axis_tag();
+}
 
-template <typename I>
-std::size_t sanitize_index(I index, std::size_t length);
-
+} // namespace multidimensional
 } // namespace xmipp4
-
-#include "index.inl"

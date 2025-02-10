@@ -161,6 +161,16 @@ private:
 
 };
 
+
+
+/**
+ * @brief Specialization of slice where all its components are dynamic.
+ * 
+ */
+using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
+
+
+
 template <typename Start1, typename Stop1, typename Step1, 
           typename Start2, typename Stop2, typename Step2>
 XMIPP4_CONSTEXPR bool
@@ -192,11 +202,14 @@ struct is_slice<slice<Start, Stop, Step>>
 
 
 
-/**
- * @brief Specialization of slice where all its components are dynamic.
- * 
- */
-using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
+template <typename T, typename = void>
+class subscript_traits;
+
+template <typename T>
+class subscript_traits<T, typename std::enable_if<is_slice<T>::value>::type>
+{
+
+};
 
 
 

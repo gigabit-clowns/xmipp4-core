@@ -50,7 +50,7 @@ dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
 template <typename I, typename = typename std::enable_if<is_index<I>::value::type>>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(I index) noexcept
-    : m_data(index, 0, 0)
+    : m_data{index}
     , m_type(subscript_type::index)
 {
 }
@@ -58,7 +58,7 @@ dynamic_subscript::dynamic_subscript(I index) noexcept
 template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept
-    : m_data(slice)
+    : m_data{slice.get_start(), slice.get_stop(), slice.get_step()}
     , m_type(subscript_type::slice)
 {
 }
@@ -73,13 +73,13 @@ dynamic_subscript::get_subscript_type() const noexcept
 XMIPP4_INLINE_CONSTEXPR
 std::ptrdiff_t dynamic_subscript::get_index() const noexcept
 {
-    return m_data.get_start();
+    return m_data[0];
 }
 
 XMIPP4_INLINE_CONSTEXPR
-const dynamic_slice& dynamic_subscript::get_slice() const noexcept
+dynamic_slice dynamic_subscript::get_slice() const noexcept
 {
-    return m_data;
+    return dynamic_slice(m_data[0], m_data[1], m_data[2]);
 }
 
 } // namespace multidimensional

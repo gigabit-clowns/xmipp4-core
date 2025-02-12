@@ -28,6 +28,7 @@
  * 
  */
 
+#include <array>
 #include <cstddef>
 
 #include "subscript_tags.hpp"
@@ -137,10 +138,12 @@ public:
      * @return const dynamic_slice& The slice held by this object.
      */
     XMIPP4_CONSTEXPR
-    const dynamic_slice& get_slice() const noexcept;
+    dynamic_slice get_slice() const noexcept;
 
 private:
-    dynamic_slice m_data; // When holding index, start value is used.
+    using storage_type = std::array<std::ptrdiff_t, 3>;
+
+    storage_type m_data; // When holding index, first value is used.
     subscript_type m_type;
 
 };

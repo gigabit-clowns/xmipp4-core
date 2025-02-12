@@ -50,16 +50,16 @@ dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
 template <typename I, typename = typename std::enable_if<is_index<I>::value::type>>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(I index) noexcept
-    : m_type(subscript_type::index)
-    , m_data(index, 0, 0)
+    : m_data(index, 0, 0)
+    , m_type(subscript_type::index)
 {
 }
 
 template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept
-    : m_type(subscript_type::slice)
-    , m_data(slice)
+    : m_data(slice)
+    , m_type(subscript_type::slice)
 {
 }
 

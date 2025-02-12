@@ -140,8 +140,8 @@ public:
     const dynamic_slice& get_slice() const noexcept;
 
 private:
-    subscript_type m_type;
     dynamic_slice m_data; // When holding index, start value is used.
+    subscript_type m_type;
 
 };
 

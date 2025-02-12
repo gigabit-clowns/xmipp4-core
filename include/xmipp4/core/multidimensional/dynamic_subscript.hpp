@@ -150,6 +150,21 @@ private:
 
 
 
+/**
+ * @brief Invoke the provided function with the value held by the dynamic 
+ * subscript
+ * 
+ * @tparam F Function type.
+ * @param func The function to be invoked. Must be callable with the following 
+ * argument types:
+ * - ellipsis_tag
+ * - new_axis_tag
+ * - std::ptrdiff_t
+ * - dynamic_slice
+ * 
+ * @param subscript The subscript to be evaluated.
+ * @return auto result of calling func with the evaluated argument.
+ */
 template <typename F>
 XMIPP4_CONSTEXPR
 auto visit(F&& func, const dynamic_subscript &subscript);

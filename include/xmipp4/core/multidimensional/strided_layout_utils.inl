@@ -219,6 +219,7 @@ XMIPP4_INLINE_CONSTEXPR_CPP20
 layout_flags compute_layout_flags(ForwardIt first, ForwardIt last)
 {
     // TODO
+    return {};
 }
 
 template<typename ForwardIt>

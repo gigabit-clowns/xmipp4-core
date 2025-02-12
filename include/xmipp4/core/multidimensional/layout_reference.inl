@@ -83,10 +83,11 @@ template <typename T>
 XMIPP4_NODISCARD inline
 layout_flags layout_reference<T>::get_flags() const noexcept
 {
-    XMIPP4_CONST_CONSTEXPR auto empty_flags = 
-        layout_flag_bits::contiguous |
+    /*XMIPP4_CONST_CONSTEXPR auto empty_flags = 
+        layout_flags(layout_flag_bits::contiguous) |
         layout_flag_bits::column_major |
-        layout_flag_bits::row_major ;
+        layout_flag_bits::row_major ; */
+    XMIPP4_CONST_CONSTEXPR layout_flags empty_flags; // TODO remove
 
     return m_layout ? m_layout->get_flags() : empty_flags;
 }

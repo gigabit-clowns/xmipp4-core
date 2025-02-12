@@ -47,7 +47,7 @@ dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
 {
 }
 
-template <typename I, typename = typename std::enable_if<is_index<I>::value::type>>
+template <typename I, typename>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(I index) noexcept
     : m_data{index}

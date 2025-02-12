@@ -48,17 +48,6 @@ struct is_index<std::integral_constant<I, value>>
 
 
 
-template <typename T, typename = void>
-class subscript_traits;
-
-template <typename T>
-class subscript_traits<T, typename std::enable_if<is_index<T>::value>::type>
-{
-
-};
-
-
-
 template <typename I>
 std::size_t sanitize_index(I index, std::size_t length);
 

@@ -33,7 +33,7 @@
 
 #include "axis_descriptor.hpp"
 #include "layout_flags.hpp"
-#include "../slice.hpp"
+#include "slice.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
 
@@ -197,7 +197,7 @@ public:
      * 
      * @return layout_reference& Raveled layout.
      */
-    layout_reference& ravel_inplace();
+    layout_reference& ravel_inplace() noexcept;
 
 private:
     std::shared_ptr<layout_type> m_layout;

@@ -186,7 +186,7 @@ public:
      * 
      * @return array& Raveled layout.
      */
-    array& ravel_inplace();
+    array& ravel_inplace() noexcept;
 
 private:
     storage_type m_storage;

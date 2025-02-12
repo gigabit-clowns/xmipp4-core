@@ -184,7 +184,7 @@ std::ostream& operator<<(std::ostream& os, const slice<Start, Stop, Step> &s);
 
 
 
-template <typename T, typename=void>
+template <typename T>
 struct is_slice
     : std::false_type
 {
@@ -194,17 +194,6 @@ template <typename Start, typename Stop, typename Step>
 struct is_slice<slice<Start, Stop, Step>>
     : std::true_type
 {
-};
-
-
-
-template <typename T, typename = void>
-class subscript_traits;
-
-template <typename T>
-class subscript_traits<T, typename std::enable_if<is_slice<T>::value>::type>
-{
-
 };
 
 

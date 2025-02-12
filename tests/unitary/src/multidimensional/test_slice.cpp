@@ -28,12 +28,12 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/slice.hpp>
+#include <xmipp4/core/miltidimensional/slice.hpp>
 
 #include <type_traits>
 #include <sstream>
 
-using namespace xmipp4;
+using namespace xmipp4::multidimensional;
 
 
 TEST_CASE( "construct slice with stop value", "[slice]" ) 

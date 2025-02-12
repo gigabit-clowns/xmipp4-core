@@ -72,17 +72,17 @@ new_axis_tag new_axis() noexcept;
 
 
 
-template <typename T, typename = void>
+template <typename T>
 class subscript_traits;
 
 template <>
-class subscript_traits<ellipsis_tag, void>
+class subscript_traits<ellipsis_tag>
 {
 
 };
 
 template <>
-class subscript_traits<new_axis_tag, void>
+class subscript_traits<new_axis_tag>
 {
 
 };

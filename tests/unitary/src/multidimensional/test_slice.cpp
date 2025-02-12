@@ -28,7 +28,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/miltidimensional/slice.hpp>
+#include <xmipp4/core/multidimensional/slice.hpp>
 
 #include <type_traits>
 #include <sstream>

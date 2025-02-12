@@ -28,8 +28,8 @@
  * 
  */
 
-#include "platform/constexpr.hpp"
-#include "platform/attributes.hpp"
+#include "../platform/constexpr.hpp"
+#include "../platform/attributes.hpp"
 
 #include <ostream>
 #include <type_traits>
@@ -164,12 +164,6 @@ private:
 };
 
 
-
-/**
- * @brief Specialization of slice where all its components are dynamic.
- * 
- */
-using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
 
 
 
@@ -419,6 +413,14 @@ std::ostream& operator<<(std::ostream& os, reversed_tag);
 
 
 
+
+
+/**
+ * @brief Specialization of slice where all its components are dynamic.
+ * 
+ */
+using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
+
 /**
  * @brief Special case of slice representing all elements
  * of an axis
@@ -427,9 +429,9 @@ std::ostream& operator<<(std::ostream& os, reversed_tag);
 using all_slice = slice<begin_tag, end_tag, adjacent_tag>;
 
 /**
- * @brief Construct an all_tag
+ * @brief Construct an all_slice
  * 
- * @return An all_tag
+ * @return An all_slice
  */
 XMIPP4_CONSTEXPR all_slice all() noexcept;
 

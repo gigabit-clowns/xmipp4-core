@@ -28,7 +28,7 @@
 
 #include "axis_descriptor.hpp"
 
-#include "../index.hpp"
+#include "index.hpp"
 #include "../math/abs.hpp"
 
 namespace xmipp4

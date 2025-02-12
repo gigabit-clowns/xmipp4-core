@@ -28,7 +28,7 @@
  * 
  */
 
-#include "../slice.hpp"
+#include "slice.hpp"
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"
 

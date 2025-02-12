@@ -79,7 +79,26 @@ std::ptrdiff_t dynamic_subscript::get_index() const noexcept
 XMIPP4_INLINE_CONSTEXPR
 dynamic_slice dynamic_subscript::get_slice() const noexcept
 {
-    return dynamic_slice(m_data[0], m_data[1], m_data[2]);
+    return make_slice(m_data[0], m_data[1], m_data[2]);
+}
+
+
+
+template <typename F>
+XMIPP4_INLINE_CONSTEXPR
+auto visit(F&& func, const dynamic_subscript &subscript)
+{
+    switch (subscript.get_subscript_type())
+    {
+    case dynamic_subscript::subscript_type::ellipsis:
+        return std::forward<F>(func)(ellipsis());
+    case dynamic_subscript::subscript_type::new_axis:
+        return std::forward<F>(func)(new_axis());
+    case dynamic_subscript::subscript_type::index:
+        return std::forward<F>(func)(subscript.get_index());
+    case dynamic_subscript::subscript_type::slice:
+        return std::forward<F>(func)(subscript.get_slice());
+    }
 }
 
 } // namespace multidimensional

@@ -148,6 +148,12 @@ private:
 
 };
 
+
+
+template <typename F>
+XMIPP4_CONSTEXPR
+auto visit(F&& func, const dynamic_subscript &subscript);
+
 } // namespace multidimensional
 } // namespace xmipp4
 

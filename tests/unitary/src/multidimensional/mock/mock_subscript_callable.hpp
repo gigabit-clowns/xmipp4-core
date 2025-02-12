@@ -21,57 +21,38 @@
  ***************************************************************************/
 
 /**
- * @file subscript_tags.inl
+ * @file mock_subscript_callable.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of subscript_tags.hpp
- * @date 2025-02-03
- * 
+ * @brief Mock for a subscript callable function.
+ * @date 2025-02-11
  */
 
-#include "subscript_tags.hpp"
+#include <xmipp4/core/multidimensional/subscript_tags.hpp>
+#include <xmipp4/core/multidimensional/index.hpp>
+#include <xmipp4/core/multidimensional/slice.hpp>
 
-namespace xmipp4 
+#include <trompeloeil.hpp>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR
-ellipsis_tag ellipsis() noexcept
+class mock_subscript_callable
 {
-    return ellipsis_tag();
-}
+public:
+    MAKE_MOCK1(function_call, void(ellipsis_tag), const);
+    MAKE_MOCK1(function_call, void(new_axis_tag), const);
+    MAKE_MOCK1(function_call, void(std::ptrdiff_t), const);
+    MAKE_MOCK1(function_call, void(dynamic_slice), const);
 
-XMIPP4_INLINE_CONSTEXPR
-bool operator==(ellipsis_tag, ellipsis_tag) noexcept
-{
-    return true;
-}
+    template <typename T>
+    void operator()(T &&arg) const
+    {
+        function_call(std::forward<T>(arg));
+    }
 
-XMIPP4_INLINE_CONSTEXPR
-bool operator!=(ellipsis_tag, ellipsis_tag) noexcept
-{
-    return false;
-}
-
-
-
-XMIPP4_INLINE_CONSTEXPR
-new_axis_tag new_axis() noexcept
-{
-    return new_axis_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool operator==(new_axis_tag, new_axis_tag) noexcept
-{
-    return true;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool operator!=(new_axis_tag, new_axis_tag) noexcept
-{
-    return false;
-}
+};
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -47,6 +47,11 @@ namespace multidimensional
  */
 struct ellipsis_tag {};
 
+XMIPP4_CONSTEXPR
+bool operator==(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
+XMIPP4_CONSTEXPR
+bool operator!=(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
+
 /**
  * @brief Construct a ellipsis_tag.
  * 
@@ -55,6 +60,8 @@ struct ellipsis_tag {};
 XMIPP4_CONSTEXPR
 ellipsis_tag ellipsis() noexcept;
 
+
+
 /**
  * @brief Tag to express the creation a new axis of size one.
  * NumPy equivalent of numpy.newaxis() or "None".
@@ -62,11 +69,11 @@ ellipsis_tag ellipsis() noexcept;
  */
 struct new_axis_tag {};
 
-/**
- * @brief Construct a new_axis_tag.
- * 
- * @return new_axis_tag Newly constructed tag.
- */
+XMIPP4_CONSTEXPR
+bool operator==(new_axis_tag, new_axis_tag) noexcept;
+XMIPP4_CONSTEXPR
+bool operator!=(new_axis_tag, new_axis_tag) noexcept;
+
 XMIPP4_CONSTEXPR
 new_axis_tag new_axis() noexcept;
 

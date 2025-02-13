@@ -53,7 +53,7 @@ XMIPP4_CONSTEXPR
 bool operator!=(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
 
 /**
- * @brief Construct a ellipsis_tag.
+ * @brief Construct an ellipsis_tag.
  * 
  * @return ellipsis_tag Newly constructed tag.
  */
@@ -74,6 +74,11 @@ bool operator==(new_axis_tag, new_axis_tag) noexcept;
 XMIPP4_CONSTEXPR
 bool operator!=(new_axis_tag, new_axis_tag) noexcept;
 
+/**
+ * @brief Construct a new_axis_tag.
+ * 
+ * @return new_axis_tag Newly constructed tag.
+ */
 XMIPP4_CONSTEXPR
 new_axis_tag new_axis() noexcept;
 

@@ -567,10 +567,10 @@ std::size_t compute_slice_size(std::size_t start,
  * must be provided. Otherwise behaviour is undefined.
  * 
  * The pivot point is the element referred by the start index. When 
- * the step of the slice is positive, this is the start value itself. 
+ * the step of the slice is positive, the pivot is the start value itself. 
  * When the step is negative, this is the start value minus one, as 
  * this index is exclusive. However, if the start value is zero, it is 
- * not decremented (in this case, the slice has size zero).
+ * not decremented (in this case, the slice must size zero).
  * 
  * @param start Start index of the slice.
  * @param step Step of the slice.

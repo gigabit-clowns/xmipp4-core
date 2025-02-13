@@ -470,8 +470,8 @@ XMIPP4_CONSTEXPR odd_slice odd() noexcept;
  * @return slice<begin_tag, Stop, adjacent_tag>
  */
 template <typename Stop>
-XMIPP4_CONSTEXPR slice<begin_tag, Stop, adjacent_tag>
-make_slice(Stop stop) noexcept;
+XMIPP4_CONSTEXPR 
+slice<begin_tag, Stop, adjacent_tag> make_slice(Stop stop) noexcept;
 
 /**
  * @brief Obtain a slice bounded at the beginning and the end
@@ -483,8 +483,8 @@ make_slice(Stop stop) noexcept;
  * @return slice<Start, Stop, adjacent_tag>
  */
 template <typename Start, typename Stop>
-XMIPP4_CONSTEXPR slice<Start, Stop, adjacent_tag>
-make_slice(Start start, Stop stop) noexcept;
+XMIPP4_CONSTEXPR 
+slice<Start, Stop, adjacent_tag> make_slice(Start start, Stop stop) noexcept;
 
 /**
  * @brief Create a slice object
@@ -498,8 +498,8 @@ make_slice(Start start, Stop stop) noexcept;
  * @return slice<Start, Stop, Step>
  */
 template <typename Start, typename Stop, typename Step>
-XMIPP4_CONSTEXPR slice<Start, Stop, Step>
-make_slice(Start start, Stop stop, Step step) noexcept;
+XMIPP4_CONSTEXPR 
+slice<Start, Stop, Step> make_slice(Start start, Stop stop, Step step) noexcept;
 
 /**
  * @brief Validates an slice index (start or stop).

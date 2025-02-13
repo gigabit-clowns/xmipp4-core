@@ -42,6 +42,7 @@ namespace multidimensional
 /**
  * @brief Tag to express the consumption of an arbitrary amount 
  * of axes until no slack is left on the right-hand dimensions.
+ * 
  * NumPy equivalent of Ellipsis or "...".
  * 
  */
@@ -64,6 +65,7 @@ ellipsis_tag ellipsis() noexcept;
 
 /**
  * @brief Tag to express the creation a new axis of size one.
+ * 
  * NumPy equivalent of numpy.newaxis() or "None".
  * 
  */

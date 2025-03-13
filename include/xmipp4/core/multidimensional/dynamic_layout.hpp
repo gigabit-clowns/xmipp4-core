@@ -33,7 +33,7 @@
 
 #include "axis_descriptor.hpp"
 #include "layout_flags.hpp"
-#include "../slice.hpp"
+#include "dynamic_subscript.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
 
@@ -110,6 +110,21 @@ public:
     std::size_t get_rank() const noexcept;
 
     /**
+     * @brief Get the axis parameters component wise.
+     * 
+     * @param extents Array of std::size_t-s. May be null. In case it is not, it
+     * must be dereferenceable in [extents, extents+count).
+     * @param strides Array of std::ptrdiff_t-s. May be null. In case it is not, 
+     * it must be dereferenceable in [strides, strides+count).
+     * @param count Element counts of the arrays.
+     * @return std::size_t Number of elements written; min(rank, count).
+     * 
+     */
+    std::size_t get_axes(std::size_t *extents, 
+                         std::ptrdiff_t *strides,
+                         std::size_t count ) const noexcept;
+
+    /**
      * @brief Get the axis parameters for one of the axes.
      * 
      * @param index Index of the axis.
@@ -128,15 +143,24 @@ public:
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
+
+    
     /**
-     * @brief Get the flags for this layout.
+     * @brief Apply a set of dynamic dynamic subscripts to this layout.
      * 
-     * @return layout_flags The flags.
+     * @param subscripts The subscripts.
+     * @return dynamic_layout The resulting layout.
      */
     XMIPP4_NODISCARD
-    layout_flags get_flags() const noexcept;
+    dynamic_layout apply_subscripts(span<dynamic_subscript> subscripts) const;
 
-
+    /**
+     * @brief Apply a set of dynamic dynamic subscripts to this layout in-place.
+     * 
+     * @param subscripts The subscripts.
+     * @return dynamic_layout& The resulting layout.
+     */
+    dynamic_layout& apply_subscripts_inplace(span<dynamic_subscript> subscripts);
 
     /**
      * @brief Reverse the order of the axes.
@@ -209,40 +233,29 @@ public:
     dynamic_layout& squeeze_inplace() noexcept;
 
     /**
-     * @brief Merge contiguous axes.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return dynamic_layout Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
      * 
-     * @note Unlike numpy's ravel, this function is not guaranteed to produce
-     * a single axis. Instead, it reduces the layout to its most compact form.
-     * For column major contiguous layouts, this function produces the same
-     * output as numpy's ravel function.
-     * @note Similarly to squeeze, non-significant axes are removed.
-     * 
+     * @return dynamic_layout The resulting layout.
      */
     XMIPP4_NODISCARD
     dynamic_layout ravel() const;
 
     /**
-     * @brief Merge contiguous axes in-place.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return dynamic_layout& Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
      * 
-     * @note Unlike numpy's ravel, this function is not guaranteed to produce
-     * a single axis. Instead, it reduces the layout to its most compact form.
-     * For column major contiguous layouts, this function produces the same
-     * output as numpy's ravel function.
-     * @note Similarly to squeeze, non-significant axes are removed.
-     * 
+     * @return dynamic_layout& *this
      */
-    dynamic_layout& ravel_inplace();
+    dynamic_layout& ravel_inplace() noexcept;
 
 private:
     std::vector<axis_descriptor> m_axes;
     std::ptrdiff_t m_offset;
-    layout_flags m_flags;
-
-    void update_flags() noexcept;
 
 };
 

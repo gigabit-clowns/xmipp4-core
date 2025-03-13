@@ -40,7 +40,6 @@ const char* to_string(layout_flag_bits flag) noexcept
 {
     switch (flag)
     {
-    case layout_flag_bits::contiguous: return "contiguous";
     case layout_flag_bits::column_major: return "column_major";
     case layout_flag_bits::row_major: return "row_major";
     default: return "";

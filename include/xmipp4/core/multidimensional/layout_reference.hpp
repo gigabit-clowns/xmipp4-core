@@ -32,6 +32,7 @@
 #include <cstddef>
 
 #include "axis_descriptor.hpp"
+#include "dynamic_subscript.hpp"
 #include "layout_flags.hpp"
 #include "slice.hpp"
 #include "../span.hpp"
@@ -104,15 +105,24 @@ public:
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
+
+
     /**
-     * @brief Get the flags for this layout.
+     * @brief Apply a set of dynamic dynamic subscripts to this layout.
      * 
-     * @return layout_flags The flags.
+     * @param subscripts The subscripts.
+     * @return layout_reference The resulting layout.
      */
     XMIPP4_NODISCARD
-    layout_flags get_flags() const noexcept;
+    layout_reference apply_subscripts(span<dynamic_subscript> subscripts) const;
 
-
+    /**
+     * @brief Apply a set of dynamic dynamic subscripts to this layout in-place.
+     * 
+     * @param subscripts The subscripts.
+     * @return layout_reference& The resulting layout.
+     */
+    layout_reference& apply_subscripts_inplace(span<dynamic_subscript> subscripts);
 
     /**
      * @brief Reverse the order of the axes.
@@ -185,17 +195,23 @@ public:
     layout_reference& squeeze_inplace() noexcept;
 
     /**
-     * @brief Merge contiguous axes.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return layout_reference Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
+     * 
+     * @return layout_reference The resulting layout.
      */
     XMIPP4_NODISCARD
     layout_reference ravel() const;
 
     /**
-     * @brief Merge contiguous axes in-place.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return layout_reference& Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
+     * 
+     * @return layout_reference& *this
      */
     layout_reference& ravel_inplace() noexcept;
 

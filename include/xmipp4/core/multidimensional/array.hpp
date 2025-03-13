@@ -32,6 +32,7 @@
 #include <memory>
 #include <cstddef>
 
+#include "dynamic_subscript.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
 
@@ -102,6 +103,23 @@ public:
      */
     XMIPP4_NODISCARD
     std::size_t get_rank() const noexcept;
+    
+    /**
+     * @brief Get the axis parameters component wise.
+     * 
+     * @param extents Array of std::size_t-s. May be null. In case it is not, it
+     * must be dereferenceable in [extents, extents+count).
+     * @param strides Array of std::ptrdiff_t-s. May be null. In case it is not, 
+     * it must be dereferenceable in [strides, strides+count).
+     * @param count Element counts of the arrays.
+     * @return std::size_t Number of elements written; min(rank, count).
+     * 
+     */
+    std::size_t get_axes(std::size_t *extents, 
+                         std::ptrdiff_t *strides,
+                         std::size_t count ) const noexcept;
+
+
 
     /**
      * @brief Reverse the order of the axes.
@@ -174,17 +192,23 @@ public:
     array& squeeze_inplace() noexcept;
 
     /**
-     * @brief Merge contiguous axes.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return array Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
+     * 
+     * @return array The resulting layout.
      */
     XMIPP4_NODISCARD
     array ravel() const;
 
     /**
-     * @brief Merge contiguous axes in-place.
+     * @brief Reduce the rank of the layout as much as possible by combining
+     * contiguous axes.
      * 
-     * @return array& Raveled layout.
+     * Unlike numpy's ravel, this will only combine axes when possible.
+     * 
+     * @return array& *this
      */
     array& ravel_inplace() noexcept;
 

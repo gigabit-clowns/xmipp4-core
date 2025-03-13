@@ -69,6 +69,14 @@ std::size_t array<Storage, Layout>::get_rank() const noexcept
 }
 
 template <typename Storage, typename Layout>
+std::size_t array<Storage, Layout>::get_axes(std::size_t *extents, 
+                                             std::ptrdiff_t *strides,
+                                             std::size_t count ) const noexcept
+{
+    return m_layout.get_axes(extents, strides, count);
+}
+
+template <typename Storage, typename Layout>
 XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::transpose() const

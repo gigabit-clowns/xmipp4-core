@@ -54,8 +54,6 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
         m_axes.rbegin(), 
         m_axes.rend()
     );
-
-    update_flags();
 }
 
 inline
@@ -70,8 +68,6 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
     {
         m_axes.emplace_back(extents[i], strides[i]);
     }
-
-    update_flags();
 }
 
 inline
@@ -81,13 +77,38 @@ dynamic_layout::dynamic_layout(const axis_descriptor *axes,
     : m_axes(axes, axes + rank)
     , m_offset(offset)
 {
-    update_flags();
 }
 
 XMIPP4_NODISCARD inline
 std::size_t dynamic_layout::get_rank() const noexcept
 {
     return m_axes.size();
+}
+
+inline
+std::size_t dynamic_layout::get_axes(std::size_t *extents, 
+                                     std::ptrdiff_t *strides,
+                                     std::size_t count ) const noexcept
+{
+    if (count > m_axes.size())
+    {
+        count = m_axes.size();
+    }
+
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        const auto &axis = m_axes[i];
+        if(extents)
+        {
+            extents[i] = axis.get_extent();
+        }
+        if(strides)
+        {
+            strides[i] = axis.get_stride();
+        }
+    }
+
+    return count;
 }
 
 inline
@@ -108,13 +129,57 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
     return m_offset;
 }
 
+
+
 XMIPP4_NODISCARD inline
-layout_flags dynamic_layout::get_flags() const noexcept
+dynamic_layout dynamic_layout::apply_subscripts(span<dynamic_subscript> subscripts) const
 {
-    return m_flags;
+    dynamic_layout result = *this;
+    result.apply_subscripts_inplace(subscripts);
+    return result;
 }
 
+inline
+dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript> subscripts)
+{
+    auto axis_ite = m_axes.begin();
+    auto subscript_ite = subscripts.begin();
 
+    while (axis_ite != m_axes.end() && subscript_ite != subscripts.end())
+    {
+        switch (subscript_ite->get_subscript_type())
+        {
+        case dynamic_subscript::subscript_type::ellipsis:
+            throw std::runtime_error("Not implemented"); // TODO
+            break;
+
+        case dynamic_subscript::subscript_type::new_axis:
+            axis_ite = m_axes.insert(axis_ite, make_phantom_axis());
+            ++axis_ite;
+            ++subscript_ite;
+            break;
+
+        case dynamic_subscript::subscript_type::index:
+            apply_index(*axis_ite, subscript_ite->get_index(), m_offset);
+            axis_ite = m_axes.erase(axis_ite);
+            ++subscript_ite;
+            break;
+
+        case dynamic_subscript::subscript_type::slice:
+            apply_slice(*axis_ite, subscript_ite->get_slice(), m_offset);
+            ++axis_ite;
+            ++subscript_ite;
+            break;
+        }
+    }
+    
+    if (subscript_ite != subscripts.end())
+    {
+        throw std::invalid_argument("not all subscripts were processed");
+    }
+    
+    return *this;
+}
 
 XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::transpose() const
@@ -128,7 +193,6 @@ inline
 dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 {
     transpose_layout_inplace(m_axes.begin(), m_axes.end());
-    update_flags();
     return *this;
 }
 
@@ -153,7 +217,6 @@ dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
     }
 
     m_axes = std::move(tmp);
-    update_flags();
     return *this;
 }
 
@@ -180,7 +243,6 @@ dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
     }
 
     std::swap(m_axes[axis1], m_axes[axis2]);
-    update_flags();
     return *this;
 }
 
@@ -199,7 +261,6 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
         squeeze_layout_inplace(m_axes.begin(), m_axes.end()), 
         m_axes.end()
     );
-    update_flags();
     return *this;
 }
 
@@ -212,21 +273,17 @@ dynamic_layout dynamic_layout::ravel() const
 }
 
 inline
-dynamic_layout& dynamic_layout::ravel_inplace()
+dynamic_layout& dynamic_layout::ravel_inplace() noexcept
 {
     sort_layout_inplace(m_axes.begin(), m_axes.end());
-    m_axes.erase(
-        ravel_layout_inplace(m_axes.begin(), m_axes.end(), m_offset), 
-        m_axes.end()
+    const auto ite = ravel_layout_inplace(
+        m_axes.begin(), 
+        m_axes.end(), 
+        m_offset
     );
-    update_flags();
-    return *this;
-}
+    m_axes.erase(ite, m_axes.end());
 
-inline
-void dynamic_layout::update_flags()
-{
-    m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());
+    return *this;
 }
 
 } // namespace multidimensional

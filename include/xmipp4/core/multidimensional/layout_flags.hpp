@@ -41,9 +41,9 @@ namespace multidimensional
 
 enum class layout_flag_bits
 {
-    contiguous = utils::bit(0),
-    column_major = utils::bit(1),
-    row_major = utils::bit(2)
+    column_major = utils::bit(0),
+    row_major = utils::bit(1),
+    contiguous = utils::bit(2),
 };
 
 using layout_flags = utils::flagset<layout_flag_bits>;

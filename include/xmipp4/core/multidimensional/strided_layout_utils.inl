@@ -63,12 +63,45 @@ bool is_layout_sorted(ForwardIt first, ForwardIt last)
     {
         auto prev = first;
         first = find_first_significant_axis(std::next(first), last);
-        while (first != last)
+        while (first != last && result)
         {
             if (compare_strides_greater(*first, *prev))
             {
                 result = false;
-                break;
+            }
+
+            prev = first;
+            first = find_first_significant_axis(std::next(first), last);
+        }
+    }
+
+    return result;
+}
+
+template<typename ForwardIt>
+XMIPP4_INLINE_CONSTEXPR_CPP20 
+layout_flags compute_layout_flags(ForwardIt first, ForwardIt last) noexcept
+{
+    first = find_first_significant_axis(first, last);
+
+    layout_flags result = {
+        layout_flag_bits::column_major, 
+        layout_flag_bits::row_major
+    };
+
+    if (first != last)
+    {
+        auto prev = first;
+        first = find_first_significant_axis(std::next(first), last);
+        while (first != last && result)
+        {
+            if (compare_strides_greater(*first, *prev))
+            {
+                result.clear(layout_flag_bits::column_major);
+            }
+            if (compare_strides_less(*first, *prev))
+            {
+                result.clear(layout_flag_bits::row_major);
             }
 
             prev = first;

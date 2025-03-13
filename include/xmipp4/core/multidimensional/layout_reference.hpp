@@ -105,6 +105,14 @@ public:
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
+    /**
+     * @brief Get the flags for this layout.
+     * 
+     * @return layout_flags The properties of this flag.
+     */
+    XMIPP4_NODISCARD
+    layout_flags get_flags() const noexcept;
+
 
 
     /**

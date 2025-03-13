@@ -143,6 +143,14 @@ public:
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
+    /**
+     * @brief Get the flags for this layout.
+     * 
+     * @return layout_flags The properties of this flag.
+     */
+    XMIPP4_NODISCARD
+    layout_flags get_flags() const noexcept;
+
 
     
     /**
@@ -256,6 +264,9 @@ public:
 private:
     std::vector<axis_descriptor> m_axes;
     std::ptrdiff_t m_offset;
+    layout_flags m_flags;
+
+    void update_flags() noexcept;
 
 };
 

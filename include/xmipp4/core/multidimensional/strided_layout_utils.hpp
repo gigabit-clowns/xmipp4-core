@@ -57,34 +57,6 @@ ForwardIt find_first_significant_axis(ForwardIt first,
                                       ForwardIt last );
 
 /**
- * @brief Finds the significant axis with the smallest stride magnitude.
- * 
- * If there are no significant axes in the range, last is returned.
- * 
- * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range.
- * @param last Iterator to the past-the-end element in the range.
- * @return ForwardIt The axis with the smallest stride magnitude.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_major_axis(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
- * @brief Finds the significant axis with the largest stride magnitude.
- * 
- * If there are no significant axes in the range, last is returned.
- * 
- * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first element in the range.
- * @param last Iterator to the past-the-end element in the range.
- * @return ForwardIt The axis with the largest stride magnitude.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 ForwardIt find_minor_axis(ForwardIt first, 
-                                                 ForwardIt last ) noexcept;
-
-/**
  * @brief Sort the layout so that it is column major.
  * 
  * After this operation, the provided layout's axes will be ordered 
@@ -111,18 +83,6 @@ XMIPP4_CONSTEXPR_CPP20 void sort_layout_inplace(BidirIt first,
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 
 bool is_layout_sorted(ForwardIt first, ForwardIt last);
-
-/**
- * @brief Obtain the flags of this layout.
- * 
- * @tparam ForwardIt Forward iterator.
- * @param first Iterator to the first axis of the layout.
- * @param last Iterator to the past-the-end axis of the layout.
- * @return layout_flags The flags.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 
-layout_flags compute_layout_flags(ForwardIt first, ForwardIt last);
 
 /**
  * @brief Merge contiguous axes of a layout to reduce it as much as possible.
@@ -239,24 +199,6 @@ std::size_t compute_layout_volume(ForwardIt first,
                                   ForwardIt last ) noexcept;
 
 /**
- * @brief Computes the last position referenced by the layout.
- * 
- * The last position of a layout is the sum of all axes' last
- * position if none of them is -1. If at least one of them equals
- * -1, -1 will be returned to signal an empty array.
- * 
- * @see get_axis_last_position
- * @tparam ForwardIt Forward iterator
- * @param first Iterator to the first element in the range
- * @param last Iterator to the past-the-end element in the range
- * @return std::ptrdiff_t. The last position referenced by the layout.
- * -1 if the layout has zero elements.
- */
-template<typename ForwardIt>
-XMIPP4_CONSTEXPR_CPP20 
-std::ptrdiff_t compute_layout_last_position(ForwardIt first,
-                                            ForwardIt last ) noexcept;
-/**
  * @brief Computes the buffer size required to store a layout
  * 
  * @tparam ForwardIt Forward iterator
@@ -267,8 +209,8 @@ std::ptrdiff_t compute_layout_last_position(ForwardIt first,
  */
 template<typename ForwardIt>
 XMIPP4_CONSTEXPR_CPP20 
-std::size_t compute_layout_buffer_size(ForwardIt first,
-                                       ForwardIt last ) noexcept;
+std::size_t compute_layout_storage_size(ForwardIt first,
+                                        ForwardIt last ) noexcept;
 
 /**
  * @brief Squeezes a layout

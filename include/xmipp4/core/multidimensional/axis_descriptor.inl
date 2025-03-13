@@ -115,29 +115,6 @@ axis_descriptor make_phantom_axis(std::size_t extent) noexcept
     return axis_descriptor(extent, 0);
 }
 
-XMIPP4_INLINE_CONSTEXPR
-std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept
-{
-    std::ptrdiff_t result = 0UL;
-    const auto extent = axis.get_extent();
-    if (extent > 0)
-    {   
-        const auto stride = axis.get_unsigned_stride();
-        result = (extent-1)*stride;
-    }
-    else
-    {
-        result = -1;
-    }
-
-    return result;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-std::size_t get_axis_length(const axis_descriptor &axis) noexcept
-{
-    return axis.get_unsigned_stride()*axis.get_extent();
-}
 
 XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_equal(const axis_descriptor &lhs, 
@@ -169,12 +146,26 @@ bool check_nonzero_stride(const axis_descriptor &axis) noexcept
 XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept
 {
+    return axis.get_stride() == 1;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_contiguous(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept
+{
+    const auto expected = major.get_stride()*major.get_extent();
+    return expected == minor.get_stride();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_mirror_contiguous(const axis_descriptor &axis) noexcept
+{
     return axis.get_unsigned_stride() == 1;
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool is_regular(const axis_descriptor &major,
-                const axis_descriptor &minor ) noexcept
+bool is_mirror_contiguous(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept
 {
     const auto expected = major.get_unsigned_stride()*major.get_extent();
     return expected == minor.get_unsigned_stride();
@@ -187,29 +178,50 @@ bool is_reversed(const axis_descriptor &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool is_significant(const axis_descriptor &axis) noexcept
-{
-    return axis.get_extent() != 1 && axis.get_stride() != 0;
-}
-
-XMIPP4_INLINE_CONSTEXPR
 bool is_repeating(const axis_descriptor &axis) noexcept
 {
     return axis.get_extent() > 1 && axis.get_stride() == 0;
 }
 
 XMIPP4_INLINE_CONSTEXPR
-std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept
+bool is_empty(const axis_descriptor &axis) noexcept
 {
-    const auto extent = axis.get_extent();
-    const auto stride = axis.get_stride();
-    return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
+    return axis.get_extent() == 0;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool is_significant(const axis_descriptor &axis) noexcept
+{
+    return axis.get_extent() != 1;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 bool check_squeeze(const axis_descriptor &axis) noexcept
 {
-    return axis.get_extent() == 1;
+    return !is_significant(axis);
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool get_axis_last_offset(const axis_descriptor &axis, 
+                          std::ptrdiff_t &result) noexcept
+{
+    const auto extent = axis.get_extent();
+    const bool success = (extent > 0);
+    if (success)
+    {
+        const auto stride = axis.get_stride();
+        result = (extent-1)*stride;
+    }
+
+    return success;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept
+{
+    const auto extent = axis.get_extent();
+    const auto stride = axis.get_stride();
+    return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
 }
 
 namespace detail
@@ -294,9 +306,9 @@ void apply_index(const axis_descriptor &desc,
 
 template <typename Start, typename Stop, typename Step>
 inline
-axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stop, Step> &slc,
-                            std::ptrdiff_t &offset )
+void apply_slice(axis_descriptor &desc, 
+                 const slice<Start, Stop, Step> &slc,
+                 std::ptrdiff_t &offset )
 {
     std::size_t start;
     std::size_t stop;
@@ -311,7 +323,7 @@ axis_descriptor apply_slice(const axis_descriptor &desc,
     auto stride = desc.get_stride();
     offset += stride*pivot;
     stride *= step;
-    return axis_descriptor(extent, stride);
+    desc = axis_descriptor(extent, stride);
 }
 
 } // namespace multidimensional

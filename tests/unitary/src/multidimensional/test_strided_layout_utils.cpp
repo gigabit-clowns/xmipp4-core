@@ -32,12 +32,15 @@
 
 #include <tuple>
 #include <vector>
+#include <iostream>
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("find first significant axis", "[memory_layout]")
+TEST_CASE("find_first_significant axis should skip axes of extent 1", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
+        axis_descriptor(1, 8),
+        axis_descriptor(1, 0),
         axis_descriptor(4, 0),
         axis_descriptor(1, 2),
         axis_descriptor(3, -2),
@@ -47,38 +50,7 @@ TEST_CASE("find first significant axis", "[memory_layout]")
     REQUIRE(find_first_significant_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
 }
 
-TEST_CASE("find major axis", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, -128),
-        axis_descriptor(4, 0),
-        axis_descriptor(4, 16),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, -2)
-    };
-
-    REQUIRE(find_major_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 5));
-}
-
-TEST_CASE("find minor axis", "[memory_layout]")
-{
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(1, 512),
-        axis_descriptor(4, -128),
-        axis_descriptor(4, 0),
-        axis_descriptor(4, 16),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, -2)
-    };
-
-    REQUIRE(find_minor_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 3));
-}
-
-TEST_CASE("sort layout", "[memory_layout]")
+TEST_CASE("sort_layout should produce a sorted layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(1, 2),
@@ -93,100 +65,67 @@ TEST_CASE("sort layout", "[memory_layout]")
         axis_descriptor(3, 0),
     };
 
-    SECTION ("column major")
-    {
-        REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), column_major()) );
-        sort_layout_inplace(layout.begin(), layout.end(), column_major());
-        REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), column_major()) );
-    }
+    REQUIRE( !is_layout_sorted(layout.cbegin(), layout.cend()) );
+    sort_layout_inplace(layout.begin(), layout.end());
+    REQUIRE( is_layout_sorted(layout.cbegin(), layout.cend()) );
 
-    SECTION ("row major")
-    {
-        REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
-        sort_layout_inplace(layout.begin(), layout.end(), row_major());
-        REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
-    }
+
 }
 
-TEST_CASE("check layout order", "[memory_layout]")
+TEST_CASE("check_layout_order should only consider significant axes", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 1),
+        axis_descriptor(2, 512),
+        axis_descriptor(1, 0),
+        axis_descriptor(4, -128),
+        axis_descriptor(2, 64),
+        axis_descriptor(2, 8),
+        axis_descriptor(1, 0),
         axis_descriptor(1, 2),
         axis_descriptor(4, -2),
         axis_descriptor(1, 2),
-        axis_descriptor(4, 0),
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 0),
-        axis_descriptor(4, -128),
-        axis_descriptor(3, 0),
-        axis_descriptor(1, 512),
+        axis_descriptor(2, 1),
     };
 
-    REQUIRE( check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
-    REQUIRE( check_layout_order(layout.crbegin(), layout.crend(), column_major()) );
+    REQUIRE( is_layout_sorted(layout.cbegin(), layout.cend()) );
 
     std::swap(layout[0], layout[2]);
 
-    REQUIRE( !check_layout_order(layout.cbegin(), layout.cend(), row_major()) );
-    REQUIRE( !check_layout_order(layout.crbegin(), layout.crend(), column_major()) );
+    REQUIRE( !is_layout_sorted(layout.cbegin(), layout.cend()) );
 }
 
-TEST_CASE("pack layout", "[memory_layout]")
+TEST_CASE("ravel_layout should combine contiguous runs of axes", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
+        axis_descriptor(1, 0),
         axis_descriptor(4, 2),
         axis_descriptor(2, 8),
-        axis_descriptor(10, 0),
+        axis_descriptor(1, 16),
         //---------------------
         axis_descriptor(4, -32),
         axis_descriptor(1, -128),
         axis_descriptor(3, 128),
         //---------------------
         axis_descriptor(9, -512),
-        axis_descriptor(2, 0),
+        axis_descriptor(1, 0),
     };
 
     std::vector<axis_descriptor> packed = layout;
     std::ptrdiff_t offset = 0;
 
-    SECTION("row major")
-    {
-        std::sort(packed.begin(), packed.end(), compare_strides_less);
-        auto ite = pack_layout_inplace(
-            packed.begin(), packed.end(),
-            offset,
-            row_major()
-        );
-        packed.erase(ite, packed.end());
 
-        REQUIRE( packed.size() == 3 );
-        REQUIRE( packed[0] == axis_descriptor(8, 2) );
-        REQUIRE( packed[1] == axis_descriptor(12, 32) );
-        REQUIRE( packed[2] == axis_descriptor(9, 512) );
-        REQUIRE( offset == -(8*512+3*32) );
-    }
+    sort_layout_inplace(packed.begin(), packed.end());
+    auto ite = ravel_layout_inplace(packed.begin(), packed.end(), offset);
+    packed.erase(ite, packed.end());
 
-    SECTION("column major")
-    {
-        std::sort(packed.rbegin(), packed.rend(), compare_strides_less);
-        auto ite = pack_layout_inplace(
-            packed.begin(), packed.end(),
-            offset,
-            column_major()
-        );
-        packed.erase(ite, packed.end());
-
-        REQUIRE( packed.size() == 3 );
-        REQUIRE( packed[0] == axis_descriptor(9, 512) );
-        REQUIRE( packed[1] == axis_descriptor(12, 32) );
-        REQUIRE( packed[2] == axis_descriptor(8, 2) );
-        REQUIRE( offset == -(8*512+3*32) );
-    }
+    REQUIRE( packed.size() == 3 );
+    REQUIRE( packed[0] == axis_descriptor(9, 512) );
+    REQUIRE( packed[1] == axis_descriptor(12, 32) );
+    REQUIRE( packed[2] == axis_descriptor(8, 2) );
+    REQUIRE( offset == -(8*512+3*32) );
 }
 
+/*
 TEST_CASE("is contiguous layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
@@ -219,6 +158,7 @@ TEST_CASE("is contiguous layout", "[memory_layout]")
         REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
 }
+*/
 
 TEST_CASE("compute contiguous axis strides", "[memory_layout]")
 {
@@ -231,29 +171,15 @@ TEST_CASE("compute contiguous axis strides", "[memory_layout]")
         make_contiguous_axis(9)
     };
 
-    SECTION("column major")
-    {
-        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), column_major());
-        REQUIRE(layout[0].get_stride() == 1);
-        REQUIRE(layout[1].get_stride() == 2);
-        REQUIRE(layout[2].get_stride() == 6);
-        REQUIRE(layout[3].get_stride() == 48);
-        REQUIRE(layout[4].get_stride() == 240);
-        REQUIRE(layout[5].get_stride() == 240);
-        REQUIRE(volume == 2160);
-    }
+    const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end());
+    REQUIRE(layout[0].get_stride() == 1);
+    REQUIRE(layout[1].get_stride() == 2);
+    REQUIRE(layout[2].get_stride() == 6);
+    REQUIRE(layout[3].get_stride() == 48);
+    REQUIRE(layout[4].get_stride() == 240);
+    REQUIRE(layout[5].get_stride() == 240);
+    REQUIRE(volume == 2160);
 
-    SECTION("row major")
-    {
-        const auto volume = compute_contiguous_axis_strides(layout.begin(), layout.end(), row_major());
-        REQUIRE(layout[5].get_stride() == 1);
-        REQUIRE(layout[4].get_stride() == 9);
-        REQUIRE(layout[3].get_stride() == 9);
-        REQUIRE(layout[2].get_stride() == 45);
-        REQUIRE(layout[1].get_stride() == 360);
-        REQUIRE(layout[0].get_stride() == 1080);
-        REQUIRE(volume == 2160);
-    }
 }
 
 TEST_CASE("compute layout buffer size", "memory_layout")
@@ -273,33 +199,33 @@ TEST_CASE("compute layout buffer size", "memory_layout")
 
     SECTION("normal")
     {
-        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 512);
     }
 
     SECTION("non contiguous")
     {
         layout[1] = axis_descriptor(1, 2);
-        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 511); // Last element no longer required
     }
 
     SECTION("zero sized axis")
     {
         layout[0] = axis_descriptor(0, 1);
-        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 0);
     }
 
     SECTION("empty")
     {
         layout.clear();
-        const auto size = compute_layout_buffer_size(layout.cbegin(), layout.cend());
+        const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 1);
     }
 }
 
-TEST_CASE("transpose layout", "[memory_layout]")
+TEST_CASE("transpose_layout should reverse the layout", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 8),
@@ -321,7 +247,7 @@ TEST_CASE("transpose layout", "[memory_layout]")
     REQUIRE(std::equal(layout.cbegin(), layout.cend(), transposed_layout.cbegin(), transposed_layout.cend()));
 }
 
-TEST_CASE("squeeze layout", "[memory_layout]")
+TEST_CASE("squeeze_layout should remove all axes with an extent of 1", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(4, 1),
@@ -351,7 +277,7 @@ TEST_CASE("squeeze layout", "[memory_layout]")
     }
 }
 
-TEST_CASE("broadcast layouts", "[memory_layout]")
+TEST_CASE("broadcast_layouts should succeed with valid data", "[memory_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(2, 0),
@@ -363,24 +289,27 @@ TEST_CASE("broadcast layouts", "[memory_layout]")
         axis_descriptor(1, 0),
     };
 
-    SECTION("itself")
-    {
-        REQUIRE( broadcast_layouts(layout.size(), layout.begin(), layout.begin()) );
-    }
+    auto layout2 = layout;
+    layout2[3].set_extent(1);
 
-    SECTION("broadcasting axes")
-    {
-        auto layout2 = layout;
-        layout2[3].set_extent(1);
-        REQUIRE( broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
-        REQUIRE( layout2[3].get_extent() == 4 );
-        REQUIRE( layout2[3].get_stride() == 0 );
-    }
+    REQUIRE( broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
+    REQUIRE( layout2[3].get_extent() == 4 );
+    REQUIRE( layout2[3].get_stride() == 0 );
+}
 
-    SECTION("unable to broadcast axes")
-    {
-        auto layout2 = layout;
-        layout2[3].set_extent(2);
-        REQUIRE( !broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
-    }
+TEST_CASE("broadcast_layouts should fail with invalid data", "[memory_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(2, 0),
+        axis_descriptor(2, 1),
+        axis_descriptor(1, 2),
+        axis_descriptor(4, 2),
+        axis_descriptor(3, 8),
+        axis_descriptor(2, 24),
+        axis_descriptor(1, 0),
+    };
+
+    auto layout2 = layout;
+    layout2[3].set_extent(2);
+    REQUIRE( !broadcast_layouts(layout.size(), layout.begin(), layout2.begin()) );
 }

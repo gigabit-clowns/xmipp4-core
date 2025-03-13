@@ -137,31 +137,6 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
 XMIPP4_CONSTEXPR
 axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
 
-
-/**
- * @brief Compute the last position referenced by an axis.
- * 
- * This is equivalent to (extent-1)*abs(stride) when extent is not zero.
- * If the axis has an extent of zero, -1 is returned.
- * 
- * @param axis The axis.
- * @return std::ptrdiff_t Axis last position. -1 if the axis has a zero
- * extent.
- */
-XMIPP4_CONSTEXPR 
-std::ptrdiff_t get_axis_last_position(const axis_descriptor &axis) noexcept;
-
-/**
- * @brief Compute the product of the stride magnitude and extent
- * 
- * @note This does not need to be confused with the number of elements 
- * referenced by the axis. To do so, please refer to get_extent
- * @param axis The axis.
- * @return std::size_t The product of the stride magnitude and extent.
- */
-XMIPP4_CONSTEXPR 
-std::size_t get_axis_length(const axis_descriptor &axis) noexcept;
-
 /**
  * @brief Compare the absolute strides of a given pair of axes.
  * 
@@ -210,28 +185,56 @@ bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
 /**
  * @brief Check if an axis is contiguous.
  * 
- * An axis is contiguous if the magnitude of its stride
- * is one.
+ * An axis is contiguous if its stride is one.
  * 
  * @param axis Axis to be checked.
- * @return bool True if the axis is contiguous.
+ * @return true if the axis is contiguous.
+ * @return false if the axis is not contiguous.
  */
 XMIPP4_CONSTEXPR
 bool is_contiguous(const axis_descriptor &axis) noexcept;
 
 /**
- * @brief Check if an axis pair is regular.
+ * @brief Check if an axis pair is contiguous.
  * 
- * A pair of axes is regular if abs(stride)*extent of the
- * major axis is equal to the abs(stride) of the minor axis.
+ * A pair of axes is contiguous if stride*extent of the
+ * major axis is equal to the stride of the minor axis.
  * 
  * @param major Fast axis (smallest stride).
  * @param minor Slow axis (largest stride).
- * @return bool True if the axes are regular.
+ * @return true if the axes are contiguous.
+ * @return false if the axes are not contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_regular(const axis_descriptor &major,
-                const axis_descriptor &minor ) noexcept;
+bool is_contiguous(const axis_descriptor &major,
+                   const axis_descriptor &minor ) noexcept;
+
+/**
+ * @brief Check if an axis is contiguous also considering its mirror.
+ * 
+ * An axis is mirror contiguous if the magnitude of its stride is one.
+ * 
+ * @param axis Axis to be checked.
+ * @return true if the axis is mirror contiguous.
+ * @return false if the axis is not mirror contiguous.
+ */
+XMIPP4_CONSTEXPR
+bool is_mirror_contiguous(const axis_descriptor &axis) noexcept;
+/**
+ * @brief Check if an axis pair is contiguous also considering their
+ * mirrors.
+ * 
+ * A pair of axes is contiguous if abs(stride)*extent of the
+ * major axis is equal to the abs(stride) of the minor axis.
+ * 
+ * @param major Fast axis (smallest stride magnitude).
+ * @param minor Slow axis (largest stride magnitude).
+ * @return true if the axes are mirror contiguous.
+ * @return false if the axes are not mirror contiguous.
+ */
+XMIPP4_CONSTEXPR
+bool is_mirror_contiguous(const axis_descriptor &major,
+                          const axis_descriptor &minor ) noexcept;
 
 /**
  * @brief Check if an axis is reversed.
@@ -243,18 +246,6 @@ bool is_regular(const axis_descriptor &major,
  */
 XMIPP4_CONSTEXPR
 bool is_reversed(const axis_descriptor &axis) noexcept;
-
-/**
- * @brief Check if an axis is significant.
- * 
- * An axis is significant if it has a non-zero stride
- * and an extent unequal to 1.
- * 
- * @param axis Axis to be checked.
- * @return bool True if the axis is significant.
- */
-XMIPP4_CONSTEXPR
-bool is_significant(const axis_descriptor &axis) noexcept;
 
 /**
  * @brief Check if an axis is repeating.
@@ -269,9 +260,61 @@ XMIPP4_CONSTEXPR
 bool is_repeating(const axis_descriptor &axis) noexcept;
 
 /**
+ * @brief Check if an axis is empty
+ * 
+ * An axis is empty if it has an extent of zero.
+ * 
+ * @param axis The axis to be checked
+ * @return true if the axis is empty
+ * @return false if the axis is not empty.
+ */
+XMIPP4_CONSTEXPR
+bool is_empty(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis is significant.
+ * 
+ * An axis is significant if it has an extent not equal to 1.
+ * 
+ * @param axis The axis to be checked.
+ * @return true if the axis is significant.
+ * @return false if the axis is not significant.
+ */
+XMIPP4_CONSTEXPR
+bool is_significant(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Check if an axis can be squeezed.
+ * 
+ * An axis can be squeezed only if it is not significant. This is,
+ * if it has an extent equal to 1.
+ * 
+ * @param axis The axis to be checked
+ * @return true If the axis is not significant
+ * @return false If the axis is significant.
+ * @see is_significant
+ * 
+ */
+XMIPP4_CONSTEXPR 
+bool check_squeeze(const axis_descriptor &axis) noexcept;
+
+/**
+ * @brief Get the axis last position referenced by ab axis.
+ * 
+ * @param axis The last position referenced by the axis.
+ * @param result Output variable with the result. Only written when the axis
+ * has non-zero extent.
+ * @return true if the axis has non-zero extent and output was written.
+ * @return false if the axis has an extent of zero.
+ */
+XMIPP4_CONSTEXPR 
+bool get_axis_last_offset(const axis_descriptor &axis, 
+                          std::ptrdiff_t &result) noexcept;
+
+/**
  * @brief Obtain the offset applied when reversing an axis.
  * 
- * If the axis is not reversed, this function returns true.
+ * If the axis is not reversed, this function returns 0.
  * If the axis is reversed, this function returns (extent-1)*unsigned_stride
  * of the axis.
  * 
@@ -279,18 +322,7 @@ bool is_repeating(const axis_descriptor &axis) noexcept;
  * @return std::size_t The offset.
 */
 XMIPP4_CONSTEXPR
-std::size_t get_reverse_axis_offset(const axis_descriptor &axis) noexcept;
-
-/**
- * @brief Check if an axis can be squeezed
- * 
- * An axis can be squeezed only if it has a extent of 1
- * 
- * @param axis The axis to be checked
- * @return bool True if the axis can be squeezed. False otherwise
- */
-XMIPP4_CONSTEXPR 
-bool check_squeeze(const axis_descriptor &axis) noexcept;
+std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept;
 
 /**
  * @brief Broadcast axis extents.
@@ -338,15 +370,16 @@ void apply_index(const axis_descriptor &desc,
  * @tparam Start Start type.
  * @tparam Stop Stop type.
  * @tparam Step Step type.
- * @param desc Axis descriptor.
+ * @param desc Axis descriptor. Will be modified according to the 
+ * provided slice.
  * @param s Slice to be applied.
  * @param offset Offset to be incremented.
- * @return axis_descriptor Sliced axis descriptor.
+ * 
  */
 template <typename Start, typename Stop, typename Step>
-axis_descriptor apply_slice(const axis_descriptor &desc, 
-                            const slice<Start, Stop, Step> &s,
-                            std::ptrdiff_t &offset );
+void apply_slice(axis_descriptor &desc, 
+                 const slice<Start, Stop, Step> &s,
+                 std::ptrdiff_t &offset );
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -45,58 +45,6 @@ ForwardIt find_first_significant_axis(ForwardIt first,
     return std::find_if(first, last, is_significant);
 }
 
-
-
-namespace detail
-{
-
-template<typename ForwardIt, typename Cmp>
-XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_significant_min_stride(ForwardIt first, 
-                                      ForwardIt last, 
-                                      const Cmp &compare )
-{
-    // Start at the first non-zero stride
-    first = find_first_significant_axis(first, last);
-
-    ForwardIt result = first;
-    if (first != last)
-    {
-        first = find_first_significant_axis(std::next(first), last);
-        while(first != last)
-        {
-            if(compare(*first, *result))
-                result = first;
-
-            first = find_first_significant_axis(std::next(first), last);
-        }
-    }
-
-    return result;
-}
-
-} // namespace detail
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20
-ForwardIt find_major_axis(ForwardIt first, ForwardIt last) noexcept
-{
-    return detail::find_significant_min_stride(
-        first, last,
-        compare_strides_less
-    );
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-ForwardIt find_minor_axis(ForwardIt first, ForwardIt last) noexcept
-{
-    return detail::find_significant_min_stride(
-        first, last,
-        compare_strides_greater
-    );
-}
-
 template<typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 void sort_layout_inplace(BidirIt first, BidirIt last)
@@ -108,7 +56,6 @@ template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 bool is_layout_sorted(ForwardIt first, ForwardIt last)
 {
-    // Start at the first non-zero stride
     first = find_first_significant_axis(first, last);
 
     bool result = true;
@@ -116,9 +63,9 @@ bool is_layout_sorted(ForwardIt first, ForwardIt last)
     {
         auto prev = first;
         first = find_first_significant_axis(std::next(first), last);
-        while(first != last)
+        while (first != last)
         {
-            if(compare_strides_less(*prev, *first))
+            if (compare_strides_greater(*first, *prev))
             {
                 result = false;
                 break;
@@ -145,14 +92,14 @@ ForwardIt ravel_layout_one(ForwardIt first,
                            std::ptrdiff_t &offset ) noexcept
 {
     std::size_t extent = first->get_extent();
-    offset -= get_reverse_axis_offset(*first);
+    offset -= get_axis_pivot_offset(*first);
 
     auto prev = first;
     first = find_first_significant_axis(std::next(first), last);
-    while(first != last && is_regular(*first, *prev))
+    while(first != last && is_mirror_contiguous(*first, *prev))
     {
         extent *= first->get_extent();
-        offset -= get_reverse_axis_offset(*first);
+        offset -= get_axis_pivot_offset(*first);
 
         prev = first;
         first = find_first_significant_axis(std::next(first), last);
@@ -206,24 +153,6 @@ ForwardIt ravel_layout_inplace(ForwardIt first,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-bool is_contiguous_layout(ForwardIt first, ForwardIt last)
-{
-    const auto slow_axis = find_minor_axis(first, last);
-    const auto expected_size = (slow_axis != last) ? get_axis_length(*slow_axis) : 1;
-    const auto size = compute_layout_buffer_size(first, last);
-    return size == expected_size;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-layout_flags compute_layout_flags(ForwardIt first, ForwardIt last)
-{
-    // TODO
-    return {};
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
 std::size_t compute_contiguous_axis_strides(ForwardIt first,
                                             ForwardIt last ) noexcept
 {
@@ -238,21 +167,6 @@ std::size_t compute_contiguous_axis_strides(ForwardIt first,
     );
     return volume;
 }
-
-template<typename InputIt, typename OutputIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-OutputIt fill_shape_from_axes(InputIt first, 
-                              InputIt last,
-                              OutputIt out )
-{
-    return std::transform(
-        first, last,
-        out,
-        std::mem_fn(&axis_descriptor::get_extent)
-    );
-}
-
-
 
 template <typename BidirIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
@@ -289,37 +203,28 @@ std::size_t compute_layout_volume(ForwardIt first,
 
 template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::ptrdiff_t compute_layout_last_position(ForwardIt first,
-                                            ForwardIt last ) noexcept
+std::size_t compute_layout_storage_size(ForwardIt first,
+                                        ForwardIt last ) noexcept
 {
     std::ptrdiff_t result = 0;
     while(first != last)
     {
-        const auto last_position = get_axis_last_position(*first);
-        if (last_position >= 0)
+        std::ptrdiff_t last_offset;
+        if (get_axis_last_offset(*first, last_offset))
         {
-            result += last_position;
+            result += math::abs(last_offset);
         }
         else
         {
             // Zero sized axis found, no elements can be stored 
             // in this layout.
-            result = -1;
-            break;
+            return 0;
         }
 
         ++first;
     }
 
-    return result;
-}
-
-template<typename ForwardIt>
-XMIPP4_INLINE_CONSTEXPR_CPP20 
-std::size_t compute_layout_buffer_size(ForwardIt first,
-                                       ForwardIt last ) noexcept
-{
-    return compute_layout_last_position(first, last) + 1;
+    return result + 1;
 }
 
 template <typename ForwardIt>

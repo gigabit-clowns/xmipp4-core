@@ -38,7 +38,7 @@ namespace multidimensional
 /**
  * @brief Check that the permutation is valid for a given layout.
  * 
- * A permutation is valid if if is a permutation of the [0, count) range.
+ * A permutation is valid if it is a permutation of the [0, count) range.
  * 
  * @tparam ForwardIt Forward iterator to std::size_t-s.
  * @param first Iterator to the first element in the range.

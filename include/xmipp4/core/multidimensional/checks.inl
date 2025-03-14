@@ -30,6 +30,7 @@
 
 #include "checks.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 #include <sstream>
 
@@ -62,10 +63,10 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
     }
 
     // For the rest, check that it is a permutation
-    for (; i < count; ++i)
+    while (i < count)
     {
         // Ensure the current value appears in the range.
-        ForwardIt ite = std::find(first, last, i);
+        auto ite = std::find(first, last, i);
         if (ite == last)
         {
             std::ostringstream oss;
@@ -73,14 +74,7 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
             throw std::invalid_argument(oss.str());
         }
 
-        // Ensure the current value appears strictly once in the range.
-        ite = std::find(ite, last, i);
-        if (ite != last)
-        {
-            std::ostringstream oss;
-            oss << "value " << i << " is duplicated in the permutation";
-            throw std::invalid_argument(oss.str());
-        }
+        ++i;
     }
 }
 

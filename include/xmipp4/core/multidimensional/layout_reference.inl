@@ -86,7 +86,7 @@ layout_flags layout_reference<T>::get_flags() const noexcept
     XMIPP4_CONST_CONSTEXPR layout_flags empty_flags = {
         layout_flag_bits::column_major,
         layout_flag_bits::row_major
-    }
+    };
 
     return m_layout ? m_layout->get_flags() : empty_flags;
 }

@@ -299,6 +299,7 @@ dynamic_layout& dynamic_layout::ravel_inplace() noexcept
 
 
 
+inline
 void dynamic_layout::update_flags() noexcept
 {
     m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());

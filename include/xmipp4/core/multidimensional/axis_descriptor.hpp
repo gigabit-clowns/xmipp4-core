@@ -314,6 +314,7 @@ bool get_axis_last_offset(const axis_descriptor &axis,
 /**
  * @brief Obtain the offset applied when reversing an axis.
  * 
+ * If the axis is empty, this function returns 0 regardless of the stride.
  * If the axis is not reversed, this function returns 0.
  * If the axis is reversed, this function returns (extent-1)*unsigned_stride
  * of the axis.

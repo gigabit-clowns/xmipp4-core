@@ -97,7 +97,12 @@ TEST_CASE("check_layout_order should only consider significant axes", "[strided_
 TEST_CASE("compute_layout_order should provide both ordering flags for an empty layout", "[strided_layout]")
 {
     std::vector<axis_descriptor> layout = {};
-    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == layout_flags({layout_flag_bits::column_major, layout_flag_bits::row_major}) );
+    const layout_flags expected = {
+        layout_flag_bits::column_major, 
+        layout_flag_bits::row_major, 
+        layout_flag_bits::forwards_strided
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected );
 }
 
 TEST_CASE("compute_layout_order should provide both ordering flags for a layout with a single significant axis", "[strided_layout]")
@@ -107,7 +112,12 @@ TEST_CASE("compute_layout_order should provide both ordering flags for a layout 
         axis_descriptor(4, 2),
         axis_descriptor(1, 8),
     };
-    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == layout_flags({layout_flag_bits::column_major, layout_flag_bits::row_major}) );
+    const layout_flags expected = {
+        layout_flag_bits::column_major, 
+        layout_flag_bits::row_major, 
+        layout_flag_bits::forwards_strided
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected );
 }
 
 TEST_CASE("compute_layout_order should provide a single flag for a layout with a multiple significant axis", "[strided_layout]")
@@ -118,11 +128,38 @@ TEST_CASE("compute_layout_order should provide a single flag for a layout with a
         axis_descriptor(1, 8),
         axis_descriptor(24, 8),
     };
-    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == layout_flag_bits::row_major );
-    REQUIRE( compute_layout_flags(layout.crbegin(), layout.crend()) == layout_flag_bits::column_major );
+    const layout_flags expected1 = {
+        layout_flag_bits::row_major, 
+        layout_flag_bits::forwards_strided
+    };
+    const layout_flags expected2 = {
+        layout_flag_bits::column_major, 
+        layout_flag_bits::forwards_strided
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected1 );
+    REQUIRE( compute_layout_flags(layout.crbegin(), layout.crend()) == expected2 );
 }
 
-TEST_CASE("compute_layout_order should provide no flags for an unordered layout", "[strided_layout]")
+TEST_CASE("compute_layout_order should not provided forwards_strided when there is a reversed axis", "[strided_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(1, 0),
+        axis_descriptor(4, 2),
+        axis_descriptor(1, 8),
+        axis_descriptor(2, -8),
+        axis_descriptor(5, 16)
+    };
+    const layout_flags expected1 = {
+        layout_flag_bits::row_major
+    };
+    const layout_flags expected2 = {
+        layout_flag_bits::column_major
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected1 );
+    REQUIRE( compute_layout_flags(layout.crbegin(), layout.crend()) == expected2 );
+}
+
+TEST_CASE("compute_layout_order should provide no ordering flags for an unordered layout", "[strided_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(1, 0),
@@ -131,7 +168,25 @@ TEST_CASE("compute_layout_order should provide no flags for an unordered layout"
         axis_descriptor(2, 1),
         axis_descriptor(24, 8),
     };
-    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == layout_flags() );
+    const layout_flags expected = {
+        layout_flag_bits::forwards_strided
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected );
+}
+
+TEST_CASE("compute_layout_order should still provide forwards_strided when negative strides are used in not significant axes", "[strided_layout]")
+{
+    std::vector<axis_descriptor> layout = {
+        axis_descriptor(1, 0),
+        axis_descriptor(4, 2),
+        axis_descriptor(1, -8),
+        axis_descriptor(2, 1),
+        axis_descriptor(24, 8),
+    };
+    const layout_flags expected = {
+        layout_flag_bits::forwards_strided
+    };
+    REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected );
 }
 
 TEST_CASE("ravel_layout should combine contiguous runs of axes", "[strided_layout]")

@@ -42,6 +42,7 @@ const char* to_string(layout_flag_bits flag) noexcept
     {
     case layout_flag_bits::column_major: return "column_major";
     case layout_flag_bits::row_major: return "row_major";
+    case layout_flag_bits::forwards_strided: return "forwards_strided";
     default: return "";
     }
 }

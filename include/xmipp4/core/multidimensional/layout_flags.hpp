@@ -41,8 +41,12 @@ namespace multidimensional
 
 enum class layout_flag_bits
 {
-    column_major = utils::bit(0),
-    row_major = utils::bit(1),
+    /// Stride magnitudes of significant axes are ordered in decreasing order.
+    column_major = utils::bit(0), 
+    /// Stride magnitudes of significant axes are ordered in increasing order.
+    row_major = utils::bit(1), 
+    /// All strides of significant axes are positive.
+    forwards_strided = utils::bit(2), 
 };
 
 using layout_flags = utils::flagset<layout_flag_bits>;

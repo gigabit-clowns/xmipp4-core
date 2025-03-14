@@ -86,15 +86,25 @@ layout_flags compute_layout_flags(ForwardIt first, ForwardIt last) noexcept
 
     layout_flags result = {
         layout_flag_bits::column_major, 
-        layout_flag_bits::row_major
+        layout_flag_bits::row_major,
+        layout_flag_bits::forwards_strided
     };
 
     if (first != last)
     {
+        if (is_reversed(*first))
+        {
+            result.clear(layout_flag_bits::forwards_strided);
+        }
+
         auto prev = first;
         first = find_first_significant_axis(std::next(first), last);
         while (first != last && result)
-        {
+        {   
+            if (is_reversed(*first))
+            {
+                result.clear(layout_flag_bits::forwards_strided);
+            }
             if (compare_strides_greater(*first, *prev))
             {
                 result.clear(layout_flag_bits::column_major);

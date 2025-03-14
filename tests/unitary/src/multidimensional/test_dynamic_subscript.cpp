@@ -39,19 +39,19 @@ using namespace xmipp4::multidimensional;
 
 
 
-TEST_CASE("construct dynamic subscript from ellipsis_tag", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from ellipsis_tag", "[dynamic_subscript]")
 {
     const auto s = dynamic_subscript(ellipsis());
     REQUIRE( s.get_subscript_type() == dynamic_subscript::subscript_type::ellipsis );
 }
 
-TEST_CASE("construct dynamic subscript from new_axis_tag", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from new_axis_tag", "[dynamic_subscript]")
 {
     const auto s = dynamic_subscript(new_axis());
     REQUIRE( s.get_subscript_type() == dynamic_subscript::subscript_type::new_axis );
 }
 
-TEST_CASE("construct dynamic subscript from index", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from index", "[dynamic_subscript]")
 {
     const auto index = 1234;
     const auto s = dynamic_subscript(index);
@@ -59,7 +59,7 @@ TEST_CASE("construct dynamic subscript from index", "[dynamic_subscript]")
     REQUIRE( s.get_index() == index );
 }
 
-TEST_CASE("construct dynamic subscript from constant index", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from constant index", "[dynamic_subscript]")
 {
     const auto index = std::integral_constant<int, 1234>();
     const auto s = dynamic_subscript(index);
@@ -67,7 +67,7 @@ TEST_CASE("construct dynamic subscript from constant index", "[dynamic_subscript
     REQUIRE( s.get_index() == index );
 }
 
-TEST_CASE("construct dynamic subscript from slice", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from slice", "[dynamic_subscript]")
 {
     const auto slice = make_slice(1, 2, 3);
     const auto s = dynamic_subscript(slice);
@@ -75,14 +75,14 @@ TEST_CASE("construct dynamic subscript from slice", "[dynamic_subscript]")
     REQUIRE( s.get_slice() == slice );
 }
 
-TEST_CASE("construct dynamic subscript from special slice", "[dynamic_subscript]")
+TEST_CASE("construct dynamic_subscript from special slice", "[dynamic_subscript]")
 {
     const auto s = dynamic_subscript(all());
     REQUIRE( s.get_subscript_type() == dynamic_subscript::subscript_type::slice );
     REQUIRE( s.get_slice() == all() );
 }
 
-TEST_CASE("copy-construct dynamic subscript from slice", "[dynamic_subscript]")
+TEST_CASE("copy-construct dynamic_subscript from slice", "[dynamic_subscript]")
 {
     const auto slice = make_slice(1, 2, 3);
     const auto s0 = dynamic_subscript(slice);
@@ -91,7 +91,7 @@ TEST_CASE("copy-construct dynamic subscript from slice", "[dynamic_subscript]")
     REQUIRE( s1.get_slice() == slice );
 }
 
-TEST_CASE("copy-assign dynamic subscript from slice", "[dynamic_subscript]")
+TEST_CASE("copy-assign dynamic_subscript from slice", "[dynamic_subscript]")
 {
     const auto slice = make_slice(1, 2, 3);
     const auto s0 = dynamic_subscript(slice);
@@ -101,7 +101,7 @@ TEST_CASE("copy-assign dynamic subscript from slice", "[dynamic_subscript]")
     REQUIRE( s1.get_slice() == slice );
 }
 
-TEST_CASE("visit function with a dynamic subscript that holds an ellipsis_tag", "[dynamic_subscript]")
+TEST_CASE("visit function with a dynamic_subscript that holds an ellipsis_tag", "[dynamic_subscript]")
 {
     mock_subscript_callable mock;
     REQUIRE_CALL(mock, function_call(ellipsis()));
@@ -110,7 +110,7 @@ TEST_CASE("visit function with a dynamic subscript that holds an ellipsis_tag", 
     visit(mock, s);
 }
 
-TEST_CASE("visit function with a dynamic subscript that holds a new_axis_tag", "[dynamic_subscript]")
+TEST_CASE("visit function with a dynamic_subscript that holds a new_axis_tag", "[dynamic_subscript]")
 {
     mock_subscript_callable mock;
     REQUIRE_CALL(mock, function_call(new_axis()));
@@ -119,7 +119,7 @@ TEST_CASE("visit function with a dynamic subscript that holds a new_axis_tag", "
     visit(mock, s);
 }
 
-TEST_CASE("visit function with a dynamic subscript that holds an index", "[dynamic_subscript]")
+TEST_CASE("visit function with a dynamic_subscript that holds an index", "[dynamic_subscript]")
 {
     mock_subscript_callable mock;
     const std::ptrdiff_t index = 12345;

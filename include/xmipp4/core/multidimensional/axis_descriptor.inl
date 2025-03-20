@@ -224,35 +224,17 @@ std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept
     return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
 }
 
-namespace detail
-{
-
-// No axis to broadcast. Always succeed.
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast() noexcept
-{
-    return true;
-}
-
-// Single axis to broadcast. Always succeed.
-XMIPP4_INLINE_CONSTEXPR
-bool broadcast(const axis_descriptor&) noexcept
-{
-    return true;
-}
-
-/// Broadcast a pair of axes.
-XMIPP4_INLINE_CONSTEXPR
-bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
+bool broadcast(axis_descriptor &axis, std::size_t &extent) noexcept
 {
     bool result = true;
 
-    if(x.get_extent() != y.get_extent())
+    if(axis.get_extent() != extent)
     {
-        if(x.get_extent() == 1)
-            x = make_phantom_axis(y.get_extent());
-        else if(y.get_extent() == 1)
-            y = make_phantom_axis(x.get_extent());
+        if(axis.get_extent() == 1)
+            axis = make_phantom_axis(extent);
+        else if(extent == 1)
+            extent = axis.get_extent();
         else
             result = false; // Unable to broadcast
     }
@@ -260,37 +242,20 @@ bool broadcast(axis_descriptor &x, axis_descriptor &y) noexcept
     return result;
 }
 
-/// Broadcast N>2 axes.
-template<typename... AxisDescriptors>
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast(axis_descriptor& first, 
-               axis_descriptor& second,
-               axis_descriptor& third,
-               AxisDescriptors&... others ) noexcept
+bool broadcast_to(axis_descriptor &axis, std::size_t extent) noexcept
 {
-    // This code recursively explores adjacent items in a ping-pong
-    // pattern, so that changes propagate back to the first element.
-    // For instance, when called with 4 arguments, it leads to the 
-    // comparing broadcast for the following combinations:
-    // (0, 1) (1, 2) (2, 3) (1, 2) (0, 1)
+    bool result = true;
 
-    if(!broadcast(first, second)) // Forward propagate
-        return false;
-    if(!broadcast(second, third, others...)) // Recurse
-        return false;
-    if(!broadcast(first, second)) // Back propagate 
-        return false;
+    if(axis.get_extent() != extent)
+    {
+        if(axis.get_extent() == 1)
+            axis = make_phantom_axis(extent);
+        else
+            result = false; // Unable to broadcast
+    }
 
-    return true;
-}
-
-} // namespace detail
-
-template<typename... AxisDescriptors>
-XMIPP4_INLINE_CONSTEXPR
-bool broadcast(AxisDescriptors&... axes) noexcept
-{
-    return detail::broadcast(axes...);
+    return result;
 }
 
 

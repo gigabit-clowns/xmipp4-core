@@ -326,27 +326,45 @@ XMIPP4_CONSTEXPR
 std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept;
 
 /**
- * @brief Broadcast axis extents.
+ * @brief Perform a broadcast between an axis an a extent.
  * 
- * Broadcasting tries to match axis extents without altering the
- * storage requirements. 
+ * If the axis' extent matches the provided extent, nothing is modified
+ * and true is returned.
+ * If the axis' extent does not match the provided extent but the former 
+ * one is 1, the axis is replaced a phantom axis with an extent of the 
+ * later value and true is returned.
+ * If the axis' extent does not match the provided extent but this equals 1,
+ * it will be overwritten with the extent of the axis and true is returned.
+ * If the extent mismatch and none of them equals 1, nothing is modified and
+ * false is returned. 
  * 
- * If all axes have the same extents nothing is modified and true 
- * is returned.
- * If some axes mismatch the size of the rest but have an extent of 1,
- * they are replaced with a phantom axis with the same extent as the other 
- * ones and true is returned. For this to happen, there needs to be at
- * least one axis with an extent different to 1.
- * Otherwise nothing can be performed to match axis extents and false 
- * is returned. In this case, axes are left in a valid but undefined state.
+ * @param axis1 The axis to be broadcasted.
+ * @param extent2 The extent to be broadcasted.
+ * @return true When successful.
+ * @return false when unable to broadcast.
  * 
- * @tparam AxisDescriptors axis_descriptor types.
- * @param descriptors Axis descriptors to be broadcasted
- * @return bool True when success, False otherwise.
  */
-template<typename... AxisDescriptors>
 XMIPP4_CONSTEXPR
-bool broadcast(AxisDescriptors&... descriptors) noexcept;
+bool broadcast(axis_descriptor &axis, std::size_t &extent) noexcept;
+
+/**
+ * @brief Perform a broadcast of an axis to a specific extent.
+ * 
+ * If the axis' extent matches the provided extent, nothing is modified
+ * and true is returned.
+ * If the axis' extent does not match the provided extent but the former 
+ * one is 1, the axis is replaced with a phantom axis with the provided 
+ * extent, and true is returned.
+ * If the axis' extent does not match the provided extent and is not 1, 
+ * nothing is modified and false is returned.
+ * 
+ * @param axis The axis to be broadcasted.
+ * @param extent The target extent for broadcasting.
+ * @return true When successful.
+ * @return false When unable to broadcast.
+ */
+XMIPP4_CONSTEXPR
+bool broadcast_to(axis_descriptor &axis, std::size_t extent) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset

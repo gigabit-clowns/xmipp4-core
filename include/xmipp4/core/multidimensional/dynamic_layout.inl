@@ -204,7 +204,7 @@ dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
+dynamic_layout dynamic_layout::permute(span<const std::size_t> order) const
 {
     dynamic_layout result = *this;
     result.permute_inplace(order);
@@ -212,7 +212,7 @@ dynamic_layout dynamic_layout::permute(span<std::size_t> order) const
 }
 
 inline
-dynamic_layout& dynamic_layout::permute_inplace(span<std::size_t> order)
+dynamic_layout& dynamic_layout::permute_inplace(span<const std::size_t> order)
 {
     check_axis_permutation(order.begin(), order.end(), m_axes.size());
 
@@ -295,6 +295,93 @@ dynamic_layout& dynamic_layout::ravel_inplace() noexcept
 
     update_flags();
     return *this;
+}
+
+inline
+dynamic_layout dynamic_layout::broadcast(std::vector<std::size_t> &extents) const
+{
+    dynamic_layout result = *this;
+    result.broadcast_inplace(extents);
+    return result;
+}
+
+inline
+dynamic_layout& dynamic_layout::broadcast_inplace(std::vector<std::size_t> &extents)
+{
+    if (m_axes.size() < extents.size())
+    {
+        const std::size_t old_size = m_axes.size();
+        const std::size_t new_size = extents.size();
+        const std::size_t padding = new_size - old_size;
+        m_axes.insert(
+            m_axes.cbegin(),
+            padding,
+            make_phantom_axis()
+        );
+    }
+    else if (m_axes.size() > extents.size())
+    {
+        const std::size_t old_size = extents.size();
+        const std::size_t new_size = m_axes.size();
+        const std::size_t padding = new_size - old_size;
+        extents.insert(
+            extents.cbegin(),
+            padding,
+            1UL
+        );
+    }
+
+    const std::size_t count = extents.size(); 
+    for(std::size_t i = 0; i < count; ++i)
+    {
+        if (!multidimensional::broadcast(m_axes[i], extents[i]))
+        {
+            std::ostringstream ss;
+            ss << "axis of extent " << i << "and extent " << extents[i]
+               << " cannot be broadcasted.";
+            throw std::invalid_argument(ss.str());
+        }
+    }
+}
+
+inline
+dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) const
+{
+    dynamic_layout result = *this;
+    result.broadcast_to_inplace(extents);
+    return result;
+}
+
+inline
+dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> extents)
+{
+    if (m_axes.size() < extents.size())
+    {
+        const std::size_t old_size = m_axes.size();
+        const std::size_t new_size = extents.size();
+        const std::size_t padding = new_size - old_size;
+        m_axes.insert(
+            m_axes.cbegin(),
+            padding,
+            make_phantom_axis()
+        );
+    }
+    else if (m_axes.size() > extents.size())
+    {
+        throw std::invalid_argument("layout has more axes than extents");
+    }
+
+    const std::size_t count = extents.size(); 
+    for(std::size_t i = 0; i < count; ++i)
+    {
+        if (!multidimensional::broadcast_to(m_axes[i], extents[i]))
+        {
+            std::ostringstream ss;
+            ss << "axis of extent " << i 
+               << " cannot be broadcasted to extent " << extents[i];
+            throw std::invalid_argument(ss.str());
+        }
+    }
 }
 
 

@@ -158,6 +158,8 @@ public:
      * 
      * @param subscripts The subscripts.
      * @return dynamic_layout The resulting layout.
+     * @throws std::runtime_error If an ellipsis subscript is encountered (not implemented).
+     * @throws std::invalid_argument If not all subscripts are processed.
      */
     XMIPP4_NODISCARD
     dynamic_layout apply_subscripts(span<dynamic_subscript> subscripts) const;
@@ -167,6 +169,8 @@ public:
      * 
      * @param subscripts The subscripts.
      * @return dynamic_layout& The resulting layout.
+     * @throws std::runtime_error If an ellipsis subscript is encountered (not implemented).
+     * @throws std::invalid_argument If not all subscripts are processed.
      */
     dynamic_layout& apply_subscripts_inplace(span<dynamic_subscript> subscripts);
 
@@ -192,9 +196,10 @@ public:
      * size as the amount of dimensions and it must feature strictly one
      * instance of each number in [0, rank).
      * @return dynamic_layout Permuted layout.
+     * @throws std::invalid_argument If the permutation order is invalid.
      */
     XMIPP4_NODISCARD
-    dynamic_layout permute(span<std::size_t> order) const;
+    dynamic_layout permute(span<const std::size_t> order) const;
 
     /**
      * @brief Permute the order of the axes in-place.
@@ -203,8 +208,9 @@ public:
      * size as the amount of dimensions and it must feature strictly one
      * instance of each number in [0, rank).
      * @return dynamic_layout& *this
+     * @throws std::invalid_argument If the permutation order is invalid.
      */
-    dynamic_layout& permute_inplace(span<std::size_t> order);
+    dynamic_layout& permute_inplace(span<const std::size_t> order);
 
     /**
      * @brief Swap two axes.
@@ -212,6 +218,7 @@ public:
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return dynamic_layout Permuted layout.
+     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
     dynamic_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
@@ -222,6 +229,7 @@ public:
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return dynamic_layout& *this
+     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     dynamic_layout& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
 
@@ -260,6 +268,63 @@ public:
      * @return dynamic_layout& *this
      */
     dynamic_layout& ravel_inplace() noexcept;
+
+    /**
+     * @brief Perform a broadcast between the layout and the provided extents.
+     * 
+     * This function modifies the layout to match the provided extents by 
+     * adding phantom axes or adjusting existing axes as needed. Similarly,
+     * it will add or modify extents of size 1 to match the layout.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return dynamic_layout The resulting broadcasted layout.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    dynamic_layout broadcast(std::vector<std::size_t> &extents) const;
+
+    /**
+     * @brief Perform a broadcast between the layout and the provided extents
+     * in-place.
+     * 
+     * This function modifies the layout to match the provided extents by 
+     * adding phantom axes or adjusting existing axes as needed. Similarly,
+     * it will add or modify extents of size 1 to match the layout.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return dynamic_layout& The modified layout.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    dynamic_layout& broadcast_inplace(std::vector<std::size_t> &extents);
+
+    /**
+     * @brief Perform a broadcast of the layout to match the provided extents.
+     * 
+     * This function modifies the layout to match the provided extents by 
+     * adding phantom axes or adjusting existing axes as needed.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return dynamic_layout The resulting broadcasted layout.
+     * @throws std::invalid_argument If the layout has more axes than extents.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to the 
+     * provided extents.
+     */
+    dynamic_layout broadcast_to(span<const std::size_t> extents) const;
+
+    /**
+     * @brief Perform a broadcast of the layout to match the provided extents in-place.
+     * 
+     * This function modifies the current layout to match the provided extents
+     * by adding phantom axes or adjusting existing axes as needed.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return dynamic_layout& The modified layout.
+     * @throws std::invalid_argument If the layout has more axes than extents.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    dynamic_layout& broadcast_to_inplace(span<const std::size_t> extents);
 
 private:
     std::vector<axis_descriptor> m_axes;

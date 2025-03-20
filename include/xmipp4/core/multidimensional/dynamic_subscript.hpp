@@ -54,7 +54,7 @@ class dynamic_subscript
 {
 public:
     /**
-     * @brief Enumeration holding the values that can hold this object. 
+     * @brief Enumeration holding the types this object can hold. 
      * 
      */
     enum class subscript_type

@@ -44,7 +44,7 @@ namespace multidimensional
 {
 
 /**
- * @brief Class describing a reference to a layout.adjacent
+ * @brief Class describing a reference to a layout.
  * 
  * This reference uses Copy on Write (CoW) semantics, so that the underlying
  * layout is copied on write operations. When empty, it represents a
@@ -222,6 +222,51 @@ public:
      * @return layout_reference& *this
      */
     layout_reference& ravel_inplace() noexcept;
+
+    /**
+     * @brief Perform a broadcast between the layout and the provided extents.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return layout_reference The resulting broadcasted layout.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    XMIPP4_NODISCARD
+    layout_reference broadcast(std::vector<std::size_t> &extents) const;
+
+    /**
+     * @brief Perform a broadcast between the layout and the provided extents
+     * in-place.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return layout_reference& The modified layout.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    layout_reference& broadcast_inplace(std::vector<std::size_t> &extents);
+
+    /**
+     * @brief Perform a broadcast of the layout to match the provided extents.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return layout_reference The resulting broadcasted layout.
+     * @throws std::invalid_argument If the layout has more axes than extents.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to the 
+     * provided extents.
+     */
+    XMIPP4_NODISCARD
+    layout_reference broadcast_to(span<const std::size_t> extents) const;
+
+    /**
+     * @brief Perform a broadcast of the layout to match the provided extents in-place.
+     * 
+     * @param extents Extents to broadcast to.
+     * @return layout_reference& The modified layout.
+     * @throws std::invalid_argument If the layout has more axes than extents.
+     * @throws std::invalid_argument If the axes cannot be broadcasted to 
+     * the provided extents.
+     */
+    layout_reference& broadcast_to_inplace(span<const std::size_t> extents);
 
 private:
     std::shared_ptr<layout_type> m_layout;

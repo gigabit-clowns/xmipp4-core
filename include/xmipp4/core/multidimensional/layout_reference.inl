@@ -204,6 +204,48 @@ layout_reference<T>& layout_reference<T>::ravel_inplace() noexcept
     return apply_inplace(std::mem_fn(&layout_type::ravel_inplace));
 }
 
+template <typename T>
+XMIPP4_NODISCARD
+layout_reference<T> 
+layout_reference<T>::broadcast(std::vector<std::size_t> &extents) const
+{
+    return apply(std::mem_fn(&layout_type::broadcast, extents));
+}
+
+template <typename T>
+inline
+layout_reference<T>& 
+layout_reference<T>::broadcast_inplace(std::vector<std::size_t> &extents)
+{
+    return apply_inplace(std::mem_fn(&layout_type::broadcast_inplace, extents));
+}
+
+template <typename T>
+XMIPP4_NODISCARD
+layout_reference<T> 
+layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
+{
+    if (!m_layout && !extents.empty())
+    {
+        m_layout = std::make_shared<layout_type>();
+    }
+
+    return apply(std::mem_fn(&layout_type::broadcast_to, extents));
+}
+
+template <typename T>
+inline
+layout_reference<T>& 
+layout_reference<T>::broadcast_to_inplace(span<const std::size_t> extents)
+{
+    if (!m_layout && !extents.empty())
+    {
+        m_layout = std::make_shared<layout_type>();
+    }
+
+    return apply_inplace(std::mem_fn(&layout_type::broadcast_to_inplace, extents));
+}
+
 
 
 template <typename T>

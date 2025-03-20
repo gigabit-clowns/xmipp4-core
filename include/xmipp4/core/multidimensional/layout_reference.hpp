@@ -116,7 +116,7 @@ public:
 
 
     /**
-     * @brief Apply a set of dynamic dynamic subscripts to this layout.
+     * @brief Apply a set of dynamic subscripts to this layout.
      * 
      * @param subscripts The subscripts.
      * @return layout_reference The resulting layout.
@@ -125,27 +125,12 @@ public:
     layout_reference apply_subscripts(span<dynamic_subscript> subscripts) const;
 
     /**
-     * @brief Apply a set of dynamic dynamic subscripts to this layout in-place.
-     * 
-     * @param subscripts The subscripts.
-     * @return layout_reference& The resulting layout.
-     */
-    layout_reference& apply_subscripts_inplace(span<dynamic_subscript> subscripts);
-
-    /**
      * @brief Reverse the order of the axes.
      * 
      * @return layout_reference The resulting layout.
      */
     XMIPP4_NODISCARD
     layout_reference transpose() const;
-
-    /**
-     * @brief Reverse the order of the axes in-place.
-     * 
-     * @return layout_reference& *this
-     */
-    layout_reference& transpose_inplace() noexcept;
 
     /**
      * @brief Permute the order of the axes.
@@ -159,16 +144,6 @@ public:
     layout_reference permute(span<std::size_t> order) const;
 
     /**
-     * @brief Permute the order of the axes in-place.
-     * 
-     * @param order Order acquired by the new layout. Must have the same 
-     * size as the amount of dimensions and it must feature strictly one
-     * instance of each number in [0, rank).
-     * @return layout_reference& *this
-     */
-    layout_reference& permute_inplace(span<std::size_t> order);
-
-    /**
      * @brief Swap two axes.
      * 
      * @param axis1 Index of the first axis. Must be in [0, rank).
@@ -179,28 +154,12 @@ public:
     layout_reference swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
-     * @brief Swap two axes.
-     * 
-     * @param axis1 Index of the first axis. Must be in [0, rank).
-     * @param axis2 Index of the second axis. Must be in [0, rank).
-     * @return layout_reference& *this
-     */
-    layout_reference& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
-
-    /**
      * @brief Remove insignificant axes of the layout.
      * 
      * @return layout_reference The resulting layout.
      */
     XMIPP4_NODISCARD
     layout_reference squeeze() const;
-
-    /**
-     * @brief Remove insignificant axes of the layout in-place.
-     * 
-     * @return layout_reference& *this
-     */
-    layout_reference& squeeze_inplace() noexcept;
 
     /**
      * @brief Reduce the rank of the layout as much as possible by combining
@@ -214,16 +173,6 @@ public:
     layout_reference ravel() const;
 
     /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
-     * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
-     * 
-     * @return layout_reference& *this
-     */
-    layout_reference& ravel_inplace() noexcept;
-
-    /**
      * @brief Perform a broadcast between the layout and the provided extents.
      * 
      * @param extents Extents to broadcast to.
@@ -233,17 +182,6 @@ public:
      */
     XMIPP4_NODISCARD
     layout_reference broadcast(std::vector<std::size_t> &extents) const;
-
-    /**
-     * @brief Perform a broadcast between the layout and the provided extents
-     * in-place.
-     * 
-     * @param extents Extents to broadcast to.
-     * @return layout_reference& The modified layout.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
-     */
-    layout_reference& broadcast_inplace(std::vector<std::size_t> &extents);
 
     /**
      * @brief Perform a broadcast of the layout to match the provided extents.
@@ -257,26 +195,11 @@ public:
     XMIPP4_NODISCARD
     layout_reference broadcast_to(span<const std::size_t> extents) const;
 
-    /**
-     * @brief Perform a broadcast of the layout to match the provided extents in-place.
-     * 
-     * @param extents Extents to broadcast to.
-     * @return layout_reference& The modified layout.
-     * @throws std::invalid_argument If the layout has more axes than extents.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
-     */
-    layout_reference& broadcast_to_inplace(span<const std::size_t> extents);
-
 private:
     std::shared_ptr<layout_type> m_layout;
 
-    void copy_on_write();
-
     template <typename Func, typename... Args>
     layout_reference apply(Func &&func, Args&& ...args);
-    template <typename Func, typename... Args>
-    layout_reference& apply_inplace(Func &&func, Args&& ...args);
 
 };
 

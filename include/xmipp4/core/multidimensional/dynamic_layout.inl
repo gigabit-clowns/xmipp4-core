@@ -286,7 +286,7 @@ inline
 dynamic_layout& dynamic_layout::coalesce_axes_inplace() noexcept
 {
     sort_layout_inplace(m_axes.begin(), m_axes.end());
-    const auto ite = ravel_layout_inplace(
+    const auto ite = coalesce_layout_inplace(
         m_axes.begin(), 
         m_axes.end(), 
         m_offset

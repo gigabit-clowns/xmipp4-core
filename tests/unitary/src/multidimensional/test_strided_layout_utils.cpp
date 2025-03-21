@@ -189,7 +189,7 @@ TEST_CASE("compute_layout_order should still provide forwards_strided when negat
     REQUIRE( compute_layout_flags(layout.cbegin(), layout.cend()) == expected );
 }
 
-TEST_CASE("ravel_layout should combine contiguous runs of axes", "[strided_layout]")
+TEST_CASE("coalesce_layout should combine contiguous runs of axes", "[strided_layout]")
 {
     std::vector<axis_descriptor> layout = {
         axis_descriptor(1, 0),
@@ -210,7 +210,7 @@ TEST_CASE("ravel_layout should combine contiguous runs of axes", "[strided_layou
 
 
     sort_layout_inplace(packed.begin(), packed.end());
-    auto ite = ravel_layout_inplace(packed.begin(), packed.end(), offset);
+    auto ite = coalesce_layout_inplace(packed.begin(), packed.end(), offset);
     packed.erase(ite, packed.end());
 
     REQUIRE( packed.size() == 3 );

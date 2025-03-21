@@ -85,29 +85,11 @@ array<Storage, Layout>::transpose() const
 }
 
 template <typename Storage, typename Layout>
-inline
-array<Storage, Layout>& 
-array<Storage, Layout>::transpose_inplace() noexcept
-{
-    m_layout.transpose_inplace();
-    return *this;
-}
-
-template <typename Storage, typename Layout>
 XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::permute(span<std::size_t> order) const
 {
     return array(m_storage, m_layout.permute(order));
-}
-
-template <typename Storage, typename Layout>
-inline
-array<Storage, Layout>& 
-array<Storage, Layout>::permute_inplace(span<std::size_t> order)
-{
-    m_layout.permute_inplace(order);
-    return *this;
 }
 
 template <typename Storage, typename Layout>
@@ -119,15 +101,6 @@ array<Storage, Layout>::swap_axes(std::size_t axis1, std::size_t axis2) const
 }
 
 template <typename Storage, typename Layout>
-inline
-array<Storage, Layout>& 
-array<Storage, Layout>::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
-{
-    m_layout.swap_axes_inplace(axis1, axis2);
-    return *this;
-}
-
-template <typename Storage, typename Layout>
 XMIPP4_NODISCARD inline
 array<Storage, Layout> 
 array<Storage, Layout>::squeeze() const
@@ -136,29 +109,11 @@ array<Storage, Layout>::squeeze() const
 }
 
 template <typename Storage, typename Layout>
-inline
-array<Storage, Layout>& 
-array<Storage, Layout>::squeeze_inplace() noexcept
-{
-    m_layout.squeeze_inplace();
-    return *this;
-}
-
-template <typename Storage, typename Layout>
 XMIPP4_NODISCARD inline
 array<Storage, Layout> 
-array<Storage, Layout>::ravel() const
+array<Storage, Layout>::coalesce_axes() const
 {
-    return array(m_storage, m_layout.ravel());
-}
-
-template <typename Storage, typename Layout>
-inline
-array<Storage, Layout>& 
-array<Storage, Layout>::ravel_inplace() noexcept
-{
-    m_layout.ravel_inplace();
-    return *this;
+    return array(m_storage, m_layout.coalesce_axes());
 }
 
 } // namespace multidimensional

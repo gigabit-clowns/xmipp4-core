@@ -130,13 +130,6 @@ public:
     array transpose() const;
 
     /**
-     * @brief Reverse the order of the axes in-place.
-     * 
-     * @return array& *this
-     */
-    array& transpose_inplace() noexcept;
-
-    /**
      * @brief Permute the order of the axes.
      * 
      * @param order Order acquired by the new layout. Must have the same 
@@ -146,16 +139,6 @@ public:
      */
     XMIPP4_NODISCARD
     array permute(span<std::size_t> order) const;
-
-    /**
-     * @brief Permute the order of the axes in-place.
-     * 
-     * @param order Order acquired by the new layout. Must have the same 
-     * size as the amount of dimensions and it must feature strictly one
-     * instance of each number in [0, rank).
-     * @return array& *this
-     */
-    array& permute_inplace(span<std::size_t> order);
 
     /**
      * @brief Swap two axes.
@@ -168,15 +151,6 @@ public:
     array swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
-     * @brief Swap two axes.
-     * 
-     * @param axis1 Index of the first axis. Must be in [0, rank).
-     * @param axis2 Index of the second axis. Must be in [0, rank).
-     * @return array& *this
-     */
-    array& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
-
-    /**
      * @brief Remove insignificant axes of the layout.
      * 
      * @return array The resulting layout.
@@ -185,13 +159,6 @@ public:
     array squeeze() const;
 
     /**
-     * @brief Remove insignificant axes of the layout in-place.
-     * 
-     * @return array& *this
-     */
-    array& squeeze_inplace() noexcept;
-
-    /**
      * @brief Reduce the rank of the layout as much as possible by combining
      * contiguous axes.
      * 
@@ -200,17 +167,7 @@ public:
      * @return array The resulting layout.
      */
     XMIPP4_NODISCARD
-    array ravel() const;
-
-    /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
-     * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
-     * 
-     * @return array& *this
-     */
-    array& ravel_inplace() noexcept;
+    array coalesce_axes() const;
 
 private:
     storage_type m_storage;

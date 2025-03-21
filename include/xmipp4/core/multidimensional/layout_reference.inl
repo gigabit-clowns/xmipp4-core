@@ -142,9 +142,9 @@ layout_reference<T> layout_reference<T>::squeeze() const
 
 template <typename T>
 XMIPP4_NODISCARD inline
-layout_reference<T> layout_reference<T>::ravel() const
+layout_reference<T> layout_reference<T>::coalesce_axes() const
 {
-    return apply(std::mem_fn(&layout_type::ravel));
+    return apply(std::mem_fn(&layout_type::coalesce_axes));
 }
 
 template <typename T>

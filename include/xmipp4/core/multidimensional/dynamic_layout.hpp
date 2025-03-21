@@ -257,7 +257,7 @@ public:
      * @return dynamic_layout The resulting layout.
      */
     XMIPP4_NODISCARD
-    dynamic_layout ravel() const;
+    dynamic_layout coalesce_axes() const;
 
     /**
      * @brief Reduce the rank of the layout as much as possible by combining
@@ -267,7 +267,7 @@ public:
      * 
      * @return dynamic_layout& *this
      */
-    dynamic_layout& ravel_inplace() noexcept;
+    dynamic_layout& coalesce_axes_inplace() noexcept;
 
     /**
      * @brief Perform a broadcast between the layout and the provided extents.

@@ -165,12 +165,12 @@ public:
      * @brief Reduce the rank of the layout as much as possible by combining
      * contiguous axes.
      * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
+     * Unlike numpy's coalesce_axes, this will only combine axes when possible.
      * 
      * @return layout_reference The resulting layout.
      */
     XMIPP4_NODISCARD
-    layout_reference ravel() const;
+    layout_reference coalesce_axes() const;
 
     /**
      * @brief Perform a broadcast between the layout and the provided extents.

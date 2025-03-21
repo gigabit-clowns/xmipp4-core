@@ -275,15 +275,15 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::ravel() const
+dynamic_layout dynamic_layout::coalesce_axes() const
 {
     dynamic_layout result = *this;
-    result.ravel_inplace();
+    result.coalesce_axes_inplace();
     return result;
 }
 
 inline
-dynamic_layout& dynamic_layout::ravel_inplace() noexcept
+dynamic_layout& dynamic_layout::coalesce_axes_inplace() noexcept
 {
     sort_layout_inplace(m_axes.begin(), m_axes.end());
     const auto ite = ravel_layout_inplace(

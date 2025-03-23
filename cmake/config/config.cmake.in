@@ -20,14 +20,12 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
+@PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
 
-find_dependency(Threads REQUIRED)
+find_dependency(Threads)
 find_dependency(spdlog)
 find_dependency(half)
 
 include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
-
-@PACKAGE_INIT@

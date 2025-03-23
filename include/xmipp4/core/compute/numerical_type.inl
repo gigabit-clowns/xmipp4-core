@@ -22,6 +22,7 @@
 
 #include "numerical_type.hpp"
 
+#include <cstdint>
 #include <unordered_map>
 
 namespace xmipp4

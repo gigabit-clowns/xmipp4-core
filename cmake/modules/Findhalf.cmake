@@ -49,5 +49,6 @@ find_package_handle_standard_args(half
 )
 
 # Define the target
-add_library(half INTERFACE IMPORTED)
-target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+set(HALF_TARGET "half")
+add_library(${HALF_TARGET} INTERFACE IMPORTED)
+target_include_directories(${HALF_TARGET} INTERFACE ${half_INCLUDE_DIR})

@@ -126,11 +126,8 @@ public:
 
     int get_rank() const override;
 
-    std::unique_ptr<communicator> split(int colour, 
+    std::shared_ptr<communicator> split(int colour, 
                                         int rank_priority ) const override;
-
-    std::shared_ptr<communicator> split_shared(int colour, 
-                                               int rank_priority ) const override;
 
     void barrier() override;
 

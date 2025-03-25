@@ -62,7 +62,7 @@ public:
      * @return std::shared_ptr<communicator> Reference to the world
      * communicator.
      */
-    virtual std::shared_ptr<communicator> get_world_communicator() const = 0;
+    virtual std::shared_ptr<communicator> create_world_communicator() const = 0;
 
 }; 
 

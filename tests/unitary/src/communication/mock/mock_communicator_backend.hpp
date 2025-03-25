@@ -44,7 +44,7 @@ public:
     MAKE_MOCK0(get_version, version (), const noexcept override);
     MAKE_MOCK0(is_available, bool (), const noexcept override);
     MAKE_MOCK0(get_priority, backend_priority (), const noexcept override);
-    MAKE_MOCK0(get_world_communicator, std::shared_ptr<communicator> (), const override);
+    MAKE_MOCK0(create_world_communicator, std::shared_ptr<communicator> (), const override);
 
 };
 

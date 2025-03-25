@@ -182,14 +182,8 @@ int dummy_communicator::get_rank() const
     return 0;
 }
 
-std::unique_ptr<communicator> 
-dummy_communicator::split(int, int) const
-{
-    return std::make_unique<dummy_communicator>();
-}
-
 std::shared_ptr<communicator> 
-dummy_communicator::split_shared(int, int) const
+dummy_communicator::split(int, int) const
 {
     return std::make_shared<dummy_communicator>();
 }

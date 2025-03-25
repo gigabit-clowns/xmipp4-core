@@ -79,23 +79,9 @@ bool host_device_backend::get_device_properties(std::size_t id,
     return result;
 }
 
-std::unique_ptr<device> 
-host_device_backend::create_device(std::size_t id,
-                                   const device_create_parameters& )
-{
-    std::unique_ptr<device> result;
-    
-    if (id == 0)
-    {
-        result = std::make_unique<host_device>();
-    }
-
-    return result;
-}
-
 std::shared_ptr<device> 
-host_device_backend::create_device_shared(std::size_t id, 
-                                          const device_create_parameters& )
+host_device_backend::create_device(std::size_t id, 
+                                   const device_create_parameters& )
 {
     std::shared_ptr<device> result;
 

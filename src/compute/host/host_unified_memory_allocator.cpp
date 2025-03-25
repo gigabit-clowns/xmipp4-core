@@ -36,21 +36,14 @@ namespace xmipp4
 namespace compute
 {
 
-std::unique_ptr<host_unified_buffer> 
+std::shared_ptr<host_unified_buffer> 
 host_unified_memory_allocator::create_unified_buffer(std::size_t size, 
                                                      std::size_t alignment )
-{
-    return std::make_unique<default_host_unified_buffer>(size, alignment);
-}
-
-std::shared_ptr<host_unified_buffer> 
-host_unified_memory_allocator::create_unified_buffer_shared(std::size_t size, 
-                                                            std::size_t alignment )
 {
     return std::make_shared<default_host_unified_buffer>(size, alignment);
 }
 
-std::unique_ptr<device_buffer> 
+std::shared_ptr<device_buffer> 
 host_unified_memory_allocator::create_device_buffer(std::size_t size,
                                                     std::size_t alignment,
                                                     device_queue& )
@@ -58,15 +51,7 @@ host_unified_memory_allocator::create_device_buffer(std::size_t size,
     return create_unified_buffer(size, alignment);
 }
 
-std::shared_ptr<device_buffer> 
-host_unified_memory_allocator::create_device_buffer_shared(std::size_t size,
-                                                           std::size_t alignment,
-                                                           device_queue& )
-{
-    return create_unified_buffer_shared(size, alignment);
-}
-
-std::unique_ptr<host_buffer> 
+std::shared_ptr<host_buffer> 
 host_unified_memory_allocator::create_host_buffer(std::size_t size,
                                                   std::size_t alignment,
                                                   device_queue& )
@@ -75,25 +60,10 @@ host_unified_memory_allocator::create_host_buffer(std::size_t size,
 }
 
 std::shared_ptr<host_buffer> 
-host_unified_memory_allocator::create_host_buffer_shared(std::size_t size,
-                                                         std::size_t alignment,
-                                                         device_queue& )
-{
-    return create_unified_buffer_shared(size, alignment);
-}
-
-std::unique_ptr<host_buffer> 
 host_unified_memory_allocator::create_host_buffer(std::size_t size,
                                                   std::size_t alignment )
 {
     return create_unified_buffer(size, alignment);
-}
-
-std::shared_ptr<host_buffer> 
-host_unified_memory_allocator::create_host_buffer_shared(std::size_t size,
-                                                         std::size_t alignment )
-{
-    return create_unified_buffer_shared(size, alignment);
 }
 
 } // namespace compute

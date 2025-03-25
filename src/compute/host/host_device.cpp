@@ -38,90 +38,58 @@ namespace xmipp4
 namespace compute
 {
 
+host_device::host_device()
+    : m_queue_pool()
+    , m_allocator(std::make_shared<host_unified_memory_allocator>())
+    , m_transfer(std::make_shared<host_transfer>())
+    , m_event(std::make_shared<host_event>())
+{
+}
+
 host_device_queue_pool& host_device::get_queue_pool()
 {
     return m_queue_pool;
 }
 
-std::unique_ptr<device_memory_allocator> 
-host_device::create_device_memory_allocator()
-{
-    return std::make_unique<host_unified_memory_allocator>();
-}
-
 std::shared_ptr<device_memory_allocator> 
-host_device::create_device_memory_allocator_shared() 
+host_device::create_device_memory_allocator() 
 {
-    return std::make_shared<host_unified_memory_allocator>();
-}
-std::unique_ptr<host_memory_allocator> 
-host_device::create_host_memory_allocator()
-{
-    return std::make_unique<host_unified_memory_allocator>();
+    return m_allocator;
 }
 
 std::shared_ptr<host_memory_allocator> 
-host_device::create_host_memory_allocator_shared() 
+host_device::create_host_memory_allocator() 
 {
-    return std::make_shared<host_unified_memory_allocator>();
-}
-
-std::unique_ptr<host_to_device_transfer> 
-host_device::create_host_to_device_transfer()
-{
-    return std::make_unique<host_transfer>();
+    return m_allocator;
 }
 
 std::shared_ptr<host_to_device_transfer> 
-host_device::create_host_to_device_transfer_shared()
+host_device::create_host_to_device_transfer()
 {
-    return std::make_shared<host_transfer>();
-}
-
-std::unique_ptr<device_to_host_transfer> 
-host_device::create_device_to_host_transfer()
-{
-    return std::make_unique<host_transfer>();
+    return m_transfer;
 }
 
 std::shared_ptr<device_to_host_transfer> 
-host_device::create_device_to_host_transfer_shared()
+host_device::create_device_to_host_transfer()
 {
-    return std::make_shared<host_transfer>();
-}
-
-std::unique_ptr<device_copy> 
-host_device::create_device_copy()
-{
-    return std::make_unique<host_transfer>();
+    return m_transfer;
 }
 
 std::shared_ptr<device_copy> 
-host_device::create_device_copy_shared()
+host_device::create_device_copy()
 {
-    return std::make_shared<host_transfer>();
+    return m_transfer;
 }
 
-std::unique_ptr<device_event> host_device::create_device_event()
+std::shared_ptr<device_event> host_device::create_device_event()
 {
-    return std::make_unique<host_event>();
-}
-
-std::shared_ptr<device_event> host_device::create_device_event_shared()
-{
-    return std::make_shared<host_event>();
-}
-
-std::unique_ptr<device_to_host_event> 
-host_device::create_device_to_host_event()
-{
-    return std::make_unique<host_event>();
+    return m_event;
 }
 
 std::shared_ptr<device_to_host_event> 
-host_device::create_device_to_host_event_shared()
+host_device::create_device_to_host_event()
 {
-    return std::make_shared<host_event>();
+    return m_event;
 }
 
 } // namespace compute

@@ -14,6 +14,7 @@ runs:
       shell: bash
       run: |
         if which apt; then
+          sudo apt-get update
           sudo apt-get install -y valgrind
         else
           echo "Could not find a package manager for this system"

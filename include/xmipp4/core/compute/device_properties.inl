@@ -29,6 +29,15 @@ namespace xmipp4
 namespace compute
 {
 
+inline 
+device_properties::device_properties()
+    : m_type(device_type::unknown),
+      m_name(),
+      m_physical_location(),
+      m_total_memory_bytes(0)
+{
+}
+
 inline
 void device_properties::set_type(device_type type) noexcept
 {

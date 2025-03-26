@@ -40,7 +40,7 @@
 #include <system_error>
 #include <cstdlib>
 
-static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "plugins";
+static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "xmipp4-plugins";
 static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
 
 namespace xmipp4

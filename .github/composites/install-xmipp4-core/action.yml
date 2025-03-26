@@ -39,13 +39,13 @@ runs:
     
     - name: Install xmipp4-core with CMake
       if: inputs.builder == 'cmake'
-      uses: ./cmake
+      uses: gigabit-clowns/xmipp4-core/.github/composites/install-xmipp4-core/cmake@ms_lib_composites
       with:
         path: ${{ inputs.path }}
     
     - name: Install xmipp4-core with pip
       if: inputs.builder == 'pip'
-      uses: ./pip
+      uses: gigabit-clowns/xmipp4-core/.github/composites/install-xmipp4-core/pip@ms_lib_composites
       with:
         path: ${{ inputs.path }}
 

@@ -59,6 +59,10 @@ TEST_CASE( "parse invalid device index", "[device_index]" )
 {
     device_index index;
     REQUIRE( !parse_device_index("3:example", index) );
+    REQUIRE( !parse_device_index(":3", index) );
+    REQUIRE( !parse_device_index("test:", index) );
+    REQUIRE( !parse_device_index(":", index) );
+    REQUIRE( !parse_device_index("", index) );
 }
 
 TEST_CASE( "device index to ostream", "[device_index]" )

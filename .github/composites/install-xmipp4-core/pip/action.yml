@@ -1,0 +1,16 @@
+name: "Install xmipp4-core with pip"
+description: "Build and install xmipp4-core from source with pip"
+
+inputs:
+  path:
+    description: "Path where xmipp4-core will be downloaded and built"
+    required: false
+    default: ${{ github.workspace }}/../xmipp4-core
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install project with pip
+      shell: bash
+      working-directory: "${{ inputs.path }}"
+      run: pip install . -vvv

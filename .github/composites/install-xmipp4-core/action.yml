@@ -36,30 +36,18 @@ runs:
     - name: Move xmipp4-core outside current repository
       shell: bash
       run: mv xmipp4-core "${{ inputs.path }}"
-
-    - name: Configure and build with CMake
-      if: inputs.builder == 'cmake'
-      uses: threeal/cmake-action@v2
-      with:
-        source-dir: "${{ inputs.path }}"
-        build-dir: "${{ inputs.path }}/build"
-        options: |
-          BUILD_TESTING=OFF
-          CMAKE_BUILD_TYPE=Release
-        run-build: true
-        build-args: --config Release
     
-    - name: Install
+    - name: Install xmipp4-core with CMake
       if: inputs.builder == 'cmake'
-      shell: bash
-      working-directory: "${{ inputs.path }}"
-      run: cmake --install build --config Release --prefix dist
-
-    - name: Install project with pip
+      uses: ./cmake
+      with:
+        path: ${{ inputs.path }}
+    
+    - name: Install xmipp4-core with pip
       if: inputs.builder == 'pip'
-      shell: bash
-      working-directory: "${{ inputs.path }}"
-      run: pip install . -vvv
+      uses: ./pip
+      with:
+        path: ${{ inputs.path }}
 
     - name: Generate output
       id: gen-output

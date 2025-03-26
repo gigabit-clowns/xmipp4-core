@@ -1,0 +1,27 @@
+name: "Install xmipp4-core with CMake"
+description: "Build and install xmipp4-core from source with CMake"
+
+inputs:
+  path:
+    description: "Path where xmipp4-core will be downloaded and built"
+    required: false
+    default: ${{ github.workspace }}/../xmipp4-core
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure and build with CMake
+      uses: threeal/cmake-action@v2
+      with:
+        source-dir: "${{ inputs.path }}"
+        build-dir: "${{ inputs.path }}/build"
+        options: |
+          BUILD_TESTING=OFF
+          CMAKE_BUILD_TYPE=Release
+        run-build: true
+        build-args: --config Release
+    
+    - name: Install
+      shell: bash
+      working-directory: "${{ inputs.path }}"
+      run: cmake --install build --config Release --prefix dist

@@ -42,7 +42,11 @@ namespace xmipp4
 class interface_registry::implementation
 {
 public:
-    implementation() = default;
+    implementation(bool load_builtin_backends)
+        : m_load_builtin_backends(load_builtin_backends)
+    {
+    }
+
     ~implementation() = default;
 
     interface_manager* get_interface_manager(std::type_index type)
@@ -61,6 +65,11 @@ public:
     void create_interface_manager(std::type_index type,
                                   std::unique_ptr<interface_manager> manager )
     {
+        if (m_load_builtin_backends)
+        {
+            manager->load_builtin_backends();
+        }
+
         m_interfaces.emplace(
             type, std::move(manager)
         );
@@ -70,11 +79,15 @@ private:
     using registry_type = 
         std::unordered_map<std::type_index, std::unique_ptr<interface_manager>>;
 
+    bool m_load_builtin_backends;
     registry_type m_interfaces;
 
 };
 
-interface_registry::interface_registry() = default;
+interface_registry::interface_registry(bool load_builtin_backends)
+    : m_implementation(load_builtin_backends)
+{
+}
 
 interface_registry::interface_registry(interface_registry&& other) noexcept = default;
 

@@ -49,7 +49,7 @@ class communicator;
  * interface.
  * 
  */
-class communicator_manager
+class communicator_manager final
     : public interface_manager
 {
 public:
@@ -63,6 +63,9 @@ public:
     operator=(const communicator_manager &other) = delete;
     XMIPP4_CORE_API communicator_manager& 
     operator=(communicator_manager &&other) noexcept;
+
+    XMIPP4_CORE_API
+    void load_builtin_backends() override;
 
     /**
      * @brief Register a new implementation.

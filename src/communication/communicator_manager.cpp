@@ -177,7 +177,7 @@ communicator_manager::operator=(communicator_manager&& other) noexcept = default
 
 
 
-void communicator_manager::load_builtin_backends()
+void communicator_manager::register_builtin_backends()
 {
     dummy_communicator_backend::register_at(*this);
 }

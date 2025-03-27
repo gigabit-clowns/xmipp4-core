@@ -65,7 +65,7 @@ public:
     XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
 
     XMIPP4_CORE_API
-    virtual void load_builtin_backends() override;
+    virtual void register_builtin_backends() override;
 
     /**
      * @brief Register a new device backend.

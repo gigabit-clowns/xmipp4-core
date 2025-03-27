@@ -59,13 +59,13 @@ public:
     XMIPP4_CORE_API device_manager();
     device_manager(const device_manager &other) = delete;
     XMIPP4_CORE_API device_manager(device_manager &&other) noexcept;
-    XMIPP4_CORE_API virtual ~device_manager();
+    XMIPP4_CORE_API ~device_manager() override;
 
     device_manager& operator=(const device_manager &other) = delete;
     XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
 
     XMIPP4_CORE_API
-    virtual void register_builtin_backends() override;
+    void register_builtin_backends() override;
 
     /**
      * @brief Register a new device backend.

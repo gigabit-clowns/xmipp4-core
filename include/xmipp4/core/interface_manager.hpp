@@ -56,7 +56,7 @@ public:
     interface_manager& operator=(interface_manager&& other) = default;
 
     /**
-     * @brief Load backends bundled with the core.access_flag_bits
+     * @brief Register backends bundled with the core.access_flag_bits
      * 
      * This usually loads fallaback implementations that are always 
      * available although they may not be the most efficient or performant.
@@ -64,7 +64,7 @@ public:
      * interface.
      * 
      */
-    virtual void load_builtin_backends() = 0;
+    virtual void register_builtin_backends() = 0;
 
 };
 

@@ -112,7 +112,7 @@ device_manager&
 device_manager::operator=(device_manager &&other) noexcept = default;
 
 
-void device_manager::load_builtin_backends()
+void device_manager::register_builtin_backends()
 {
     host_device_backend::register_at(*this);
 }

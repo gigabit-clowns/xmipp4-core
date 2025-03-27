@@ -65,7 +65,7 @@ public:
     operator=(communicator_manager &&other) noexcept;
 
     XMIPP4_CORE_API
-    void load_builtin_backends() override;
+    void register_builtin_backends() override;
 
     /**
      * @brief Register a new implementation.

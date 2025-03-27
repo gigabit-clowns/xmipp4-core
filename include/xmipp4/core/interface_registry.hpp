@@ -53,13 +53,13 @@ public:
     /**
      * @brief Construct a new interface registry object.
      * 
-     * @param load_builtin_backends This parameters controls whether the
+     * @param register_builtin_backends This parameters controls whether the
      * interface registry should load the backends bundled with the
      * core.
      * 
      */
     XMIPP4_CORE_API 
-    explicit interface_registry(bool load_builtin_backends = true);
+    explicit interface_registry(bool register_builtin_backends = true);
     interface_registry(const interface_registry& other) = delete;
     XMIPP4_CORE_API interface_registry(interface_registry&& other) noexcept;
     XMIPP4_CORE_API ~interface_registry();

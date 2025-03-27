@@ -18,27 +18,23 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+/**
+ * @file test_access_flags.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Test for access_flags.hpp
+ * @date 2025-03-27
+ */
 
-namespace xmipp4 
-{
 
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+#include <catch2/catch_test_macros.hpp>
+
+#include <xmipp4/core/access_flags.hpp>
+
+using namespace xmipp4;
+
+
+TEST_CASE( "to_string with access_flag_bits should produce correct results", "[access_flags]" ) 
 {
-    switch (v)
-    {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
-    }
+    REQUIRE( std::string(to_string(access_flag_bits::read)) == "read" ); 
+    REQUIRE( std::string(to_string(access_flag_bits::write)) == "write" ); 
 }
-
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
-
-} // namespace xmipp4

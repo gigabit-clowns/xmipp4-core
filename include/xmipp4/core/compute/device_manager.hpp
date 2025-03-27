@@ -52,7 +52,7 @@ class device_create_parameters;
  * @brief Centralize multiple device_backends.
  * 
  */
-class device_manager
+class device_manager final
     : public interface_manager
 {
 public:
@@ -63,6 +63,9 @@ public:
 
     device_manager& operator=(const device_manager &other) = delete;
     XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
+
+    XMIPP4_CORE_API
+    virtual void load_builtin_backends() override;
 
     /**
      * @brief Register a new device backend.

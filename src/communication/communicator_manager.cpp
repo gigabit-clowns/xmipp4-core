@@ -28,8 +28,9 @@
 
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
+#include <xmipp4/core/communication/communicator_backend.hpp>
+#include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
 
 #include <tuple>
 #include <vector>
@@ -175,6 +176,11 @@ communicator_manager&
 communicator_manager::operator=(communicator_manager&& other) noexcept = default;
 
 
+
+void communicator_manager::load_builtin_backends()
+{
+    dummy_communicator_backend::register_at(*this);
+}
 
 bool communicator_manager::register_backend(std::unique_ptr<communicator_backend> backend)
 {

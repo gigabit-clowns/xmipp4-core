@@ -55,6 +55,17 @@ public:
     interface_manager& operator=(const interface_manager& other) = default;
     interface_manager& operator=(interface_manager&& other) = default;
 
+    /**
+     * @brief Load backends bundled with the core.access_flag_bits
+     * 
+     * This usually loads fallaback implementations that are always 
+     * available although they may not be the most efficient or performant.
+     * The loaded backend(s) depend on the implementation of the specific
+     * interface.
+     * 
+     */
+    virtual void load_builtin_backends() = 0;
+
 };
 
 } // namespace xmipp4

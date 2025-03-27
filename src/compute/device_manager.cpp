@@ -29,6 +29,7 @@
 #include <xmipp4/core/compute/device_manager.hpp>
 
 #include <xmipp4/core/compute/device_backend.hpp>
+#include <xmipp4/core/compute/host/host_device_backend.hpp>
 
 #include <unordered_map>
 
@@ -111,6 +112,10 @@ device_manager&
 device_manager::operator=(device_manager &&other) noexcept = default;
 
 
+void device_manager::load_builtin_backends()
+{
+    host_device_backend::register_at(*this);
+}
 
 bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
 {

@@ -42,7 +42,7 @@ namespace xmipp4
 class interface_registry::implementation
 {
 public:
-    implementation(bool register_builtin_backends)
+    explicit implementation(bool register_builtin_backends)
         : m_register_builtin_backends(register_builtin_backends)
     {
     }

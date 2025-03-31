@@ -19,27 +19,41 @@
  ***************************************************************************/
 
 /**
- * @file test_interface_registry.cpp
+ * @file test_reduction_operation.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for interface_registry.hpp
- * @date 2024-10-28
- * 
+ * @brief Test for reduction_operation.hpp
+ * @date 2025-03-27
  */
 
-#include <xmipp4/core/interface_registry.hpp>
-
-#include "mock/mock_interface_manager.hpp"
 
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil/matcher/any.hpp>
+
+#include <xmipp4/core/reduction_operation.hpp>
 
 using namespace xmipp4;
 
-TEST_CASE( "get_interface_manager should always return the same instance", "[interface_registry]" ) 
-{
-    interface_registry registry(false);
 
-    auto& manager1 = registry.get_interface_manager<mock_interface_manager>();
-    auto& manager2 = registry.get_interface_manager<mock_interface_manager>();
-    REQUIRE( &manager1 == &manager2 );
+TEST_CASE( "to_string with reduction_operation should produce correct results", "[reduction_operation]" ) 
+{
+    REQUIRE( std::string(to_string(reduction_operation::sum)) == "sum" ); 
+    REQUIRE( std::string(to_string(reduction_operation::product)) == "product" ); 
+    REQUIRE( std::string(to_string(reduction_operation::min)) == "min" ); 
+    REQUIRE( std::string(to_string(reduction_operation::max)) == "max" ); 
 }
+
+TEST_CASE( "from_string with reduction_operation should produce correct results", "[reduction_operation]" ) 
+{
+    reduction_operation op;
+
+    REQUIRE( from_string("sum", op) );
+    REQUIRE( op == reduction_operation::sum );  
+    REQUIRE( from_string("product", op) );
+    REQUIRE( op == reduction_operation::product );  
+    REQUIRE( from_string("max", op) );
+    REQUIRE( op == reduction_operation::max );
+    REQUIRE( from_string("min", op) );
+    REQUIRE( op == reduction_operation::min );
+    
+    REQUIRE( !from_string("invalid", op) );
+}
+

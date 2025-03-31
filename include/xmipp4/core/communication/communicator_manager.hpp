@@ -49,7 +49,7 @@ class communicator;
  * interface.
  * 
  */
-class communicator_manager
+class communicator_manager final
     : public interface_manager
 {
 public:
@@ -57,12 +57,15 @@ public:
     communicator_manager(const communicator_manager &other) = delete;
     XMIPP4_CORE_API 
     communicator_manager(communicator_manager &&other) noexcept;
-    XMIPP4_CORE_API virtual ~communicator_manager();
+    XMIPP4_CORE_API ~communicator_manager() override;
 
     communicator_manager& 
     operator=(const communicator_manager &other) = delete;
     XMIPP4_CORE_API communicator_manager& 
     operator=(communicator_manager &&other) noexcept;
+
+    XMIPP4_CORE_API
+    void register_builtin_backends() override;
 
     /**
      * @brief Register a new implementation.
@@ -117,7 +120,7 @@ public:
      */
     XMIPP4_CORE_API
     std::shared_ptr<communicator> 
-    get_world_communicator(const std::string &name) const;
+    create_world_communicator(const std::string &name) const;
 
     /**
      * @brief Get the world communicator from the preferred backend.
@@ -127,7 +130,7 @@ public:
      * @see get_preferred_backend
      */
     XMIPP4_CORE_API
-    std::shared_ptr<communicator> get_preferred_world_communicator() const;
+    std::shared_ptr<communicator> create_preferred_world_communicator() const;
 
 private:
     class implementation;

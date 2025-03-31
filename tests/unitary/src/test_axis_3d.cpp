@@ -169,3 +169,43 @@ TEST_CASE( "cross", "[axis_3d]" )
         }
     }
 }
+
+TEST_CASE( "to_string with axis_3d should produce correct results", "[axis_3d]" ) 
+{
+    REQUIRE( std::string(to_string(axis_3d::x)) == "x" ); 
+    REQUIRE( std::string(to_string(axis_3d::y)) == "y" ); 
+    REQUIRE( std::string(to_string(axis_3d::z)) == "z" ); 
+    REQUIRE( std::string(to_string(axis_3d::zero)) == "0" ); 
+    REQUIRE( std::string(to_string(axis_3d::negative_x)) == "-x" ); 
+    REQUIRE( std::string(to_string(axis_3d::negative_y)) == "-y" ); 
+    REQUIRE( std::string(to_string(axis_3d::negative_z)) == "-z" ); 
+}
+
+TEST_CASE( "from_string with axis_3d should produce correct results", "[axis_3d]" ) 
+{
+   axis_3d axis;
+
+   REQUIRE( from_string("0", axis) ); 
+   REQUIRE( axis == axis_3d::zero ); 
+   REQUIRE( from_string("zero", axis) ); 
+   REQUIRE( axis == axis_3d::zero ); 
+   REQUIRE( from_string("x", axis) ); 
+   REQUIRE( axis == axis_3d::x ); 
+   REQUIRE( from_string("+x", axis) ); 
+   REQUIRE( axis == axis_3d::x ); 
+   REQUIRE( from_string("y", axis) ); 
+   REQUIRE( axis == axis_3d::y ); 
+   REQUIRE( from_string("+y", axis) ); 
+   REQUIRE( axis == axis_3d::y ); 
+   REQUIRE( from_string("z", axis) ); 
+   REQUIRE( axis == axis_3d::z ); 
+   REQUIRE( from_string("+z", axis) ); 
+   REQUIRE( axis == axis_3d::z ); 
+   REQUIRE( from_string("-x", axis) ); 
+   REQUIRE( axis == axis_3d::negative_x ); 
+   REQUIRE( from_string("-y", axis) ); 
+   REQUIRE( axis == axis_3d::negative_y ); 
+   REQUIRE( from_string("-z", axis) ); 
+   REQUIRE( axis == axis_3d::negative_z ); 
+   REQUIRE( !from_string("invalid", axis) ); 
+}

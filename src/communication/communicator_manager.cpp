@@ -28,8 +28,9 @@
 
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
+#include <xmipp4/core/communication/communicator_backend.hpp>
+#include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
 
 #include <tuple>
 #include <vector>
@@ -151,13 +152,13 @@ private:
 
 static 
 std::shared_ptr<communicator> 
-obtain_communicator(const communicator_backend* backend)
+create_communicator(const communicator_backend* backend)
 {
     std::shared_ptr<communicator> result;
     
     if (backend)
     {
-        result = backend->get_world_communicator();
+        result = backend->create_world_communicator();
     }
 
     return result;
@@ -175,6 +176,11 @@ communicator_manager&
 communicator_manager::operator=(communicator_manager&& other) noexcept = default;
 
 
+
+void communicator_manager::register_builtin_backends()
+{
+    dummy_communicator_backend::register_at(*this);
+}
 
 bool communicator_manager::register_backend(std::unique_ptr<communicator_backend> backend)
 {
@@ -199,15 +205,15 @@ communicator_manager::get_preferred_backend() const
 }
 
 std::shared_ptr<communicator>
-communicator_manager::get_world_communicator(const std::string &name) const
+communicator_manager::create_world_communicator(const std::string &name) const
 {
-    return obtain_communicator(get_backend(name));
+    return create_communicator(get_backend(name));
 }
 
 std::shared_ptr<communicator>
-communicator_manager::get_preferred_world_communicator() const
+communicator_manager::create_preferred_world_communicator() const
 {
-    return obtain_communicator(get_preferred_backend());
+    return create_communicator(get_preferred_backend());
 }
 
 } // namespace communication

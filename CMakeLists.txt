@@ -39,6 +39,8 @@ option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-ins
 # Set the CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
+set(XMIPP4_CORE_LIBRARY_TARGET "xmipp4-core")
+
 # Include CMake packages
 include(CTest)
 include(GNUInstallDirs)
@@ -64,6 +66,12 @@ if (XMIPP4_CORE_BUILD_HALF)
 	fetch_half(VERSION 2.2.0)
 else()
 	find_package(half 2 REQUIRED)
+	install(
+		FILES 
+			${PROJECT_SOURCE_DIR}/cmake/modules/Findhalf.cmake
+		DESTINATION 
+			${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}/modules
+	)
 endif()
 
 # Find all source and header files
@@ -86,22 +94,22 @@ file(
 )
 
 # Create the shared library
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${XMIPP4_CORE_LIBRARY_TARGET} SHARED ${SOURCES})
 set_target_properties(
-	${PROJECT_NAME} 
+	${XMIPP4_CORE_LIBRARY_TARGET} 
 	PROPERTIES 
 		SOVERSION ${PROJECT_VERSION}
 		CXX_STANDARD 20
 		DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
 )
 target_include_directories(
-	${PROJECT_NAME} 
+	${XMIPP4_CORE_LIBRARY_TARGET} 
 	PUBLIC 
 	  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(
-	${PROJECT_NAME} 
+	${XMIPP4_CORE_LIBRARY_TARGET} 
 	PRIVATE
 		VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
 		VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
@@ -110,11 +118,14 @@ target_compile_definitions(
 
 # Link dependencies
 if(MSVC)
-	target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32) # Winsock
+	target_link_libraries(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PRIVATE ws2_32 # Winsock
+	) 
 endif()
 
 target_link_libraries(
-	${PROJECT_NAME} 
+	${XMIPP4_CORE_LIBRARY_TARGET} 
 	PUBLIC
 		Threads::Threads
 		spdlog::spdlog_header_only
@@ -127,14 +138,14 @@ target_link_libraries(
 if(XMIPP4_CORE_LINT_CLANG_TIDY)
 	find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
 	set_target_properties(
-		${PROJECT_NAME} 
+		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PROPERTIES 
 			CXX_CLANG_TIDY ${CLANG_TIDY_EXE}
 	)
 elseif(XMIPP4_CORE_PRECOMPILED_HEADERS)
 	# Precompiler headers do not work with clang-tidy
 	target_precompile_headers(
-		${PROJECT_NAME} 
+		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PRIVATE
 			${HEADERS}
 	)
@@ -142,54 +153,58 @@ endif()
 
 # Enable all warnings during compilation
 if(MSVC)
-	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-	target_compile_options(${PROJECT_NAME} PRIVATE /wd4996) # getenv warning
+	target_compile_options(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PRIVATE 
+			/W4
+			/wd4996 # getenv warning
+	)
 else()
-	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+	target_compile_options(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PRIVATE 
+			-Wall 
+			-Wextra 
+			-Wpedantic
+	)
 endif()
 
 # Disable min/max macros in windows
 if(MSVC)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX)
+	target_compile_definitions(${XMIPP4_CORE_LIBRARY_TARGET} PUBLIC -DNOMINMAX)
 endif()
 
 # Install library's binary files and headers
 install(
-	TARGETS ${PROJECT_NAME}
-	EXPORT ${PROJECT_NAME}-targets
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/xmipp4/
+	TARGETS ${XMIPP4_CORE_LIBRARY_TARGET}
+	EXPORT ${XMIPP4_CORE_LIBRARY_TARGET}-targets
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ 
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-install(
-	FILES 
-		${PROJECT_SOURCE_DIR}/cmake/modules/Findhalf.cmake
-	DESTINATION 
-		${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/modules
-)
 
 # Create and install CMake config files
 configure_package_config_file(
   	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
-  	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-  	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  	${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config.cmake
+  	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
 )
 write_basic_package_version_file(
-	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config-version.cmake
 	COMPATIBILITY SameMinorVersion
 )
 install(
-  	EXPORT ${PROJECT_NAME}-targets
-  	FILE ${PROJECT_NAME}-targets.cmake
-  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  	EXPORT ${XMIPP4_CORE_LIBRARY_TARGET}-targets
+  	FILE ${XMIPP4_CORE_LIBRARY_TARGET}-targets.cmake
+  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
 )
 install(
   	FILES 
-		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-		${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
-  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+		${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config-version.cmake
+  	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
 )
 
 # Only build tests if it is the main project

@@ -52,17 +52,20 @@ class device_create_parameters;
  * @brief Centralize multiple device_backends.
  * 
  */
-class device_manager
+class device_manager final
     : public interface_manager
 {
 public:
     XMIPP4_CORE_API device_manager();
     device_manager(const device_manager &other) = delete;
     XMIPP4_CORE_API device_manager(device_manager &&other) noexcept;
-    XMIPP4_CORE_API virtual ~device_manager();
+    XMIPP4_CORE_API ~device_manager() override;
 
     device_manager& operator=(const device_manager &other) = delete;
     XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
+
+    XMIPP4_CORE_API
+    void register_builtin_backends() override;
 
     /**
      * @brief Register a new device backend.
@@ -121,22 +124,11 @@ public:
      * 
      * @param index Index of the device.
      * @param params Parameters used for device instantiation.
-     * @return std::unique_ptr<device> The device handle.
-     */
-    XMIPP4_CORE_API std::unique_ptr<device> 
-    create_device(const device_index &index, 
-                  const device_create_parameters &params ) const;
-
-    /**
-     * @brief Create a device handle.
-     * 
-     * @param index Index of the device.
-     * @param params Parameters used for device instantiation.
      * @return std::shared_ptr<device> The device handle.
      */
     XMIPP4_CORE_API std::shared_ptr<device> 
-    create_device_shared(const device_index &index,
-                         const device_create_parameters &params ) const;
+    create_device(const device_index &index,
+                  const device_create_parameters &params ) const;
 
 private:
     class implementation;

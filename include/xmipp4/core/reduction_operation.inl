@@ -44,7 +44,7 @@ const char* to_string(reduction_operation op) noexcept
     case reduction_operation::product: return "product";
     case reduction_operation::min: return "min";
     case reduction_operation::max: return "max";
-
+    default: return "";
     }
 }
 

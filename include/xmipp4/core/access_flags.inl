@@ -30,6 +30,7 @@ to_string(access_flag_bits v) noexcept
     {
     case access_flag_bits::read:    return "read";
     case access_flag_bits::write:   return "write";
+    default: return "";
     }
 }
 

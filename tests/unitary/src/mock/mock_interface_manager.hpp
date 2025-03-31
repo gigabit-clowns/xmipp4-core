@@ -21,50 +21,25 @@
  ***************************************************************************/
 
 /**
- * @file communicator_backend.hpp
+ * @file interface_manager.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines communicator_backend interface
- * @date 2024-10-24
- * 
+ * @brief Mock for interface_manager interface.
+ * @date 2025-03-27
  */
 
-#include "../backend.hpp"
+#include <xmipp4/core/interface_manager.hpp>
 
-#include "../platform/dynamic_shared_object.h"
+#include <trompeloeil.hpp>
 
-#include <string>
-#include <memory>
-
-namespace xmipp4 
-{
-namespace communication
+namespace xmipp4
 {
 
-class communicator;
-
-class XMIPP4_CORE_API communicator_backend
-    : public backend
+class mock_interface_manager final
+    : public interface_manager
 {
 public:
-    communicator_backend() = default;
-    communicator_backend(const communicator_backend &other) = default;
-    communicator_backend(communicator_backend &&other) = default;
-    virtual ~communicator_backend() = default;
+    MAKE_MOCK0(register_builtin_backends, void(), override);
 
-    communicator_backend& operator=(const communicator_backend &other) = default;
-    communicator_backend& operator=(communicator_backend &&other) = default;
+};
 
-    /**
-     * @brief Get the world communicator.
-     * 
-     * The world communicator connects all known peers together.
-     * 
-     * @return std::shared_ptr<communicator> Reference to the world
-     * communicator.
-     */
-    virtual std::shared_ptr<communicator> create_world_communicator() const = 0;
-
-}; 
-
-} // namespace communication
 } // namespace xmipp4

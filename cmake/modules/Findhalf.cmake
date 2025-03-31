@@ -32,13 +32,15 @@ find_path(
 )
 
 # Parse version from header file
-file(
-    STRINGS "${half_INCLUDE_DIR}/half.hpp"
-    half_VERSION_LINE
-    REGEX "Version"
-)
-string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
-set(half_VERSION ${CMAKE_MATCH_1})
+if(half_INCLUDE_DIR)
+    file(
+        STRINGS "${half_INCLUDE_DIR}/half.hpp"
+        half_VERSION_LINE
+        REGEX "Version"
+    )
+    string(REGEX MATCH "Version ([0-9]*\.[0-9]*\.[0-9]*)" _ ${half_VERSION_LINE})
+    set(half_VERSION ${CMAKE_MATCH_1})
+endif()
 
 # Define the package variables
 find_package_handle_standard_args(half 
@@ -47,5 +49,6 @@ find_package_handle_standard_args(half
 )
 
 # Define the target
-add_library(half INTERFACE IMPORTED)
-target_include_directories(half INTERFACE ${half_INCLUDE_DIR})
+set(HALF_TARGET "half")
+add_library(${HALF_TARGET} INTERFACE IMPORTED)
+target_include_directories(${HALF_TARGET} INTERFACE ${half_INCLUDE_DIR})

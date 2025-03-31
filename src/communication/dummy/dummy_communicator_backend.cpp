@@ -59,7 +59,7 @@ backend_priority dummy_communicator_backend::get_priority() const noexcept
 }
 
 std::shared_ptr<communicator> 
-dummy_communicator_backend::get_world_communicator() const
+dummy_communicator_backend::create_world_communicator() const
 {
     return std::make_shared<dummy_communicator>();
 }

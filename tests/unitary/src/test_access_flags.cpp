@@ -19,27 +19,22 @@
  ***************************************************************************/
 
 /**
- * @file test_interface_registry.cpp
+ * @file test_access_flags.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for interface_registry.hpp
- * @date 2024-10-28
- * 
+ * @brief Test for access_flags.hpp
+ * @date 2025-03-27
  */
 
-#include <xmipp4/core/interface_registry.hpp>
-
-#include "mock/mock_interface_manager.hpp"
 
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil/matcher/any.hpp>
+
+#include <xmipp4/core/access_flags.hpp>
 
 using namespace xmipp4;
 
-TEST_CASE( "get_interface_manager should always return the same instance", "[interface_registry]" ) 
-{
-    interface_registry registry(false);
 
-    auto& manager1 = registry.get_interface_manager<mock_interface_manager>();
-    auto& manager2 = registry.get_interface_manager<mock_interface_manager>();
-    REQUIRE( &manager1 == &manager2 );
+TEST_CASE( "to_string with access_flag_bits should produce correct results", "[access_flags]" ) 
+{
+    REQUIRE( std::string(to_string(access_flag_bits::read)) == "read" ); 
+    REQUIRE( std::string(to_string(access_flag_bits::write)) == "write" ); 
 }

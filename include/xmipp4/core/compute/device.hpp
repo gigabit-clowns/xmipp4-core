@@ -76,26 +76,10 @@ public:
     /**
      * @brief Create a memory allocator for this device.
      * 
-     * @return std::unique_ptr<device_memory_allocator> 
-     */
-    virtual std::unique_ptr<device_memory_allocator> 
-    create_device_memory_allocator() = 0;
-
-    /**
-     * @brief Create a memory allocator for this device.
-     * 
      * @return std::shared_ptr<device_memory_allocator> 
      */
     virtual std::shared_ptr<device_memory_allocator> 
-    create_device_memory_allocator_shared() = 0;
-
-    /**
-     * @brief Create a memory allocator for the host.
-     * 
-     * @return std::unique_ptr<host_memory_allocator> 
-     */
-    virtual std::unique_ptr<host_memory_allocator> 
-    create_host_memory_allocator() = 0;
+    create_device_memory_allocator() = 0;
 
     /**
      * @brief Create a memory allocator for the host.
@@ -103,15 +87,7 @@ public:
      * @return std::shared_ptr<host_memory_allocator> 
      */
     virtual std::shared_ptr<host_memory_allocator> 
-    create_host_memory_allocator_shared() = 0;
-
-    /**
-     * @brief Create a host to device transfer engine.
-     * 
-     * @return std::unique_ptr<host_to_device_transfer> 
-     */
-    virtual std::unique_ptr<host_to_device_transfer> 
-    create_host_to_device_transfer() = 0;
+    create_host_memory_allocator() = 0;
 
     /**
      * @brief Create a host to device transfer engine.
@@ -119,15 +95,7 @@ public:
      * @return std::shared_ptr<host_to_device_transfer> 
      */
     virtual std::shared_ptr<host_to_device_transfer> 
-    create_host_to_device_transfer_shared() = 0;
-
-    /**
-     * @brief Create a device to host transfer engine.
-     * 
-     * @return std::unique_ptr<device_to_host_transfer> 
-     */
-    virtual std::unique_ptr<device_to_host_transfer> 
-    create_device_to_host_transfer() = 0;
+    create_host_to_device_transfer() = 0;
 
     /**
      * @brief Create a device to host transfer engine.
@@ -135,15 +103,7 @@ public:
      * @return std::shared_ptr<device_to_host_transfer> 
      */
     virtual std::shared_ptr<device_to_host_transfer> 
-    create_device_to_host_transfer_shared() = 0;
-
-    /**
-     * @brief Create a device buffer copy engine.
-     * 
-     * @return std::unique_ptr<device_copy> 
-     */
-    virtual std::unique_ptr<device_copy> 
-    create_device_copy() = 0;
+    create_device_to_host_transfer() = 0;
 
     /**
      * @brief Create a device buffer copy engine.
@@ -151,15 +111,7 @@ public:
      * @return std::shared_ptr<device_copy> 
      */
     virtual std::shared_ptr<device_copy> 
-    create_device_copy_shared() = 0;
-
-    /**
-     * @brief Create an intra-device synchronization primitive.
-     * 
-     * @return std::unique_ptr<device_event> 
-     */
-    virtual std::unique_ptr<device_event>
-    create_device_event() = 0;
+    create_device_copy() = 0;
 
     /**
      * @brief Create an intra-device synchronization primitive.
@@ -167,15 +119,7 @@ public:
      * @return std::shared_ptr<device_event> 
      */
     virtual std::shared_ptr<device_event>
-    create_device_event_shared() = 0;
-
-    /**
-     * @brief Create a device to host synchronization primitive.
-     * 
-     * @return std::unique_ptr<device_to_host_event> 
-     */
-    virtual std::unique_ptr<device_to_host_event>
-    create_device_to_host_event() = 0;
+    create_device_event() = 0;
 
     /**
      * @brief Create a device to host synchronization primitive.
@@ -183,7 +127,7 @@ public:
      * @return std::shared_ptr<device_to_host_event> 
      */
     virtual std::shared_ptr<device_to_host_event>
-    create_device_to_host_event_shared() = 0;
+    create_device_to_host_event() = 0;
 
 }; 
 

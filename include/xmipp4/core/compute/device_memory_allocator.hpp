@@ -66,23 +66,6 @@ public:
      * @param size Number of bytes in the buffer.
      * @param alignment Alignment requirements for the data in the buffer.
      * @param queue Queue where the allocation and deallocation takes place.
-     * @return std::unique_ptr<device_buffer> The buffer.
-     * 
-     * @note Using the buffer in an queue other than the one
-     * used for allocation-deallocation requires explicit
-     * synchronization.
-     */
-    virtual std::unique_ptr<device_buffer> 
-    create_device_buffer(std::size_t size,
-                         std::size_t alignment,
-                         device_queue &queue ) = 0;
-
-    /**
-     * @brief Allocate a buffer in this device.
-     * 
-     * @param size Number of bytes in the buffer.
-     * @param alignment Alignment requirements for the data in the buffer.
-     * @param queue Queue where the allocation and deallocation takes place.
      * @return std::shared_ptr<device_buffer> The buffer.
 
      * @note Using the buffer in an queue other than the one
@@ -90,9 +73,9 @@ public:
      * synchronization.
      */
     virtual std::shared_ptr<device_buffer> 
-    create_device_buffer_shared(std::size_t size, 
-                                std::size_t alignment,
-                                device_queue &queue ) = 0;
+    create_device_buffer(std::size_t size, 
+                         std::size_t alignment,
+                         device_queue &queue ) = 0;
 
 }; 
 

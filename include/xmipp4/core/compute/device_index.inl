@@ -144,16 +144,25 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const device_index 
 
 inline
 bool parse_device_index(std::string_view text, device_index &result)
-{
-    bool success = false;
+{    
+    if(text.empty())
+    {
+        return false;
+    }
 
     XMIPP4_CONST_CONSTEXPR auto separator = 
         detail::get_device_index_separator();
 
+    bool success = false;
     const auto begin = text.data();
     const auto end = begin + text.size();
     const auto ite = std::find(begin, end, separator);
-    if (ite != end)
+    if (ite == end)
+    {
+        result = device_index(text, 0);
+        success = true;
+    }
+    else if (ite != begin)
     {
         std::size_t id;
         if (std::from_chars(std::next(ite), end, id, 10).ec == std::errc())
@@ -164,11 +173,6 @@ bool parse_device_index(std::string_view text, device_index &result)
             );
             success = true;
         }
-    }
-    else
-    {
-        result = device_index(text, 0);
-        success = true;
     }
 
     return success;

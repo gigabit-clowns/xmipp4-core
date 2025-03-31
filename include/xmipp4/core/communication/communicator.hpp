@@ -302,20 +302,6 @@ public:
      */
     virtual int get_rank() const = 0;
 
-     /**
-     * @brief Split the current communicator.
-     * 
-     * Split a communicator into multiple communicators containing.
-     * 
-     * @param colour The group where the current rank will be assigned to.
-     * @param rank_priority Hint to assign the rank in the new communicator.
-     * @return std::unique_ptr<communicator> The communicator where
-     * the current rank has been assigned to.
-     * 
-     */
-    virtual std::unique_ptr<communicator> split(int colour, 
-                                                int rank_priority ) const = 0;
-
     /**
      * @brief Split the current communicator.
      * 
@@ -327,8 +313,8 @@ public:
      * the current rank has been assigned to.
      * 
      */
-    virtual std::shared_ptr<communicator> split_shared(int colour, 
-                                                       int rank_priority ) const = 0;
+    virtual std::shared_ptr<communicator> split(int colour, 
+                                                int rank_priority ) const = 0;
 
     /**
      * @brief Synchronize all peers.

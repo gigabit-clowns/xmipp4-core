@@ -161,7 +161,21 @@ std::string get_plugin_directory()
 
 void discover_plugins(const std::string& directory, plugin_manager &manager)
 {
-    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+    std::filesystem::directory_iterator iterator;
+    try
+    {
+        iterator = std::filesystem::directory_iterator(directory);
+    }
+    catch(const std::filesystem::filesystem_error& e)
+    {
+        XMIPP4_LOG_WARN(
+            "Failed to open plugin directory {}: {}", 
+            directory, 
+            e.what()
+        );
+    }
+
+    for (const auto& entry : iterator) 
     {
         try
         {

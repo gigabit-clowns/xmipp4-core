@@ -95,7 +95,7 @@ TEST_CASE( "querying out out range plugin from plugin manager should throw", "[p
     REQUIRE_THROWS_AS( manager.get_plugin(10), std::out_of_range );
 }
 
-TEST_CASE( "discover plugins", "[plugin_manager]" ) 
+TEST_CASE( "discover_plugins should tolerate invalid plugins", "[plugin_manager]" ) 
 {
     plugin_manager manager;
     discover_plugins(get_test_plugin_directory(), manager);
@@ -104,4 +104,11 @@ TEST_CASE( "discover plugins", "[plugin_manager]" )
     const plugin& plugin = manager.get_plugin(0);
     REQUIRE( plugin.get_name() == "dummy-plugin" );
     REQUIRE( plugin.get_version() == version(1, 2, 3) );
+}
+
+TEST_CASE( "discover_plugins should tolerate non-existing directories", "[plugin_manager]" ) 
+{
+    plugin_manager manager;
+    discover_plugins("/path/to/nowhere/dshfjbfnmxbcusdfj", manager);
+    REQUIRE( manager.get_plugin_count() == 0 );
 }

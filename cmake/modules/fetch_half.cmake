@@ -36,7 +36,7 @@ function(fetch_half)
 	set(NO_OP_COMMAND "${CMAKE_COMMAND} -E true")
 	FetchContent_Declare(
 		half
-		URL https://kumisystems.dl.sourceforge.net/project/half/half/${arg_VERSION}/half-${arg_VERSION}.zip
+		URL https://sourceforge.net/projects/half/files/half/${arg_VERSION}/half-${arg_VERSION}.zip
 		CONFIGURE_COMMAND ${NO_OP_COMMAND}
 		BUILD_COMMAND ${NO_OP_COMMAND}
 		INSTALL_COMMAND ${NO_OP_COMMAND}

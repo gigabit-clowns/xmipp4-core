@@ -98,7 +98,7 @@ TEST_CASE( "querying out out range plugin from plugin manager should throw", "[p
 TEST_CASE( "discover_plugins should tolerate invalid plugins", "[plugin_manager]" ) 
 {
     plugin_manager manager;
-    discover_plugins(get_test_plugin_directory(), manager);
+    REQUIRE_NOTHROW( discover_plugins(get_test_plugin_directory(), manager) );
     REQUIRE( manager.get_plugin_count() == 1 );
 
     const plugin& plugin = manager.get_plugin(0);
@@ -109,6 +109,6 @@ TEST_CASE( "discover_plugins should tolerate invalid plugins", "[plugin_manager]
 TEST_CASE( "discover_plugins should tolerate non-existing directories", "[plugin_manager]" ) 
 {
     plugin_manager manager;
-    discover_plugins("/path/to/nowhere/dshfjbfnmxbcusdfj", manager);
+    REQUIRE_NOTHROW( discover_plugins("/path/to/nowhere/dshfjbfnmxbcusdfj", manager) );
     REQUIRE( manager.get_plugin_count() == 0 );
 }

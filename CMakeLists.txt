@@ -63,7 +63,7 @@ else()
 endif()
 
 if (XMIPP4_CORE_BUILD_HALF)
-	fetch_half(VERSION 2.2.0)
+	fetch_half(VERSION 2.2.1)
 else()
 	find_package(half 2 REQUIRED)
 	install(

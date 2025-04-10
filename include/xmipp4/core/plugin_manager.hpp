@@ -37,7 +37,7 @@ namespace xmipp4
 {
 
 class plugin;
-class interface_registry;
+class interface_catalog;
 
 /**
  * @brief Class managing a set of plugins.
@@ -144,15 +144,15 @@ void discover_plugins(plugin_manager &manager);
 
 /**
  * @brief Register all plugins from a plugin manager into an
- * interface registry.
+ * interface catalog.
  * 
  * @param manager The plugin_manager that contains the plugins to
  * be registered.
- * @param registry Interface registry where plugins will be registered.
+ * @param catalog Interface catalog where plugins will be registered.
  * @return std::size_t Number of plugins registered.
  */
 XMIPP4_CORE_API
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    interface_registry &registry );
+                                    interface_catalog &catalog );
 
 } // namespace xmipp4

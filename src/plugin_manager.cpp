@@ -207,13 +207,13 @@ void discover_plugins(plugin_manager &manager)
 }
 
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    interface_registry &registry )
+                                    interface_catalog &catalog )
 {
     const auto count = manager.get_plugin_count();
     for (std::size_t i = 0; i < count; ++i)
     {
         const auto &plugin = manager.get_plugin(i);
-        plugin.register_at(registry);
+        plugin.register_at(catalog);
     }
     return count;
 }

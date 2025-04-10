@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file test_interface_registry.cpp
+ * @file test_interface_catalog.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for interface_registry.hpp
+ * @brief Tests for interface_catalog.hpp
  * @date 2024-10-28
  * 
  */
 
-#include <xmipp4/core/interface_registry.hpp>
+#include <xmipp4/core/interface_catalog.hpp>
 
 #include "mock/mock_interface_manager.hpp"
 
@@ -35,11 +35,11 @@
 
 using namespace xmipp4;
 
-TEST_CASE( "get_interface_manager should always return the same instance", "[interface_registry]" ) 
+TEST_CASE( "get_interface_manager should always return the same instance", "[interface_catalog]" ) 
 {
-    interface_registry registry(false);
+    interface_catalog catalog(false);
 
-    auto& manager1 = registry.get_interface_manager<mock_interface_manager>();
-    auto& manager2 = registry.get_interface_manager<mock_interface_manager>();
+    auto& manager1 = catalog.get_interface_manager<mock_interface_manager>();
+    auto& manager2 = catalog.get_interface_manager<mock_interface_manager>();
     REQUIRE( &manager1 == &manager2 );
 }

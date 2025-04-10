@@ -54,7 +54,7 @@ public:
         if (backend)
         {
             auto key = backend->get_name();
-            std::tie(std::ignore, inserted) = m_registry.emplace(
+            std::tie(std::ignore, inserted) = m_catalog.emplace(
                 std::move(key), std::move(backend)
             );
         }
@@ -65,9 +65,9 @@ public:
     void enumerate_backends(std::vector<std::string> &backends) const
     {
         backends.clear();
-        backends.reserve(m_registry.size());
+        backends.reserve(m_catalog.size());
 
-        for (const auto &backend : m_registry)
+        for (const auto &backend : m_catalog)
         {
             backends.emplace_back(backend.first);
         }
@@ -75,10 +75,10 @@ public:
 
     communicator_backend* get_backend(const std::string &name) const
     {
-        const auto ite = m_registry.find(name);
+        const auto ite = m_catalog.find(name);
 
         communicator_backend *result = nullptr;
-        if (ite != m_registry.end())
+        if (ite != m_catalog.end())
         {
             result = ite->second.get();
         }
@@ -92,8 +92,8 @@ public:
 
         // Filter available backends
         std::vector<communicator_backend*> available_backends;
-        available_backends.reserve(m_registry.size());
-        for (auto &item : m_registry)
+        available_backends.reserve(m_catalog.size());
+        for (auto &item : m_catalog)
         {   
             if (item.second->is_available())
             {
@@ -141,10 +141,10 @@ public:
     }
 
 private:
-    using registry_type = 
+    using catalog_type = 
         std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
 
-    registry_type m_registry;
+    catalog_type m_catalog;
 
 };
 

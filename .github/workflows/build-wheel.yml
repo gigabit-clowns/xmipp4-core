@@ -41,8 +41,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            architectures: "x86_64 i686 aarch64 ppc64le s390x"
+            architectures: "x86_64 i686 ppc64le s390x"
             use_qemu: true
+          - os: ubuntu-24.04-arm
+            architectures: "aarch64"
+            use_qemu: false
           - os: macos-latest
             #architectures: "x86_64 arm64 universal2"
             architectures: "arm64"
@@ -66,7 +69,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.2
         env:
           CIBW_ARCHS: "${{ matrix.architectures }}"
-          CIBW_BUILD: "cp39-*" # Python agnostic
+          CIBW_BUILD: "cp39-*" # Python agnostic, pick any version
     
       - name: List wheels
         run: ls -l ./wheelhouse

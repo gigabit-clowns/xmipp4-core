@@ -42,7 +42,7 @@ jobs:
         - ubuntu-latest
         #- windows-latest
         - macos-latest
-        - macos-13 # For amd64 MacOS
+        #- macos-13 # For amd64 MacOS
 
     runs-on: ${{ matrix.os }}
     defaults:

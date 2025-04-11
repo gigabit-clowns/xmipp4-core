@@ -45,8 +45,9 @@ set(XMIPP4_CORE_LIBRARY_TARGET "xmipp4-core")
 include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(fetch_spdlog)
+include(fetch_ghc_filesystem)
 include(fetch_half)
+include(fetch_spdlog)
 
 # Only build docs if it is the main project
 if(XMIPP4_CORE_BUILD_DOC)
@@ -55,6 +56,7 @@ endif()
 
 # Find dependencies
 find_package(Threads REQUIRED)
+fetch_ghc_filesystem(VERSION 1.5.14)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	fetch_spdlog(VERSION 1.15.0)
@@ -73,6 +75,7 @@ else()
 			${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}/modules
 	)
 endif()
+
 
 # Find all source and header files
 file(
@@ -131,6 +134,7 @@ target_link_libraries(
 		spdlog::spdlog_header_only
 		half
 	PRIVATE
+		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}
 )
 

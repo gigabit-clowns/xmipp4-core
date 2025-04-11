@@ -44,7 +44,8 @@ jobs:
             architectures: "x86_64 i686 aarch64 ppc64le s390x"
             use_qemu: true
           - os: macos-latest
-            architectures: "x86_64 arm64 universal2"
+            #architectures: "x86_64 arm64 universal2"
+            architectures: "arm64"
             use_qemu: false
           - os: windows-latest
             architectures: "AMD64 x86 ARM64"

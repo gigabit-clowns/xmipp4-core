@@ -52,7 +52,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
         env:
-          CIBW_BUILD: cp37-* # Python agnostic
+          CIBW_BUILD: cp38-* # Python agnostic
     
       - name: List wheels
         run: ls -l ./wheelhouse

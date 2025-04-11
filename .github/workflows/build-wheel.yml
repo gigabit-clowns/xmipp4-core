@@ -21,7 +21,7 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-name: Build pip wheels
+name: Build wheels and source distribution
 
 on:
   pull_request:

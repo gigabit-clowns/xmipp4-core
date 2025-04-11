@@ -42,7 +42,6 @@ jobs:
         - ubuntu-latest
         #- windows-latest
         - macos-latest
-        #- macos-13 # For amd64 MacOS
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -63,6 +62,8 @@ jobs:
 
       - name: Build wheels
         run: cibuildwheel --output-dir dist
+        env:
+          CIBW_ARCHS: "all" # Enable cross-compilation
     
       - name: List wheels
         run: ls -l dist

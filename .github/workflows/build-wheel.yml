@@ -60,6 +60,8 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
+        env:
+          CIBW_BUILD: cp37-* # Python agnostic
 
   build_sdist:
     name: Build source distribution

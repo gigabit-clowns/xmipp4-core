@@ -61,7 +61,8 @@ jobs:
     
       - name: List wheels
         run: ls -l dist
-
+      
+      # Uncomment the following lines to upload the built wheels as artifacts
       #- name: Upload wheels
       #  uses: actions/upload-artifact@v3
       #  with:

@@ -36,23 +36,36 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels for ${{ matrix.os }}
+    name: Build wheels for ${{ matrix.os }} ${{ matrix.architectures }}
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        - windows-latest
-        - macos-latest
+        include:
+          - os: ubuntu-latest
+            architectures: "x86_64 i686 aarch64 ppc64le s390x"
+            use_qemu: true
+          - os: macos-latest
+            architectures: "x86_64 arm64 universal2"
+            use_qemu: false
+          - os: windows-latest
+            architectures: "AMD64 x86 ARM64"
+            use_qemu: false
 
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        if: matrix.use_qemu == 'true'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
         env:
-          CIBW_BUILD: cp38-* # Python agnostic
+          CIBW_ARCHS: "${{ matrix.architectures }}"
+          CIBW_BUILD: "cp39-*" # Python agnostic
     
       - name: List wheels
         run: ls -l ./wheelhouse

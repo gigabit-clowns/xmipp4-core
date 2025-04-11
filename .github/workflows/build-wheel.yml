@@ -51,6 +51,8 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
+        env:
+          CIBW_BUILD: cp37-* # Python agnostic
     
       - name: List wheels
         run: ls -l ./wheelhouse
@@ -60,8 +62,6 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
-        env:
-          CIBW_BUILD: cp37-* # Python agnostic
 
   build_sdist:
     name: Build source distribution

@@ -40,7 +40,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        - windows-latest
+        #- windows-latest
         - macos-latest
         - macos-13 # For amd64 MacOS
 

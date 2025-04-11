@@ -24,10 +24,6 @@
 name: Build wheels and source distribution
 
 on:
-  pull_request:
-    branches:
-      - main
-
   push:
     branches:
       - main

@@ -24,10 +24,6 @@
 name: Build wheels and source distribution
 
 on:
-  push:
-    branches:
-      - main
-  
   workflow_dispatch:
 
 jobs:

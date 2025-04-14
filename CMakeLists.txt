@@ -187,9 +187,9 @@ install(
 
 # Create and install CMake config files
 if(WIN32)
-	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_FULL_BINDIR}/xmipp4-plugins)
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)
 else()
-	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR}/xmipp4-plugins)
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
 endif()
 
 configure_package_config_file(

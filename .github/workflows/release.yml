@@ -159,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: conda-${{ matrix.os }}
-          path: builds/*
+          path: builds/**/xmipp4-core*.tar.bz2
 
   upload_conda:
     name: Upload to conda-forge

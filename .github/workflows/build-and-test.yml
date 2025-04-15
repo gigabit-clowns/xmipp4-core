@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_and_test_with_cmake:
-    name: Build and Test with CMake
+    name: CMake
     strategy:
       matrix:
         os:
@@ -63,7 +63,7 @@ jobs:
           test-numbers: ${{ steps.run-memtool.outputs.test-numbers }}
 
   build_and_test_with_pip:
-    name: Build and Test with pip
+    name: pip
     strategy:
       matrix:
         os:
@@ -86,7 +86,7 @@ jobs:
       # TODO run tests with pip
 
   build_and_test_with_conda:
-    name: Build and Test with conda
+    name: conda
     strategy:
       matrix:
         os:

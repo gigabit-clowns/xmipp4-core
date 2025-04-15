@@ -1,6 +1,9 @@
 name: Generate new tag & GitHub release
 on:
   workflow_dispatch:
+  
+  push:
+    branches: [ ms_generate_release ]
 
 jobs:
   tag-and-release:

@@ -7,11 +7,9 @@ on:
 
   workflow_dispatch:
 
-env:
-  BUILD_TYPE: Debug
-
 jobs:
-  build:
+  build_and_test_with_cmake:
+    name: Build and Test with CMake
     strategy:
       matrix:
         os:
@@ -26,6 +24,8 @@ jobs:
         - os: windows-latest
           compiler: {cc: cl, cxx: cl}
   
+    env:
+      BUILD_TYPE: Debug
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -61,3 +61,56 @@ jobs:
         uses: ./.github/composites/show-memleaks
         with:
           test-numbers: ${{ steps.run-memtool.outputs.test-numbers }}
+
+  build_and_test_with_pip:
+    name: Build and Test with pip
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - ubuntu-22.04
+        - macos-latest
+        - windows-latest
+  
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install xmipp4-core with pip
+        run: pip install . -v
+
+      # TODO run tests with pip
+
+  build_and_test_with_conda:
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        #- windows-latest # FIXME
+  
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          activate-environment: "" # Base is required for conda-build
+
+      - name: Install conda-build and conda-verify
+        run: conda install -y conda-build conda-verify
+
+      - name: Build with conda
+        run: conda build conda.recipe
+
+      # TODO run tests

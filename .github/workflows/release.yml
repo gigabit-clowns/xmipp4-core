@@ -3,8 +3,6 @@ name: Generate new release
 on:
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   tag_and_release:
     name: Generate new tag & GitHub release
@@ -38,9 +36,6 @@ jobs:
         name: ${{ steps.variables.outputs.RELEASE_NAME }}
         body: ${{ steps.variables.outputs.CHANGELOG_BODY }}
     
-    - name: Fail
-      run: exit 1
-
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
     needs: [tag_and_release]

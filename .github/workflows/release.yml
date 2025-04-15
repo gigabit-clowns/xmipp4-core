@@ -35,4 +35,3 @@ jobs:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: ${{ steps.variables.outputs.RELEASE_NAME }}
         body: ${{ steps.variables.outputs.CHANGELOG_BODY }}
-    

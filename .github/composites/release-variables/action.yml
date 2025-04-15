@@ -1,0 +1,43 @@
+name: "Check user authorization"
+description: "Checks if the calling user has enough permission to perform action"
+
+outputs:
+  tag_name:
+    description: "Name of the tag, in the format X.Y.Z"
+    value: ${{ steps.tag_name.outputs.tag_name }}
+  release_name:
+    description: "Name of the release, in the format vX.Y.Z"
+    value: ${{ steps.release_name.outputs.release_name }}
+  changelog:
+    description: "Body of the changelog"
+    value: ${{ steps.changelog.outputs.changelog }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Retrieve tag name
+      id: tag_name
+      shell: bash
+      run: |
+        export TAG_NAME=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "Version: $TAG_NAME"
+    
+    - name: Retrieve release name
+      id: release_name
+      shell: bash
+      env:
+        TAG_NAME: ${{ steps.tag_name.outputs.tag_name }}
+      run: |
+        export RELEASE_NAME="v$TAG_NAME"
+        echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+        echo "Release name: $RELEASE_NAME"
+
+    - name: Retrieve changelog
+      id: changelog
+      shell: bash
+      run: |
+        export CHANGELOG_BODY=$(awk '/# /{if (found) exit} {if (/# /) found=1; else if (found) print}' CHANGELOG.md)
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT

@@ -119,3 +119,49 @@ jobs:
       - name: Upload to PyPI
         if: false
         uses: pypa/gh-action-pypi-publish@release/v1 # TODO enable this in the future
+
+  build_doxygen: 
+    name: Build Doxygen documentation
+    needs: [tag_and_release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y doxygen
+    
+    - name: Configure and build with CMake
+      uses: threeal/cmake-action@v2
+      with:
+        source-dir: ${{ github.workspace }}
+        build-dir: "${{ github.workspace }}/build"
+        options: |
+          XMIPP4_CORE_BUILD_DOC=ON
+          XMIPP4_CORE_BUILD_SPDLOG=ON
+          BUILD_TESTING=OFF
+        run-build: true
+        build-args: --target doxygen
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ${{ github.workspace }}/build/doc/doxygen/html
+
+  deploy_doxygen_to_gh_pages:
+    name: Deploy Doxygen documentation to GitHub Pages
+    needs: [build_doxygen]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

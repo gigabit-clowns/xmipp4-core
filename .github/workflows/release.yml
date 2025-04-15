@@ -10,6 +10,9 @@ jobs:
     name: Generate new tag & GitHub release
     runs-on: ubuntu-latest
     steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
     - name: Check authorisation level of dispatching user
       uses: ./.github/composites/authorize-user
@@ -18,9 +21,6 @@ jobs:
     
     - name: Fail
       run: exit 1
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
 
     - name: Retrieve tag name, release name & changelog
       id: variables

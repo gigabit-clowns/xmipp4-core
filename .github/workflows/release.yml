@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tag-and-release:
+  tag_and_release:
     name: Generate new tag & GitHub release
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +39,7 @@ jobs:
 
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
-    needs: [tag-and-release]
+    needs: [tag_and_release]
     strategy:
       matrix:
         include:
@@ -72,7 +72,7 @@ jobs:
 
   build_sdist:
     name: Build source distribution
-    needs: [tag-and-release]
+    needs: [tag_and_release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,32 @@
+name: "Check user authorisation"
+description: "Checks if the calling user has enough permission to perform action"
+
+inputs:
+  allowed_roles:
+    description: "Comma-separated list of roles that are allowed"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check authorisation level of dispatching user
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ALLOWED_ROLES: ${{ inputs.allowed_roles }}
+      shell: bash
+      run: |
+        USER_ROLE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission" | jq -r .permission)
+
+        echo "User ${{ github.actor }} has role: \"$USER_ROLE\""
+        IFS=',' read -ra ROLES <<< "$ALLOWED_ROLES"
+        for role in "${ROLES[@]}"; do
+          echo "Checking role: \"$role\""
+          if [[ "$USER_ROLE" == "$role" ]]; then
+            echo "User is authorized"
+            exit 0
+          fi
+        done
+
+        echo "User is not authorized to perform this operation"
+        exit 1

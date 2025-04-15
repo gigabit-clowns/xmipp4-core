@@ -18,6 +18,7 @@ jobs:
       uses: ./.github/composites/authorize-user
       with:
         allowed_roles: "admin, maintain"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Fail
       run: exit 1

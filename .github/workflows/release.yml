@@ -30,7 +30,7 @@ jobs:
         echo "Version: $TAG_NAME"
         echo "Release name: $RELEASE_NAME"
 
-        export CHANGELOG_BODY=$(awk '/## Release/{if (found) exit} {if (/## Release/) found=1; else if (found) print}' CHANGELOG.md)
+        export CHANGELOG_BODY=$(awk '/## /{if (found) exit} {if (/## /) found=1; else if (found) print}' CHANGELOG.md)
         echo "Changelog: $CHANGELOG_BODY"
         echo "Done"
     

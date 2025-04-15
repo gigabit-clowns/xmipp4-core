@@ -36,9 +36,10 @@
 
 #include <vector>
 #include <functional>
-#include <filesystem>
 #include <system_error>
 #include <cstdlib>
+
+#include <ghc/filesystem.hpp>
 
 static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "xmipp4-plugins";
 static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
@@ -128,7 +129,7 @@ std::string get_default_plugin_directory()
     const auto* symbol = 
         reinterpret_cast<const void*>(&get_default_plugin_directory);
 
-    auto path = std::filesystem::path(
+    auto path = ghc::filesystem::path(
         system::dynamic_library::query_symbol_filename(symbol)
     );
     if(path.empty())
@@ -161,12 +162,12 @@ std::string get_plugin_directory()
 
 void discover_plugins(const std::string& directory, plugin_manager &manager)
 {
-    std::filesystem::directory_iterator iterator;
+    ghc::filesystem::directory_iterator iterator;
     try
     {
-        iterator = std::filesystem::directory_iterator(directory);
+        iterator = ghc::filesystem::directory_iterator(directory);
     }
-    catch(const std::filesystem::filesystem_error& e)
+    catch(const ghc::filesystem::filesystem_error& e)
     {
         XMIPP4_LOG_WARN(
             "Failed to open plugin directory {}: {}", 

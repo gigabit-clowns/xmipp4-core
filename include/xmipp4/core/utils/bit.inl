@@ -41,7 +41,15 @@ namespace utils
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t bit(std::size_t i) noexcept
 {
-    return std::size_t(1) << i;
+    XMIPP4_CONSTEXPR auto n_bits = std::numeric_limits<std::size_t>::digits;
+    if (i >= n_bits)
+    {
+        return 0;
+    }
+    else
+    {
+        return std::size_t(1) << i;
+    }
 }
 
 template<typename T>

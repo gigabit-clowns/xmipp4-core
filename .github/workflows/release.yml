@@ -1,34 +1,45 @@
-#***************************************************************************
-# Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
-#              Martín Salinas Antón (ssalinasmartin@gmail.com)
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-# 02111-1307  USA
-#
-#  All comments concerning this program package may be sent to the
-#  e-mail address 'xmipp@cnb.csic.es'
-# ***************************************************************************
-
-name: Build wheels and source distribution
+name: Generate new release
 
 on:
   workflow_dispatch:
 
 jobs:
+  tag-and-release:
+    name: Generate new tag & GitHub release
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Retrieve tag name, release name & changelog
+      id: variables
+      run: |
+        export TAG_NAME=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+        export RELEASE_NAME="v$TAG_NAME"
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
+        echo "Version: $TAG_NAME"
+        echo "Release name: $RELEASE_NAME"
+      
+    - name: Generate tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.variables.outputs.TAG_NAME }}
+        tag_prefix: ''
+        
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: ${{ steps.variables.outputs.RELEASE_NAME }}
+        body: ${{ steps.tag_version.outputs.changelog }}
+
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
+    needs: [tag-and-release]
     strategy:
       matrix:
         include:
@@ -50,7 +61,8 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.2
         env:
           CIBW_ARCHS: "${{ matrix.architectures }}"
-          CIBW_BUILD: "cp39-*" # Python agnostic, pick any version
+          CIBW_BUILD: "cp313-*" # Python agnostic, pick any version
+          CIBW_BUILD_VERBOSITY: 1
       
       - name: Upload wheels
         uses: actions/upload-artifact@v4
@@ -60,6 +72,7 @@ jobs:
 
   build_sdist:
     name: Build source distribution
+    needs: [tag-and-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +89,6 @@ jobs:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    # TODO add condition to run only when releasing
     steps:
       - uses: actions/download-artifact@v4
         with:

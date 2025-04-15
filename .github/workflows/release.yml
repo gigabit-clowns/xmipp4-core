@@ -19,10 +19,11 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission" | jq -r .permission)
 
         echo "User ${{ github.actor }} has role: $USER_ROLE"
-        if [[ "$USER_ROLE" != "admin" ]]; then
+        if [[ "$USER_ROLE" != "admin" && "$USER_ROLE" != "maintain" ]]; then
           echo "User does not have admin privileges"
           exit 1
         fi
+        echo "Failing anyway (testing purposes)"
         false
 
     - name: Checkout repository

@@ -41,3 +41,4 @@ runs:
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
         echo "$changelog" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
+        echo "Changelog: $CHANGELOG_BODY"

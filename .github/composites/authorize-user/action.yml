@@ -3,8 +3,9 @@ description: "Checks if the calling user has enough permission to perform action
 
 inputs:
   allowed_roles:
-    description: "Comma-separated list of roles that are allowed"
+    description: "Space-separated list of roles that are allowed"
     required: true
+    default: "admin"
   github_token:
     description: "GitHub token for API authentication"
     required: true
@@ -19,9 +20,8 @@ runs:
           "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission" | jq -r .permission)
 
         echo "User ${{ github.actor }} has role: \"$USER_ROLE\""
-        IFS=',' read -ra ROLES <<< "${{ inputs.allowed_roles }}"
+        IFS=' ' read -ra ROLES <<< "${{ inputs.allowed_roles }}"
         for role in "${ROLES[@]}"; do
-          echo "Checking role: \"$role\""
           if [[ "$USER_ROLE" == "$role" ]]; then
             echo "User is authorized"
             exit 0

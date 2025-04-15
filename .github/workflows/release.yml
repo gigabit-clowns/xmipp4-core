@@ -3,8 +3,6 @@ name: Generate new release
 on:
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   tag_and_release:
     name: Generate new tag & GitHub release
@@ -17,11 +15,8 @@ jobs:
     - name: Check authorisation level of dispatching user
       uses: ./.github/composites/authorize-user
       with:
-        allowed_roles: "read, write"
+        allowed_roles: "admin, maintain"
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Fail
-      run: exit 1
 
     - name: Retrieve tag name, release name & changelog
       id: variables

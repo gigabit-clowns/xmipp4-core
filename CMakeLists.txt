@@ -195,7 +195,7 @@ if(WIN32)
 else()
 	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
 endif()
-set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4-core plugins are installed")
+set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
 
 configure_package_config_file(
   	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in

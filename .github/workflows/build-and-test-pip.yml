@@ -26,6 +26,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install xmipp4-core with pip
-        run: pip install . -vvv
+        run: pip install . -v
 
       # TODO run tests

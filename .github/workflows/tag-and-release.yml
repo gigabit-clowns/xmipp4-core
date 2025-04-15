@@ -1,0 +1,33 @@
+name: Generate new tag & GitHub release
+on:
+  workflow_dispatch:
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Retrieve tag name, release name & changelog
+      id: version
+      run: |
+        export TAG_NAME=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "Version: $TAG_NAME"
+      
+    - name: Generate tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.version.outputs.TAG_NAME }}
+        tag_prefix: ''
+        
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: ${{ steps.version.outputs.TAG_NAME }}
+        body: ${{ steps.tag_version.outputs.changelog }}

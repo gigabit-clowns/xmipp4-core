@@ -53,9 +53,6 @@ jobs:
         env:
           CIBW_ARCHS: "${{ matrix.architectures }}"
           CIBW_BUILD: "cp39-*" # Python agnostic, pick any version
-    
-      - name: List wheels
-        run: ls -l ./wheelhouse
       
       - name: Upload wheels
         uses: actions/upload-artifact@v4

@@ -17,7 +17,7 @@ jobs:
     - name: Check authorisation level of dispatching user
       uses: ./.github/composites/authorize-user
       with:
-        allowed_roles: "read"
+        allowed_roles: "read, write"
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Fail

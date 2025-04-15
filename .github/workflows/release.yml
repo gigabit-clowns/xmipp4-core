@@ -3,8 +3,6 @@ name: Generate new release
 on:
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   tag_and_release:
     name: Generate new tag & GitHub release
@@ -31,7 +29,7 @@ jobs:
         echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
         echo "Release name: $RELEASE_NAME"
 
-        export CHANGELOG_BODY=$(awk '/## /{if (found) exit} {if (/## /) found=1; else if (found) print}' CHANGELOG.md)
+        export CHANGELOG_BODY=$(awk '/# /{if (found) exit} {if (/# /) found=1; else if (found) print}' CHANGELOG.md)
         echo "CHANGELOG_BODY<<EOF" >> $GITHUB_OUTPUT
         echo "$CHANGELOG_BODY" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -50,9 +48,6 @@ jobs:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: ${{ steps.variables.outputs.RELEASE_NAME }}
         body: ${{ steps.variables.outputs.CHANGELOG_BODY }}
-
-    - name: Fail
-      run: exit 1
 
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})

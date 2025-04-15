@@ -1,4 +1,4 @@
-## Release v0.1.0
+# Release v0.1.0
 Initial xmipp4-core release. Still work in progress.
 
 - Defined and implemented plugin architecture.

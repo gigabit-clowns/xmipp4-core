@@ -4,8 +4,9 @@ on:
   push:
     tags:
       - 'v*'
-  schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
+    branches:
+      - main
+
   workflow_dispatch:
 
 jobs:
@@ -60,7 +61,7 @@ jobs:
   upload_pypi:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -73,9 +74,9 @@ jobs:
       - name: List artifacts
         run: ls -l ./dist
 
-      - name: Upload to PyPI
+      - name: Upload to PyPI # TODO enable this in the future
         run: echo I should be uploading here
-        #uses: pypa/gh-action-pypi-publish@release/v1 # TODO enable this in the future
+        #uses: pypa/gh-action-pypi-publish@release/v1
 
   build_conda:
     name: Build conda packages
@@ -117,7 +118,7 @@ jobs:
   upload_conda:
     name: Upload to conda-forge
     needs: [build_conda]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -130,7 +131,8 @@ jobs:
       - name: List artifacts
         run: ls -l ./dist
       
-        # TODO upload to conda-forge
+      - name: Upload to conda-forge # TODO implement this in the future
+        run: echo I should be uploading here
 
   build_doxygen: 
     name: Build Doxygen documentation
@@ -165,7 +167,7 @@ jobs:
   deploy_doxygen_to_gh_pages:
     name: Deploy Doxygen documentation to GitHub Pages
     needs: [build_doxygen]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.event.ref, 'refs/tags/v')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -178,13 +180,13 @@ jobs:
       id: deployment
       uses: actions/deploy-pages@v4
 
-  create_nightly_release:
-    name: Create Nightlty release
+  create_developer_release:
+    name: Create development release
     needs: [build_wheels, build_sdist, build_conda]
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     steps:
       - name: Download artifacs
         uses: actions/download-artifact@v4
@@ -193,14 +195,16 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: Update nightly release
+      - name: Update development release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: nightly
-          name: "Nightly Release"
-          body: "This is an automated nightly release."
+          tag_name: development
+          name: "Development build"
+          body: >-
+            This is an automated release containing binaries built with 
+            with the head of the main branch.
           draft: false
           prerelease: true
           files: dist/**

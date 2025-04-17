@@ -10,7 +10,6 @@ on:
 
   pull_request:
 
-
 jobs:
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
@@ -63,7 +62,7 @@ jobs:
   upload_pypi:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -120,7 +119,7 @@ jobs:
   upload_conda:
     name: Upload to conda-forge
     needs: [build_conda]
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -168,7 +167,7 @@ jobs:
   deploy_doxygen_to_gh_pages:
     name: Deploy Doxygen documentation to GitHub Pages
     needs: [build_doxygen]
-    if: github.event_name == 'release' && github.event.action == 'published'     
+    if: startsWith(github.ref, 'refs/tags/v')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

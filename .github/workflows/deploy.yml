@@ -4,6 +4,8 @@ on:
   release:
     types: 
       - published
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -58,6 +60,7 @@ jobs:
   upload_pypi:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -71,8 +74,8 @@ jobs:
         run: ls -l ./dist
 
       - name: Upload to PyPI
-        if: false && github.event_name == 'release' && github.event.action == 'published'
-        uses: pypa/gh-action-pypi-publish@release/v1 # TODO enable this in the future
+        run: echo I should be uploading here
+        #uses: pypa/gh-action-pypi-publish@release/v1 # TODO enable this in the future
 
   build_conda:
     name: Build conda packages
@@ -114,6 +117,7 @@ jobs:
   upload_conda:
     name: Upload to conda-forge
     needs: [build_conda]
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -161,6 +165,7 @@ jobs:
   deploy_doxygen_to_gh_pages:
     name: Deploy Doxygen documentation to GitHub Pages
     needs: [build_doxygen]
+    if: github.event_name == 'release' && github.event.action == 'published'     
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -170,6 +175,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to GitHub Pages
-      if: github.event_name == 'release' && github.event.action == 'published'     
       id: deployment
       uses: actions/deploy-pages@v4
+
+  create_nightly_release:
+    name: Create Nightlty release
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: true
+    steps:
+      - name: Download artifacs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - name: Update nightly release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly
+          name: "Nightly Release"
+          body: "This is an automated nightly release."
+          draft: false
+          prerelease: true
+          files: dist/**

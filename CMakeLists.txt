@@ -196,14 +196,6 @@ else()
 	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
 endif()
 set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
-file(
-	WRITE ${CMAKE_CURRENT_BINARY_DIR}/.placeholder 
-	"This file is here to prevent deletion of the plugin directory"
-)
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/.placeholder 
-	DESTINATION ${XMIPP4_PLUGIN_INSTALL_DIR} 
-)
 
 configure_package_config_file(
   	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in

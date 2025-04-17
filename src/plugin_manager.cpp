@@ -169,7 +169,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
     }
     catch(const ghc::filesystem::filesystem_error& e)
     {
-        XMIPP4_LOG_WARN(
+        XMIPP4_LOG_DEBUG(
             "Failed to open plugin directory {}: {}", 
             directory, 
             e.what()
@@ -178,17 +178,9 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
 
     for (const auto& entry : iterator) 
     {
-        const auto path = entry.path();
-        const auto filename = path.filename().string();
-        if( filename.starts_with(".") )
-        {
-            // Skip hidden files (e.g. .placeholder)
-            continue;
-        }
-
         try
         {
-            manager.load_plugin(path.string());
+            manager.load_plugin(entry.path().string());
         }
         catch(const plugin_load_error& error)
         {

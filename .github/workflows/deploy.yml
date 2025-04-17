@@ -182,7 +182,7 @@ jobs:
 
   create_nightly_release:
     name: Create Nightlty release
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist, build_conda]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -191,7 +191,7 @@ jobs:
       - name: Download artifacs
         uses: actions/download-artifact@v4
         with:
-          pattern: cibw-*
+          pattern: "{cibw,conda}-*"
           path: dist
           merge-multiple: true
 

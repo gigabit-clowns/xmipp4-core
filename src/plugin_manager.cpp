@@ -169,7 +169,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
     }
     catch(const ghc::filesystem::filesystem_error& e)
     {
-        XMIPP4_LOG_WARN(
+        XMIPP4_LOG_DEBUG(
             "Failed to open plugin directory {}: {}", 
             directory, 
             e.what()

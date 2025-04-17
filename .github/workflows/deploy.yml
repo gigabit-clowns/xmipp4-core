@@ -9,6 +9,8 @@ on:
 
   workflow_dispatch:
 
+  pull_request:
+
 jobs:
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})

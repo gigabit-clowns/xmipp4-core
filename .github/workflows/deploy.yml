@@ -177,7 +177,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         pattern: "cibw-*"
-        path: dist/simple/
+        path: dist/simple/xmipp4-core
         merge-multiple: true
 
     - name: Download doxygen documentation

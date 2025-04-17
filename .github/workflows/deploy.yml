@@ -9,8 +9,6 @@ on:
 
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
@@ -188,7 +186,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    # if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     steps:
       - name: Download artifacs
         uses: actions/download-artifact@v4
@@ -210,5 +208,3 @@ jobs:
           draft: false
           prerelease: true
           files: dist/**
-
-# Run 2

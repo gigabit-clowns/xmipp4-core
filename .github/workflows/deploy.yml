@@ -9,8 +9,6 @@ on:
 
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
@@ -194,7 +192,7 @@ jobs:
   deploy_gh_pages:
     name: Deploy website to GitHub Pages
     needs: [build_gh_pages]
-    #if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

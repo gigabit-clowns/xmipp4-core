@@ -61,7 +61,7 @@ jobs:
   upload_pypi:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
-    if: startsWith(github.event.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -75,8 +75,8 @@ jobs:
         run: ls -l ./dist
 
       - name: Upload to PyPI # TODO enable this in the future
-        run: echo I should be uploading here
-        #uses: pypa/gh-action-pypi-publish@release/v1
+        if: false
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   build_conda:
     name: Build conda packages
@@ -118,7 +118,7 @@ jobs:
   upload_conda:
     name: Upload to conda-forge
     needs: [build_conda]
-    if: startsWith(github.event.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs
@@ -131,8 +131,7 @@ jobs:
       - name: List artifacts
         run: ls -l ./dist
       
-      - name: Upload to conda-forge # TODO implement this in the future
-        run: echo I should be uploading here
+      # TODO upload to conda-forge
 
   build_doxygen: 
     name: Build Doxygen documentation

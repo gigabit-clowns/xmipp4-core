@@ -163,6 +163,36 @@ jobs:
       with:
         path: ${{ github.workspace }}/build/doc/doxygen/html
 
+  build_pypi_simple:
+    name: Build PyPI simple repository
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up node.js
+        uses: actions/setup-node@v4
+
+      - name: Install npm dependencies
+        run: npm install -g gen-index
+
+      - name: Download artifacs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "{cibw}-*"
+          path: simple/xmipp4-core
+          merge-multiple: true
+      
+      - name: Build index
+        run: gen-index ./simple
+      
+      - name: Upload PyPI simple
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-simple
+          path: simple/
+      
+
+
+
   deploy_doxygen_to_gh_pages:
     name: Deploy Doxygen documentation to GitHub Pages
     needs: [build_doxygen]

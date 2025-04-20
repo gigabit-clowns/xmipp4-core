@@ -24,9 +24,12 @@
 # https://github.com/pybind/cmake_example/blob/master/conda.recipe/meta.yaml
 # https://scikit-build-core.readthedocs.io/en/stable/faqs.html#making-a-conda-recipe
 
+{% set version_match = load_file_regex(load_file="VERSION", regex_pattern='(\\d+\\.\\d+\\.\\d+)') %}
+{% set version = version_match[1] %}
+
 package:
   name: xmipp4-core
-  version: "0.1.0"
+  version: {{ version }}
 
 about:
   summary: Core library for the xmipp4 framework

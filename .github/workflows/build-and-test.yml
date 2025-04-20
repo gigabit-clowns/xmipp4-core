@@ -112,6 +112,6 @@ jobs:
         run: conda install -y conda-build conda-verify
 
       - name: Build with conda
-        run: conda build conda.recipe
+        run: conda build conda
 
       # TODO run tests with conda

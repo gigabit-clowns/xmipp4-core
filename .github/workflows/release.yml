@@ -21,7 +21,7 @@ jobs:
     - name: Retrieve tag name
       id: tag_name
       run: |
-        export TAG_NAME=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+        export TAG_NAME=$(cat VERSION)
         echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Version: $TAG_NAME"
     

@@ -105,7 +105,7 @@ jobs:
         run: conda install -y conda-build conda-verify
 
       - name: Build with conda
-        run: conda build conda.recipe --output-folder builds/
+        run: conda build conda --output-folder builds/
 
       - name: Upload conda package
         uses: actions/upload-artifact@v4

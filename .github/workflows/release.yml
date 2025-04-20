@@ -3,7 +3,6 @@ name: Generate new release
 on:
   workflow_dispatch:
   workflow_call:
-  pull_request:
 
 jobs:
   tag_and_release:
@@ -25,9 +24,6 @@ jobs:
         export TAG_NAME=$(cat VERSION)
         echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Version: $TAG_NAME"
-    
-    - name: Fail
-      run: false
     
     - name: Retrieve release name
       id: release_name

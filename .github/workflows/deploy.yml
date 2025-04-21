@@ -197,7 +197,7 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: Update development tag
+      - name: Create or update development tag
         env:
           TAG_NAME: "development"
         run: |

@@ -213,7 +213,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $TAG_NAME
+          tag_name: ${{ env.TAG_NAME }}
           name: "Development build"
           body: >-
             This is an automated release containing binaries built with 

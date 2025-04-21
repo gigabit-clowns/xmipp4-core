@@ -187,6 +187,9 @@ jobs:
       contents: write
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Download artifacs
         uses: actions/download-artifact@v4
         with:
@@ -201,9 +204,6 @@ jobs:
           tree
           pwd
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
       - name: Update development tag
         env:
           TAG_NAME: "development"
@@ -213,10 +213,6 @@ jobs:
           git tag -fa $TAG_NAME -m 'Update development tag with main branch'
           git push origin $TAG_NAME --force
       
-      - name: Show directory tree
-        working-directory: ${{ github.workspace }}/../
-        run: tree && pwd
-
       - name: Fail
         run: false
 

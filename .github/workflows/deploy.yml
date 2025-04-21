@@ -208,7 +208,7 @@ jobs:
           git tag -fa $TAG_NAME -m 'Update development tag with main branch'
           git push origin $TAG_NAME --force
       
-      - name: Update development release
+      - name: Create or update development release
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

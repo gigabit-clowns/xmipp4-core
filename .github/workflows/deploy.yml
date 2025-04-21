@@ -194,6 +194,27 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Update development tag
+        env:
+          TAG_NAME: "development"
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'action@github.com'
+          git tag -fa $TAG_NAME -m 'Update development tag with main branch'
+          git push origin $TAG_NAME --force
+      
+      - name: Show directory tree
+        run: |
+          sudo apt-get update
+          sudo apt-get install tree -y
+          tree
+
+      - name: Fail
+        run: false
+
       - name: Update development release
         uses: softprops/action-gh-release@v1
         env:

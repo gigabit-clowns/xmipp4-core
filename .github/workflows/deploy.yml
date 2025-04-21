@@ -199,6 +199,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install tree -y
           tree
+          pwd
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -214,7 +215,7 @@ jobs:
       
       - name: Show directory tree
         working-directory: ${{ github.workspace }}/../
-        run: tree
+        run: tree && pwd
 
       - name: Fail
         run: false

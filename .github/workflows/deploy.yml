@@ -196,13 +196,6 @@ jobs:
           pattern: "{cibw,conda}-*"
           path: dist
           merge-multiple: true
-      
-      - name: Show directory tree
-        run: |
-          sudo apt-get update
-          sudo apt-get install tree -y
-          tree
-          pwd
 
       - name: Update development tag
         env:

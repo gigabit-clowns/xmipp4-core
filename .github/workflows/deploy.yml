@@ -193,6 +193,12 @@ jobs:
           pattern: "{cibw,conda}-*"
           path: dist
           merge-multiple: true
+      
+      - name: Show directory tree
+        run: |
+          sudo apt-get update
+          sudo apt-get install tree -y
+          tree
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -208,10 +214,7 @@ jobs:
       
       - name: Show directory tree
         working-directory: ${{ github.workspace }}/../
-        run: |
-          sudo apt-get update
-          sudo apt-get install tree -y
-          tree
+        run: tree
 
       - name: Fail
         run: false

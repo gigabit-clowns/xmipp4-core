@@ -185,7 +185,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+    env:
+      TAG_NAME: "development"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -198,8 +200,6 @@ jobs:
           merge-multiple: true
 
       - name: Create or update development tag
-        env:
-          TAG_NAME: "development"
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'action@github.com'

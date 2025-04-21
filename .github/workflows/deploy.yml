@@ -207,6 +207,7 @@ jobs:
           git push origin $TAG_NAME --force
       
       - name: Show directory tree
+        working-directory: ${{ github.workspace }}/../
         run: |
           sudo apt-get update
           sudo apt-get install tree -y

@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file interface_registry.hpp
+ * @file interface_catalog.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines interface_registry class
+ * @brief Defines interface_catalog class
  * @date 2024-10-23
  * 
  */
@@ -42,31 +42,31 @@ namespace xmipp4
 /**
  * @brief Stores a single instance of each type interface_manager.
  * 
- * The interface registry allows to centralize interface managers.
+ * The interface catalog allows to centralize interface managers.
  * 
  * @see interface_manager
  * 
  */
-class interface_registry
+class interface_catalog
 {
 public:
     /**
-     * @brief Construct a new interface registry object.
+     * @brief Construct a new interface catalog object.
      * 
      * @param register_builtin_backends This parameters controls whether the
-     * interface registry should load the backends bundled with the
+     * interface catalog should load the backends bundled with the
      * core.
      * 
      */
     XMIPP4_CORE_API 
-    explicit interface_registry(bool register_builtin_backends = true);
-    interface_registry(const interface_registry& other) = delete;
-    XMIPP4_CORE_API interface_registry(interface_registry&& other) noexcept;
-    XMIPP4_CORE_API ~interface_registry();
+    explicit interface_catalog(bool register_builtin_backends = true);
+    interface_catalog(const interface_catalog& other) = delete;
+    XMIPP4_CORE_API interface_catalog(interface_catalog&& other) noexcept;
+    XMIPP4_CORE_API ~interface_catalog();
 
-    interface_registry& operator=(const interface_registry& other) = delete;
+    interface_catalog& operator=(const interface_catalog& other) = delete;
     XMIPP4_CORE_API 
-    interface_registry& operator=(interface_registry&& other) noexcept;
+    interface_catalog& operator=(interface_catalog&& other) noexcept;
 
     /**
      * @brief Get a concrete interface manager.
@@ -97,4 +97,4 @@ private:
 
 } // namespace xmipp4
 
-#include "interface_registry.inl"
+#include "interface_catalog.inl"

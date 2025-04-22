@@ -36,7 +36,7 @@
 namespace xmipp4
 {
 
-class interface_registry;
+class interface_catalog;
 
 /**
  * @brief Abstract class representing a plugin interface.
@@ -71,11 +71,11 @@ public:
     virtual version get_version() const noexcept = 0;
 
     /**
-     * @brief Register this plugin at a given interface registry.
+     * @brief Register this plugin at a given interface catalog.
      * 
-     * @param registry The registry where this plugin will be registered.
+     * @param catalog The catalog where this plugin will be registered.
      */
-    virtual void register_at(interface_registry& registry) const = 0;
+    virtual void register_at(interface_catalog& catalog) const = 0;
 
 };
 

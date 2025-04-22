@@ -20,17 +20,23 @@
 #  e-mail address 'xmipp@cnb.csic.es'
 # ***************************************************************************
 
-@PACKAGE_INIT@
+cmake_minimum_required(VERSION 3.12)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
+include(FetchContent)
 
-include(CMakeFindDependencyMacro)
+function(fetch_ghc_filesystem)
+    set(options)
+    set(oneValueArgs VERSION)
+    set(multiValueArgs)
+    cmake_parse_arguments(PARSE_ARGV 0 arg
+        "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    )
 
-find_dependency(Threads)
-find_dependency(spdlog)
-find_dependency(half)
+	FetchContent_Declare(
+		ghc_filesystem
+		GIT_REPOSITORY https://github.com/gulrak/filesystem.git
+		GIT_TAG v${arg_VERSION}
+	)
 
-include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
-
-set(XMIPP4_PLUGIN_INSTALL_DIR "@XMIPP4_PLUGIN_INSTALL_DIR@")
-set(XMIPP4_PLUGIN_INSTALL_FULL_DIR "${PACKAGE_PREFIX_DIR}/${XMIPP4_PLUGIN_INSTALL_DIR}")
+	FetchContent_MakeAvailable(ghc_filesystem)
+endfunction()

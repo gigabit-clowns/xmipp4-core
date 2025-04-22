@@ -20,7 +20,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_registry.hpp"
+#include "interface_catalog.hpp"
 
 #include "platform/constexpr.hpp"
 #include "platform/assert.hpp"
@@ -31,7 +31,7 @@ namespace xmipp4
 template <typename T>
 inline
 typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-interface_registry::get_interface_manager()
+interface_catalog::get_interface_manager()
 {
     const std::type_index type(typeid(T));
 

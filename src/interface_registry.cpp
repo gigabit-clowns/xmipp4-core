@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file interface_registry.cpp
+ * @file interface_catalog.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Implementation of plugin.hpp
  * @date 2024-03-11
  * 
  */
 
-#include <xmipp4/core/interface_registry.hpp>
+#include <xmipp4/core/interface_catalog.hpp>
 
 #include "plugin_loader.hpp"
 
@@ -39,7 +39,7 @@
 namespace xmipp4
 {
 
-class interface_registry::implementation
+class interface_catalog::implementation
 {
 public:
     explicit implementation(bool register_builtin_backends)
@@ -76,34 +76,34 @@ public:
     }
 
 private:
-    using registry_type = 
+    using catalog_type = 
         std::unordered_map<std::type_index, std::unique_ptr<interface_manager>>;
 
     bool m_register_builtin_backends;
-    registry_type m_interfaces;
+    catalog_type m_interfaces;
 
 };
 
-interface_registry::interface_registry(bool register_builtin_backends)
+interface_catalog::interface_catalog(bool register_builtin_backends)
     : m_implementation(register_builtin_backends)
 {
 }
 
-interface_registry::interface_registry(interface_registry&& other) noexcept = default;
+interface_catalog::interface_catalog(interface_catalog&& other) noexcept = default;
 
-interface_registry::~interface_registry() = default;
+interface_catalog::~interface_catalog() = default;
 
-interface_registry& 
-interface_registry::operator=(interface_registry&& other) noexcept = default;
+interface_catalog& 
+interface_catalog::operator=(interface_catalog&& other) noexcept = default;
 
 
 interface_manager* 
-interface_registry::get_interface_manager(std::type_index type)
+interface_catalog::get_interface_manager(std::type_index type)
 {
     return m_implementation->get_interface_manager(type);
 }
     
-void interface_registry::create_interface_manager(std::type_index type,
+void interface_catalog::create_interface_manager(std::type_index type,
                                                   std::unique_ptr<interface_manager> manager )
 {
     m_implementation->create_interface_manager(type, std::move(manager));

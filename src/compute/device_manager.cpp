@@ -47,7 +47,7 @@ public:
         if (backend)
         {
             auto key = backend->get_name();
-            std::tie(std::ignore, inserted) = m_registry.emplace(
+            std::tie(std::ignore, inserted) = m_catalog.emplace(
                 std::move(key), std::move(backend)
             );
         }
@@ -58,9 +58,9 @@ public:
     void enumerate_backends(std::vector<std::string> &backends) const
     {
         backends.clear();
-        backends.reserve(m_registry.size());
+        backends.reserve(m_catalog.size());
 
-        for(const auto &backend : m_registry)
+        for(const auto &backend : m_catalog)
         {
             backends.push_back(backend.first);
         }
@@ -68,10 +68,10 @@ public:
 
     device_backend* get_backend(const std::string &name) const
     {
-        const auto ite = m_registry.find(name);
+        const auto ite = m_catalog.find(name);
 
         device_backend *result = nullptr;
-        if (ite != m_registry.end())
+        if (ite != m_catalog.end())
         {
             result = ite->second.get();
         }
@@ -83,7 +83,7 @@ public:
     {
         indices.clear();
         std::vector<std::size_t> ids;
-        for(const auto &backend : m_registry)
+        for(const auto &backend : m_catalog)
         {
             backend.second->enumerate_devices(ids);
             for(const auto &id : ids)
@@ -94,7 +94,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_registry;
+    std::unordered_map<std::string, std::unique_ptr<device_backend>> m_catalog;
 
 };
 

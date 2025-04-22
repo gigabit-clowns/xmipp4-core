@@ -36,9 +36,10 @@
 
 #include <vector>
 #include <functional>
-#include <filesystem>
 #include <system_error>
 #include <cstdlib>
+
+#include <ghc/filesystem.hpp>
 
 static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "xmipp4-plugins";
 static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
@@ -128,7 +129,7 @@ std::string get_default_plugin_directory()
     const auto* symbol = 
         reinterpret_cast<const void*>(&get_default_plugin_directory);
 
-    auto path = std::filesystem::path(
+    auto path = ghc::filesystem::path(
         system::dynamic_library::query_symbol_filename(symbol)
     );
     if(path.empty())
@@ -161,7 +162,21 @@ std::string get_plugin_directory()
 
 void discover_plugins(const std::string& directory, plugin_manager &manager)
 {
-    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+    ghc::filesystem::directory_iterator iterator;
+    try
+    {
+        iterator = ghc::filesystem::directory_iterator(directory);
+    }
+    catch(const ghc::filesystem::filesystem_error& e)
+    {
+        XMIPP4_LOG_DEBUG(
+            "Failed to open plugin directory {}: {}", 
+            directory, 
+            e.what()
+        );
+    }
+
+    for (const auto& entry : iterator) 
     {
         try
         {
@@ -193,13 +208,13 @@ void discover_plugins(plugin_manager &manager)
 }
 
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    interface_registry &registry )
+                                    interface_catalog &catalog )
 {
     const auto count = manager.get_plugin_count();
     for (std::size_t i = 0; i < count; ++i)
     {
         const auto &plugin = manager.get_plugin(i);
-        plugin.register_at(registry);
+        plugin.register_at(catalog);
     }
     return count;
 }

@@ -23,9 +23,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Define the project
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION PROJECT_VERSION)
+string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
 project(
   xmipp4-core
-	VERSION 0.1.0 
+	VERSION ${PROJECT_VERSION}
 	LANGUAGES C CXX
 )
 
@@ -45,8 +47,9 @@ set(XMIPP4_CORE_LIBRARY_TARGET "xmipp4-core")
 include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(fetch_spdlog)
+include(fetch_ghc_filesystem)
 include(fetch_half)
+include(fetch_spdlog)
 
 # Only build docs if it is the main project
 if(XMIPP4_CORE_BUILD_DOC)
@@ -55,6 +58,7 @@ endif()
 
 # Find dependencies
 find_package(Threads REQUIRED)
+fetch_ghc_filesystem(VERSION 1.5.14)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	fetch_spdlog(VERSION 1.15.0)
@@ -63,7 +67,7 @@ else()
 endif()
 
 if (XMIPP4_CORE_BUILD_HALF)
-	fetch_half(VERSION 2.2.0)
+	fetch_half(VERSION 2.2.1)
 else()
 	find_package(half 2 REQUIRED)
 	install(
@@ -73,6 +77,7 @@ else()
 			${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}/modules
 	)
 endif()
+
 
 # Find all source and header files
 file(
@@ -131,6 +136,7 @@ target_link_libraries(
 		spdlog::spdlog_header_only
 		half
 	PRIVATE
+		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}
 )
 
@@ -186,6 +192,13 @@ install(
 )
 
 # Create and install CMake config files
+if(WIN32)
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)
+else()
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
+endif()
+set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
+
 configure_package_config_file(
   	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
   	${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config.cmake

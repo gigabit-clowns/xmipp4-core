@@ -42,12 +42,19 @@ jobs:
         echo "$changelog" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
         echo "Changelog: $CHANGELOG_BODY"
+    
+    - name: Generate GitHub App Token
+      id: generate_token
+      uses: tibdex/github-app-token@v2
+      with:
+        app_id: ${{ secrets.W2W_APP_ID }}
+        private_key: ${{ secrets.W2W_APP_PRIVATE_KEY }}
 
     - name: Generate tag
       id: tag_version
       uses: mathieudutour/github-tag-action@v6.2
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ steps.generate_token.outputs.token }}
         custom_tag: ${{ steps.tag_name.outputs.tag_name }}
         tag_prefix: ''
         

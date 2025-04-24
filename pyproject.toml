@@ -70,4 +70,4 @@ regex = "(?P<value>\\d+\\.\\d+\\.\\d+)"
 XMIPP4_CORE_BUILD_SPDLOG = {env="XMIPP4_CORE_BUILD_SPDLOG", default="ON"}
 XMIPP4_CORE_BUILD_HALF = {env="XMIPP4_CORE_BUILD_HALF", default="ON"}
 BUILD_TESTING = "OFF"
-CMAKE_INSTALL_LIBDIR = "lib"
+CMAKE_INSTALL_LIBDIR = "lib" # avoid using lib64

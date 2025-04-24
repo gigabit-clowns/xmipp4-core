@@ -21,18 +21,9 @@ jobs:
     - name: Retrieve tag name
       id: tag_name
       run: |
-        export TAG_NAME=$(cat VERSION)
+        export TAG_NAME=v$(cat VERSION)
         echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Version: $TAG_NAME"
-    
-    - name: Retrieve release name
-      id: release_name
-      env:
-        TAG_NAME: ${{ steps.tag_name.outputs.tag_name }}
-      run: |
-        export RELEASE_NAME="v$TAG_NAME"
-        echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
-        echo "Release name: $RELEASE_NAME"
 
     - name: Retrieve changelog
       id: changelog
@@ -62,5 +53,5 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
-        name: ${{ steps.release_name.outputs.release_name }}
+        name: ${{ steps.tag_name.outputs.tag_name }}
         body: ${{ steps.changelog.outputs.changelog }}

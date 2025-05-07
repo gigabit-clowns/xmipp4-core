@@ -29,6 +29,7 @@
  */
 
 #include "../interface_manager.hpp"
+#include "../memory/pimpl.hpp"
 
 #include <string_view>
 #include <memory>
@@ -60,6 +61,15 @@ public:
     XMIPP4_CORE_API 
     void register_builtin_backends() override;
 
+    XMIPP4_CORE_API
+    bool register_backend(std::unique_ptr<reader_backend> backend);
+ 
+    XMIPP4_CORE_API
+    void enumerate_backends(std::vector<std::string> &backends) const;
+
+    XMIPP4_CORE_API
+    reader_backend* get_backend(const std::string &name) const;
+
     /**
      * @brief Create an image reader for the given file.
      * 
@@ -71,6 +81,8 @@ public:
     create_reader(std::string_view path) const;
 
 private:
+    class implementation;
+    memory::pimpl<implementation> m_implementation;
 
 };
 

@@ -57,7 +57,7 @@ public:
     reader_backend &operator=(const reader_backend &) = default;
     reader_backend &operator=(reader_backend &&) = default;
 
-    virtual bool supports_format(std::string_view path) const = 0;
+    virtual bool supports_file(std::string_view path) const = 0;
 
     /**
      * @brief Create an image reader for the provided file.

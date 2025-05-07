@@ -51,11 +51,10 @@ public:
     reader &operator=(const reader &) = default;
     reader &operator=(reader &&) = default;
 
-    virtual numeric_type get_numerical_type() const = 0;
+    // virtual numeric_type get_numerical_type() const = 0; // TODO
     virtual void get_extent(std::vector<std::size_t> &extent) const = 0;
 
     // TODO retrieve other information
-u
     virtual void read_image() const = 0; // TODO return
     virtual void read_image(std::size_t position) const = 0; // TODO return
 

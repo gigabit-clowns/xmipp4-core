@@ -21,51 +21,38 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader.hpp
+ * @file caching_reader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_reader class
+ * @brief Definition of the image::caching_reader class
  * @date 2025-05-07
  * 
  */
 
-#include "location.hpp"
-#include "../span.hpp"
-
-#include <cstddef>
+#include "batch_reader.hpp"
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class reader_manager;
-
 /**
- * @brief Base class to efficiently read batches of images.
- * 
- * This base class may be implemented to read batches of images from potentially 
- * multiple image stacks. Implementations may choose different policies to 
- * maximize the throughput of the reading process. 
+ * @brief Specialized batch_reader that keeps a cache of opened image files.
  * 
  */
-class batch_reader
+class caching_reader final
+    : public batch_reader
 {
 public:
-    explicit batch_reader(const reader_manager &readers, 
+    explicit caching_reader(const reader_manager &readers, 
                           std::size_t max_open = 64 );
-    batch_reader(const batch_reader &) = delete;
-    batch_reader(batch_reader &&);
-    ~batch_reader();
+    caching_reader(const caching_reader &) = delete;
+    caching_reader(caching_reader &&);
+    ~caching_reader();
 
-    batch_reader &operator=(const batch_reader &) = delete;
-    batch_reader &operator=(batch_reader &&);
+    caching_reader &operator=(const caching_reader &) = delete;
+    caching_reader &operator=(caching_reader &&);
     
-    /**
-     * @brief Read a batch of images.
-     * 
-     * @param locations Locations of the images to read.
-     */
-    virtual void read_batch(span<const location> locations) = 0; // TODO return
+    void read_batch(span<const location> locations) override; // TODO return
 
 private:
 

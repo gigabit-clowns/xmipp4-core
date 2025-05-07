@@ -258,3 +258,14 @@ bool parse_location(const std::string &path, location &result)
 
 } // namespace image
 } // namespace xmipp4
+
+namespace std
+{
+
+inline std::size_t 
+hash<xmipp4::image::location>::operator()(const xmipp4::image::location &loc) const noexcept
+{
+    return hash<std::string>()(loc.get_filename()) + loc.get_position();
+}
+
+} // namespace std

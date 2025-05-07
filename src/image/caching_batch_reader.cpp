@@ -31,9 +31,7 @@
 #include <xmipp4/core/image/reader.hpp>
 #include <xmipp4/core/image/reader_manager.hpp>
 
-#include <unordered_map>
-#include <list>
-#include <utility>
+#include "lru_reader_cache.hpp"
 
 namespace xmipp4
 {
@@ -45,62 +43,22 @@ class caching_batch_reader::implementation
 public:
     implementation(const reader_manager &reader_manager, 
                    std::size_t max_open )
-        : m_reader_manager(reader_manager)
-        , m_max_open(max_open)
+        : m_cache(reader_manager, max_open)
     {
     }
 
     ~implementation() = default;
 
-    reader& get_file_reader(const std::string &path)
+    const reader& get_reader(const std::string &path)
     {
-        reader *result;
-
-        const auto ite = m_reader_paths.find(path);
-        if (ite != m_reader_paths.end()) 
-        {
-            // Bring the reader to the front of the list
-            m_open_readers.splice(
-                m_open_readers.cbegin(), 
-                m_open_readers, 
-                ite->second
-            );
-
-            result = ite->second->second.get();
-        }
-        else
-        {
-            // Reader does not exist, create it
-            const auto pos = m_open_readers.emplace(
-                m_open_readers.cbegin(), 
-                path, 
-                m_reader_manager.get().create_reader(path)
-            );
-
-            m_reader_paths.emplace(path, pos);
-
-            result = pos->second.get();
-        }
-
-        // Delete the least recently used reader if we have too many open
-        if (m_open_readers.size() > m_max_open) 
-        {
-            m_reader_paths.erase(m_open_readers.back().first);
-            m_open_readers.pop_back();
-        }
-
-        return *result;
+        m_cache.get_reader(path);
     }
 
 private:
-    using key_value_pair = std::pair<const std::string, std::shared_ptr<reader>>;
-
-    std::reference_wrapper<const reader_manager> m_reader_manager;
-    std::size_t m_max_open;
-    std::list<key_value_pair> m_open_readers;
-    std::unordered_map<std::string, std::list<key_value_pair>::iterator> m_reader_paths;
+    lru_reader_cache m_cache;
 
 };
+
 
 
 caching_batch_reader::caching_batch_reader(const reader_manager &readers, 
@@ -121,10 +79,20 @@ void caching_batch_reader::read_batch(span<const location> locations)
     auto first = locations.begin();
     while (first != locations.end()) 
     {
-        auto last = find_contiguous_location_run(first, locations.end());
-        auto &reader = m_impl->get_file_reader(first->get_filename());
-        // TODO
-
+        auto &reader = m_impl->get_reader(first->get_filename());
+        const auto position = first->get_position();
+        if (position == location::no_position) 
+        {
+            reader.read(); // TODO
+            ++first;
+        }
+        else
+        {
+            auto last = find_contiguous_location_run(first, locations.end());
+            const std::size_t count = std::distance(first, last);
+            reader.read_batch(position, count); // TODO
+            first = last;
+        }
     }
 }
 

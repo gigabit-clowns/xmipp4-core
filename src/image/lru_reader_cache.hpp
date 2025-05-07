@@ -21,52 +21,54 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader.hpp
+ * @file lru_reader_cache.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_reader class
+ * @brief Definition of the image::lru_reader_cache class
  * @date 2025-05-07
  * 
  */
 
-#include "location.hpp"
-#include "../span.hpp"
-
 #include <cstddef>
+#include <unordered_map>
+#include <list>
+#include <string>
+#include <memory>
 
 namespace xmipp4 
 {
 namespace image
 {
 
+class reader;
 class reader_manager;
 
 /**
- * @brief Base class to efficiently read batches of images.
- * 
- * This base class may be implemented to read batches of images from potentially 
- * multiple image stacks. Implementations may choose different policies to 
- * maximize the throughput of the reading process. 
+ * @brief Class to open and close readers on a Least Recently Used basis
  * 
  */
-class batch_reader
+class lru_reader_cache
 {
 public:
-    explicit batch_reader(const reader_manager &readers, 
-                          std::size_t max_open = 64 );
-    batch_reader(const batch_reader &) = delete;
-    batch_reader(batch_reader &&);
-    ~batch_reader();
+    lru_reader_cache(const reader_manager &reader_manager,
+                     std::size_t max_open );
 
-    batch_reader &operator=(const batch_reader &) = delete;
-    batch_reader &operator=(batch_reader &&);
-    
-    /**
-     * @brief Read a batch of images.
-     * 
-     * @param locations Locations of the images to read.
-     */
-    virtual void read_batch(span<const location> locations) = 0; // TODO return
-    
+    lru_reader_cache(const lru_reader_cache &other) = default;
+    lru_reader_cache(lru_reader_cache &&other) = default;
+    ~lru_reader_cache() = default;
+
+    lru_reader_cache& operator=(const lru_reader_cache &other) = default;
+    lru_reader_cache& operator=(lru_reader_cache &&other) = default;
+
+    const reader& get_reader(const std::string &path);
+
+private:
+    using reader_context = std::pair<std::string, std::shared_ptr<reader>>;
+
+    std::reference_wrapper<const reader_manager> m_reader_manager;
+    std::size_t m_max_open;
+    std::list<reader_context> m_open_readers;
+    std::unordered_map<std::string, std::list<reader_context>::const_iterator> m_reader_paths;
+
 };
 
 } // namespace image

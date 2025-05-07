@@ -55,8 +55,9 @@ public:
     virtual void get_extent(std::vector<std::size_t> &extent) const = 0;
 
     // TODO retrieve other information
-    virtual void read_image() const = 0; // TODO return
-    virtual void read_image(std::size_t position) const = 0; // TODO return
+    virtual void read() const = 0; // TODO return
+    virtual void read_single(std::size_t position) const = 0; // TODO return
+    virtual void read_batch(std::size_t first_position, std::size_t count) const = 0; // TODO return
 
 };
 

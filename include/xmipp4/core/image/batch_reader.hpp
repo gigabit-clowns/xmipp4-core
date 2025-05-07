@@ -67,8 +67,6 @@ public:
      */
     virtual void read_batch(span<const location> locations) = 0; // TODO return
 
-private:
-
 };
 
 } // namespace image

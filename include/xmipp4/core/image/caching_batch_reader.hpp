@@ -21,14 +21,16 @@
  ***************************************************************************/
 
 /**
- * @file caching_reader.hpp
+ * @file caching_batch_reader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::caching_reader class
+ * @brief Definition of the image::caching_batch_reader class
  * @date 2025-05-07
  * 
  */
 
 #include "batch_reader.hpp"
+
+#include "../memory/pimpl.hpp"
 
 namespace xmipp4 
 {
@@ -39,22 +41,24 @@ namespace image
  * @brief Specialized batch_reader that keeps a cache of opened image files.
  * 
  */
-class caching_reader final
+class caching_batch_reader final
     : public batch_reader
 {
 public:
-    explicit caching_reader(const reader_manager &readers, 
-                          std::size_t max_open = 64 );
-    caching_reader(const caching_reader &) = delete;
-    caching_reader(caching_reader &&);
-    ~caching_reader();
+    explicit caching_batch_reader(const reader_manager &readers, 
+                                  std::size_t max_open = 64 );
+    caching_batch_reader(const caching_batch_reader &) = delete;
+    caching_batch_reader(caching_batch_reader &&);
+    ~caching_batch_reader();
 
-    caching_reader &operator=(const caching_reader &) = delete;
-    caching_reader &operator=(caching_reader &&);
+    caching_batch_reader &operator=(const caching_batch_reader &) = delete;
+    caching_batch_reader &operator=(caching_batch_reader &&);
     
     void read_batch(span<const location> locations) override; // TODO return
 
 private:
+    class implementation;
+    memory::pimpl<implementation> m_impl;
 
 };
 

@@ -41,6 +41,10 @@ namespace image
 
 class reader;
 
+/**
+ * @brief Centralizes all known reader_backend-s.
+ * 
+ */
 class reader_manager final
     : public interface_manager
 {
@@ -53,11 +57,18 @@ public:
     reader_manager &operator=(const reader_manager &) = default;
     reader_manager &operator=(reader_manager &&) = default;
 
+    /**
+     * @brief Create an image reader for the given file.
+     * 
+     * @param path Path to the file to be read.
+     * @return std::shared_ptr<reader> Newly created reader.
+     */
     virtual std::shared_ptr<reader> 
-    create_reader(std::string_view path) const = 0;
+    create_reader(std::string_view path) const;
 
     void register_builtin_backends() override;
 
+private:
 
 };
 

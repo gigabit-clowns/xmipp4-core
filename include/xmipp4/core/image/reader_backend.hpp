@@ -41,6 +41,10 @@ namespace image
 
 class reader;
 
+/**
+ * @brief Abstract backend to handle create image readers. 
+ * 
+ */
 class reader_backend
     : public backend
 {
@@ -55,6 +59,12 @@ public:
 
     virtual bool supports_format(std::string_view path) const = 0;
 
+    /**
+     * @brief Create an image reader for the provided file.
+     * 
+     * @param path Path to the file to be read.
+     * @return std::shared_ptr<reader> Newly created reader.
+     */
     virtual std::shared_ptr<reader> 
     create_reader(std::string_view path) const = 0;
 

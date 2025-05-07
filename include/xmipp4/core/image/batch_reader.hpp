@@ -40,6 +40,14 @@ namespace image
 
 class reader_manager;
 
+/**
+ * @brief Class to efficiently read batches of images.
+ * 
+ * This class is used to read batches of images from potentially multiple image
+ * stacks. Reads are bundled to maximize throughput. In addition, it caches
+ * open readers to avoid opening and closing files repeatedly.
+ * 
+ */
 class batch_reader
 {
 public:
@@ -51,7 +59,12 @@ public:
 
     batch_reader &operator=(const batch_reader &) = delete;
     batch_reader &operator=(batch_reader &&);
-
+    
+    /**
+     * @brief Read a batch of images.
+     * 
+     * @param locations Locations of the images to read.
+     */
     void read_batch(span<const location> locations); // TODO return
 
 private:

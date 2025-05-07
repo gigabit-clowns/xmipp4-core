@@ -21,16 +21,15 @@
  ***************************************************************************/
 
 /**
- * @file reader_manager.hpp
+ * @file batch_reader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::reader_manager class
+ * @brief Definition of the image::batch_reader_backend class
  * @date 2025-05-07
  * 
  */
 
-#include "../interface_manager.hpp"
+#include "../backend.hpp"
 
-#include <string_view>
 #include <memory>
 #include <cstddef>
 
@@ -39,38 +38,27 @@ namespace xmipp4
 namespace image
 {
 
-class reader;
+class batch_reader;
+class reader_manager;
 
 /**
- * @brief Centralizes all known reader_backend-s.
+ * @brief Abstract factory class to create batch_reader-s. 
  * 
  */
-class reader_manager final
-    : public interface_manager
+class batch_reader_backend
+    : public backend
 {
 public:
-    reader_manager() = default;
-    reader_manager(const reader_manager &) = default;
-    reader_manager(reader_manager &&) = default;
-    virtual ~reader_manager() = default;
+    batch_reader_backend() = default;
+    batch_reader_backend(const batch_reader_backend &) = default;
+    batch_reader_backend(batch_reader_backend &&) = default;
+    virtual ~batch_reader_backend() = default;
     
-    reader_manager &operator=(const reader_manager &) = default;
-    reader_manager &operator=(reader_manager &&) = default;
+    batch_reader_backend &operator=(const batch_reader_backend &) = default;
+    batch_reader_backend &operator=(batch_reader_backend &&) = default;
 
-    XMIPP4_CORE_API 
-    void register_builtin_backends() override;
-
-    /**
-     * @brief Create an image reader for the given file.
-     * 
-     * @param path Path to the file to be read.
-     * @return std::shared_ptr<reader> Newly created reader.
-     */
-    XMIPP4_CORE_API 
-    virtual std::shared_ptr<reader> 
-    create_reader(std::string_view path) const;
-
-private:
+    virtual std::shared_ptr<batch_reader> 
+    create_batch_reader(reader_manager &readers) const = 0;
 
 };
 

@@ -102,11 +102,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12' 
-
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -114,7 +109,7 @@ jobs:
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify
-        run: conda install -y conda-build conda-verify
+        run: conda install -y conda-build conda-verify python=3.12
 
       - name: Build with conda
         run: conda build conda

@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,25 +19,27 @@
  ***************************************************************************/
 
 /**
- * @file interface_manager.cpp
+ * @file test_interface_catalog.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Mock for interface_manager interface.
- * @date 2025-03-27
+ * @brief Tests for interface_catalog.hpp
+ * @date 2024-10-28
+ * 
  */
 
-#include <xmipp4/core/interface_manager.hpp>
+#include <xmipp4/core/interface_catalog.hpp>
 
-#include <trompeloeil.hpp>
+#include "mock/mock_backend_manager.hpp"
 
-namespace xmipp4
+#include <catch2/catch_test_macros.hpp>
+#include <trompeloeil/matcher/any.hpp>
+
+using namespace xmipp4;
+
+TEST_CASE( "get_backend_manager should always return the same instance", "[interface_catalog]" ) 
 {
+    interface_catalog catalog(false);
 
-class mock_interface_manager final
-    : public interface_manager
-{
-public:
-    MAKE_MOCK0(register_builtin_backends, void(), override);
-
-};
-
-} // namespace xmipp4
+    auto& manager1 = catalog.get_backend_manager<mock_backend_manager>();
+    auto& manager2 = catalog.get_backend_manager<mock_backend_manager>();
+    REQUIRE( &manager1 == &manager2 );
+}

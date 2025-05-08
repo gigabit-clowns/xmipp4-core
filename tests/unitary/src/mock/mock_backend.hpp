@@ -20,31 +20,29 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_catalog.hpp"
+/**
+ * @file mock_backend.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Mock for backend interface.
+ * @date 2025-03-27
+ */
 
-#include "platform/constexpr.hpp"
-#include "platform/assert.hpp"
+#include <xmipp4/core/backend.hpp>
 
-namespace xmipp4 
+#include <trompeloeil.hpp>
+
+namespace xmipp4
 {
 
-template <typename T>
-inline
-typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
-interface_catalog::get_backend_manager()
+class mock_backend final
+    : public backend
 {
-    const std::type_index type(typeid(T));
+public:
+    MAKE_MOCK0(get_name, std::string(), const noexcept);
+    MAKE_MOCK0(get_version, version(), const noexcept);
+    MAKE_MOCK0(is_available, bool(), const noexcept);
+    MAKE_MOCK0(get_priority, backend_priority(), const noexcept);
 
-    T* result = static_cast<T*>(get_backend_manager(type));
-    if(result == nullptr)
-    {
-        // Interface does not exist. Create it
-        auto new_interface = std::make_unique<T>();
-        result = new_interface.get();
-        create_backend_manager(type, std::move(new_interface));
-    }
-
-    return *result;
-}
+};
 
 } // namespace xmipp4

@@ -106,6 +106,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
+          python-version: '3.11'
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify

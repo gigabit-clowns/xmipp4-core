@@ -30,6 +30,7 @@
 
 #include "platform/dynamic_shared_object.h"
 
+#include <string>
 #include <memory>
 #include <vector>
 #include <unordered_map>

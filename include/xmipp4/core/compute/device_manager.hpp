@@ -31,7 +31,6 @@
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "../interface_manager.hpp"
-#include "../memory/pimpl.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -56,13 +55,13 @@ class device_manager final
     : public basic_interface_manager<device_backend>
 {
 public:
-    XMIPP4_CORE_API device_manager();
-    device_manager(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager(device_manager &&other) noexcept;
-    XMIPP4_CORE_API ~device_manager() override;
+    device_manager() = default;
+    device_manager(const device_manager &other) = default;
+    device_manager(device_manager &&other) = default;
+    ~device_manager() override = default;
 
-    device_manager& operator=(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
+    device_manager& operator=(const device_manager &other) = default;
+    device_manager& operator=(device_manager &&other) = default;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;

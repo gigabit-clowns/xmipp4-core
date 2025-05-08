@@ -35,7 +35,6 @@
 #include "communicator_backend.hpp"
 #include "../interface_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
-#include "../memory/pimpl.hpp"
 
 namespace xmipp4 
 {

@@ -29,126 +29,15 @@
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
-#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
 
-#include <tuple>
 #include <vector>
-#include <unordered_map>
 #include <algorithm>
 
 namespace xmipp4
 {
 namespace communication
 {
-
-class communicator_manager::implementation
-{
-public:
-    implementation() = default;
-    ~implementation() = default;
-
-    bool register_backend(std::unique_ptr<communicator_backend> backend)
-    {
-        bool inserted = false;
-        if (backend)
-        {
-            auto key = backend->get_name();
-            std::tie(std::ignore, inserted) = m_catalog.emplace(
-                std::move(key), std::move(backend)
-            );
-        }
-
-        return inserted;
-    }
-
-    void enumerate_backends(std::vector<std::string> &backends) const
-    {
-        backends.clear();
-        backends.reserve(m_catalog.size());
-
-        for (const auto &backend : m_catalog)
-        {
-            backends.emplace_back(backend.first);
-        }
-    }
-
-    communicator_backend* get_backend(const std::string &name) const
-    {
-        const auto ite = m_catalog.find(name);
-
-        communicator_backend *result = nullptr;
-        if (ite != m_catalog.end())
-        {
-            result = ite->second.get();
-        }
-
-        return result;
-    }
-
-    communicator_backend* get_preferred_backend() const
-    {   
-        communicator_backend* result;
-
-        // Filter available backends
-        std::vector<communicator_backend*> available_backends;
-        available_backends.reserve(m_catalog.size());
-        for (auto &item : m_catalog)
-        {   
-            if (item.second->is_available())
-            {
-                available_backends.emplace_back(item.second.get());
-            }
-        }
-
-        if( available_backends.empty())
-        {
-            result = nullptr;
-        }
-        else if (available_backends.size() == 1)
-        {
-            result = available_backends[0];
-        }
-        else // available_backends.size() > 1
-        {
-            // Get the best two
-            std::partial_sort(
-                available_backends.begin(),
-                std::next(available_backends.begin(), 2),
-                available_backends.end(),
-                [] (const communicator_backend *lhs, 
-                    const communicator_backend *rhs )
-                {
-                    return lhs->get_priority() > rhs->get_priority();
-                }
-            );
-
-            // Ensure the second is worse
-            if (available_backends[0]->get_priority() == 
-                available_backends[1]->get_priority() )
-            {
-                throw ambiguous_backend_error(
-                    "Could not disambiguate among multiple "
-                    "communicator_backend-s. Ensure that only one has "
-                    "been installed."
-                );
-            }
-
-            result = available_backends[0];
-        }
-
-        return result;
-    }
-
-private:
-    using catalog_type = 
-        std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
-
-    catalog_type m_catalog;
-
-};
-
-
 
 static 
 std::shared_ptr<communicator> 
@@ -166,42 +55,56 @@ create_communicator(const communicator_backend* backend)
 
 
 
-communicator_manager::communicator_manager() = default;
-
-communicator_manager::communicator_manager(communicator_manager&& other) noexcept = default;
-
-communicator_manager::~communicator_manager() = default;
-
-communicator_manager& 
-communicator_manager::operator=(communicator_manager&& other) noexcept = default;
-
-
 
 void communicator_manager::register_builtin_backends()
 {
     dummy_communicator_backend::register_at(*this);
 }
 
-bool communicator_manager::register_backend(std::unique_ptr<communicator_backend> backend)
-{
-    return m_implementation->register_backend(std::move(backend));
-}
-
-void communicator_manager::enumerate_backends(std::vector<std::string> &backends) const
-{
-    m_implementation->enumerate_backends(backends);
-}
-
-communicator_backend* 
-communicator_manager::get_backend(const std::string &name) const
-{
-    return m_implementation->get_backend(name);
-}
-
 communicator_backend* 
 communicator_manager::get_preferred_backend() const
 {
-    return m_implementation->get_preferred_backend();
+    communicator_backend* result;
+
+    std::vector<communicator_backend*> available_backends;
+    get_available_backends(available_backends);
+    if( available_backends.empty())
+    {
+        result = nullptr;
+    }
+    else if (available_backends.size() == 1)
+    {
+        result = available_backends[0];
+    }
+    else // available_backends.size() > 1
+    {
+        // Get the best two
+        std::partial_sort(
+            available_backends.begin(),
+            std::next(available_backends.begin(), 2),
+            available_backends.end(),
+            [] (const communicator_backend *lhs, 
+                const communicator_backend *rhs )
+            {
+                return lhs->get_priority() > rhs->get_priority();
+            }
+        );
+
+        // Ensure the second is worse
+        if (available_backends[0]->get_priority() == 
+            available_backends[1]->get_priority() )
+        {
+            throw ambiguous_backend_error(
+                "Could not disambiguate among multiple "
+                "communicator_backend-s. Ensure that only one has "
+                "been installed."
+            );
+        }
+
+        result = available_backends[0];
+    }
+
+    return result;
 }
 
 std::shared_ptr<communicator>

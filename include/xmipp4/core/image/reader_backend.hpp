@@ -42,7 +42,7 @@ namespace image
 class reader;
 
 /**
- * @brief Abstract backend to handle create image readers. 
+ * @brief Abstract backend class to create image readers. 
  * 
  */
 class reader_backend
@@ -57,6 +57,13 @@ public:
     reader_backend &operator=(const reader_backend &) = default;
     reader_backend &operator=(reader_backend &&) = default;
 
+    /**
+     * @brief Check wether the provided file is supported by this reader.
+     * 
+     * @param path Path to the file.
+     * @return true File can be read by this backend.
+     * @return false File cannot be read by this backend.
+     */
     virtual bool supports_file(std::string_view path) const = 0;
 
     /**

@@ -50,53 +50,21 @@ class communicator;
  * 
  */
 class communicator_manager final
-    : public interface_manager
+    : public basic_interface_manager<communicator_backend>
 {
 public:
-    XMIPP4_CORE_API communicator_manager();
-    communicator_manager(const communicator_manager &other) = delete;
-    XMIPP4_CORE_API 
-    communicator_manager(communicator_manager &&other) noexcept;
-    XMIPP4_CORE_API ~communicator_manager() override;
+    communicator_manager() = default;
+    communicator_manager(const communicator_manager &other) = default;
+    communicator_manager(communicator_manager &&other) = default;
+    ~communicator_manager() override = default;
 
     communicator_manager& 
-    operator=(const communicator_manager &other) = delete;
-    XMIPP4_CORE_API communicator_manager& 
-    operator=(communicator_manager &&other) noexcept;
+    operator=(const communicator_manager &other) = default;
+    communicator_manager& 
+    operator=(communicator_manager &&other) = default;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;
-
-    /**
-     * @brief Register a new implementation.
-     * 
-     * @param backend The backend to be registered.
-     * @return true Successfully registered.
-     * @return false Failed to register. I.e. an homonym implementation 
-     * already exists or nullptr was provided.
-     */
-    XMIPP4_CORE_API 
-    bool register_backend(std::unique_ptr<communicator_backend> backend);
-
-    /**
-     * @brief Enumerate all available backends.
-     * 
-     * @param backends Output list with the names of the backends.
-     * @note The list is cleared before appending the backend names.
-     */
-    XMIPP4_CORE_API 
-    void enumerate_backends(std::vector<std::string> &backends) const;
-
-
-    /**
-     * @brief Find a backend by its name.
-     * 
-     * @param name The name of the backend.
-     * @return communicator_backend* The backend. Nullptr if not found.
-     */
-    XMIPP4_CORE_API
-    communicator_backend* 
-    get_backend(const std::string &name) const;
     
     /**
      * @brief Find the most suitable backend
@@ -104,7 +72,7 @@ public:
      * The most suitable backend is an available backend with the highest
      * priority.
      *  
-     * @return communicator_backend* The backend. Nullptr if none is available.
+     * @return const communicator_backend* The backend. Nullptr if none is available.
      */
     XMIPP4_CORE_API
     communicator_backend* get_preferred_backend() const;
@@ -131,10 +99,6 @@ public:
      */
     XMIPP4_CORE_API
     std::shared_ptr<communicator> create_preferred_world_communicator() const;
-
-private:
-    class implementation;
-    memory::pimpl<implementation> m_implementation;
 
 }; 
 

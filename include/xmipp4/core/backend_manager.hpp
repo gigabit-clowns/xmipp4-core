@@ -131,7 +131,7 @@ public:
     void get_backends(std::vector<backend_type*> &backends) const;
 
     /**
-     * @brief Get all the backends known by this manager.
+     * @brief Get all available backends known by this manager.
      * 
      * @param backends Output parameter where backends are written.
      * 

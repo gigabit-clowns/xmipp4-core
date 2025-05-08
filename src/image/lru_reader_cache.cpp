@@ -42,9 +42,10 @@ lru_reader_cache::lru_reader_cache(const reader_manager &reader_manager,
 {
 }
 
-const reader& lru_reader_cache::get_reader(const std::string &path)
+std::shared_ptr<const reader> 
+lru_reader_cache::get_reader(const std::string &path)
 {
-    reader *result;
+    std::shared_ptr<const reader> result;
 
     const auto ite = m_reader_paths.find(path);
     if (ite != m_reader_paths.end()) 
@@ -56,7 +57,7 @@ const reader& lru_reader_cache::get_reader(const std::string &path)
             ite->second
         );
 
-        result = ite->second->second.get();
+        result = ite->second->second;
     }
     else
     {
@@ -69,7 +70,7 @@ const reader& lru_reader_cache::get_reader(const std::string &path)
 
         m_reader_paths.emplace(path, pos);
 
-        result = pos->second.get();
+        result = pos->second;
     }
 
     // Delete the least recently used reader if we have too many open
@@ -79,7 +80,7 @@ const reader& lru_reader_cache::get_reader(const std::string &path)
         m_open_readers.pop_back();
     }
 
-    return *result;
+    return result;
 }
 
 } // namespace image

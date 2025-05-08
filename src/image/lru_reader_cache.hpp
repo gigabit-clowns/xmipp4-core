@@ -59,7 +59,7 @@ public:
     lru_reader_cache& operator=(const lru_reader_cache &other) = default;
     lru_reader_cache& operator=(lru_reader_cache &&other) = default;
 
-    const reader& get_reader(const std::string &path);
+    std::shared_ptr<const reader> get_reader(const std::string &path);
 
 private:
     using reader_context = std::pair<std::string, std::shared_ptr<reader>>;

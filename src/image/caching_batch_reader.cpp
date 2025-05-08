@@ -49,9 +49,9 @@ public:
 
     ~implementation() = default;
 
-    const reader& get_reader(const std::string &path)
+    std::shared_ptr<const reader> get_reader(const std::string &path)
     {
-        m_cache.get_reader(path);
+        return m_cache.get_reader(path);
     }
 
 private:
@@ -79,18 +79,18 @@ void caching_batch_reader::read_batch(span<const location> locations)
     auto first = locations.begin();
     while (first != locations.end()) 
     {
-        auto &reader = m_impl->get_reader(first->get_filename());
+        const auto reader = m_impl->get_reader(first->get_filename());
         const auto position = first->get_position();
         if (position == location::no_position) 
         {
-            reader.read(); // TODO
+            reader->read(); // TODO
             ++first;
         }
         else
         {
             auto last = find_contiguous_location_run(first, locations.end());
             const std::size_t count = std::distance(first, last);
-            reader.read_batch(position, count); // TODO
+            reader->read_batch(position, count); // TODO
             first = last;
         }
     }

@@ -51,14 +51,13 @@ class reader_manager;
 class batch_reader
 {
 public:
-    explicit batch_reader(const reader_manager &readers, 
-                          std::size_t max_open = 64 );
-    batch_reader(const batch_reader &) = delete;
-    batch_reader(batch_reader &&);
-    ~batch_reader();
+    batch_reader() = default;
+    batch_reader(const batch_reader &other) = default;
+    batch_reader(batch_reader &&other) = default;
+    virtual ~batch_reader() = default;
 
-    batch_reader &operator=(const batch_reader &) = delete;
-    batch_reader &operator=(batch_reader &&);
+    batch_reader &operator=(const batch_reader &other) = default;
+    batch_reader &operator=(batch_reader &&other) = default;
     
     /**
      * @brief Read a batch of images.

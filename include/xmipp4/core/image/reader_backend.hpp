@@ -30,7 +30,7 @@
 
 #include "../backend.hpp"
 
-#include <string_view>
+#include <string>
 #include <memory>
 #include <cstddef>
 
@@ -64,7 +64,7 @@ public:
      * @return true File can be read by this backend.
      * @return false File cannot be read by this backend.
      */
-    virtual bool supports_file(std::string_view path) const = 0;
+    virtual bool supports_file(const std::string &path) const = 0;
 
     /**
      * @brief Create an image reader for the provided file.
@@ -73,7 +73,7 @@ public:
      * @return std::shared_ptr<reader> Newly created reader.
      */
     virtual std::shared_ptr<reader> 
-    create_reader(std::string_view path) const = 0;
+    create_reader(const std::string &path) const = 0;
 
 };
 

@@ -19,17 +19,17 @@
  ***************************************************************************/
 
 /**
- * @file reader_manager.cpp
+ * @file writer_manager.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of reader_manager.hpp
+ * @brief Implementation of writer_manager.hpp
  * @date 2024-10-25
  * 
  */
 
-#include <xmipp4/core/image/reader_manager.hpp>
+#include <xmipp4/core/image/writer_manager.hpp>
 
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
-#include <xmipp4/core/image/reader_backend.hpp>
+#include <xmipp4/core/image/writer_backend.hpp>
 
 #include <tuple>
 #include <vector>
@@ -42,14 +42,14 @@ namespace image
 {
 
 static 
-std::shared_ptr<reader> 
-create_reader(const reader_backend* backend, const std::string &path)
+std::shared_ptr<writer> 
+create_writer(const writer_backend* backend, const std::string &path)
 {
-    std::shared_ptr<reader> result;
+    std::shared_ptr<writer> result;
 
     if (backend)
     {
-        result = backend->create_reader(path);
+        result = backend->create_writer(path);
     }
 
     return result;
@@ -57,12 +57,12 @@ create_reader(const reader_backend* backend, const std::string &path)
 
 
 
-reader_backend* reader_manager::get_backend_for_file(const std::string &path) const
+writer_backend* writer_manager::get_backend_for_file(const std::string &path) const
 {
-    reader_backend* result;
+    writer_backend* result;
 
     // Filter available backends
-    std::vector<reader_backend*> available_backends;
+    std::vector<writer_backend*> available_backends;
     get_available_backends(available_backends);
 
     if(available_backends.empty())
@@ -80,8 +80,8 @@ reader_backend* reader_manager::get_backend_for_file(const std::string &path) co
             available_backends.begin(),
             std::next(available_backends.begin(), 2),
             available_backends.end(),
-            [] (const reader_backend *lhs, 
-                const reader_backend *rhs )
+            [] (const writer_backend *lhs, 
+                const writer_backend *rhs )
             {
                 return lhs->get_priority() > rhs->get_priority();
             }
@@ -93,7 +93,7 @@ reader_backend* reader_manager::get_backend_for_file(const std::string &path) co
         {
             throw ambiguous_backend_error(
                 "Could not disambiguate among multiple "
-                "reader_backend-s. Ensure that only one has "
+                "writer_backend-s. Ensure that only one has "
                 "been installed."
             );
         }
@@ -104,11 +104,11 @@ reader_backend* reader_manager::get_backend_for_file(const std::string &path) co
     return result;
 }
 
-std::shared_ptr<reader> 
-reader_manager::create_reader(const std::string &path) const
+std::shared_ptr<writer> 
+writer_manager::create_writer(const std::string &path) const
 {
     const auto *backend = get_backend_for_file(path);
-    return create_reader(backend, path);
+    return create_writer(backend, path);
 }
 
 

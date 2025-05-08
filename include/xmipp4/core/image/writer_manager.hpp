@@ -21,13 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file reader_manager.hpp
+ * @file writer_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::reader_manager class
+ * @brief Definition of the image::writer_manager class
  * @date 2025-05-07
  * 
  */
 
+#include "writer_backend.hpp"
 #include "../backend_manager.hpp"
 
 #include <string>
@@ -38,42 +39,42 @@ namespace xmipp4
 namespace image
 {
 
-class reader;
+class writer;
 
 /**
- * @brief Centralizes all known reader_backend-s.
+ * @brief Centralizes all known writer_backend-s.
  * 
  */
-class reader_manager final
-    : public basic_backend_manager<reader_backend>
+class writer_manager final
+    : public basic_backend_manager<writer_backend>
 {
 public:
-    reader_manager() = default;
-    reader_manager(const reader_manager &) = default;
-    reader_manager(reader_manager &&) = default;
-    virtual ~reader_manager() = default;
+    writer_manager() = default;
+    writer_manager(const writer_manager &) = default;
+    writer_manager(writer_manager &&) = default;
+    virtual ~writer_manager() = default;
     
-    reader_manager &operator=(const reader_manager &) = default;
-    reader_manager &operator=(reader_manager &&) = default;
+    writer_manager &operator=(const writer_manager &) = default;
+    writer_manager &operator=(writer_manager &&) = default;
 
     /**
-     * @brief Get a suitable backend for for a path.
+     * @brief Get a suitable writer backend for for a path.
      * 
      * @param path Path to an image file.
-     * @return reader_backend* A suitable backend. nullptr if not found.
+     * @return writer_backend* A suitable backend. nullptr if not found.
      */
     XMIPP4_CORE_API
-    reader_backend* get_backend_for_file(const std::string &path) const;
+    writer_backend* get_backend_for_file(const std::string &path) const;
 
     /**
-     * @brief Create an image reader for the given file.
+     * @brief Create an image writer for the given file.
      * 
      * @param path Path to the file to be read.
-     * @return std::shared_ptr<reader> Newly created reader.
+     * @return std::shared_ptr<writer> Newly created writer.
      */
     XMIPP4_CORE_API 
-    virtual std::shared_ptr<reader> 
-    create_reader(const std::string &path) const;
+    virtual std::shared_ptr<writer> 
+    create_writer(const std::string &path) const; // TODO parameters
 
 };
 

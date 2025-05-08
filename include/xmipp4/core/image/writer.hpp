@@ -21,59 +21,37 @@
  ***************************************************************************/
 
 /**
- * @file reader_manager.hpp
+ * @file writer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::reader_manager class
+ * @brief Definition of the image::writer class
  * @date 2025-05-07
  * 
  */
 
-#include "../backend_manager.hpp"
-
-#include <string>
 #include <cstddef>
+#include <vector>
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class reader;
-
 /**
- * @brief Centralizes all known reader_backend-s.
+ * @brief Abstract class to write images to a file.
  * 
  */
-class reader_manager final
-    : public basic_backend_manager<reader_backend>
+class writer
 {
 public:
-    reader_manager() = default;
-    reader_manager(const reader_manager &) = default;
-    reader_manager(reader_manager &&) = default;
-    virtual ~reader_manager() = default;
+    writer() = default;
+    writer(const writer &) = default;
+    writer(writer &&) = default;
+    virtual ~writer() = default;
     
-    reader_manager &operator=(const reader_manager &) = default;
-    reader_manager &operator=(reader_manager &&) = default;
+    writer &operator=(const writer &) = default;
+    writer &operator=(writer &&) = default;
 
-    /**
-     * @brief Get a suitable backend for for a path.
-     * 
-     * @param path Path to an image file.
-     * @return reader_backend* A suitable backend. nullptr if not found.
-     */
-    XMIPP4_CORE_API
-    reader_backend* get_backend_for_file(const std::string &path) const;
-
-    /**
-     * @brief Create an image reader for the given file.
-     * 
-     * @param path Path to the file to be read.
-     * @return std::shared_ptr<reader> Newly created reader.
-     */
-    XMIPP4_CORE_API 
-    virtual std::shared_ptr<reader> 
-    create_reader(const std::string &path) const;
+    // TODO
 
 };
 

@@ -63,7 +63,7 @@ public:
     /**
      * @brief Register backends bundled with the core.access_flag_bits
      * 
-     * This usually loads fallaback implementations that are always 
+     * This usually loads fallback implementations that are always 
      * available although they may not be the most efficient or performant.
      * The loaded backend(s) depend on the implementation of the specific
      * interface.

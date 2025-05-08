@@ -28,7 +28,7 @@
  * 
  */
 
-#include "interface_manager.hpp"
+#include "backend_manager.hpp"
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
@@ -40,11 +40,11 @@ namespace xmipp4
 {
 
 /**
- * @brief Stores a single instance of each type interface_manager.
+ * @brief Stores a single instance of each type backend_manager.
  * 
  * The interface catalog allows to centralize interface managers.
  * 
- * @see interface_manager
+ * @see backend_manager
  * 
  */
 class interface_catalog
@@ -75,23 +75,23 @@ public:
      * a given type, it constructs a new concrete interface manager of that
      * type. If called previously, it returns the same instance.
      * 
-     * @tparam T interface manager. Must be child class of interface_manager.
+     * @tparam T interface manager. Must be child class of backend_manager.
      * @return T& the requested interface manager.
      */
     template <typename T>
-    typename std::enable_if<std::is_convertible<T*, interface_manager*>::value, T&>::type
-    get_interface_manager();
+    typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
+    get_backend_manager();
 
 private:
     class implementation;
     memory::pimpl<implementation> m_implementation;
 
     XMIPP4_CORE_API
-    interface_manager* get_interface_manager(std::type_index type);
+    backend_manager* get_backend_manager(std::type_index type);
 
     XMIPP4_CORE_API
-    void create_interface_manager(std::type_index type,
-                                  std::unique_ptr<interface_manager> manager );
+    void create_backend_manager(std::type_index type,
+                                  std::unique_ptr<backend_manager> manager );
 
 };
 

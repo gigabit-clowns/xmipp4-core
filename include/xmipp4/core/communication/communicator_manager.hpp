@@ -33,7 +33,7 @@
 #include <memory>
 
 #include "communicator_backend.hpp"
-#include "../interface_manager.hpp"
+#include "../backend_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -49,7 +49,7 @@ class communicator;
  * 
  */
 class communicator_manager final
-    : public basic_interface_manager<communicator_backend>
+    : public basic_backend_manager<communicator_backend>
 {
 public:
     communicator_manager() = default;

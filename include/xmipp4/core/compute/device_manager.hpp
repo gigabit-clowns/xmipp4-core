@@ -31,7 +31,7 @@
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "device_backend.hpp"
-#include "../interface_manager.hpp"
+#include "../backend_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -53,7 +53,7 @@ class device_create_parameters;
  * 
  */
 class device_manager final
-    : public basic_interface_manager<device_backend>
+    : public basic_backend_manager<device_backend>
 {
 public:
     device_manager() = default;

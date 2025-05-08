@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file interface_manager.hpp
+ * @file backend_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines interface_manager class
+ * @brief Defines backend_manager class
  * @date 2024-10-23
  * 
  */
@@ -38,9 +38,9 @@ namespace xmipp4
 {
 
 /**
- * @brief Abstract class defining the interface of an interface manager.
+ * @brief Abstract class defining the interface of a backend manager.
  * 
- * An interface manager keeps track of all known implementations of a given
+ * An backend manager keeps track of all known implementations of a given
  * interface and provides utilities to access the most relevant implementation
  * for a given context. This is a base class for collecting them on an
  * interface_catalog.
@@ -48,16 +48,16 @@ namespace xmipp4
  * @see interface_catalog
  * 
  */
-class XMIPP4_CORE_API interface_manager
+class XMIPP4_CORE_API backend_manager
 {
 public:
-    interface_manager() = default;
-    interface_manager(const interface_manager& other) = default;
-    interface_manager(interface_manager&& other) = default;
-    virtual ~interface_manager() = default;
+    backend_manager() = default;
+    backend_manager(const backend_manager& other) = default;
+    backend_manager(backend_manager&& other) = default;
+    virtual ~backend_manager() = default;
 
-    interface_manager& operator=(const interface_manager& other) = default;
-    interface_manager& operator=(interface_manager&& other) = default;
+    backend_manager& operator=(const backend_manager& other) = default;
+    backend_manager& operator=(backend_manager&& other) = default;
 
     /**
      * @brief Register backends bundled with the core.access_flag_bits
@@ -68,13 +68,13 @@ public:
      * interface.
      * 
      */
-    virtual void register_builtin_backends() = 0;
+    virtual void register_builtin_backends() {};
 
 };
 
 template <typename B>
-class basic_interface_manager
-    : public interface_manager
+class basic_backend_manager
+    : public backend_manager
 {
 public:
     /**
@@ -84,13 +84,13 @@ public:
      */
     using backend_type = B;
 
-    basic_interface_manager() = default;
-    basic_interface_manager(const basic_interface_manager &other) = delete;
-    basic_interface_manager(basic_interface_manager &&other) = default;
-    virtual ~basic_interface_manager() override = default;
+    basic_backend_manager() = default;
+    basic_backend_manager(const basic_backend_manager &other) = delete;
+    basic_backend_manager(basic_backend_manager &&other) = default;
+    virtual ~basic_backend_manager() override = default;
 
-    basic_interface_manager& operator=(const basic_interface_manager &other) = delete;
-    basic_interface_manager& operator=(basic_interface_manager &&other) = default;
+    basic_backend_manager& operator=(const basic_backend_manager &other) = delete;
+    basic_backend_manager& operator=(basic_backend_manager &&other) = default;
 
     /**
      * @brief Register a new implementation.
@@ -146,4 +146,4 @@ private:
 
 } // namespace xmipp4
 
-#include "interface_manager.inl"
+#include "backend_manager.inl"

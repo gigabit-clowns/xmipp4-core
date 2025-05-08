@@ -49,9 +49,9 @@ public:
 
     ~implementation() = default;
 
-    interface_manager* get_interface_manager(std::type_index type)
+    backend_manager* get_backend_manager(std::type_index type)
     {
-        interface_manager* result = nullptr;
+        backend_manager* result = nullptr;
 
         const auto ite = m_interfaces.find(type);
         if(ite != m_interfaces.end())
@@ -62,8 +62,8 @@ public:
         return result;
     }
 
-    void create_interface_manager(std::type_index type,
-                                  std::unique_ptr<interface_manager> manager )
+    void create_backend_manager(std::type_index type,
+                                  std::unique_ptr<backend_manager> manager )
     {
         if (m_register_builtin_backends)
         {
@@ -77,7 +77,7 @@ public:
 
 private:
     using catalog_type = 
-        std::unordered_map<std::type_index, std::unique_ptr<interface_manager>>;
+        std::unordered_map<std::type_index, std::unique_ptr<backend_manager>>;
 
     bool m_register_builtin_backends;
     catalog_type m_interfaces;
@@ -97,16 +97,16 @@ interface_catalog&
 interface_catalog::operator=(interface_catalog&& other) noexcept = default;
 
 
-interface_manager* 
-interface_catalog::get_interface_manager(std::type_index type)
+backend_manager* 
+interface_catalog::get_backend_manager(std::type_index type)
 {
-    return m_implementation->get_interface_manager(type);
+    return m_implementation->get_backend_manager(type);
 }
     
-void interface_catalog::create_interface_manager(std::type_index type,
-                                                  std::unique_ptr<interface_manager> manager )
+void interface_catalog::create_backend_manager(std::type_index type,
+                                                  std::unique_ptr<backend_manager> manager )
 {
-    m_implementation->create_interface_manager(type, std::move(manager));
+    m_implementation->create_backend_manager(type, std::move(manager));
 }
 
 } // namespace xmipp4

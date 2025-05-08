@@ -20,14 +20,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "interface_manager.hpp"
+#include "backend_manager.hpp"
 
 namespace xmipp4 
 {
 
 template <typename B>
 inline
-bool basic_interface_manager<B>::register_backend(std::unique_ptr<backend_type> backend)
+bool basic_backend_manager<B>::register_backend(std::unique_ptr<backend_type> backend)
 {
     bool inserted = false;
     if (backend)
@@ -43,7 +43,7 @@ bool basic_interface_manager<B>::register_backend(std::unique_ptr<backend_type> 
 
 template <typename B>
 inline
-void basic_interface_manager<B>::enumerate_backends(std::vector<std::string> &backends) const
+void basic_backend_manager<B>::enumerate_backends(std::vector<std::string> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());
@@ -55,8 +55,8 @@ void basic_interface_manager<B>::enumerate_backends(std::vector<std::string> &ba
 
 template <typename B>
 inline
-typename basic_interface_manager<B>::backend_type* 
-basic_interface_manager<B>::get_backend(const std::string &name) const
+typename basic_backend_manager<B>::backend_type* 
+basic_backend_manager<B>::get_backend(const std::string &name) const
 {
     backend_type *result = nullptr;
     
@@ -71,7 +71,7 @@ basic_interface_manager<B>::get_backend(const std::string &name) const
 
 template <typename B>
 inline
-void basic_interface_manager<B>::get_backends(std::vector<backend_type*> &backends) const
+void basic_backend_manager<B>::get_backends(std::vector<backend_type*> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());
@@ -83,7 +83,7 @@ void basic_interface_manager<B>::get_backends(std::vector<backend_type*> &backen
 
 template <typename B>
 inline
-void basic_interface_manager<B>::get_available_backends(std::vector<backend_type*> &backends) const
+void basic_backend_manager<B>::get_available_backends(std::vector<backend_type*> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());

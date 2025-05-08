@@ -69,7 +69,7 @@ public:
      * interface.
      * 
      */
-    virtual void register_builtin_backends() {};
+    virtual void register_builtin_backends() { /*By default this is a no-op*/ };
 
 };
 
@@ -88,7 +88,7 @@ public:
     basic_backend_manager() = default;
     basic_backend_manager(const basic_backend_manager &other) = delete;
     basic_backend_manager(basic_backend_manager &&other) = default;
-    virtual ~basic_backend_manager() override = default;
+    ~basic_backend_manager() override = default;
 
     basic_backend_manager& operator=(const basic_backend_manager &other) = delete;
     basic_backend_manager& operator=(basic_backend_manager &&other) = default;

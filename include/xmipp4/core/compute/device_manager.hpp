@@ -30,6 +30,7 @@
 
 #include "device_index.hpp"
 #include "device_properties.hpp"
+#include "device_backend.hpp"
 #include "../interface_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -56,11 +57,11 @@ class device_manager final
 {
 public:
     device_manager() = default;
-    device_manager(const device_manager &other) = default;
+    device_manager(const device_manager &other) = delete;
     device_manager(device_manager &&other) = default;
     ~device_manager() override = default;
 
-    device_manager& operator=(const device_manager &other) = default;
+    device_manager& operator=(const device_manager &other) = delete;
     device_manager& operator=(device_manager &&other) = default;
 
     XMIPP4_CORE_API

@@ -28,7 +28,6 @@
 
 #include <xmipp4/core/compute/device_manager.hpp>
 
-#include <xmipp4/core/compute/device_backend.hpp>
 #include <xmipp4/core/compute/host/host_device_backend.hpp>
 
 #include <unordered_map>
@@ -37,6 +36,11 @@ namespace xmipp4
 {
 namespace compute
 {
+
+void device_manager::register_builtin_backends()
+{
+    host_device_backend::register_at(*this);
+}
 
 void device_manager::enumerate_devices(std::vector<device_index> &indices) const
 {

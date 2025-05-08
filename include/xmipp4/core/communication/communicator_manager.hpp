@@ -53,12 +53,12 @@ class communicator_manager final
 {
 public:
     communicator_manager() = default;
-    communicator_manager(const communicator_manager &other) = default;
+    communicator_manager(const communicator_manager &other) = delete;
     communicator_manager(communicator_manager &&other) = default;
     ~communicator_manager() override = default;
 
     communicator_manager& 
-    operator=(const communicator_manager &other) = default;
+    operator=(const communicator_manager &other) = delete;
     communicator_manager& 
     operator=(communicator_manager &&other) = default;
 

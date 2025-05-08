@@ -85,11 +85,11 @@ public:
     using backend_type = B;
 
     basic_interface_manager() = default;
-    basic_interface_manager(const basic_interface_manager &other) = default;
+    basic_interface_manager(const basic_interface_manager &other) = delete;
     basic_interface_manager(basic_interface_manager &&other) = default;
     virtual ~basic_interface_manager() override = default;
 
-    basic_interface_manager& operator=(const basic_interface_manager &other) = default;
+    basic_interface_manager& operator=(const basic_interface_manager &other) = delete;
     basic_interface_manager& operator=(basic_interface_manager &&other) = default;
 
     /**

@@ -29,7 +29,6 @@
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
-#include <xmipp4/core/communication/communicator_backend.hpp>
 #include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
 
 #include <vector>

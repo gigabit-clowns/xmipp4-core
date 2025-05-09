@@ -70,7 +70,7 @@ lru_batch_loader_backend::create_batch_loader(const reader_manager &reader_manag
     const char *max_open_str = std::getenv(XMIPP4_LRU_LOADER_MAX_OPEN);
     if (max_open_str)
     {
-        max_open = std::stoull(max_open_str);
+        max_open = std::stoul(max_open_str);
     }
 
     return std::make_shared<lru_batch_loader>(reader_manager, max_open);

@@ -19,67 +19,29 @@
  ***************************************************************************/
 
 /**
- * @file caching_batch_reader.cpp
+ * @file lru_batch_reader.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of caching_batch_reader.hpp
+ * @brief Implementation of lru_batch_reader.hpp
  * @date 2024-10-25
  * 
  */
 
-#include <xmipp4/core/image/caching_batch_reader.hpp>
+#include "lru_batch_reader.hpp"
 
 #include <xmipp4/core/image/reader.hpp>
 #include <xmipp4/core/image/reader_manager.hpp>
-
-#include "lru_reader_cache.hpp"
 
 namespace xmipp4
 {
 namespace image
 {
 
-class caching_batch_reader::implementation
-{
-public:
-    implementation(const reader_manager &reader_manager, 
-                   std::size_t max_open )
-        : m_cache(reader_manager, max_open)
-    {
-    }
-
-    ~implementation() = default;
-
-    std::shared_ptr<const reader> get_reader(const std::string &path)
-    {
-        return m_cache.get_reader(path);
-    }
-
-private:
-    lru_reader_cache m_cache;
-
-};
-
-
-
-caching_batch_reader::caching_batch_reader(const reader_manager &readers, 
-                                           std::size_t max_open )
-    : m_impl(readers, max_open)
-{
-}
-
-caching_batch_reader::caching_batch_reader(caching_batch_reader&& other) noexcept = default;
-
-caching_batch_reader::~caching_batch_reader() = default;
-
-caching_batch_reader& 
-caching_batch_reader::operator=(caching_batch_reader&& other) noexcept = default;
-
-void caching_batch_reader::read_batch(span<const location> locations)
+void lru_batch_reader::read_batch(span<const location> locations)
 {
     auto first = locations.begin();
     while (first != locations.end()) 
     {
-        const auto reader = m_impl->get_reader(first->get_filename());
+        const auto reader = m_cache.get_reader(first->get_filename());
         const auto position = first->get_position();
         if (position == location::no_position) 
         {

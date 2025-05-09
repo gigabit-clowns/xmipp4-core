@@ -46,6 +46,7 @@ enum class backend_priority
 {
     fallback = -1024, ///< Used for dummy implementations.
     normal = 0, ///< Normal priority. Use by default.
+    preferred = 1024, ///< Used when the backend should be preferred. Use with caution.
 };
 
 

@@ -21,16 +21,16 @@
  ***************************************************************************/
 
 /**
- * @file caching_batch_reader.hpp
+ * @file lru_batch_reader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::caching_batch_reader class
+ * @brief Definition of the image::lru_batch_reader class
  * @date 2025-05-07
  * 
  */
 
-#include "batch_reader.hpp"
+#include <xmipp4/core/image/batch_reader.hpp>
 
-#include "../memory/pimpl.hpp"
+#include "lru_reader_cache.hpp"
 
 namespace xmipp4 
 {
@@ -38,27 +38,35 @@ namespace image
 {
 
 /**
- * @brief Specialized batch_reader that keeps a cache of opened image files.
+ * @brief Specialized batch_reader that keeps several files open on a Least
+ * Recently Used (LRU) polcy basis.
+ * policy.
  * 
  */
-class caching_batch_reader final
+class lru_batch_reader final
     : public batch_reader
 {
-public:
-    explicit caching_batch_reader(const reader_manager &readers, 
+public: 
+    /**
+     * @brief Construct a new lru_batch_reader.
+     * 
+     * @param readers reader_manager from which necessary readers are created.
+     * @param max_open Maximum amount of readers open at a given time.
+     * When set to 0, no readers are cached.
+     */
+    explicit lru_batch_reader(const reader_manager &readers, 
                                   std::size_t max_open = 64 );
-    caching_batch_reader(const caching_batch_reader &) = delete;
-    caching_batch_reader(caching_batch_reader &&);
-    ~caching_batch_reader();
+    lru_batch_reader(const lru_batch_reader &other) = delete;
+    lru_batch_reader(lru_batch_reader &&other) = default;
+    ~lru_batch_reader() override = default;
 
-    caching_batch_reader &operator=(const caching_batch_reader &) = delete;
-    caching_batch_reader &operator=(caching_batch_reader &&);
+    lru_batch_reader &operator=(const lru_batch_reader &other) = delete;
+    lru_batch_reader &operator=(lru_batch_reader &&other) = default;
     
     void read_batch(span<const location> locations) override; // TODO return
 
 private:
-    class implementation;
-    memory::pimpl<implementation> m_impl;
+    lru_reader_cache m_cache;
 
 };
 

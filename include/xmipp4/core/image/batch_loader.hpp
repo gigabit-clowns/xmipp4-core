@@ -21,53 +21,51 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_reader.hpp
+ * @file batch_loader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_batch_reader class
+ * @brief Definition of the image::batch_loader class
  * @date 2025-05-07
  * 
  */
 
-#include <xmipp4/core/image/batch_reader.hpp>
+#include "location.hpp"
+#include "../span.hpp"
 
-#include "lru_reader_cache.hpp"
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace image
 {
 
+class reader_manager;
+
 /**
- * @brief Specialized batch_reader that keeps several files open on a Least
- * Recently Used (LRU) polcy basis.
- * policy.
+ * @brief Base class to efficiently read batches of images.
+ * 
+ * This base class may be implemented to read batches of images from potentially 
+ * multiple image stacks. Implementations may choose different policies to 
+ * maximize the throughput of the reading process. 
  * 
  */
-class lru_batch_reader final
-    : public batch_reader
+class batch_loader
 {
-public: 
-    /**
-     * @brief Construct a new lru_batch_reader.
-     * 
-     * @param readers reader_manager from which necessary readers are created.
-     * @param max_open Maximum amount of readers open at a given time.
-     * When set to 0, no readers are cached.
-     */
-    explicit lru_batch_reader(const reader_manager &readers, 
-                                  std::size_t max_open = 64 );
-    lru_batch_reader(const lru_batch_reader &other) = delete;
-    lru_batch_reader(lru_batch_reader &&other) = default;
-    ~lru_batch_reader() override = default;
+public:
+    batch_loader() = default;
+    batch_loader(const batch_loader &other) = default;
+    batch_loader(batch_loader &&other) = default;
+    virtual ~batch_loader() = default;
 
-    lru_batch_reader &operator=(const lru_batch_reader &other) = delete;
-    lru_batch_reader &operator=(lru_batch_reader &&other) = default;
+    batch_loader &operator=(const batch_loader &other) = default;
+    batch_loader &operator=(batch_loader &&other) = default;
     
-    void read_batch(span<const location> locations) override; // TODO return
-
-private:
-    lru_reader_cache m_cache;
-
+    /**
+     * @brief Read a batch of images.
+     * 
+     * @param locations Locations of the images to read.
+     */
+    virtual void read_batch(span<const location> locations) = 0; // TODO return
+    
 };
 
 } // namespace image

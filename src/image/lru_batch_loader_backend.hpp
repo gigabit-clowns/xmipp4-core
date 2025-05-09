@@ -21,51 +21,49 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader.hpp
+ * @file lru_batch_loader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_reader class
+ * @brief Definition of the image::lru_batch_loader_backend class
  * @date 2025-05-07
  * 
  */
 
-#include "location.hpp"
-#include "../span.hpp"
-
-#include <cstddef>
+#include <xmipp4/core/image/batch_loader_backend.hpp>
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class reader_manager;
+class batch_loader_manager;
 
 /**
- * @brief Base class to efficiently read batches of images.
+ * @brief Backend to create a lru_batch_loader-s.
  * 
- * This base class may be implemented to read batches of images from potentially 
- * multiple image stacks. Implementations may choose different policies to 
- * maximize the throughput of the reading process. 
- * 
+ * @see lru_batch_loader
+ *  
  */
-class batch_reader
+class lru_batch_loader_backend
+    : public batch_loader_backend
 {
 public:
-    batch_reader() = default;
-    batch_reader(const batch_reader &other) = default;
-    batch_reader(batch_reader &&other) = default;
-    virtual ~batch_reader() = default;
+    lru_batch_loader_backend() = default;
+    lru_batch_loader_backend(const lru_batch_loader_backend &other) = default;
+    lru_batch_loader_backend(lru_batch_loader_backend &&other) = default;
+    virtual ~lru_batch_loader_backend() = default;
+    
+    lru_batch_loader_backend &operator=(const lru_batch_loader_backend &other) = default;
+    lru_batch_loader_backend &operator=(lru_batch_loader_backend &&other) = default;
 
-    batch_reader &operator=(const batch_reader &other) = default;
-    batch_reader &operator=(batch_reader &&other) = default;
-    
-    /**
-     * @brief Read a batch of images.
-     * 
-     * @param locations Locations of the images to read.
-     */
-    virtual void read_batch(span<const location> locations) = 0; // TODO return
-    
+    std::string get_name() const noexcept override;
+    version get_version() const noexcept override;
+    bool is_available() const noexcept override;
+    backend_priority get_priority() const noexcept override;
+    std::shared_ptr<batch_loader> 
+    create_batch_loader(const reader_manager &reader_manager) const override;
+
+    static bool register_at(batch_loader_manager &manager);
+
 };
 
 } // namespace image

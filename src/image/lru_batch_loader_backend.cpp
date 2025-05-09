@@ -19,19 +19,19 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_reader_backend.cpp
+ * @file lru_batch_loader_backend.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of lru_batch_reader_backend.hpp
+ * @brief Implementation of lru_batch_loader_backend.hpp
  * @date 2024-10-25
  * 
  */
 
-#include "lru_batch_reader_backend.hpp"
+#include "lru_batch_loader_backend.hpp"
 
-#include "lru_batch_reader.hpp"
+#include "lru_batch_loader.hpp"
 
 #include <xmipp4/core/core_version.hpp>
-#include <xmipp4/core/image/batch_reader_manager.hpp>
+#include <xmipp4/core/image/batch_loader_manager.hpp>
 
 static const char XMIPP4_LRU_READER_MAX_OPEN[] = 
     "XMIPP4_LRU_READER_MAX_OPEN";
@@ -41,28 +41,28 @@ namespace xmipp4
 namespace image
 {
 
-std::string lru_batch_reader_backend::get_name() const noexcept
+std::string lru_batch_loader_backend::get_name() const noexcept
 {
     return "lru";
 }
 
-version lru_batch_reader_backend::get_version() const noexcept
+version lru_batch_loader_backend::get_version() const noexcept
 {
     return get_core_version();
 }
 
-bool lru_batch_reader_backend::is_available() const noexcept
+bool lru_batch_loader_backend::is_available() const noexcept
 {
     return true;
 }
 
-backend_priority lru_batch_reader_backend::get_priority() const noexcept
+backend_priority lru_batch_loader_backend::get_priority() const noexcept
 {
     return backend_priority::preferred;
 }
 
-std::shared_ptr<batch_reader> 
-lru_batch_reader_backend::create_batch_reader(const reader_manager &reader_manager) const
+std::shared_ptr<batch_loader> 
+lru_batch_loader_backend::create_batch_loader(const reader_manager &reader_manager) const
 {
     const char* max_open_str = std::getenv(XMIPP4_LRU_READER_MAX_OPEN);
     std::size_t max_open = 64;
@@ -71,13 +71,13 @@ lru_batch_reader_backend::create_batch_reader(const reader_manager &reader_manag
         // TODO parse
     }
 
-    return std::make_shared<lru_batch_reader>(reader_manager, max_open);
+    return std::make_shared<lru_batch_loader>(reader_manager, max_open);
 }
 
-bool lru_batch_reader_backend::register_at(batch_reader_manager &manager)
+bool lru_batch_loader_backend::register_at(batch_loader_manager &manager)
 {
     return manager.register_backend(
-        std::make_unique<lru_batch_reader_backend>()
+        std::make_unique<lru_batch_loader_backend>()
     );
 }
 

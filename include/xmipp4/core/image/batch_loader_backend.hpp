@@ -21,48 +21,52 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_reader_backend.hpp
+ * @file batch_loader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_batch_reader_backend class
+ * @brief Definition of the image::batch_loader_backend class
  * @date 2025-05-07
  * 
  */
 
-#include <xmipp4/core/image/batch_reader_backend.hpp>
+#include "../backend.hpp"
+
+#include <string>
+#include <memory>
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class batch_reader_manager;
+class batch_loader;
+class reader_manager;
 
 /**
- * @brief Backend to create a lru_batch_reader-s.
+ * @brief Abstract backend class to create image batch_loader-s. 
  * 
- * @see lru_batch_reader
- *  
  */
-class lru_batch_reader_backend
-    : public batch_reader_backend
+class batch_loader_backend
+    : public backend
 {
 public:
-    lru_batch_reader_backend() = default;
-    lru_batch_reader_backend(const lru_batch_reader_backend &other) = default;
-    lru_batch_reader_backend(lru_batch_reader_backend &&other) = default;
-    virtual ~lru_batch_reader_backend() = default;
+    batch_loader_backend() = default;
+    batch_loader_backend(const batch_loader_backend &other) = default;
+    batch_loader_backend(batch_loader_backend &&other) = default;
+    virtual ~batch_loader_backend() = default;
     
-    lru_batch_reader_backend &operator=(const lru_batch_reader_backend &other) = default;
-    lru_batch_reader_backend &operator=(lru_batch_reader_backend &&other) = default;
-
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
-    std::shared_ptr<batch_reader> 
-    create_batch_reader(const reader_manager &reader_manager) const override;
-
-    static bool register_at(batch_reader_manager &manager);
+    batch_loader_backend &operator=(const batch_loader_backend &other) = default;
+    batch_loader_backend &operator=(batch_loader_backend &&other) = default;
+    
+    /**
+     * @brief Create an image batch_loader for the provided file.
+     * 
+     * @param reader_manager Reader manager from which readers are created.
+     * @return std::shared_ptr<batch_loader> Newly created batch_loader.
+     * 
+     */
+    virtual std::shared_ptr<batch_loader> 
+    create_batch_loader(const reader_manager &reader_manager) const = 0;
 
 };
 

@@ -21,52 +21,52 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader_backend.hpp
+ * @file lru_batch_loader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_reader_backend class
+ * @brief Definition of the image::lru_batch_loader class
  * @date 2025-05-07
  * 
  */
 
-#include "../backend.hpp"
+#include <xmipp4/core/image/batch_loader.hpp>
 
-#include <string>
-#include <memory>
-#include <cstddef>
+#include "lru_reader_cache.hpp"
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class batch_reader;
-class reader_manager;
-
 /**
- * @brief Abstract backend class to create image batch_reader-s. 
+ * @brief Specialized batch_loader that keeps several files open on a Least
+ * Recently Used (LRU) polcy basis.
+ * policy.
  * 
  */
-class batch_reader_backend
-    : public backend
+class lru_batch_loader final
+    : public batch_loader
 {
-public:
-    batch_reader_backend() = default;
-    batch_reader_backend(const batch_reader_backend &other) = default;
-    batch_reader_backend(batch_reader_backend &&other) = default;
-    virtual ~batch_reader_backend() = default;
-    
-    batch_reader_backend &operator=(const batch_reader_backend &other) = default;
-    batch_reader_backend &operator=(batch_reader_backend &&other) = default;
-    
+public: 
     /**
-     * @brief Create an image batch_reader for the provided file.
+     * @brief Construct a new lru_batch_loader.
      * 
-     * @param reader_manager Reader manager from which readers are created.
-     * @return std::shared_ptr<batch_reader> Newly created batch_reader.
-     * 
+     * @param readers reader_manager from which necessary readers are created.
+     * @param max_open Maximum amount of readers open at a given time.
+     * When set to 0, no readers are cached.
      */
-    virtual std::shared_ptr<batch_reader> 
-    create_batch_reader(const reader_manager &reader_manager) const = 0;
+    explicit lru_batch_loader(const reader_manager &readers, 
+                                  std::size_t max_open = 64 );
+    lru_batch_loader(const lru_batch_loader &other) = delete;
+    lru_batch_loader(lru_batch_loader &&other) = default;
+    ~lru_batch_loader() override = default;
+
+    lru_batch_loader &operator=(const lru_batch_loader &other) = delete;
+    lru_batch_loader &operator=(lru_batch_loader &&other) = default;
+    
+    void read_batch(span<const location> locations) override; // TODO return
+
+private:
+    lru_reader_cache m_cache;
 
 };
 

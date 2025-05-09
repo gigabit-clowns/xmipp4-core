@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader_manager.hpp
+ * @file batch_loader_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_reader_manager class
+ * @brief Definition of the image::batch_loader_manager class
  * @date 2025-05-07
  * 
  */
@@ -40,31 +40,31 @@ namespace image
 {
 
 class reader_manager;
-class batch_reader;
-class batch_reader_backend;
+class batch_loader;
+class batch_loader_backend;
 
 /**
- * @brief Centralizes all known batch_reader_backend-s.
+ * @brief Centralizes all known batch_loader_backend-s.
  * 
  */
-class batch_reader_manager final
-    : public basic_backend_manager<batch_reader_backend>
+class batch_loader_manager final
+    : public basic_backend_manager<batch_loader_backend>
 {
 public:
-    batch_reader_manager() = default;
-    batch_reader_manager(const batch_reader_manager &) = default;
-    batch_reader_manager(batch_reader_manager &&) = default;
-    virtual ~batch_reader_manager() = default;
+    batch_loader_manager() = default;
+    batch_loader_manager(const batch_loader_manager &) = default;
+    batch_loader_manager(batch_loader_manager &&) = default;
+    virtual ~batch_loader_manager() = default;
     
-    batch_reader_manager &operator=(const batch_reader_manager &) = default;
-    batch_reader_manager &operator=(batch_reader_manager &&) = default;
+    batch_loader_manager &operator=(const batch_loader_manager &) = default;
+    batch_loader_manager &operator=(batch_loader_manager &&) = default;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;
 
     XMIPP4_CORE_API
-    std::shared_ptr<batch_reader> 
-    create_batch_reader(const std::string &backend_name,
+    std::shared_ptr<batch_loader> 
+    create_batch_loader(const std::string &backend_name,
                         const reader_manager &reader_manager) const;
 
 };

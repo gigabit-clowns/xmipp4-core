@@ -19,50 +19,43 @@
  ***************************************************************************/
 
 /**
- * @file batch_reader_manager.cpp
+ * @file lru_batch_loader.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of batch_reader_manager.hpp
+ * @brief Implementation of lru_batch_loader.hpp
  * @date 2024-10-25
  * 
  */
 
-#include <xmipp4/core/image/batch_reader_manager.hpp>
+#include "lru_batch_loader.hpp"
 
-#include <xmipp4/core/image/batch_reader_backend.hpp>
-
-#include "lru_batch_reader_backend.hpp"
+#include <xmipp4/core/image/reader.hpp>
+#include <xmipp4/core/image/reader_manager.hpp>
 
 namespace xmipp4
 {
 namespace image
 {
 
-static 
-std::shared_ptr<batch_reader> 
-create_batch_reader(const batch_reader_backend* backend, 
-                    const reader_manager &reader_manager )
+void lru_batch_loader::read_batch(span<const location> locations)
 {
-    std::shared_ptr<batch_reader> result;
-
-    if (backend)
+    auto first = locations.begin();
+    while (first != locations.end()) 
     {
-        result = backend->create_batch_reader(reader_manager);
+        const auto reader = m_cache.get_reader(first->get_filename());
+        const auto position = first->get_position();
+        if (position == location::no_position) 
+        {
+            reader->read(); // TODO
+            ++first;
+        }
+        else
+        {
+            auto last = find_contiguous_location_run(first, locations.end());
+            const std::size_t count = std::distance(first, last);
+            reader->read_batch(position, count); // TODO
+            first = last;
+        }
     }
-
-    return result;
-}
-
-void batch_reader_manager::register_builtin_backends() 
-{
-    lru_batch_reader_backend::register_at(*this);
-}
-
-std::shared_ptr<batch_reader> 
-batch_reader_manager::create_batch_reader(const std::string &backend_name,
-                                          const reader_manager &reader_manager ) const
-{
-    const auto *backend = get_backend(backend_name);
-    return image::create_batch_reader(backend, reader_manager);
 }
 
 } // namespace image

@@ -63,8 +63,11 @@ public:
     default_async_loader &operator=(const default_async_loader &other) = delete;
     default_async_loader &operator=(default_async_loader &&other) = default;
     
-    std::unique_ptr<async_load_result> read_batch(span<const location> locations) override;
-    std::unique_ptr<async_load_result> read_single(const location &location) override;
+    std::unique_ptr<async_load_result>
+    read_batch(span<const location> locations) override;
+
+    std::unique_ptr<async_load_result>
+    read_single(const location &location) override;
 
 private:
     lru_reader_cache m_cache;

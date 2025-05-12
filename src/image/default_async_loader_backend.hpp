@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file lru_async_loader_backend.hpp
+ * @file default_async_loader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_async_loader_backend class
+ * @brief Definition of the image::default_async_loader_backend class
  * @date 2025-05-07
  * 
  */
@@ -38,22 +38,22 @@ namespace image
 class async_loader_manager;
 
 /**
- * @brief Backend to create a lru_async_loader-s.
+ * @brief Backend to create a default_async_loader-s.
  * 
- * @see lru_async_loader
+ * @see default_async_loader
  *  
  */
-class lru_async_loader_backend
+class default_async_loader_backend
     : public async_loader_backend
 {
 public:
-    lru_async_loader_backend() = default;
-    lru_async_loader_backend(const lru_async_loader_backend &other) = default;
-    lru_async_loader_backend(lru_async_loader_backend &&other) = default;
-    virtual ~lru_async_loader_backend() = default;
+    default_async_loader_backend() = default;
+    default_async_loader_backend(const default_async_loader_backend &other) = default;
+    default_async_loader_backend(default_async_loader_backend &&other) = default;
+    virtual ~default_async_loader_backend() = default;
     
-    lru_async_loader_backend &operator=(const lru_async_loader_backend &other) = default;
-    lru_async_loader_backend &operator=(lru_async_loader_backend &&other) = default;
+    default_async_loader_backend &operator=(const default_async_loader_backend &other) = default;
+    default_async_loader_backend &operator=(default_async_loader_backend &&other) = default;
 
     std::string get_name() const noexcept override;
     version get_version() const noexcept override;

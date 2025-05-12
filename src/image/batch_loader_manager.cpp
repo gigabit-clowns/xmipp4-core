@@ -30,7 +30,7 @@
 
 #include <xmipp4/core/image/async_loader_backend.hpp>
 
-#include "lru_async_loader_backend.hpp"
+#include "default_async_loader_backend.hpp"
 
 namespace xmipp4
 {
@@ -54,7 +54,7 @@ create_async_loader(const async_loader_backend* backend,
 
 void async_loader_manager::register_builtin_backends() 
 {
-    lru_async_loader_backend::register_at(*this);
+    default_async_loader_backend::register_at(*this);
 }
 
 std::shared_ptr<async_loader> 

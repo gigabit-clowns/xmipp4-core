@@ -19,16 +19,16 @@
  ***************************************************************************/
 
 /**
- * @file lru_async_loader_backend.cpp
+ * @file default_async_loader_backend.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of lru_async_loader_backend.hpp
+ * @brief Implementation of default_async_loader_backend.hpp
  * @date 2024-10-25
  * 
  */
 
-#include "lru_async_loader_backend.hpp"
+#include "default_async_loader_backend.hpp"
 
-#include "lru_async_loader.hpp"
+#include "default_async_loader.hpp"
 
 #include <xmipp4/core/core_version.hpp>
 #include <xmipp4/core/image/async_loader_manager.hpp>
@@ -41,37 +41,37 @@ namespace xmipp4
 namespace image
 {
 
-std::string lru_async_loader_backend::get_name() const noexcept
+std::string default_async_loader_backend::get_name() const noexcept
 {
-    return "lru";
+    return "default";
 }
 
-version lru_async_loader_backend::get_version() const noexcept
+version default_async_loader_backend::get_version() const noexcept
 {
     return get_core_version();
 }
 
-bool lru_async_loader_backend::is_available() const noexcept
+bool default_async_loader_backend::is_available() const noexcept
 {
     return true;
 }
 
-backend_priority lru_async_loader_backend::get_priority() const noexcept
+backend_priority default_async_loader_backend::get_priority() const noexcept
 {
     return backend_priority::preferred;
 }
 
 std::shared_ptr<async_loader> 
-lru_async_loader_backend::create_async_loader(const reader_manager &reader_manager) const
+default_async_loader_backend::create_async_loader(const reader_manager &reader_manager) const
 {
     std::size_t max_open = 64; // TODO deduce
-    return std::make_shared<lru_async_loader>(reader_manager, max_open);
+    return std::make_shared<default_async_loader>(reader_manager, max_open);
 }
 
-bool lru_async_loader_backend::register_at(async_loader_manager &manager)
+bool default_async_loader_backend::register_at(async_loader_manager &manager)
 {
     return manager.register_backend(
-        std::make_unique<lru_async_loader_backend>()
+        std::make_unique<default_async_loader_backend>()
     );
 }
 

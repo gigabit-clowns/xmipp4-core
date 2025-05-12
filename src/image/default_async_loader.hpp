@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file lru_async_loader.hpp
+ * @file default_async_loader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_async_loader class
+ * @brief Definition of the image::default_async_loader class
  * @date 2025-05-07
  * 
  */
@@ -43,25 +43,25 @@ namespace image
  * policy.
  * 
  */
-class lru_async_loader final
+class default_async_loader final
     : public async_loader
 {
 public: 
     /**
-     * @brief Construct a new lru_async_loader.
+     * @brief Construct a new default_async_loader.
      * 
      * @param readers reader_manager from which necessary readers are created.
      * @param max_open Maximum amount of readers open at a given time.
      * When set to 0, no readers are cached.
      */
-    explicit lru_async_loader(const reader_manager &readers, 
+    explicit default_async_loader(const reader_manager &readers, 
                                   std::size_t max_open = 64 );
-    lru_async_loader(const lru_async_loader &other) = delete;
-    lru_async_loader(lru_async_loader &&other) = default;
-    ~lru_async_loader() override = default;
+    default_async_loader(const default_async_loader &other) = delete;
+    default_async_loader(default_async_loader &&other) = default;
+    ~default_async_loader() override = default;
 
-    lru_async_loader &operator=(const lru_async_loader &other) = delete;
-    lru_async_loader &operator=(lru_async_loader &&other) = default;
+    default_async_loader &operator=(const default_async_loader &other) = delete;
+    default_async_loader &operator=(default_async_loader &&other) = default;
     
     std::unique_ptr<async_load_result> read_batch(span<const location> locations) override;
     std::unique_ptr<async_load_result> read_single(const location &location) override;

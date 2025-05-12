@@ -43,7 +43,7 @@ class async_loader_manager;
  * @see default_async_loader
  *  
  */
-class default_async_loader_backend
+class default_async_loader_backend final
     : public async_loader_backend
 {
 public:

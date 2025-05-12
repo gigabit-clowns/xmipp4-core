@@ -28,6 +28,8 @@
 
 #include "setting_value.hpp"
 
+#include <cstdlib>
+
 namespace xmipp4 
 {
 
@@ -43,6 +45,11 @@ setting_value::setting_value(Str &&value, setting_source source)
     : m_source(source)
     , m_value(std::forward<Str>(value))
 {
+}
+
+bool setting_value::is_set() const noexcept
+{
+    return m_source != setting_source::unset;
 }
 
 inline
@@ -61,8 +68,9 @@ template <typename Str>
 inline
 bool setting_value::update(Str &&value, setting_source source)
 {
-    const auto result = source > m_source;
-    if (result)
+    bool result = false;
+
+    if (source > m_source)
     {
         m_source = source;
         m_value = std::forward<Str>(value);
@@ -76,6 +84,22 @@ inline
 bool setting_value::update(const setting_value &other)
 {
     return update(other.get_value(), other.get_source());
+}
+
+inline
+bool setting_value::update_from_environment_variable(const std::string &name)
+{
+    bool result = false;
+    if (setting_source::environment_variable > m_source)
+    {
+        const char *env_value = std::getenv(name.c_str());
+        if (env_value)
+        {
+            m_source = setting_source::environment_variable;
+            m_value = std::string(env_value);
+            result = true;
+        }
+    }
 }
 
 } // namespace xmipp4

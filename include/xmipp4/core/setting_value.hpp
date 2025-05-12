@@ -67,6 +67,16 @@ public:
     setting_value& operator=(setting_value &&other) = default;
     
     /**
+     * @brief Check if the setting value has been set.
+     * 
+     * This is equivalent to comparing the source to setting_source::unset.
+     * 
+     * @return true Setting value is set.
+     * @return false Setting value is not set.
+     */
+    bool is_set() const noexcept;
+
+    /**
      * @brief Get the source of the value.
      * 
      * @return setting_source The source.
@@ -107,6 +117,20 @@ public:
      * @return false Value was not updated.
      */
     bool update(const setting_value &other);
+    
+    /**
+     * @brief Update the value held by this object from an environment
+     * variable.
+     * 
+     * The value held by this object is only written when the environment
+     * variable is defined and setting_source::environment variable evaluates
+     * to greater than the current source.
+     * 
+     * @param key Key identifying the environment variable.
+     * @return true Value was updated.
+     * @return false Value was not updated.
+     */
+    bool update_from_environment_variable(const std::string &name);
 
 private:
     setting_source m_source;

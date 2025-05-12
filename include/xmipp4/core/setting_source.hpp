@@ -46,6 +46,7 @@ enum class setting_source
     unset, ///< The value has not been set yet.
     preset, ///< The value is the default value.
     environment_variable, ///< The value is set by an environment variable.
+    configuration_file, ///< The value is set by a configuration file.
     user, ///< The value is set by the user.
 };
 

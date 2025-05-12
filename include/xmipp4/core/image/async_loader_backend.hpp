@@ -21,17 +21,17 @@
  ***************************************************************************/
 
 /**
- * @file batch_loader_manager.hpp
+ * @file async_loader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_loader_manager class
+ * @brief Definition of the image::async_loader_backend class
  * @date 2025-05-07
  * 
  */
- 
-#include "../backend_manager.hpp"
-#include "../platform/dynamic_shared_object.h"
+
+#include "../backend.hpp"
 
 #include <string>
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
@@ -39,33 +39,34 @@ namespace xmipp4
 namespace image
 {
 
+class async_loader;
 class reader_manager;
-class batch_loader;
-class batch_loader_backend;
 
 /**
- * @brief Centralizes all known batch_loader_backend-s.
+ * @brief Abstract backend class to create image async_loader-s. 
  * 
  */
-class batch_loader_manager final
-    : public basic_backend_manager<batch_loader_backend>
+class async_loader_backend
+    : public backend
 {
 public:
-    batch_loader_manager() = default;
-    batch_loader_manager(const batch_loader_manager &) = default;
-    batch_loader_manager(batch_loader_manager &&) = default;
-    virtual ~batch_loader_manager() = default;
+    async_loader_backend() = default;
+    async_loader_backend(const async_loader_backend &other) = default;
+    async_loader_backend(async_loader_backend &&other) = default;
+    virtual ~async_loader_backend() = default;
     
-    batch_loader_manager &operator=(const batch_loader_manager &) = default;
-    batch_loader_manager &operator=(batch_loader_manager &&) = default;
-
-    XMIPP4_CORE_API
-    void register_builtin_backends() override;
-
-    XMIPP4_CORE_API
-    std::shared_ptr<batch_loader> 
-    create_batch_loader(const std::string &backend_name,
-                        const reader_manager &reader_manager) const;
+    async_loader_backend &operator=(const async_loader_backend &other) = default;
+    async_loader_backend &operator=(async_loader_backend &&other) = default;
+    
+    /**
+     * @brief Create an image async_loader for the provided file.
+     * 
+     * @param reader_manager Reader manager from which readers are created.
+     * @return std::shared_ptr<async_loader> Newly created async_loader.
+     * 
+     */
+    virtual std::shared_ptr<async_loader> 
+    create_async_loader(const reader_manager &reader_manager) const = 0;
 
 };
 

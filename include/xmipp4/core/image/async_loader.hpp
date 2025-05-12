@@ -21,13 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file batch_loader.hpp
+ * @file async_loader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_loader class
+ * @brief Definition of the image::async_loader class
  * @date 2025-05-07
  * 
  */
 
+#include "async_load_result.hpp"
 #include "location.hpp"
 #include "../span.hpp"
 
@@ -41,30 +42,41 @@ namespace image
 class reader_manager;
 
 /**
- * @brief Base class to efficiently read batches of images.
+ * @brief Base class to efficiently read images asynchronously.
  * 
- * This base class may be implemented to read batches of images from potentially 
+ * This base class may be implemented to read images from potentially 
  * multiple image stacks. Implementations may choose different policies to 
  * maximize the throughput of the reading process. 
  * 
  */
-class batch_loader
+class async_loader
 {
 public:
-    batch_loader() = default;
-    batch_loader(const batch_loader &other) = default;
-    batch_loader(batch_loader &&other) = default;
-    virtual ~batch_loader() = default;
+    async_loader() = default;
+    async_loader(const async_loader &other) = default;
+    async_loader(async_loader &&other) = default;
+    virtual ~async_loader() = default;
 
-    batch_loader &operator=(const batch_loader &other) = default;
-    batch_loader &operator=(batch_loader &&other) = default;
+    async_loader &operator=(const async_loader &other) = default;
+    async_loader &operator=(async_loader &&other) = default;
     
     /**
      * @brief Read a batch of images.
      * 
      * @param locations Locations of the images to read.
+     * @return async_load_result Result object to be polled.
      */
-    virtual void read_batch(span<const location> locations) = 0; // TODO return
+    virtual std::unique_ptr<async_load_result> 
+    read_batch(span<const location> locations) = 0;
+
+    /**
+     * @brief Read a single image.
+     * 
+     * @param location Location where the image is stored.
+     * @return async_load_result Result object to be polled.
+     */
+    virtual std::unique_ptr<async_load_result> 
+    read_single(const location &location) = 0;
     
 };
 

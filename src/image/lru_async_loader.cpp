@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_loader.cpp
+ * @file lru_async_loader.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of lru_batch_loader.hpp
+ * @brief Implementation of lru_async_loader.hpp
  * @date 2024-10-25
  * 
  */
 
-#include "lru_batch_loader.hpp"
+#include "lru_async_loader.hpp"
 
 #include <xmipp4/core/image/reader.hpp>
 #include <xmipp4/core/image/reader_manager.hpp>
@@ -36,7 +36,7 @@ namespace xmipp4
 namespace image
 {
 
-void lru_batch_loader::read_batch(span<const location> locations)
+std::unique_ptr<async_load_result> lru_async_loader::read_batch(span<const location> locations)
 {
     auto first = locations.begin();
     while (first != locations.end()) 
@@ -55,6 +55,20 @@ void lru_batch_loader::read_batch(span<const location> locations)
             reader->read_batch(position, count); // TODO
             first = last;
         }
+    }
+}
+
+std::unique_ptr<async_load_result> lru_async_loader::read_single(const location &location)
+{
+    const auto reader = m_cache.get_reader(location.get_filename());
+    const auto position = location.get_position();
+    if (position == location::no_position) 
+    {
+        reader->read(); // TODO
+    }
+    else
+    {
+        reader->read_single(position); // TODO
     }
 }
 

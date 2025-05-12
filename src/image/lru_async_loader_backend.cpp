@@ -19,67 +19,59 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_loader_backend.cpp
+ * @file lru_async_loader_backend.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of lru_batch_loader_backend.hpp
+ * @brief Implementation of lru_async_loader_backend.hpp
  * @date 2024-10-25
  * 
  */
 
-#include "lru_batch_loader_backend.hpp"
+#include "lru_async_loader_backend.hpp"
 
-#include "lru_batch_loader.hpp"
+#include "lru_async_loader.hpp"
 
 #include <xmipp4/core/core_version.hpp>
-#include <xmipp4/core/image/batch_loader_manager.hpp>
+#include <xmipp4/core/image/async_loader_manager.hpp>
 #include <xmipp4/core/logger.hpp>
 
-static const char XMIPP4_LRU_LOADER_MAX_OPEN[] = 
-    "XMIPP4_LRU_LOADER_MAX_OPEN";
+
 
 namespace xmipp4
 {
 namespace image
 {
 
-std::string lru_batch_loader_backend::get_name() const noexcept
+std::string lru_async_loader_backend::get_name() const noexcept
 {
     return "lru";
 }
 
-version lru_batch_loader_backend::get_version() const noexcept
+version lru_async_loader_backend::get_version() const noexcept
 {
     return get_core_version();
 }
 
-bool lru_batch_loader_backend::is_available() const noexcept
+bool lru_async_loader_backend::is_available() const noexcept
 {
     return true;
 }
 
-backend_priority lru_batch_loader_backend::get_priority() const noexcept
+backend_priority lru_async_loader_backend::get_priority() const noexcept
 {
     return backend_priority::preferred;
 }
 
-std::shared_ptr<batch_loader> 
-lru_batch_loader_backend::create_batch_loader(const reader_manager &reader_manager) const
+std::shared_ptr<async_loader> 
+lru_async_loader_backend::create_async_loader(const reader_manager &reader_manager) const
 {
-    std::size_t max_open = 64;
-
-    const char *max_open_str = std::getenv(XMIPP4_LRU_LOADER_MAX_OPEN);
-    if (max_open_str)
-    {
-        max_open = std::stoul(max_open_str);
-    }
-
-    return std::make_shared<lru_batch_loader>(reader_manager, max_open);
+    std::size_t max_open = 64; // TODO deduce
+    return std::make_shared<lru_async_loader>(reader_manager, max_open);
 }
 
-bool lru_batch_loader_backend::register_at(batch_loader_manager &manager)
+bool lru_async_loader_backend::register_at(async_loader_manager &manager)
 {
     return manager.register_backend(
-        std::make_unique<lru_batch_loader_backend>()
+        std::make_unique<lru_async_loader_backend>()
     );
 }
 

@@ -21,48 +21,30 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_loader_backend.hpp
+ * @file async_load_result.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_batch_loader_backend class
+ * @brief Definition of the image::async_load_result class
  * @date 2025-05-07
  * 
  */
-
-#include <xmipp4/core/image/batch_loader_backend.hpp>
 
 namespace xmipp4 
 {
 namespace image
 {
 
-class batch_loader_manager;
-
-/**
- * @brief Backend to create a lru_batch_loader-s.
- * 
- * @see lru_batch_loader
- *  
- */
-class lru_batch_loader_backend
-    : public batch_loader_backend
+class async_load_result
 {
 public:
-    lru_batch_loader_backend() = default;
-    lru_batch_loader_backend(const lru_batch_loader_backend &other) = default;
-    lru_batch_loader_backend(lru_batch_loader_backend &&other) = default;
-    virtual ~lru_batch_loader_backend() = default;
-    
-    lru_batch_loader_backend &operator=(const lru_batch_loader_backend &other) = default;
-    lru_batch_loader_backend &operator=(lru_batch_loader_backend &&other) = default;
+    async_load_result() = default;
+    async_load_result(const async_load_result &other) = default;
+    async_load_result(async_load_result &&other) = default;
+    virtual ~async_load_result() = default;
 
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
-    std::shared_ptr<batch_loader> 
-    create_batch_loader(const reader_manager &reader_manager) const override;
+    async_load_result& operator=(const async_load_result &other) = default;
+    async_load_result& operator=(async_load_result &&other) = default;
 
-    static bool register_at(batch_loader_manager &manager);
+    virtual void wait() = 0; // TODO define interface
 
 };
 

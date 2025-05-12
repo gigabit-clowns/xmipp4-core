@@ -21,17 +21,17 @@
  ***************************************************************************/
 
 /**
- * @file batch_loader_backend.hpp
+ * @file async_loader_manager.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::batch_loader_backend class
+ * @brief Definition of the image::async_loader_manager class
  * @date 2025-05-07
  * 
  */
-
-#include "../backend.hpp"
+ 
+#include "../backend_manager.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <string>
-#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
@@ -39,34 +39,33 @@ namespace xmipp4
 namespace image
 {
 
-class batch_loader;
 class reader_manager;
+class async_loader;
+class async_loader_backend;
 
 /**
- * @brief Abstract backend class to create image batch_loader-s. 
+ * @brief Centralizes all known async_loader_backend-s.
  * 
  */
-class batch_loader_backend
-    : public backend
+class async_loader_manager final
+    : public basic_backend_manager<async_loader_backend>
 {
 public:
-    batch_loader_backend() = default;
-    batch_loader_backend(const batch_loader_backend &other) = default;
-    batch_loader_backend(batch_loader_backend &&other) = default;
-    virtual ~batch_loader_backend() = default;
+    async_loader_manager() = default;
+    async_loader_manager(const async_loader_manager &) = default;
+    async_loader_manager(async_loader_manager &&) = default;
+    virtual ~async_loader_manager() = default;
     
-    batch_loader_backend &operator=(const batch_loader_backend &other) = default;
-    batch_loader_backend &operator=(batch_loader_backend &&other) = default;
-    
-    /**
-     * @brief Create an image batch_loader for the provided file.
-     * 
-     * @param reader_manager Reader manager from which readers are created.
-     * @return std::shared_ptr<batch_loader> Newly created batch_loader.
-     * 
-     */
-    virtual std::shared_ptr<batch_loader> 
-    create_batch_loader(const reader_manager &reader_manager) const = 0;
+    async_loader_manager &operator=(const async_loader_manager &) = default;
+    async_loader_manager &operator=(async_loader_manager &&) = default;
+
+    XMIPP4_CORE_API
+    void register_builtin_backends() override;
+
+    XMIPP4_CORE_API
+    std::shared_ptr<async_loader> 
+    create_async_loader(const std::string &backend_name,
+                        const reader_manager &reader_manager) const;
 
 };
 

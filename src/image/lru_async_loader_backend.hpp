@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,51 +21,50 @@
  ***************************************************************************/
 
 /**
- * @file async_loader_manager.cpp
+ * @file lru_async_loader_backend.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of async_loader_manager.hpp
- * @date 2024-10-25
+ * @brief Definition of the image::lru_async_loader_backend class
+ * @date 2025-05-07
  * 
  */
 
-#include <xmipp4/core/image/async_loader_manager.hpp>
-
 #include <xmipp4/core/image/async_loader_backend.hpp>
 
-#include "lru_async_loader_backend.hpp"
-
-namespace xmipp4
+namespace xmipp4 
 {
 namespace image
 {
 
-static 
-std::shared_ptr<async_loader> 
-create_async_loader(const async_loader_backend* backend, 
-                    const reader_manager &reader_manager )
+class async_loader_manager;
+
+/**
+ * @brief Backend to create a lru_async_loader-s.
+ * 
+ * @see lru_async_loader
+ *  
+ */
+class lru_async_loader_backend
+    : public async_loader_backend
 {
-    std::shared_ptr<async_loader> result;
+public:
+    lru_async_loader_backend() = default;
+    lru_async_loader_backend(const lru_async_loader_backend &other) = default;
+    lru_async_loader_backend(lru_async_loader_backend &&other) = default;
+    virtual ~lru_async_loader_backend() = default;
+    
+    lru_async_loader_backend &operator=(const lru_async_loader_backend &other) = default;
+    lru_async_loader_backend &operator=(lru_async_loader_backend &&other) = default;
 
-    if (backend)
-    {
-        result = backend->create_async_loader(reader_manager);
-    }
+    std::string get_name() const noexcept override;
+    version get_version() const noexcept override;
+    bool is_available() const noexcept override;
+    backend_priority get_priority() const noexcept override;
+    std::shared_ptr<async_loader> 
+    create_async_loader(const reader_manager &reader_manager) const override;
 
-    return result;
-}
+    static bool register_at(async_loader_manager &manager);
 
-void async_loader_manager::register_builtin_backends() 
-{
-    lru_async_loader_backend::register_at(*this);
-}
-
-std::shared_ptr<async_loader> 
-async_loader_manager::create_async_loader(const std::string &backend_name,
-                                          const reader_manager &reader_manager ) const
-{
-    const auto *backend = get_backend(backend_name);
-    return image::create_async_loader(backend, reader_manager);
-}
+};
 
 } // namespace image
 } // namespace xmipp4

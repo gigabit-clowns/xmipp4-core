@@ -21,14 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file lru_batch_loader.hpp
+ * @file lru_async_loader.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::lru_batch_loader class
+ * @brief Definition of the image::lru_async_loader class
  * @date 2025-05-07
  * 
  */
 
-#include <xmipp4/core/image/batch_loader.hpp>
+#include <xmipp4/core/image/async_loader.hpp>
 
 #include "lru_reader_cache.hpp"
 
@@ -38,32 +38,33 @@ namespace image
 {
 
 /**
- * @brief Specialized batch_loader that keeps several files open on a Least
+ * @brief Specialized async_loader that keeps several files open on a Least
  * Recently Used (LRU) polcy basis.
  * policy.
  * 
  */
-class lru_batch_loader final
-    : public batch_loader
+class lru_async_loader final
+    : public async_loader
 {
 public: 
     /**
-     * @brief Construct a new lru_batch_loader.
+     * @brief Construct a new lru_async_loader.
      * 
      * @param readers reader_manager from which necessary readers are created.
      * @param max_open Maximum amount of readers open at a given time.
      * When set to 0, no readers are cached.
      */
-    explicit lru_batch_loader(const reader_manager &readers, 
+    explicit lru_async_loader(const reader_manager &readers, 
                                   std::size_t max_open = 64 );
-    lru_batch_loader(const lru_batch_loader &other) = delete;
-    lru_batch_loader(lru_batch_loader &&other) = default;
-    ~lru_batch_loader() override = default;
+    lru_async_loader(const lru_async_loader &other) = delete;
+    lru_async_loader(lru_async_loader &&other) = default;
+    ~lru_async_loader() override = default;
 
-    lru_batch_loader &operator=(const lru_batch_loader &other) = delete;
-    lru_batch_loader &operator=(lru_batch_loader &&other) = default;
+    lru_async_loader &operator=(const lru_async_loader &other) = delete;
+    lru_async_loader &operator=(lru_async_loader &&other) = default;
     
-    void read_batch(span<const location> locations) override; // TODO return
+    std::unique_ptr<async_load_result> read_batch(span<const location> locations) override;
+    std::unique_ptr<async_load_result> read_single(const location &location) override;
 
 private:
     lru_reader_cache m_cache;

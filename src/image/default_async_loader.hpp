@@ -39,7 +39,7 @@ namespace image
 
 /**
  * @brief Specialized async_loader that keeps several files open on a Least
- * Recently Used (LRU) polcy basis.
+ * Recently Used (LRU) policy basis.
  * policy.
  * 
  */

@@ -30,8 +30,8 @@
 
 #include "device_index.hpp"
 #include "device_properties.hpp"
-#include "../interface_manager.hpp"
-#include "../memory/pimpl.hpp"
+#include "device_backend.hpp"
+#include "../backend_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -53,49 +53,19 @@ class device_create_parameters;
  * 
  */
 class device_manager final
-    : public interface_manager
+    : public basic_backend_manager<device_backend>
 {
 public:
-    XMIPP4_CORE_API device_manager();
+    device_manager() = default;
     device_manager(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager(device_manager &&other) noexcept;
-    XMIPP4_CORE_API ~device_manager() override;
+    device_manager(device_manager &&other) = default;
+    ~device_manager() override = default;
 
     device_manager& operator=(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
+    device_manager& operator=(device_manager &&other) = default;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;
-
-    /**
-     * @brief Register a new device backend.
-     * 
-     * @param backend The backend to be registered.
-     * @return true The backend was successfully registered.
-     * @return false The backend with the same name already exists.
-     * 
-     */
-    XMIPP4_CORE_API
-    bool register_backend(std::unique_ptr<device_backend> backend);
-
-    /**
-     * @brief Enumerate all registered backends.
-     * 
-     * @param backends Output list with the backend names.
-     * @note The output list is cleared before populating it.
-     * 
-     */
-    XMIPP4_CORE_API
-    void enumerate_backends(std::vector<std::string> &backends) const;
-
-    /**
-     * @brief Get a backend by its name.
-     * 
-     * @param name The name of the backend.
-     * @return device_backend* The requested backend. nullptr if not found.
-     */
-    XMIPP4_CORE_API
-    device_backend* get_backend(const std::string &name) const;
 
     /**
      * @brief Enumerate devices across all backends.
@@ -129,10 +99,6 @@ public:
     XMIPP4_CORE_API std::shared_ptr<device> 
     create_device(const device_index &index,
                   const device_create_parameters &params ) const;
-
-private:
-    class implementation;
-    memory::pimpl<implementation> m_implementation;
 
 }; 
 

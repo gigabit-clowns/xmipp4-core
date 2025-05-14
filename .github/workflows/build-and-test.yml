@@ -1,4 +1,6 @@
 name: Build and Test
+permissions:
+  contents: read
 
 on:
   pull_request:
@@ -109,7 +111,7 @@ jobs:
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify
-        run: conda install -y conda-build conda-verify
+        run: conda install -y conda-build conda-verify python=3.12
 
       - name: Build with conda
         run: conda build conda

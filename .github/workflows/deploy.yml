@@ -1,4 +1,6 @@
 name: Deploy release
+permissions: # Default permissions for every job
+  contents: read
 
 on:
   push:
@@ -133,7 +135,7 @@ jobs:
       
       # TODO upload to conda-forge
 
-  build_doxygen: 
+  build_doxygen:
     name: Build Doxygen documentation
     runs-on: ubuntu-latest
     steps:
@@ -172,7 +174,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       pages: write
-      id-token: write 
+      id-token: write
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to GitHub Pages

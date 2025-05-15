@@ -128,8 +128,8 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
  * 
  * A phantom axis descriptor has null stride. 
  * This means that it does not contribute to the
- * underlying array's size and all its elements
- * are repeated. 
+ * underlying array's storage size and all its 
+ * elements are repeated. 
  * 
  * @param extent Number of elements on the axis.
  * @return axis_descriptor. The resulting axis

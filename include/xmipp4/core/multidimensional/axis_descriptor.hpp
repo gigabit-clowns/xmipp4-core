@@ -102,7 +102,7 @@ public:
      * 
      * @return std::size_t Step between consecutive elements. In items
      */
-    XMIPP4_CONSTEXPR std::size_t get_unsigned_stride() const noexcept;
+    XMIPP4_CONSTEXPR std::size_t get_stride_magnitude() const noexcept;
 
 private:
     std::size_t m_extent; ///< Number of elements

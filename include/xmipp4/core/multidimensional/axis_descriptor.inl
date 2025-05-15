@@ -88,7 +88,7 @@ std::ptrdiff_t axis_descriptor::get_stride() const noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t axis_descriptor::get_unsigned_stride() const noexcept
+std::size_t axis_descriptor::get_stride_magnitude() const noexcept
 {
     return math::abs(get_stride());
 }
@@ -120,21 +120,21 @@ XMIPP4_INLINE_CONSTEXPR
 bool compare_strides_equal(const axis_descriptor &lhs, 
                            const axis_descriptor &rhs ) noexcept
 {
-    return lhs.get_unsigned_stride() == rhs.get_unsigned_stride();
+    return lhs.get_stride_magnitude() == rhs.get_stride_magnitude();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_less(const axis_descriptor &lhs, 
                           const axis_descriptor &rhs ) noexcept
 {
-    return lhs.get_unsigned_stride() < rhs.get_unsigned_stride();
+    return lhs.get_stride_magnitude() < rhs.get_stride_magnitude();
 }
 
 XMIPP4_INLINE_CONSTEXPR 
 bool compare_strides_greater(const axis_descriptor &lhs, 
                              const axis_descriptor &rhs ) noexcept
 {
-    return lhs.get_unsigned_stride() > rhs.get_unsigned_stride();
+    return lhs.get_stride_magnitude() > rhs.get_stride_magnitude();
 }
 
 XMIPP4_INLINE_CONSTEXPR
@@ -160,15 +160,15 @@ bool is_contiguous(const axis_descriptor &major,
 XMIPP4_INLINE_CONSTEXPR
 bool is_mirror_contiguous(const axis_descriptor &axis) noexcept
 {
-    return axis.get_unsigned_stride() == 1;
+    return axis.get_stride_magnitude() == 1;
 }
 
 XMIPP4_INLINE_CONSTEXPR
 bool is_mirror_contiguous(const axis_descriptor &major,
                    const axis_descriptor &minor ) noexcept
 {
-    const auto expected = major.get_unsigned_stride()*major.get_extent();
-    return expected == minor.get_unsigned_stride();
+    const auto expected = major.get_stride_magnitude()*major.get_extent();
+    return expected == minor.get_stride_magnitude();
 }
 
 XMIPP4_INLINE_CONSTEXPR

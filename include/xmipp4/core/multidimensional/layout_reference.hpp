@@ -113,7 +113,13 @@ public:
     XMIPP4_NODISCARD
     layout_flags get_flags() const noexcept;
 
-
+    /**
+     * @brief Get a read-only shared_ptr to the underlying layout.
+     * 
+     * @return std::shared_ptr<const layout_type> The underlying layout.
+     */
+    XMIPP4_NODISCARD
+    std::shared_ptr<const layout_type> get_shared() const noexcept;
 
     /**
      * @brief Apply a set of dynamic subscripts to this layout.

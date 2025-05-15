@@ -135,7 +135,7 @@ public:
      * This method shall only be called if get_subscript_type() returns
      * subscript_type::slice. Otherwise behavior is undefined.
      * 
-     * @return const dynamic_slice& The slice held by this object.
+     * @return dynamic_slice The slice held by this object.
      */
     XMIPP4_CONSTEXPR
     dynamic_slice get_slice() const noexcept;

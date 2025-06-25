@@ -158,17 +158,6 @@ public:
     XMIPP4_NODISCARD
     array squeeze() const;
 
-    /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
-     * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
-     * 
-     * @return array The resulting layout.
-     */
-    XMIPP4_NODISCARD
-    array coalesce_axes() const;
-
 private:
     storage_type m_storage;
     layout_type m_layout;

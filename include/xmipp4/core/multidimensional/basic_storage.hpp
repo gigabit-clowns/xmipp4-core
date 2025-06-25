@@ -43,7 +43,6 @@ public:
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using is_host_accessible = std::true_type;
-    using may_alias = std::false_type;
 
     basic_storage() = default;
     explicit basic_storage(std::size_t n);
@@ -57,10 +56,13 @@ public:
     void reset() noexcept;
     void swap(basic_storage &other) noexcept;
 
+    bool aliases(const basic_storage &other) const noexcept;
+
     pointer data() noexcept;
     const_pointer data() const noexcept;
 
     std::size_t size() const noexcept;
+
 
 private:
     std::vector<value_type> m_data;

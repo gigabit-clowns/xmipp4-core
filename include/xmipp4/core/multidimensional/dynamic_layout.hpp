@@ -240,27 +240,6 @@ public:
     dynamic_layout& squeeze_inplace() noexcept;
 
     /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
-     * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
-     * 
-     * @return dynamic_layout The resulting layout.
-     */
-    XMIPP4_NODISCARD
-    dynamic_layout coalesce_axes() const;
-
-    /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
-     * 
-     * Unlike numpy's ravel, this will only combine axes when possible.
-     * 
-     * @return dynamic_layout& *this
-     */
-    dynamic_layout& coalesce_axes_inplace() noexcept;
-
-    /**
      * @brief Perform a broadcast between the layout and the provided extents.
      * 
      * This function modifies the layout to match the provided extents by 

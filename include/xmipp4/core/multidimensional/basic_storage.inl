@@ -58,6 +58,13 @@ void basic_storage<T>::swap(basic_storage &other) noexcept
 
 template <typename T>
 inline
+bool basic_storage<T>::aliases(const basic_storage &other) const noexcept
+{
+    return &other == this;
+}
+
+template <typename T>
+inline
 typename basic_storage<T>::pointer basic_storage<T>::data() noexcept
 {
     return m_data.data();

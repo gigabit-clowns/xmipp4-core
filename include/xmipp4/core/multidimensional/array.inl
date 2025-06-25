@@ -108,13 +108,5 @@ array<Storage, Layout>::squeeze() const
     return array(m_storage, m_layout.squeeze());
 }
 
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-array<Storage, Layout> 
-array<Storage, Layout>::coalesce_axes() const
-{
-    return array(m_storage, m_layout.coalesce_axes());
-}
-
 } // namespace multidimensional
 } // namespace xmipp4

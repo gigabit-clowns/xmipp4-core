@@ -34,26 +34,26 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-/*
+
 template <typename T>
 template <typename... Args>
 inline
 storage_reference<T>::storage_reference(Args&&... args)
-    : m_data(std::make_shared<storage_type>(std::forward<Args>(args)...))
+    : m_storage(std::make_shared<storage_type>(std::forward<Args>(args)...))
 {
 }
 
 template <typename T>
 inline
 storage_reference<T>::storage_reference(const storage_reference<const storage_type> &other)
-    : m_data(other.m_data)
+    : m_storage(other.m_storage)
 {
 }
 
 template <typename T>
 inline
 storage_reference<T>::storage_reference(storage_reference<const storage_type> &&other)
-    : m_data(std::move(other.m_data))
+    : m_storage(std::move(other.m_storage))
 {
 }
 
@@ -61,14 +61,21 @@ template <typename T>
 inline
 void storage_reference<T>::reset() noexcept
 {
-    m_data.reset();
+    m_storage.reset();
 }
 
 template <typename T>
 inline
 void storage_reference<T>::swap(storage_reference &other) noexcept
 {
-    m_data.swap(other.m_data);
+    m_storage.swap(other.m_storage);
+}
+
+template <typename T>
+inline
+bool storage_reference<T>::aliases(const storage_reference &other) const noexcept
+{
+    return m_storage == other.m_storage;
 }
 
 template <typename T>
@@ -76,7 +83,7 @@ inline
 typename storage_reference<T>::storage_type* 
 storage_reference<T>::get() noexcept
 {
-    return m_data.get();
+    return m_storage.get();
 }
 
 template <typename T>
@@ -84,21 +91,14 @@ inline
 const typename storage_reference<T>::storage_type* 
 storage_reference<T>::get() const noexcept
 {
-    return m_data.get();
-}
-
-template <typename T>
-inline
-bool storage_reference<T>::is_alias(const storage_reference &other) const noexcept
-{
-    return m_data == other.m_data;
+    return m_storage.get();
 }
 
 template <typename T>
 inline
 std::size_t storage_reference<T>::size() const noexcept
 {
-    return m_data ? m_data->size() : 0;
+    return m_storage ? m_storage->size() : 0;
 }
 
 
@@ -109,6 +109,6 @@ void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept
 {
     lhs.swap(rhs);
 }
-*/
+
 } // namespace multidimensional
 } // namespace xmipp4

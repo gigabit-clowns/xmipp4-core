@@ -36,14 +36,16 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-/*
+
 template <typename T>
 class storage_reference
 {
 public:
     using storage_type = T;
-    using value_type = storage_traits<storage_type>::value_type;
-    using is_host_accessible = storage_traits<storage_type>::is_host_accessible;
+    using value_type = 
+        typename storage_traits<storage_type>::value_type;
+    using is_host_accessible = 
+        typename storage_traits<storage_type>::is_host_accessible;
 
     storage_reference() = default;
     template <typename... Args>
@@ -60,10 +62,10 @@ public:
     void reset() noexcept;
     void swap(storage_reference &other) noexcept;
 
+    bool aliases(const storage_reference &other) const noexcept;
+
     storage_type* get() noexcept;
     const storage_type* get() const noexcept;
-    
-    bool is_alias(const storage_reference &other) const noexcept;
 
     std::size_t size() const noexcept;
 
@@ -79,7 +81,7 @@ private:
 
 template <typename T>
 void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept;
-*/
+
 } // namespace multidimensional
 } // namespace xmipp4
 

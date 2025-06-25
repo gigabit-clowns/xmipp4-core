@@ -32,11 +32,13 @@
 
 #include "checks.hpp"
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional
 {
-/*
+
 inline
 dynamic_layout::dynamic_layout(const std::size_t *extents, 
                                std::size_t rank,
@@ -49,12 +51,12 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
         m_axes.emplace_back(extents[i], 0);
     }
 
-    compute_contiguous_axis_strides(
-        m_axes.rbegin(), 
-        m_axes.rend()
-    );
-
-    update_flags();
+    std::size_t stride = 1;
+    for(auto ite = m_axes.rbegin(); ite != m_axes.rend(); ++ite)
+    {
+        ite->set_stride(stride);
+        stride *= ite->get_extent();
+    }
 }
 
 inline
@@ -69,8 +71,6 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
     {
         m_axes.emplace_back(extents[i], strides[i]);
     }
-
-    update_flags();
 }
 
 inline
@@ -80,7 +80,6 @@ dynamic_layout::dynamic_layout(const strided_axis *axes,
     : m_axes(axes, axes + rank)
     , m_offset(offset)
 {
-    update_flags();
 }
 
 XMIPP4_NODISCARD inline
@@ -146,6 +145,7 @@ dynamic_layout dynamic_layout::apply_subscripts(span<dynamic_subscript> subscrip
 inline
 dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript> subscripts)
 {
+    /*
     auto axis_ite = m_axes.begin();
     auto subscript_ite = subscripts.begin();
 
@@ -183,6 +183,7 @@ dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript>
     }
     
     return *this;
+    */
 }
 
 XMIPP4_NODISCARD inline
@@ -196,7 +197,7 @@ dynamic_layout dynamic_layout::transpose() const
 inline
 dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 {
-    transpose_layout_inplace(m_axes.begin(), m_axes.end());
+    std::reverse(m_axes.begin(), m_axes.end());
     return *this;
 }
 
@@ -221,7 +222,6 @@ dynamic_layout& dynamic_layout::permute_inplace(span<const std::size_t> order)
     }
 
     m_axes = std::move(tmp);
-    update_flags();
     return *this;
 }
 
@@ -248,7 +248,6 @@ dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
     }
 
     std::swap(m_axes[axis1], m_axes[axis2]);
-    update_flags();
     return *this;
 }
 
@@ -263,34 +262,13 @@ dynamic_layout dynamic_layout::squeeze() const
 inline
 dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
 {
-    m_axes.erase(
-        squeeze_layout_inplace(m_axes.begin(), m_axes.end()), 
-        m_axes.end()
-    );
-    update_flags();
-    return *this;
-}
-
-XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::coalesce_axes() const
-{
-    dynamic_layout result = *this;
-    result.coalesce_axes_inplace();
-    return result;
-}
-
-inline
-dynamic_layout& dynamic_layout::coalesce_axes_inplace() noexcept
-{
-    sort_layout_inplace(m_axes.begin(), m_axes.end());
-    const auto ite = coalesce_layout_inplace(
+    const auto last = std::remove_if(
         m_axes.begin(), 
         m_axes.end(), 
-        m_offset
+        check_squeeze
     );
-    m_axes.erase(ite, m_axes.end());
 
-    update_flags();
+    m_axes.erase(last, m_axes.end());
     return *this;
 }
 
@@ -328,6 +306,7 @@ dynamic_layout& dynamic_layout::broadcast_inplace(std::vector<std::size_t> &exte
         );
     }
 
+    /*
     const std::size_t count = extents.size(); 
     for(std::size_t i = 0; i < count; ++i)
     {
@@ -339,6 +318,7 @@ dynamic_layout& dynamic_layout::broadcast_inplace(std::vector<std::size_t> &exte
             throw std::invalid_argument(ss.str());
         }
     }
+    */
 }
 
 inline
@@ -379,15 +359,9 @@ dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> ext
             throw std::invalid_argument(ss.str());
         }
     }
+
+    return *this;
 }
 
-
-
-inline
-void dynamic_layout::update_flags() noexcept
-{
-    m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());
-}
-*/
 } // namespace multidimensional
 } // namespace xmipp4

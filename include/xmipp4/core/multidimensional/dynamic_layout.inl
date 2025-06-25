@@ -75,7 +75,7 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
 }
 
 inline
-dynamic_layout::dynamic_layout(const axis_descriptor *axes, 
+dynamic_layout::dynamic_layout(const strided_axis *axes, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
     : m_axes(axes, axes + rank)
@@ -118,7 +118,7 @@ std::size_t dynamic_layout::get_axes(std::size_t *extents,
 
 inline
 bool dynamic_layout::get_axis(std::size_t index, 
-                              axis_descriptor &out ) const noexcept
+                              strided_axis &out ) const noexcept
 {
     const bool result = (index < m_axes.size());
     if (result)
@@ -216,7 +216,7 @@ dynamic_layout& dynamic_layout::permute_inplace(span<const std::size_t> order)
 {
     check_axis_permutation(order.begin(), order.end(), m_axes.size());
 
-    std::vector<axis_descriptor> tmp;
+    std::vector<strided_axis> tmp;
     tmp.reserve(m_axes.size());
     for(std::size_t i = 0; i < order.size(); ++i)
     {

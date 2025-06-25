@@ -56,7 +56,7 @@ std::size_t layout_reference<T>::get_rank() const noexcept
 template <typename T>
 inline
 bool layout_reference<T>::get_axis(std::size_t index, 
-                                   axis_descriptor &out ) const noexcept
+                                   strided_axis &out ) const noexcept
 {
     bool result;
 

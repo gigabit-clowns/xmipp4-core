@@ -31,7 +31,7 @@
 #include <memory>
 #include <cstddef>
 
-#include "axis_descriptor.hpp"
+#include "strided_axis.hpp"
 #include "dynamic_subscript.hpp"
 #include "layout_flags.hpp"
 #include "slice.hpp"
@@ -95,7 +95,7 @@ public:
      * @return false Index is out of bounds and the output was not written.
      * 
      */
-    bool get_axis(std::size_t index, axis_descriptor &out) const noexcept;
+    bool get_axis(std::size_t index, strided_axis &out) const noexcept;
 
     /**
      * @brief Get the offset of the layout.

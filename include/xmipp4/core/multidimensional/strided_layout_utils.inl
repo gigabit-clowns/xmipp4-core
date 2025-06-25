@@ -131,7 +131,7 @@ template<typename ForwardIt>
 XMIPP4_INLINE_CONSTEXPR_CPP20 
 ForwardIt coalesce_layout_one(ForwardIt first, 
                               ForwardIt last,
-                              axis_descriptor &ravelled,
+                              strided_axis &ravelled,
                               std::ptrdiff_t &offset ) noexcept
 {
     std::size_t extent = first->get_extent();
@@ -149,7 +149,7 @@ ForwardIt coalesce_layout_one(ForwardIt first,
     }
 
     const auto stride = prev->get_unsigned_stride();
-    ravelled = axis_descriptor(extent, stride);
+    ravelled = strided_axis(extent, stride);
     return first;
 }
 
@@ -169,7 +169,7 @@ OutputIt coalesce_layout(ForwardIt first_from,
     while(first_from != last_from)
     {
         // Ravel a single run of the layout
-        axis_descriptor ravelled;
+        strided_axis ravelled;
         first_from = detail::coalesce_layout_one(
             first_from, last_from, 
             ravelled, offset
@@ -202,7 +202,7 @@ std::size_t compute_contiguous_axis_strides(ForwardIt first,
     std::size_t volume = 1;
     std::for_each(
         first, last,
-        [&volume] (axis_descriptor& desc) -> void
+        [&volume] (strided_axis& desc) -> void
         {
             desc.set_stride(volume);
             volume *= desc.get_extent();
@@ -237,7 +237,7 @@ std::size_t compute_layout_volume(ForwardIt first,
     return std::accumulate(
         first, last,
         std::size_t(1),
-        [] (std::size_t current, const axis_descriptor &axis) -> std::size_t
+        [] (std::size_t current, const strided_axis &axis) -> std::size_t
         {
             return current * axis.get_extent();
         }

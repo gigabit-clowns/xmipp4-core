@@ -38,13 +38,13 @@ using namespace xmipp4::multidimensional;
 
 TEST_CASE("find_first_significant axis should skip axes of extent 1", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 8),
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 0),
-        axis_descriptor(1, 2),
-        axis_descriptor(3, -2),
-        axis_descriptor(2, 1),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 8),
+        strided_axis(1, 0),
+        strided_axis(4, 0),
+        strided_axis(1, 2),
+        strided_axis(3, -2),
+        strided_axis(2, 1),
     };
 
     REQUIRE(find_first_significant_axis(layout.cbegin(), layout.cend()) == std::next(layout.cbegin(), 2));
@@ -52,17 +52,17 @@ TEST_CASE("find_first_significant axis should skip axes of extent 1", "[strided_
 
 TEST_CASE("sort_layout should produce a sorted layout", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 2),
-        axis_descriptor(4, 0),
-        axis_descriptor(1, 512),
-        axis_descriptor(2, 1),
-        axis_descriptor(2, 8),
-        axis_descriptor(4, 0),
-        axis_descriptor(4, -2),
-        axis_descriptor(4, -128),
-        axis_descriptor(2, 64),
-        axis_descriptor(3, 0),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 2),
+        strided_axis(4, 0),
+        strided_axis(1, 512),
+        strided_axis(2, 1),
+        strided_axis(2, 8),
+        strided_axis(4, 0),
+        strided_axis(4, -2),
+        strided_axis(4, -128),
+        strided_axis(2, 64),
+        strided_axis(3, 0),
     };
 
     REQUIRE( !is_layout_sorted(layout.cbegin(), layout.cend()) );
@@ -74,17 +74,17 @@ TEST_CASE("sort_layout should produce a sorted layout", "[strided_layout]")
 
 TEST_CASE("check_layout_order should only consider significant axes", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 512),
-        axis_descriptor(1, 0),
-        axis_descriptor(4, -128),
-        axis_descriptor(2, 64),
-        axis_descriptor(2, 8),
-        axis_descriptor(1, 0),
-        axis_descriptor(1, 2),
-        axis_descriptor(4, -2),
-        axis_descriptor(1, 2),
-        axis_descriptor(2, 1),
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 512),
+        strided_axis(1, 0),
+        strided_axis(4, -128),
+        strided_axis(2, 64),
+        strided_axis(2, 8),
+        strided_axis(1, 0),
+        strided_axis(1, 2),
+        strided_axis(4, -2),
+        strided_axis(1, 2),
+        strided_axis(2, 1),
     };
 
     REQUIRE( is_layout_sorted(layout.cbegin(), layout.cend()) );
@@ -96,7 +96,7 @@ TEST_CASE("check_layout_order should only consider significant axes", "[strided_
 
 TEST_CASE("compute_layout_order should provide both ordering flags for an empty layout", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {};
+    std::vector<strided_axis> layout = {};
     const layout_flags expected = {
         layout_flag_bits::column_major, 
         layout_flag_bits::row_major, 
@@ -107,10 +107,10 @@ TEST_CASE("compute_layout_order should provide both ordering flags for an empty 
 
 TEST_CASE("compute_layout_order should provide both ordering flags for a layout with a single significant axis", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(1, 8),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(1, 8),
     };
     const layout_flags expected = {
         layout_flag_bits::column_major, 
@@ -122,11 +122,11 @@ TEST_CASE("compute_layout_order should provide both ordering flags for a layout 
 
 TEST_CASE("compute_layout_order should provide a single flag for a layout with a multiple significant axis", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(1, 8),
-        axis_descriptor(24, 8),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(1, 8),
+        strided_axis(24, 8),
     };
     const layout_flags expected1 = {
         layout_flag_bits::row_major, 
@@ -142,12 +142,12 @@ TEST_CASE("compute_layout_order should provide a single flag for a layout with a
 
 TEST_CASE("compute_layout_order should not provided forwards_strided when there is a reversed axis", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(1, 8),
-        axis_descriptor(2, -8),
-        axis_descriptor(5, 16)
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(1, 8),
+        strided_axis(2, -8),
+        strided_axis(5, 16)
     };
     const layout_flags expected1 = {
         layout_flag_bits::row_major
@@ -161,12 +161,12 @@ TEST_CASE("compute_layout_order should not provided forwards_strided when there 
 
 TEST_CASE("compute_layout_order should provide no ordering flags for an unordered layout", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(1, 8),
-        axis_descriptor(2, 1),
-        axis_descriptor(24, 8),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(1, 8),
+        strided_axis(2, 1),
+        strided_axis(24, 8),
     };
     const layout_flags expected = {
         layout_flag_bits::forwards_strided
@@ -176,12 +176,12 @@ TEST_CASE("compute_layout_order should provide no ordering flags for an unordere
 
 TEST_CASE("compute_layout_order should still provide forwards_strided when negative strides are used in not significant axes", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(1, -8),
-        axis_descriptor(2, 1),
-        axis_descriptor(24, 8),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(1, -8),
+        strided_axis(2, 1),
+        strided_axis(24, 8),
     };
     const layout_flags expected = {
         layout_flag_bits::forwards_strided
@@ -191,21 +191,21 @@ TEST_CASE("compute_layout_order should still provide forwards_strided when negat
 
 TEST_CASE("coalesce_layout should combine contiguous runs of axes", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(1, 0),
-        axis_descriptor(4, 2),
-        axis_descriptor(2, 8),
-        axis_descriptor(1, 16),
+    std::vector<strided_axis> layout = {
+        strided_axis(1, 0),
+        strided_axis(4, 2),
+        strided_axis(2, 8),
+        strided_axis(1, 16),
         //---------------------
-        axis_descriptor(4, -32),
-        axis_descriptor(1, -128),
-        axis_descriptor(3, 128),
+        strided_axis(4, -32),
+        strided_axis(1, -128),
+        strided_axis(3, 128),
         //---------------------
-        axis_descriptor(9, -512),
-        axis_descriptor(1, 0),
+        strided_axis(9, -512),
+        strided_axis(1, 0),
     };
 
-    std::vector<axis_descriptor> packed = layout;
+    std::vector<strided_axis> packed = layout;
     std::ptrdiff_t offset = 0;
 
 
@@ -214,26 +214,26 @@ TEST_CASE("coalesce_layout should combine contiguous runs of axes", "[strided_la
     packed.erase(ite, packed.end());
 
     REQUIRE( packed.size() == 3 );
-    REQUIRE( packed[0] == axis_descriptor(9, 512) );
-    REQUIRE( packed[1] == axis_descriptor(12, 32) );
-    REQUIRE( packed[2] == axis_descriptor(8, 2) );
+    REQUIRE( packed[0] == strided_axis(9, 512) );
+    REQUIRE( packed[1] == strided_axis(12, 32) );
+    REQUIRE( packed[2] == strided_axis(8, 2) );
     REQUIRE( offset == -(8*512+3*32) );
 }
 
 /*
 TEST_CASE("is contiguous layout", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(2, -1),
-        axis_descriptor(4, 2),
-        axis_descriptor(2, 8),
-        axis_descriptor(4, -16),
-        axis_descriptor(10, 0),
-        axis_descriptor(1, -64),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(2, 0),
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 0),
+        strided_axis(2, -1),
+        strided_axis(4, 2),
+        strided_axis(2, 8),
+        strided_axis(4, -16),
+        strided_axis(10, 0),
+        strided_axis(1, -64),
+        strided_axis(2, 64),
+        strided_axis(4, 128),
+        strided_axis(2, 0),
     };
 
     SECTION("contiguous")
@@ -242,13 +242,13 @@ TEST_CASE("is contiguous layout", "[strided_layout]")
     }
     SECTION("first axis has not unit stride")
     {
-        layout[1] = axis_descriptor(1, 2);
+        layout[1] = strided_axis(1, 2);
 
         REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
     SECTION("not packed")
     {
-        layout[2] = axis_descriptor(2, -4);
+        layout[2] = strided_axis(2, -4);
 
         REQUIRE( !is_contiguous_layout(layout.cbegin(), layout.cend()) );
     }
@@ -257,7 +257,7 @@ TEST_CASE("is contiguous layout", "[strided_layout]")
 
 TEST_CASE("compute contiguous axis strides", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
+    std::vector<strided_axis> layout = {
         make_contiguous_axis(2),
         make_contiguous_axis(3),
         make_contiguous_axis(8),
@@ -279,17 +279,17 @@ TEST_CASE("compute contiguous axis strides", "[strided_layout]")
 
 TEST_CASE("compute layout buffer size", "strided_layout")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(2, -1),
-        axis_descriptor(4, 2),
-        axis_descriptor(2, 8),
-        axis_descriptor(4, -16),
-        axis_descriptor(10, 0),
-        axis_descriptor(1, -64),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(2, 0),
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 0),
+        strided_axis(2, -1),
+        strided_axis(4, 2),
+        strided_axis(2, 8),
+        strided_axis(4, -16),
+        strided_axis(10, 0),
+        strided_axis(1, -64),
+        strided_axis(2, 64),
+        strided_axis(4, 128),
+        strided_axis(2, 0),
     };
 
     SECTION("normal")
@@ -300,14 +300,14 @@ TEST_CASE("compute layout buffer size", "strided_layout")
 
     SECTION("non contiguous")
     {
-        layout[1] = axis_descriptor(1, 2);
+        layout[1] = strided_axis(1, 2);
         const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 511); // Last element no longer required
     }
 
     SECTION("zero sized axis")
     {
-        layout[0] = axis_descriptor(0, 1);
+        layout[0] = strided_axis(0, 1);
         const auto size = compute_layout_storage_size(layout.cbegin(), layout.cend());
         REQUIRE(size == 0);
     }
@@ -322,17 +322,17 @@ TEST_CASE("compute layout buffer size", "strided_layout")
 
 TEST_CASE("transpose_layout should reverse the layout", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 8),
-        axis_descriptor(2, 64),
-        axis_descriptor(4, 128),
-        axis_descriptor(4, 16),
-        axis_descriptor(2, 1),
-        axis_descriptor(4, 2)
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 8),
+        strided_axis(2, 64),
+        strided_axis(4, 128),
+        strided_axis(4, 16),
+        strided_axis(2, 1),
+        strided_axis(4, 2)
     };
 
     // Transpose the layout out of place
-    std::vector<axis_descriptor> transposed_layout;
+    std::vector<strided_axis> transposed_layout;
     transpose_layout(layout.cbegin(), layout.cend(), std::back_inserter(transposed_layout));
 
     REQUIRE(std::equal(layout.crbegin(), layout.crend(), transposed_layout.cbegin(), transposed_layout.cend()));
@@ -344,20 +344,20 @@ TEST_CASE("transpose_layout should reverse the layout", "[strided_layout]")
 
 TEST_CASE("squeeze_layout should remove all axes with an extent of 1", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(4, 1),
-        axis_descriptor(1, 4),
-        axis_descriptor(4, 4),
-        axis_descriptor(1, 16),
-        axis_descriptor(4, 16),
+    std::vector<strided_axis> layout = {
+        strided_axis(4, 1),
+        strided_axis(1, 4),
+        strided_axis(4, 4),
+        strided_axis(1, 16),
+        strided_axis(4, 16),
     };
 
     SECTION("in-place")
     {
-        const std::vector<axis_descriptor> squeezed_layout = {
-            axis_descriptor(4, 1),
-            axis_descriptor(4, 4),
-            axis_descriptor(4, 16),
+        const std::vector<strided_axis> squeezed_layout = {
+            strided_axis(4, 1),
+            strided_axis(4, 4),
+            strided_axis(4, 16),
 
         };
         layout.erase(squeeze_layout_inplace(layout.begin(), layout.end()), layout.end());
@@ -365,7 +365,7 @@ TEST_CASE("squeeze_layout should remove all axes with an extent of 1", "[strided
     }
     SECTION("out of place")
     {
-        std::vector<axis_descriptor> squeezed_layout;
+        std::vector<strided_axis> squeezed_layout;
         squeeze_layout(layout.cbegin(), layout.cend(), std::back_inserter(squeezed_layout));
         layout.erase(squeeze_layout_inplace(layout.begin(), layout.end()), layout.end());
         REQUIRE(layout == squeezed_layout);
@@ -374,14 +374,14 @@ TEST_CASE("squeeze_layout should remove all axes with an extent of 1", "[strided
 
 TEST_CASE("broadcast_layouts should succeed with valid data", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(2, 1),
-        axis_descriptor(1, 2),
-        axis_descriptor(4, 2),
-        axis_descriptor(3, 8),
-        axis_descriptor(2, 24),
-        axis_descriptor(1, 0),
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 0),
+        strided_axis(2, 1),
+        strided_axis(1, 2),
+        strided_axis(4, 2),
+        strided_axis(3, 8),
+        strided_axis(2, 24),
+        strided_axis(1, 0),
     };
 
     auto layout2 = layout;
@@ -394,14 +394,14 @@ TEST_CASE("broadcast_layouts should succeed with valid data", "[strided_layout]"
 
 TEST_CASE("broadcast_layouts should fail with invalid data", "[strided_layout]")
 {
-    std::vector<axis_descriptor> layout = {
-        axis_descriptor(2, 0),
-        axis_descriptor(2, 1),
-        axis_descriptor(1, 2),
-        axis_descriptor(4, 2),
-        axis_descriptor(3, 8),
-        axis_descriptor(2, 24),
-        axis_descriptor(1, 0),
+    std::vector<strided_axis> layout = {
+        strided_axis(2, 0),
+        strided_axis(2, 1),
+        strided_axis(1, 2),
+        strided_axis(4, 2),
+        strided_axis(3, 8),
+        strided_axis(2, 24),
+        strided_axis(1, 0),
     };
 
     auto layout2 = layout;

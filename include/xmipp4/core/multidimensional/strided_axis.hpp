@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file axis_descriptor.hpp
+ * @file strided_axis.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines axis_descriptor class
+ * @brief Defines strided_axis class
  * @date 2023-08-13
  * 
  */
@@ -44,7 +44,7 @@ namespace multidimensional
  * axis
  * 
  */
-class axis_descriptor 
+class strided_axis 
 {
 public:
     /**
@@ -53,21 +53,21 @@ public:
      * @param extent Number of elements in the axis. Defaults to 0
      * @param stride Step between consecutive elements. In items.
      */
-    XMIPP4_CONSTEXPR axis_descriptor(std::size_t extent, 
+    XMIPP4_CONSTEXPR strided_axis(std::size_t extent, 
                                      std::ptrdiff_t stride ) noexcept;
 
-    axis_descriptor() = default;
-    axis_descriptor(const axis_descriptor& other) = default;
-    axis_descriptor(axis_descriptor&& other) = default;
-    ~axis_descriptor() = default;
+    strided_axis() = default;
+    strided_axis(const strided_axis& other) = default;
+    strided_axis(strided_axis&& other) = default;
+    ~strided_axis() = default;
 
-    axis_descriptor& operator=(const axis_descriptor& other) = default;
-    axis_descriptor& operator=(axis_descriptor&& other) = default;
+    strided_axis& operator=(const strided_axis& other) = default;
+    strided_axis& operator=(strided_axis&& other) = default;
     
-    XMIPP4_CONSTEXPR bool operator==(const axis_descriptor& other) const noexcept;
-    XMIPP4_CONSTEXPR bool operator!=(const axis_descriptor& other) const noexcept;
+    XMIPP4_CONSTEXPR bool operator==(const strided_axis& other) const noexcept;
+    XMIPP4_CONSTEXPR bool operator!=(const strided_axis& other) const noexcept;
 
-    XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &other) noexcept;
+    XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &other) noexcept;
 
     /**
      * @brief Set the element count
@@ -110,21 +110,21 @@ private:
 
 };
 
-XMIPP4_CONSTEXPR_CPP20 void swap(axis_descriptor &x, axis_descriptor &y) noexcept;
+XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &x, strided_axis &y) noexcept;
 
 /**
- * @brief Create a contiguous axis_descriptor.
+ * @brief Create a contiguous strided_axis.
  * 
  * A contiguous axis descriptor has a unitary stride.
  * 
  * @param extent Number of elements on the axis.
- * @return axis_descriptor. The resulting axis
+ * @return strided_axis. The resulting axis
  */
 XMIPP4_CONSTEXPR
-axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
+strided_axis make_contiguous_axis(std::size_t extent=1) noexcept;
 
 /**
- * @brief Create a phantom axis_descriptor.
+ * @brief Create a phantom strided_axis.
  * 
  * A phantom axis descriptor has null stride. 
  * This means that it does not contribute to the
@@ -132,10 +132,10 @@ axis_descriptor make_contiguous_axis(std::size_t extent=1) noexcept;
  * elements are repeated. 
  * 
  * @param extent Number of elements on the axis.
- * @return axis_descriptor. The resulting axis
+ * @return strided_axis. The resulting axis
  */
 XMIPP4_CONSTEXPR
-axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
+strided_axis make_phantom_axis(std::size_t extent=1) noexcept;
 
 /**
  * @brief Compare the absolute strides of a given pair of axes.
@@ -146,8 +146,8 @@ axis_descriptor make_phantom_axis(std::size_t extent=1) noexcept;
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_equal(const axis_descriptor &lhs, 
-                           const axis_descriptor &rhs ) noexcept;
+bool compare_strides_equal(const strided_axis &lhs, 
+                           const strided_axis &rhs ) noexcept;
 
 /**
  * @brief Compare the absolute strides of a given pair of axes.
@@ -158,8 +158,8 @@ bool compare_strides_equal(const axis_descriptor &lhs,
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_less(const axis_descriptor &lhs, 
-                          const axis_descriptor &rhs ) noexcept;
+bool compare_strides_less(const strided_axis &lhs, 
+                          const strided_axis &rhs ) noexcept;
 
 /**
  * @brief Compare the absolute strides of a given pair of axes.
@@ -170,8 +170,8 @@ bool compare_strides_less(const axis_descriptor &lhs,
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_greater(const axis_descriptor &lhs, 
-                             const axis_descriptor &rhs ) noexcept;
+bool compare_strides_greater(const strided_axis &lhs, 
+                             const strided_axis &rhs ) noexcept;
 
 /**
  * @brief Check if an axis has a non zero stride.
@@ -180,7 +180,7 @@ bool compare_strides_greater(const axis_descriptor &lhs,
  * @return bool True if the axis has a non-zero stride.
  */
 XMIPP4_CONSTEXPR
-bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
+bool check_nonzero_stride(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis is contiguous.
@@ -192,7 +192,7 @@ bool check_nonzero_stride(const axis_descriptor &axis) noexcept;
  * @return false if the axis is not contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_contiguous(const axis_descriptor &axis) noexcept;
+bool is_contiguous(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis pair is contiguous.
@@ -206,8 +206,8 @@ bool is_contiguous(const axis_descriptor &axis) noexcept;
  * @return false if the axes are not contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_contiguous(const axis_descriptor &major,
-                   const axis_descriptor &minor ) noexcept;
+bool is_contiguous(const strided_axis &major,
+                   const strided_axis &minor ) noexcept;
 
 /**
  * @brief Check if an axis is contiguous also considering its mirror.
@@ -219,7 +219,7 @@ bool is_contiguous(const axis_descriptor &major,
  * @return false if the axis is not mirror contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_mirror_contiguous(const axis_descriptor &axis) noexcept;
+bool is_mirror_contiguous(const strided_axis &axis) noexcept;
 /**
  * @brief Check if an axis pair is contiguous also considering their
  * mirrors.
@@ -233,8 +233,8 @@ bool is_mirror_contiguous(const axis_descriptor &axis) noexcept;
  * @return false if the axes are not mirror contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_mirror_contiguous(const axis_descriptor &major,
-                          const axis_descriptor &minor ) noexcept;
+bool is_mirror_contiguous(const strided_axis &major,
+                          const strided_axis &minor ) noexcept;
 
 /**
  * @brief Check if an axis is reversed.
@@ -245,7 +245,7 @@ bool is_mirror_contiguous(const axis_descriptor &major,
  * @return bool True if the axis is reversed.
  */
 XMIPP4_CONSTEXPR
-bool is_reversed(const axis_descriptor &axis) noexcept;
+bool is_reversed(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis is repeating.
@@ -257,7 +257,7 @@ bool is_reversed(const axis_descriptor &axis) noexcept;
  * @return bool True if the axis is repeating.
  */
 XMIPP4_CONSTEXPR
-bool is_repeating(const axis_descriptor &axis) noexcept;
+bool is_repeating(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis is empty
@@ -269,7 +269,7 @@ bool is_repeating(const axis_descriptor &axis) noexcept;
  * @return false if the axis is not empty.
  */
 XMIPP4_CONSTEXPR
-bool is_empty(const axis_descriptor &axis) noexcept;
+bool is_empty(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis is significant.
@@ -281,7 +281,7 @@ bool is_empty(const axis_descriptor &axis) noexcept;
  * @return false if the axis is not significant.
  */
 XMIPP4_CONSTEXPR
-bool is_significant(const axis_descriptor &axis) noexcept;
+bool is_significant(const strided_axis &axis) noexcept;
 
 /**
  * @brief Check if an axis can be squeezed.
@@ -296,7 +296,7 @@ bool is_significant(const axis_descriptor &axis) noexcept;
  * 
  */
 XMIPP4_CONSTEXPR 
-bool check_squeeze(const axis_descriptor &axis) noexcept;
+bool check_squeeze(const strided_axis &axis) noexcept;
 
 /**
  * @brief Get the axis last position referenced by ab axis.
@@ -308,7 +308,7 @@ bool check_squeeze(const axis_descriptor &axis) noexcept;
  * @return false if the axis has an extent of zero.
  */
 XMIPP4_CONSTEXPR 
-bool get_axis_last_offset(const axis_descriptor &axis, 
+bool get_axis_last_offset(const strided_axis &axis, 
                           std::ptrdiff_t &result) noexcept;
 
 /**
@@ -323,7 +323,7 @@ bool get_axis_last_offset(const axis_descriptor &axis,
  * @return std::size_t The offset.
 */
 XMIPP4_CONSTEXPR
-std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept;
+std::size_t get_axis_pivot_offset(const strided_axis &axis) noexcept;
 
 /**
  * @brief Perform a broadcast between an axis an a extent.
@@ -345,7 +345,7 @@ std::size_t get_axis_pivot_offset(const axis_descriptor &axis) noexcept;
  * 
  */
 XMIPP4_CONSTEXPR
-bool broadcast(axis_descriptor &axis, std::size_t &extent) noexcept;
+bool broadcast(strided_axis &axis, std::size_t &extent) noexcept;
 
 /**
  * @brief Perform a broadcast of an axis to a specific extent.
@@ -364,7 +364,7 @@ bool broadcast(axis_descriptor &axis, std::size_t &extent) noexcept;
  * @return false When unable to broadcast.
  */
 XMIPP4_CONSTEXPR
-bool broadcast_to(axis_descriptor &axis, std::size_t extent) noexcept;
+bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
 
 /**
  * @brief Apply an index to an axis descriptor to increment the offset
@@ -375,7 +375,7 @@ bool broadcast_to(axis_descriptor &axis, std::size_t extent) noexcept;
  * @param offset Offset to be incremented.
  */
 template <typename I>
-void apply_index(const axis_descriptor &desc,
+void apply_index(const strided_axis &desc,
                  I index,
                  std::ptrdiff_t &offset );
 
@@ -396,11 +396,11 @@ void apply_index(const axis_descriptor &desc,
  * 
  */
 template <typename Start, typename Stop, typename Step>
-void apply_slice(axis_descriptor &desc, 
+void apply_slice(strided_axis &desc, 
                  const slice<Start, Stop, Step> &s,
                  std::ptrdiff_t &offset );
 
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "axis_descriptor.inl"
+#include "strided_axis.inl"

@@ -31,7 +31,7 @@
 #include <vector>
 #include <cstddef>
 
-#include "axis_descriptor.hpp"
+#include "strided_axis.hpp"
 #include "layout_flags.hpp"
 #include "dynamic_subscript.hpp"
 #include "../span.hpp"
@@ -87,7 +87,7 @@ public:
      * @param offset Offset of the layout. Defaults to zero.
      * 
      */
-    dynamic_layout(const axis_descriptor *axes, 
+    dynamic_layout(const strided_axis *axes, 
                    std::size_t rank,
                    std::ptrdiff_t offset = 0 );
 
@@ -133,7 +133,7 @@ public:
      * @return false Index is out of bounds and the output was not written.
      * 
      */
-    bool get_axis(std::size_t index, axis_descriptor &out) const noexcept;
+    bool get_axis(std::size_t index, strided_axis &out) const noexcept;
 
     /**
      * @brief Get the offset of the layout.
@@ -327,7 +327,7 @@ public:
     dynamic_layout& broadcast_to_inplace(span<const std::size_t> extents);
 
 private:
-    std::vector<axis_descriptor> m_axes;
+    std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
     layout_flags m_flags;
 

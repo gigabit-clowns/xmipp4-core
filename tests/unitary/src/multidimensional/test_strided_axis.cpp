@@ -74,24 +74,6 @@ TEST_CASE("is_contiguous should return true only if the product condition satisf
     REQUIRE( !is_contiguous(strided_axis(8, 2), strided_axis(1234, 31)) );
 }
 
-TEST_CASE("is_mirror_contiguous should return true only if the axis has a stride of 1 or -1", "[strided_axis]")
-{
-    REQUIRE( is_mirror_contiguous(strided_axis(1234, 1)) );
-    REQUIRE( is_mirror_contiguous(strided_axis(1234, -1)) );
-    REQUIRE( !is_mirror_contiguous(strided_axis(1234, 0)) );
-    REQUIRE( !is_mirror_contiguous(strided_axis(1234, 8)) );
-}
-
-TEST_CASE("is_mirror_contiguous should return true only if the product condition satisfies", "[strided_axis]")
-{
-    REQUIRE( is_mirror_contiguous(strided_axis(8, 2), strided_axis(1234, 16)) );
-    REQUIRE( is_mirror_contiguous(strided_axis(8, -2), strided_axis(1234, 16)) );
-    REQUIRE( is_mirror_contiguous(strided_axis(8, 2), strided_axis(1234, -16)) );
-    REQUIRE( is_mirror_contiguous(strided_axis(8, -2), strided_axis(1234, -16)) );
-    REQUIRE( !is_mirror_contiguous(strided_axis(9, 2), strided_axis(1234, 16)) );
-    REQUIRE( !is_mirror_contiguous(strided_axis(8, 2), strided_axis(1234, 31)) );
-}
-
 TEST_CASE("is_reversed should only return true when stride is negative", "[strided_axis]")
 {
     REQUIRE( is_reversed(strided_axis(1234, -1)) );
@@ -181,18 +163,6 @@ TEST_CASE("get_axis_pivot_offset should return the last offset for reversed axes
     REQUIRE( get_axis_pivot_offset(strided_axis(11, -10)) == 100 );
 }
 
-TEST_CASE("broadcast with no axes should always succeed", "[strided_axis]")
-{
-    REQUIRE( broadcast() );
-}
-
-TEST_CASE("broadcast with one axis should always succeed", "[strided_axis]")
-{
-    strided_axis axis0(3, 1);
-    REQUIRE( broadcast(axis0) );
-    REQUIRE( axis0 == strided_axis(3, 1) );
-}
-
 TEST_CASE("broadcast with two axes of equal extents should succeed", "[strided_axis]")
 {
     strided_axis axis0(3, 1);
@@ -226,26 +196,4 @@ TEST_CASE("broadcast with two incompatible axes should fail", "[strided_axis]")
     strided_axis axis0(3, 1);
     strided_axis axis1(2, 2);
     REQUIRE( !broadcast(axis1, axis0) );
-}
-
-TEST_CASE("broadcast with more than two compatible axes should succeed", "[strided_axis]")
-{
-    strided_axis axis0(1, 1);
-    strided_axis axis1(3, 2);
-    strided_axis axis2(1, 3);
-    strided_axis axis3(3, 4);
-    REQUIRE( broadcast(axis0, axis1, axis2, axis3) );
-    REQUIRE( axis0 == strided_axis(3, 0) );
-    REQUIRE( axis1 == strided_axis(3, 2) );
-    REQUIRE( axis2 == strided_axis(3, 0) );
-    REQUIRE( axis3 == strided_axis(3, 4) );
-}
-
-TEST_CASE("broadcast with more than two incompatible axes should fail", "[strided_axis]")
-{
-    strided_axis axis0(1, 1);
-    strided_axis axis1(3, 2);
-    strided_axis axis2(2, 3);
-    strided_axis axis3(3, 4);
-    REQUIRE( !broadcast(axis0, axis1, axis2, axis3) );
 }

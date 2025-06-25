@@ -81,18 +81,6 @@ std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
 
 template <typename T>
 XMIPP4_NODISCARD inline
-layout_flags layout_reference<T>::get_flags() const noexcept
-{
-    XMIPP4_CONST_CONSTEXPR layout_flags empty_flags = {
-        layout_flag_bits::column_major,
-        layout_flag_bits::row_major
-    };
-
-    return m_layout ? m_layout->get_flags() : empty_flags;
-}
-
-template <typename T>
-XMIPP4_NODISCARD inline
 std::shared_ptr<const typename layout_reference<T>::layout_type> 
 layout_reference<T>::get_shared() const noexcept
 {

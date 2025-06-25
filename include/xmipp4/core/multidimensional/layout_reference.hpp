@@ -33,7 +33,6 @@
 
 #include "strided_axis.hpp"
 #include "dynamic_subscript.hpp"
-#include "layout_flags.hpp"
 #include "slice.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
@@ -104,14 +103,6 @@ public:
      */
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
-
-    /**
-     * @brief Get the flags for this layout.
-     * 
-     * @return layout_flags The properties of this flag.
-     */
-    XMIPP4_NODISCARD
-    layout_flags get_flags() const noexcept;
 
     /**
      * @brief Get a read-only shared_ptr to the underlying layout.

@@ -36,7 +36,7 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
+/*
 template <typename T>
 class storage_reference
 {
@@ -79,7 +79,7 @@ private:
 
 template <typename T>
 void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept;
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4
 

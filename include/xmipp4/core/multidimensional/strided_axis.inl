@@ -158,20 +158,6 @@ bool is_contiguous(const strided_axis &major,
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool is_mirror_contiguous(const strided_axis &axis) noexcept
-{
-    return axis.get_stride_magnitude() == 1;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool is_mirror_contiguous(const strided_axis &major,
-                   const strided_axis &minor ) noexcept
-{
-    const auto expected = major.get_stride_magnitude()*major.get_extent();
-    return expected == minor.get_stride_magnitude();
-}
-
-XMIPP4_INLINE_CONSTEXPR
 bool is_reversed(const strided_axis &axis) noexcept
 {
     return axis.get_stride() < 0;
@@ -225,16 +211,16 @@ std::size_t get_axis_pivot_offset(const strided_axis &axis) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast(strided_axis &axis, std::size_t &extent) noexcept
+bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept
 {
     bool result = true;
 
-    if(axis.get_extent() != extent)
+    if(axis1.get_extent() != axis2.get_extent())
     {
-        if(axis.get_extent() == 1)
-            axis = make_phantom_axis(extent);
-        else if(extent == 1)
-            extent = axis.get_extent();
+        if(axis1.get_extent() == 1)
+            axis1 = make_phantom_axis(axis2.get_extent());
+        else if(axis2.get_extent() == 1)
+            axis2 = make_phantom_axis(axis1.get_extent());
         else
             result = false; // Unable to broadcast
     }
@@ -243,52 +229,19 @@ bool broadcast(strided_axis &axis, std::size_t &extent) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept
+bool broadcast_to(strided_axis &from, std::size_t to) noexcept
 {
     bool result = true;
 
-    if(axis.get_extent() != extent)
+    if(from.get_extent() != to)
     {
-        if(axis.get_extent() == 1)
-            axis = make_phantom_axis(extent);
+        if(from.get_extent() == 1)
+            from = make_phantom_axis(to);
         else
             result = false; // Unable to broadcast
     }
 
     return result;
-}
-
-
-
-template <typename I>
-inline
-void apply_index(const strided_axis &desc,
-                 I index,
-                 std::ptrdiff_t &offset )
-{
-    offset += sanitize_index(index, desc.get_extent()) * desc.get_stride();
-}
-
-template <typename Start, typename Stop, typename Step>
-inline
-void apply_slice(strided_axis &desc, 
-                 const slice<Start, Stop, Step> &slc,
-                 std::ptrdiff_t &offset )
-{
-    std::size_t start;
-    std::size_t stop;
-    std::ptrdiff_t step;
-    sanitize_slice(
-        slc, desc.get_extent(),
-        start, stop, step
-    );
-    const auto pivot = compute_slice_pivot(start, step);
-    const auto extent = compute_slice_size(start, stop, step);
-    
-    auto stride = desc.get_stride();
-    offset += stride*pivot;
-    stride *= step;
-    desc = strided_axis(extent, stride);
 }
 
 } // namespace multidimensional

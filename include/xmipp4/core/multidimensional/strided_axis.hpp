@@ -210,33 +210,6 @@ bool is_contiguous(const strided_axis &major,
                    const strided_axis &minor ) noexcept;
 
 /**
- * @brief Check if an axis is contiguous also considering its mirror.
- * 
- * An axis is mirror contiguous if the magnitude of its stride is one.
- * 
- * @param axis Axis to be checked.
- * @return true if the axis is mirror contiguous.
- * @return false if the axis is not mirror contiguous.
- */
-XMIPP4_CONSTEXPR
-bool is_mirror_contiguous(const strided_axis &axis) noexcept;
-/**
- * @brief Check if an axis pair is contiguous also considering their
- * mirrors.
- * 
- * A pair of axes is contiguous if abs(stride)*extent of the
- * major axis is equal to the abs(stride) of the minor axis.
- * 
- * @param major Fast axis (smallest stride magnitude).
- * @param minor Slow axis (largest stride magnitude).
- * @return true if the axes are mirror contiguous.
- * @return false if the axes are not mirror contiguous.
- */
-XMIPP4_CONSTEXPR
-bool is_mirror_contiguous(const strided_axis &major,
-                          const strided_axis &minor ) noexcept;
-
-/**
  * @brief Check if an axis is reversed.
  * 
  * An axis is reversed if has negative stride.
@@ -326,26 +299,22 @@ XMIPP4_CONSTEXPR
 std::size_t get_axis_pivot_offset(const strided_axis &axis) noexcept;
 
 /**
- * @brief Perform a broadcast between an axis an a extent.
+ * @brief Perform a broadcast between two axes.
  * 
- * If the axis' extent matches the provided extent, nothing is modified
- * and true is returned.
- * If the axis' extent does not match the provided extent but the former 
- * one is 1, the axis is replaced a phantom axis with an extent of the 
- * later value and true is returned.
- * If the axis' extent does not match the provided extent but this equals 1,
- * it will be overwritten with the extent of the axis and true is returned.
- * If the extent mismatch and none of them equals 1, nothing is modified and
- * false is returned. 
+ * If both axes have the same extent, nothing is modified and true is returned.
+ * If the first axis has an extent of 1, it is replaced with a phantom axis
+ * with the extent of the second axis and true is returned. 
+ * If the second axis has an extent of 1, it is replaced with a phantom axis
+ * with the extent of the first axis and true is returned.
+ * Otherwise, nothing is modified and false is returned.
  * 
- * @param axis1 The axis to be broadcasted.
- * @param extent2 The extent to be broadcasted.
+ * @param axis1 An axis to be broadcasted.
+ * @param axis2 An axis to be broadcasted.
  * @return true When successful.
  * @return false when unable to broadcast.
- * 
  */
 XMIPP4_CONSTEXPR
-bool broadcast(strided_axis &axis, std::size_t &extent) noexcept;
+bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept;
 
 /**
  * @brief Perform a broadcast of an axis to a specific extent.
@@ -358,47 +327,13 @@ bool broadcast(strided_axis &axis, std::size_t &extent) noexcept;
  * If the axis' extent does not match the provided extent and is not 1, 
  * nothing is modified and false is returned.
  * 
- * @param axis The axis to be broadcasted.
- * @param extent The target extent for broadcasting.
+ * @param from The axis to be broadcasted.
+ * @param to The target extent for broadcasting.
  * @return true When successful.
  * @return false When unable to broadcast.
  */
 XMIPP4_CONSTEXPR
-bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
-
-/**
- * @brief Apply an index to an axis descriptor to increment the offset
- * 
- * @tparam I Index type.
- * @param desc Axis descriptor.
- * @param index The index.
- * @param offset Offset to be incremented.
- */
-template <typename I>
-void apply_index(const strided_axis &desc,
-                 I index,
-                 std::ptrdiff_t &offset );
-
-/**
- * @brief Apply a slice to an axis descriptor.
- * 
- * When slicing an axis, an offset can be introduced to the
- * current view. Additionally, axis' stride and extent may
- * be modified.
- * 
- * @tparam Start Start type.
- * @tparam Stop Stop type.
- * @tparam Step Step type.
- * @param desc Axis descriptor. Will be modified according to the 
- * provided slice.
- * @param s Slice to be applied.
- * @param offset Offset to be incremented.
- * 
- */
-template <typename Start, typename Stop, typename Step>
-void apply_slice(strided_axis &desc, 
-                 const slice<Start, Stop, Step> &s,
-                 std::ptrdiff_t &offset );
+bool broadcast_to(strided_axis &from, std::size_t to) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

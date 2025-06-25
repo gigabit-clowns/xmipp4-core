@@ -30,14 +30,13 @@
 
 #include "dynamic_layout.hpp"
 
-#include "strided_layout_utils.hpp"
 #include "checks.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
-
+/*
 inline
 dynamic_layout::dynamic_layout(const std::size_t *extents, 
                                std::size_t rank,
@@ -183,7 +182,6 @@ dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript>
         throw std::invalid_argument("not all subscripts were processed");
     }
     
-    update_flags();
     return *this;
 }
 
@@ -199,7 +197,6 @@ inline
 dynamic_layout& dynamic_layout::transpose_inplace() noexcept
 {
     transpose_layout_inplace(m_axes.begin(), m_axes.end());
-    update_flags();
     return *this;
 }
 
@@ -391,6 +388,6 @@ void dynamic_layout::update_flags() noexcept
 {
     m_flags = compute_layout_flags(m_axes.cbegin(), m_axes.cend());
 }
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4

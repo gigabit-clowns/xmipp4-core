@@ -34,7 +34,7 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
+/*
 template <typename T>
 template <typename... Args>
 inline
@@ -109,6 +109,6 @@ void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept
 {
     lhs.swap(rhs);
 }
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4

@@ -54,7 +54,7 @@ public:
      * @param stride Step between consecutive elements. In items.
      */
     XMIPP4_CONSTEXPR strided_axis(std::size_t extent, 
-                                     std::ptrdiff_t stride ) noexcept;
+                                  std::ptrdiff_t stride ) noexcept;
 
     strided_axis() = default;
     strided_axis(const strided_axis& other) = default;

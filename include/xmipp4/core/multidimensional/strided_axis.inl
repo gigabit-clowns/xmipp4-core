@@ -36,8 +36,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR strided_axis::strided_axis(std::size_t extent, 
-                                                         std::ptrdiff_t stride ) noexcept
+XMIPP4_INLINE_CONSTEXPR 
+strided_axis::strided_axis(std::size_t extent, std::ptrdiff_t stride) noexcept
     : m_extent(extent)
     , m_stride(stride)
 {   

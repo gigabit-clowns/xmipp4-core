@@ -59,6 +59,14 @@ TEST_CASE("construct dynamic_subscript from index", "[dynamic_subscript]")
     REQUIRE( s.get_index() == index );
 }
 
+TEST_CASE("construct dynamic_subscript from constant index", "[dynamic_subscript]")
+{
+    const auto index = std::integral_constant<int, 1234>();
+    const auto s = dynamic_subscript(index);
+    REQUIRE( s.get_subscript_type() == dynamic_subscript::subscript_type::index );
+    REQUIRE( s.get_index() == index );
+}
+
 TEST_CASE("construct dynamic_subscript from slice", "[dynamic_subscript]")
 {
     const auto slice = make_slice(1, 2, 3);

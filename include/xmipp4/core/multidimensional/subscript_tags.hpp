@@ -29,7 +29,6 @@
  */
 
 #include "slice.hpp"
-#include "index.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>

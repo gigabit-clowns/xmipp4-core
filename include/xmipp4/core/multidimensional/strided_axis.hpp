@@ -335,6 +335,25 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept;
 XMIPP4_CONSTEXPR
 bool broadcast_to(strided_axis &from, std::size_t to) noexcept;
 
+/**
+ * @brief Apply an index to an axis to update an offset.
+ * 
+ * If index is less than the extent of the axis, the offset is incremented
+ * by the axis' stride multiplied by the index and true is returned.
+ * Otherwise, the offset is not modified and false is returned.
+ * 
+ * @param axis Axis where the index is applied.
+ * @param index The index to be applied.
+ * @param offset Offset to be updated.
+ * @return true If the index was successfully applied.
+ * @return false If the index was not successfully applied due to an out of 
+ * bound condition.
+ */
+XMIPP4_CONSTEXPR
+bool apply_index(const strided_axis &axis, 
+                 std::size_t index, 
+                 std::ptrdiff_t &offset ) noexcept;
+
 } // namespace multidimensional
 } // namespace xmipp4
 

@@ -197,3 +197,27 @@ TEST_CASE("broadcast with two incompatible axes should fail", "[strided_axis]")
     strided_axis axis1(2, 2);
     REQUIRE( !broadcast(axis1, axis0) );
 }
+
+TEST_CASE("apply_index with a valid index should increment the offset", "[strided_axis]")
+{
+    const std::ptrdiff_t initial_offset = 24;
+    const strided_axis axis(16, -5);
+    const std::size_t index = 3;
+
+    std::ptrdiff_t offset = initial_offset;
+    REQUIRE( apply_index(axis, index, offset) );
+    REQUIRE( offset == initial_offset + index*axis.get_stride() );
+}
+
+TEST_CASE("apply_index with an index should not modify the offset", "[strided_axis]")
+{
+    const std::ptrdiff_t initial_offset = 24;
+    const strided_axis axis(16, -5);
+    const std::size_t index = 16;
+
+    std::ptrdiff_t offset = initial_offset;
+    REQUIRE( !apply_index(axis, index, offset) );
+    REQUIRE( offset == initial_offset );
+}
+
+

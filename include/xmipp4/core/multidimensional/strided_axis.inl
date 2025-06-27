@@ -28,7 +28,6 @@
 
 #include "strided_axis.hpp"
 
-#include "index.hpp"
 #include "../math/abs.hpp"
 
 namespace xmipp4
@@ -242,6 +241,21 @@ bool broadcast_to(strided_axis &from, std::size_t to) noexcept
     }
 
     return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool apply_index(const strided_axis &axis, 
+                 std::size_t index, 
+                 std::ptrdiff_t &offset ) noexcept
+{
+    const bool success = (index < axis.get_extent());
+    if (success)
+    {
+        const auto increment = index*axis.get_stride();
+        offset += increment;
+    }
+
+    return success;
 }
 
 } // namespace multidimensional

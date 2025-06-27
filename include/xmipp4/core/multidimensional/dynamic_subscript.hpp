@@ -86,7 +86,7 @@ public:
      * @param index The index that is assigned to this object.
 
      */
-    template <typename I, typename = typename std::enable_if<is_index<I>::value>::type>
+    template <typename I, typename = typename std::enable_if<std::is_integral<I>::value>::type>
     XMIPP4_CONSTEXPR
     dynamic_subscript(I index) noexcept;
 

@@ -28,7 +28,6 @@
  */
 
 #include <xmipp4/core/multidimensional/subscript_tags.hpp>
-#include <xmipp4/core/multidimensional/index.hpp>
 #include <xmipp4/core/multidimensional/slice.hpp>
 
 #include <trompeloeil.hpp>

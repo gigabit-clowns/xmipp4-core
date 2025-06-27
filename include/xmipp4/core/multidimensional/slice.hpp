@@ -43,41 +43,34 @@ namespace multidimensional
 /**
  * @brief Class representing an slice of an array.
  *
- * The slice class holds two indices representing the range of referenced 
- * items. Similarly to STL iterators, these indices refer to the first and 
- * past-the-end elements of the range. In addition, a step value is also 
- * stored, which defines the stride (in elements) when accessing contiguous
- * items. This step cannot be zero. Negative values are allowed. When using
- * a negative step, the slice refers to (start, stop] range, where 
- * start >= stop (similarly to reverse iterators in the STL library). 
- * When using a positive step, the slice refers to the [start, stop) range, 
- * where start <= stop.
- *  
+ * This class is used to represent a slice of an array axis. It consists of
+ * a start index, a count of elements and a step between elements.
+ *
  * @tparam Start Type of the starting index. 
- * May be an integral, std::integral_constant, begin_tag or end_tag.
- * @tparam Stop Type of the stopping index.
- * May be an integral, std::integral_constant, begin_tag or end_tag.
+ * May be an integral, std::integral_constant or begin_tag.
+ * @tparam Count Type of the count value
+ * May be an integral, std::integral_constant or end_tag.
  * @tparam Step Type of the step. 
  * May be an integral, std::integral_constant or adjacent_tag.
  * 
  */
-template <typename Start, typename Stop, typename Step>
+template <typename Start, typename Count, typename Step>
 class slice
 {
 public:
     using start_type = Start;
-    using stop_type = Stop;
+    using count_type = Count;
     using step_type = Step;
 
     /**
      * @brief Constructor
      * 
      * @param start Index of the first element
-     * @param stop Index of the past-the-end element
+     * @param count Number of elements.
      * @param step Step between consecutive elements
      */
     XMIPP4_CONSTEXPR slice(start_type start,
-                           stop_type stop,
+                           count_type count,
                            step_type step ) noexcept;
 
     /**
@@ -85,12 +78,12 @@ public:
      * 
      * @tparam Start2 
      * @tparam Step2 
-     * @tparam Stop2 
+     * @tparam Count2 
      * @param other The object to be copied
      */
-    template <typename Start2, typename Stop2, typename Step2>
+    template <typename Start2, typename Count2, typename Step2>
     XMIPP4_CONSTEXPR slice(Start2 start,
-                           Stop2 stop,
+                           Count2 count,
                            Step2 step ) noexcept;
 
     /**
@@ -98,11 +91,11 @@ public:
      * 
      * @tparam Start2 
      * @tparam Step2 
-     * @tparam Stop2 
+     * @tparam Count2 
      * @param other The object to be copied
      */
-    template <typename Start2, typename Stop2, typename Step2>
-    XMIPP4_CONSTEXPR slice(const slice<Start2, Stop2, Step2>& other) noexcept;
+    template <typename Start2, typename Count2, typename Step2>
+    XMIPP4_CONSTEXPR slice(const slice<Start2, Count2, Step2>& other) noexcept;
     slice() = default;
     slice(const slice& other) = default;
     slice(slice&& other) = default;
@@ -126,18 +119,18 @@ public:
     XMIPP4_CONSTEXPR const start_type& get_start() const noexcept;
     
     /**
-     * @brief Set the stopping index
+     * @brief Set the countping index
      * 
-     * @param stop Index of the past-the-end element
+     * @param count Index of the past-the-end element
      */
-    XMIPP4_CONSTEXPR void set_stop(stop_type stop) noexcept;
+    XMIPP4_CONSTEXPR void set_count(count_type count) noexcept;
 
     /**
-     * @brief Get the stopping index
+     * @brief Get the countping index
      * 
-     * @return stop_type const& Index of the past-the-end element
+     * @return count_type const& Index of the past-the-end element
      */
-    XMIPP4_CONSTEXPR const stop_type& get_stop() const noexcept;
+    XMIPP4_CONSTEXPR const count_type& get_count() const noexcept;
 
     /**
      * @brief Set the step
@@ -158,7 +151,7 @@ private:
     // may be made of an empty type such
     // as std::integral_constant
     XMIPP4_NO_UNIQUE_ADDRESS start_type m_start;
-    XMIPP4_NO_UNIQUE_ADDRESS stop_type m_stop;
+    XMIPP4_NO_UNIQUE_ADDRESS count_type m_count;
     XMIPP4_NO_UNIQUE_ADDRESS step_type m_step;
 
 };
@@ -167,20 +160,20 @@ private:
 
 
 
-template <typename Start1, typename Stop1, typename Step1, 
-          typename Start2, typename Stop2, typename Step2>
+template <typename Start1, typename Count1, typename Step1, 
+          typename Start2, typename Count2, typename Step2>
 XMIPP4_CONSTEXPR bool
-operator==( const slice<Start1, Stop1, Step1>& lhs, 
-            const slice<Start2, Stop2, Step2>& rhs ) noexcept;
+operator==( const slice<Start1, Count1, Step1>& lhs, 
+            const slice<Start2, Count2, Step2>& rhs ) noexcept;
 
-template <typename Start1, typename Stop1, typename Step1, 
-          typename Start2, typename Stop2, typename Step2>
+template <typename Start1, typename Count1, typename Step1, 
+          typename Start2, typename Count2, typename Step2>
 XMIPP4_CONSTEXPR bool
-operator!=( const slice<Start1, Stop1, Step1>& lhs, 
-            const slice<Start2, Stop2, Step2>& rhs ) noexcept;
+operator!=( const slice<Start1, Count1, Step1>& lhs, 
+            const slice<Start2, Count2, Step2>& rhs ) noexcept;
 
-template <typename Start, typename Stop, typename Step>
-std::ostream& operator<<(std::ostream& os, const slice<Start, Stop, Step> &s);
+template <typename Start, typename Count, typename Step>
+std::ostream& operator<<(std::ostream& os, const slice<Start, Count, Step> &s);
 
 
 
@@ -190,8 +183,8 @@ struct is_slice
 {
 };
 
-template <typename Start, typename Stop, typename Step>
-struct is_slice<slice<Start, Stop, Step>>
+template <typename Start, typename Count, typename Step>
+struct is_slice<slice<Start, Count, Step>>
     : std::true_type
 {
 };
@@ -247,7 +240,7 @@ std::ostream& operator<<(std::ostream& os, begin_tag);
 
 
 /**
- * @brief Tag defining the end on an axis
+ * @brief Tag defining an undefined count value.
  * 
  */
 struct end_tag {
@@ -408,7 +401,7 @@ std::ostream& operator<<(std::ostream& os, reversed_tag);
  * @brief Specialization of slice where all its components are dynamic.
  * 
  */
-using dynamic_slice = slice<std::ptrdiff_t, std::ptrdiff_t, std::ptrdiff_t>;
+using dynamic_slice = slice<std::ptrdiff_t, std::size_t, std::ptrdiff_t>;
 
 /**
  * @brief Special case of slice representing all elements
@@ -436,9 +429,9 @@ using even_slice = slice<std::integral_constant<std::size_t, 0>,
                          std::integral_constant<std::size_t, 2> >;
 
 /**
- * @brief Construct an even_tag
+ * @brief Construct an even_slice
  * 
- * @return An even_tag
+ * @return An even_slice
  */
 XMIPP4_CONSTEXPR even_slice even() noexcept;
 
@@ -454,9 +447,9 @@ using odd_slice = slice<std::integral_constant<std::size_t, 1>,
                         std::integral_constant<std::size_t, 2> >;
 
 /**
- * @brief Construct an odd_tag
+ * @brief Construct an odd_slice
  * 
- * @return An odd_tag
+ * @return An odd_slice
  */
 XMIPP4_CONSTEXPR odd_slice odd() noexcept;
 
@@ -465,120 +458,41 @@ XMIPP4_CONSTEXPR odd_slice odd() noexcept;
 /**
  * @brief Obtain a slice bounded at the end
  * 
- * @tparam Stop 
- * @param stop Index of the past-the-end element
- * @return slice<begin_tag, Stop, adjacent_tag>
+ * @tparam Count 
+ * @param count Number of elements.
+ * @return slice<begin_tag, Count, adjacent_tag>
  */
-template <typename Stop>
+template <typename Count>
 XMIPP4_CONSTEXPR 
-slice<begin_tag, Stop, adjacent_tag> make_slice(Stop stop) noexcept;
+slice<begin_tag, Count, adjacent_tag> make_slice(Count count) noexcept;
 
 /**
  * @brief Obtain a slice bounded at the beginning and the end
  * 
  * @tparam Start 
- * @tparam Stop 
+ * @tparam Count 
  * @param start Index of the first element
- * @param stop Index of the past-the-end element
- * @return slice<Start, Stop, adjacent_tag>
+ * @param count Number of elements.
+ * @return slice<Start, Count, adjacent_tag>
  */
-template <typename Start, typename Stop>
+template <typename Start, typename Count>
 XMIPP4_CONSTEXPR 
-slice<Start, Stop, adjacent_tag> make_slice(Start start, Stop stop) noexcept;
+slice<Start, Count, adjacent_tag> make_slice(Start start, Count count) noexcept;
 
 /**
  * @brief Create a slice object
  * 
  * @tparam Start 
  * @tparam Step 
- * @tparam Stop 
- * @param start Index of the first element
- * @param step Step between adjacent element
- * @param stop Index of the past-the-end element
- * @return slice<Start, Stop, Step>
+ * @tparam Count 
+ * @param start Index of the first element.
+ * @param count Number of elements.
+ * @param step Step between adjacent element.
+ * @return slice<Start, Count, Step>
  */
-template <typename Start, typename Stop, typename Step>
+template <typename Start, typename Count, typename Step>
 XMIPP4_CONSTEXPR 
-slice<Start, Stop, Step> make_slice(Start start, Stop stop, Step step) noexcept;
-
-/**
- * @brief Validates an slice index (start or stop).
- * This function performs the following actions
- * - Replaces end value with size
- * - Replaces negative values with size + index
- * - Checks for bounds
- * 
- * @tparam T Type of the index.
- * @param index The index to be validated.
- * @param size Size of the referenced array.
- * @return std::size_t Index sanitized according to the array size.
- */
-template <typename T>
-std::size_t sanitize_slice_index(T index, std::size_t size);
-
-/**
- * @brief Sanitize step and check coherency with start stop value
- * ordering.
- * 
- * @tparam T Type of the step.
- * @param step Step of the slice.
- * @param start Start value.
- * @param stop Stop value.
- * @return std::ptrdiff_t Sanitized step.
- */
-template <typename T>
-std::ptrdiff_t sanitize_slice_step(T step, std::size_t start, std::size_t stop);
-
-/**
- * @brief Sanitizes and unpacks a slice for use.
- * 
- * @tparam Start Type of the start value.
- * @tparam Step Type of the step value.
- * @tparam Stop Type of the stop value.
- * @param slc The slice to be sanitized.
- * @param size Size of the referenced array.
- * @param start Output of start value.
- * @param stop Output of stop value.
- * @param step Output of step value.
- */
-template <typename Start, typename Step, typename Stop>
-void sanitize_slice(const slice<Start, Step, Stop> &slc,
-                    std::size_t size,
-                    std::size_t &start,
-                    std::size_t &stop,
-                    std::ptrdiff_t &step );
-
-/**
- * @brief Compute the number of elements referenced by a slice.
- * Sanitized parameters must be provided. Otherwise behaviour is undefined.
- * 
- * @param start Start value.
- * @param stop Stop value.
- * @param step Step value.
- * @return std::size_t Number of elements referenced by the slice.
- */
-XMIPP4_CONSTEXPR
-std::size_t compute_slice_size(std::size_t start, 
-                               std::size_t stop, 
-                               std::ptrdiff_t step ) noexcept;
-
-/**
- * @brief Compute the pivot index of the slice. Sanitized parameters
- * must be provided. Otherwise behaviour is undefined.
- * 
- * The pivot point is the element referred by the start index. When 
- * the step of the slice is positive, the pivot is the start value itself. 
- * When the step is negative, this is the start value minus one, as 
- * this index is exclusive. However, if the start value is zero, it is 
- * not decremented (in this case, the slice must size zero).
- * 
- * @param start Start index of the slice.
- * @param step Step of the slice.
- * @return std::size_t The pivot index.
- */
-XMIPP4_CONSTEXPR
-std::size_t compute_slice_pivot(std::size_t start, 
-                                std::ptrdiff_t step ) noexcept;
+slice<Start, Count, Step> make_slice(Start start, Count count, Step step) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

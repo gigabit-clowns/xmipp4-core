@@ -58,7 +58,7 @@ dynamic_subscript::dynamic_subscript(I index) noexcept
 template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept
-    : m_data{slice.get_start(), slice.get_stop(), slice.get_step()}
+    : m_data{slice.get_start(), slice.get_count(), slice.get_step()}
     , m_type(subscript_type::slice)
 {
 }

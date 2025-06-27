@@ -267,7 +267,7 @@ operator==(const end_tag&, const end_tag&) noexcept
 XMIPP4_INLINE_CONSTEXPR bool
 operator!=(const end_tag&, const end_tag&) noexcept
 {
-    return true;
+    return false;
 }
 
 template <typename I>

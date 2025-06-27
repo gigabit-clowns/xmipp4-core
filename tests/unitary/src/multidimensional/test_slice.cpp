@@ -87,6 +87,121 @@ TEST_CASE( "cross-constructing an slice should propagate values", "[slice]" )
     }
 }
 
+TEST_CASE("begin_tag should be equal to itself", "[slice]")
+{
+    REQUIRE(begin() == begin());
+}
+
+TEST_CASE("begin_tag should not be unequal to itself", "[slice]")
+{
+    REQUIRE(!(begin() != begin()));
+}
+
+TEST_CASE("begin_tag should be equal to 0", "[slice]")
+{
+    REQUIRE(begin() == 0);
+    REQUIRE(0 == begin());
+}
+
+TEST_CASE("begin_tag should be unequal to non-zero integers", "[slice]")
+{
+    REQUIRE(begin() != 1);
+    REQUIRE(1 != begin());
+    REQUIRE(begin() != -10);
+    REQUIRE(-10 != begin());
+}
+
+TEST_CASE("end_tag should be equal to itself", "[slice]")
+{
+    REQUIRE(end() == end());
+}
+
+TEST_CASE("end_tag should not be unequal to itself", "[slice]")
+{
+    REQUIRE(!(end() != end()));
+}
+
+TEST_CASE("end_tag should be equal to std::numeric_limits::max()", "[slice]")
+{
+    REQUIRE(end() == std::numeric_limits<std::size_t>::max());
+    REQUIRE(std::numeric_limits<std::size_t>::max() == end());
+    REQUIRE(end() == std::numeric_limits<int>::max());
+    REQUIRE(std::numeric_limits<int>::max() == end());
+}
+
+TEST_CASE("end_tag should be equal to integers other than std::numeric_limits::max()", "[slice]")
+{
+    REQUIRE(end() != 1);
+    REQUIRE(1 != end());
+    REQUIRE(end() != -10);
+    REQUIRE(-10 != end());
+}
+
+TEST_CASE("propagate_end should preserve normal values", "[slice]")
+{
+    REQUIRE(propagate_end<std::size_t>(5) == 5);
+    REQUIRE(propagate_end<int>(10) == 10);
+    REQUIRE(propagate_end<int>(-10) == -10);
+    REQUIRE(propagate_end<int>(std::integral_constant<std::size_t, 9>()) == 9);
+}
+
+TEST_CASE("propagate_end should adjust end values", "[slice]")
+{
+    REQUIRE(propagate_end<std::size_t>(end()) == end());
+    REQUIRE(propagate_end<std::int32_t>(std::numeric_limits<std::int64_t>::max()) == end());
+    REQUIRE(propagate_end<std::int64_t>(std::numeric_limits<std::int32_t>::max()) == end());
+    REQUIRE(propagate_end<std::uint32_t>(std::numeric_limits<std::uint64_t>::max()) == end());
+    REQUIRE(propagate_end<std::uint64_t>(std::numeric_limits<std::uint32_t>::max()) == end());
+}
+
+TEST_CASE("adjacent_tag should be equal to itself", "[slice]")
+{
+    REQUIRE(adjacent() == adjacent());
+}
+
+TEST_CASE("adjacent_tag should not be unequal to itself", "[slice]")
+{
+    REQUIRE(!(adjacent() != adjacent()));
+}
+
+TEST_CASE("adjacent_tag should be equal to 1", "[slice]")
+{
+    REQUIRE(adjacent() == 1);
+    REQUIRE(1 == adjacent());
+}
+
+TEST_CASE("adjacent_tag should be unequal to integers other than 1", "[slice]")
+{
+    REQUIRE(adjacent() != 2);
+    REQUIRE(2 != adjacent());
+    REQUIRE(adjacent() != -10);
+    REQUIRE(-10 != adjacent());
+}
+
+TEST_CASE("reversed_tag should be equal to itself", "[slice]")
+{
+    REQUIRE(reversed() == reversed());
+}
+
+TEST_CASE("reversed_tag should not be unequal to itself", "[slice]")
+{
+    REQUIRE(!(reversed() != reversed()));
+}
+
+TEST_CASE("reversed_tag should be equal to -1", "[slice]")
+{
+    REQUIRE(reversed() == -1);
+    REQUIRE(-1 == reversed());
+}
+
+TEST_CASE("reversed_tag should be unequal to integers other than 1", "[slice]")
+{
+    REQUIRE(reversed() != 1);
+    REQUIRE(1 != reversed());
+    REQUIRE(reversed() != -10);
+    REQUIRE(-10 != reversed());
+}
+
 TEST_CASE( "make_slice with count argument should preserve its type and value", "[slice]" ) 
 {
     SECTION( "with int" )

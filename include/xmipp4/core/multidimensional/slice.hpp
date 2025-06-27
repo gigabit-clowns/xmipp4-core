@@ -119,16 +119,16 @@ public:
     XMIPP4_CONSTEXPR const start_type& get_start() const noexcept;
     
     /**
-     * @brief Set the countping index
+     * @brief Set the index element count.
      * 
-     * @param count Index of the past-the-end element
+     * @param count New number of elements referred by this slice.
      */
     XMIPP4_CONSTEXPR void set_count(count_type count) noexcept;
 
     /**
-     * @brief Get the countping index
+     * @brief Get the element count.
      * 
-     * @return count_type const& Index of the past-the-end element
+     * @return count_type const& Number of elements referred by this slice.
      */
     XMIPP4_CONSTEXPR const count_type& get_count() const noexcept;
 

@@ -145,7 +145,6 @@ dynamic_layout dynamic_layout::apply_subscripts(span<dynamic_subscript> subscrip
 inline
 dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript> subscripts)
 {
-    /*
     auto axis_ite = m_axes.begin();
     auto subscript_ite = subscripts.begin();
 
@@ -164,13 +163,22 @@ dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript>
             break;
 
         case dynamic_subscript::subscript_type::index:
-            apply_index(*axis_ite, subscript_ite->get_index(), m_offset);
+            {
+                const auto index = subscript_ite->get_index(); // TODO sanitize
+                apply_index(*axis_ite, m_offset, index);
+            }
             axis_ite = m_axes.erase(axis_ite);
             ++subscript_ite;
             break;
 
         case dynamic_subscript::subscript_type::slice:
-            apply_slice(*axis_ite, subscript_ite->get_slice(), m_offset);
+            {
+                const auto slice = sanitize_slice(
+                    subscript_ite->get_slice(), 
+                    axis_ite->get_extent()
+                );
+                apply_slice(*axis_ite, m_offset, slice);
+            }
             ++axis_ite;
             ++subscript_ite;
             break;
@@ -183,7 +191,6 @@ dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript>
     }
     
     return *this;
-    */
 }
 
 XMIPP4_NODISCARD inline

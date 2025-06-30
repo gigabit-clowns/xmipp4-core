@@ -492,7 +492,8 @@ slice<Start, Count, adjacent_tag> make_slice(Start start, Count count) noexcept;
  */
 template <typename Start, typename Count, typename Step>
 XMIPP4_CONSTEXPR 
-slice<Start, Count, Step> make_slice(Start start, Count count, Step step) noexcept;
+slice<Start, Count, Step> 
+make_slice(Start start, Count count, Step step) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

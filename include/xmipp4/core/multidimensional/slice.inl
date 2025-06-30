@@ -439,21 +439,24 @@ XMIPP4_INLINE_CONSTEXPR odd_slice odd() noexcept
 
 
 template <typename Count>
-XMIPP4_INLINE_CONSTEXPR slice<begin_tag, Count, adjacent_tag> 
+XMIPP4_INLINE_CONSTEXPR 
+slice<begin_tag, Count, adjacent_tag> 
 make_slice(Count count) noexcept
 {
     return slice<begin_tag, Count, adjacent_tag>(begin(), count, adjacent());
 }
 
 template <typename Start, typename Count>
-XMIPP4_INLINE_CONSTEXPR slice<Start, Count, adjacent_tag> 
+XMIPP4_INLINE_CONSTEXPR 
+slice<Start, Count, adjacent_tag> 
 make_slice(Start start, Count count) noexcept
 {
     return slice<Start, Count, adjacent_tag>(start, count, adjacent());
 }
 
 template <typename Start, typename Count, typename Step>
-XMIPP4_INLINE_CONSTEXPR slice<Start, Count, Step> 
+XMIPP4_INLINE_CONSTEXPR 
+slice<Start, Count, Step> 
 make_slice(Start start, Count count, Step step) noexcept
 {
     return slice<Start, Count, Step>(start, count, step);

@@ -244,18 +244,31 @@ bool broadcast_to(strided_axis &from, std::size_t to) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool apply_index(const strided_axis &axis, 
-                 std::size_t index, 
-                 std::ptrdiff_t &offset ) noexcept
+void apply_index(const strided_axis &axis, 
+                 std::ptrdiff_t &offset,
+                 std::size_t index ) noexcept
 {
-    const bool success = (index < axis.get_extent());
-    if (success)
-    {
-        const auto increment = index*axis.get_stride();
-        offset += increment;
-    }
+    const auto increment = index*axis.get_stride();
+    offset += increment;
+}
 
-    return success;
+XMIPP4_INLINE_CONSTEXPR
+void apply_slice(strided_axis &axis,
+                 std::ptrdiff_t &offset,
+                 const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept
+{
+
+        const auto start = slice.get_start();
+        const auto count = slice.get_count();
+        const auto step = slice.get_step();
+        const auto extent = axis.get_extent();
+        const auto stride = axis.get_stride();
+
+        const auto new_stride = stride*step;
+        const auto increment = stride*start;
+
+        axis = strided_axis(count, new_stride);
+        offset += increment;
 }
 
 } // namespace multidimensional

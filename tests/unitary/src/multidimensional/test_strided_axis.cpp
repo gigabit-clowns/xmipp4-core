@@ -198,26 +198,28 @@ TEST_CASE("broadcast with two incompatible axes should fail", "[strided_axis]")
     REQUIRE( !broadcast(axis1, axis0) );
 }
 
-TEST_CASE("apply_index with a valid index should increment the offset", "[strided_axis]")
+TEST_CASE("apply_index should increment the offset as expected", "[strided_axis]")
 {
     const std::ptrdiff_t initial_offset = 24;
     const strided_axis axis(16, -5);
     const std::size_t index = 3;
 
-    std::ptrdiff_t offset = initial_offset;
-    REQUIRE( apply_index(axis, index, offset) );
+    auto offset = initial_offset;
+    apply_index(axis, offset, index);
     REQUIRE( offset == initial_offset + index*axis.get_stride() );
 }
 
-TEST_CASE("apply_index with an index should not modify the offset", "[strided_axis]")
+TEST_CASE("apply_slice increment the offset and modify the axis", "[strided_axis]")
 {
     const std::ptrdiff_t initial_offset = 24;
-    const strided_axis axis(16, -5);
-    const std::size_t index = 16;
+    const strided_axis initial_axis(16, -5);
+    const slice<std::size_t, std::size_t, std::ptrdiff_t> slice(2, 5, 3);
 
-    std::ptrdiff_t offset = initial_offset;
-    REQUIRE( !apply_index(axis, index, offset) );
-    REQUIRE( offset == initial_offset );
+    auto axis = initial_axis;
+    auto offset = initial_offset;
+    apply_slice(axis, offset, slice);
+    REQUIRE( offset == initial_offset + slice.get_start()*initial_axis.get_stride() );
+    REQUIRE( axis.get_extent() == slice.get_count() );
+    REQUIRE( axis.get_stride() == slice.get_step()*initial_axis.get_stride() );
 }
-
 

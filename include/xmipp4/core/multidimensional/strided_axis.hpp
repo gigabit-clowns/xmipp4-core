@@ -337,22 +337,37 @@ bool broadcast_to(strided_axis &from, std::size_t to) noexcept;
 
 /**
  * @brief Apply an index to an axis to update an offset.
- * 
- * If index is less than the extent of the axis, the offset is incremented
- * by the axis' stride multiplied by the index and true is returned.
- * Otherwise, the offset is not modified and false is returned.
- * 
+ *
+ * @note This function does not check if the index is within the axis' extent.
+ * Please ensure that the index is valid before calling this function. Otherwise
+ * the behavior is undefined.  
+ * @see sanitize_index
  * @param axis Axis where the index is applied.
- * @param index The index to be applied.
  * @param offset Offset to be updated.
- * @return true If the index was successfully applied.
- * @return false If the index was not successfully applied due to an out of 
- * bound condition.
+ * @param index The index to be applied.
+ * 
  */
 XMIPP4_CONSTEXPR
-bool apply_index(const strided_axis &axis, 
-                 std::size_t index, 
-                 std::ptrdiff_t &offset ) noexcept;
+void apply_index(const strided_axis &axis, 
+                 std::ptrdiff_t &offset,
+                 std::size_t index ) noexcept;
+
+/**
+ * @brief Apply a slice to an axis to update an offset.
+ * 
+ * @note This function does not check if the slice is valid and within the axis' 
+ * extent. Please ensure that the slice is valid before calling this function.
+ * Otherwise the behavior is undefined.
+ * @see sanitize_slice
+ * @param axis Axis where the index is applied. It is modified accordingly.
+ * @param offset Offset to be updated.
+ * @param slice The slice to be applied to the axis.
+ * 
+ */
+XMIPP4_CONSTEXPR
+void apply_slice(strided_axis &axis,
+                 std::ptrdiff_t &offset,
+                 const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

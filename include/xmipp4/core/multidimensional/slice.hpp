@@ -458,7 +458,7 @@ XMIPP4_CONSTEXPR odd_slice odd() noexcept;
 /**
  * @brief Obtain a slice bounded at the end
  * 
- * @tparam Count 
+ * @tparam Count Type of the count value.
  * @param count Number of elements.
  * @return slice<begin_tag, Count, adjacent_tag>
  */
@@ -469,8 +469,8 @@ slice<begin_tag, Count, adjacent_tag> make_slice(Count count) noexcept;
 /**
  * @brief Obtain a slice bounded at the beginning and the end
  * 
- * @tparam Start 
- * @tparam Count 
+ * @tparam Start Type of the starting index.
+ * @tparam Count Type of the count value.
  * @param start Index of the first element
  * @param count Number of elements.
  * @return slice<Start, Count, adjacent_tag>
@@ -482,9 +482,9 @@ slice<Start, Count, adjacent_tag> make_slice(Start start, Count count) noexcept;
 /**
  * @brief Create a slice object
  * 
- * @tparam Start 
- * @tparam Step 
- * @tparam Count 
+ * @tparam Start Type of the starting index.
+ * @tparam Count Type of the count value.
+ * @tparam Step Type of the step.
  * @param start Index of the first element.
  * @param count Number of elements.
  * @param step Step between adjacent element.
@@ -494,6 +494,25 @@ template <typename Start, typename Count, typename Step>
 XMIPP4_CONSTEXPR 
 slice<Start, Count, Step> 
 make_slice(Start start, Count count, Step step) noexcept;
+
+/**
+ * @brief Sanitize a slice to ensure it is valid and within bounds for a given 
+ * extent.
+ *
+ * In addition, this function replaces tags with their corresponding values. 
+ * 
+ * @tparam Start Type of the starting index.
+ * @tparam Count Type of the count value.
+ * @tparam Step Type of the step.
+ * @param slice Slice to be sanitized.
+ * @param extent Extent of the axis to which the slice applies.
+ * @return slice<std::size_t, std::size_t, std::ptrdiff_t> Sanitized slice.
+ * @throw std::out_of_range If the slice is invalid or out of bounds.
+ * @throw std::invalid_argument If the slice step is zero.
+ */
+template <typename Start, typename Count, typename Step>
+slice<std::size_t, std::size_t, std::ptrdiff_t>
+sanitize_slice(const slice<Start, Count, Step>& slice, std::size_t extent);
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -27,6 +27,7 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include <xmipp4/core/multidimensional/slice.hpp>
 
@@ -456,5 +457,201 @@ TEST_CASE( "output slice to a std::ostream should produce the expected results",
         stream << x;
 
         REQUIRE( stream.str() == "slice(begin, end, adjacent)" );
+    }
+}
+
+TEST_CASE( "sanitize_slice should throw with a stride of zero" )
+{
+    const dynamic_slice input(2, 5, 0);
+    const auto first_extent = 0;
+    const auto last_extent = 10;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::invalid_argument );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), "Slice step cannot be zero.");
+    }
+}
+
+TEST_CASE( "sanitize_slice should replace correct negative start values" )
+{
+    const auto extent = 16;
+    const auto first_start = -extent;
+    const auto last_start = 0;
+
+    for (auto start = first_start; start < last_start; ++start) 
+    {
+        dynamic_slice input(start, 1, 1);
+        const auto output = sanitize_slice(input, extent);
+        REQUIRE(output.get_start() == start+extent);
+        REQUIRE(output.get_count() == 1);
+        REQUIRE(output.get_step() == 1);
+    }
+}
+
+TEST_CASE( "sanitize_slice should throw with out of bounds negative start values" )
+{
+    const dynamic_slice input(-10, 1, 1);
+    const auto first_extent = 1;
+    const auto last_extent = 10;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        std::ostringstream oss;
+        oss << "Slice start negative index " << input.get_start()
+            << " is out of bounds for extent " << extent;
+        const auto err_msg = oss.str();
+
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
+    }
+}
+
+TEST_CASE( "sanitize_slice should produce a correct result with a valid forwards slice" )
+{
+    const dynamic_slice input(2, 5, 3); // 2, 5, 8, 11, 14
+    const auto first_extent = 15;
+    const auto last_extent = 20;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        const auto output = sanitize_slice(input, extent);
+        REQUIRE(output.get_start() == 2);
+        REQUIRE(output.get_count() == 5);
+        REQUIRE(output.get_step() == 3);
+    }
+}
+
+TEST_CASE( "sanitize_slice should complete end values for forwards slices" )
+{
+    const auto first_extent = 2;
+    const auto last_extent = 16;
+    
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        const auto step = 3;
+        const auto start = 2;
+        const dynamic_slice input(start, end(), step); 
+        const auto expected_count = (extent - start + step - 1) / step;
+
+        const auto output = sanitize_slice(input, extent);
+        REQUIRE(output.get_start() == start);
+        REQUIRE(output.get_count() == expected_count);
+        REQUIRE(output.get_step() == step);
+    }
+}
+
+TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice start index" )
+{
+    const dynamic_slice input(4, 5, 3); 
+    const auto first_extent = 0;
+    const auto last_extent = input.get_start();
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        std::ostringstream oss;
+        oss << "Slice start index " << input.get_start()
+            << " is out of bounds for extent " << extent 
+            << " when step is positive and slice is non-empty.";
+        const auto err_msg = oss.str();
+
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
+    }
+}
+
+TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice count value" )
+{
+    const dynamic_slice input(2, 5, 3); // 2, 5, 8, 11, 14
+    const auto first_extent = input.get_start();
+    const auto last_extent = 15;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        std::ostringstream oss;
+        oss << "Slice count " << input.get_count() 
+            << " start index " << input.get_start()
+            << " and step " << input.get_step()
+            << " overflows extent " << extent;
+        const auto err_msg = oss.str();
+
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
+    }
+}
+
+TEST_CASE( "sanitize_slice should produce a correct result with a valid backwards slice" )
+{
+    const dynamic_slice input(15, 6, -3); // 15, 12, 9, 6, 3, 0
+    const auto first_extent = 16;
+    const auto last_extent = 20;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        const auto output = sanitize_slice(input, extent);
+        REQUIRE(output.get_start() == 15);
+        REQUIRE(output.get_count() == 6);
+        REQUIRE(output.get_step() == -3);
+    }
+}
+
+TEST_CASE( "sanitize_slice should complete end values for backwards slices" )
+{
+    const auto first_extent = 2;
+    const auto last_extent = 16;
+    
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        const auto abs_step = 3;
+        const dynamic_slice input(-2, end(), -abs_step); 
+        const auto start = extent - 2;
+        const auto expected_count = (start + abs_step - 1) / abs_step + 1;
+
+        const auto output = sanitize_slice(input, extent);
+        REQUIRE(output.get_start() == start);
+        REQUIRE(output.get_count() == expected_count);
+        REQUIRE(output.get_step() == -abs_step);
+    }
+
+}
+
+TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice start index" )
+{
+    const dynamic_slice input(15, 6, -3); // 15, 12, 9, 6, 3, 0
+    const auto first_extent = 0;
+    const auto last_extent = input.get_start() + 1;
+
+    for (auto extent = first_extent; extent < last_extent; ++extent) 
+    {
+        std::ostringstream oss;
+        oss << "Slice start index " << input.get_start()
+            << " is out of bounds for extent " << extent 
+            << " when step is negative and slice is non-empty.";
+        const auto err_msg = oss.str();
+
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
+    }
+}
+
+TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice count value" )
+{
+    const auto first_start = 0;
+    const auto last_start = 15;
+    const auto extent = 16;
+
+    for (auto start = first_start; start < last_start; ++start)
+    {
+        const dynamic_slice input(start, 6, -3);
+
+        std::ostringstream oss;
+        oss << "Reversed slice with count " << input.get_count() 
+            << " start index " << input.get_start()
+            << " and step " << input.get_step()
+            << " underflows 0";
+        const auto err_msg = oss.str();
+
+        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
     }
 }

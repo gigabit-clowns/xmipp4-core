@@ -240,28 +240,17 @@ dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
 }
 
 inline
-dynamic_layout dynamic_layout::broadcast(std::vector<std::size_t> &extents) const
-{
-    dynamic_layout result = *this;
-    result.broadcast_inplace(extents);
-    return result;
-}
-
-inline
-dynamic_layout& dynamic_layout::broadcast_inplace(std::vector<std::size_t> &extents)
+void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 {
     if (m_axes.size() < extents.size())
     {
-        const std::size_t old_size = m_axes.size();
-        const std::size_t new_size = extents.size();
-        const std::size_t padding = new_size - old_size;
-        m_axes.insert(
-            m_axes.cbegin(),
-            padding,
-            make_phantom_axis()
-        );
+        std::ostringstream oss;
+        oss << "Can not broadcast shape with " << extents.size()
+            << " axes into a layout of " << m_axes.size() << " axes.";
+        throw std::invalid_argument(oss.str());
     }
-    else if (m_axes.size() > extents.size())
+    
+    if (m_axes.size() > extents.size())
     {
         const std::size_t old_size = extents.size();
         const std::size_t new_size = m_axes.size();
@@ -273,19 +262,17 @@ dynamic_layout& dynamic_layout::broadcast_inplace(std::vector<std::size_t> &exte
         );
     }
 
-    /*
     const std::size_t count = extents.size(); 
     for(std::size_t i = 0; i < count; ++i)
     {
-        if (!multidimensional::broadcast(m_axes[i], extents[i]))
+        if (!multidimensional::broadcast_dry(m_axes[i], extents[i]))
         {
-            std::ostringstream ss;
-            ss << "axis of extent " << i << "and extent " << extents[i]
-               << " cannot be broadcasted.";
-            throw std::invalid_argument(ss.str());
+            std::ostringstream oss;
+            oss << "Can not broadcast extent " << extents[i]
+                << "into an axis of extent " << m_axes[i].get_extent();
+            throw std::invalid_argument(oss.str());
         }
     }
-    */
 }
 
 inline
@@ -299,6 +286,14 @@ dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) con
 inline
 dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> extents)
 {
+    if (m_axes.size() > extents.size())
+    {
+        std::ostringstream oss;
+        oss << "Can not broadcast layout with " << m_axes.size()
+            << " axes into a shape of " << extents.size() << " axes.";
+        throw std::invalid_argument(oss.str());
+    }
+
     if (m_axes.size() < extents.size())
     {
         const std::size_t old_size = m_axes.size();
@@ -310,20 +305,16 @@ dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> ext
             make_phantom_axis()
         );
     }
-    else if (m_axes.size() > extents.size())
-    {
-        throw std::invalid_argument("layout has more axes than extents");
-    }
 
     const std::size_t count = extents.size(); 
     for(std::size_t i = 0; i < count; ++i)
     {
         if (!multidimensional::broadcast_to(m_axes[i], extents[i]))
         {
-            std::ostringstream ss;
-            ss << "axis of extent " << i 
-               << " cannot be broadcasted to extent " << extents[i];
-            throw std::invalid_argument(ss.str());
+            std::ostringstream oss;
+            oss << "Can not broadcast axis of extent " << m_axes[i].get_extent()
+                << "into an extent of " << extents[i] << ".";
+            throw std::invalid_argument(oss.str());
         }
     }
 

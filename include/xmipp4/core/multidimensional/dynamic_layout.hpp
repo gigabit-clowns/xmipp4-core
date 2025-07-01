@@ -240,33 +240,17 @@ public:
     dynamic_layout& squeeze_inplace() noexcept;
 
     /**
-     * @brief Perform a broadcast between the layout and the provided extents.
+     * @brief Broadcast a shape to match this layout.
      * 
-     * This function modifies the layout to match the provided extents by 
-     * adding phantom axes or adjusting existing axes as needed. Similarly,
-     * it will add or modify extents of size 1 to match the layout.
+     * This function modifies the provided extents to match this layout.
      * 
-     * @param extents Extents to broadcast to.
-     * @return dynamic_layout The resulting broadcasted layout.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
+     * @param extents Extents to be broadcasted. Input/output parameter.
+     * @throws std::invalid_argument If the extents has more axes than this
+     * layout.
+     * @throws std::invalid_argument If the extent can not be broadcasted to 
+     * this layout.
      */
-    dynamic_layout broadcast(std::vector<std::size_t> &extents) const;
-
-    /**
-     * @brief Perform a broadcast between the layout and the provided extents
-     * in-place.
-     * 
-     * This function modifies the layout to match the provided extents by 
-     * adding phantom axes or adjusting existing axes as needed. Similarly,
-     * it will add or modify extents of size 1 to match the layout.
-     * 
-     * @param extents Extents to broadcast to.
-     * @return dynamic_layout& The modified layout.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
-     */
-    dynamic_layout& broadcast_inplace(std::vector<std::size_t> &extents);
+    void broadcast_dry(std::vector<std::size_t> &extents) const;
 
     /**
      * @brief Perform a broadcast of the layout to match the provided extents.

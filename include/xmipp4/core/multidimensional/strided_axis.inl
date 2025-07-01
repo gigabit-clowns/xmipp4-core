@@ -217,27 +217,59 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept
     if(axis1.get_extent() != axis2.get_extent())
     {
         if(axis1.get_extent() == 1)
+        {
             axis1 = make_phantom_axis(axis2.get_extent());
+        }
         else if(axis2.get_extent() == 1)
+        {
             axis2 = make_phantom_axis(axis1.get_extent());
+        }
         else
+        {
             result = false; // Unable to broadcast
+        }
     }
 
     return result;
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast_to(strided_axis &from, std::size_t to) noexcept
+bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept
 {
     bool result = true;
 
-    if(from.get_extent() != to)
+    const auto axis_extent = axis.get_extent();
+    if(axis_extent != extent)
     {
-        if(from.get_extent() == 1)
-            from = make_phantom_axis(to);
+        if(axis_extent == 1)
+        {
+            axis = make_phantom_axis(extent);
+        }
         else
+        {
             result = false; // Unable to broadcast
+        }
+    }
+
+    return result;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept
+{
+    bool result = true;
+
+    const auto axis_extent = axis.get_extent();
+    if(axis_extent != extent)
+    {
+        if(extent == 1)
+        {
+            extent = axis_extent;
+        }
+        else
+        {
+            result = false; // Unable to broadcast
+        }
     }
 
     return result;

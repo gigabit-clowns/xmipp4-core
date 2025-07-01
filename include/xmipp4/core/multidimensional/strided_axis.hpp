@@ -327,13 +327,32 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept;
  * If the axis' extent does not match the provided extent and is not 1, 
  * nothing is modified and false is returned.
  * 
- * @param from The axis to be broadcasted.
- * @param to The target extent for broadcasting.
+ * @param axis The axis to be broadcasted.
+ * @param extent The target extent for broadcasting.
  * @return true When successful.
  * @return false When unable to broadcast.
  */
 XMIPP4_CONSTEXPR
-bool broadcast_to(strided_axis &from, std::size_t to) noexcept;
+bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
+
+/**
+ * @brief Perform a dry attempt to broadcast an axis and extent.
+ * 
+ * This function tries to broadcast an extent into an axis without modifying 
+ * the axis. 
+ * If the axis' extent matches the extent, nothing is done and this function
+ * returns true.
+ * If the axis' extent does not match the extent but extent is 1, extent is 
+ * overwritten with axis' extent and true is returned.
+ * Otherwise nothing is modified and false is returned.
+ * 
+ * @param axis The axis participating in the broadcast operation.
+ * @param extent The extent to be modified in the broadcast operation.
+ * @return true When successful.
+ * @return false When unable to broadcast.
+ */
+XMIPP4_CONSTEXPR
+bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept;
 
 /**
  * @brief Apply an index to an axis to update an offset.

@@ -31,6 +31,7 @@
 #include <xmipp4/core/multidimensional/strided_axis.hpp>
 
 #include <array>
+#include <utility>
 
 using namespace xmipp4::multidimensional;
 
@@ -163,39 +164,140 @@ TEST_CASE("get_axis_pivot_offset should return the last offset for reversed axes
     REQUIRE( get_axis_pivot_offset(strided_axis(11, -10)) == 100 );
 }
 
-TEST_CASE("broadcast with two axes of equal extents should succeed", "[strided_axis]")
+TEST_CASE("broadcast with equal extents should succeed and leave axes unmodified", "[strided_axis]")
 {
-    strided_axis axis0(3, 1);
-    strided_axis axis1(3, 2);
-    REQUIRE( broadcast(axis0, axis1) );
-    REQUIRE( axis0 == strided_axis(3, 1) );
-    REQUIRE( axis1 == strided_axis(3, 2) );
+    const strided_axis initial_axis1(123, 345);
+    const strided_axis initial_axis2(123, 654);
+
+    auto axis1 = initial_axis1;
+    auto axis2 = initial_axis2;
+    REQUIRE( broadcast(axis1, axis2) );
+    REQUIRE(axis1 == initial_axis1 );
+    REQUIRE(axis2 == initial_axis2 );
 }
 
-TEST_CASE("broadcast with two compatible axes should succeed", "[strided_axis]")
+TEST_CASE("broadcast with left axis of extent 1 should broadcast it")
 {
-    strided_axis axis0(3, 1);
-    strided_axis axis1(1, 2);
+    const strided_axis initial_axis1(1, 345);
+    const strided_axis initial_axis2(123, 654);
 
-    SECTION ("Ordered")
-    {
-        REQUIRE( broadcast(axis0, axis1) );
-    }
-
-    SECTION ("Reversed")
-    {
-        REQUIRE( broadcast(axis1, axis0) );
-    }
-
-    REQUIRE( axis0 == strided_axis(3, 1) );
-    REQUIRE( axis1 == strided_axis(3, 0) );
+    auto axis1 = initial_axis1;
+    auto axis2 = initial_axis2;
+    REQUIRE( broadcast(axis1, axis2) );
+    REQUIRE(axis1 == make_phantom_axis(axis2.get_extent()) );
+    REQUIRE(axis2 == initial_axis2 );
 }
 
-TEST_CASE("broadcast with two incompatible axes should fail", "[strided_axis]")
+TEST_CASE("broadcast with right axis of extent 1 should broadcast it")
 {
-    strided_axis axis0(3, 1);
-    strided_axis axis1(2, 2);
-    REQUIRE( !broadcast(axis1, axis0) );
+    const strided_axis initial_axis1(123, 345);
+    const strided_axis initial_axis2(1, 654);
+
+    auto axis1 = initial_axis1;
+    auto axis2 = initial_axis2;
+    REQUIRE( broadcast(axis1, axis2) );
+    REQUIRE(axis1 == initial_axis1 );
+    REQUIRE(axis2 == make_phantom_axis(axis1.get_extent()) );
+}
+
+TEST_CASE("broadcast with unequal extents should fail and leave axes unmodified", "[strided_axis]")
+{
+    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
+        std::pair<std::size_t, std::size_t>(76, 0),
+        std::pair<std::size_t, std::size_t>(0, 3),
+        std::pair<std::size_t, std::size_t>(2, 4),
+        std::pair<std::size_t, std::size_t>(252, 308)
+    };
+
+    for (const auto &test_case : test_cases)
+    {
+        const strided_axis initial_axis1(test_case.first, 345);
+        const strided_axis initial_axis2(test_case.second, 654);
+
+        auto axis1 = initial_axis1;
+        auto axis2 = initial_axis2;
+        REQUIRE( !broadcast(axis1, axis2) );
+        REQUIRE(axis1 == initial_axis1 );
+        REQUIRE(axis2 == initial_axis2 );
+    }
+}
+
+TEST_CASE("broadcast_to with equal extents should succeed and leave axis unmodified", "[strided_axis]")
+{
+    const std::size_t extent = 876;
+    const auto initial_axis = make_contiguous_axis(extent);
+
+    auto axis = initial_axis;
+    REQUIRE( broadcast_to(axis, extent) );
+    REQUIRE( axis == initial_axis );
+}
+
+TEST_CASE("broadcast_to with an axis of extent 1 should broadcast it")
+{
+    const std::size_t extent = 565;
+
+    auto axis = make_contiguous_axis();
+    REQUIRE( broadcast_to(axis, extent) );
+    REQUIRE( axis == make_phantom_axis(extent) );
+}
+
+TEST_CASE("broadcast_to with unequal extents should fail and leave axis unmodified", "[strided_axis]")
+{
+    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
+        std::pair<std::size_t, std::size_t>(0, 1),
+        std::pair<std::size_t, std::size_t>(43, 0),
+        std::pair<std::size_t, std::size_t>(12, 1),
+        std::pair<std::size_t, std::size_t>(654, 345)
+    };
+
+    for (const auto &test_case : test_cases)
+    {
+        const auto initial_axis = make_contiguous_axis(test_case.first);
+        const auto extent = test_case.second;
+
+        auto axis = initial_axis;
+        REQUIRE( !broadcast_to(axis, extent) );
+        REQUIRE( axis == initial_axis );
+    }
+}
+
+TEST_CASE("broadcast_dry with equal extents should succeed and leave extent unmodified", "[strided_axis]")
+{
+    const std::size_t initial_extent = 654;
+    const auto axis = make_contiguous_axis(initial_extent);
+
+    auto extent = initial_extent;
+    REQUIRE( broadcast_dry(axis, extent) );
+    REQUIRE( extent == initial_extent );
+}
+
+TEST_CASE("broadcast_dry with an extent 1 should broadcast it")
+{
+    const auto axis = make_contiguous_axis(1234);
+
+    std::size_t extent = 1;
+    REQUIRE( broadcast_dry(axis, extent) );
+    REQUIRE( extent == axis.get_extent() );
+}
+
+TEST_CASE("broadcast_dry with unequal extents should fail and leave extent unmodified", "[strided_axis]")
+{
+    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
+        std::pair<std::size_t, std::size_t>(0, 1),
+        std::pair<std::size_t, std::size_t>(76, 0),
+        std::pair<std::size_t, std::size_t>(13, 1),
+        std::pair<std::size_t, std::size_t>(252, 308)
+    };
+
+    for (const auto &test_case : test_cases)
+    {
+        const auto initial_extent = test_case.first;
+        const auto axis = make_contiguous_axis(test_case.second);
+
+        auto extent = initial_extent;
+        REQUIRE( !broadcast_dry(axis, extent) );
+        REQUIRE( extent == initial_extent );
+    }
 }
 
 TEST_CASE("apply_index should increment the offset as expected", "[strided_axis]")
@@ -209,7 +311,7 @@ TEST_CASE("apply_index should increment the offset as expected", "[strided_axis]
     REQUIRE( offset == initial_offset + index*axis.get_stride() );
 }
 
-TEST_CASE("apply_slice increment the offset and modify the axis", "[strided_axis]")
+TEST_CASE("apply_slice should increment the offset and modify the axis", "[strided_axis]")
 {
     const std::ptrdiff_t initial_offset = 24;
     const strided_axis initial_axis(16, -5);
@@ -222,4 +324,3 @@ TEST_CASE("apply_slice increment the offset and modify the axis", "[strided_axis
     REQUIRE( axis.get_extent() == slice.get_count() );
     REQUIRE( axis.get_stride() == slice.get_step()*initial_axis.get_stride() );
 }
-

@@ -90,5 +90,3 @@ TEST_CASE("sanitize_index with an out of bounds negative index should throw", "[
         REQUIRE_THROWS_WITH( sanitize_index(index, extent), err_msg);
     }
 }
-
-

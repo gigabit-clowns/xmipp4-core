@@ -135,7 +135,7 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
 
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::apply_subscripts(span<dynamic_subscript> subscripts) const
+dynamic_layout dynamic_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     dynamic_layout result = *this;
     result.apply_subscripts_inplace(subscripts);
@@ -143,55 +143,12 @@ dynamic_layout dynamic_layout::apply_subscripts(span<dynamic_subscript> subscrip
 }
 
 inline
-dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript> subscripts)
+dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<const dynamic_subscript> subscripts)
 {
-    auto axis_ite = m_axes.begin();
-    auto subscript_ite = subscripts.begin();
-
-    while (axis_ite != m_axes.end() && subscript_ite != subscripts.end())
-    {
-        switch (subscript_ite->get_subscript_type())
-        {
-        case dynamic_subscript::subscript_type::ellipsis:
-            throw std::runtime_error("Not implemented"); // TODO
-            break;
-
-        case dynamic_subscript::subscript_type::new_axis:
-            axis_ite = m_axes.insert(axis_ite, make_phantom_axis());
-            ++axis_ite;
-            ++subscript_ite;
-            break;
-
-        case dynamic_subscript::subscript_type::index:
-            {
-                const auto index = sanitize_index(
-                    subscript_ite->get_index(),
-                    axis_ite->get_extent()
-                );
-                apply_index(*axis_ite, m_offset, index);
-            }
-            axis_ite = m_axes.erase(axis_ite);
-            ++subscript_ite;
-            break;
-
-        case dynamic_subscript::subscript_type::slice:
-            {
-                const auto slice = sanitize_slice(
-                    subscript_ite->get_slice(), 
-                    axis_ite->get_extent()
-                );
-                apply_slice(*axis_ite, m_offset, slice);
-            }
-            ++axis_ite;
-            ++subscript_ite;
-            break;
-        }
-    }
-    
-    if (subscript_ite != subscripts.end())
-    {
-        throw std::invalid_argument("not all subscripts were processed");
-    }
+    apply_subscripts_helper(
+        m_axes.begin(), m_axes.end(),
+        subscripts.begin(), subscripts.end()
+    );
     
     return *this;
 }
@@ -371,6 +328,133 @@ dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> ext
     }
 
     return *this;
+}
+
+
+
+template <typename Ite1, typename Ite2>
+void dynamic_layout::apply_subscripts_helper(Ite1 first_axis, Ite1 last_axis, 
+                                             Ite2 first_subscript, Ite2 last_subscript )
+{
+    while (first_axis != last_axis && first_subscript != last_subscript)
+    {
+        visit(
+            [this, &first_axis, &first_subscript, last_subscript] (auto subscript) -> void
+            {
+                apply_subscript_helper(
+                    first_axis, 
+                    first_subscript, 
+                    last_subscript, 
+                    subscript
+                );
+            },
+            *first_subscript
+        );
+    }
+    
+    if (first_subscript != last_subscript)
+    {
+        throw std::invalid_argument("Not all subscripts were processed");
+    }
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite, 
+                                            span<const dynamic_subscript>::iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::iterator last_subscript, 
+                                            ellipsis_tag )
+{
+    apply_subscripts_helper(
+        std::make_reverse_iterator(axis_ite), 
+        m_axes.rend(),
+        std::make_reverse_iterator(std::next(subscript_ite)), // Leave this out.
+        std::make_reverse_iterator(last_subscript)
+    );
+    subscript_ite = last_subscript; // Finishes processing.
+}
+
+inline 
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite, 
+                                            span<const dynamic_subscript>::iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::iterator, 
+                                            new_axis_tag )
+{
+    axis_ite = m_axes.insert(axis_ite, make_phantom_axis());
+    ++axis_ite;
+    ++subscript_ite;
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite,
+                                            span<const dynamic_subscript>::iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::iterator, 
+                                            std::ptrdiff_t index)
+{
+
+    const auto sanitized = sanitize_index(index, axis_ite->get_extent());
+    apply_index(*axis_ite, m_offset, sanitized);
+    axis_ite = m_axes.erase(axis_ite);
+    ++subscript_ite;
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite,
+                                            span<const dynamic_subscript>::iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::iterator, 
+                                            const dynamic_slice &slice)
+{
+    const auto sanitized_slice = sanitize_slice(slice, axis_ite->get_extent());
+    apply_slice(*axis_ite, m_offset, sanitized_slice);
+    ++axis_ite;
+    ++subscript_ite;
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::reverse_iterator&, 
+                                            span<const dynamic_subscript>::reverse_iterator&, 
+                                            span<const dynamic_subscript>::reverse_iterator, 
+                                            ellipsis_tag )
+{
+    throw std::invalid_argument("Two ellipsis tags were encountered");
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite, 
+                                            span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::reverse_iterator, 
+                                            new_axis_tag )
+{
+    auto base = axis_ite.base();
+    base = m_axes.insert(base, make_phantom_axis());
+    axis_ite = std::make_reverse_iterator(base);
+    ++subscript_ite;
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite,
+                                            span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::reverse_iterator, 
+                                            std::ptrdiff_t index)
+{
+    const auto sanitized = sanitize_index(index, axis_ite->get_extent());
+    apply_index(*axis_ite, m_offset, sanitized);
+    
+    auto base = std::prev(axis_ite.base());
+    base = m_axes.erase(base);
+    axis_ite = std::make_reverse_iterator(base);
+    ++subscript_ite;
+}
+
+inline
+void dynamic_layout::apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite,
+                                            span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
+                                            span<const dynamic_subscript>::reverse_iterator, 
+                                            const dynamic_slice &slice)
+{
+    const auto sanitized_slice = sanitize_slice(slice, axis_ite->get_extent());
+    apply_slice(*axis_ite, m_offset, sanitized_slice);
+    ++axis_ite;
+    ++subscript_ite;
 }
 
 } // namespace multidimensional

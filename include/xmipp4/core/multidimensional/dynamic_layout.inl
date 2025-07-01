@@ -164,7 +164,10 @@ dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<dynamic_subscript>
 
         case dynamic_subscript::subscript_type::index:
             {
-                const auto index = subscript_ite->get_index(); // TODO sanitize
+                const auto index = sanitize_index(
+                    subscript_ite->get_index(),
+                    axis_ite->get_extent()
+                );
                 apply_index(*axis_ite, m_offset, index);
             }
             axis_ite = m_axes.erase(axis_ite);

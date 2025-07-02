@@ -257,21 +257,6 @@ XMIPP4_CONSTEXPR
 bool is_significant(const strided_axis &axis) noexcept;
 
 /**
- * @brief Check if an axis can be squeezed.
- * 
- * An axis can be squeezed only if it is not significant. This is,
- * if it has an extent equal to 1.
- * 
- * @param axis The axis to be checked
- * @return true If the axis is not significant
- * @return false If the axis is significant.
- * @see is_significant
- * 
- */
-XMIPP4_CONSTEXPR 
-bool check_squeeze(const strided_axis &axis) noexcept;
-
-/**
  * @brief Get the axis last position referenced by ab axis.
  * 
  * @param axis The last position referenced by the axis.

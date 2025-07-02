@@ -40,6 +40,14 @@ namespace multidimensional
 {
 
 inline
+dynamic_layout::dynamic_layout(std::vector<strided_axis> &&axes,
+                               std::ptrdiff_t offset ) noexcept
+    : m_axes(std::move(axes))
+    , m_offset(offset)
+{
+}
+
+inline
 dynamic_layout::dynamic_layout(const std::size_t *extents, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
@@ -138,72 +146,49 @@ XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     dynamic_layout result = *this;
-    result.apply_subscripts_inplace(subscripts);
-    return result;
-}
 
-inline
-dynamic_layout& dynamic_layout::apply_subscripts_inplace(span<const dynamic_subscript> subscripts)
-{
-    apply_subscripts_helper(
-        m_axes.begin(), m_axes.end(),
+    result.apply_subscripts_helper(
+        result.m_axes.begin(), result.m_axes.end(),
         subscripts.begin(), subscripts.end()
     );
-    
-    return *this;
+
+    return result;
 }
 
 XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::transpose() const
 {
-    dynamic_layout result = *this;
-    result.transpose_inplace();
-    return result;
-}
+    std::vector<strided_axis> axes;
+    axes.reserve(m_axes.size());
 
-inline
-dynamic_layout& dynamic_layout::transpose_inplace() noexcept
-{
-    std::reverse(m_axes.begin(), m_axes.end());
-    return *this;
+    std::reverse_copy(
+        m_axes.cbegin(), m_axes.cend(),
+        std::back_inserter(axes)
+    );
+
+    return dynamic_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::permute(span<const std::size_t> order) const
 {
-    dynamic_layout result = *this;
-    result.permute_inplace(order);
-    return result;
-}
+    const auto count = m_axes.size();
+    check_axis_permutation(order.begin(), order.end(), count);
 
-inline
-dynamic_layout& dynamic_layout::permute_inplace(span<const std::size_t> order)
-{
-    check_axis_permutation(order.begin(), order.end(), m_axes.size());
+    std::vector<strided_axis> axes;
+    axes.reserve(count);
 
-    std::vector<strided_axis> tmp;
-    tmp.reserve(m_axes.size());
-    for(std::size_t i = 0; i < order.size(); ++i)
+    for(std::size_t i = 0; i < count; ++i)
     {
-        tmp.push_back(m_axes[order[i]]);
+        axes.push_back(m_axes[order[i]]);
     }
 
-    m_axes = std::move(tmp);
-    return *this;
+    return dynamic_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
 dynamic_layout 
 dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
-{
-    dynamic_layout result = *this;
-    result.swap_axes_inplace(axis1, axis2);
-    return result;
-}
-
-inline
-dynamic_layout& 
-dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
 {
     if (axis1 >= m_axes.size())
     {
@@ -214,29 +199,24 @@ dynamic_layout::swap_axes_inplace(std::size_t axis1, std::size_t axis2)
         throw std::invalid_argument("axis2 exceeds bounds");
     }
 
-    std::swap(m_axes[axis1], m_axes[axis2]);
-    return *this;
+    auto axes = m_axes;
+    std::swap(axes[axis1], axes[axis2]);
+
+    return dynamic_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::squeeze() const
 {
-    dynamic_layout result = *this;
-    result.squeeze_inplace();
-    return result;
-}
+    std::vector<strided_axis> axes;
 
-inline
-dynamic_layout& dynamic_layout::squeeze_inplace() noexcept
-{
-    const auto last = std::remove_if(
-        m_axes.begin(), 
-        m_axes.end(), 
-        check_squeeze
+    std::copy_if(
+        m_axes.cbegin(), m_axes.cend(),
+        std::back_inserter(axes),
+        is_significant
     );
 
-    m_axes.erase(last, m_axes.end());
-    return *this;
+    return dynamic_layout(std::move(axes), m_offset);
 }
 
 inline
@@ -278,14 +258,7 @@ void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 inline
 dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) const
 {
-    dynamic_layout result = *this;
-    result.broadcast_to_inplace(extents);
-    return result;
-}
 
-inline
-dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> extents)
-{
     if (m_axes.size() > extents.size())
     {
         std::ostringstream oss;
@@ -294,31 +267,32 @@ dynamic_layout& dynamic_layout::broadcast_to_inplace(span<const std::size_t> ext
         throw std::invalid_argument(oss.str());
     }
 
-    if (m_axes.size() < extents.size())
-    {
-        const std::size_t old_size = m_axes.size();
-        const std::size_t new_size = extents.size();
-        const std::size_t padding = new_size - old_size;
-        m_axes.insert(
-            m_axes.cbegin(),
-            padding,
-            make_phantom_axis()
-        );
-    }
+    std::vector<strided_axis> axes;
+    axes.reserve(extents.size());
+    
+    const auto padding = extents.size() - m_axes.size();
+    std::fill_n(
+        std::back_inserter(axes), padding,
+        make_phantom_axis()
+    );
+    std::copy(
+        m_axes.cbegin(), m_axes.cend(),
+        std::back_inserter(axes)
+    );
 
     const std::size_t count = extents.size(); 
     for(std::size_t i = 0; i < count; ++i)
     {
-        if (!multidimensional::broadcast_to(m_axes[i], extents[i]))
+        if (!multidimensional::broadcast_to(axes[i], extents[i]))
         {
             std::ostringstream oss;
-            oss << "Can not broadcast axis of extent " << m_axes[i].get_extent()
+            oss << "Can not broadcast axis of extent " << axes[i].get_extent()
                 << "into an extent of " << extents[i] << ".";
             throw std::invalid_argument(oss.str());
         }
     }
 
-    return *this;
+    return dynamic_layout(std::move(axes), m_offset);
 }
 
 

@@ -51,6 +51,15 @@ public:
     dynamic_layout() = default;
 
     /**
+     * @brief Construct a dynamic layout from its components.
+     * 
+     * @param axes Axes used in the dynamic layout
+     * @param offset Offset used in the dynamic layout
+     */
+    dynamic_layout(std::vector<strided_axis> &&axes,
+                   std::ptrdiff_t offset ) noexcept;
+
+    /**
      * @brief Construct a new column-major dynamic layout.
      * 
      * @param extents Array with the extents of the layout. The first rank
@@ -156,29 +165,12 @@ public:
     dynamic_layout apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
     /**
-     * @brief Apply a set of dynamic dynamic subscripts to this layout in-place.
-     * 
-     * @param subscripts The subscripts.
-     * @return dynamic_layout& The resulting layout.
-     * @throws std::runtime_error If an ellipsis subscript is encountered (not implemented).
-     * @throws std::invalid_argument If not all subscripts are processed.
-     */
-    dynamic_layout& apply_subscripts_inplace(span<const dynamic_subscript> subscripts);
-
-    /**
      * @brief Reverse the order of the axes.
      * 
      * @return dynamic_layout The resulting layout.
      */
     XMIPP4_NODISCARD
     dynamic_layout transpose() const;
-
-    /**
-     * @brief Reverse the order of the axes in-place.
-     * 
-     * @return dynamic_layout& *this
-     */
-    dynamic_layout& transpose_inplace() noexcept;
 
     /**
      * @brief Permute the order of the axes.
@@ -193,17 +185,6 @@ public:
     dynamic_layout permute(span<const std::size_t> order) const;
 
     /**
-     * @brief Permute the order of the axes in-place.
-     * 
-     * @param order Order acquired by the new layout. Must have the same 
-     * size as the amount of dimensions and it must feature strictly one
-     * instance of each number in [0, rank).
-     * @return dynamic_layout& *this
-     * @throws std::invalid_argument If the permutation order is invalid.
-     */
-    dynamic_layout& permute_inplace(span<const std::size_t> order);
-
-    /**
      * @brief Swap two axes.
      * 
      * @param axis1 Index of the first axis. Must be in [0, rank).
@@ -215,29 +196,12 @@ public:
     dynamic_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
-     * @brief Swap two axes.
-     * 
-     * @param axis1 Index of the first axis. Must be in [0, rank).
-     * @param axis2 Index of the second axis. Must be in [0, rank).
-     * @return dynamic_layout& *this
-     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
-     */
-    dynamic_layout& swap_axes_inplace(std::size_t axis1, std::size_t axis2);
-
-    /**
      * @brief Remove insignificant axes of the layout.
      * 
      * @return dynamic_layout The resulting layout.
      */
     XMIPP4_NODISCARD
     dynamic_layout squeeze() const;
-
-    /**
-     * @brief Remove insignificant axes of the layout in-place.
-     * 
-     * @return dynamic_layout& *this
-     */
-    dynamic_layout& squeeze_inplace() noexcept;
 
     /**
      * @brief Broadcast a shape to match this layout.
@@ -265,20 +229,6 @@ public:
      * provided extents.
      */
     dynamic_layout broadcast_to(span<const std::size_t> extents) const;
-
-    /**
-     * @brief Perform a broadcast of the layout to match the provided extents in-place.
-     * 
-     * This function modifies the current layout to match the provided extents
-     * by adding phantom axes or adjusting existing axes as needed.
-     * 
-     * @param extents Extents to broadcast to.
-     * @return dynamic_layout& The modified layout.
-     * @throws std::invalid_argument If the layout has more axes than extents.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
-     */
-    dynamic_layout& broadcast_to_inplace(span<const std::size_t> extents);
 
 private:
     std::vector<strided_axis> m_axes;

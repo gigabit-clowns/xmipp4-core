@@ -115,19 +115,6 @@ TEST_CASE("is_significant should only return true for axes with an extent unequa
     REQUIRE( !is_significant(strided_axis(1, -18)) );
 }
 
-TEST_CASE("check_squeeze should only return true for axes with an extent equal to 1", "[strided_axis]")
-{
-    REQUIRE( check_squeeze(strided_axis(1, 0)) );
-    REQUIRE( check_squeeze(strided_axis(1, 18)) );
-    REQUIRE( check_squeeze(strided_axis(1, -18)) );
-    REQUIRE( !check_squeeze(strided_axis(12, 0)) );
-    REQUIRE( !check_squeeze(strided_axis(0, 0)) );
-    REQUIRE( !check_squeeze(strided_axis(12, 12)) );
-    REQUIRE( !check_squeeze(strided_axis(12, -12)) );
-    REQUIRE( !check_squeeze(strided_axis(43, 1)) );
-    REQUIRE( !check_squeeze(strided_axis(54, -1)) );
-}
-
 TEST_CASE("get_axis_last_offset should return the last offset for non-empty axes", "[strided_axis]")
 {
     std::ptrdiff_t offset;

@@ -180,12 +180,6 @@ bool is_significant(const strided_axis &axis) noexcept
     return axis.get_extent() != 1;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-bool check_squeeze(const strided_axis &axis) noexcept
-{
-    return !is_significant(axis);
-}
-
 XMIPP4_INLINE_CONSTEXPR
 bool get_axis_last_offset(const strided_axis &axis, 
                           std::ptrdiff_t &result) noexcept

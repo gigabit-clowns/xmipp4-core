@@ -174,15 +174,6 @@ bool compare_strides_greater(const strided_axis &lhs,
                              const strided_axis &rhs ) noexcept;
 
 /**
- * @brief Check if an axis has a non zero stride.
- * 
- * @param axis The axis to be checked.
- * @return bool True if the axis has a non-zero stride.
- */
-XMIPP4_CONSTEXPR
-bool check_nonzero_stride(const strided_axis &axis) noexcept;
-
-/**
  * @brief Check if an axis is contiguous.
  * 
  * An axis is contiguous if its stride is one.

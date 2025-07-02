@@ -137,12 +137,6 @@ bool compare_strides_greater(const strided_axis &lhs,
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool check_nonzero_stride(const strided_axis &axis) noexcept
-{
-    return axis.get_stride() != 0;
-}
-
-XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const strided_axis &axis) noexcept
 {
     return axis.get_stride() == 1;

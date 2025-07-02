@@ -51,13 +51,6 @@ TEST_CASE("make_phantom_axis should create an axis of stride 0", "[strided_axis]
     REQUIRE( axis.get_stride() == 0 );
 }
 
-TEST_CASE("check_nonzero_stride should only return true with non-zero strides", "[strided_axis]")
-{
-    REQUIRE( check_nonzero_stride(strided_axis(1234, 8)) );
-    REQUIRE( check_nonzero_stride(strided_axis(1234, -8)) );
-    REQUIRE( !check_nonzero_stride(strided_axis(1234, 0)) );
-}
-
 TEST_CASE("is_contiguous should return true only if the axis has a stride of 1", "[strided_axis]")
 {
     REQUIRE( is_contiguous(strided_axis(1234, 1)) );

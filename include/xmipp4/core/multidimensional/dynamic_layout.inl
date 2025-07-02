@@ -255,7 +255,7 @@ void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
     }
 }
 
-inline
+XMIPP4_NODISCARD inline
 dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) const
 {
 
@@ -298,6 +298,7 @@ dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) con
 
 
 template <typename Ite1, typename Ite2>
+inline
 void dynamic_layout::apply_subscripts_helper(Ite1 first_axis, Ite1 last_axis, 
                                              Ite2 first_subscript, Ite2 last_subscript )
 {

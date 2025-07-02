@@ -86,9 +86,24 @@ public:
     std::size_t get_rank() const noexcept;
 
     /**
+     * @brief Get the axis parameters component wise.
+     * 
+     * @param extents Array of std::size_t-s. May be null. In case it is not, it
+     * must be dereferenceable in [extents, extents+count).
+     * @param strides Array of std::ptrdiff_t-s. May be null. In case it is not, 
+     * it must be dereferenceable in [strides, strides+count).
+     * @param count Element counts of the arrays.
+     * @return std::size_t Number of elements written; min(rank, count).
+     * 
+     */
+    std::size_t get_axes(std::size_t *extents, 
+                         std::ptrdiff_t *strides,
+                         std::size_t count ) const noexcept;
+
+    /**
      * @brief Get the axis parameters for one of the axes.
      * 
-     * @param index Index of the axis.
+     * @param index Index o:f the axis.
      * @param out Axis descriptor where the requested axis is written.
      * @return true Index is valid and axis descriptor was written.
      * @return false Index is out of bounds and the output was not written.
@@ -117,9 +132,11 @@ public:
      * 
      * @param subscripts The subscripts.
      * @return layout_reference The resulting layout.
+     * @throws std::invalid_argument If not all subscripts are processed.
+     * Or subscript is out of bounds
      */
     XMIPP4_NODISCARD
-    layout_reference apply_subscripts(span<dynamic_subscript> subscripts) const;
+    layout_reference apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
     /**
      * @brief Reverse the order of the axes.
@@ -136,9 +153,10 @@ public:
      * size as the amount of dimensions and it must feature strictly one
      * instance of each number in [0, rank).
      * @return layout_reference Permuted layout.
+     * @throws std::invalid_argument If the permutation order is invalid.
      */
     XMIPP4_NODISCARD
-    layout_reference permute(span<std::size_t> order) const;
+    layout_reference permute(span<const std::size_t> order) const;
 
     /**
      * @brief Swap two axes.
@@ -146,6 +164,7 @@ public:
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return layout_reference Permuted layout.
+     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
     layout_reference swap_axes(std::size_t axis1, std::size_t axis2) const;
@@ -159,29 +178,23 @@ public:
     layout_reference squeeze() const;
 
     /**
-     * @brief Reduce the rank of the layout as much as possible by combining
-     * contiguous axes.
+     * @brief Broadcast a shape to match this layout.
      * 
-     * Unlike numpy's coalesce_axes, this will only combine axes when possible.
+     * This function modifies the provided extents to match this layout.
      * 
-     * @return layout_reference The resulting layout.
+     * @param extents Extents to be broadcasted. Input/output parameter.
+     * @throws std::invalid_argument If the extents has more axes than this
+     * layout.
+     * @throws std::invalid_argument If the extent can not be broadcasted to 
+     * this layout.
      */
-    XMIPP4_NODISCARD
-    layout_reference coalesce_axes() const;
-
-    /**
-     * @brief Perform a broadcast between the layout and the provided extents.
-     * 
-     * @param extents Extents to broadcast to.
-     * @return layout_reference The resulting broadcasted layout.
-     * @throws std::invalid_argument If the axes cannot be broadcasted to 
-     * the provided extents.
-     */
-    XMIPP4_NODISCARD
-    layout_reference broadcast(std::vector<std::size_t> &extents) const;
+    void broadcast_dry(std::vector<std::size_t> &extents) const;
 
     /**
      * @brief Perform a broadcast of the layout to match the provided extents.
+     * 
+     * This function modifies the layout to match the provided extents by 
+     * adding phantom axes or adjusting existing axes as needed.
      * 
      * @param extents Extents to broadcast to.
      * @return layout_reference The resulting broadcasted layout.

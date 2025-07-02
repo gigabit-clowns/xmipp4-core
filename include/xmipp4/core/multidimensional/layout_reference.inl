@@ -90,9 +90,9 @@ layout_reference<T>::get_shared() const noexcept
 
 
 template <typename T>
-XMIPP4_NODISCARD
+XMIPP4_NODISCARD inline
 layout_reference<T> 
-layout_reference<T>::apply_subscripts(span<dynamic_subscript> subscripts) const
+layout_reference<T>::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     return apply(std::mem_fn(&layout_type::apply_subscripts, subscripts));
 }
@@ -106,13 +106,9 @@ layout_reference<T> layout_reference<T>::transpose() const
 
 template <typename T>
 XMIPP4_NODISCARD inline
-layout_reference<T> layout_reference<T>::permute(span<std::size_t> order) const
+layout_reference<T> 
+layout_reference<T>::permute(span<const std::size_t> order) const
 {
-    if (!m_layout && !order.empty())
-    {
-        throw std::invalid_argument("cannot permute empty layout");
-    }
-
     return apply(std::mem_fn(&layout_type::permute, order));
 }
 
@@ -121,11 +117,6 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
-    if (!m_layout)
-    {
-        throw std::invalid_argument("cannot swap axes on empty layout");
-    }
-
     return apply(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
 }
 
@@ -137,22 +128,14 @@ layout_reference<T> layout_reference<T>::squeeze() const
 }
 
 template <typename T>
+inline
+void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents) const
+{
+    return apply(std::mem_fn(&layout_type::broadcast_dry, extents)); // TODO broadcast_dry does not return
+}
+
+template <typename T>
 XMIPP4_NODISCARD inline
-layout_reference<T> layout_reference<T>::coalesce_axes() const
-{
-    return apply(std::mem_fn(&layout_type::coalesce_axes));
-}
-
-template <typename T>
-XMIPP4_NODISCARD
-layout_reference<T> 
-layout_reference<T>::broadcast(std::vector<std::size_t> &extents) const
-{
-    return apply(std::mem_fn(&layout_type::broadcast, extents));
-}
-
-template <typename T>
-XMIPP4_NODISCARD
 layout_reference<T> 
 layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
 {
@@ -177,6 +160,14 @@ layout_reference<T> layout_reference<T>::apply(Func &&func, Args&& ...args)
     {
         result = layout_reference(
             std::forward<Func>(func)(*m_layout, std::forward<Args>(args)...)
+        );
+    }
+    else
+    {
+        // Apply it on a default constructed layout
+        layout_type layout;
+        result = layout_reference(
+            std::forward<Func>(func)(layout, std::forward<Args>(args)...)
         );
     }
 

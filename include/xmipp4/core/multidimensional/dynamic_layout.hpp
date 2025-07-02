@@ -154,12 +154,12 @@ public:
 
     
     /**
-     * @brief Apply a set of dynamic dynamic subscripts to this layout.
+     * @brief Apply a set of dynamic subscripts to this layout.
      * 
      * @param subscripts The subscripts.
      * @return dynamic_layout The resulting layout.
-     * @throws std::runtime_error If an ellipsis subscript is encountered (not implemented).
      * @throws std::invalid_argument If not all subscripts are processed.
+     * Or subscript is out of bounds
      */
     XMIPP4_NODISCARD
     dynamic_layout apply_subscripts(span<const dynamic_subscript> subscripts) const;

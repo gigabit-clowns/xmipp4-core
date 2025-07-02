@@ -47,7 +47,7 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
     // The former function could be re-used, provided that something
     // like boost::counting_iterator is available.
 
-    if (std::distance(first, last) != count)
+    if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
     {
         throw std::invalid_argument(
             "permutation's length does not match the required count"

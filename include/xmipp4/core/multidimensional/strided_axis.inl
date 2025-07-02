@@ -146,7 +146,8 @@ XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const strided_axis &major,
                    const strided_axis &minor ) noexcept
 {
-    const auto expected = major.get_stride()*major.get_extent();
+    const auto expected = 
+        major.get_stride()*static_cast<std::ptrdiff_t>(major.get_extent());
     return expected == minor.get_stride();
 }
 
@@ -281,7 +282,6 @@ void apply_slice(strided_axis &axis,
         const auto start = slice.get_start();
         const auto count = slice.get_count();
         const auto step = slice.get_step();
-        const auto extent = axis.get_extent();
         const auto stride = axis.get_stride();
 
         const auto new_stride = stride*step;

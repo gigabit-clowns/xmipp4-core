@@ -40,7 +40,7 @@ sanitize_index(T index, std::size_t extent)
     
     if (result < 0)
     {
-        if (result < -extent)
+        if (result < -static_cast<std::ptrdiff_t>(extent))
         {
             std::ostringstream oss;
             oss << "Reverse index " << result 
@@ -50,7 +50,7 @@ sanitize_index(T index, std::size_t extent)
 
         result += extent;
     }
-    else if (result >= extent)
+    else if (result >= static_cast<std::ptrdiff_t>(extent))
     {
         std::ostringstream oss;
         oss << "Index " << result

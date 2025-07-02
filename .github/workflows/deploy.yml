@@ -38,8 +38,6 @@ jobs:
           CIBW_ARCHS: "${{ matrix.architectures }}"
           CIBW_BUILD: "cp313-*" # Python agnostic, pick any version
           CIBW_BUILD_VERBOSITY: 1
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28 # TODO remove when it becomes default
-          CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: manylinux_2_28 # TODO remove when it becomes default
       
       - name: Upload wheels
         uses: actions/upload-artifact@v4

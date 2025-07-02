@@ -162,7 +162,8 @@ public:
      * Or subscript is out of bounds
      */
     XMIPP4_NODISCARD
-    dynamic_layout apply_subscripts(span<const dynamic_subscript> subscripts) const;
+    dynamic_layout 
+    apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
     /**
      * @brief Reverse the order of the axes.
@@ -234,41 +235,7 @@ private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
 
-    template <typename Ite1, typename Ite2>
-    void apply_subscripts_helper(Ite1 first_axis, Ite1 last_axis, 
-                                 Ite2 first_subscript, Ite2 last_subscript );
-    void apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite, 
-                                span<const dynamic_subscript>::iterator &subscript_ite, 
-                                span<const dynamic_subscript>::iterator last_subscript, 
-                                ellipsis_tag );
-    void apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite, 
-                                span<const dynamic_subscript>::iterator &subscript_ite, 
-                                span<const dynamic_subscript>::iterator last_subscript, 
-                                new_axis_tag );
-    void apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite,
-                                span<const dynamic_subscript>::iterator &subscript_ite, 
-                                span<const dynamic_subscript>::iterator last_subscript, 
-                                std::ptrdiff_t index);
-    void apply_subscript_helper(std::vector<strided_axis>::iterator &axis_ite,
-                                span<const dynamic_subscript>::iterator &subscript_ite, 
-                                span<const dynamic_subscript>::iterator last_subscript, 
-                                const dynamic_slice &slice);
-    void apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite, 
-                                span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
-                                span<const dynamic_subscript>::reverse_iterator last_subscript, 
-                                ellipsis_tag );
-    void apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite, 
-                                span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
-                                span<const dynamic_subscript>::reverse_iterator last_subscript, 
-                                new_axis_tag );
-    void apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite,
-                                span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
-                                span<const dynamic_subscript>::reverse_iterator last_subscript, 
-                                std::ptrdiff_t index);
-    void apply_subscript_helper(std::vector<strided_axis>::reverse_iterator &axis_ite,
-                                span<const dynamic_subscript>::reverse_iterator &subscript_ite, 
-                                span<const dynamic_subscript>::reverse_iterator last_subscript, 
-                                const dynamic_slice &slice);
+    class apply_subscripts_helper;
 
 };
 

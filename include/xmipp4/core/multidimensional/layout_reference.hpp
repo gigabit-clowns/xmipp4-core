@@ -136,7 +136,8 @@ public:
      * Or subscript is out of bounds
      */
     XMIPP4_NODISCARD
-    layout_reference apply_subscripts(span<const dynamic_subscript> subscripts) const;
+    layout_reference 
+    apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
     /**
      * @brief Reverse the order of the axes.

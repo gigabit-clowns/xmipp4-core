@@ -26,7 +26,7 @@
  * 
  */
 
-#include <xmipp4/core/multidimensional/dynamic_layout.hpp>
+#include <xmipp4/core/multidimensional/dynamic_subscript.hpp>
 
 #include "mock/mock_subscript_callable.hpp"
 

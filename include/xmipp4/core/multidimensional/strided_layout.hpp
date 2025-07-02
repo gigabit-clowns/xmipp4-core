@@ -21,9 +21,9 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_layout.hpp
+ * @file strided_layout.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines dynamic_layout class
+ * @brief Defines strided_layout class
  * @date 2025-02-03
  * 
  */
@@ -45,10 +45,10 @@ namespace multidimensional
  * @brief Class describing element layout on a multidimensional array
  * 
  */
-class dynamic_layout
+class strided_layout
 {
 public:
-    dynamic_layout() = default;
+    strided_layout() = default;
 
     /**
      * @brief Construct a dynamic layout from its components.
@@ -56,7 +56,7 @@ public:
      * @param axes Axes used in the dynamic layout
      * @param offset Offset used in the dynamic layout
      */
-    dynamic_layout(std::vector<strided_axis> &&axes,
+    strided_layout(std::vector<strided_axis> &&axes,
                    std::ptrdiff_t offset ) noexcept;
 
     /**
@@ -68,7 +68,7 @@ public:
      * @param offset Offset of the layout. Defaults to zero.
      * 
      */
-    dynamic_layout(const std::size_t *extents, 
+    strided_layout(const std::size_t *extents, 
                    std::size_t rank,
                    std::ptrdiff_t offset = 0 );
     /**
@@ -82,7 +82,7 @@ public:
      * @param offset Offset of the layout. Defaults to zero.
      * 
      */
-    dynamic_layout(const std::size_t *extents, 
+    strided_layout(const std::size_t *extents, 
                    const std::ptrdiff_t *strides, 
                    std::size_t rank,
                    std::ptrdiff_t offset = 0 );
@@ -95,16 +95,16 @@ public:
      * @param offset Offset of the layout. Defaults to zero.
      * 
      */
-    dynamic_layout(const strided_axis *axes, 
+    strided_layout(const strided_axis *axes, 
                    std::size_t rank,
                    std::ptrdiff_t offset = 0 );
 
-    dynamic_layout(const dynamic_layout &other) = default;
-    dynamic_layout(dynamic_layout &&other) = default;
-    ~dynamic_layout() = default;
+    strided_layout(const strided_layout &other) = default;
+    strided_layout(strided_layout &&other) = default;
+    ~strided_layout() = default;
 
-    dynamic_layout& operator=(const dynamic_layout &other) = default;
-    dynamic_layout& operator=(dynamic_layout &&other) = default;
+    strided_layout& operator=(const strided_layout &other) = default;
+    strided_layout& operator=(strided_layout &&other) = default;
 
     /**
      * @brief Get the rank of the layout.
@@ -157,21 +157,21 @@ public:
      * @brief Apply a set of dynamic subscripts to this layout.
      * 
      * @param subscripts The subscripts.
-     * @return dynamic_layout The resulting layout.
+     * @return strided_layout The resulting layout.
      * @throws std::invalid_argument If not all subscripts are processed.
      * Or subscript is out of bounds
      */
     XMIPP4_NODISCARD
-    dynamic_layout 
+    strided_layout 
     apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
     /**
      * @brief Reverse the order of the axes.
      * 
-     * @return dynamic_layout The resulting layout.
+     * @return strided_layout The resulting layout.
      */
     XMIPP4_NODISCARD
-    dynamic_layout transpose() const;
+    strided_layout transpose() const;
 
     /**
      * @brief Permute the order of the axes.
@@ -179,30 +179,30 @@ public:
      * @param order Order acquired by the new layout. Must have the same 
      * size as the amount of dimensions and it must feature strictly one
      * instance of each number in [0, rank).
-     * @return dynamic_layout Permuted layout.
+     * @return strided_layout Permuted layout.
      * @throws std::invalid_argument If the permutation order is invalid.
      */
     XMIPP4_NODISCARD
-    dynamic_layout permute(span<const std::size_t> order) const;
+    strided_layout permute(span<const std::size_t> order) const;
 
     /**
      * @brief Swap two axes.
      * 
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
-     * @return dynamic_layout Permuted layout.
+     * @return strided_layout Permuted layout.
      * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
-    dynamic_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
+    strided_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
 
     /**
      * @brief Remove insignificant axes of the layout.
      * 
-     * @return dynamic_layout The resulting layout.
+     * @return strided_layout The resulting layout.
      */
     XMIPP4_NODISCARD
-    dynamic_layout squeeze() const;
+    strided_layout squeeze() const;
 
     /**
      * @brief Broadcast a shape to match this layout.
@@ -224,12 +224,12 @@ public:
      * adding phantom axes or adjusting existing axes as needed.
      * 
      * @param extents Extents to broadcast to.
-     * @return dynamic_layout The resulting broadcasted layout.
+     * @return strided_layout The resulting broadcasted layout.
      * @throws std::invalid_argument If the layout has more axes than extents.
      * @throws std::invalid_argument If the axes cannot be broadcasted to the 
      * provided extents.
      */
-    dynamic_layout broadcast_to(span<const std::size_t> extents) const;
+    strided_layout broadcast_to(span<const std::size_t> extents) const;
 
 private:
     std::vector<strided_axis> m_axes;
@@ -245,7 +245,7 @@ template <typename T>
 struct layout_traits;
 
 template <>
-struct layout_traits<dynamic_layout>
+struct layout_traits<strided_layout>
 {
 
 };
@@ -253,4 +253,4 @@ struct layout_traits<dynamic_layout>
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "dynamic_layout.inl"
+#include "strided_layout.inl"

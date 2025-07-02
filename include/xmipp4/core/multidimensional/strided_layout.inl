@@ -21,14 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file dynamic_layout.inl
+ * @file strided_layout.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of dynamic_layout.hpp
+ * @brief Implementation of strided_layout.hpp
  * @date 2025-02-03
  * 
  */
 
-#include "dynamic_layout.hpp"
+#include "strided_layout.hpp"
 
 #include "checks.hpp"
 
@@ -39,10 +39,10 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class dynamic_layout::apply_subscripts_helper
+class strided_layout::apply_subscripts_helper
 {
 public:
-    dynamic_layout operator()(const dynamic_layout &source, 
+    strided_layout operator()(const strided_layout &source, 
                               span<const dynamic_subscript> subscripts )
     {
         initialize(source);
@@ -52,14 +52,14 @@ public:
             subscripts.begin(), subscripts.end()
         );
 
-        return dynamic_layout(std::move(m_axes), m_offset);
+        return strided_layout(std::move(m_axes), m_offset);
     }
 
 private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
 
-    void initialize(const dynamic_layout &source)
+    void initialize(const strided_layout &source)
     {
         m_axes = source.m_axes;
         m_offset = source.m_offset;
@@ -190,7 +190,7 @@ private:
 
 
 inline
-dynamic_layout::dynamic_layout(std::vector<strided_axis> &&axes,
+strided_layout::strided_layout(std::vector<strided_axis> &&axes,
                                std::ptrdiff_t offset ) noexcept
     : m_axes(std::move(axes))
     , m_offset(offset)
@@ -198,7 +198,7 @@ dynamic_layout::dynamic_layout(std::vector<strided_axis> &&axes,
 }
 
 inline
-dynamic_layout::dynamic_layout(const std::size_t *extents, 
+strided_layout::strided_layout(const std::size_t *extents, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
     : m_offset(offset)
@@ -218,7 +218,7 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
 }
 
 inline
-dynamic_layout::dynamic_layout(const std::size_t *extents, 
+strided_layout::strided_layout(const std::size_t *extents, 
                                const std::ptrdiff_t *strides, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
@@ -232,7 +232,7 @@ dynamic_layout::dynamic_layout(const std::size_t *extents,
 }
 
 inline
-dynamic_layout::dynamic_layout(const strided_axis *axes, 
+strided_layout::strided_layout(const strided_axis *axes, 
                                std::size_t rank,
                                std::ptrdiff_t offset )
     : m_axes(axes, axes + rank)
@@ -241,13 +241,13 @@ dynamic_layout::dynamic_layout(const strided_axis *axes,
 }
 
 XMIPP4_NODISCARD inline
-std::size_t dynamic_layout::get_rank() const noexcept
+std::size_t strided_layout::get_rank() const noexcept
 {
     return m_axes.size();
 }
 
 inline
-std::size_t dynamic_layout::get_axes(std::size_t *extents, 
+std::size_t strided_layout::get_axes(std::size_t *extents, 
                                      std::ptrdiff_t *strides,
                                      std::size_t count ) const noexcept
 {
@@ -273,7 +273,7 @@ std::size_t dynamic_layout::get_axes(std::size_t *extents,
 }
 
 inline
-bool dynamic_layout::get_axis(std::size_t index, 
+bool strided_layout::get_axis(std::size_t index, 
                               strided_axis &out ) const noexcept
 {
     const bool result = (index < m_axes.size());
@@ -285,7 +285,7 @@ bool dynamic_layout::get_axis(std::size_t index,
 }
 
 XMIPP4_NODISCARD inline
-std::ptrdiff_t dynamic_layout::get_offset() const noexcept
+std::ptrdiff_t strided_layout::get_offset() const noexcept
 {
     return m_offset;
 }
@@ -293,15 +293,15 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
 
 
 XMIPP4_NODISCARD inline
-dynamic_layout 
-dynamic_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
+strided_layout 
+strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     apply_subscripts_helper helper;
     return helper(*this, subscripts);
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::transpose() const
+strided_layout strided_layout::transpose() const
 {
     std::vector<strided_axis> axes;
     axes.reserve(m_axes.size());
@@ -311,11 +311,11 @@ dynamic_layout dynamic_layout::transpose() const
         std::back_inserter(axes)
     );
 
-    return dynamic_layout(std::move(axes), m_offset);
+    return strided_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::permute(span<const std::size_t> order) const
+strided_layout strided_layout::permute(span<const std::size_t> order) const
 {
     const auto count = m_axes.size();
     check_axis_permutation(order.begin(), order.end(), count);
@@ -328,12 +328,12 @@ dynamic_layout dynamic_layout::permute(span<const std::size_t> order) const
         axes.push_back(m_axes[order[i]]);
     }
 
-    return dynamic_layout(std::move(axes), m_offset);
+    return strided_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout 
-dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
+strided_layout 
+strided_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
     if (axis1 >= m_axes.size())
     {
@@ -347,11 +347,11 @@ dynamic_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
     auto axes = m_axes;
     std::swap(axes[axis1], axes[axis2]);
 
-    return dynamic_layout(std::move(axes), m_offset);
+    return strided_layout(std::move(axes), m_offset);
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::squeeze() const
+strided_layout strided_layout::squeeze() const
 {
     std::vector<strided_axis> axes;
 
@@ -361,11 +361,11 @@ dynamic_layout dynamic_layout::squeeze() const
         is_significant
     );
 
-    return dynamic_layout(std::move(axes), m_offset);
+    return strided_layout(std::move(axes), m_offset);
 }
 
 inline
-void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
+void strided_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 {
     if (m_axes.size() < extents.size())
     {
@@ -401,8 +401,8 @@ void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout 
-dynamic_layout::broadcast_to(span<const std::size_t> extents) const
+strided_layout 
+strided_layout::broadcast_to(span<const std::size_t> extents) const
 {
 
     if (m_axes.size() > extents.size())
@@ -438,7 +438,7 @@ dynamic_layout::broadcast_to(span<const std::size_t> extents) const
         }
     }
 
-    return dynamic_layout(std::move(axes), m_offset);
+    return strided_layout(std::move(axes), m_offset);
 }
 
 } // namespace multidimensional

@@ -72,7 +72,8 @@ private:
         while (first_axis != last_axis && first_subscript != last_subscript)
         {
             visit(
-                [this, &first_axis, &first_subscript, last_subscript] (auto subscript) -> void
+                [this, &first_axis, &first_subscript, last_subscript] 
+                (auto subscript) -> void
                 {
                     apply_subscript(
                         first_axis, 
@@ -292,7 +293,8 @@ std::ptrdiff_t dynamic_layout::get_offset() const noexcept
 
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
+dynamic_layout 
+dynamic_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     apply_subscripts_helper helper;
     return helper(*this, subscripts);
@@ -399,7 +401,8 @@ void dynamic_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 }
 
 XMIPP4_NODISCARD inline
-dynamic_layout dynamic_layout::broadcast_to(span<const std::size_t> extents) const
+dynamic_layout 
+dynamic_layout::broadcast_to(span<const std::size_t> extents) const
 {
 
     if (m_axes.size() > extents.size())

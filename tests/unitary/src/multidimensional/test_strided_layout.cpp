@@ -311,7 +311,69 @@ TEST_CASE("get_axes axis in strided_layout should fail for out of range indices"
     }
 }
 
-TEST_CASE( "apply_subscripts is strided_layout with two ellipsis should throw", "[strided_layout]" )
+TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should produce the expected result ", "[strided_layout]" )
+{
+    const std::vector<std::size_t> extents = 
+    {
+        120, 56, 24, 1, 10, 8
+    };
+    const std::size_t offset = 16;
+    const strided_layout layout(
+        extents.data(),
+        extents.size(),
+        offset
+    );
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        odd(), // Selects half of the elements in the axis with 120 elements
+        new_axis(), // Inserts phantom axis between 120 and 56 sized axes
+        ellipsis(), // Absorbs 56 and 24 sized axes.
+        0, // Squeezes 1-sized axis
+        even(), // Selects half of the elements in the axis with 10 elements
+        new_axis(), // Inserts an axis between 10 and 8 sized axes
+        new_axis(), // Inserts an axis between 10 and 8 sized axes
+        6 // Selects the 7th element in the 8 element axis
+    };
+
+    const auto subscripted_layout = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    const std::vector<std::size_t> expected_extents = 
+    {
+        60,
+        1,
+        56,
+        24,
+        5,
+        1,
+        1
+    };
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        215040,
+        0,
+        1920,
+        80,
+        16,
+        0,
+        0
+    };
+
+    const std::ptrdiff_t expected_offset = offset + 107520 + 6;
+
+    REQUIRE( subscripted_layout.get_offset() == expected_offset );
+    REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
+
+    const auto count = layout.get_rank();
+    strided_axis axis;
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        subscripted_layout.get_axis(i, axis);
+        REQUIRE( axis.get_extent() == expected_extents[i] );
+        REQUIRE( axis.get_stride() == expected_strides[i] );
+    }
+}
+
+TEST_CASE( "apply_subscripts in strided_layout with two ellipsis should throw", "[strided_layout]" )
 {
     const std::vector<std::size_t> extents = 
     {
@@ -331,7 +393,7 @@ TEST_CASE( "apply_subscripts is strided_layout with two ellipsis should throw", 
     };
 
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "Two ellipsis tags were encountered" );
+    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "Two ellipsis tags were encountered when processing subscripts" );
 }
 
 // TODO checks related to apply_subscript

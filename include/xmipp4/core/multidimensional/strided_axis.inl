@@ -28,6 +28,7 @@
 
 #include "strided_axis.hpp"
 
+#include "index.hpp"
 #include "../math/abs.hpp"
 
 namespace xmipp4
@@ -273,6 +274,15 @@ void apply_index(const strided_axis &axis,
     offset += increment;
 }
 
+inline
+void apply_index_safe(const strided_axis &axis, 
+                      std::ptrdiff_t &offset,
+                      std::ptrdiff_t index )
+{
+    const auto sanitized_index = sanitize_index(index, axis.get_extent());
+    apply_index(axis, offset, sanitized_index);
+}
+
 XMIPP4_INLINE_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
@@ -289,6 +299,15 @@ void apply_slice(strided_axis &axis,
 
         axis = strided_axis(count, new_stride);
         offset += increment;
+}
+
+inline
+void apply_slice_safe(strided_axis &axis,
+                      std::ptrdiff_t &offset,
+                      const dynamic_slice &slice)
+{
+    const auto sanitized_slice = sanitize_slice(slice, axis.get_extent());
+    apply_slice(axis, offset, sanitized_slice);
 }
 
 } // namespace multidimensional

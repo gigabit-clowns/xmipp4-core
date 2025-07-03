@@ -336,7 +336,7 @@ bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept;
  * @note This function does not check if the index is within the axis' extent.
  * Please ensure that the index is valid before calling this function. Otherwise
  * the behavior is undefined.  
- * @see sanitize_index
+ * @see sanitize_index_safe
  * @param axis Axis where the index is applied.
  * @param offset Offset to be updated.
  * @param index The index to be applied.
@@ -346,6 +346,22 @@ XMIPP4_CONSTEXPR
 void apply_index(const strided_axis &axis, 
                  std::ptrdiff_t &offset,
                  std::size_t index ) noexcept;
+
+/**
+ * @brief Apply an index to an axis to update an offset while checking bounds.
+ * 
+ * This is equivalent to calling sanitize_index and apply_index
+ * 
+ * @see apply_index
+ * @see sanitize_index
+ * @param axis Axis where the index is applied.
+ * @param offset Offset to be updated.
+ * @param index The index to be applied.
+ * @throws std::out_ofr_range
+ */
+void apply_index_safe(const strided_axis &axis, 
+                      std::ptrdiff_t &offset,
+                      std::ptrdiff_t index );
 
 /**
  * @brief Apply a slice to an axis to update an offset.
@@ -363,6 +379,23 @@ XMIPP4_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
                  const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept;
+
+/**
+ * @brief Apply a slice to an axis to update an offset while checking for 
+ * bounds.
+ * 
+ * This is equivalent to calling sanitize_slice and apply_slice
+ * 
+ * @see apply_slice
+ * @see sanitize_slice
+ * @param axis Axis where the index is applied. It is modified accordingly.
+ * @param offset Offset to be updated.
+ * @param slice The slice to be applied to the axis.
+ * @throws std::out_ofr_range
+ */
+void apply_slice_safe(strided_axis &axis,
+                      std::ptrdiff_t &offset,
+                      const dynamic_slice &slice);
 
 } // namespace multidimensional
 } // namespace xmipp4

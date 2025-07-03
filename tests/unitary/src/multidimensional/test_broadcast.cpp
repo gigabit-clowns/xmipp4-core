@@ -38,7 +38,7 @@ using namespace xmipp4::multidimensional;
 
 TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
 {
-    trompeloeil::sequence seq;
+    //trompeloeil::sequence seq;
     mock_broadcastable first;
     mock_broadcastable second;
     mock_broadcastable third;

@@ -49,7 +49,8 @@ public:
                            BidirIt2 first_axis, BidirIt2 last_axis,
                            std::ptrdiff_t offset )
     {
-        std::list<strided_axis> axes;
+        // Using list instead of vector due to the chaotic insertion pattern
+        std::list<strided_axis> axes; 
 
         process_forwards(
             first_subscript, last_subscript,

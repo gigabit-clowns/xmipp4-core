@@ -21,40 +21,32 @@
  ***************************************************************************/
 
 /**
- * @file broadcast.hpp
+ * @file mock_broadcastable.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines broadcasting utilities
- * @date 2025-07-02
- * 
+ * @brief Definition of a broadcastable class.
+ * @date 2025-07-03
  */
 
-#include <vector>
-#include <tuple>
+#include <trompeloeil.hpp>
 
-namespace xmipp4 
+#include <xmipp4/core/span.hpp>
+
+#include <vector>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-/**
- * @brief Function to broadcast multiple layouts/arrays into a common
- * shape.
- * 
- * @tparam Broadcastables Broadastable types. These types must implement
- * broadcast_dry and broadcast_to methods.
- * @param extents Input/output extents. The contents of extents participate
- * in the broadcasting operation. Leave it empty to avoid this. The resulting
- * consensus shape will be stored in this variable.
- * @param items Items to be broadcasted.
- * @return std::tuple<Broadcastables...> Broadcasted items. When successful,
- * all of the returned items will have the same shape as the values
- * written in extents.
- */
-template <typename... Broadcastables>
-std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
-                                        const Broadcastables&... items );
+class mock_broadcastable
+{
+public:
+    static constexpr bool trompeloeil_movable_mock = true;
+
+    MAKE_CONST_MOCK1(broadcast_dry, void(std::vector<std::size_t>&));
+    MAKE_CONST_MOCK1(broadcast_to, mock_broadcastable(span<const std::size_t>));
+
+};
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "broadcast.inl"

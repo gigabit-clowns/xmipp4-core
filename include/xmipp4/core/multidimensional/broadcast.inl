@@ -30,8 +30,7 @@
 
 #include "broadcast.hpp"
 
-#include <algorithm>
-#include <functional>
+#include "../span.hpp"
 
 namespace xmipp4 
 {
@@ -44,7 +43,7 @@ std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
                                        const Broadcastables&... items )
 {
     (items.broadcast_dry(extents), ...); // TODO avoid using fold expressions
-    return std::tuple<Broadcastables...>(items.broadcast_to(extents)...);
+    return std::tuple<Broadcastables...>(items.broadcast_to(xmipp4::make_span(extents))...);
 }
 
 

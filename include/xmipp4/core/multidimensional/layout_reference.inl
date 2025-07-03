@@ -30,6 +30,8 @@
 
 #include "layout_reference.hpp"
 
+#include <sstream>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -131,7 +133,17 @@ template <typename T>
 inline
 void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents) const
 {
-    return apply(std::mem_fn(&layout_type::broadcast_dry, extents)); // TODO broadcast_dry does not return
+    if (m_layout)
+    {
+        m_layout->broadcast_dry(extents);
+    }
+    else if (!extents.empty())
+    {
+        std::ostringstream oss;
+        oss << "Cannot broadcast shape of " << extents.size()
+            << " axes into an empty layout";
+        throw std::invalid_argument(oss.str());
+    }
 }
 
 template <typename T>
@@ -139,11 +151,6 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
 {
-    if (!m_layout && !extents.empty())
-    {
-        m_layout = std::make_shared<layout_type>();
-    }
-
     return apply(std::mem_fn(&layout_type::broadcast_to, extents));
 }
 

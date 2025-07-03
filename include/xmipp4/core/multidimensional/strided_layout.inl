@@ -98,8 +98,8 @@ private:
                          ellipsis_tag )
     {
         process_subscripts(
+            m_axes.rbegin(),
             std::make_reverse_iterator(axis_ite), 
-            m_axes.rend(),
             std::make_reverse_iterator(std::next(subscript_ite)), // Leave this out.
             std::make_reverse_iterator(last_subscript)
         );
@@ -337,11 +337,11 @@ strided_layout::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
     if (axis1 >= m_axes.size())
     {
-        throw std::invalid_argument("axis1 exceeds bounds");
+        throw std::out_of_range("axis1 exceeds bounds");
     }
     if (axis2 >= m_axes.size())
     {
-        throw std::invalid_argument("axis2 exceeds bounds");
+        throw std::out_of_range("axis2 exceeds bounds");
     }
 
     auto axes = m_axes;
@@ -394,7 +394,7 @@ void strided_layout::broadcast_dry(std::vector<std::size_t> &extents) const
         {
             std::ostringstream oss;
             oss << "Can not broadcast extent " << extents[i]
-                << "into an axis of extent " << m_axes[i].get_extent();
+                << " into an axis of extent " << m_axes[i].get_extent();
             throw std::invalid_argument(oss.str());
         }
     }
@@ -433,7 +433,7 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
         {
             std::ostringstream oss;
             oss << "Can not broadcast axis of extent " << axes[i].get_extent()
-                << "into an extent of " << extents[i] << ".";
+                << " into an extent of " << extents[i] << ".";
             throw std::invalid_argument(oss.str());
         }
     }

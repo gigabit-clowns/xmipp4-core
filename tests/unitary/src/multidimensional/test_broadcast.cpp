@@ -44,7 +44,7 @@ TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
     mock_broadcastable third;
 
     std::vector<std::size_t> extents;
-    /*
+
     REQUIRE_CALL(first, broadcast_dry(std::ref(extents)))
         .IN_SEQUENCE(seq);
     REQUIRE_CALL(second, broadcast_dry(std::ref(extents)))
@@ -60,17 +60,6 @@ TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
     REQUIRE_CALL(third, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
         .RETURN(mock_broadcastable())
         .IN_SEQUENCE(seq);
-    */
-
-    REQUIRE_CALL(first, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(second, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(third, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(first, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
-    REQUIRE_CALL(second, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
-    REQUIRE_CALL(third, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
 
     broadcast(extents, first, second, third);
 }

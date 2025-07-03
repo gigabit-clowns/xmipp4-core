@@ -114,7 +114,7 @@ private:
                 break;
 
             default:
-                std::logic_error("Unknown subscript type encountered");
+                throw std::logic_error("Unknown subscript type encountered");
                 break;
             }
         }
@@ -169,7 +169,7 @@ private:
                 break;
 
             default:
-                std::logic_error("Unknown subscript type encountered");
+                throw std::logic_error("Unknown subscript type encountered");
                 break;
             }
         }

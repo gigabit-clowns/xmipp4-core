@@ -75,6 +75,9 @@ private:
     {
         while (first_axis != last_axis && first_subscript != last_subscript)
         {
+            const auto &subscript = *first_subscript;
+            const auto &axis = *first_axis;
+
             switch (first_subscript->get_subscript_type())
             {
             case dynamic_subscript::subscript_type::ellipsis:
@@ -91,27 +94,19 @@ private:
 
             case dynamic_subscript::subscript_type::new_axis:
                 head_ite = axes.insert(head_ite, make_phantom_axis());
-                ++head_ite;
                 ++first_subscript;
+                ++head_ite;
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index_safe(
-                    *first_axis, 
-                    offset, 
-                    first_subscript->get_index()
-                );
+                apply_index_safe(axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                head_ite = axes.insert(head_ite, *first_axis);
-                apply_slice_safe(
-                    *head_ite,
-                    offset,
-                    first_subscript->get_slice()
-                );
+                head_ite = axes.insert(head_ite, axis);
+                apply_slice_safe(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
                 ++first_axis;
                 ++head_ite;
@@ -135,19 +130,17 @@ private:
     template <typename BidirIt1, typename BidirIt2>
     static
     void process_backwards(BidirIt1 first_subscript, BidirIt1 last_subscript,
-                          BidirIt2 first_axis, BidirIt2 last_axis, 
-                          std::ptrdiff_t &offset,
-                          std::list<strided_axis> &axes,
-                          std::list<strided_axis>::iterator head_ite )
+                           BidirIt2 first_axis, BidirIt2 last_axis, 
+                           std::ptrdiff_t &offset,
+                           std::list<strided_axis> &axes,
+                           std::list<strided_axis>::iterator head_ite )
     {
-        --first_subscript;
-        --last_subscript;
-        --first_axis;
-        --last_axis;
-
         while (first_axis != last_axis && first_subscript != last_subscript)
         {
-            switch (last_subscript->get_subscript_type())
+            const auto &subscript = *std::prev(last_subscript);
+            const auto &axis = *std::prev(last_axis);
+
+            switch (subscript.get_subscript_type())
             {
             case dynamic_subscript::subscript_type::ellipsis:
                 throw std::invalid_argument(
@@ -162,22 +155,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index_safe(
-                    *last_axis, 
-                    offset, 
-                    last_subscript->get_index()
-                );
+                apply_index_safe(axis, offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                head_ite = axes.insert(head_ite, *last_axis);
-                apply_slice_safe(
-                    *head_ite,
-                    offset,
-                    last_subscript->get_slice()
-                );
+                head_ite = axes.insert(head_ite, axis);
+                apply_slice_safe(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
                 --last_axis;
                 break;
@@ -194,8 +179,6 @@ private:
         }
 
         // Copy reminder
-        ++first_axis;
-        ++last_axis;
         axes.insert(head_ite, first_axis, last_axis);
     }
 

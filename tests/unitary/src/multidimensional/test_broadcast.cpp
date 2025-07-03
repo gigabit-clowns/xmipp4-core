@@ -38,7 +38,7 @@ using namespace xmipp4::multidimensional;
 
 TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
 {
-    //trompeloeil::sequence seq;
+    trompeloeil::sequence seq;
     mock_broadcastable first;
     mock_broadcastable second;
     mock_broadcastable third;
@@ -61,6 +61,16 @@ TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
         .RETURN(mock_broadcastable())
         .IN_SEQUENCE(seq);
     */
+
+    REQUIRE_CALL(first, broadcast_dry(std::ref(extents)));
+    REQUIRE_CALL(second, broadcast_dry(std::ref(extents)));
+    REQUIRE_CALL(third, broadcast_dry(std::ref(extents)));
+    REQUIRE_CALL(first, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+        .RETURN(mock_broadcastable());
+    REQUIRE_CALL(second, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+        .RETURN(mock_broadcastable());
+    REQUIRE_CALL(third, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+        .RETURN(mock_broadcastable());
 
     broadcast(extents, first, second, third);
 }

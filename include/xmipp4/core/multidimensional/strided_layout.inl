@@ -74,7 +74,7 @@ private:
             const auto &subscript = *first_subscript;
             const auto &axis = *first_axis;
 
-            switch (first_subscript->get_subscript_type())
+            switch (subscript.get_subscript_type())
             {
             case dynamic_subscript::subscript_type::ellipsis:
                 process_backwards(
@@ -120,7 +120,10 @@ private:
         }
 
         // Copy reminder
-        axes.insert(head_ite, first_axis, last_axis);
+        if (first_axis != last_axis)
+        {
+            axes.insert(head_ite, first_axis, last_axis);
+        }
     }
 
     template <typename BidirIt1, typename BidirIt2>
@@ -175,7 +178,10 @@ private:
         }
 
         // Copy reminder
-        axes.insert(head_ite, first_axis, last_axis);
+        if (first_axis != last_axis)
+        {
+            axes.insert(head_ite, first_axis, last_axis);
+        }
     }
 
 };

@@ -311,6 +311,54 @@ TEST_CASE("get_axes axis in strided_layout should fail for out of range indices"
     }
 }
 
+TEST_CASE("compute_storage_requirement in strided_layout should return the last index + 1", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = 
+    {
+        32, 16, 12, 6
+    };
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        1, 32, 512, 8192
+    };
+    const auto offset = 20;
+    const strided_layout layout(
+        extents.data(),
+        strides.data(), 
+        extents.size(),
+        offset
+    );
+
+    const auto expected_size = 31 + 15*32 + 11*512 + 5*8192 + offset + 1;
+    const auto size = layout.compute_storage_requirement();
+
+    REQUIRE( expected_size == size );
+}
+
+
+TEST_CASE("compute_storage_requirement in strided_layout should return 0 if there is a zero-sized axis", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = 
+    {
+        32, 0, 12, 6
+    };
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        1, 32, 512, 8192
+    };
+    const auto offset = 20;
+    const strided_layout layout(
+        extents.data(),
+        strides.data(), 
+        extents.size(),
+        offset
+    );
+
+    const auto size = layout.compute_storage_requirement();
+
+    REQUIRE( size == 0 );
+}
+
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
     const std::vector<std::size_t> extents = 

@@ -120,6 +120,14 @@ public:
     std::ptrdiff_t get_offset() const noexcept;
 
     /**
+     * @brief Computes the minimum storage size (in elements) for this layout.
+     * 
+     * @return std::size_t Minimum storage size in elements.
+     */
+    XMIPP4_NODISCARD
+    std::size_t compute_storage_requirement() const noexcept;
+
+    /**
      * @brief Get a read-only shared_ptr to the underlying layout.
      * 
      * @return std::shared_ptr<const layout_type> The underlying layout.

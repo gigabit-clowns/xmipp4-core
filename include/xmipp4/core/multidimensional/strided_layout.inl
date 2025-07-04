@@ -290,6 +290,41 @@ std::ptrdiff_t strided_layout::get_offset() const noexcept
     return m_offset;
 }
 
+XMIPP4_NODISCARD inline
+std::size_t strided_layout::compute_storage_requirement() const noexcept
+{
+    std::size_t result = 0;
+
+    bool zero_extent = false;
+    for (const auto &axis : m_axes)
+    {
+        const auto extent = axis.get_extent();
+        if (extent == 0)
+        {
+            zero_extent = true;
+            break;
+        }
+
+        const auto stride = axis.get_stride();
+        if(stride > 0)
+        {
+            const std::size_t last_index = extent - 1;
+            result += last_index*stride;
+        }
+    }
+
+    if (zero_extent)
+    {
+        result = 0;
+    }
+    else
+    {
+        ++result;
+        result += m_offset;
+    }
+
+    return result;
+}
 
 
 XMIPP4_NODISCARD inline

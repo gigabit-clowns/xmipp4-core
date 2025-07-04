@@ -83,6 +83,13 @@ std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
 
 template <typename T>
 XMIPP4_NODISCARD inline
+std::size_t layout_reference<T>::compute_storage_requirement() const noexcept
+{
+    return m_layout ? m_layout->compute_storage_requirement() : 0;
+}
+
+template <typename T>
+XMIPP4_NODISCARD inline
 std::shared_ptr<const typename layout_reference<T>::layout_type> 
 layout_reference<T>::get_shared() const noexcept
 {

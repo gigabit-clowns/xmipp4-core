@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +20,33 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+/**
+ * @file mock_broadcastable.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Definition of a broadcastable class.
+ * @date 2025-07-03
+ */
 
-namespace xmipp4 
+#include <trompeloeil.hpp>
+
+#include <xmipp4/core/span.hpp>
+
+#include <vector>
+
+namespace xmipp4
+{
+namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+class mock_broadcastable
 {
-    switch (v)
-    {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
-    }
-}
+public:
+    static constexpr bool trompeloeil_movable_mock = true;
 
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
+    MAKE_MOCK1(broadcast_dry, void(std::vector<std::size_t>&), const);
+    MAKE_MOCK1(broadcast_to, mock_broadcastable(span<const std::size_t>), const);
 
+};
+
+} // namespace multidimensional
 } // namespace xmipp4

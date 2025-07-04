@@ -20,33 +20,46 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include "index.hpp"
+
 #include <type_traits>
-#include <cstddef>
+#include <sstream>
+#include <stdexcept>
 
 namespace xmipp4 
 {
-
-template <typename T, typename=void>
-struct is_index
-	: std::false_type
+namespace multidimensional
 {
-};
 
-template <typename I>
-struct is_index<I, typename std::enable_if<std::is_integral<I>::value>::type>
-	: std::true_type
+template <typename T>
+inline
+typename std::enable_if<is_index<T>::value, std::size_t>::type
+sanitize_index(T index, std::size_t extent)
 {
-};
+    auto result = static_cast<std::ptrdiff_t>(index);
+    
+    if (result < 0)
+    {
+        if (result < -static_cast<std::ptrdiff_t>(extent))
+        {
+            std::ostringstream oss;
+            oss << "Reverse index " << result 
+                << " is out of bounds for extent " << extent;
+            throw std::out_of_range(oss.str());
+        }
 
-template <typename I, I value>
-struct is_index<std::integral_constant<I, value>>
-	: std::true_type
-{
-};
+        result += extent;
+    }
+    else if (result >= static_cast<std::ptrdiff_t>(extent))
+    {
+        std::ostringstream oss;
+        oss << "Index " << result
+            << " is out of bounds for extent " << extent;
+        throw std::out_of_range(oss.str());
+    }
 
-template <typename I>
-std::size_t sanitize_index(I index, std::size_t length);
+    return static_cast<std::size_t>(result);
+}
 
+} // namespace multidimensional
 } // namespace xmipp4
-
-#include "index.inl"

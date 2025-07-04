@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,54 +21,37 @@
  ***************************************************************************/
 
 /**
- * @file layout_flags.inl
+ * @file mock_subscript_callable.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of layout_flags.hpp
- * @date 2024-05-01
- * 
+ * @brief Mock for a subscript callable function.
+ * @date 2025-02-11
  */
 
-#include "layout_flags.hpp"
+#include <xmipp4/core/multidimensional/subscript_tags.hpp>
+#include <xmipp4/core/multidimensional/slice.hpp>
 
-#include <unordered_map>
+#include <trompeloeil.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR 
-const char* to_string(layout_flag_bits flag) noexcept
+class mock_subscript_callable
 {
-    switch (flag)
+public:
+    MAKE_MOCK1(function_call, void(ellipsis_tag), const);
+    MAKE_MOCK1(function_call, void(new_axis_tag), const);
+    MAKE_MOCK1(function_call, void(std::ptrdiff_t), const);
+    MAKE_MOCK1(function_call, void(dynamic_slice), const);
+
+    template <typename T>
+    void operator()(T &&arg) const
     {
-    case layout_flag_bits::contiguous: return "contiguous";
-    case layout_flag_bits::column_major: return "column_major";
-    case layout_flag_bits::row_major: return "row_major";
-    default: return "";
+        function_call(std::forward<T>(arg));
     }
-}
 
-template<typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits flag)
-{
-    return os << to_string(flag);
-}
-
-
-
-
-
-XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
-{
-    return column_major_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
-{
-    return row_major_tag();
-}
+};
 
 } // namespace multidimensional
 } // namespace xmipp4

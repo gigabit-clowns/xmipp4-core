@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +20,36 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+/**
+ * @file checks.hpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Defines validation functions
+ * @date 2025-02-06
+ * 
+ */
+
+#include <cstddef>
 
 namespace xmipp4 
 {
-
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+namespace multidimensional
 {
-    switch (v)
-    {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
-    }
-}
 
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
+/**
+ * @brief Check that the permutation is valid for a given layout.
+ * 
+ * A permutation is valid if it is a permutation of the [0, count) range.
+ * 
+ * @tparam ForwardIt Forward iterator to std::size_t-s.
+ * @param first Iterator to the first element in the range.
+ * @param last Iterator to the past-the-end element in the range.
+ * @param count Number of axes in the layout.
+ * @throws std::invalid_argument If the permutation is not valid.
+ */
+template <typename ForwardIt>
+void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count);
 
+} // namespace multidimensional
 } // namespace xmipp4
+
+#include "checks.inl"

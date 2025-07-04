@@ -21,55 +21,57 @@
  ***************************************************************************/
 
 /**
- * @file layout_flags.hpp
+ * @file subscript_tags.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declares layout_flags flagset
- * @date 2024-05-01
+ * @brief Implementation of subscript_tags.hpp
+ * @date 2025-02-03
  * 
  */
 
-#include "../utils/bit.hpp"
-#include "../utils/flagset.hpp"
-#include "../platform/constexpr.hpp"
-
-#include <ostream>
+#include "subscript_tags.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
-enum class layout_flag_bits
+XMIPP4_INLINE_CONSTEXPR
+ellipsis_tag ellipsis() noexcept
 {
-    contiguous = utils::bit(0),
-    column_major = utils::bit(1),
-    row_major = utils::bit(2)
-};
+    return ellipsis_tag();
+}
 
-using layout_flags = utils::flagset<layout_flag_bits>;
+XMIPP4_INLINE_CONSTEXPR
+bool operator==(ellipsis_tag, ellipsis_tag) noexcept
+{
+    return true;
+}
 
-
-
-struct column_major_tag {};
-
-/**
- * @brief Construct a column major tag
- * 
- * @return column_major_tag
- */
-XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
+XMIPP4_INLINE_CONSTEXPR
+bool operator!=(ellipsis_tag, ellipsis_tag) noexcept
+{
+    return false;
+}
 
 
-struct row_major_tag {};
 
-/**
- * @brief Construct a row major tag
- * 
- * @return row_major_tag
- */
-XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
+XMIPP4_INLINE_CONSTEXPR
+new_axis_tag new_axis() noexcept
+{
+    return new_axis_tag();
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator==(new_axis_tag, new_axis_tag) noexcept
+{
+    return true;
+}
+
+XMIPP4_INLINE_CONSTEXPR
+bool operator!=(new_axis_tag, new_axis_tag) noexcept
+{
+    return false;
+}
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "layout_flags.inl"

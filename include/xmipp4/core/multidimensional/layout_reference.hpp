@@ -212,6 +212,9 @@ private:
     template <typename Func, typename... Args>
     layout_reference apply(Func &&func, Args&& ...args);
 
+    template <typename Func, typename... Args>
+    layout_reference apply_no_empty(Func &&func, Args&& ...args);
+
 };
 
 

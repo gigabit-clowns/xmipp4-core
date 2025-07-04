@@ -96,7 +96,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
-    return apply(std::mem_fn(&layout_type::apply_subscripts, subscripts));
+    return apply_no_empty(std::mem_fn(&layout_type::apply_subscripts, subscripts));
 }
 
 template <typename T>
@@ -111,7 +111,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::permute(span<const std::size_t> order) const
 {
-    return apply(std::mem_fn(&layout_type::permute, order));
+    return apply_no_empty(std::mem_fn(&layout_type::permute, order));
 }
 
 template <typename T>
@@ -119,7 +119,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
-    return apply(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
+    return apply_no_empty(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
 }
 
 template <typename T>
@@ -151,7 +151,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
 {
-    return apply(std::mem_fn(&layout_type::broadcast_to, extents));
+    return apply_no_empty(std::mem_fn(&layout_type::broadcast_to, extents));
 }
 
 
@@ -160,6 +160,23 @@ template <typename T>
 template <typename Func, typename... Args>
 inline
 layout_reference<T> layout_reference<T>::apply(Func &&func, Args&& ...args)
+{
+    layout_reference result;
+
+    if (m_layout)
+    {
+        result = layout_reference(
+            std::forward<Func>(func)(*m_layout, std::forward<Args>(args)...)
+        );
+    }
+
+    return result;
+}
+
+template <typename T>
+template <typename Func, typename... Args>
+inline
+layout_reference<T> layout_reference<T>::apply_no_empty(Func &&func, Args&& ...args)
 {
     layout_reference result;
 

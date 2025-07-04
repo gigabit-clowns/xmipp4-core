@@ -120,10 +120,7 @@ private:
         }
 
         // Copy reminder
-        if (first_axis != last_axis)
-        {
-            axes.insert(head_ite, first_axis, last_axis);
-        }
+        axes.insert(head_ite, first_axis, last_axis);
     }
 
     template <typename BidirIt1, typename BidirIt2>
@@ -178,10 +175,7 @@ private:
         }
 
         // Copy reminder
-        if (first_axis != last_axis)
-        {
-            axes.insert(head_ite, first_axis, last_axis);
-        }
+        axes.insert(head_ite, first_axis, last_axis);
     }
 
 };

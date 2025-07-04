@@ -28,6 +28,7 @@
 
 #include "strided_axis.hpp"
 
+#include "index.hpp"
 #include "../math/abs.hpp"
 
 namespace xmipp4
@@ -146,7 +147,8 @@ XMIPP4_INLINE_CONSTEXPR
 bool is_contiguous(const strided_axis &major,
                    const strided_axis &minor ) noexcept
 {
-    const auto expected = major.get_stride()*major.get_extent();
+    const auto expected = 
+        major.get_stride()*static_cast<std::ptrdiff_t>(major.get_extent());
     return expected == minor.get_stride();
 }
 
@@ -272,6 +274,15 @@ void apply_index(const strided_axis &axis,
     offset += increment;
 }
 
+inline
+void apply_index_safe(const strided_axis &axis, 
+                      std::ptrdiff_t &offset,
+                      std::ptrdiff_t index )
+{
+    const auto sanitized_index = sanitize_index(index, axis.get_extent());
+    apply_index(axis, offset, sanitized_index);
+}
+
 XMIPP4_INLINE_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
@@ -281,7 +292,6 @@ void apply_slice(strided_axis &axis,
         const auto start = slice.get_start();
         const auto count = slice.get_count();
         const auto step = slice.get_step();
-        const auto extent = axis.get_extent();
         const auto stride = axis.get_stride();
 
         const auto new_stride = stride*step;
@@ -289,6 +299,15 @@ void apply_slice(strided_axis &axis,
 
         axis = strided_axis(count, new_stride);
         offset += increment;
+}
+
+inline
+void apply_slice_safe(strided_axis &axis,
+                      std::ptrdiff_t &offset,
+                      const dynamic_slice &slice)
+{
+    const auto sanitized_slice = sanitize_slice(slice, axis.get_extent());
+    apply_slice(axis, offset, sanitized_slice);
 }
 
 } // namespace multidimensional

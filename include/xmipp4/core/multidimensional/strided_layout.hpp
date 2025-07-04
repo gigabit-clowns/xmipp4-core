@@ -151,8 +151,15 @@ public:
     XMIPP4_NODISCARD
     std::ptrdiff_t get_offset() const noexcept;
 
+    /**
+     * @brief Computes the minimum storage size (in elements) for this layout.
+     * 
+     * @return std::size_t Minimum storage size in elements.
+     */
+    XMIPP4_NODISCARD
+    std::size_t compute_storage_requirement() const noexcept;
 
-    
+
     /**
      * @brief Apply a set of dynamic subscripts to this layout.
      * 

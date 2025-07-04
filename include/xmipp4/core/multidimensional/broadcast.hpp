@@ -46,13 +46,13 @@ namespace multidimensional
  * in the broadcasting operation. Leave it empty to avoid this. The resulting
  * consensus shape will be stored in this variable.
  * @param items Items to be broadcasted.
- * @return std::tuple<Broadcastable...> Broadcasted items. When successful,
+ * @return std::tuple<Broadcastables...> Broadcasted items. When successful,
  * all of the returned items will have the same shape as the values
  * written in extents.
  */
 template <typename... Broadcastables>
 std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
-                                       const Broadcastables&... items );
+                                        const Broadcastables&... items );
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -20,46 +20,33 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "index.hpp"
+/**
+ * @file mock_broadcastable.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Definition of a broadcastable class.
+ * @date 2025-07-03
+ */
 
-#include <type_traits>
-#include <sstream>
-#include <stdexcept>
+#include <trompeloeil.hpp>
 
-namespace xmipp4 
+#include <xmipp4/core/span.hpp>
+
+#include <vector>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-template <typename T>
-inline
-typename std::enable_if<is_index<T>::value, std::size_t>::type
-sanitize_index(T index, std::size_t extent)
+class mock_broadcastable
 {
-    auto result = static_cast<std::ptrdiff_t>(index);
-    
-    if (result < 0)
-    {
-        if (result < -static_cast<std::ptrdiff_t>(extent))
-        {
-            std::ostringstream oss;
-            oss << "Reverse index " << result 
-                << " is out of bounds for extent " << extent;
-            throw std::out_of_range(oss.str());
-        }
+public:
+    static constexpr bool trompeloeil_movable_mock = true;
 
-        result += extent;
-    }
-    else if (result >= static_cast<std::ptrdiff_t>(extent))
-    {
-        std::ostringstream oss;
-        oss << "Index " << result
-            << " is out of bounds for extent " << extent;
-        throw std::out_of_range(oss.str());
-    }
+    MAKE_MOCK1(broadcast_dry, void(std::vector<std::size_t>&), const);
+    MAKE_MOCK1(broadcast_to, mock_broadcastable(span<const std::size_t>), const);
 
-    return static_cast<std::size_t>(result);
-}
+};
 
 } // namespace multidimensional
 } // namespace xmipp4

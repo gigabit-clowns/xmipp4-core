@@ -476,7 +476,7 @@ void sanitize_slice_negative_start(dynamic_slice &slice, std::size_t extent)
     const auto start = slice.get_start();
     if (start < 0)
     {
-        if (start < -extent)
+        if (start < -static_cast<std::ptrdiff_t>(extent))
         {
             std::ostringstream oss;
             oss << "Slice start negative index " << start 
@@ -496,7 +496,7 @@ void sanitize_slice_start(dynamic_slice &slice, std::size_t extent)
     const auto step = slice.get_step();
     if (step > 0)
     {
-        if (count > 0 && start > extent)
+        if (count > 0 && start > static_cast<std::ptrdiff_t>(extent))
         {
             std::ostringstream oss;
             oss << "Slice start index " << start 
@@ -507,7 +507,7 @@ void sanitize_slice_start(dynamic_slice &slice, std::size_t extent)
     }
     else // step < 0
     {
-        if (count > 0 && start >= extent)
+        if (count > 0 && start >= static_cast<std::ptrdiff_t>(extent))
         {
             std::ostringstream oss;
             oss << "Slice start index " << start 
@@ -550,7 +550,7 @@ void sanitize_slice_count(dynamic_slice &slice, std::size_t extent)
             const auto new_count = (start + abs_step - 1) / abs_step + 1;
             slice.set_count(new_count);
         }
-        else if (count > 0 && abs_step*(count-1) > start)
+        else if (count > 0U && abs_step*(count-1) > start)
         {
             std::ostringstream oss;
             oss << "Reversed slice with count " << count 

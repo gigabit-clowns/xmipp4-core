@@ -30,6 +30,8 @@
 
 #include "layout_reference.hpp"
 
+#include <sstream>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -81,6 +83,13 @@ std::ptrdiff_t layout_reference<T>::get_offset() const noexcept
 
 template <typename T>
 XMIPP4_NODISCARD inline
+std::size_t layout_reference<T>::compute_storage_requirement() const noexcept
+{
+    return m_layout ? m_layout->compute_storage_requirement() : 0;
+}
+
+template <typename T>
+XMIPP4_NODISCARD inline
 std::shared_ptr<const typename layout_reference<T>::layout_type> 
 layout_reference<T>::get_shared() const noexcept
 {
@@ -94,7 +103,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
-    return apply(std::mem_fn(&layout_type::apply_subscripts, subscripts));
+    return apply_no_empty(std::mem_fn(&layout_type::apply_subscripts, subscripts));
 }
 
 template <typename T>
@@ -109,7 +118,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::permute(span<const std::size_t> order) const
 {
-    return apply(std::mem_fn(&layout_type::permute, order));
+    return apply_no_empty(std::mem_fn(&layout_type::permute, order));
 }
 
 template <typename T>
@@ -117,7 +126,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
-    return apply(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
+    return apply_no_empty(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
 }
 
 template <typename T>
@@ -131,7 +140,17 @@ template <typename T>
 inline
 void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents) const
 {
-    return apply(std::mem_fn(&layout_type::broadcast_dry, extents)); // TODO broadcast_dry does not return
+    if (m_layout)
+    {
+        m_layout->broadcast_dry(extents);
+    }
+    else if (!extents.empty())
+    {
+        std::ostringstream oss;
+        oss << "Cannot broadcast shape of " << extents.size()
+            << " axes into an empty layout";
+        throw std::invalid_argument(oss.str());
+    }
 }
 
 template <typename T>
@@ -139,12 +158,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
 {
-    if (!m_layout && !extents.empty())
-    {
-        m_layout = std::make_shared<layout_type>();
-    }
-
-    return apply(std::mem_fn(&layout_type::broadcast_to, extents));
+    return apply_no_empty(std::mem_fn(&layout_type::broadcast_to, extents));
 }
 
 
@@ -153,6 +167,23 @@ template <typename T>
 template <typename Func, typename... Args>
 inline
 layout_reference<T> layout_reference<T>::apply(Func &&func, Args&& ...args)
+{
+    layout_reference result;
+
+    if (m_layout)
+    {
+        result = layout_reference(
+            std::forward<Func>(func)(*m_layout, std::forward<Args>(args)...)
+        );
+    }
+
+    return result;
+}
+
+template <typename T>
+template <typename Func, typename... Args>
+inline
+layout_reference<T> layout_reference<T>::apply_no_empty(Func &&func, Args&& ...args)
 {
     layout_reference result;
 

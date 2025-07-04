@@ -32,7 +32,6 @@
 
 #include "checks.hpp"
 
-#include <list>
 #include <algorithm>
 
 namespace xmipp4 
@@ -49,8 +48,7 @@ public:
                            BidirIt2 first_axis, BidirIt2 last_axis,
                            std::ptrdiff_t offset )
     {
-        // Using list instead of vector due to the chaotic insertion pattern
-        std::list<strided_axis> axes; 
+        std::vector<strided_axis> axes; 
 
         process_forwards(
             first_subscript, last_subscript,
@@ -59,10 +57,7 @@ public:
             axes, axes.begin()
         );
 
-        return strided_layout(
-            std::vector<strided_axis>(axes.cbegin(), axes.cend()), 
-            offset
-        );
+        return strided_layout(std::move(axes), offset);
     }
 
 private:
@@ -71,8 +66,8 @@ private:
     void process_forwards(BidirIt1 first_subscript, BidirIt1 last_subscript,
                           BidirIt2 first_axis, BidirIt2 last_axis, 
                           std::ptrdiff_t &offset,
-                          std::list<strided_axis> &axes,
-                          std::list<strided_axis>::iterator head_ite )
+                          std::vector<strided_axis> &axes,
+                          std::vector<strided_axis>::iterator head_ite )
     {
         while (first_axis != last_axis && first_subscript != last_subscript)
         {
@@ -133,8 +128,8 @@ private:
     void process_backwards(BidirIt1 first_subscript, BidirIt1 last_subscript,
                            BidirIt2 first_axis, BidirIt2 last_axis, 
                            std::ptrdiff_t &offset,
-                           std::list<strided_axis> &axes,
-                           std::list<strided_axis>::iterator head_ite )
+                           std::vector<strided_axis> &axes,
+                           std::vector<strided_axis>::iterator head_ite )
     {
         while (first_axis != last_axis && first_subscript != last_subscript)
         {

@@ -50,7 +50,7 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param extent Number of elements in the axis. Defaults to 0
+     * @param extent Number of elements in the axis.
      * @param stride Step between consecutive elements. In items.
      */
     XMIPP4_CONSTEXPR strided_axis(std::size_t extent, 

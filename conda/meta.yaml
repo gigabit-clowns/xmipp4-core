@@ -54,7 +54,7 @@ build:
 
 requirements:
   run:
-    - spdlog
+    - spdlog # [not win]
 
   build:
     - python                                 # [build_platform != target_platform]
@@ -63,7 +63,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake>=3.16
     - make # [unix]
-    - spdlog
+    - spdlog # [not win]
     - ninja
 
   host:

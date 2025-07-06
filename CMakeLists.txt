@@ -56,13 +56,6 @@ if(XMIPP4_CORE_BUILD_DOC)
 	add_subdirectory(doc)
 endif()
 
-# Force header-only spdlog/fmt on MinGW to avoid linker errors with conda binaries
-if(MINGW)
-    set(SPDLOG_FMT_EXTERNAL OFF CACHE BOOL "" FORCE)
-    set(SPDLOG_HEADER_ONLY ON CACHE BOOL "" FORCE)
-    set(FMT_HEADER_ONLY ON CACHE BOOL "" FORCE)
-endif()
-
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_ghc_filesystem(VERSION 1.5.14)

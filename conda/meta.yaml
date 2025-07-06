@@ -42,6 +42,7 @@ source:
 build:
   number: 0
   script_env:
+    - CMAKE_GENERATOR=Ninja
     - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
     # C++17 features marked as not available
@@ -61,6 +62,7 @@ requirements:
     - cmake>=3.16
     - make # [unix]
     - spdlog
+    - ninja
 
   host:
     - python

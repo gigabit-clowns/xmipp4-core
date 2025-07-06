@@ -58,7 +58,6 @@ experimental=true # For wheel.install-dir
 wheel.install-dir="/data"
 wheel.py-api = "py3" # Python version agnostic
 cmake.version = ">=3.16"
-cmake.args = []
 cmake.build-type = "Release"
 
 [tool.scikit-build.metadata.version]

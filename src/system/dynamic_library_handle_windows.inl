@@ -56,7 +56,11 @@ inline void dynamic_library_close(void* handle) noexcept
 
 inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
 {
-    return ::GetProcAddress(static_cast<HMODULE>(handle), name);
+    return reinterpret_cast<void*>(
+        reinterpret_cast<uintptr_t>(
+            ::GetProcAddress(static_cast<HMODULE>(handle), name)
+        )
+    );
 }
 
 inline std::string dynamic_library_symbol_filename_lookup(const void* symbol)

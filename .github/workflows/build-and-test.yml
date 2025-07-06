@@ -94,7 +94,7 @@ jobs:
         os:
         - ubuntu-latest
         - macos-latest
-        #- windows-latest # FIXME
+        - windows-latest # FIXME
   
     runs-on: ${{ matrix.os }}
     defaults:

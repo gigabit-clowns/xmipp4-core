@@ -48,6 +48,8 @@ build:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - export CC=gcc  # [win]
+    - export CXX=g++  # [win]
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
 
 requirements:
@@ -55,13 +57,14 @@ requirements:
     - spdlog
 
   build:
-    - ninja
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
+    - make # [unix]
     - spdlog
+    - ninja
 
   host:
     - python

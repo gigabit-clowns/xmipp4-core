@@ -55,14 +55,13 @@ requirements:
     - spdlog
 
   build:
+    - ninja
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake>=3.16
-    - make # [unix]
     - spdlog
-    - ninja
 
   host:
     - python

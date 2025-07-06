@@ -60,6 +60,7 @@ wheel.py-api = "py3" # Python version agnostic
 cmake.version = ">=3.16"
 cmake.args = []
 cmake.build-type = "Release"
+cmake.generator = "Ninja"
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"

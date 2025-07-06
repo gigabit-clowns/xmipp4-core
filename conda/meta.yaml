@@ -42,7 +42,6 @@ source:
 build:
   number: 0
   script_env:
-    - CMAKE_GENERATOR=Ninja
     - XMIPP4_CORE_BUILD_SPDLOG=OFF # [not win]
   script:
     # C++17 features marked as not available
@@ -50,7 +49,7 @@ build:
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
     - set "CC=gcc"  # [win]
     - set "CXX=g++"  # [win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="-G Ninja"
 
 requirements:
   run:

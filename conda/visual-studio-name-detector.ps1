@@ -4,7 +4,7 @@
 #    -property catalog_productDisplayVersion,catalog_productLineVersion `
 #    -nologo
 
-$props = & vswhere -latest -products -property catalog_productDisplayVersion,catalog_productLineVersion
+$props = & vswhere -latest -property catalog_productDisplayVersion,catalog_productLineVersion -nologo
 Write-Output $props
 exit 1
 

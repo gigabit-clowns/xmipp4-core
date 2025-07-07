@@ -108,41 +108,26 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          echo Checking for Visual Studio installations...
-          set FOUND=0
-
-          if defined VS140COMNTOOLS (
-            echo VS2015 found at: %VS140COMNTOOLS%
-            set FOUND=1
-            if exist "%VS140COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" (
-              call "%VS140COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x64 && cl.exe
+          echo Checking for Visual Studio installations with vswhere...
+          set VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          if exist %VSWHERE% (
+            %VSWHERE% -all -products * -property installationPath
+            echo.
+            echo Visual Studio versions:
+            for /f "delims=" %%i in ('%VSWHERE% -all -products * -property installationPath') do (
+              if exist "%%i\Common7\IDE\devenv.exe" (
+                "%%i\Common7\IDE\devenv.exe" /?
+              ) else (
+                echo No devenv.exe in %%i
+              )
             )
+            echo.
+            echo Visual Studio detection complete.
+            exit /b 1
+          ) else (
+            echo vswhere.exe not found!
+            exit /b 1
           )
-          if defined VS150COMNTOOLS (
-            echo VS2017 found at: %VS150COMNTOOLS%
-            set FOUND=1
-            if exist "%VS150COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" (
-              call "%VS150COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x64 && cl.exe
-            )
-          )
-          if defined VS160COMNTOOLS (
-            echo VS2019 found at: %VS160COMNTOOLS%
-            set FOUND=1
-            if exist "%VS160COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" (
-              call "%VS160COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x64 && cl.exe
-            )
-          )
-          if defined VS170COMNTOOLS (
-            echo VS2022 found at: %VS170COMNTOOLS%
-            set FOUND=1
-            if exist "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" (
-              call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x64 && cl.exe
-            )
-          )
-
-          echo.
-          echo Visual Studio detection complete.
-          exit /b 1
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3

@@ -116,12 +116,15 @@ jobs:
             "%VSWHERE%" -all -products * -property installationPath,displayName,catalog_productLineVersion
             echo.
             echo Visual Studio MSVC compiler versions (if available):
-            for /f "delims=" %%i in ('"%VSWHERE%" -all -products * -property installationPath') do (
+            "%VSWHERE%" -all -products * -property installationPath > vs_paths.txt
+            for /f "usebackq delims=" %%i in (vs_paths.txt) do (
               echo ----
               echo Installation: %%i
               if exist "%%i\VC\Tools\MSVC" (
-                for /f "delims=" %%v in ('dir /b /ad "%%i\VC\Tools\MSVC"') do (
+                dir /b /ad "%%i\VC\Tools\MSVC" > msvc_dirs.txt
+                for /f "usebackq delims=" %%v in (msvc_dirs.txt) do (
                   if exist "%%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64\cl.exe" (
+                    echo MSVC version directory: %%v
                     "%%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64\cl.exe"
                   ) else (
                     echo No cl.exe found in %%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64
@@ -131,6 +134,8 @@ jobs:
                 echo No MSVC tools found in %%i
               )
             )
+            del vs_paths.txt
+            del msvc_dirs.txt
             echo.
             echo Visual Studio detection complete.
             exit /b 1

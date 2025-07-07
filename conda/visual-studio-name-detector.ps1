@@ -4,7 +4,11 @@
 #    -property catalog_productDisplayVersion,catalog_productLineVersion `
 #    -nologo
 
-$props = & vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$props = & vswhere`
+    -latest `
+    -products * `
+    -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+    -property installationPath
 Write-Output $props
 exit 1
 

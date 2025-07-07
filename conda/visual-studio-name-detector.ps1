@@ -1,21 +1,12 @@
-# PowerShell script to detect the latest Visual Studio and return a string like:
-# "Visual Studio <display version major> <year>"
-Invoke-Expression "vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1"
+$props = & vswhere `
+    -latest `
+    -products * `
+    -property catalog_productDisplayVersion,catalog_productLineVersion `
+    -nologo
 
-$instance = & "vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1"
-if (-not $instance) {
-    Write-Error "No Visual Studio installation found."
-    exit 1
-}
+$catalogProductDisplayVersion = $props[0].Trim()
+$catalogProductLineVersion   = $props[1].Trim()
+$catalogProductLineMajor = $catalogProductLineVersion.Split('.')[0]
 
-$displayVersion = $instance.catalog_productDisplayVersion
-$year = $instance.catalog_productLineVersion
-
-if (-not $displayVersion -or -not $year) {
-    Write-Error "Could not determine Visual Studio version/year."
-    exit 1
-}
-
-$major = $displayVersion.Split('.')[0]
-
-Write-Output "Visual Studio $major $year"
+Write-Host "Display Version: $catalogProductDisplayVersion"
+Write-Host "Line Major:      $catalogProductLineMajor"

@@ -8,7 +8,8 @@ $props = & vswhere `
     -latest `
     -products * `
     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-    -property installationPath
+    -property catalog_productDisplayVersion
+
 Write-Output $props
 exit 1
 

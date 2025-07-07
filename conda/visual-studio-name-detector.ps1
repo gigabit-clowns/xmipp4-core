@@ -4,6 +4,9 @@ $props = & vswhere `
     -property catalog_productDisplayVersion,catalog_productLineVersion `
     -nologo
 
+Write-Host $props
+exit 1
+
 $catalogProductDisplayVersion = $props[0].Trim()
 $catalogProductLineVersion   = $props[1].Trim()
 $catalogProductLineMajor = $catalogProductLineVersion.Split('.')[0]

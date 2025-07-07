@@ -57,9 +57,7 @@ inline void dynamic_library_close(void* handle) noexcept
 inline void* dynamic_library_get_symbol(void* handle, const char* name) noexcept
 {
     return reinterpret_cast<void*>(
-        reinterpret_cast<uintptr_t>(
-            ::GetProcAddress(static_cast<HMODULE>(handle), name)
-        )
+        ::GetProcAddress(static_cast<HMODULE>(handle), name)
     );
 }
 

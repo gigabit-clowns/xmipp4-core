@@ -8,7 +8,7 @@ $displayVersion = & vswhere `
     -latest `
     -products * `
     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-    -property catalog_productDisplayVersion
+    -property catalog_productDisplayVersion,catalog_productLineVersion
 
 $lineVersion = & vswhere `
     -latest `

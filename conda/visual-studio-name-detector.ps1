@@ -1,12 +1,13 @@
 # PowerShell script to detect the latest Visual Studio and return a string like:
 # "Visual Studio <display version major> <year>"
 
-if (!(Test-Path vswhere)) {
-    Write-Error "vswhere.exe not found."
+try {
+    $instance = & vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1
+} catch {
+    Write-Error "vswhere.exe not found in PATH."
     exit 1
 }
 
-$instance = & vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1
 if (-not $instance) {
     Write-Error "No Visual Studio installation found."
     exit 1

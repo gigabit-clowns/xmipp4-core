@@ -111,14 +111,25 @@ jobs:
           echo Checking for Visual Studio installations with vswhere...
           set VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
           if exist %VSWHERE% (
-            %VSWHERE% -all -products * -property installationPath
             echo.
-            echo Visual Studio versions:
-            for /f "delims=" %%i in ('%VSWHERE% -all -products * -property installationPath') do (
-              if exist "%%i\Common7\IDE\devenv.exe" (
-                "%%i\Common7\IDE\devenv.exe" /?
+            echo Visual Studio installations:
+            %VSWHERE% -all -products * -property installationPath,displayName,catalog_productLineVersion
+            echo.
+            echo Visual Studio versions and MSVC compiler (if available):
+            for /f "usebackq tokens=*" %%i in (`%VSWHERE% -all -products * -property installationPath`) do (
+              echo ----
+              echo Installation: %%i
+              if exist "%%i\VC\Tools\MSVC" (
+                for /f %%v in ('dir /b /ad "%%i\VC\Tools\MSVC"') do (
+                  set "MSVCVER=%%v"
+                  if exist "%%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64\cl.exe" (
+                    "%%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64\cl.exe"
+                  ) else (
+                    echo No cl.exe found in %%i\VC\Tools\MSVC\%%v\bin\Hostx64\x64
+                  )
+                )
               ) else (
-                echo No devenv.exe in %%i
+                echo No MSVC tools found in %%i
               )
             )
             echo.

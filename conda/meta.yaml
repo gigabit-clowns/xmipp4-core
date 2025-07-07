@@ -42,18 +42,16 @@ source:
 build:
   number: 0
   script_env:
-    - XMIPP4_CORE_BUILD_SPDLOG=OFF # [not win]
+    - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    - set "CC=gcc"  # [win]
-    - set "CXX=g++"  # [win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="-G Ninja"
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
 
 requirements:
   run:
-    - spdlog # [not win]
+    - spdlog
 
   build:
     - python                                 # [build_platform != target_platform]
@@ -62,8 +60,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake>=3.16
     - make # [unix]
-    - spdlog # [not win]
-    - ninja
+    - spdlog
 
   host:
     - python

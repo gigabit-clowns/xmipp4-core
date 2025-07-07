@@ -112,13 +112,14 @@ jobs:
 
       - name: Check Visual
         if: matrix.os == 'windows-latest'
-        shell: cmd
         # Installation: C:\Program Files\Microsoft Visual Studio\2022\Enterprise
         # MSVC tools found in C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC
+        shell: pwsh
         run: |
-          echo Checking for Visual Studio installations with vswhere...
-          vswhere
-          exit /b 1
+          Write-Host 'Checking Visual Studio version using visual-studio-name-detector.ps1...'
+          $result = & "${{ github.workspace }}/conda/visual-studio-name-detector.ps1"
+          Write-Host $result
+          exit 1
 
       - name: Install conda-build and conda-verify
         run: conda install -y conda-build conda-verify python=3.12

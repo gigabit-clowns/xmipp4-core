@@ -1,9 +1,10 @@
-$props = & vswhere `
-    -latest `
-    -products * `
-    -property catalog_productDisplayVersion,catalog_productLineVersion `
-    -nologo
+#$props = & vswhere `
+#    -latest `
+#    -products * `
+#    -property catalog_productDisplayVersion,catalog_productLineVersion `
+#    -nologo
 
+$props = & vswhere
 Write-Output $props
 exit 1
 

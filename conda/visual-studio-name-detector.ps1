@@ -4,13 +4,20 @@
 #    -property catalog_productDisplayVersion,catalog_productLineVersion `
 #    -nologo
 
-$props = & vswhere `
+$displayVersion = & vswhere `
     -latest `
     -products * `
     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     -property catalog_productDisplayVersion
 
-Write-Output $props
+$lineVersion = & vswhere `
+    -latest `
+    -products * `
+    -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+    -property catalog_productLineVersion
+
+Write-Output $displayVersion
+Write-Output $lineVersion
 exit 1
 
 $catalogProductDisplayVersion = $props[0].Trim()

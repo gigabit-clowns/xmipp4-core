@@ -25,8 +25,8 @@ build:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    - echo %RECIPE_DIR% # [win]
-    - powershell -NoProfile -NonInteractive -Command "Write-Host $env:RECIPE_DIR" # [win]
+    - echo CWD: %CD% # [win]
+    #- powershell -NoProfile -NonInteractive -Command "Write-Host $env:RECIPE_DIR" # [win]
     #- echo "${RECIPE_DIR}\visual-studio-name-detector.ps1" # [win]
     #- powershell -NoProfile -NonInteractive -Command { $generator = & "${RECIPE_DIR}\visual-studio-name-detector.ps1"; Write-Host "Detected generator:" $generator; $env:CMAKE_GENERATOR = $generator }  # [win]
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation

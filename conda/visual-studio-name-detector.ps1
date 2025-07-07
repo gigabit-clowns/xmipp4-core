@@ -1,6 +1,6 @@
 # PowerShell script to detect the latest Visual Studio and return a string like:
 # "Visual Studio <display version major> <year>"
-Invoke-Expression vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1
+Invoke-Expression "vswhere -latest -products * -format json | ConvertFrom-Json | Select-Object -First 1"
 exit 1
 $vswhere = "$Env:ProgramFiles(x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 if (!(Test-Path $vswhere)) {

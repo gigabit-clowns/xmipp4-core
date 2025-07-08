@@ -31,10 +31,10 @@ build:
     - "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%RECIPE_DIR%\\visual-studio-name-detector.ps1\" > generator.txt"  # [win]
     - "set /p VS_GENERATOR=<generator.txt"  # [win]
     - set CMAKE_ARGS=%CMAKE_ARGS% -G %VS_GENERATOR%  # [win]
-    - echo "Generator obtained %VS_GENERATOR%" # [win]
-    - echo 'CMAKE ARGS "%CMAKE_ARGS%"' # [win]
+    - echo Generator obtained %VS_GENERATOR% # [win]
+    - echo CMAKE ARGS %CMAKE_ARGS% # [win]
     - echo "------------------- End -------------------" # [win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args=%CMAKE_ARGS%  # [win]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="-G %VS_GENERATOR%"  # [win]
     
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation  # [not win]
 

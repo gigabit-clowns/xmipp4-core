@@ -27,14 +27,9 @@ build:
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
     
     # Make sure an existing Visual Studio installation is being used 
-    - echo "------------------- Start -------------------" # [win]
     - "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%RECIPE_DIR%\\visual-studio-name-detector.ps1\" > generator.txt"  # [win]
     - "set /p VS_GENERATOR=<generator.txt"  # [win]
-    - echo Generator obtained %VS_GENERATOR% # [win]
-    - set CMAKE_ARGS=%CMAKE_ARGS% -G "%VS_GENERATOR%"  # [win]
-    - echo CMAKE ARGS %CMAKE_ARGS% # [win]
-    - echo "------------------- End -------------------" # [win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation # [win]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="%CMAKE_ARGS% -G %VS_GENERATOR%" # [win]
     
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation # [not win]
 

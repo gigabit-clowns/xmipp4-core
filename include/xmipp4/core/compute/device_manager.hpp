@@ -52,7 +52,7 @@ class device_create_parameters;
  * @brief Centralize multiple device_backends.
  * 
  */
-class XMIPP4_CORE_API device_manager final
+class device_manager final
     : public basic_backend_manager<device_backend>
 {
 public:

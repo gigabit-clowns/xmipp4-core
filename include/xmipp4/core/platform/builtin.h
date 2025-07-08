@@ -42,7 +42,7 @@
  * defaults to false.
  * 
  */
-#if defined(__has_builtin) && defined(__GNUC__)
+#if defined(__has_builtin) && !(defined(__MINGW32__) || defined(__MINGW64__))
     #define XMIPP4_HAS_BUILTIN(fun) __has_builtin(__builtin_##fun)
 #elif defined(XMIPP4_DOC_BUILD)
     #define XMIPP4_HAS_BUILTIN(fun) 1

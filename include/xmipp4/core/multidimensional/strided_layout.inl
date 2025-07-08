@@ -404,20 +404,31 @@ strided_layout strided_layout::squeeze() const
 }
 
 inline
-void strided_layout::broadcast_dry(std::vector<std::size_t> &extents) const
+void strided_layout::broadcast_dry(std::vector<std::size_t> &extents,
+                                   std::size_t trailing_dimensions ) const
 {
-    if (m_axes.size() < extents.size())
+    if (trailing_dimensions > m_axes.size())
+    {
+        throw std::invalid_argument(
+            "Requesting more trailing dimensions than axes in the layout"
+        );
+    }
+
+    const std::size_t count = m_axes.size() - trailing_dimensions;
+    if (count < extents.size())
     {
         std::ostringstream oss;
         oss << "Can not broadcast shape with " << extents.size()
-            << " axes into a layout of " << m_axes.size() << " axes.";
+            << " axes into a layout of " << m_axes.size() 
+            << " axes with " << trailing_dimensions 
+            << " trailing dimensions";
         throw std::invalid_argument(oss.str());
     }
     
-    if (m_axes.size() > extents.size())
+    if (count > extents.size())
     {
         const std::size_t old_size = extents.size();
-        const std::size_t new_size = m_axes.size();
+        const std::size_t new_size = count;
         const std::size_t padding = new_size - old_size;
         extents.insert(
             extents.cbegin(),
@@ -426,7 +437,6 @@ void strided_layout::broadcast_dry(std::vector<std::size_t> &extents) const
         );
     }
 
-    const std::size_t count = extents.size(); 
     for(std::size_t i = 0; i < count; ++i)
     {
         if (!multidimensional::broadcast_dry(m_axes[i], extents[i]))
@@ -441,21 +451,24 @@ void strided_layout::broadcast_dry(std::vector<std::size_t> &extents) const
 
 XMIPP4_NODISCARD inline
 strided_layout 
-strided_layout::broadcast_to(span<const std::size_t> extents) const
+strided_layout::broadcast_to(span<const std::size_t> extents,
+                             std::size_t trailing_dimensions ) const
 {
-
-    if (m_axes.size() > extents.size())
+    const auto total = extents.size() + trailing_dimensions;
+    if (m_axes.size() > total)
     {
         std::ostringstream oss;
         oss << "Can not broadcast layout with " << m_axes.size()
-            << " axes into a shape of " << extents.size() << " axes.";
+            << " axes into a shape of " << extents.size() 
+            << " axes and " << trailing_dimensions
+            << " trailing dimensions.";
         throw std::invalid_argument(oss.str());
     }
 
     std::vector<strided_axis> axes;
-    axes.reserve(extents.size());
+    axes.reserve(total);
     
-    const auto padding = extents.size() - m_axes.size();
+    const std::size_t padding = total - m_axes.size();
     std::fill_n(
         std::back_inserter(axes), padding,
         make_phantom_axis()
@@ -465,7 +478,7 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
         std::back_inserter(axes)
     );
 
-    const std::size_t count = extents.size(); 
+    const auto count = extents.size();
     for(std::size_t i = 0; i < count; ++i)
     {
         if (!multidimensional::broadcast_to(axes[i], extents[i]))

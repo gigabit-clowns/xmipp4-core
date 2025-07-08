@@ -908,6 +908,38 @@ TEST_CASE("broadcast_dry in strided_layout should fill in the left and promote a
     layout.broadcast_dry(broadcast_extents);
     REQUIRE( broadcast_extents == extents );
 }
+TEST_CASE("broadcast_dry in strided_layout should fill in the left and promote axes with extent 1, leaving trailing dimensions out", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = 
+    {
+        123, 563, 1234, 245, 543, 453
+    };
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        23, 63, 12434, 532, 343, 355
+    };
+    const std::size_t offset = 47683;
+    const strided_layout layout(
+        extents.data(),
+        strides.data(), 
+        extents.size(),
+        offset
+    );
+
+    std::vector<std::size_t> broadcast_extents =
+    {
+        1, 245
+    };
+
+    const auto trailing_dimensions = 2;
+    layout.broadcast_dry(broadcast_extents, trailing_dimensions);
+
+    const std::vector<std::size_t> expected_extents = 
+    {
+        123, 563, 1234, 245
+    };
+    REQUIRE( broadcast_extents == expected_extents );
+}
 
 TEST_CASE("broadcast_dry in strided_layout should throw when the provided extents have more axes than the layout", "[strided_layout]")
 {
@@ -933,7 +965,7 @@ TEST_CASE("broadcast_dry in strided_layout should throw when the provided extent
     };
 
     REQUIRE_THROWS_AS( layout.broadcast_dry(broadcast_extents), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_dry(broadcast_extents), "Can not broadcast shape with 5 axes into a layout of 4 axes." );
+    REQUIRE_THROWS_WITH( layout.broadcast_dry(broadcast_extents), "Can not broadcast shape with 5 axes into a layout of 4 axes with 0 trailing dimensions" );
 }
 
 TEST_CASE("broadcast_dry in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
@@ -961,6 +993,33 @@ TEST_CASE("broadcast_dry in strided_layout should throw if an axis is not broadc
 
     REQUIRE_THROWS_AS( layout.broadcast_dry(broadcast_extents), std::invalid_argument );
     REQUIRE_THROWS_WITH( layout.broadcast_dry(broadcast_extents), "Can not broadcast extent 2 into an axis of extent 245" );
+}
+
+TEST_CASE("broadcast_dry in strided_layout should throw if requesting too many trailing axes", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = 
+    {
+        123, 563, 1234, 245
+    };
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        23, 63, 12434, 532
+    };
+    const std::size_t offset = 47683;
+    const strided_layout layout(
+        extents.data(),
+        strides.data(), 
+        extents.size(),
+        offset
+    );
+
+    std::vector<std::size_t> broadcast_extents =
+    {
+        2
+    };
+
+    REQUIRE_THROWS_AS( layout.broadcast_dry(broadcast_extents, 5), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_dry(broadcast_extents, 5), "Requesting more trailing dimensions than axes in the layout" );
 }
 
 TEST_CASE("broadcast_to in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
@@ -1005,6 +1064,56 @@ TEST_CASE("broadcast_to in strided_layout should fill in the left and promote ax
     }
 }
 
+TEST_CASE("broadcast_to in strided_layout should fill in the left and promote axes with extent 1 while passing through trailing dimensions", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = 
+    {
+        123, 1,  1, 245, 234, 123
+    };
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        3, 23, 63, 12434, 322, 342
+    };
+    const std::size_t offset = 7533;
+    const strided_layout layout(
+        extents.data(),
+        strides.data(), 
+        extents.size(),
+        offset
+    );
+    const std::vector<std::size_t> target_extents =
+    {
+        9, 7, 123, 5, 8, 245
+    };
+
+    const auto trailing_dimensions = 2;
+    const auto broadcasted_layout = layout.broadcast_to(
+        xmipp4::make_span(target_extents),
+        trailing_dimensions
+    );
+
+    REQUIRE( broadcasted_layout.get_rank() == target_extents.size() + trailing_dimensions );
+    REQUIRE( broadcasted_layout.get_offset() == layout.get_offset() );
+
+    const std::vector<std::size_t> expected_extents =
+    {
+        9, 7, 123, 5, 8, 245, 234, 123
+    };
+    const std::vector<std::size_t> expected_strides =
+    {
+        0, 0, 3, 0, 0, 12434, 322, 342
+    };
+
+    const auto count = broadcasted_layout.get_rank();
+    strided_axis axis;
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        broadcasted_layout.get_axis(i, axis);
+        REQUIRE( axis.get_extent() == expected_extents[i] );
+        REQUIRE( axis.get_stride() == expected_strides[i] );
+    }
+}
+
 TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")
 {
     const std::vector<std::size_t> extents = 
@@ -1027,8 +1136,8 @@ TEST_CASE("broadcast_to in strided_layout should throw when the provided extents
         8, 245
     };
 
-    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast layout with 4 axes into a shape of 2 axes." );
+    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents), 1), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents), 1), "Can not broadcast layout with 4 axes into a shape of 2 axes and 1 trailing dimensions." );
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")

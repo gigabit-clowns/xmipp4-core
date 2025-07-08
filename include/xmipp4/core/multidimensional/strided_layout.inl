@@ -95,14 +95,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index_safe(axis, offset, subscript.get_index());
+                apply_index(axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
                 head_ite = axes.insert(head_ite, axis);
-                apply_slice_safe(*head_ite, offset, subscript.get_slice());
+                apply_slice(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
                 ++first_axis;
                 ++head_ite;
@@ -154,14 +154,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index_safe(axis, offset, subscript.get_index());
+                apply_index(axis, offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
                 head_ite = axes.insert(head_ite, axis);
-                apply_slice_safe(*head_ite, offset, subscript.get_slice());
+                apply_slice(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
                 --last_axis;
                 break;
@@ -404,8 +404,9 @@ strided_layout strided_layout::squeeze() const
 }
 
 inline
-void strided_layout::broadcast_dry(std::vector<std::size_t> &extents,
-                                   std::size_t trailing_dimensions ) const
+void 
+strided_layout::broadcast_extents_to_layout(std::vector<std::size_t> &extents,
+                                            std::size_t trailing_dimensions ) const
 {
     if (trailing_dimensions > m_axes.size())
     {
@@ -439,7 +440,7 @@ void strided_layout::broadcast_dry(std::vector<std::size_t> &extents,
 
     for(std::size_t i = 0; i < count; ++i)
     {
-        if (!multidimensional::broadcast_dry(m_axes[i], extents[i]))
+        if (!multidimensional::broadcast_extent_to_axis(extents[i], m_axes[i]))
         {
             std::ostringstream oss;
             oss << "Can not broadcast extent " << extents[i]
@@ -451,7 +452,7 @@ void strided_layout::broadcast_dry(std::vector<std::size_t> &extents,
 
 XMIPP4_NODISCARD inline
 strided_layout 
-strided_layout::broadcast_to(span<const std::size_t> extents,
+strided_layout::broadcast_layout_to_extents(span<const std::size_t> extents,
                              std::size_t trailing_dimensions ) const
 {
     const auto total = extents.size() + trailing_dimensions;
@@ -481,7 +482,7 @@ strided_layout::broadcast_to(span<const std::size_t> extents,
     const auto count = extents.size();
     for(std::size_t i = 0; i < count; ++i)
     {
-        if (!multidimensional::broadcast_to(axes[i], extents[i]))
+        if (!multidimensional::broadcast_axis_to_extent(axes[i], extents[i]))
         {
             std::ostringstream oss;
             oss << "Can not broadcast axis of extent " << axes[i].get_extent()

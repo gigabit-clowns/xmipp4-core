@@ -43,8 +43,8 @@ class mock_broadcastable
 public:
     static constexpr bool trompeloeil_movable_mock = true;
 
-    MAKE_MOCK1(broadcast_dry, void(std::vector<std::size_t>&), const);
-    MAKE_MOCK1(broadcast_to, mock_broadcastable(span<const std::size_t>), const);
+    MAKE_MOCK1(broadcast_extents_to_layout, void(std::vector<std::size_t>&), const);
+    MAKE_MOCK1(broadcast_layout_to_extents, mock_broadcastable(span<const std::size_t>), const);
 
 };
 

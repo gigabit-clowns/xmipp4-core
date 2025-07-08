@@ -202,8 +202,8 @@ public:
      * @throws std::invalid_argument If the extent can not be broadcasted to 
      * this layout.
      */
-    void broadcast_dry(std::vector<std::size_t> &extents,
-                       std::size_t trailing_dimensions = 0) const;
+    void broadcast_extents_to_layout(std::vector<std::size_t> &extents,
+                                     std::size_t trailing_dimensions = 0) const;
 
     /**
      * @brief Perform a broadcast of the layout to match the provided extents.
@@ -223,8 +223,9 @@ public:
      * @throws std::invalid_argument If the axes cannot be broadcasted to the 
      * provided extents.
      */
-    layout_reference broadcast_to(span<const std::size_t> extents,
-                                  std::size_t trailing_dimensions = 0 ) const;
+    layout_reference 
+    broadcast_layout_to_extents(span<const std::size_t> extents,
+                                std::size_t trailing_dimensions = 0 ) const;
 
 
 private:

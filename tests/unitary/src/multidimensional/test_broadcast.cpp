@@ -35,7 +35,7 @@
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
+TEST_CASE("broadcast should call broadcast_extents_to_layout and broadcast_layout_to_extents in order")
 {
     mock_broadcastable first;
     mock_broadcastable second;
@@ -43,14 +43,14 @@ TEST_CASE("broadcast should call broadcast_dry and broadcast_to in order")
 
     std::vector<std::size_t> extents;
     
-    REQUIRE_CALL(first, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(second, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(third, broadcast_dry(std::ref(extents)));
-    REQUIRE_CALL(first, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+    REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)));
+    REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)));
+    REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)));
+    REQUIRE_CALL(first, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
         .RETURN(mock_broadcastable());
-    REQUIRE_CALL(second, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+    REQUIRE_CALL(second, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
         .RETURN(mock_broadcastable());
-    REQUIRE_CALL(third, broadcast_to(ANY(xmipp4::span<const std::size_t>)))
+    REQUIRE_CALL(third, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
         .RETURN(mock_broadcastable());
 
     broadcast(extents, first, second, third);

@@ -309,7 +309,7 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept;
  * @return false When unable to broadcast.
  */
 XMIPP4_CONSTEXPR
-bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
+bool broadcast_axis_to_extent(strided_axis &axis, std::size_t extent) noexcept;
 
 /**
  * @brief Perform a dry attempt to broadcast an axis and extent.
@@ -328,24 +328,8 @@ bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
  * @return false When unable to broadcast.
  */
 XMIPP4_CONSTEXPR
-bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept;
-
-/**
- * @brief Apply an index to an axis to update an offset.
- *
- * @note This function does not check if the index is within the axis' extent.
- * Please ensure that the index is valid before calling this function. Otherwise
- * the behavior is undefined.  
- * @see sanitize_index_safe
- * @param axis Axis where the index is applied.
- * @param offset Offset to be updated.
- * @param index The index to be applied.
- * 
- */
-XMIPP4_CONSTEXPR
-void apply_index(const strided_axis &axis, 
-                 std::ptrdiff_t &offset,
-                 std::size_t index ) noexcept;
+bool broadcast_extent_to_axis(std::size_t &extent, 
+                              const strided_axis &axis) noexcept;
 
 /**
  * @brief Apply an index to an axis to update an offset while checking bounds.
@@ -359,26 +343,9 @@ void apply_index(const strided_axis &axis,
  * @param index The index to be applied.
  * @throws std::out_ofr_range
  */
-void apply_index_safe(const strided_axis &axis, 
-                      std::ptrdiff_t &offset,
-                      std::ptrdiff_t index );
-
-/**
- * @brief Apply a slice to an axis to update an offset.
- * 
- * @note This function does not check if the slice is valid and within the axis' 
- * extent. Please ensure that the slice is valid before calling this function.
- * Otherwise the behavior is undefined.
- * @see sanitize_slice
- * @param axis Axis where the index is applied. It is modified accordingly.
- * @param offset Offset to be updated.
- * @param slice The slice to be applied to the axis.
- * 
- */
-XMIPP4_CONSTEXPR
-void apply_slice(strided_axis &axis,
+void apply_index(const strided_axis &axis, 
                  std::ptrdiff_t &offset,
-                 const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept;
+                 std::ptrdiff_t index );
 
 /**
  * @brief Apply a slice to an axis to update an offset while checking for 
@@ -393,9 +360,9 @@ void apply_slice(strided_axis &axis,
  * @param slice The slice to be applied to the axis.
  * @throws std::out_ofr_range
  */
-void apply_slice_safe(strided_axis &axis,
-                      std::ptrdiff_t &offset,
-                      const dynamic_slice &slice);
+void apply_slice(strided_axis &axis,
+                 std::ptrdiff_t &offset,
+                 const dynamic_slice &slice);
 
 } // namespace multidimensional
 } // namespace xmipp4

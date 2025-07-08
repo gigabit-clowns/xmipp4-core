@@ -138,12 +138,12 @@ layout_reference<T> layout_reference<T>::squeeze() const
 
 template <typename T>
 inline
-void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents,
-                                        std::size_t trailing_dimensions ) const
+void layout_reference<T>::broadcast_extents_to_layout(std::vector<std::size_t> &extents,
+                                                      std::size_t trailing_dimensions ) const
 {
     if (m_layout)
     {
-        m_layout->broadcast_dry(extents, trailing_dimensions);
+        m_layout->broadcast_extents_to_layout(extents, trailing_dimensions);
     }
     else if (!extents.empty())
     {
@@ -164,11 +164,11 @@ void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents,
 template <typename T>
 XMIPP4_NODISCARD inline
 layout_reference<T> 
-layout_reference<T>::broadcast_to(span<const std::size_t> extents,
-                                  std::size_t trailing_dimensions ) const
+layout_reference<T>::broadcast_layout_to_extents(span<const std::size_t> extents,
+                                                 std::size_t trailing_dimensions ) const
 {
     return apply_no_empty(
-        std::mem_fn(&layout_type::broadcast_to), 
+        std::mem_fn(&layout_type::broadcast_layout_to_extents), 
         extents, 
         trailing_dimensions
     );

@@ -202,26 +202,26 @@ TEST_CASE("broadcast with unequal extents should fail and leave axes unmodified"
     }
 }
 
-TEST_CASE("broadcast_to with equal extents should succeed and leave axis unmodified", "[strided_axis]")
+TEST_CASE("broadcast_axis_to_extent with equal extents should succeed and leave axis unmodified", "[strided_axis]")
 {
     const std::size_t extent = 876;
     const auto initial_axis = make_contiguous_axis(extent);
 
     auto axis = initial_axis;
-    REQUIRE( broadcast_to(axis, extent) );
+    REQUIRE( broadcast_axis_to_extent(axis, extent) );
     REQUIRE( axis == initial_axis );
 }
 
-TEST_CASE("broadcast_to with an axis of extent 1 should broadcast it")
+TEST_CASE("broadcast_axis_to_extent with an axis of extent 1 should broadcast it")
 {
     const std::size_t extent = 565;
 
     auto axis = make_contiguous_axis();
-    REQUIRE( broadcast_to(axis, extent) );
+    REQUIRE( broadcast_axis_to_extent(axis, extent) );
     REQUIRE( axis == make_phantom_axis(extent) );
 }
 
-TEST_CASE("broadcast_to with unequal extents should fail and leave axis unmodified", "[strided_axis]")
+TEST_CASE("broadcast_axis_to_extent with unequal extents should fail and leave axis unmodified", "[strided_axis]")
 {
     const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
         std::pair<std::size_t, std::size_t>(0, 1),
@@ -236,31 +236,31 @@ TEST_CASE("broadcast_to with unequal extents should fail and leave axis unmodifi
         const auto extent = test_case.second;
 
         auto axis = initial_axis;
-        REQUIRE( !broadcast_to(axis, extent) );
+        REQUIRE( !broadcast_axis_to_extent(axis, extent) );
         REQUIRE( axis == initial_axis );
     }
 }
 
-TEST_CASE("broadcast_dry with equal extents should succeed and leave extent unmodified", "[strided_axis]")
+TEST_CASE("broadcast_extent_to_axis with equal extents should succeed and leave extent unmodified", "[strided_axis]")
 {
     const std::size_t initial_extent = 654;
     const auto axis = make_contiguous_axis(initial_extent);
 
     auto extent = initial_extent;
-    REQUIRE( broadcast_dry(axis, extent) );
+    REQUIRE( broadcast_extent_to_axis(extent, axis) );
     REQUIRE( extent == initial_extent );
 }
 
-TEST_CASE("broadcast_dry with an extent 1 should broadcast it")
+TEST_CASE("broadcast_extent_to_axis with an extent 1 should broadcast it")
 {
     const auto axis = make_contiguous_axis(1234);
 
     std::size_t extent = 1;
-    REQUIRE( broadcast_dry(axis, extent) );
+    REQUIRE( broadcast_extent_to_axis(extent, axis) );
     REQUIRE( extent == axis.get_extent() );
 }
 
-TEST_CASE("broadcast_dry with unequal extents should fail and leave extent unmodified", "[strided_axis]")
+TEST_CASE("broadcast_extent_to_axis with unequal extents should fail and leave extent unmodified", "[strided_axis]")
 {
     const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
         std::pair<std::size_t, std::size_t>(0, 1),
@@ -275,7 +275,7 @@ TEST_CASE("broadcast_dry with unequal extents should fail and leave extent unmod
         const auto axis = make_contiguous_axis(test_case.second);
 
         auto extent = initial_extent;
-        REQUIRE( !broadcast_dry(axis, extent) );
+        REQUIRE( !broadcast_extent_to_axis(extent, axis) );
         REQUIRE( extent == initial_extent );
     }
 }

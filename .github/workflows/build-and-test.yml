@@ -25,6 +25,8 @@ jobs:
           compiler: {cc: clang, cxx: clang++}
         - os: windows-latest
           compiler: {cc: cl, cxx: cl}
+        - os: windows-latest
+          compiler: {cc: gcc, cxx: g++}
   
     env:
       BUILD_TYPE: Debug

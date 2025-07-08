@@ -29,11 +29,19 @@ build:
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    #- echo "Start" # [win]
-    #- set CMAKE_ARGS=%CMAKE_ARGS% -G "Visual Studio 17 2022" # [win]
-    #- echo "End" # [win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation # [not win]
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="-G Visual Studio 17 2022" # [win]
+
+    - echo "Start" # [win]
+    - echo RECIPE_DIR is: %RECIPE_DIR%  # [win]
+    - dir "%RECIPE_DIR%"  # [win]
+    - echo About to run: "%RECIPE_DIR%\visual-studio-name-detector.ps1"  # [win]
+    - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%RECIPE_DIR%\visual-studio-name-detector.ps1" > generator.txt  # [win]
+    - set /p VS_GENERATOR=<generator.txt  # [win]
+    - echo Generator obtained: %VS_GENERATOR%  # [win]
+    - set CMAKE_ARGS=%CMAKE_ARGS% -G "%VS_GENERATOR%"  # [win]
+    - echo "End" # [win]
+    
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="%CMAKE_ARGS%"  # [win]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation  # [not win]
 
 requirements:
   run:

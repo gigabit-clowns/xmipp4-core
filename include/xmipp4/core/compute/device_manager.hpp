@@ -56,13 +56,13 @@ class device_manager final
     : public basic_backend_manager<device_backend>
 {
 public:
-    XMIPP4_CORE_API device_manager();
+    device_manager() = default;
     device_manager(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager(device_manager &&other);
+    device_manager(device_manager &&other) = default;
     XMIPP4_CORE_API ~device_manager() override;
 
     device_manager& operator=(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager& operator=(device_manager &&other);
+    device_manager& operator=(device_manager &&other) = default;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;

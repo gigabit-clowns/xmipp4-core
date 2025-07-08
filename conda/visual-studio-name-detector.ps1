@@ -1,3 +1,8 @@
+if (-not (Get-Command vswhere -ErrorAction SilentlyContinue)) {
+    Write-Error "vswhere not found. Please ensure it is installed and available in your PATH."
+    exit 1
+}
+
 $displayVersion = & vswhere `
     -latest `
     -products * `

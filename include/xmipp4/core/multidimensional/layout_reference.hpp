@@ -189,30 +189,43 @@ public:
     /**
      * @brief Broadcast a shape to match this layout.
      * 
-     * This function modifies the provided extents to match this layout.
+     * This function modifies the provided extents to match this layout upto
+     * the last trailing_dimensions. The last trailing dimensions are not 
+     * considered in the algorithm. This is useful to broadcast batch dimensions
+     * while keeping trailing dimensions.
      * 
      * @param extents Extents to be broadcasted. Input/output parameter.
+     * @param trailing_dimensions Number of dimensions at the end left 
+     * untouched. Must be greater or equal to rank. Defaults to zero.
      * @throws std::invalid_argument If the extents has more axes than this
      * layout.
      * @throws std::invalid_argument If the extent can not be broadcasted to 
      * this layout.
      */
-    void broadcast_dry(std::vector<std::size_t> &extents) const;
+    void broadcast_dry(std::vector<std::size_t> &extents,
+                       std::size_t trailing_dimensions = 0) const;
 
     /**
      * @brief Perform a broadcast of the layout to match the provided extents.
      * 
      * This function modifies the layout to match the provided extents by 
-     * adding phantom axes or adjusting existing axes as needed.
+     * adding phantom axes or adjusting existing axes as needed upto the last 
+     * trailing_dimensions. The last trailing dimensions from this layout are 
+     * not considered in the algorithm and they are passed-through to the 
+     * result. This is useful to broadcast batch dimensions while keeping
+     * trailing dimensions.
      * 
      * @param extents Extents to broadcast to.
+     * @param trailing_dimensions Number of dimensions at the end left 
+     * untouched. Must be greater or equal to rank. Defaults to zero.
      * @return layout_reference The resulting broadcasted layout.
      * @throws std::invalid_argument If the layout has more axes than extents.
      * @throws std::invalid_argument If the axes cannot be broadcasted to the 
      * provided extents.
      */
-    XMIPP4_NODISCARD
-    layout_reference broadcast_to(span<const std::size_t> extents) const;
+    layout_reference broadcast_to(span<const std::size_t> extents,
+                                  std::size_t trailing_dimensions = 0 ) const;
+
 
 private:
     std::shared_ptr<layout_type> m_layout;

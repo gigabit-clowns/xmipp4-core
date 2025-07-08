@@ -138,11 +138,12 @@ layout_reference<T> layout_reference<T>::squeeze() const
 
 template <typename T>
 inline
-void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents) const
+void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents,
+                                        std::size_t trailing_dimensions ) const
 {
     if (m_layout)
     {
-        m_layout->broadcast_dry(extents);
+        m_layout->broadcast_dry(extents, trailing_dimensions);
     }
     else if (!extents.empty())
     {
@@ -151,14 +152,26 @@ void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents) const
             << " axes into an empty layout";
         throw std::invalid_argument(oss.str());
     }
+    else if (trailing_dimensions > 0)
+    {
+        std::ostringstream oss;
+        oss << "Cannot broadcast shape of an empty layout with " 
+            << trailing_dimensions << "trailing dimensions";
+        throw std::invalid_argument(oss.str());
+    }
 }
 
 template <typename T>
 XMIPP4_NODISCARD inline
 layout_reference<T> 
-layout_reference<T>::broadcast_to(span<const std::size_t> extents) const
+layout_reference<T>::broadcast_to(span<const std::size_t> extents,
+                                  std::size_t trailing_dimensions ) const
 {
-    return apply_no_empty(std::mem_fn(&layout_type::broadcast_to, extents));
+    return apply_no_empty(
+        std::mem_fn(&layout_type::broadcast_to), 
+        extents, 
+        trailing_dimensions
+    );
 }
 
 

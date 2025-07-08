@@ -22,22 +22,20 @@ build:
   script_env:
     - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
-    # Installation: C:\Program Files\Microsoft Visual Studio\2022\Enterprise
-    # MSVC tools found in C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC
-    #- pwd: /c/Miniconda/conda-bld/xmipp4-core_1751958195406/work
-    # %RECIPE_DIR%: D:\a\xmipp4-core\xmipp4-core\conda
-    
     # C++17 features marked as not available
     # https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
     
+    # Make sure an existing Visual Studio installation is being used 
     - echo "------------------- Start -------------------" # [win]
     - "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%RECIPE_DIR%\\visual-studio-name-detector.ps1\" > generator.txt"  # [win]
     - "set /p VS_GENERATOR=<generator.txt"  # [win]
     - set CMAKE_ARGS=%CMAKE_ARGS% -G "%VS_GENERATOR%"  # [win]
+    - echo "Generator obtained %VS_GENERATOR%"" # [win]
+    - echo "CMAKE ARGS %CMAKE_ARGS%"" # [win]
     - echo "------------------- End -------------------" # [win]
-    
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --config-settings=cmake.args="%CMAKE_ARGS%"  # [win]
+    
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation  # [not win]
 
 requirements:

@@ -36,10 +36,11 @@
 
 namespace xmipp4
 {
-namespace communication
-{
 
 template class basic_backend_manager<communicator_backend>;
+
+namespace communication
+{
 
 static 
 std::shared_ptr<communicator> 

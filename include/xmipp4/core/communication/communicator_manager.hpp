@@ -55,7 +55,7 @@ public:
     communicator_manager() = default;
     communicator_manager(const communicator_manager &other) = delete;
     communicator_manager(communicator_manager &&other) = default;
-    XMIPP4_CORE_API ~communicator_manager() override;
+    XMIPP4_CORE_API ~communicator_manager() override = default;
 
     communicator_manager& 
     operator=(const communicator_manager &other) = delete;

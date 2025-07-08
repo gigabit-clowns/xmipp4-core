@@ -30,7 +30,7 @@ build:
     - echo "------------------- Start -------------------" # [win]
     - "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%RECIPE_DIR%\\visual-studio-name-detector.ps1\" > generator.txt"  # [win]
     - "set /p VS_GENERATOR=<generator.txt"  # [win]
-    - set CMAKE_ARGS=%CMAKE_ARGS% -G "%VS_GENERATOR%"  # [win]
+    - set CMAKE_ARGS=%CMAKE_ARGS% -G %VS_GENERATOR%  # [win]
     - echo "Generator obtained %VS_GENERATOR%"" # [win]
     - echo "CMAKE ARGS %CMAKE_ARGS%"" # [win]
     - echo "------------------- End -------------------" # [win]

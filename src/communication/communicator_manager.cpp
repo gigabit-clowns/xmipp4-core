@@ -55,6 +55,7 @@ create_communicator(const communicator_backend* backend)
 
 
 
+communicator_manager::~communicator_manager() = default;
 
 void communicator_manager::register_builtin_backends()
 {

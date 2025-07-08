@@ -59,7 +59,7 @@ public:
     device_manager() = default;
     device_manager(const device_manager &other) = delete;
     device_manager(device_manager &&other) = default;
-    XMIPP4_CORE_API ~device_manager() override = default;
+    XMIPP4_CORE_API ~device_manager() override;
 
     device_manager& operator=(const device_manager &other) = delete;
     device_manager& operator=(device_manager &&other) = default;

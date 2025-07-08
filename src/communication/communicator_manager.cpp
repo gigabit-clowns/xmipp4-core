@@ -37,7 +37,7 @@
 namespace xmipp4
 {
 
-template class basic_backend_manager<communication::communicator_backend>;
+template class basic_backend_manager<communicator_backend>;
 
 namespace communication
 {

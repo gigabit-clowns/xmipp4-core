@@ -29,6 +29,7 @@ build:
     - powershell -NoProfile -NonInteractive -Command "Write-Host 'CWD (ps):' (Get-Location).Path" # [win]
     - pwd # [win]
     - echo "End" # [win]
+    - set CMAKE_ARGS=%CMAKE_ARGS% -G "Visual Studio 17 2022" # [win]
     #- powershell -NoProfile -NonInteractive -Command "Write-Host $env:RECIPE_DIR" # [win]
     #- echo "${RECIPE_DIR}\visual-studio-name-detector.ps1" # [win]
     #- powershell -NoProfile -NonInteractive -Command { $generator = & "${RECIPE_DIR}\visual-studio-name-detector.ps1"; Write-Host "Detected generator:" $generator; $env:CMAKE_GENERATOR = $generator }  # [win]

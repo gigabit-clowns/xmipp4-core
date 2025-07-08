@@ -31,10 +31,8 @@ build:
     - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
     
     - echo "------------------- Start -------------------" # [win]
-    - echo RECIPE_DIR is %RECIPE_DIR%  # [win]
-    #- dir "%RECIPE_DIR%"  # [win]
-    #- echo About to run: "%RECIPE_DIR%\visual-studio-name-detector.ps1"  # [win]
-    #- powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%RECIPE_DIR%\visual-studio-name-detector.ps1" > generator.txt  # [win]
+    - echo About to run: "%RECIPE_DIR%\visual-studio-name-detector.ps1"  # [win]
+    - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%RECIPE_DIR%\visual-studio-name-detector.ps1" > generator.txt  # [win]
     #- "set /p VS_GENERATOR=<generator.txt"  # [win]
     #- echo Generator obtained: %VS_GENERATOR%  # [win]
     #- set CMAKE_ARGS=%CMAKE_ARGS% -G "%VS_GENERATOR%"  # [win]

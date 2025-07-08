@@ -50,7 +50,7 @@ jobs:
           build-dir: "${{ github.workspace }}/build"
           c-compiler: ${{ matrix.compiler.cc }}
           cxx-compiler: ${{ matrix.compiler.cxx }}
-          generator: ${{ matrix.compiler.generator }}
+          generator: ${{ matrix.generator }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           run-build: true

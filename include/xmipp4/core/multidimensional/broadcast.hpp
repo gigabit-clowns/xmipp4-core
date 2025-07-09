@@ -41,7 +41,7 @@ namespace multidimensional
  * shape.
  * 
  * @tparam Broadcastables Broadastable types. These types must implement
- * broadcast_dry and broadcast_to methods.
+ * broadcast_extents_to_layout and broadcast_layout_to_extents methods.
  * @param extents Input/output extents. The contents of extents participate
  * in the broadcasting operation. Leave it empty to avoid this. The resulting
  * consensus shape will be stored in this variable.

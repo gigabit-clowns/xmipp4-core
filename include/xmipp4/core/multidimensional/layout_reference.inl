@@ -103,7 +103,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
-    return apply_no_empty(std::mem_fn(&layout_type::apply_subscripts, subscripts));
+    return apply_no_empty(std::mem_fn(&layout_type::apply_subscripts), subscripts);
 }
 
 template <typename T>
@@ -118,7 +118,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::permute(span<const std::size_t> order) const
 {
-    return apply_no_empty(std::mem_fn(&layout_type::permute, order));
+    return apply_no_empty(std::mem_fn(&layout_type::permute), order);
 }
 
 template <typename T>
@@ -126,7 +126,7 @@ XMIPP4_NODISCARD inline
 layout_reference<T> 
 layout_reference<T>::swap_axes(std::size_t axis1, std::size_t axis2) const
 {
-    return apply_no_empty(std::mem_fn(&layout_type::swap_axes, axis1, axis2));
+    return apply_no_empty(std::mem_fn(&layout_type::swap_axes), axis1, axis2);
 }
 
 template <typename T>
@@ -138,12 +138,12 @@ layout_reference<T> layout_reference<T>::squeeze() const
 
 template <typename T>
 inline
-void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents,
-                                        std::size_t trailing_dimensions ) const
+void layout_reference<T>::broadcast_extents_to_layout(std::vector<std::size_t> &extents,
+                                                      std::size_t trailing_dimensions ) const
 {
     if (m_layout)
     {
-        m_layout->broadcast_dry(extents, trailing_dimensions);
+        m_layout->broadcast_extents_to_layout(extents, trailing_dimensions);
     }
     else if (!extents.empty())
     {
@@ -164,11 +164,11 @@ void layout_reference<T>::broadcast_dry(std::vector<std::size_t> &extents,
 template <typename T>
 XMIPP4_NODISCARD inline
 layout_reference<T> 
-layout_reference<T>::broadcast_to(span<const std::size_t> extents,
-                                  std::size_t trailing_dimensions ) const
+layout_reference<T>::broadcast_layout_to_extents(span<const std::size_t> extents,
+                                                 std::size_t trailing_dimensions ) const
 {
     return apply_no_empty(
-        std::mem_fn(&layout_type::broadcast_to), 
+        std::mem_fn(&layout_type::broadcast_layout_to_extents), 
         extents, 
         trailing_dimensions
     );

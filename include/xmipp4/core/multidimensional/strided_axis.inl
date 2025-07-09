@@ -224,7 +224,7 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept
+bool broadcast_axis_to_extent(strided_axis &axis, std::size_t extent) noexcept
 {
     bool result = true;
 
@@ -245,7 +245,8 @@ bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept
+bool broadcast_extent_to_axis(std::size_t &extent,
+                              const strided_axis &axis) noexcept
 {
     bool result = true;
 
@@ -265,6 +266,9 @@ bool broadcast_dry(const strided_axis &axis, std::size_t &extent) noexcept
     return result;
 }
 
+namespace detail
+{
+
 XMIPP4_INLINE_CONSTEXPR
 void apply_index(const strided_axis &axis, 
                  std::ptrdiff_t &offset,
@@ -274,40 +278,46 @@ void apply_index(const strided_axis &axis,
     offset += increment;
 }
 
+} // namespace
+
 inline
-void apply_index_safe(const strided_axis &axis, 
-                      std::ptrdiff_t &offset,
-                      std::ptrdiff_t index )
+void apply_index(const strided_axis &axis, 
+                 std::ptrdiff_t &offset,
+                 std::ptrdiff_t index )
 {
     const auto sanitized_index = sanitize_index(index, axis.get_extent());
-    apply_index(axis, offset, sanitized_index);
+    detail::apply_index(axis, offset, sanitized_index);
 }
+
+namespace detail 
+{
 
 XMIPP4_INLINE_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
                  const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept
 {
+    const auto start = slice.get_start();
+    const auto count = slice.get_count();
+    const auto step = slice.get_step();
+    const auto stride = axis.get_stride();
 
-        const auto start = slice.get_start();
-        const auto count = slice.get_count();
-        const auto step = slice.get_step();
-        const auto stride = axis.get_stride();
+    const auto new_stride = stride*step;
+    const auto increment = stride*start;
 
-        const auto new_stride = stride*step;
-        const auto increment = stride*start;
-
-        axis = strided_axis(count, new_stride);
-        offset += increment;
+    axis = strided_axis(count, new_stride);
+    offset += increment;
 }
 
+} // namespace detail
+
 inline
-void apply_slice_safe(strided_axis &axis,
-                      std::ptrdiff_t &offset,
-                      const dynamic_slice &slice)
+void apply_slice(strided_axis &axis,
+                 std::ptrdiff_t &offset,
+                 const dynamic_slice &slice)
 {
     const auto sanitized_slice = sanitize_slice(slice, axis.get_extent());
-    apply_slice(axis, offset, sanitized_slice);
+    detail::apply_slice(axis, offset, sanitized_slice);
 }
 
 } // namespace multidimensional

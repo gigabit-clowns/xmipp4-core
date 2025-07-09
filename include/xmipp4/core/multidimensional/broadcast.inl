@@ -42,8 +42,10 @@ inline
 std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
                                        const Broadcastables&... items )
 {
-    (items.broadcast_dry(extents), ...); // TODO avoid using fold expressions
-    return std::tuple<Broadcastables...>(items.broadcast_to(xmipp4::make_span(extents))...);
+    (items.broadcast_extents_to_layout(extents), ...); // TODO avoid using fold expressions
+    return std::tuple<Broadcastables...>(
+        items.broadcast_layout_to_extents(xmipp4::make_span(extents))...
+    );
 }
 
 

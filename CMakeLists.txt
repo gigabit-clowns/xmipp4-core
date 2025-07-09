@@ -122,7 +122,7 @@ target_compile_definitions(
 )
 
 # Link dependencies
-if(MSVC)
+if(WIN32)
 	target_link_libraries(
 		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PRIVATE ws2_32 # Winsock

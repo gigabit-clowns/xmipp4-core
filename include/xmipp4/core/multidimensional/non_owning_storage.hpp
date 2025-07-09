@@ -21,14 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file basic_storage.hpp
+ * @file non_owning_storage.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines basic_storage class
+ * @brief Defines non_owning_storage class
  * @date 2025-03-14
  * 
  */
 
-#include <vector>
+#include <cstddef>
 
 namespace xmipp4 
 {
@@ -36,10 +36,7 @@ namespace multidimensional
 {
 
 template <typename T>
-class non_owning_host_storage;
-
-template <typename T>
-class basic_storage
+class non_owning_storage
 {
 public:
     using value_type = T;
@@ -47,19 +44,21 @@ public:
     using const_pointer = const value_type*;
     using is_host_accessible = std::true_type;
     using view_type = non_owning_host_storage<value_type>;
-    using const_view_type = non_owning_host_storage<value_type>;
+    using const_view_type = non_owning_host_storage<const value_type>;
 
-    basic_storage() = default;
-    explicit basic_storage(std::size_t n);
-    basic_storage(const basic_storage &other) = default;
-    basic_storage(basic_storage &&other) = default;
-    ~basic_storage() = default;
+    non_owning_storage() = default;
+    non_owning_storage(pointer data, std::size_t count) noexcept;
+    template <typename Q>
+    non_owning_storage(const non_owning_storage<Q> &other) noexcept;
+    non_owning_storage(const non_owning_storage &other) = default;
+    non_owning_storage(non_owning_storage &&other) = default;
+    ~non_owning_storage() = default;
 
-    basic_storage& operator=(const basic_storage &other) = default;
-    basic_storage& operator=(basic_storage &&other) = default;
+    non_owning_storage& operator=(const non_owning_storage &other) = default;
+    non_owning_storage& operator=(non_owning_storage &&other) = default;
 
     void reset() noexcept;
-    void swap(basic_storage &other) noexcept;
+    void swap(non_owning_storage &other) noexcept;
 
     view_type view() noexcept;
     const_view_type view() const noexcept;
@@ -70,14 +69,15 @@ public:
     std::size_t size() const noexcept;
 
 private:
-    std::vector<value_type> m_data;
+    pointer m_data;
+    std::size_t m_count;
 
 };
 
 template <typename T>
-void swap(basic_storage<T> &lhs, basic_storage<T> &rhs) noexcept;
+void swap(non_owning_storage<T> &lhs, non_owning_storage<T> &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "basic_storage.inl"
+#include "non_owning_storage.inl"

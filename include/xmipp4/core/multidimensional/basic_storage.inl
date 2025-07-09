@@ -58,9 +58,18 @@ void basic_storage<T>::swap(basic_storage &other) noexcept
 
 template <typename T>
 inline
-bool basic_storage<T>::aliases(const basic_storage &other) const noexcept
+typename basic_storage<T>::view_type 
+basic_storage<T>::view() noexcept
 {
-    return &other == this;
+    return view_type(data(), size());
+}
+
+template <typename T>
+inline
+typename basic_storage<T>::const_view_type 
+basic_storage<T>::view() const noexcept
+{
+    return const_view_type(data(), size());
 }
 
 template <typename T>

@@ -21,14 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file storage_reference.inl
+ * @file non_owning_storage.inl
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of storage_reference.hpp
+ * @brief Implementation of non_owning_storage.hpp
  * @date 2025-03-14
  * 
  */
 
-#include "storage_reference.hpp"
+#include "non_owning_storage.hpp"
 
 namespace xmipp4 
 {
@@ -36,87 +36,80 @@ namespace multidimensional
 {
 
 template <typename T>
-template <typename... Args>
 inline
-storage_reference<T>::storage_reference(Args&&... args)
-    : m_storage(std::make_shared<storage_type>(std::forward<Args>(args)...))
+non_owning_storage<T>::non_owning_storage(pointer data, 
+                                          std::size_t count ) noexcept
+    : m_data(data)
+    , m_count(count)
 {
 }
 
 template <typename T>
-    template <typename Q>
+template <typename Q>
 inline
-storage_reference<T>::storage_reference(const storage_reference<Q> &other)
-    : m_storage(other.m_storage)
-{
-}
-
-template <typename T>
-    template <typename Q>
-inline
-storage_reference<T>::storage_reference(storage_reference<Q> &&other)
-    : m_storage(std::move(other.m_storage))
+non_owning_storage<T>::non_owning_storage(const non_owning_storage<Q> &other) noexcept
+    : m_data(other.m_data)
+    , m_count(other.m_count)
 {
 }
 
 template <typename T>
 inline
-void storage_reference<T>::reset() noexcept
+void non_owning_storage<T>::reset() noexcept
 {
-    m_storage.reset();
+    m_data = nullptr;
+    m_count = 0;
 }
 
 template <typename T>
 inline
-void storage_reference<T>::swap(storage_reference &other) noexcept
+void non_owning_storage<T>::swap(non_owning_storage &other) noexcept
 {
-    m_storage.swap(other.m_storage);
+    std::swap(m_data, other.m_data);
+    std::swap(m_count, other.m_count);
 }
 
 template <typename T>
 inline
-typename storage_reference<T>::view_type 
-storage_reference<T>::view() noexcept
+typename non_owning_storage<T>::view_type 
+non_owning_storage<T>::view() noexcept
 {
     return *this;
 }
 
 template <typename T>
 inline
-typename storage_reference<T>::const_view_type 
-storage_reference<T>::view() const noexcept
+typename non_owning_storage<T>::const_view_type 
+non_owning_storage<T>::view() const noexcept
 {
     return *this;
 }
 
 template <typename T>
 inline
-typename storage_reference<T>::storage_type* 
-storage_reference<T>::get() noexcept
+typename non_owning_storage<T>::pointer non_owning_storage<T>::data() noexcept
 {
-    return m_storage.get();
+    return m_data;
 }
 
 template <typename T>
 inline
-const typename storage_reference<T>::storage_type* 
-storage_reference<T>::get() const noexcept
+typename non_owning_storage<T>::const_pointer 
+non_owning_storage<T>::data() const noexcept
 {
-    return m_storage.get();
+    return m_data;
 }
 
 template <typename T>
 inline
-std::size_t storage_reference<T>::size() const noexcept
+std::size_t non_owning_storage<T>::size() const noexcept
 {
-    return m_storage ? m_storage->size() : 0;
+    return m_count;
 }
 
-
-
 template <typename T>
-inline 
-void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept
+inline
+void swap(non_owning_storage<T> &lhs, non_owning_storage<T> &rhs) noexcept
 {
     lhs.swap(rhs);
 }

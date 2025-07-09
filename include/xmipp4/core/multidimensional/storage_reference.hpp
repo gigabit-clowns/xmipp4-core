@@ -42,6 +42,8 @@ class storage_reference
 {
 public:
     using storage_type = T;
+    using view_type = storage_reference<storage_type>;
+    using const_view_type = storage_reference<const storage_type>;
     using value_type = 
         typename storage_traits<storage_type>::value_type;
     using is_host_accessible = 
@@ -52,8 +54,10 @@ public:
     explicit storage_reference(Args&&... args);
     storage_reference(const storage_reference &other) = default;
     storage_reference(storage_reference &&other) = default;
-    storage_reference(const storage_reference<const storage_type> &other);
-    storage_reference(storage_reference<const storage_type> &&other);
+    template <typename Q>
+    storage_reference(const storage_reference<Q> &other);
+    template <typename Q>
+    storage_reference(storage_reference<Q> &&other);
     ~storage_reference() = default;
 
     storage_reference& operator=(const storage_reference &other) = default;
@@ -62,20 +66,22 @@ public:
     void reset() noexcept;
     void swap(storage_reference &other) noexcept;
 
-    bool aliases(const storage_reference &other) const noexcept;
+    view_type view() noexcept;
+    const_view_type view() const noexcept;
 
     storage_type* get() noexcept;
     const storage_type* get() const noexcept;
 
     std::size_t size() const noexcept;
 
+    // TODO handle when storage_type is const
     typename std::enable_if<is_host_accessible::value, value_type*>::type
     data() noexcept;
     typename std::enable_if<is_host_accessible::value, const value_type*>::type
     data() const noexcept;
 
 private:
-    std::shared_ptr<value_type> m_storage;
+    std::shared_ptr<storage_type> m_storage;
 
 };
 

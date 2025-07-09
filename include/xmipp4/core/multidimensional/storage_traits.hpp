@@ -28,6 +28,8 @@
  * 
  */
 
+#include <type_traits>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -37,8 +39,9 @@ template <typename T>
 struct storage_traits
 {
     using value_type = typename T::value_type;
+    using view_type = typename T::view_type;
+    using const_view_type = typename T::const_view_type;
     using is_host_accessible = typename T::is_host_accessible;
-    using may_alias = typename T::may_alias;
 
 };
 

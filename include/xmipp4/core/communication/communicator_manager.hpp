@@ -54,13 +54,13 @@ class communicator_manager final
 public:
     XMIPP4_CORE_API communicator_manager();
     communicator_manager(const communicator_manager &other) = delete;
-    XMIPP4_CORE_API communicator_manager(communicator_manager &&other);
+    XMIPP4_CORE_API communicator_manager(communicator_manager &&other) noexcept;
     XMIPP4_CORE_API ~communicator_manager() override;
 
     communicator_manager& 
     operator=(const communicator_manager &other) = delete;
     XMIPP4_CORE_API 
-    communicator_manager& operator=(communicator_manager &&other);
+    communicator_manager& operator=(communicator_manager &&other) noexcept;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;

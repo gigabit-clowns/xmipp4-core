@@ -56,10 +56,10 @@ create_communicator(const communicator_backend* backend)
 
 
 communicator_manager::communicator_manager() = default;
-communicator_manager::communicator_manager(communicator_manager&&) = default;
+communicator_manager::communicator_manager(communicator_manager&&) noexcept = default;
 communicator_manager::~communicator_manager() = default;
 communicator_manager& 
-communicator_manager::operator=(communicator_manager&&) = default;
+communicator_manager::operator=(communicator_manager&&) noexcept = default;
 
 void communicator_manager::register_builtin_backends()
 {

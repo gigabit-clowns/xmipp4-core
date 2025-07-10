@@ -135,7 +135,6 @@ target_link_libraries(
 		Threads::Threads
 		spdlog::spdlog_header_only
 		half
-		m
 	PRIVATE
 		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}

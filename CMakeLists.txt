@@ -135,10 +135,20 @@ target_link_libraries(
 		Threads::Threads
 		spdlog::spdlog_header_only
 		half
+		m
 	PRIVATE
 		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}
 )
+find_library(MATH_LIBRARY m)
+if (MATH_LIBRARY)
+    target_link_libraries(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC
+			${MATH_LIBRARY}
+	)
+endif()
+
 
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)

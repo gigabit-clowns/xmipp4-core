@@ -62,7 +62,7 @@ public:
     XMIPP4_CORE_API ~device_manager() override;
 
     device_manager& operator=(const device_manager &other) = delete;
-    XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept
+    XMIPP4_CORE_API device_manager& operator=(device_manager &&other) noexcept;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;

@@ -38,7 +38,7 @@ jobs:
           CIBW_ARCHS: "${{ matrix.architectures }}"
           CIBW_BUILD: "cp313-*" # Python agnostic, pick any version
           CIBW_BUILD_VERBOSITY: 1
-      
+
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -93,7 +93,7 @@ jobs:
         - ubuntu-latest
         - macos-latest
         - windows-latest
-  
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -137,7 +137,7 @@ jobs:
 
       - name: List artifacts
         run: ls -l ./dist
-      
+
       # TODO upload to conda-forge
 
   build_doxygen:
@@ -154,7 +154,7 @@ jobs:
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y doxygen
-    
+
     - name: Configure and build with CMake
       uses: threeal/cmake-action@v2
       with:
@@ -200,7 +200,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Download artifacs
         uses: actions/download-artifact@v4
         with:
@@ -216,7 +216,15 @@ jobs:
           git commit -m "Add pre-built binaries"
           git tag -fa $TAG_NAME -m 'Update development tag with main branch'
           git push origin $TAG_NAME --force
-      
+
+      - name: Delete all old assets from development release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view $TAG_NAME --json assets -q ".assets[].name" | while read asset; do
+            gh release delete-asset $TAG_NAME "$asset" -y
+          done
+
       - name: Create or update development release
         uses: softprops/action-gh-release@v2
         env:

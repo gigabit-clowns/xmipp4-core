@@ -181,7 +181,7 @@ if(MSVC)
 	target_compile_definitions(
 		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PUBLIC 
-			-DNOMINMAX
+			NOMINMAX
 	)
 endif()
 
@@ -190,7 +190,7 @@ if(MINGW)
 	target_compile_definitions(
 		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PUBLIC 
-			-DXMIPP4_NO_BUILTIN
+			XMIPP4_NO_BUILTIN
 	)
 endif()
 

@@ -139,14 +139,6 @@ target_link_libraries(
 		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}
 )
-find_library(MATH_LIBRARY m)
-if (MATH_LIBRARY)
-    target_link_libraries(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PUBLIC
-			${MATH_LIBRARY}
-	)
-endif()
 
 
 # Set up clang-tidy
@@ -186,7 +178,20 @@ endif()
 
 # Disable min/max macros in windows
 if(MSVC)
-	target_compile_definitions(${XMIPP4_CORE_LIBRARY_TARGET} PUBLIC -DNOMINMAX)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			-DNOMINMAX
+	)
+endif()
+
+# Disable builtin functions in MinGW
+if(MINGW)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			-DXMIPP4_NO_BUILTIN
+	)
 endif()
 
 # Install library's binary files and headers

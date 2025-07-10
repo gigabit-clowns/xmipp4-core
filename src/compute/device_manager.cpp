@@ -37,6 +37,8 @@ namespace xmipp4
 namespace compute
 {
 
+device_manager::~device_manager() = default;
+
 void device_manager::register_builtin_backends()
 {
     host_device_backend::register_at(*this);

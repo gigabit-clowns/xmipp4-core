@@ -37,7 +37,10 @@ namespace xmipp4
 namespace compute
 {
 
+device_manager::device_manager() = default;
+device_manager::device_manager(device_manager&&) = default;
 device_manager::~device_manager() = default;
+device_manager& device_manager::operator=(device_manager&&) = default;
 
 void device_manager::register_builtin_backends()
 {

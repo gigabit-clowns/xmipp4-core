@@ -39,9 +39,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Que GCC
-        run: which gcc
-
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
         id: install-memtool
@@ -62,7 +59,10 @@ jobs:
       - name: Add MinGW to PATH
         if: runner.os == 'Windows'
         run: |
-          echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+          ls C:/mingw64/bin/
+          ls /c/mingw64/bin/
+          echo "C:/mingw64/bin/" >> $GITHUB_PATH
+          echo "/c/mingw64/bin/" >> $GITHUB_PATH
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool

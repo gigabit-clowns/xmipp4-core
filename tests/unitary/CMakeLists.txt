@@ -56,15 +56,6 @@ if(WIN32)
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> $<TARGET_FILE_DIR:${TESTS_NAME}>
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:spdlog::spdlog> $<TARGET_FILE_DIR:${TESTS_NAME}>
-		COMMENT "Copying DLLs"
-	)
-endif()
-
-if (MINGW)
-	add_custom_command(TARGET ${TESTS_NAME}
-		POST_BUILD
-		COMMAND $<TARGET_FILE:${TESTS_NAME}>
-		COMMENT "Running test exe"
 	)
 endif()
 

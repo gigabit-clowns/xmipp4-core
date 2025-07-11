@@ -39,6 +39,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Que GCC
+        run: which gcc
+
       - name: Install memcheck tool
         uses: ./.github/composites/install-memtool
         id: install-memtool

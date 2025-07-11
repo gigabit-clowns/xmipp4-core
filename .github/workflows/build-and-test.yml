@@ -57,7 +57,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
       
       - name: Test
-        if: runner.os == 'Windows'
+        if: matrix.compiler.generator == 'Ninja'
         run: ./build/tests/unitary/xmipp4-core_unitary_tests.exe
 
       - name: Run tests with memory check

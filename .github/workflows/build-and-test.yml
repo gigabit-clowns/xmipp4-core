@@ -60,7 +60,8 @@ jobs:
         if: ${{matrix.generator == 'Ninja'}}
         shell: pwsh
         run: |
-          build\tests\unitary\xmipp4-core_unitary_tests.exe
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          dumpbin build\tests\unitary\xmipp4-core_unitary_tests.exe
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool

@@ -58,7 +58,9 @@ jobs:
 
       - name: Add MinGW to PATH
         if: runner.os == 'Windows'
-        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+        run: |
+          ls C:/msys64/mingw64/bin
+          echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool

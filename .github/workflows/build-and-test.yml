@@ -61,7 +61,7 @@ jobs:
         #run: ./build/tests/unitary/xmipp4-core_unitary_tests.exe
         run: |
           ls build/tests/unitary/
-          ./build/tests/unitary/xmipp4-core_unitary_tests.exe
+          dumpbin /DEPENDENTS ./build/tests/unitary/xmipp4-core_unitary_tests.exe
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool

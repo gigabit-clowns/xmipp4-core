@@ -192,10 +192,6 @@ if(MINGW)
 		PUBLIC 
 			XMIPP4_NO_BUILTIN
 	)
-	set_target_properties(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PROPERTIES 
-			PREFIX "")
 endif()
 
 # Install library's binary files and headers

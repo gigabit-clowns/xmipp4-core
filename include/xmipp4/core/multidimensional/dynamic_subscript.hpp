@@ -123,23 +123,25 @@ public:
      * @brief Get the index.
      * 
      * This method shall only be called if get_subscript_type() returns
-     * subscript_type::index. Otherwise behavior is undefined.
+     * subscript_type::index. Otherwise an exception is thrown.
      * 
      * @return std::ptrdiff_t The index held by this object.
+     * @throws std::logic_error
      */
     XMIPP4_CONSTEXPR
-    std::ptrdiff_t get_index() const noexcept;
+    std::ptrdiff_t get_index() const;
 
     /**
      * @brief Get the slice.
      * 
      * This method shall only be called if get_subscript_type() returns
-     * subscript_type::slice. Otherwise behavior is undefined.
+     * subscript_type::slice. Otherwise an exception is thrown.
      * 
      * @return dynamic_slice The slice held by this object.
+     * @throws std::logic_error
      */
     XMIPP4_CONSTEXPR
-    dynamic_slice get_slice() const noexcept;
+    dynamic_slice get_slice() const;
 
 private:
     using storage_type = std::array<std::ptrdiff_t, 3>;

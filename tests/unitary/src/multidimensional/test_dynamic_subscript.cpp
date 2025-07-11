@@ -34,6 +34,7 @@
 #include <sstream>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 using namespace xmipp4::multidimensional;
 
@@ -65,6 +66,13 @@ TEST_CASE("construct dynamic_subscript from constant index", "[dynamic_subscript
     const auto s = dynamic_subscript(index);
     REQUIRE( s.get_subscript_type() == dynamic_subscript::subscript_type::index );
     REQUIRE( s.get_index() == index );
+}
+
+TEST_CASE("calling get_index on a dynamic_subscript that holds another value should throw", "[dynamic_subscript]")
+{
+    dynamic_subscript s(new_axis());
+    REQUIRE_THROWS_AS( s.get_index(), std::logic_error );
+    REQUIRE_THROWS_WITH( s.get_index(), "Invalid call to get_index." );
 }
 
 TEST_CASE("construct dynamic_subscript from slice", "[dynamic_subscript]")
@@ -99,6 +107,13 @@ TEST_CASE("copy-assign dynamic_subscript from slice", "[dynamic_subscript]")
     s1 = s0;
     REQUIRE( s1.get_subscript_type() == dynamic_subscript::subscript_type::slice );
     REQUIRE( s1.get_slice() == slice );
+}
+
+TEST_CASE("calling get_slice on a dynamic_subscript that holds another value should throw", "[dynamic_subscript]")
+{
+    dynamic_subscript s(new_axis());
+    REQUIRE_THROWS_AS( s.get_slice(), std::logic_error );
+    REQUIRE_THROWS_WITH( s.get_slice(), "Invalid call to get_slice." );
 }
 
 TEST_CASE("visit function with a dynamic_subscript that holds an ellipsis_tag", "[dynamic_subscript]")

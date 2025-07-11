@@ -75,14 +75,24 @@ dynamic_subscript::get_subscript_type() const noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-std::ptrdiff_t dynamic_subscript::get_index() const noexcept
+std::ptrdiff_t dynamic_subscript::get_index() const
 {
+    if (m_type != subscript_type::index)
+    {
+        throw std::logic_error("Invalid call to get_index.");
+    }
+
     return m_data[0];
 }
 
 XMIPP4_INLINE_CONSTEXPR
-dynamic_slice dynamic_subscript::get_slice() const noexcept
+dynamic_slice dynamic_subscript::get_slice() const
 {
+    if (m_type != subscript_type::slice)
+    {
+        throw std::logic_error("Invalid call to get_slice.");
+    }
+
     return make_slice(m_data[0], m_data[1], m_data[2]);
 }
 

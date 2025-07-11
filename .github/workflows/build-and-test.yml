@@ -60,7 +60,6 @@ jobs:
         if: ${{matrix.generator == 'Ninja'}}
         shell: pwsh
         run: |
-          ls build/tests/unitary/
           dumpbin /DEPENDENTS ./build/tests/unitary/xmipp4-core_unitary_tests.exe
 
       - name: Run tests with memory check

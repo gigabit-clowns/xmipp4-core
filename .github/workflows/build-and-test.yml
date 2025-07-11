@@ -56,6 +56,9 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
       
+      - name: Test
+        run: ./build/tests/unitary/xmipp4-core_unitary_tests
+
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         id: run-memtool

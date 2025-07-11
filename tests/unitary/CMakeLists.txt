@@ -59,6 +59,13 @@ if(WIN32)
 	)
 endif()
 
+if (MINGW)
+	add_custom_command(TARGET ${TESTS_NAME}
+		POST_BUILD
+		COMMAND $<TARGET_FILE:${TESTS_NAME}>
+	)
+endif()
+
 # Discover tests
 catch_discover_tests(${TESTS_NAME})
 

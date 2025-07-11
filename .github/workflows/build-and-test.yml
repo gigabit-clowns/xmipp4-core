@@ -61,6 +61,7 @@ jobs:
         #run: ./build/tests/unitary/xmipp4-core_unitary_tests.exe
         run: |
           ls build/tests/unitary/
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           dumpbin /DEPENDENTS ./build/tests/unitary/xmipp4-core_unitary_tests.exe
 
       - name: Run tests with memory check

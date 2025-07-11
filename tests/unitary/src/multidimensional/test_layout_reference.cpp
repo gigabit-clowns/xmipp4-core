@@ -19,54 +19,36 @@
  ***************************************************************************/
 
 /**
- * @file layout_flags.inl
+ * @file test_layout_reference.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of layout_flags.hpp
- * @date 2024-05-01
+ * @brief Tests for multidimensional/layout_reference.hpp
+ * @date 2025-07-11
  * 
  */
 
-#include "layout_flags.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
-#include <unordered_map>
+#include <xmipp4/core/multidimensional/layout_reference.hpp>
 
-namespace xmipp4 
-{
-namespace multidimensional
-{
+#include "mock/mock_layout.hpp"
 
-XMIPP4_INLINE_CONSTEXPR 
-const char* to_string(layout_flag_bits flag) noexcept
+using namespace xmipp4::multidimensional;
+
+TEST_CASE("get_rank on an empty layout_reference should return 0")
 {
-    switch (flag)
-    {
-    case layout_flag_bits::contiguous: return "contiguous";
-    case layout_flag_bits::column_major: return "column_major";
-    case layout_flag_bits::row_major: return "row_major";
-    default: return "";
-    }
+    layout_reference<mock_layout> test_layout;
+    REQUIRE( test_layout.get_rank() == 0 );
 }
 
-template<typename T>
-inline
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, layout_flag_bits flag)
+TEST_CASE("get_rank on an non-empty layout_reference should forward the underlying rank")
 {
-    return os << to_string(flag);
+    mock_layout mock;
+
+    const std::size_t rank = 65732;
+    REQUIRE_CALL(mock, get_rank()).RETURN(rank);
+
+    layout_reference<mock_layout> test_layout(std::move(mock));
+    REQUIRE( test_layout.get_rank() == rank );
 }
 
-
-
-
-
-XMIPP4_INLINE_CONSTEXPR column_major_tag column_major() noexcept
-{
-    return column_major_tag();
-}
-
-XMIPP4_INLINE_CONSTEXPR row_major_tag row_major() noexcept
-{
-    return row_major_tag();
-}
-
-} // namespace multidimensional
-} // namespace xmipp4

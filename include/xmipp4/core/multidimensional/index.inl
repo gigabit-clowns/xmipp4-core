@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +20,46 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+#include "index.hpp"
+
+#include <type_traits>
+#include <sstream>
+#include <stdexcept>
 
 namespace xmipp4 
 {
-
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+namespace multidimensional
 {
-    switch (v)
+
+template <typename T>
+inline
+typename std::enable_if<is_index<T>::value, std::size_t>::type
+sanitize_index(T index, std::size_t extent)
+{
+    auto result = static_cast<std::ptrdiff_t>(index);
+    
+    if (result < 0)
     {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
+        if (result < -static_cast<std::ptrdiff_t>(extent))
+        {
+            std::ostringstream oss;
+            oss << "Reverse index " << result 
+                << " is out of bounds for extent " << extent;
+            throw std::out_of_range(oss.str());
+        }
+
+        result += extent;
     }
+    else if (result >= static_cast<std::ptrdiff_t>(extent))
+    {
+        std::ostringstream oss;
+        oss << "Index " << result
+            << " is out of bounds for extent " << extent;
+        throw std::out_of_range(oss.str());
+    }
+
+    return static_cast<std::size_t>(result);
 }
 
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
-
+} // namespace multidimensional
 } // namespace xmipp4

@@ -21,55 +21,32 @@
  ***************************************************************************/
 
 /**
- * @file layout_flags.hpp
+ * @file mock_broadcastable.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declares layout_flags flagset
- * @date 2024-05-01
- * 
+ * @brief Definition of a broadcastable class.
+ * @date 2025-07-03
  */
 
-#include "../utils/bit.hpp"
-#include "../utils/flagset.hpp"
-#include "../platform/constexpr.hpp"
+#include <trompeloeil.hpp>
 
-#include <ostream>
+#include <xmipp4/core/span.hpp>
 
-namespace xmipp4 
+#include <vector>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-enum class layout_flag_bits
+class mock_broadcastable
 {
-    contiguous = utils::bit(0),
-    column_major = utils::bit(1),
-    row_major = utils::bit(2)
+public:
+    static constexpr bool trompeloeil_movable_mock = true;
+
+    MAKE_MOCK1(broadcast_extents_to_layout, void(std::vector<std::size_t>&), const);
+    MAKE_MOCK1(broadcast_layout_to_extents, mock_broadcastable(span<const std::size_t>), const);
+
 };
-
-using layout_flags = utils::flagset<layout_flag_bits>;
-
-
-
-struct column_major_tag {};
-
-/**
- * @brief Construct a column major tag
- * 
- * @return column_major_tag
- */
-XMIPP4_CONSTEXPR column_major_tag column_major() noexcept;
-
-
-struct row_major_tag {};
-
-/**
- * @brief Construct a row major tag
- * 
- * @return row_major_tag
- */
-XMIPP4_CONSTEXPR row_major_tag row_major() noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "layout_flags.inl"

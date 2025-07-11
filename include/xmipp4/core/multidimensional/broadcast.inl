@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +20,34 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+/**
+ * @file broadcast.inl
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Implementation broadcast.hpp
+ * @date 2025-07-03
+ * 
+ */
+
+#include "broadcast.hpp"
+
+#include "../span.hpp"
 
 namespace xmipp4 
 {
-
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+namespace multidimensional
 {
-    switch (v)
-    {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
-    }
+
+template <typename... Broadcastables>
+inline
+std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
+                                       const Broadcastables&... items )
+{
+    (items.broadcast_extents_to_layout(extents), ...); // TODO avoid using fold expressions
+    return std::tuple<Broadcastables...>(
+        items.broadcast_layout_to_extents(xmipp4::make_span(extents))...
+    );
 }
 
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
 
+} // namespace multidimensional
 } // namespace xmipp4

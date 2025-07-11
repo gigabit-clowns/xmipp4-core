@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +20,38 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "access_flags.hpp"
+/**
+ * @file mock_subscript_callable.cpp
+ * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
+ * @brief Mock for a subscript callable function.
+ * @date 2025-02-11
+ */
 
-namespace xmipp4 
+#include <xmipp4/core/multidimensional/subscript_tags.hpp>
+#include <xmipp4/core/multidimensional/slice.hpp>
+
+#include <trompeloeil.hpp>
+
+namespace xmipp4
+{
+namespace multidimensional
 {
 
-XMIPP4_INLINE_CONSTEXPR const char* 
-to_string(access_flag_bits v) noexcept
+class mock_subscript_callable
 {
-    switch (v)
+public:
+    MAKE_MOCK1(function_call, void(ellipsis_tag), const);
+    MAKE_MOCK1(function_call, void(new_axis_tag), const);
+    MAKE_MOCK1(function_call, void(std::ptrdiff_t), const);
+    MAKE_MOCK1(function_call, void(dynamic_slice), const);
+
+    template <typename T>
+    void operator()(T &&arg) const
     {
-    case access_flag_bits::read:    return "read";
-    case access_flag_bits::write:   return "write";
-    default: return "";
+        function_call(std::forward<T>(arg));
     }
-}
 
-template<typename T>
-inline std::basic_ostream<T>& 
-operator<<(std::basic_ostream<T>& os, access_flag_bits v)
-{
-    return os << to_string(v);
-}
+};
 
+} // namespace multidimensional
 } // namespace xmipp4

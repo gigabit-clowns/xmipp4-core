@@ -35,6 +35,12 @@
  */
 
 /**
+ * @def XMIPP4_ICC
+ * @brief Defined when building with Intel Compilers
+ * 
+ */
+
+/**
  * @def XMIPP4_GCC
  * @brief Defined when building with GNU C/C++ compiler
  * 
@@ -52,7 +58,7 @@
 #if defined(__clang__)
     #define XMIPP4_CLANG 1
 #elif defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
-    #define XMIPP4_INTEL_COMPILER 1
+    #define XMIPP4_ICC 1
 #elif defined(__GNUC__) || defined(__GNUG__)
     #define XMIPP4_GCC 1
 #elif defined(_MSC_VER)

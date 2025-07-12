@@ -67,6 +67,7 @@ jobs:
 
       - name: Run tests in cmd
         shell: cmd
+        working-directory: "${{ github.workspace }}/build"
         if: runner.os == 'Windows'
         run: ctest -T test --rerun-failed --output-on-failure
       

@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * @file host_transfer.hpp
+ * @file cpu_transfer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Implementation of device_host_communicator
  * @date 2024-11-06
@@ -47,7 +47,7 @@ namespace compute
  * is casted to the output buffer, aliasing its contents.
  * 
  */
-class host_transfer final
+class cpu_transfer final
     : public host_to_device_transfer
     , public device_to_host_transfer
     , public device_copy

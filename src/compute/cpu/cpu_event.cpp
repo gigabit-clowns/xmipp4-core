@@ -1,5 +1,3 @@
-#pragma once
-
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,46 +19,40 @@
  ***************************************************************************/
 
 /**
- * @file host_unified_buffer.hpp
+ * @file cpu_event.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_unified_buffer interface
- * @date 2024-10-29
+ * @brief Implementation of cpu_event.hpp
+ * @date 2024-11-13
  * 
  */
 
-#include "../device_buffer.hpp"
-#include "../host_buffer.hpp"
+#include <xmipp4/core/compute/cpu/cpu_event.hpp>
 
-namespace xmipp4 
+
+namespace xmipp4
 {
 namespace compute
 {
 
-/**
- * @brief Interface merging the interfaces of host_buffer and device_buffer.
- * 
- * This interface unifies host_buffer and device_buffer interfaces, as
- * when using the host as a compute device, both buffers types are 
- * equivalent
- * 
- */
-class host_unified_buffer
-    : public device_buffer
-    , public host_buffer
+void cpu_event::signal(device_queue&)
 {
-public:
-    std::size_t get_size() const noexcept override = 0;
-    void* get_data() noexcept override = 0;
-    const void* get_data() const noexcept override = 0;
+    // No-op
+}
 
-    host_unified_buffer* get_device_accessible_alias() noexcept final;
-    const host_unified_buffer* get_device_accessible_alias() const noexcept final;
-    host_unified_buffer* get_host_accessible_alias() noexcept final;
-    const host_unified_buffer* get_host_accessible_alias() const noexcept final;
-    
-    void record_queue(device_queue &queue) override = 0;
+void cpu_event::wait() const
+{
+    // No-op
+}
 
-}; 
+void cpu_event::wait(device_queue&) const
+{
+    // No-op
+}
+
+bool cpu_event::is_signaled() const
+{
+    return true;
+}
 
 } // namespace compute
 } // namespace xmipp4

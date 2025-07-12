@@ -19,39 +19,40 @@
  ***************************************************************************/
 
 /**
- * @file host_event.cpp
+ * @file cpu_unified_buffer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_event.hpp
- * @date 2024-11-13
+ * @brief Implementation of default_cpu_unified_buffer.hpp
+ * @date 2024-11-26
  * 
  */
 
-#include <xmipp4/core/compute/host/host_event.hpp>
-
+#include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>
 
 namespace xmipp4
 {
 namespace compute
 {
 
-void host_event::signal(device_queue&)
+cpu_unified_buffer* cpu_unified_buffer::get_device_accessible_alias() noexcept
 {
-    // No-op
+    return this;
 }
 
-void host_event::wait() const
+const cpu_unified_buffer* 
+cpu_unified_buffer::get_device_accessible_alias() const noexcept
 {
-    // No-op
+    return this;
 }
 
-void host_event::wait(device_queue&) const
+cpu_unified_buffer* cpu_unified_buffer::get_host_accessible_alias() noexcept
 {
-    // No-op
+    return this;
 }
 
-bool host_event::is_signaled() const
+const cpu_unified_buffer* 
+cpu_unified_buffer::get_host_accessible_alias() const noexcept
 {
-    return true;
+    return this;
 }
 
 } // namespace compute

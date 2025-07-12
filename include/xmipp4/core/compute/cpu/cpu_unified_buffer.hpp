@@ -1,3 +1,5 @@
+#pragma once
+
 /***************************************************************************
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +21,46 @@
  ***************************************************************************/
 
 /**
- * @file host_device_queue_pool.cpp
+ * @file cpu_unified_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device_queue_pool.hpp
- * @date 2024-11-27
+ * @brief Defines the compute::cpu_unified_buffer interface
+ * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device_queue_pool.hpp>
+#include "../device_buffer.hpp"
+#include "../host_buffer.hpp"
 
-#include <stdexcept>
-
-namespace xmipp4
+namespace xmipp4 
 {
 namespace compute
 {
 
-
-std::size_t host_device_queue_pool::get_size() const noexcept
+/**
+ * @brief Interface merging the interfaces of host_buffer and device_buffer.
+ * 
+ * This interface unifies host_buffer and device_buffer interfaces, as
+ * when using the host as a compute device, both buffers types are 
+ * equivalent
+ * 
+ */
+class cpu_unified_buffer
+    : public device_buffer
+    , public host_buffer
 {
-    return 1;
-}
+public:
+    std::size_t get_size() const noexcept override = 0;
+    void* get_data() noexcept override = 0;
+    const void* get_data() const noexcept override = 0;
 
-host_device_queue& host_device_queue_pool::get_queue(std::size_t index)
-{
-    if (index > 0)
-    {
-        throw std::out_of_range(
-            "queue index is out of range"
-        );
-    }
+    cpu_unified_buffer* get_device_accessible_alias() noexcept final;
+    const cpu_unified_buffer* get_device_accessible_alias() const noexcept final;
+    cpu_unified_buffer* get_host_accessible_alias() noexcept final;
+    const cpu_unified_buffer* get_host_accessible_alias() const noexcept final;
+    
+    void record_queue(device_queue &queue) override = 0;
 
-    return m_queue;
-}
+}; 
 
 } // namespace compute
 } // namespace xmipp4

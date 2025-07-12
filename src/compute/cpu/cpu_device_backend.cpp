@@ -19,16 +19,16 @@
  ***************************************************************************/
 
 /**
- * @file host_device_backend.cpp
+ * @file cpu_device_backend.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_device_backend.hpp
+ * @brief Implementation of cpu_device_backend.hpp
  * @date 2024-10-29
  * 
  */
 
-#include <xmipp4/core/compute/host/host_device_backend.hpp>
+#include <xmipp4/core/compute/cpu/cpu_device_backend.hpp>
 
-#include <xmipp4/core/compute/host/host_device.hpp>
+#include <xmipp4/core/compute/cpu/cpu_device.hpp>
 #include <xmipp4/core/core_version.hpp>
 #include <xmipp4/core/system/host.hpp>
 
@@ -37,32 +37,32 @@ namespace xmipp4
 namespace compute
 {
 
-std::string host_device_backend::get_name() const noexcept
+std::string cpu_device_backend::get_name() const noexcept
 {
-    return "host";
+    return "cpu";
 }
 
-version host_device_backend::get_version() const noexcept
+version cpu_device_backend::get_version() const noexcept
 {
     return get_core_version();
 }
 
-bool host_device_backend::is_available() const noexcept
+bool cpu_device_backend::is_available() const noexcept
 {
     return true;
 }
 
-backend_priority host_device_backend::get_priority() const noexcept
+backend_priority cpu_device_backend::get_priority() const noexcept
 {
     return backend_priority::normal;
 }
 
-void host_device_backend::enumerate_devices(std::vector<std::size_t> &ids) const
+void cpu_device_backend::enumerate_devices(std::vector<std::size_t> &ids) const
 {
     ids = { 0 };
 }
 
-bool host_device_backend::get_device_properties(std::size_t id, 
+bool cpu_device_backend::get_device_properties(std::size_t id, 
                                                 device_properties &desc ) const
 {
     bool result = false;
@@ -80,22 +80,22 @@ bool host_device_backend::get_device_properties(std::size_t id,
 }
 
 std::shared_ptr<device> 
-host_device_backend::create_device(std::size_t id, 
+cpu_device_backend::create_device(std::size_t id, 
                                    const device_create_parameters& )
 {
     std::shared_ptr<device> result;
 
     if (id == 0)
     {
-        result = std::make_shared<host_device>();
+        result = std::make_shared<cpu_device>();
     }
 
     return result;
 }
 
-bool host_device_backend::register_at(device_manager &manager)
+bool cpu_device_backend::register_at(device_manager &manager)
 {
-    return manager.register_backend(std::make_unique<host_device_backend>());
+    return manager.register_backend(std::make_unique<cpu_device_backend>());
 }
 
 } // namespace compute

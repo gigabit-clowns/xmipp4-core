@@ -56,14 +56,20 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Add MinGW to PATH
+      - name: Print PATH in cmd
+        shell: cmd
         if: runner.os == 'Windows'
-        run: |
-          ls C:/mingw64/bin/
-          ls /c/mingw64/bin/
-          echo "C:/mingw64/bin/" >> $GITHUB_PATH
-          echo "/c/mingw64/bin/" >> $GITHUB_PATH
+        run: echo %PATH%
 
+      - name: Print PATH in bash
+        if: runner.os == 'Windows'
+        run: echo $PATH
+
+      - name: Run tests in cmd
+        shell: cmd
+        if: runner.os == 'Windows'
+        run: ctest -T test --rerun-failed --output-on-failure
+      
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         id: run-memtool

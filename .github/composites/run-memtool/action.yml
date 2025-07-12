@@ -25,7 +25,7 @@ runs:
     - name: Run tests without memory check (Windows)
       if: runner.os == 'Windows'
       working-directory: "${{ github.workspace }}/build"
-      shell: bash
+      shell: cmd
       run: ctest -T test --rerun-failed --output-on-failure
     
     - name: Run tests without memory check (MacOS)

@@ -52,15 +52,15 @@ class communicator_manager final
     : public basic_backend_manager<communicator_backend>
 {
 public:
-    communicator_manager() = default;
+    XMIPP4_CORE_API communicator_manager();
     communicator_manager(const communicator_manager &other) = delete;
-    communicator_manager(communicator_manager &&other) = default;
-    ~communicator_manager() override = default;
+    XMIPP4_CORE_API communicator_manager(communicator_manager &&other) noexcept;
+    XMIPP4_CORE_API ~communicator_manager() override;
 
     communicator_manager& 
     operator=(const communicator_manager &other) = delete;
-    communicator_manager& 
-    operator=(communicator_manager &&other) = default;
+    XMIPP4_CORE_API 
+    communicator_manager& operator=(communicator_manager &&other) noexcept;
 
     XMIPP4_CORE_API
     void register_builtin_backends() override;

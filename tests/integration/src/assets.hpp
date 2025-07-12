@@ -27,6 +27,7 @@
  */
 
 #include <xmipp4/core/platform/operating_system.h>
+#include <xmipp4/core/platform/compiler.h>
 
 #include <string>
 
@@ -64,7 +65,11 @@ inline std::string get_mock_plugin_path(const std::string &name)
 {
 
     #if XMIPP4_WINDOWS
-        return get_asset_root() + "\\plugins\\" + name + ".dll";
+        #if XMIPP4_MINGW
+            return get_asset_root() + "\\plugins\\lib" + name + ".dll";
+        #else
+            return get_asset_root() + "\\plugins\\" + name + ".dll";
+        #endif
     #elif XMIPP4_APPLE || XMIPP4_LINUX
         return get_asset_root() + "/plugins/lib" + name + ".so";
     #else

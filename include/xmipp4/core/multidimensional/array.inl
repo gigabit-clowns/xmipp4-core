@@ -63,122 +63,25 @@ array<Storage, Layout>::get_layout() const noexcept
 
 template <typename Storage, typename Layout>
 XMIPP4_NODISCARD inline
+typename array<Storage, Layout>::storage_view_type 
+array<Storage, Layout>::view_storage()
+{
+    return m_storage.view();
+}
+
+template <typename Storage, typename Layout>
+XMIPP4_NODISCARD inline
+typename array<Storage, Layout>::storage_const_view_type 
+array<Storage, Layout>::view_storage() const
+{
+    return m_storage.view();
+}
+
+template <typename Storage, typename Layout>
+XMIPP4_NODISCARD inline
 std::size_t array<Storage, Layout>::get_rank() const noexcept
 {
     return m_layout.get_rank();
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::apply_subscripts(span<const dynamic_subscript> subscripts)
-{
-    return array(m_storage.view(), m_layout.apply_subscripts(subscripts));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::apply_subscripts(span<const dynamic_subscript> subscripts) const
-{
-    return array(m_storage.view(), m_layout.apply_subscripts(subscripts));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::transpose()
-{
-    return array(m_storage.view(), m_layout.transpose());
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::transpose() const
-{
-    return array(m_storage.view(), m_layout.transpose());
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::permute(span<std::size_t> order)
-{
-    return array(m_storage.view(), m_layout.permute(order));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::permute(span<std::size_t> order) const
-{
-    return array(m_storage.view(), m_layout.permute(order));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::swap_axes(std::size_t axis1, std::size_t axis2)
-{
-    return array(m_storage.view(), m_layout.swap_axes(axis1, axis2));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::swap_axes(std::size_t axis1, std::size_t axis2) const
-{
-    return array(m_storage.view(), m_layout.swap_axes(axis1, axis2));
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::squeeze()
-{
-    return array(m_storage.view(), m_layout.squeeze());
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::squeeze() const
-{
-    return array(m_storage.view(), m_layout.squeeze());
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-void array<Storage, Layout>::broadcast_extents_to_layout(std::vector<std::size_t> &extents,
-                                                         std::size_t trailing_dimensions ) const
-{
-    m_layout.broadcast_extents_to_layout(extents, trailing_dimensions);
-}
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::view_type
-array<Storage, Layout>::broadcast_layout_to_extents(span<const std::size_t> extents,
-                                                    std::size_t trailing_dimensions )
-{
-    return array(
-        m_storage.view(), 
-        m_layout.broadcast_layout_to_extents(extents, trailing_dimensions)
-    );
-}
-
-
-template <typename Storage, typename Layout>
-XMIPP4_NODISCARD inline
-typename array<Storage, Layout>::const_view_type
-array<Storage, Layout>::broadcast_layout_to_extents(span<const std::size_t> extents,
-                                                    std::size_t trailing_dimensions ) const
-{
-    return array(
-        m_storage.view(), 
-        m_layout.broadcast_layout_to_extents(extents, trailing_dimensions)
-    );
 }
 
 } // namespace multidimensional

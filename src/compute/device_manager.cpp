@@ -28,7 +28,7 @@
 
 #include <xmipp4/core/compute/device_manager.hpp>
 
-#include <xmipp4/core/compute/host/host_device_backend.hpp>
+#include <xmipp4/core/compute/cpu/cpu_device_backend.hpp>
 
 #include <unordered_map>
 
@@ -44,7 +44,7 @@ device_manager& device_manager::operator=(device_manager&&) noexcept = default;
 
 void device_manager::register_builtin_backends()
 {
-    host_device_backend::register_at(*this);
+    cpu_device_backend::register_at(*this);
 }
 
 void device_manager::enumerate_devices(std::vector<device_index> &indices) const

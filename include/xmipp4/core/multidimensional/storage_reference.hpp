@@ -38,16 +38,14 @@ namespace multidimensional
 {
 
 template <typename T>
-class storage_reference
+class storage_reference_base
 {
 public:
-    using storage_type = T;
-    using view_type = storage_reference<storage_type>;
-    using const_view_type = storage_reference<const storage_type>;
-    using value_type = 
-        typename storage_traits<storage_type>::value_type;
-    using is_host_accessible = 
-        typename storage_traits<storage_type>::is_host_accessible;
+    using storage_type = typename T::storage_type;
+    using view_type = typename T::view_type;
+    using const_view_type = typename T::const_view_type;
+    using value_type = typename T::value_type;
+    using is_host_accessible = typename T::is_host_accessible;
 
     storage_reference() = default;
     template <typename... Args>
@@ -86,7 +84,35 @@ private:
 };
 
 template <typename T>
-void swap(storage_reference<T> &lhs, storage_reference<T> &rhs) noexcept;
+class storage_reference
+    : public storage_reference_base<storage_reference>
+{
+public:
+    using storage_type = T;
+    using view_type = storage_reference<storage_type>;
+    using const_view_type = const_storage_reference<storage_type>;
+    using value_type = 
+        typename storage_traits<storage_type>::value_type;
+    using is_host_accessible = 
+        typename storage_traits<storage_type>::is_host_accessible;
+};
+
+template <typename T>
+class const_storage_reference
+    : public storage_reference_base<const_storage_reference>
+{
+public:
+    using storage_type = T;
+    using view_type = const_storage_reference<storage_type>;
+    using const_view_type = const_storage_reference<storage_type>;
+    using value_type = 
+        typename storage_traits<storage_type>::value_type;
+    using is_host_accessible = 
+        typename storage_traits<storage_type>::is_host_accessible;
+};
+
+template <typename T>
+void swap(storage_reference_base<T> &lhs, storage_reference_base<T> &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

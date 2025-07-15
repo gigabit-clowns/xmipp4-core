@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * @file host_numerical_type.hpp
+ * @file cpu_numerical_type.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Numerical type conversions for host
  * @date 2024-11-06
@@ -42,7 +42,7 @@ namespace compute
 {
 
 template <typename T>
-struct host_numerical_type
+struct cpu_numerical_type
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -52,7 +52,7 @@ struct host_numerical_type
 };
 
 template <>
-struct host_numerical_type<std::int8_t>
+struct cpu_numerical_type<std::int8_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -62,7 +62,7 @@ struct host_numerical_type<std::int8_t>
 };
 
 template <>
-struct host_numerical_type<std::uint8_t>
+struct cpu_numerical_type<std::uint8_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -72,7 +72,7 @@ struct host_numerical_type<std::uint8_t>
 };
 
 template <>
-struct host_numerical_type<std::int16_t>
+struct cpu_numerical_type<std::int16_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -82,7 +82,7 @@ struct host_numerical_type<std::int16_t>
 };
 
 template <>
-struct host_numerical_type<std::uint16_t>
+struct cpu_numerical_type<std::uint16_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -92,7 +92,7 @@ struct host_numerical_type<std::uint16_t>
 };
 
 template <>
-struct host_numerical_type<std::int32_t>
+struct cpu_numerical_type<std::int32_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -102,7 +102,7 @@ struct host_numerical_type<std::int32_t>
 };
 
 template <>
-struct host_numerical_type<std::uint32_t>
+struct cpu_numerical_type<std::uint32_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -112,7 +112,7 @@ struct host_numerical_type<std::uint32_t>
 };
 
 template <>
-struct host_numerical_type<std::int64_t>
+struct cpu_numerical_type<std::int64_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -122,7 +122,7 @@ struct host_numerical_type<std::int64_t>
 };
 
 template <>
-struct host_numerical_type<std::uint64_t>
+struct cpu_numerical_type<std::uint64_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -132,7 +132,7 @@ struct host_numerical_type<std::uint64_t>
 };
 
 template <>
-struct host_numerical_type<float16_t>
+struct cpu_numerical_type<float16_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -142,7 +142,7 @@ struct host_numerical_type<float16_t>
 };
 
 template <>
-struct host_numerical_type<float32_t>
+struct cpu_numerical_type<float32_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -152,7 +152,7 @@ struct host_numerical_type<float32_t>
 };
 
 template <>
-struct host_numerical_type<float64_t>
+struct cpu_numerical_type<float64_t>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -162,7 +162,7 @@ struct host_numerical_type<float64_t>
 };
 
 template <>
-struct host_numerical_type<std::complex<float16_t>>
+struct cpu_numerical_type<std::complex<float16_t>>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -172,7 +172,7 @@ struct host_numerical_type<std::complex<float16_t>>
 };
 
 template <>
-struct host_numerical_type<std::complex<float32_t>>
+struct cpu_numerical_type<std::complex<float32_t>>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept
@@ -182,7 +182,7 @@ struct host_numerical_type<std::complex<float32_t>>
 };
 
 template <>
-struct host_numerical_type<std::complex<float64_t>>
+struct cpu_numerical_type<std::complex<float64_t>>
 {
     XMIPP4_CONSTEXPR
     static numerical_type value() noexcept

@@ -21,16 +21,14 @@
  ***************************************************************************/
 
 /**
- * @file host_device_queue.hpp
+ * @file default_cpu_unified_buffer.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_device_queue interface
- * @date 2024-11-27
+ * @brief Defines the compute::default_cpu_unified_buffer interface
+ * @date 2024-10-29
  * 
  */
 
-#include "../device_queue_pool.hpp"
-
-#include "host_device_queue.hpp"
+#include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>
 
 namespace xmipp4 
 {
@@ -38,23 +36,38 @@ namespace compute
 {
 
 /**
- * @brief Implementation of the device_queue_pool interface to be 
- * able to obtain host_device_queue-s.
- * 
- * As host_device_queue-s are synchronous, it does not make sense to
- * instantiate multiple of them. Thus, this pool always has a size of
- * one.
+ * @brief Special implementation of device_buffer that allows to 
+ * allocate memory in the host as if it were a device.
  * 
  */
-class host_device_queue_pool final
-    : public device_queue_pool
+class default_cpu_unified_buffer final
+    : public cpu_unified_buffer
 {
 public:
+    default_cpu_unified_buffer() noexcept;
+    default_cpu_unified_buffer(std::size_t size, std::size_t alignment);
+    default_cpu_unified_buffer(const default_cpu_unified_buffer &other) = delete;
+    default_cpu_unified_buffer(default_cpu_unified_buffer &&other) noexcept;
+    ~default_cpu_unified_buffer() override;
+
+    default_cpu_unified_buffer& 
+    operator=(const default_cpu_unified_buffer &other) = delete;
+    default_cpu_unified_buffer& 
+    operator=(default_cpu_unified_buffer &&other) noexcept;
+
+    void swap(default_cpu_unified_buffer &other) noexcept;
+    void reset() noexcept;
+
     std::size_t get_size() const noexcept override;
-    host_device_queue& get_queue(std::size_t index) override;
+
+    void* get_data() noexcept override;
+    const void* get_data() const noexcept override;
+
+    void record_queue(device_queue &queue) override;
 
 private:
-    host_device_queue m_queue;
+    std::size_t m_size;
+    void* m_data;
 
 }; 
 

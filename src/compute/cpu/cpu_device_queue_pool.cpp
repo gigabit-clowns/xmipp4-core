@@ -19,40 +19,38 @@
  ***************************************************************************/
 
 /**
- * @file host_unified_buffer.cpp
+ * @file cpu_device_queue_pool.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of default_host_unified_buffer.hpp
- * @date 2024-11-26
+ * @brief Implementation of cpu_device_queue_pool.hpp
+ * @date 2024-11-27
  * 
  */
 
-#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
+#include <xmipp4/core/compute/cpu/cpu_device_queue_pool.hpp>
+
+#include <stdexcept>
 
 namespace xmipp4
 {
 namespace compute
 {
 
-host_unified_buffer* host_unified_buffer::get_device_accessible_alias() noexcept
+
+std::size_t cpu_device_queue_pool::get_size() const noexcept
 {
-    return this;
+    return 1;
 }
 
-const host_unified_buffer* 
-host_unified_buffer::get_device_accessible_alias() const noexcept
+cpu_device_queue& cpu_device_queue_pool::get_queue(std::size_t index)
 {
-    return this;
-}
+    if (index > 0)
+    {
+        throw std::out_of_range(
+            "queue index is out of range"
+        );
+    }
 
-host_unified_buffer* host_unified_buffer::get_host_accessible_alias() noexcept
-{
-    return this;
-}
-
-const host_unified_buffer* 
-host_unified_buffer::get_host_accessible_alias() const noexcept
-{
-    return this;
+    return m_queue;
 }
 
 } // namespace compute

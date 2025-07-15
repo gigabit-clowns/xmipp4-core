@@ -19,16 +19,16 @@
  ***************************************************************************/
 
 /**
- * @file host_transfer.cpp
+ * @file cpu_transfer.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_transfer.hpp
+ * @brief Implementation of cpu_transfer.hpp
  * @date 2024-11-06
  * 
  */
 
-#include <xmipp4/core/compute/host/host_transfer.hpp>
+#include <xmipp4/core/compute/cpu/cpu_transfer.hpp>
 
-#include <xmipp4/core/compute/host/host_unified_buffer.hpp>
+#include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>
 #include <xmipp4/core/compute/numerical_type.hpp>
 
 #include <stdexcept>
@@ -39,30 +39,30 @@ namespace xmipp4
 namespace compute
 {
 
-void host_transfer::transfer_copy(const host_buffer &src_buffer, 
+void cpu_transfer::transfer_copy(const host_buffer &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   device_queue& )
 {
     compute::copy(
         src_buffer, 
-        dynamic_cast<host_unified_buffer&>(dst_buffer)
+        dynamic_cast<cpu_unified_buffer&>(dst_buffer)
     );
 }
 
-void host_transfer::transfer_copy(const host_buffer &src_buffer, 
+void cpu_transfer::transfer_copy(const host_buffer &src_buffer, 
                                   device_buffer &dst_buffer, 
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
     compute::copy(
         src_buffer, 
-        dynamic_cast<host_unified_buffer&>(dst_buffer), 
+        dynamic_cast<cpu_unified_buffer&>(dst_buffer), 
         regions
     );
 }
 
 std::shared_ptr<device_buffer> 
-host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer, 
+cpu_transfer::transfer(const std::shared_ptr<host_buffer> &buffer, 
                         device_memory_allocator&,
                         std::size_t,
                         device_queue&)
@@ -71,7 +71,7 @@ host_transfer::transfer(const std::shared_ptr<host_buffer> &buffer,
 }
 
 std::shared_ptr<const device_buffer> 
-host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer, 
+cpu_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer, 
                         device_memory_allocator&,
                         std::size_t,
                         device_queue& )
@@ -79,30 +79,30 @@ host_transfer::transfer(const std::shared_ptr<const host_buffer> &buffer,
     return get_device_accessible_alias(buffer);
 }
 
-void host_transfer::transfer_copy(const device_buffer &src_buffer,
+void cpu_transfer::transfer_copy(const device_buffer &src_buffer,
                                   host_buffer &dst_buffer,
                                   device_queue& )
 {
     compute::copy(
-        dynamic_cast<const host_unified_buffer&>(src_buffer), 
+        dynamic_cast<const cpu_unified_buffer&>(src_buffer), 
         dst_buffer
     );
 }
 
-void host_transfer::transfer_copy(const device_buffer &src_buffer,
+void cpu_transfer::transfer_copy(const device_buffer &src_buffer,
                                   host_buffer &dst_buffer,
                                   span<const copy_region> regions, 
                                   device_queue& )
 {
     compute::copy(
-        dynamic_cast<const host_unified_buffer&>(src_buffer), 
+        dynamic_cast<const cpu_unified_buffer&>(src_buffer), 
         dst_buffer,
         regions
     );
 }
 
 std::shared_ptr<host_buffer> 
-host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer, 
+cpu_transfer::transfer(const std::shared_ptr<device_buffer> &buffer, 
                         host_memory_allocator&,
                         std::size_t,
                         device_queue& )
@@ -111,7 +111,7 @@ host_transfer::transfer(const std::shared_ptr<device_buffer> &buffer,
 }
 
 std::shared_ptr<const host_buffer> 
-host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer, 
+cpu_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer, 
                         host_memory_allocator&,
                         std::size_t,
                         device_queue& )
@@ -120,24 +120,24 @@ host_transfer::transfer(const std::shared_ptr<const device_buffer> &buffer,
 }
 
 
-void host_transfer::copy(const device_buffer &src_buffer,
+void cpu_transfer::copy(const device_buffer &src_buffer,
                          device_buffer &dst_buffer, 
                          device_queue& )
 {
     compute::copy(
-        dynamic_cast<const host_unified_buffer&>(src_buffer), 
-        dynamic_cast<host_unified_buffer&>(dst_buffer)
+        dynamic_cast<const cpu_unified_buffer&>(src_buffer), 
+        dynamic_cast<cpu_unified_buffer&>(dst_buffer)
     );
 }
 
-void host_transfer::copy(const device_buffer &src_buffer,
+void cpu_transfer::copy(const device_buffer &src_buffer,
                          device_buffer &dst_buffer,
                          span<const copy_region> regions,
                          device_queue& )
 {
     compute::copy(
-        dynamic_cast<const host_unified_buffer&>(src_buffer), 
-        dynamic_cast<host_unified_buffer&>(dst_buffer), 
+        dynamic_cast<const cpu_unified_buffer&>(src_buffer), 
+        dynamic_cast<cpu_unified_buffer&>(dst_buffer), 
         regions
     );
 }

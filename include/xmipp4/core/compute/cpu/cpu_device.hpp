@@ -21,39 +21,39 @@
  ***************************************************************************/
 
 /**
- * @file host_device.hpp
+ * @file cpu_device.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines host_device interface
+ * @brief Defines cpu_device interface
  * @date 2024-10-29
  * 
  */
 
 #include "../device.hpp"
 
-#include "host_device_queue_pool.hpp"
+#include "cpu_device_queue_pool.hpp"
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class host_unified_memory_allocator;
-class host_transfer;
-class host_event;
+class cpu_unified_memory_allocator;
+class cpu_transfer;
+class cpu_event;
 
 /**
  * @brief Special implementation of the device interface to be able to use
  * the "host" as a device.
  * 
  */
-class host_device final
+class cpu_device final
     : public device
 {
 public:
-    host_device();
-    ~host_device() override = default;
+    cpu_device();
+    ~cpu_device() override = default;
 
-    host_device_queue_pool& get_queue_pool() override;
+    cpu_device_queue_pool& get_queue_pool() override;
 
     std::shared_ptr<device_memory_allocator> 
     create_device_memory_allocator() override;
@@ -76,10 +76,10 @@ public:
     create_device_to_host_event() override;
 
 private:
-    host_device_queue_pool m_queue_pool;
-    std::shared_ptr<host_unified_memory_allocator> m_allocator;
-    std::shared_ptr<host_transfer> m_transfer;
-    std::shared_ptr<host_event> m_event;
+    cpu_device_queue_pool m_queue_pool;
+    std::shared_ptr<cpu_unified_memory_allocator> m_allocator;
+    std::shared_ptr<cpu_transfer> m_transfer;
+    std::shared_ptr<cpu_event> m_event;
 
 }; 
 

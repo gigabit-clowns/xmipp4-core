@@ -21,31 +21,34 @@
  ***************************************************************************/
 
 /**
- * @file builtin.h
+ * @file cpu_event.hpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions to check compiler builtin functions
- * @date 2023-08-08
+ * @brief Defines cpu_event class.
+ * @date 2024-11-13
  * 
  */
 
-/**
- * @brief Declaration name of a builtin function
- * 
- */
-#define XMIPP4_BUILTIN(fun) __builtin_##fun
+#include "../device_event.hpp"
+#include "../device_to_host_event.hpp"
 
-/**
- * @def XMIPP4_HAS_BUILTIN(fun)
- * @brief Checks if a particular builtin function is provided
- * 
- * When no way of checking availability is provided, it 
- * defaults to false.
- * 
- */
-#if defined(__has_builtin) && !defined(XMIPP4_NO_BUILTIN)
-    #define XMIPP4_HAS_BUILTIN(fun) __has_builtin(__builtin_##fun)
-#elif defined(XMIPP4_DOC_BUILD)
-    #define XMIPP4_HAS_BUILTIN(fun) 1
-#else
-    #define XMIPP4_HAS_BUILTIN(fun) 0
-#endif
+namespace xmipp4 
+{
+namespace compute
+{
+
+class cpu_event final
+    : public device_event
+    , public device_to_host_event
+{
+public:
+    void signal(device_queue &queue) override;
+
+    void wait() const override;
+    void wait(device_queue &queue) const override;
+
+    bool is_signaled() const override;
+
+}; 
+
+} // namespace compute
+} // namespace xmipp4

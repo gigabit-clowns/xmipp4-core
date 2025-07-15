@@ -140,6 +140,7 @@ target_link_libraries(
 		${CMAKE_DL_LIBS}
 )
 
+
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)
 	find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
@@ -177,7 +178,20 @@ endif()
 
 # Disable min/max macros in windows
 if(MSVC)
-	target_compile_definitions(${XMIPP4_CORE_LIBRARY_TARGET} PUBLIC -DNOMINMAX)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			NOMINMAX
+	)
+endif()
+
+# Disable builtin functions in MinGW
+if(MINGW)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			XMIPP4_NO_BUILTIN
+	)
 endif()
 
 # Install library's binary files and headers

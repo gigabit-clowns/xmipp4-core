@@ -25,9 +25,9 @@ jobs:
           compiler: {cc: clang, cxx: clang++}
         - os: windows-latest
           compiler: {cc: cl, cxx: cl}
-        # - os: windows-latest # FIXME
-        #   compiler: {cc: gcc, cxx: g++}
-        #   generator: "Ninja"
+        - os: windows-latest
+          compiler: {cc: gcc, cxx: g++}
+          generator: "Ninja"
   
     env:
       BUILD_TYPE: Debug
@@ -55,7 +55,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
-      
+
       - name: Run tests with memory check
         uses: ./.github/composites/run-memtool
         id: run-memtool

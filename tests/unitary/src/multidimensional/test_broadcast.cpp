@@ -43,6 +43,7 @@ TEST_CASE("broadcast should call broadcast_extents_to_layout and broadcast_layou
 
     std::vector<std::size_t> extents;
     
+    // TODO Check call order
     REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)));
     REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)));
     REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)));

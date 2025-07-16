@@ -123,7 +123,7 @@ public:
      * 
      * @param other The set to be copied from
      */
-    flagset(flagset &&other) = default;
+    flagset(flagset &&other) noexcept = default;
 
     /**
      * @brief Destroy the flagset object
@@ -145,7 +145,7 @@ public:
      * @param other The set to be copied from
      * @return flagset& *this
      */
-    flagset& operator=(flagset &&other) = default;
+    flagset& operator=(flagset &&other) noexcept = default;
 
 
     /**

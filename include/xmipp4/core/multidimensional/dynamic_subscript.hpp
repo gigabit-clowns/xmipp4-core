@@ -29,6 +29,7 @@
  */
 
 #include <array>
+#include <ostream>
 #include <cstddef>
 
 #include "subscript_tags.hpp"
@@ -128,7 +129,6 @@ public:
      * @return std::ptrdiff_t The index held by this object.
      * @throws std::logic_error
      */
-    XMIPP4_CONSTEXPR
     std::ptrdiff_t get_index() const;
 
     /**
@@ -140,7 +140,6 @@ public:
      * @return dynamic_slice The slice held by this object.
      * @throws std::logic_error
      */
-    XMIPP4_CONSTEXPR
     dynamic_slice get_slice() const;
 
 private:
@@ -152,6 +151,10 @@ private:
 };
 
 
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, 
+                                  const dynamic_subscript &subscript );
 
 /**
  * @brief Invoke the provided function with the value held by the dynamic 

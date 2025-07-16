@@ -30,6 +30,8 @@
 
 #include "dynamic_subscript.hpp"
 
+#include <sstream>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -74,29 +76,49 @@ dynamic_subscript::get_subscript_type() const noexcept
     return m_type;
 }
 
-XMIPP4_INLINE_CONSTEXPR
+inline
 std::ptrdiff_t dynamic_subscript::get_index() const
 {
     if (m_type != subscript_type::index)
     {
-        throw std::logic_error("Invalid call to get_index.");
+        std::ostringstream oss;
+        oss << "Cannot call get_index on a " << *this;
+        throw std::logic_error(oss.str());
     }
 
     return m_data[0];
 }
 
-XMIPP4_INLINE_CONSTEXPR
+inline
 dynamic_slice dynamic_subscript::get_slice() const
 {
     if (m_type != subscript_type::slice)
     {
-        throw std::logic_error("Invalid call to get_slice.");
+        std::ostringstream oss;
+        oss << "Cannot call get_slice on a " << *this;
+        throw std::logic_error(oss.str());
     }
 
     return make_slice(m_data[0], m_data[1], m_data[2]);
 }
 
 
+
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, 
+                                  const dynamic_subscript &subscript )
+{
+    os << "dynamic_subscript(";
+    visit(
+        [&os] (auto x) -> void
+        {
+            os << x;
+        },
+        subscript
+    );
+    return os << ")";
+}
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR

@@ -53,6 +53,13 @@ bool operator!=(ellipsis_tag, ellipsis_tag) noexcept
     return false;
 }
 
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, ellipsis_tag)
+{
+    return os << "ellipsis_tag";
+}
+
 
 
 XMIPP4_INLINE_CONSTEXPR
@@ -71,6 +78,13 @@ XMIPP4_INLINE_CONSTEXPR
 bool operator!=(new_axis_tag, new_axis_tag) noexcept
 {
     return false;
+}
+
+template <typename T>
+inline
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag)
+{
+    return os << "new_axis_tag";
 }
 
 } // namespace multidimensional

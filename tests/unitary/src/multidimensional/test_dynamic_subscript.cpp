@@ -72,7 +72,7 @@ TEST_CASE("calling get_index on a dynamic_subscript that holds another value sho
 {
     dynamic_subscript s(new_axis());
     REQUIRE_THROWS_AS( s.get_index(), std::logic_error );
-    REQUIRE_THROWS_WITH( s.get_index(), "Invalid call to get_index." );
+    REQUIRE_THROWS_WITH( s.get_index(), "Cannot call get_index on a dynamic_subscript(new_axis_tag)" );
 }
 
 TEST_CASE("construct dynamic_subscript from slice", "[dynamic_subscript]")
@@ -111,9 +111,9 @@ TEST_CASE("copy-assign dynamic_subscript from slice", "[dynamic_subscript]")
 
 TEST_CASE("calling get_slice on a dynamic_subscript that holds another value should throw", "[dynamic_subscript]")
 {
-    dynamic_subscript s(new_axis());
+    dynamic_subscript s(ellipsis());
     REQUIRE_THROWS_AS( s.get_slice(), std::logic_error );
-    REQUIRE_THROWS_WITH( s.get_slice(), "Invalid call to get_slice." );
+    REQUIRE_THROWS_WITH( s.get_slice(), "Cannot call get_slice on a dynamic_subscript(ellipsis_tag)" );
 }
 
 TEST_CASE("visit function with a dynamic_subscript that holds an ellipsis_tag", "[dynamic_subscript]")
@@ -144,7 +144,7 @@ TEST_CASE("visit function with a dynamic_subscript that holds an index", "[dynam
     visit(mock, s);
 }
 
-TEST_CASE("visit function with a dynamic subscript that holds a slice", "[dynamic_subscript]")
+TEST_CASE("visit function with a dynamic_subscript that holds a slice", "[dynamic_subscript]")
 {
     mock_subscript_callable mock;
     const auto slice = make_slice(1, 2, 3);
@@ -152,4 +152,22 @@ TEST_CASE("visit function with a dynamic subscript that holds a slice", "[dynami
 
     const auto s = dynamic_subscript(slice);
     visit(mock, s);
+}
+
+TEST_CASE("outputing a dynamic_subscript to an ostream", "[dynamic_subscript]")
+{
+    std::ostringstream oss;
+    oss << dynamic_subscript(ellipsis()) << "\n";
+    oss << dynamic_subscript(new_axis()) << "\n";
+    oss << dynamic_subscript(make_slice(1, 2, 3)) << "\n";
+    oss << dynamic_subscript(10);
+
+    const auto result = oss.str();
+    const auto expected = 
+        "dynamic_subscript(ellipsis_tag)\n"
+        "dynamic_subscript(new_axis_tag)\n"
+        "dynamic_subscript(slice(1, 2, 3))\n"
+        "dynamic_subscript(10)";
+
+    REQUIRE( result == expected );
 }

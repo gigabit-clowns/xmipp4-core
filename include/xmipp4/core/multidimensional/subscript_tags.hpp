@@ -31,6 +31,7 @@
 #include "slice.hpp"
 #include "../platform/constexpr.hpp"
 
+#include <ostream>
 #include <type_traits>
 
 namespace xmipp4 
@@ -51,6 +52,9 @@ XMIPP4_CONSTEXPR
 bool operator==(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
 XMIPP4_CONSTEXPR
 bool operator!=(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, ellipsis_tag);
 
 /**
  * @brief Construct an ellipsis_tag.
@@ -74,6 +78,9 @@ XMIPP4_CONSTEXPR
 bool operator==(new_axis_tag, new_axis_tag) noexcept;
 XMIPP4_CONSTEXPR
 bool operator!=(new_axis_tag, new_axis_tag) noexcept;
+
+template <typename T>
+std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag);
 
 /**
  * @brief Construct a new_axis_tag.

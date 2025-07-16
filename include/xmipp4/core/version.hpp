@@ -29,7 +29,7 @@
  */
 
 #include "platform/constexpr.hpp"
-#include "utils/bit.hpp"
+#include "binary/bit.hpp"
 
 #include <ostream>
 #include <cstdint>
@@ -70,11 +70,11 @@ private:
     static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t major_offset = minor_offset + minor_bits;
 
     static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t patch_mask = 
-        utils::bit_range_mask<std::uint32_t>(patch_offset, patch_offset+patch_bits);
+        binary::bit_range_mask<std::uint32_t>(patch_offset, patch_offset+patch_bits);
     static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t minor_mask = 
-        utils::bit_range_mask<std::uint32_t>(minor_offset, minor_offset+minor_bits);
+        binary::bit_range_mask<std::uint32_t>(minor_offset, minor_offset+minor_bits);
     static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t major_mask = 
-        utils::bit_range_mask<std::uint32_t>(major_offset, major_offset+major_bits);
+        binary::bit_range_mask<std::uint32_t>(major_offset, major_offset+major_bits);
 
     std::uint32_t m_data;
 

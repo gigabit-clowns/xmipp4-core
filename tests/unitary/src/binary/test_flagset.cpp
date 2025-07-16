@@ -21,7 +21,7 @@
 /**
  * @file test_flagset.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for utils/flagset.hpp
+ * @brief Test for binary/flagset.hpp
  * @date 2023-08-09
  * 
  */
@@ -32,9 +32,9 @@
 #include <type_traits>
 #include <cstdint>
 
-#include <xmipp4/core/utils/flagset.hpp>
+#include <xmipp4/core/binary/flagset.hpp>
 
-#include <xmipp4/core/utils/bit.hpp>
+#include <xmipp4/core/binary/bit.hpp>
 
 using namespace xmipp4;
 
@@ -42,45 +42,45 @@ using namespace xmipp4;
 
 enum class test_int32_flag_bits : int32_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(28),
-    y = utils::bit(29),
-    z = utils::bit(30),
+    x = binary::bit(28),
+    y = binary::bit(29),
+    z = binary::bit(30),
 };
-using test_int32_flags = utils::flagset<test_int32_flag_bits>;
+using test_int32_flags = binary::flagset<test_int32_flag_bits>;
 
 enum class test_uint16_flag_bits : uint16_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(13),
-    y = utils::bit(14),
-    z = utils::bit(15),
+    x = binary::bit(13),
+    y = binary::bit(14),
+    z = binary::bit(15),
 };
-using test_uint16_flags = utils::flagset<test_uint16_flag_bits>;
+using test_uint16_flags = binary::flagset<test_uint16_flag_bits>;
 
 enum class test_uint32_flag_bits : uint32_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(29),
-    y = utils::bit(30),
-    z = utils::bit(31),
+    x = binary::bit(29),
+    y = binary::bit(30),
+    z = binary::bit(31),
 };
-using test_uint32_flags = utils::flagset<test_uint32_flag_bits>;
+using test_uint32_flags = binary::flagset<test_uint32_flag_bits>;
 
 
 

@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace binary
 {
 
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
@@ -459,5 +459,5 @@ parity(T x) noexcept
     return detail::parity(x);
 }
 
-} // namespace utils
+} // namespace binary
 } // namespace xmipp4

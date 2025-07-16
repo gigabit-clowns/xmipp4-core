@@ -178,6 +178,50 @@ exp10(F exponent) noexcept
 namespace detail
 {
 
+inline float expm1(float exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1f)
+    return XMIPP4_BUILTIN(expm1f)(exponent);
+#else
+    return expm1f(exponent);
+#endif
+}
+
+inline double expm1(double exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1)
+    return XMIPP4_BUILTIN(expm1)(exponent);
+#else
+    return ::expm1(exponent);
+#endif
+}
+
+inline long double expm1(long double exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1l)
+    return XMIPP4_BUILTIN(expm1l)(exponent);
+#else
+    return expm1l(exponent);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+expm1(F exponent) noexcept
+{
+    return detail::expm1(exponent);
+}
+
+
+
+
+
+namespace detail
+{
+
 inline float log(float x) noexcept
 {
 #if XMIPP4_HAS_BUILTIN(logf)
@@ -313,6 +357,65 @@ typename std::enable_if<std::is_floating_point<F>::value, F>::type
 logn(F n, F x) noexcept
 {
     return log(x) / log(n);
+}
+
+
+
+
+
+namespace detail
+{
+
+inline float log1p(float x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1pf)
+    return XMIPP4_BUILTIN(log1pf)(x);
+#else
+    return log1pf(x);
+#endif
+}
+
+inline double log1p(double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1p)
+    return XMIPP4_BUILTIN(log1p)(x);
+#else
+    return ::log1p(x);
+#endif
+}
+
+inline long double log1p(long double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1pl)
+    return XMIPP4_BUILTIN(log1pl)(x);
+#else
+    return log1pl(x);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+log1p(F x) noexcept
+{
+    return detail::log1p(x);
+}
+
+
+template <typename F>
+inline
+typename std::enable_if<std::is_floating_point<F>::value, F>::type
+log_add(F log_x, F log_y) noexcept
+{
+    if (log_x < log_y)
+    {
+        std::swap(log_x, log_y);
+    }
+
+    const auto minus_difference = log_x - log_y;
+    return log_x + log1p(exp(minus_difference));
 }
 
 } // namespace math

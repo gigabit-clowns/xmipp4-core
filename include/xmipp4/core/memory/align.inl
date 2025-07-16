@@ -20,7 +20,7 @@
 
 #include "align.hpp"
 
-#include "../utils/bit.hpp"
+#include "../binary/bit.hpp"
 
 namespace xmipp4
 {
@@ -37,7 +37,7 @@ std::size_t get_alignment(T* address) noexcept
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t get_alignment(std::uintptr_t address) noexcept
 {
-    return utils::mask_trailing_zeros(address) + 1;
+    return binary::mask_trailing_zeros(address) + 1;
 }
 
 template <typename T>

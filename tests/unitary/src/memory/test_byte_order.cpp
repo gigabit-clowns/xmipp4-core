@@ -21,7 +21,7 @@
 /**
  * @file test_byte_order.cpp
  * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for utils/byte_order.hpp
+ * @brief Test for binary/byte_order.hpp
  * @date 2023-08-12
  */
 

@@ -28,8 +28,8 @@
  * 
  */
 
-#include "../utils/bit.hpp"
-#include "../utils/flagset.hpp"
+#include "../binary/bit.hpp"
+#include "../binary/flagset.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <ostream>
@@ -41,12 +41,12 @@ namespace multidimensional
 
 enum class layout_flag_bits
 {
-    contiguous = utils::bit(0),
-    column_major = utils::bit(1),
-    row_major = utils::bit(2)
+    contiguous = binary::bit(0),
+    column_major = binary::bit(1),
+    row_major = binary::bit(2)
 };
 
-using layout_flags = utils::flagset<layout_flag_bits>;
+using layout_flags = binary::flagset<layout_flag_bits>;
 
 
 

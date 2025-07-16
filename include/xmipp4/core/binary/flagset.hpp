@@ -37,7 +37,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace binary
 {
 
 /**
@@ -344,13 +344,13 @@ template<typename B>
 XMIPP4_CONSTEXPR 
 flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
 
-} // namespace utils
+} // namespace binary
 } // namespace xmipp4
 
 template <typename B>
-struct std::hash<xmipp4::utils::flagset<B>>
+struct std::hash<xmipp4::binary::flagset<B>>
 {
-    XMIPP4_CONSTEXPR size_t operator()(xmipp4::utils::flagset<B> b) const noexcept;
+    XMIPP4_CONSTEXPR size_t operator()(xmipp4::binary::flagset<B> b) const noexcept;
 };
 
 #include "flagset.inl"

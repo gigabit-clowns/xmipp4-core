@@ -35,7 +35,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace binary
 {
 
 /**
@@ -300,7 +300,7 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
 parity(T x) noexcept;
 
-} // namespace utils
+} // namespace binary
 } // namespace xmipp4
 
 #include "bit.inl"

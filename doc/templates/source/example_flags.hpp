@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #include "platform/constexpr.hpp"
-#include "utils/flagset.hpp"
+#include "binary/flagset.hpp"
 
 #include <string_view>
 #include <ostream>
@@ -31,12 +31,12 @@ namespace xmipp4
 
 enum class example_flag_bits
 {
-    first = utils::bit(0),
-    second = utils::bit(1),
-    third = utils::bit(2),
+    first = binary::bit(0),
+    second = binary::bit(1),
+    third = binary::bit(2),
 };
 
-using example_flags = utils::flagset<example_flag_bits>;
+using example_flags = binary::flagset<example_flag_bits>;
 
 XMIPP4_CONSTEXPR const char* to_string(example_flag_bits ex) noexcept;
 bool from_string(std::string_view str, example_flag_bits& ex) noexcept;

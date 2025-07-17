@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/compute/numerical_type.hpp>
+#include <xmipp4/core/numerical_type.hpp>
 
 using namespace xmipp4::compute;
 

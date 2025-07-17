@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../platform/constexpr.hpp"
+#include "platform/constexpr.hpp"
 
 #include <cstddef>
 #include <string_view>

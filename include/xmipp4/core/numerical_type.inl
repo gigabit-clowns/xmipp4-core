@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace compute
-{
 
 XMIPP4_INLINE_CONSTEXPR std::size_t get_size(numerical_type type) noexcept
 {
@@ -170,5 +168,4 @@ operator<<(std::basic_ostream<T>& os, numerical_type type)
     return os << to_string(type);
 }
 
-} // namespace compute
 } // namespace xmipp4

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/compute/cpu/cpu_transfer.hpp>
+
+#include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>
 
 #include <stdexcept>

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file location.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of location.hpp
- * @date 2024-05-15
- * 
- */
-
 #include "location.hpp"
 
 #include <tuple>

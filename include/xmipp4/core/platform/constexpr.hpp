@@ -2,17 +2,6 @@
 
 #pragma once
 
-/**
- * @file constexpr.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for version dependant constexpr
- * @date 2023-08-08
- * 
- * This file provides definitions for using constexpr when
- * supported
- * 
- */
-
 #include "cpp_features.hpp"
 
 #if XMIPP4_HAS_CONSTEXPR || defined(XMIPP4_DOC_BUILD)

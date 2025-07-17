@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_buffer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_buffer interface
- * @date 2024-10-25
- * 
- */
-
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>

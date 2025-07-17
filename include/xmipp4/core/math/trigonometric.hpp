@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file trigonometric.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides trigonometric functions.
- * @date 2024-04-15
- * 
- */
-
 #include <utility>
 #include <type_traits>
 

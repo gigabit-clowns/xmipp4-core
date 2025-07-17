@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file default_cpu_unified_buffer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of default_cpu_unified_buffer.hpp
- * @date 2024-10-29
- * 
- */
-
 #include "default_cpu_unified_buffer.hpp"
 
 #include <xmipp4/core/memory/aligned_alloc.hpp>

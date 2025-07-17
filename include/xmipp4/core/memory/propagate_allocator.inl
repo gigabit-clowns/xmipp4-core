@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file propagate_allocator.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of propagate_allocator.hpp
- * @date 2024-03-12
- * 
- */
-
 #include "propagate_allocator.hpp"
 
 #include <memory>

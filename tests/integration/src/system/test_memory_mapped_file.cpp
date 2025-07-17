@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_memory_mapped_file.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for system/memory_mapped_file.hpp
- * @date 2024-03-01
- * 
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/system/memory_mapped_file.hpp>

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_numerical_type.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Numerical type conversions for host
- * @date 2024-11-06
- * 
- */
-
 #include "../numerical_type.hpp"
 #include "../../fixed_float.hpp"
 #include "../../platform/constexpr.hpp"

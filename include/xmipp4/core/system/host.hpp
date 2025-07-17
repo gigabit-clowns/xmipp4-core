@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file host.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Utilities to query the host
- * @date 2024-10-29
- * 
- */
-
 #include <string>
 
 namespace xmipp4 

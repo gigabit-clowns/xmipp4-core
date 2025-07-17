@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file subscript_sequence.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of subscript_sequence.hpp
- * @date 2024-04-03
- * 
- */
-
 #include "subscript_sequence.hpp"
 
 #include <utility>

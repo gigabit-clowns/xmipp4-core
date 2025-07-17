@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the version class
- * @date 2023-08-12
- * 
- */
-
 #include "platform/constexpr.hpp"
 #include "binary/bit.hpp"
 

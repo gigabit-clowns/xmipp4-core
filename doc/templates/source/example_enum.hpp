@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file example_enum.hpp
- * @author Your Name (yourname@yourdomain.tld)
- * @brief Provides example_enum
- * @date Today (YYYY/MM/DD)
- * 
- */
-
 #include "platform/constexpr.hpp"
 
 #include <string_view>

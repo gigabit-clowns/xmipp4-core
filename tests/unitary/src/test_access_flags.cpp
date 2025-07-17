@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_access_flags.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for access_flags.hpp
- * @date 2025-03-27
- */
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/access_flags.hpp>

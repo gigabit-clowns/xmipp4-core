@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file bspline.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides B-Spline functions.
- * @date 2024-10-24
- * 
- */
-
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>

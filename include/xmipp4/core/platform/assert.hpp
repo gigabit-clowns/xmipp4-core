@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file assert.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Custom declaration of assert
- * @date 2023-08-08
- * 
- */
-
 #include <cassert>
 
 /**

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file dynamic_library.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of dynamic_library.hpp
- * @date 2023-08-13
- * 
- */
-
 #include <xmipp4/core/system/dynamic_library.hpp>
 
 #include "dynamic_library_handle.hpp"

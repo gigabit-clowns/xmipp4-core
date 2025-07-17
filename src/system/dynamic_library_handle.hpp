@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file dynamic_library_handle.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Platform independent functions for loading, unloading and querying
- * dynamic libraries
- * @date 2023-08-13
- * 
- */
 
 #include <xmipp4/core/platform/operating_system.h>
 

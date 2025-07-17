@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_abs.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for abs.hpp
- * @date 2024-04-11
- * 
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/math/abs.hpp>

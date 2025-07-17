@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file dynamic_library_handle_posix.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief POSIX implementation of dynamic_library_handle.hpp
- * @date 2023-08-13
- * 
- */
-
 #include "dynamic_library_handle.hpp"
 
 #include <xmipp4/core/platform/constexpr.hpp>

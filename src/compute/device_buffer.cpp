@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file host_buffer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host_buffer.hpp
- * @date 2024-12-08
- * 
- */
-
 #include <xmipp4/core/compute/device_buffer.hpp>
 
 namespace xmipp4

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file communicator.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::communicator class
- * @date 2024-10-24
- * 
- */
-
 #include "../reduction_operation.hpp"
 #include "../span.hpp"
 #include "../memory/byte.hpp"

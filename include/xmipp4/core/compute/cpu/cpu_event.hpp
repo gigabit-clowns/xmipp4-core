@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_event.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines cpu_event class.
- * @date 2024-11-13
- * 
- */
-
 #include "../device_event.hpp"
 #include "../device_to_host_event.hpp"
 

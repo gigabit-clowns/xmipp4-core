@@ -3,14 +3,6 @@
 #pragma once
 
 /**
- * @file stringfy.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides macro for stringfying literals.
- * @date 2024-10-25
- * 
- */
-
-/**
  * @brief Stringfy the literal x
  * 
  */

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file cpu_device_queue_pool.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of cpu_device_queue_pool.hpp
- * @date 2024-11-27
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_device_queue_pool.hpp>
 
 #include <stdexcept>

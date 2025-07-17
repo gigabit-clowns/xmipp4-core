@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file plugin_loader.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin_loader class
- * @date 2024-03-11
- * 
- */
-
 #include <xmipp4/core/system/dynamic_library.hpp>
 
 namespace xmipp4

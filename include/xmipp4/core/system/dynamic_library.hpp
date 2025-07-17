@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file dynamic_library.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of dynamic_library class
- * @date 2023-07-09
- */
-
 #include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
 

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_memory_allocator.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_memory_allocator interface
- * @date 2024-10-31
- * 
- */
-
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>

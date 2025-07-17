@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file logger.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines logging utilities.
- * @date 2024-11-21
- * 
- */
-
 #define XMIPP4_LOG_LEVEL_TRACE SPDLOG_LEVEL_TRACE
 #define XMIPP4_LOG_LEVEL_DEBUG SPDLOG_LEVEL_DEBUG
 #define XMIPP4_LOG_LEVEL_INFO SPDLOG_LEVEL_INFO

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file pimpl.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of pimpl.hpp
- * @date 2024-03-10
- * 
- */
-
 #include "pimpl.hpp"
 
 #include "propagate_allocator.hpp"

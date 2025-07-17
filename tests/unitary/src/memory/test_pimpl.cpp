@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_pimpl.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for memory/pimpl.hpp
- * @date 2024-03-10
- * 
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/memory/pimpl.hpp>

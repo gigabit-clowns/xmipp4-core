@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_copy.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_copy interface
- * @date 2024-11-15
- * 
- */
-
 #include "copy_region.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"

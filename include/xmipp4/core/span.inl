@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file span.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of span.hpp
- * @date 2024-10-24
- * 
- */
-
 #include "span.hpp"
 
 #include "platform/assert.hpp"

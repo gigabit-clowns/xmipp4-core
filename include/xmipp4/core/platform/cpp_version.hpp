@@ -3,17 +3,6 @@
 #pragma once
 
 /**
- * @file cpp_version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for detecting C++ version
- * @date 2023-08-08
- * 
- * This file provides definitions for determining 
- * the C++ version support
- * 
- */
-
-/**
  * @def XMIPP4_CPLUSPLUS
  * @brief C++ standard version
  * 

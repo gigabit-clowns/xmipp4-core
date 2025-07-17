@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file copy_region.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the compute::copy_region class
- * @date 2024-11-11
- * 
- */
-
 #include "../platform/constexpr.hpp"
 
 #include <cstddef>

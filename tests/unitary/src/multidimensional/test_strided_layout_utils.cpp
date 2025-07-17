@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_memory_layout.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for multidimensional/strided_layout_utils.hpp
- * @date 2023-09-25
- * 
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout_utils.hpp>

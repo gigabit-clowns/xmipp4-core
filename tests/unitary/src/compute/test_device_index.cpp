@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_device_index.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for device_index.hpp
- * @date 2024-10-29
- * 
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/compute/device_index.hpp>

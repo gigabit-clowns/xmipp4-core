@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file communicator_backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines communicator_backend interface
- * @date 2024-10-24
- * 
- */
-
 #include "../backend.hpp"
 
 #include "../platform/dynamic_shared_object.h"

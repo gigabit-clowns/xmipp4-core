@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines basic backend interface
- * @date 2024-10-29
- * 
- */
-
 #include "version.hpp"
 #include "backend_priority.hpp"
 #include "platform/dynamic_shared_object.h"

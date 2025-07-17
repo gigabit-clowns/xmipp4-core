@@ -1,17 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// Implementation based on: https://github.com/tcbrindle/span
 
 #pragma once
-
-/**
- * @file span.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides span enumeration and utility functions
- * @date 2024-10-24
- * 
- * Implementation based on:
- * https://github.com/tcbrindle/span
- * 
- */
 
 #include "memory/byte.hpp"
 #include "platform/attributes.hpp"

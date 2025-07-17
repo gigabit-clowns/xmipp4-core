@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file interface_catalog.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of plugin.hpp
- * @date 2024-03-11
- * 
- */
-
 #include <xmipp4/core/interface_catalog.hpp>
 
 #include "plugin_loader.hpp"

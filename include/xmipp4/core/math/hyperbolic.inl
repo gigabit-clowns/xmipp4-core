@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file hyperbolic.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of hyperbolic.hpp
- * @date 2024-04-15
- * 
- */
-
 #include "hyperbolic.hpp"
 
 #include "../platform/builtin.h"

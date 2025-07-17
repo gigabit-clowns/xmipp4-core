@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpp_execution.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for using C++ algorithm parallelization
- * @date 2023-11-14
- * 
- */
-
 #include "cpp_features.hpp"
 
 #if XMIPP4_HAS_LIB_EXECUTION

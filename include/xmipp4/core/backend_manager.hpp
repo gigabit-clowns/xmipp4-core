@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file backend_manager.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines backend_manager class
- * @date 2024-10-23
- * 
- */
-
 #include "platform/dynamic_shared_object.h"
 
 #include <string>

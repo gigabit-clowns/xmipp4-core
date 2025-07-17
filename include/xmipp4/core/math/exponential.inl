@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file exponential.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of exponential.hpp
- * @date 2024-04-15
- * 
- */
-
 #include "exponential.hpp"
 
 #include "power.hpp"

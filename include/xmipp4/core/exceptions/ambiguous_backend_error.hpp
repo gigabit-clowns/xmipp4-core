@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file ambiguous_backend_exception.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of ambiguous_backend_error
- * @date 2024-11-20
- * 
- */
-
 #include <stdexcept>
 
 namespace xmipp4 

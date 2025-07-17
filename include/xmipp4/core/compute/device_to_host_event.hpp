@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_to_host_event.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_to_host_event interface
- * @date 2024-11-13
- * 
- */
-
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 

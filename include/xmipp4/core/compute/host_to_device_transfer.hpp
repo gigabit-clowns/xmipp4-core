@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file host_to_device_transfer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::host_to_device_transfer interface
- * @date 2024-11-06
- * 
- */
-
 #include "copy_region.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"

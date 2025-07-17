@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_plugin_manager.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for plugin_manager.hpp
- * @date 2024-10-28
- * 
- */
-
 #include <xmipp4/core/plugin_manager.hpp>
 
 #include <xmipp4/core/plugin.hpp>

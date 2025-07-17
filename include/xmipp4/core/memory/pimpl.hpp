@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file pimpl.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides pimpl class
- * @date 2024-03-10
- * 
- */
-
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"
 

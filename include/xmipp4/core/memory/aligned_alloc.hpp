@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file aligned_alloc.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Allocate memory with alignment specifications.
- * @date 2024-12-02
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/dynamic_shared_object.h"
 

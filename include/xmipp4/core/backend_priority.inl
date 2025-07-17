@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file backend_priority.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of backend_priority.hpp
- * @date 2024-11-20
- * 
- */
-
 #include "backend_priority.hpp"
 
 namespace xmipp4 

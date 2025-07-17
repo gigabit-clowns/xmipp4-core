@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_transfer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of device_host_communicator
- * @date 2024-11-06
- * 
- */
-
 #include "../device_to_host_transfer.hpp"
 #include "../host_to_device_transfer.hpp"
 #include "../device_copy.hpp"

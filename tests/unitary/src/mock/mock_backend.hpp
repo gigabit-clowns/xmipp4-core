@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file mock_backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Mock for backend interface.
- * @date 2025-03-27
- */
-
 #include <xmipp4/core/backend.hpp>
 
 #include <trompeloeil.hpp>

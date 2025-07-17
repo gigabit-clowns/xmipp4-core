@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file arithmetic.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of arithmetic.hpp
- * @date 2024-04-15
- * 
- */
-
 #include "arithmetic.hpp"
 
 #include "../platform/builtin.h"

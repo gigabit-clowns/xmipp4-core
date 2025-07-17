@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file byte_order.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for determining byte ordering (endianess)
- * @date 2023-08-12
- */
-
 #include "operating_system.h"
 
 /**

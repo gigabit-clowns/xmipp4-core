@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file hyperbolic.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides hyperbolic functions.
- * @date 2024-04-15
- * 
- */
-
 #include <type_traits>
 
 namespace xmipp4

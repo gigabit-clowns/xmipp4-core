@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file byte.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides C++17 like byte type
- * @date 2023-08-12
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

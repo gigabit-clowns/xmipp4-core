@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file layout_flags.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of layout_flags.hpp
- * @date 2024-05-01
- * 
- */
-
 #include "layout_flags.hpp"
 
 #include <unordered_map>

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file version.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of version.hpp
- * @date 2023-08-12
- * 
- */
-
 #include "version.hpp"
 
 namespace xmipp4 

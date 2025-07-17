@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file cpu_transfer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of cpu_transfer.hpp
- * @date 2024-11-06
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_transfer.hpp>
 
 #include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>

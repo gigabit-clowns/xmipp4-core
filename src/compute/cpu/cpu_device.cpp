@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file cpu_device.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of cpu_device.hpp
- * @date 2024-10-29
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_device.hpp>
 
 #include <xmipp4/core/compute/cpu/cpu_device_queue.hpp>

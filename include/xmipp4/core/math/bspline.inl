@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file bspline.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of bspline.hpp
- * @date 2024-10-24
- * 
- */
-
 #include "bspline.hpp"
 
 #include "abs.hpp"

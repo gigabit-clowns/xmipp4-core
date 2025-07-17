@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file flagset.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides flagset class
- * @date 2023-08-09
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

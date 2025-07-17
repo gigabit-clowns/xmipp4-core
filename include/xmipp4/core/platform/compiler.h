@@ -3,14 +3,6 @@
 #pragma once
 
 /**
- * @file compiler.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides macros for detecting the compiler
- * @date 2025-07-12
- * 
- */
-
-/**
  * @def XMIPP4_CLANG
  * @brief Defined when building with Clang
  * 

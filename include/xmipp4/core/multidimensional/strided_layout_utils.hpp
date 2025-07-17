@@ -2,15 +2,6 @@
 
 #pragma once
 
-/**
- * @file strided_layout_utils.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declaration of utility functions for handling sequences 
- * of axis_descriptor
- * @date 2023-10-16
- * 
- */
-
 #include "axis_descriptor.hpp"
 #include "layout_flags.hpp"
 #include "subscript_sequence.hpp"

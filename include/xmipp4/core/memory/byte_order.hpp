@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file byte_order.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of byte_order dependant words and conversion methods
- * @date 2023-08-12
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

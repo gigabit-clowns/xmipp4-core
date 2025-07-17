@@ -56,7 +56,6 @@ else()
 	)
 endif()
 
-
 # Find all source and header files
 file(
 	GLOB_RECURSE 
@@ -117,7 +116,6 @@ target_link_libraries(
 		ghc_filesystem # Eventually replace by std::filesystem (C++17)
 		${CMAKE_DL_LIBS}
 )
-
 
 # Set up clang-tidy
 if(XMIPP4_CORE_LINT_CLANG_TIDY)

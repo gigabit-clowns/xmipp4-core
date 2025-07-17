@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file core_version.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Utilities for getting xmipp4-core version
- * @date 2024-03-03
- * 
- */
-
 #include "version.hpp"
 #include "platform/dynamic_shared_object.h"
 

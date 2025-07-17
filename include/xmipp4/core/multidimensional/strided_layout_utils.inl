@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file strided_layout_utils.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of strided_layout_utils.hpp
- * @date 2023-08-16
- * 
- */
-
 #include "strided_layout_utils.hpp"
 
 #include <algorithm>

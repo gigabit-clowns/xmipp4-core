@@ -1,14 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file faulty_plugin1.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief An invalid plugin which declares the hook
- * but returns null
- * @date 2024-10-28
- * 
- */
-
 #include <xmipp4/core/plugin.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 

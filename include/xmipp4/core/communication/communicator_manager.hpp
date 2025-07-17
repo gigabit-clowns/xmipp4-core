@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file communicator_manager.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines communicator_manager interface
- * @date 2024-10-25
- * 
- */
-
 #include <string>
 #include <vector>
 #include <memory>

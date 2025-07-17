@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file axis_descriptor.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of axis_descriptor
- * @date 2023-08-13
- * 
- */
-
 #include "axis_descriptor.hpp"
 
 #include "../index.hpp"

@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_byte_order.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for binary/byte_order.hpp
- * @date 2023-08-12
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/memory/byte_order.hpp>

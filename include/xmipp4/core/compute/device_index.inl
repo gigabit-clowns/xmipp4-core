@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file device_index.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of device_index.hpp
- * @date 2024-05-15
- * 
- */
-
 #include "device_index.hpp"
 
 #include <tuple>

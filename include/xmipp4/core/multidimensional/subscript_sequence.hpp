@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file subscript_sequence.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides utilities for manipulating subscript sequences
- * @date 2024-04-03
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

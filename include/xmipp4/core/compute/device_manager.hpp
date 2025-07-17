@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_manager.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_manager interface
- * @date 2024-10-23
- * 
- */
-
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "device_backend.hpp"

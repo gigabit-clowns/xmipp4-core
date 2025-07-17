@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file header.hpp
- * @author Your Name (yourname@yourdomain.tld)
- * @brief Describe the purpose of this header
- * @date Today (YYYY/MM/DD)
- * 
- */
-
 namespace xmipp4 
 {
 

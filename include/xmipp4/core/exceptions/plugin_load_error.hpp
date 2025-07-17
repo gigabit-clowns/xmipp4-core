@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file plugin_load_error.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of plugin_load_error
- * @date 2024-11-21
- * 
- */
-
 #include <stdexcept>
 
 namespace xmipp4 

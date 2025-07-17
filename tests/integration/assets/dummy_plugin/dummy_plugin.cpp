@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file dummy_plugin.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Exports a dummy plugin
- * @date 2024-10-28
- * 
- */
-
 #include <xmipp4/core/plugin.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 

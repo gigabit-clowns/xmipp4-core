@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file align.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Utility functions related to memory address manipulations
- * @date 2023-08-31
- * 
- */
-
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
 

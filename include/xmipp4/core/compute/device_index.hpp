@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_index.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the compute::device_index class
- * @date 2024-10-23
- * 
- */
-
 #include "../platform/constexpr.hpp"
 
 #include <string>

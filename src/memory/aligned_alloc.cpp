@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file aligned_alloc.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of aligned_alloc.hpp
- * @date 2024-12-02
- * 
- */
-
 #include <xmipp4/core/memory/aligned_alloc.hpp>
 
 #include <xmipp4/core/platform/operating_system.h>

@@ -2,15 +2,6 @@
 
 #pragma once
 
-/**
- * @file dynamic_shared_object.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides API definition macros for selectively exporting
- * to the final binary file.
- * @date 2023-08-08
- * 
- */
-
 #include "c_attributes.h"
 #include "operating_system.h"
 

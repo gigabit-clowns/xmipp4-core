@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_bit.cpp
- * @author Oier Lauzirika Zarrabeitia
- * @brief Test for binary/bit.hpp
- * @date 2023-08-09
- */
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <limits>

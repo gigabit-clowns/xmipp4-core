@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device interface
- * @date 2024-10-22
- * 
- */
-
 #include <memory>
 
 #include "../platform/dynamic_shared_object.h"

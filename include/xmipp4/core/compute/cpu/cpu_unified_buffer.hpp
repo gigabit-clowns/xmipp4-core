@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_unified_buffer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::cpu_unified_buffer interface
- * @date 2024-10-29
- * 
- */
-
 #include "../device_buffer.hpp"
 #include "../host_buffer.hpp"
 

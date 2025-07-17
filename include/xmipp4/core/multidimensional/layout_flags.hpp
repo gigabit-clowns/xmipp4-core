@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file layout_flags.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declares layout_flags flagset
- * @date 2024-05-01
- * 
- */
-
 #include "../binary/bit.hpp"
 #include "../binary/flagset.hpp"
 #include "../platform/constexpr.hpp"

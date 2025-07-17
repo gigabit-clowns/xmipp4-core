@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file backend_priority.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides backend_priority enumeration and utility functions
- * @date 2023-11-20
- * 
- */
-
 #include "platform/constexpr.hpp"
 #include "platform/attributes.hpp"
 

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file dummy_communicator_backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::dummy_communicator_backend class
- * @date 2024-11-20
- * 
- */
-
 #include "../communicator_backend.hpp"
 
 #include <memory>

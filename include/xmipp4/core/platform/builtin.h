@@ -3,14 +3,6 @@
 #pragma once
 
 /**
- * @file builtin.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions to check compiler builtin functions
- * @date 2023-08-08
- * 
- */
-
-/**
  * @brief Declaration name of a builtin function
  * 
  */

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file byte.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of byte.hpp
- * @date 2023-08-12
- * 
- */
-
 #include "byte.hpp"
 
 #include <array>

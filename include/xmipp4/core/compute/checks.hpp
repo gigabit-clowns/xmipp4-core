@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file checks.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Declaration of precondition handling routines.
- * @date 2024-11-12
- * 
- */
-
 #include "numerical_type.hpp"
 #include "copy_region.hpp"
 #include "../platform/dynamic_shared_object.h"

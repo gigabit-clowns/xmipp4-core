@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file plugin.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin class
- * @date 2024-03-11
- * 
- */
-
 #include "version.hpp"
 #include "platform/dynamic_shared_object.h"
 

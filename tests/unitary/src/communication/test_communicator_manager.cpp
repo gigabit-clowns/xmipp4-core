@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_communicator_manager.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for communicator_manager.hpp
- * @date 2024-10-29
- */
-
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
 #include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file location.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the image::location class
- * @date 2024-05-15
- * 
- */
-
 #include "../platform/constexpr.hpp"
 
 #include <string>

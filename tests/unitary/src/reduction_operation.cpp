@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_reduction_operation.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for reduction_operation.hpp
- * @date 2025-03-27
- */
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/reduction_operation.hpp>
@@ -38,4 +30,3 @@ TEST_CASE( "from_string with reduction_operation should produce correct results"
     
     REQUIRE( !from_string("invalid", op) );
 }
-

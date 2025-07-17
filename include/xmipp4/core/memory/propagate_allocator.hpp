@@ -2,15 +2,6 @@
 
 #pragma once
 
-/**
- * @file propagate_allocator.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides functions that conditionally propagate allocator assignments
- * based on std::allocator_traits
- * @date 2024-03-12
- * 
- */
-
 namespace xmipp4 
 {
 namespace memory

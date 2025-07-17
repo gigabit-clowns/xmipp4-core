@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_device_backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines cpu_device_backend interface
- * @date 2024-10-29
- * 
- */
-
 #include "../device_backend.hpp"
 
 namespace xmipp4 

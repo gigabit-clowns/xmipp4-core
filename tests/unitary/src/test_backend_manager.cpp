@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_interface_catalog.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for interface_catalog.hpp
- * @date 2024-10-28
- * 
- */
-
 #include <xmipp4/core/backend_manager.hpp>
 
 #include "mock/mock_backend.hpp"

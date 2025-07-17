@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_device.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines cpu_device interface
- * @date 2024-10-29
- * 
- */
-
 #include "../device.hpp"
 
 #include "cpu_device_queue_pool.hpp"

@@ -2,15 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_unified_memory_allocator.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::cpu_unified_memory_allocator class
- * @date 2024-11-06
- * 
- */
-
-
 #include "../device_memory_allocator.hpp"
 #include "../host_memory_allocator.hpp"
 

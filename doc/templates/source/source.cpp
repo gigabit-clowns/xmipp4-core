@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file source.cpp
- * @author Your Name (yourname@yourdomain.tld)
- * @brief Implements header.hpp
- * @date Today (YYYY/MM/DD)
- * 
- */
-
 #include "header.hpp"
 
 namespace xmipp4 

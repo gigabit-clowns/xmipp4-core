@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file mock_device_backend.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Mock for device_backend interface.
- * @date 2024-12-10
- */
-
 #include <xmipp4/core/compute/device_backend.hpp>
 
 #include <trompeloeil.hpp>

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file interface_catalog.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines interface_catalog class
- * @date 2024-10-23
- * 
- */
-
 #include "backend_manager.hpp"
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"

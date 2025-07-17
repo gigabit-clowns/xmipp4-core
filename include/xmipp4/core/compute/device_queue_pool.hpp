@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_queue_pool.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_queue_pool interface
- * @date 2024-11-27
- * 
- */
-
 #include "../platform/dynamic_shared_object.h"
 
 #include <cstddef>

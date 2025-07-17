@@ -3,14 +3,6 @@
 #pragma once
 
 /**
- * @file operating_system.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides macros for detecting the target OS
- * @date 2023-08-08
- * 
- */
-
-/**
  * @def XMIPP4_WINDOWS
  * @brief Defined if the target is Windows (32bit or 64bit)
  * 

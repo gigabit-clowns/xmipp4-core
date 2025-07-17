@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_backend.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines device_backend interface
- * @date 2024-10-23
- * 
- */
-
 #include "device_properties.hpp"
 #include "../backend.hpp"
 #include "../platform/dynamic_shared_object.h"

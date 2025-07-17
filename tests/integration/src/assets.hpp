@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file assets.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Functions to get the path to test assets
- * @date 2024-10-28
- * 
- */
-
 #include <xmipp4/core/platform/operating_system.h>
 #include <xmipp4/core/platform/compiler.h>
 

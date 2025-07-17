@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file device_queue.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::device_queue interface
- * @date 2024-10-22
- * 
- */
-
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 

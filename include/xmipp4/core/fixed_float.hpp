@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file fixed_float.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Fixed width floating point types.
- * @date 2024-11-25
- * 
- */
-
 #include <half.hpp>
 
 namespace xmipp4

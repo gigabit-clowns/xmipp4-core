@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file mock_host_buffer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Mock for host_buffer interface.
- * @date 2024-12-10
- */
-
 #include <xmipp4/core/compute/host_buffer.hpp>
 
 #include <trompeloeil.hpp>

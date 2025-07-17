@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file bit.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of bit.hpp
- * @date 2023-08-09
- */
-
 #include "bit.hpp"
 #include "../platform/cpp_features.hpp"
 

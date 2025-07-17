@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file checks.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of checks.hpp
- * @date 2024-11-12
- * 
- */
-
 #include <xmipp4/core/compute/checks.hpp>
 
 #include <stdexcept>

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_numerical_type.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for numerical_type.hpp
- * @date 2025-03-27
- */
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/compute/numerical_type.hpp>
@@ -72,5 +64,4 @@ TEST_CASE( "from_string with numerical_type should produce correct results", "[n
     REQUIRE( from_string("complex_float64", type) );
     REQUIRE( type == numerical_type::complex_float64 );
 }
-
 

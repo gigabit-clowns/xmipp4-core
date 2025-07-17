@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file math.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Includes all math headers.
- * @date 2024-04-15
- * 
- */
-
 #include "abs.hpp"
 #include "arithmetic.hpp"
 #include "bessel.hpp"

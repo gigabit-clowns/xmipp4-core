@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file byte_order.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of byte_order.hpp
- * @date 2023-08-12
- * 
- */
-
 #include "byte_order.hpp"
 
 #include "../platform/byte_order.h"

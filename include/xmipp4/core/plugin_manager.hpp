@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file plugin_manager.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines plugin_manager class
- * @date 2024-03-11
- * 
- */
-
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 

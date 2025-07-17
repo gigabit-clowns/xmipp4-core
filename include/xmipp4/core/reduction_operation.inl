@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file reduction_operation.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of reduction_operation.inl
- * @date 2024-10-24
- * 
- */
-
 #include "reduction_operation.hpp"
 
 #include <unordered_map>

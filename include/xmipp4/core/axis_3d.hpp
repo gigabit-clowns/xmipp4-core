@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file axis_3d.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides axis_3d enumeration and utility functions
- * @date 2023-09-27
- * 
- */
-
 #include "platform/constexpr.hpp"
 #include "platform/attributes.hpp"
 

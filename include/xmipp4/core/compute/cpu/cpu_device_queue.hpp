@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file cpu_device_queue.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines cpu_device_queue interface
- * @date 2024-10-29
- * 
- */
-
 #include "../device_queue.hpp"
 
 namespace xmipp4 

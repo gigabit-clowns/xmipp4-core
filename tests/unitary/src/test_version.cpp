@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_version.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for version.hpp
- * @date 2023-08-12
- */
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/version.hpp>

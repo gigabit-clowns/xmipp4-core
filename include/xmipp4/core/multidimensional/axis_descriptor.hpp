@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file axis_descriptor.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines axis_descriptor class
- * @date 2023-08-13
- * 
- */
-
 #include "../slice.hpp"
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"

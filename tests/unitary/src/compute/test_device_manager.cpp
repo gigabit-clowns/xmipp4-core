@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_device_manager.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for device_manager.hpp
- * @date 2024-10-29
- */
-
 #include <xmipp4/core/compute/device_manager.hpp>
 
 #include <xmipp4/core/compute/device.hpp>

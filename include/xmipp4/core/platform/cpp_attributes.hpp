@@ -3,18 +3,6 @@
 #pragma once
 
 /**
- * @file cpp_attributes.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for C++ attributes.
- * @date 2023-08-08
- * 
- * This file provides definitions for accessing C++
- * attributes, if available
- * 
- */
-
-
-/**
  * @brief C++ attribute declaration
  * @see https://en.cppreference.com/w/cpp/language/attributes
  * 

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_host_buffer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for host_buffer.hpp
- * @date 2024-11-09
- * 
- */
-
 #include <xmipp4/core/compute/host_buffer.hpp>
 #include <xmipp4/core/compute/device_queue.hpp>
 

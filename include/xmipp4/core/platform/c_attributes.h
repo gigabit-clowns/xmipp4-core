@@ -3,19 +3,6 @@
 #pragma once
 
 /**
- * @file gcc_attributes.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Macro definitions for GCC attributes.
- * @date 2023-08-08
- * 
- * This file provides definitions for accessing GCC
- * attributes, if available
- * 
- */
-
-
-
-/**
  * @brief GCC attribute declaration
  * @see https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html
  * 

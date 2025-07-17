@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file dummy_communicator_backend.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of dummy_communicator_backend.hpp
- * @date 2024-10-26
- * 
- */
-
 #include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
 
 #include <xmipp4/core/communication/dummy/dummy_communicator.hpp>

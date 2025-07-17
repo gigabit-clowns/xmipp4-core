@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file default_cpu_unified_buffer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::default_cpu_unified_buffer interface
- * @date 2024-10-29
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_unified_buffer.hpp>
 
 namespace xmipp4 

@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file bit.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Utilities to perform bitwise operations on unsigned words
- * @date 2023-08-09
- */
-
 #include "../platform/constexpr.hpp"
 #include "../platform/attributes.hpp"
 

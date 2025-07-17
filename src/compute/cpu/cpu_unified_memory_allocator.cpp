@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file cpu_unified_memory_allocator.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of cpu_unified_memory_allocator.hpp
- * @date 2024-11-06
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_unified_memory_allocator.hpp>
 
 #include "default_cpu_unified_buffer.hpp"

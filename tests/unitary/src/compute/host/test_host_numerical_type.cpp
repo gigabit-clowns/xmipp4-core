@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_host_numerical_type.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for numerical type conversions.
- * @date 2024-11-19
- * 
- */
-
 #include <xmipp4/core/compute/cpu/cpu_numerical_type.hpp>
 
 #include <catch2/catch_test_macros.hpp>

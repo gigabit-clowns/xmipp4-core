@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file slice.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of slice.hpp
- * @date 2023-08-13
- * 
- */
-
 #include "slice.hpp"
 
 #include <sstream>

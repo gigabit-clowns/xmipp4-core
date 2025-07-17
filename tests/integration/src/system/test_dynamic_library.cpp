@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file test_dynamic_library.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for system/dynamic_library.hpp
- * @date 2024-03-03
- * 
- */
-
 #include "../assets.hpp"
 
 #include <xmipp4/core/system/dynamic_library.hpp>

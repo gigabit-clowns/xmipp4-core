@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file slice.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of slice class and helper tags
- * @date 2023-08-13
- * 
- */
-
 #include "platform/constexpr.hpp"
 #include "platform/attributes.hpp"
 

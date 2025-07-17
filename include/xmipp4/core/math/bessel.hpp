@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file bessel.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides multiple variants of bessel functions.
- * @date 2024-04-15
- * 
- */
-
 #include <type_traits>
 
 namespace xmipp4

@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-/**
- * @file host.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of host.hpp
- * @date 2024-10-29
- * 
- */
-
 #include <xmipp4/core/system/host.hpp>
 #include <xmipp4/core/platform/operating_system.h>
 

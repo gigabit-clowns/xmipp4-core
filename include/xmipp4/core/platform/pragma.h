@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file pragma.h
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides a cross-platform macro for compiler pragma directives.
- * @date 2024-10-25
- * 
- */
-
 #include "stringfy.h"
 
 /**

@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file factorial.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides factorial and gamma functions.
- * @date 2024-04-15
- * 
- */
-
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>

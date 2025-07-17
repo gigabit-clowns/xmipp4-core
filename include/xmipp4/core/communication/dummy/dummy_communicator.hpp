@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file dummy_communicator.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of the communication::dummy_communicator class
- * @date 2024-10-26
- * 
- */
-
 #include "../communicator.hpp"
 
 #include <memory>

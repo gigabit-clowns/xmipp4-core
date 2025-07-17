@@ -2,14 +2,6 @@
 
 #pragma once
 
-/**
- * @file reduction_operation.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the reduction_operation enum.
- * @date 2024-10-24
- * 
- */
-
 #include "platform/constexpr.hpp"
 
 #include <cstddef>

@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file mock_communicator_backend.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Mock for communicator_backend interface.
- * @date 2024-12-10
- */
-
 #include <xmipp4/core/communication/communicator_backend.hpp>
 
 #include <trompeloeil.hpp>

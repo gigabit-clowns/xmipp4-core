@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace compute
-{
 
 /**
  * @brief Representation of all considered numerical types for
@@ -113,7 +111,6 @@ template<typename T>
 std::basic_ostream<T>& 
 operator<<(std::basic_ostream<T>& os, numerical_type type);
 
-} // namespace compute
 } // namespace xmipp4
 
 #include "numerical_type.inl"

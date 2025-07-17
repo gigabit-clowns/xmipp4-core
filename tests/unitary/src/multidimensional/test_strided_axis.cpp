@@ -288,7 +288,7 @@ TEST_CASE("apply_index should increment the offset as expected", "[strided_axis]
 
     auto offset = initial_offset;
     apply_index(axis, offset, index);
-    REQUIRE( offset == initial_offset + index*axis.get_stride() ); // TODO
+    REQUIRE( offset == initial_offset + index*axis.get_stride() ); // TODO parametrize
 }
 
 TEST_CASE("apply_index should throw with an out of bounds index", "[strided_axis]")
@@ -312,7 +312,7 @@ TEST_CASE("apply_slice should increment the offset and modify the axis", "[strid
     apply_slice(axis, offset, slice);
     REQUIRE( offset == initial_offset + slice.get_start()*initial_axis.get_stride() );
     REQUIRE( axis.get_extent() == slice.get_count() );
-    REQUIRE( axis.get_stride() == slice.get_step()*initial_axis.get_stride() ); // TODO
+    REQUIRE( axis.get_stride() == slice.get_step()*initial_axis.get_stride() ); // TODO parametrize
 }
 
 TEST_CASE("apply_slice should throw with an out of range index", "[strided_axis]")

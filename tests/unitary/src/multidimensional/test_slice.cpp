@@ -76,9 +76,9 @@ TEST_CASE( "cross-constructing an slice should propagate values", "[slice]" )
     SECTION( "integer promotion preserves end value")
     {
         const auto s0 = make_slice(1, end(), 2);
-        const slice<int, int, std::uint8_t> s1(s0);
-        const slice<int, int, std::int64_t> s2(s1);
-        const slice<int, int, std::uint32_t> s3(s2);
+        const slice<int, std::uint8_t, int> s1(s0);
+        const slice<int, std::int64_t, int> s2(s1);
+        const slice<int, std::uint32_t, int> s3(s2);
         const slice<int, int, int> s4(s3);
 
         REQUIRE( s1.get_count() == end() );
@@ -102,6 +102,8 @@ TEST_CASE("begin_tag should be equal to 0", "[slice]")
 {
     REQUIRE(begin() == 0);
     REQUIRE(0 == begin());
+    REQUIRE(!(begin() != 0));
+    REQUIRE(!(0 != begin()));
 }
 
 TEST_CASE("begin_tag should be unequal to non-zero integers", "[slice]")
@@ -110,6 +112,8 @@ TEST_CASE("begin_tag should be unequal to non-zero integers", "[slice]")
     REQUIRE(1 != begin());
     REQUIRE(begin() != -10);
     REQUIRE(-10 != begin());
+    REQUIRE(!(begin() == -10));
+    REQUIRE(!(-10 == begin()));
 }
 
 TEST_CASE("end_tag should be equal to itself", "[slice]")
@@ -128,6 +132,8 @@ TEST_CASE("end_tag should be equal to std::numeric_limits::max()", "[slice]")
     REQUIRE(std::numeric_limits<std::size_t>::max() == end());
     REQUIRE(end() == std::numeric_limits<int>::max());
     REQUIRE(std::numeric_limits<int>::max() == end());
+    REQUIRE(!(end() != std::numeric_limits<int>::max()));
+    REQUIRE(!(std::numeric_limits<int>::max() != end()));
 }
 
 TEST_CASE("end_tag should be equal to integers other than std::numeric_limits::max()", "[slice]")
@@ -136,6 +142,8 @@ TEST_CASE("end_tag should be equal to integers other than std::numeric_limits::m
     REQUIRE(1 != end());
     REQUIRE(end() != -10);
     REQUIRE(-10 != end());
+    REQUIRE(!(end() == -10));
+    REQUIRE(!(-10 == end()));
 }
 
 TEST_CASE("propagate_end should preserve normal values", "[slice]")
@@ -169,6 +177,8 @@ TEST_CASE("adjacent_tag should be equal to 1", "[slice]")
 {
     REQUIRE(adjacent() == 1);
     REQUIRE(1 == adjacent());
+    REQUIRE(!(adjacent() != 1));
+    REQUIRE(!(1 != adjacent()));
 }
 
 TEST_CASE("adjacent_tag should be unequal to integers other than 1", "[slice]")
@@ -177,6 +187,8 @@ TEST_CASE("adjacent_tag should be unequal to integers other than 1", "[slice]")
     REQUIRE(2 != adjacent());
     REQUIRE(adjacent() != -10);
     REQUIRE(-10 != adjacent());
+    REQUIRE(!(adjacent() == 2));
+    REQUIRE(!(2 == adjacent()));
 }
 
 TEST_CASE("reversed_tag should be equal to itself", "[slice]")
@@ -193,6 +205,8 @@ TEST_CASE("reversed_tag should be equal to -1", "[slice]")
 {
     REQUIRE(reversed() == -1);
     REQUIRE(-1 == reversed());
+    REQUIRE(!(reversed() != -1));
+    REQUIRE(!(-1 != reversed()));
 }
 
 TEST_CASE("reversed_tag should be unequal to integers other than 1", "[slice]")
@@ -201,9 +215,11 @@ TEST_CASE("reversed_tag should be unequal to integers other than 1", "[slice]")
     REQUIRE(1 != reversed());
     REQUIRE(reversed() != -10);
     REQUIRE(-10 != reversed());
+    REQUIRE(!(reversed() == 1));
+    REQUIRE(!(1 == reversed()));
 }
 
-TEST_CASE( "make_slice with count argument should preserve its type and value", "[slice]" ) 
+TEST_CASE( "make_slice with count argument should set count and leave the rest defaulted", "[slice]" ) 
 {
     SECTION( "with int" )
     {
@@ -295,7 +311,7 @@ TEST_CASE( "make_slice with count argument should preserve its type and value", 
     }
 }
 
-TEST_CASE( "make_slice with start and count arguments should preserve their types and values", "[slice]" ) 
+TEST_CASE( "make_slice with start and count arguments should set their values and leave the rest defaulted", "[slice]" ) 
 {
     SECTION( "with int" )
     {
@@ -366,7 +382,7 @@ TEST_CASE( "make_slice with start and count arguments should preserve their type
     }
 }
 
-TEST_CASE( "make_slice with start stop and step arguments should preserve their types and values", "[slice]" ) 
+TEST_CASE( "make_slice with start stop and step arguments should set their values", "[slice]" ) 
 {
     SECTION( "with int" )
     {
@@ -439,7 +455,7 @@ TEST_CASE( "make_slice with start stop and step arguments should preserve their 
     }
 }
 
-TEST_CASE( "output slice to a std::ostream should produce the expected results", "[slice]" )
+TEST_CASE( "output slice to a std::ostream should produce the expected strings", "[slice]" )
 {
     std::stringstream stream;
 
@@ -483,7 +499,7 @@ TEST_CASE( "sanitize_slice should replace correct negative start values" )
     {
         dynamic_slice input(start, 1, 1);
         const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == start+extent);
+        REQUIRE(output.get_start() == start+extent); // TODO parametrize
         REQUIRE(output.get_count() == 1);
         REQUIRE(output.get_step() == 1);
     }
@@ -498,7 +514,7 @@ TEST_CASE( "sanitize_slice should throw with out of bounds negative start values
     for (auto extent = first_extent; extent < last_extent; ++extent) 
     {
         std::ostringstream oss;
-        oss << "Slice start negative index " << input.get_start()
+        oss << "Slice start negative index " << input.get_start() // TODO parametrize
             << " is out of bounds for extent " << extent;
         const auto err_msg = oss.str();
 
@@ -532,7 +548,7 @@ TEST_CASE( "sanitize_slice should complete end values for forwards slices" )
         const auto step = 3;
         const auto start = 2;
         const dynamic_slice input(start, end(), step); 
-        const auto expected_count = (extent - start + step - 1) / step;
+        const auto expected_count = (extent - start + step - 1) / step; // TODO parametrize
 
         const auto output = sanitize_slice(input, extent);
         REQUIRE(output.get_start() == start);
@@ -550,7 +566,7 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice sta
     for (auto extent = first_extent; extent < last_extent; ++extent) 
     {
         std::ostringstream oss;
-        oss << "Slice start index " << input.get_start()
+        oss << "Slice start index " << input.get_start() // TODO parametrize
             << " is out of bounds for extent " << extent 
             << " when step is positive and slice is non-empty.";
         const auto err_msg = oss.str();
@@ -569,7 +585,7 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice cou
     for (auto extent = first_extent; extent < last_extent; ++extent) 
     {
         std::ostringstream oss;
-        oss << "Slice count " << input.get_count() 
+        oss << "Slice count " << input.get_count()  // TODO parametrize
             << " start index " << input.get_start()
             << " and step " << input.get_step()
             << " overflows extent " << extent;
@@ -605,7 +621,7 @@ TEST_CASE( "sanitize_slice should complete end values for backwards slices" )
         const auto abs_step = 3;
         const dynamic_slice input(-2, end(), -abs_step); 
         const auto start = extent - 2;
-        const auto expected_count = (start + abs_step - 1) / abs_step + 1;
+        const auto expected_count = (start + abs_step - 1) / abs_step + 1; // TODO parametrize
 
         const auto output = sanitize_slice(input, extent);
         REQUIRE(output.get_start() == start);
@@ -624,7 +640,7 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice st
     for (auto extent = first_extent; extent < last_extent; ++extent) 
     {
         std::ostringstream oss;
-        oss << "Slice start index " << input.get_start()
+        oss << "Slice start index " << input.get_start() // TODO parametrize
             << " is out of bounds for extent " << extent 
             << " when step is negative and slice is non-empty.";
         const auto err_msg = oss.str();
@@ -645,7 +661,7 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice co
         const dynamic_slice input(start, 6, -3);
 
         std::ostringstream oss;
-        oss << "Reversed slice with count " << input.get_count() 
+        oss << "Reversed slice with count " << input.get_count() // TODO parametrize
             << " start index " << input.get_start()
             << " and step " << input.get_step()
             << " underflows 0";

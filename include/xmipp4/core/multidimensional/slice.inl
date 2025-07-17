@@ -13,8 +13,8 @@ namespace multidimensional
 template <typename Start, typename Count, typename Step>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Count, Step>::slice(start_type start, 
-                                count_type count,
-                                step_type step ) noexcept
+                                 count_type count,
+                                 step_type step ) noexcept
     : m_start(start)
     , m_count(count)
     , m_step(step)
@@ -25,8 +25,8 @@ template <typename Start, typename Count, typename Step>
 template <typename Start2, typename Count2, typename Step2>
 XMIPP4_INLINE_CONSTEXPR 
 slice<Start, Count, Step>::slice(Start2 start,
-                                Count2 count,
-                                Step2 step ) noexcept
+                                 Count2 count,
+                                 Step2 step ) noexcept
     : slice(
         static_cast<start_type>(start),
         propagate_end<count_type>(count),

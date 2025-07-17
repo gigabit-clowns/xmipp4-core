@@ -19,4 +19,3 @@ class ambiguous_backend_error
 };
 
 } // namespace xmipp4
-

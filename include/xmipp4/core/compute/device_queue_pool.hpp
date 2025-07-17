@@ -35,4 +35,3 @@ public:
 
 } // namespace compute
 } // namespace xmipp4
-

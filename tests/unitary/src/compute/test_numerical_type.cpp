@@ -64,4 +64,3 @@ TEST_CASE( "from_string with numerical_type should produce correct results", "[n
     REQUIRE( from_string("complex_float64", type) );
     REQUIRE( type == numerical_type::complex_float64 );
 }
-

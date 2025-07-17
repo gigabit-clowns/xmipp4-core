@@ -41,4 +41,3 @@ TEST_CASE( "reverse byte order", "[byte_order]" )
         REQUIRE( reverse_byte_order(uint64_t(0x123456789ABCDEF0)) == 0xF0DEBC9A78563412 );
     }
 }
-

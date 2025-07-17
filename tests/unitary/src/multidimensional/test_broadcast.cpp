@@ -44,7 +44,7 @@ TEST_CASE("broadcast should call broadcast_extents_to_layout and broadcast_layou
 
     std::vector<std::size_t> extents;
     
-    #if defined(XMIPP4_GCC) // FIXME 
+    #if defined(XMIPP4_GCC) || defined(XMIPP4_MSVC) // FIXME 
         REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)));
         REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)));
         REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)));
@@ -64,14 +64,14 @@ TEST_CASE("broadcast should call broadcast_extents_to_layout and broadcast_layou
         REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)))
             .IN_SEQUENCE(seq);
         REQUIRE_CALL(first, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-            .IN_SEQUENCE(seq)
-            .RETURN(mock_broadcastable());
+            .RETURN(mock_broadcastable())
+            .IN_SEQUENCE(seq);
         REQUIRE_CALL(second, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-            .IN_SEQUENCE(seq)
-            .RETURN(mock_broadcastable());
+            .RETURN(mock_broadcastable())
+            .IN_SEQUENCE(seq);
         REQUIRE_CALL(third, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-            .IN_SEQUENCE(seq)
-            .RETURN(mock_broadcastable());
+            .RETURN(mock_broadcastable())
+            .IN_SEQUENCE(seq);
     #endif
 
     broadcast(extents, first, second, third);

@@ -53,7 +53,7 @@ TEST_CASE("sanitize_index with a in-bounds negative index should return the pois
     {
         const auto index = -(i+1);
         const auto sanitized = sanitize_index(index, extent);
-        REQUIRE( sanitized == (extent+index) );
+        REQUIRE( sanitized == (extent+index) ); // TODO: LUT
     }
 }
 
@@ -64,7 +64,7 @@ TEST_CASE("sanitize_index with an out of bounds positive index should throw", "[
     for (std::ptrdiff_t i = extent; i < last; ++i)
     {
         std::ostringstream oss;
-        oss << "Index " << i
+        oss << "Index " << i // TODO
             << " is out of bounds for extent " << extent;
         const auto err_msg = oss.str();
 
@@ -81,7 +81,7 @@ TEST_CASE("sanitize_index with an out of bounds negative index should throw", "[
     {
         const auto index = -(i+1);
 
-        std::ostringstream oss;
+        std::ostringstream oss; // TODO
         oss << "Reverse index " << index
             << " is out of bounds for extent " << extent;
         const auto err_msg = oss.str();

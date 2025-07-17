@@ -1,32 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
-
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file flagset.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Provides flagset class
- * @date 2023-08-09
- * 
- */
 
 #include "../platform/attributes.hpp"
 #include "../platform/constexpr.hpp"
@@ -37,7 +11,7 @@
 
 namespace xmipp4
 {
-namespace utils
+namespace binary
 {
 
 /**
@@ -123,7 +97,7 @@ public:
      * 
      * @param other The set to be copied from
      */
-    flagset(flagset &&other) = default;
+    flagset(flagset &&other) noexcept = default;
 
     /**
      * @brief Destroy the flagset object
@@ -145,7 +119,7 @@ public:
      * @param other The set to be copied from
      * @return flagset& *this
      */
-    flagset& operator=(flagset &&other) = default;
+    flagset& operator=(flagset &&other) noexcept = default;
 
 
     /**
@@ -344,13 +318,13 @@ template<typename B>
 XMIPP4_CONSTEXPR 
 flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
 
-} // namespace utils
+} // namespace binary
 } // namespace xmipp4
 
 template <typename B>
-struct std::hash<xmipp4::utils::flagset<B>>
+struct std::hash<xmipp4::binary::flagset<B>>
 {
-    XMIPP4_CONSTEXPR size_t operator()(xmipp4::utils::flagset<B> b) const noexcept;
+    XMIPP4_CONSTEXPR size_t operator()(xmipp4::binary::flagset<B> b) const noexcept;
 };
 
 #include "flagset.inl"

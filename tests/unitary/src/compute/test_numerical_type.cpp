@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_numerical_type.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for numerical_type.hpp
- * @date 2025-03-27
- */
-
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -90,5 +64,3 @@ TEST_CASE( "from_string with numerical_type should produce correct results", "[n
     REQUIRE( from_string("complex_float64", type) );
     REQUIRE( type == numerical_type::complex_float64 );
 }
-
-

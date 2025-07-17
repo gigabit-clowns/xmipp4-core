@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_flagset.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Test for utils/flagset.hpp
- * @date 2023-08-09
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -32,9 +6,9 @@
 #include <type_traits>
 #include <cstdint>
 
-#include <xmipp4/core/utils/flagset.hpp>
+#include <xmipp4/core/binary/flagset.hpp>
 
-#include <xmipp4/core/utils/bit.hpp>
+#include <xmipp4/core/binary/bit.hpp>
 
 using namespace xmipp4;
 
@@ -42,45 +16,45 @@ using namespace xmipp4;
 
 enum class test_int32_flag_bits : int32_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(28),
-    y = utils::bit(29),
-    z = utils::bit(30),
+    x = binary::bit(28),
+    y = binary::bit(29),
+    z = binary::bit(30),
 };
-using test_int32_flags = utils::flagset<test_int32_flag_bits>;
+using test_int32_flags = binary::flagset<test_int32_flag_bits>;
 
 enum class test_uint16_flag_bits : uint16_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(13),
-    y = utils::bit(14),
-    z = utils::bit(15),
+    x = binary::bit(13),
+    y = binary::bit(14),
+    z = binary::bit(15),
 };
-using test_uint16_flags = utils::flagset<test_uint16_flag_bits>;
+using test_uint16_flags = binary::flagset<test_uint16_flag_bits>;
 
 enum class test_uint32_flag_bits : uint32_t
 {
-    a = utils::bit(0),
-    b = utils::bit(1),
-    c = utils::bit(2),
+    a = binary::bit(0),
+    b = binary::bit(1),
+    c = binary::bit(2),
 
     // ...
 
-    x = utils::bit(29),
-    y = utils::bit(30),
-    z = utils::bit(31),
+    x = binary::bit(29),
+    y = binary::bit(30),
+    z = binary::bit(31),
 };
-using test_uint32_flags = utils::flagset<test_uint32_flag_bits>;
+using test_uint32_flags = binary::flagset<test_uint32_flag_bits>;
 
 
 

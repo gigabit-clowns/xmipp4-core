@@ -388,15 +388,13 @@ TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the remind
     };
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        80,
-        80, 
-        8, 
+        1*8*10*1,
+        1*8*10, 
+        1*8, 
         1
     };
 
-    const std::ptrdiff_t expected_offset = offset;
-
-    REQUIRE( subscripted_layout.get_offset() == expected_offset );
+    REQUIRE( subscripted_layout.get_offset() == offset );
     REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
 
     const auto count = subscripted_layout.get_rank();
@@ -439,15 +437,13 @@ TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the remind
     };
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        107520,
-        1920,
-        80,
-        80
+        8*10*1*24*56,
+        8*10*1*24,
+        8*10*1,
+        8*10
     };
 
-    const std::ptrdiff_t expected_offset = offset;
-
-    REQUIRE( subscripted_layout.get_offset() == expected_offset );
+    REQUIRE( subscripted_layout.get_offset() == offset );
     REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
 
     const auto count = subscripted_layout.get_rank();
@@ -499,11 +495,11 @@ TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should p
     };
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        215040,
-        0,
-        1920,
-        80,
-        16,
+        56*24*1*10*8 * 2, // *2 because odd elements
+        0,       
+        8*10*1*24,
+        8*10*1,
+        8 * 2, // *2 because even
         0,
         0
     };
@@ -615,7 +611,7 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds index should t
     );
     const std::vector<dynamic_subscript> subscripts = 
     {
-        121
+        120
     };
 
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::out_of_range );
@@ -636,7 +632,7 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds index after el
     const std::vector<dynamic_subscript> subscripts = 
     {
         ellipsis(),
-        9
+        8
     };
 
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::out_of_range );
@@ -834,10 +830,10 @@ TEST_CASE("swap_axes in strided_layout should throw when one of the axes is out 
         offset
     );
 
-    REQUIRE_THROWS_AS( layout.swap_axes(5, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(5, 0), "axis1 exceeds bounds" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 5), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 5), "axis2 exceeds bounds" );
+    REQUIRE_THROWS_AS( layout.swap_axes(4, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(4, 0), "axis1 exceeds bounds" );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 4), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(0, 4), "axis2 exceeds bounds" );
 }
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")

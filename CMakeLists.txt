@@ -1,25 +1,3 @@
-#***************************************************************************
-# Authors:     Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-# 02111-1307  USA
-#
-#  All comments concerning this program package may be sent to the
-#  e-mail address 'xmipp@cnb.csic.es'
-# ***************************************************************************
-
 cmake_minimum_required(VERSION 3.16)
 
 # Define the project
@@ -78,7 +56,6 @@ else()
 	)
 endif()
 
-
 # Find all source and header files
 file(
 	GLOB_RECURSE 
@@ -122,7 +99,7 @@ target_compile_definitions(
 )
 
 # Link dependencies
-if(MSVC)
+if(WIN32)
 	target_link_libraries(
 		${XMIPP4_CORE_LIBRARY_TARGET} 
 		PRIVATE ws2_32 # Winsock
@@ -177,7 +154,20 @@ endif()
 
 # Disable min/max macros in windows
 if(MSVC)
-	target_compile_definitions(${XMIPP4_CORE_LIBRARY_TARGET} PUBLIC -DNOMINMAX)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			NOMINMAX
+	)
+endif()
+
+# Disable builtin functions in MinGW
+if(MINGW)
+	target_compile_definitions(
+		${XMIPP4_CORE_LIBRARY_TARGET} 
+		PUBLIC 
+			XMIPP4_NO_BUILTIN
+	)
 endif()
 
 # Install library's binary files and headers

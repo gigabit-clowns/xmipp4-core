@@ -1,32 +1,7 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file assets.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Functions to get the path to test assets
- * @date 2024-10-28
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <xmipp4/core/platform/operating_system.h>
+#include <xmipp4/core/platform/compiler.h>
 
 #include <string>
 
@@ -64,7 +39,11 @@ inline std::string get_mock_plugin_path(const std::string &name)
 {
 
     #if XMIPP4_WINDOWS
-        return get_asset_root() + "\\plugins\\" + name + ".dll";
+        #if XMIPP4_MINGW
+            return get_asset_root() + "\\plugins\\lib" + name + ".dll";
+        #else
+            return get_asset_root() + "\\plugins\\" + name + ".dll";
+        #endif
     #elif XMIPP4_APPLE || XMIPP4_LINUX
         return get_asset_root() + "/plugins/lib" + name + ".so";
     #else

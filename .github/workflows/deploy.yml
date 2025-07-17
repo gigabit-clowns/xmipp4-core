@@ -1,4 +1,5 @@
 name: Deploy release
+permissions: {}
 
 on:
   push:
@@ -12,17 +13,19 @@ on:
 jobs:
   build_wheels:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
+    permissions:
+      contents: read
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
-            architectures: "x86_64 i686"
+            architectures: "x86_64"
           - os: ubuntu-24.04-arm
             architectures: "aarch64"
           - os: macos-latest
             architectures: "x86_64 arm64 universal2"
           - os: windows-latest
-            architectures: "AMD64 x86 ARM64"
+            architectures: "AMD64 ARM64"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -30,12 +33,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.0.1
         env:
           CIBW_ARCHS: "${{ matrix.architectures }}"
           CIBW_BUILD: "cp313-*" # Python agnostic, pick any version
           CIBW_BUILD_VERBOSITY: 1
-      
+
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -44,6 +47,8 @@ jobs:
 
   build_sdist:
     name: Build source distribution
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -80,13 +85,15 @@ jobs:
 
   build_conda:
     name: Build conda packages
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
         - ubuntu-latest
         - macos-latest
-        #- windows-latest # FIXME
-  
+        - windows-latest
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -102,7 +109,7 @@ jobs:
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify
-        run: conda install -y conda-build conda-verify
+        run: conda install -y conda-build conda-verify python=3.12
 
       - name: Build with conda
         run: conda build conda --output-folder builds/
@@ -130,11 +137,13 @@ jobs:
 
       - name: List artifacts
         run: ls -l ./dist
-      
+
       # TODO upload to conda-forge
 
-  build_doxygen: 
+  build_doxygen:
     name: Build Doxygen documentation
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -145,7 +154,7 @@ jobs:
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y doxygen
-    
+
     - name: Configure and build with CMake
       uses: threeal/cmake-action@v2
       with:
@@ -166,13 +175,13 @@ jobs:
   deploy_doxygen_to_gh_pages:
     name: Deploy Doxygen documentation to GitHub Pages
     needs: [build_doxygen]
+    permissions:
+      pages: write
+      id-token: write
     if: startsWith(github.event.ref, 'refs/tags/v')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      pages: write
-      id-token: write 
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to GitHub Pages
@@ -182,16 +191,16 @@ jobs:
   create_developer_release:
     name: Create development release
     needs: [build_wheels, build_sdist, build_conda]
-    runs-on: ubuntu-latest
     permissions:
       contents: write
+    runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     env:
       TAG_NAME: "development"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Download artifacs
         uses: actions/download-artifact@v4
         with:
@@ -207,7 +216,15 @@ jobs:
           git commit -m "Add pre-built binaries"
           git tag -fa $TAG_NAME -m 'Update development tag with main branch'
           git push origin $TAG_NAME --force
-      
+
+      - name: Delete all old assets from development release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view $TAG_NAME --json assets -q ".assets[].name" | while read asset; do
+            gh release delete-asset $TAG_NAME "$asset" -y
+          done
+
       - name: Create or update development release
         uses: softprops/action-gh-release@v2
         env:

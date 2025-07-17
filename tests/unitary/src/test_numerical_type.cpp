@@ -2,10 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/compute/numerical_type.hpp>
+#include <xmipp4/core/numerical_type.hpp>
 
-using namespace xmipp4::compute;
-
+using namespace xmipp4;
 
 TEST_CASE( "to_string with numerical_type should produce correct results", "[numerical_type]" ) 
 {

@@ -5,6 +5,7 @@
 
 #include <xmipp4/core/compute/checks.hpp>
 
+using namespace xmipp4;
 using namespace xmipp4::compute;
 
 TEST_CASE( "require_same_buffer_size should return the common size", "[checks]" )

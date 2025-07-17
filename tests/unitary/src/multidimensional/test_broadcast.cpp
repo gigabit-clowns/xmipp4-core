@@ -30,6 +30,7 @@
 #include <catch2/matchers/catch_matchers.hpp>
 
 #include <xmipp4/core/multidimensional/broadcast.hpp>
+#include <xmipp4/core/platform/compiler.h>
 
 #include "mock/mock_broadcastable.hpp"
 
@@ -43,16 +44,35 @@ TEST_CASE("broadcast should call broadcast_extents_to_layout and broadcast_layou
 
     std::vector<std::size_t> extents;
     
-    // TODO Check call order
-    REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)));
-    REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)));
-    REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)));
-    REQUIRE_CALL(first, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
-    REQUIRE_CALL(second, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
-    REQUIRE_CALL(third, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
-        .RETURN(mock_broadcastable());
+    #if defined(XMIPP4_GCC) // FIXME 
+        REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)));
+        REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)));
+        REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)));
+        REQUIRE_CALL(first, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .RETURN(mock_broadcastable());
+        REQUIRE_CALL(second, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .RETURN(mock_broadcastable());
+        REQUIRE_CALL(third, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .RETURN(mock_broadcastable());
+    #else
+        trompeloeil::sequence seq;
+
+        REQUIRE_CALL(first, broadcast_extents_to_layout(std::ref(extents)))
+            .IN_SEQUENCE(seq);
+        REQUIRE_CALL(second, broadcast_extents_to_layout(std::ref(extents)))
+            .IN_SEQUENCE(seq);
+        REQUIRE_CALL(third, broadcast_extents_to_layout(std::ref(extents)))
+            .IN_SEQUENCE(seq);
+        REQUIRE_CALL(first, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .IN_SEQUENCE(seq)
+            .RETURN(mock_broadcastable());
+        REQUIRE_CALL(second, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .IN_SEQUENCE(seq)
+            .RETURN(mock_broadcastable());
+        REQUIRE_CALL(third, broadcast_layout_to_extents(ANY(xmipp4::span<const std::size_t>)))
+            .IN_SEQUENCE(seq)
+            .RETURN(mock_broadcastable());
+    #endif
 
     broadcast(extents, first, second, third);
 }

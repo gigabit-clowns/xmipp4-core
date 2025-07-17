@@ -2,15 +2,13 @@
 
 #pragma once
 
-#include "../platform/constexpr.hpp"
+#include "platform/constexpr.hpp"
 
 #include <cstddef>
 #include <string_view>
 #include <ostream>
 
 namespace xmipp4
-{
-namespace compute
 {
 
 /**
@@ -113,7 +111,6 @@ template<typename T>
 std::basic_ostream<T>& 
 operator<<(std::basic_ostream<T>& os, numerical_type type);
 
-} // namespace compute
 } // namespace xmipp4
 
 #include "numerical_type.inl"

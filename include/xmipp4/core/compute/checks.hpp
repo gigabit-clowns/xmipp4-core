@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "numerical_type.hpp"
 #include "copy_region.hpp"
+#include "../numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 

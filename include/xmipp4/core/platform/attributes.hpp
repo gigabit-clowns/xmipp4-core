@@ -4,9 +4,7 @@
 
 /**
  * @file attributes.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
  * @brief Macro definitions for supported attributes
- * @date 2023-08-08
  * 
  * This file declares a variety of C++ attributes through
  * macros. When an attribute is not supported, first it

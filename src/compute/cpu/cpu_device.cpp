@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/compute/cpu/cpu_device_queue.hpp>
 #include <xmipp4/core/compute/cpu/cpu_unified_memory_allocator.hpp>
-#include <xmipp4/core/compute/cpu/cpu_transfer.hpp>
+#include <xmipp4/core/compute/cpu/cpu_unified_copy.hpp>
 #include <xmipp4/core/compute/cpu/cpu_event.hpp>
 
 namespace xmipp4
@@ -15,7 +15,7 @@ namespace compute
 cpu_device::cpu_device()
     : m_queue_pool()
     , m_allocator(std::make_shared<cpu_unified_memory_allocator>())
-    , m_transfer(std::make_shared<cpu_transfer>())
+    , m_transfer(std::make_shared<cpu_unified_copy>())
     , m_event(std::make_shared<cpu_event>())
 {
 }

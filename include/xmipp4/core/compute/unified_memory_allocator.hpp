@@ -29,16 +29,6 @@ class unified_memory_allocator
     , public host_memory_allocator
 {
 public:
-    unified_memory_allocator() = default;
-    unified_memory_allocator(const unified_memory_allocator &other) = default;
-    unified_memory_allocator(unified_memory_allocator &&other) = default;
-    ~unified_memory_allocator() override = default;
-
-    unified_memory_allocator& 
-    operator=(const unified_memory_allocator &other) = default;
-    unified_memory_allocator& 
-    operator=(unified_memory_allocator &&other) = default;
-
     virtual std::shared_ptr<unified_buffer> 
     create_unified_buffer(std::size_t size, std::size_t alignment) = 0;
 

@@ -24,7 +24,7 @@ class unified_buffer;
  * interfaces in unified memory architectures.
  * 
  */
-class unified_memory_allocator
+class XMIPP4_CORE_API unified_memory_allocator
     : public device_memory_allocator
     , public host_memory_allocator
 {
@@ -37,19 +37,16 @@ public:
                           std::size_t alignment, 
                           device_queue &queue ) = 0;
 
-    XMIPP4_CORE_API
     std::shared_ptr<device_buffer> 
     create_device_buffer(std::size_t size, 
                          std::size_t alignment,
                          device_queue &queue ) final;
 
-    XMIPP4_CORE_API
     std::shared_ptr<host_buffer> 
     create_host_buffer(std::size_t size, 
                        std::size_t alignment,
                        device_queue &queue ) final;
 
-    XMIPP4_CORE_API
     std::shared_ptr<host_buffer> 
     create_host_buffer(std::size_t size, std::size_t alignment) final;
 

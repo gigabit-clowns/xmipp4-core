@@ -23,68 +23,58 @@ class unified_buffer;
  * is casted to the output buffer, aliasing its contents.
  * 
  */
-class unified_copy
+class XMIPP4_CORE_API unified_copy
     : public host_to_device_transfer
     , public device_to_host_transfer
     , public device_copy
 {
 public:
-    XMIPP4_CORE_API
     void transfer_copy(const host_buffer &src_buffer,
                        device_buffer &dst_buffer, 
                        device_queue &queue ) override;
     
-    XMIPP4_CORE_API
     void transfer_copy(const host_buffer &src_buffer,
                        device_buffer &dst_buffer, 
                        span<const copy_region> regions, 
                        device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     std::shared_ptr<device_buffer> 
     transfer(const std::shared_ptr<host_buffer> &buffer, 
              device_memory_allocator &allocator,
              std::size_t alignment,
              device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     std::shared_ptr<const device_buffer> 
     transfer(const std::shared_ptr<const host_buffer> &buffer, 
              device_memory_allocator &allocator,
              std::size_t alignment,
              device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     void transfer_copy(const device_buffer &src_buffer,
                        host_buffer &dst_buffer, 
                        device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     void transfer_copy(const device_buffer &src_buffer,
                        host_buffer &dst_buffer, 
                        span<const copy_region> regions, 
                        device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     std::shared_ptr<host_buffer> 
     transfer(const std::shared_ptr<device_buffer> &buffer, 
              host_memory_allocator &allocator,
              std::size_t alignment,
              device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     std::shared_ptr<const host_buffer> 
     transfer(const std::shared_ptr<const device_buffer> &buffer, 
              host_memory_allocator &allocator,
              std::size_t alignment,
              device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     void copy(const device_buffer &src_buffer,
               device_buffer &dst_buffer, 
               device_queue &queue ) override;
 
-    XMIPP4_CORE_API
     void copy(const device_buffer &src_buffer,
               device_buffer &dst_buffer,
               span<const copy_region> regions,
@@ -106,7 +96,6 @@ public:
      * using the CPU.
      * 
      */
-    XMIPP4_CORE_API
     virtual
     void copy_unified(const unified_buffer &src_buffer,
                       unified_buffer &dst_buffer, 
@@ -133,7 +122,6 @@ public:
      * using the CPU.
      * 
      */
-    XMIPP4_CORE_API
     virtual
     void copy_unified(const unified_buffer &src_buffer,
                       unified_buffer &dst_buffer,

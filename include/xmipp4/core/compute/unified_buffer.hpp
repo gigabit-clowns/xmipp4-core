@@ -20,7 +20,7 @@ namespace compute
  * architectures.
  * 
  */
-class unified_buffer
+class XMIPP4_CORE_API unified_buffer
     : public device_buffer
     , public host_buffer
 {
@@ -29,13 +29,9 @@ public:
     void* get_data() noexcept override = 0;
     const void* get_data() const noexcept override = 0;
 
-    XMIPP4_CORE_API
     unified_buffer* get_device_accessible_alias() noexcept final;
-    XMIPP4_CORE_API
     const unified_buffer* get_device_accessible_alias() const noexcept final;
-    XMIPP4_CORE_API
     unified_buffer* get_host_accessible_alias() noexcept final;
-    XMIPP4_CORE_API
     const unified_buffer* get_host_accessible_alias() const noexcept final;
     
     void record_queue(device_queue &queue) override = 0;

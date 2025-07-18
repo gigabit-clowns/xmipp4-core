@@ -12,7 +12,7 @@ namespace compute
 {
 
 class cpu_unified_memory_allocator;
-class cpu_transfer;
+class cpu_unified_copy;
 class cpu_event;
 
 /**
@@ -52,7 +52,7 @@ public:
 private:
     cpu_device_queue_pool m_queue_pool;
     std::shared_ptr<cpu_unified_memory_allocator> m_allocator;
-    std::shared_ptr<cpu_transfer> m_transfer;
+    std::shared_ptr<cpu_unified_copy> m_transfer;
     std::shared_ptr<cpu_event> m_event;
 
 }; 

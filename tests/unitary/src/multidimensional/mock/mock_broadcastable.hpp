@@ -2,13 +2,6 @@
 
 #pragma once
 
-/**
- * @file mock_broadcastable.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Definition of a broadcastable class.
- * @date 2025-07-03
- */
-
 #include <trompeloeil.hpp>
 
 #include <xmipp4/core/span.hpp>

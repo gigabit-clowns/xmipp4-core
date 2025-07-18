@@ -21,7 +21,7 @@ on:
         default: ""
 
 jobs:
-  static-check:
+  check-spdx:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -32,27 +32,28 @@ jobs:
 
       - name: Find source code files without valid SPDX license header
         run: |
-          # Build an include/exclude specification
-          IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
+          # Parse inputs
+          IFS=',' read -r -a exts <<< "${{ inputs.extensions }}"
           IFS=',' read -r -a skips <<< "${{ inputs.skip }}"
 
-          # Construct a find command that:
-          #  - looks for our extensions
-          #  - prunes skip patterns
-          find_args=()
-          for extension in "${extensions[@]}"; do
-            find_args+=(-name "*${extension}" -o)
+          # Build the name clauses for find
+          find_names=""
+          for ext in "${exts[@]}"; do
+            find_names+="-name '*${ext}' -o "
           done
-          unset 'find_args[${#find_args[@]}-1]' # remove trailing -o
+          # drop trailing "-o "
+          find_names=${find_names% -o }
 
-          # Build prune clauses
-          prune_args=()
+          # Build the prune (skip) clauses for find
+          prune_clause=""
           for pat in "${skips[@]}"; do
             [[ -z "$pat" ]] && continue
-            prune_args+=(-path "$pat" -prune -o)
+            prune_clause+="-path '$pat' -prune -o "
           done
+          prune_clause=${prune_clause% -o }
 
-          # Final find invocation
-          find . "${prune_args[@]}" \( "${find_args[@]}" \) -type f \
-            -print0 \
-          | xargs -0 reuse lint --fail-on error
+          # Compose and run reuse command
+          cmd="find . $prune_clause \\( $find_names \\) -type f -print0 | xargs -0 reuse lint"
+          echo "Running SPDX lint command:"
+          echo "$cmd"
+          eval "$cmd"

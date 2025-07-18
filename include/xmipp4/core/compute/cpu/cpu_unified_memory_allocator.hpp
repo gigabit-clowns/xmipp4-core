@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "../device_memory_allocator.hpp"
-#include "../host_memory_allocator.hpp"
-
+#include "../unified_memory_allocator.hpp"
 
 namespace xmipp4 
 {
@@ -13,15 +11,8 @@ namespace compute
 
 class cpu_unified_buffer;
 
-/**
- * @brief Special implementation of device_memory_allocator and
- * host_memory_allocator that allows to allocate memory in the host 
- * as if it were a device.
- * 
- */
-class cpu_unified_memory_allocator
-    : public device_memory_allocator
-    , public host_memory_allocator
+class cpu_unified_memory_allocator final
+    : public unified_memory_allocator
 {
 public:
     cpu_unified_memory_allocator() = default;
@@ -35,22 +26,18 @@ public:
     operator=(cpu_unified_memory_allocator &&other) = default;
 
     std::shared_ptr<cpu_unified_buffer> 
-    create_unified_buffer(std::size_t size, std::size_t alignment);
+    create_unified_buffer_impl(std::size_t size, std::size_t alignment);
 
-    std::shared_ptr<device_buffer> 
-    create_device_buffer(std::size_t size, 
-                         std::size_t alignment,
-                         device_queue &queue ) override;
+    std::shared_ptr<unified_buffer> 
+    create_unified_buffer(std::size_t size, std::size_t alignment) override;
 
-    std::shared_ptr<host_buffer> 
-    create_host_buffer(std::size_t size, 
-                       std::size_t alignment,
-                       device_queue &queue ) override;
-
-    std::shared_ptr<host_buffer> 
-    create_host_buffer(std::size_t size, std::size_t alignment) override;
+    std::shared_ptr<unified_buffer> 
+    create_unified_buffer(std::size_t size, 
+                          std::size_t alignment, 
+                          device_queue &queue) override;
 
 }; 
 
 } // namespace compute
 } // namespace xmipp4
+

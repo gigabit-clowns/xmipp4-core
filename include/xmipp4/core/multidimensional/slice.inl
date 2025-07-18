@@ -506,7 +506,7 @@ void sanitize_slice_count(dynamic_slice &slice, std::size_t extent)
             const auto new_count = (extent - start + step - 1) / step;
             slice.set_count(new_count);
         }
-        else if (count > 0 && start + step*(count-1) >= extent)
+        else if (count > 0U && start + step*(count-1) >= extent)
         {
             std::ostringstream oss;
             oss << "Slice count " << count 
@@ -524,7 +524,7 @@ void sanitize_slice_count(dynamic_slice &slice, std::size_t extent)
             const auto new_count = (start + abs_step - 1) / abs_step + 1;
             slice.set_count(new_count);
         }
-        else if (count > 0U && abs_step*(count-1) > start)
+        else if (count > 0U && abs_step*static_cast<std::ptrdiff_t>(count-1) > start)
         {
             std::ostringstream oss;
             oss << "Reversed slice with count " << count 

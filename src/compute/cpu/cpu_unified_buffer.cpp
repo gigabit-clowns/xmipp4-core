@@ -85,7 +85,7 @@ const void* cpu_unified_buffer::get_data() const noexcept
 
 void cpu_unified_buffer::record_queue(device_queue& queue)
 {
-    dynamic_cast<cpu_device_queue&>(queue); // Check
+    std::ignore = dynamic_cast<cpu_device_queue&>(queue); // Check
     // No-op
 }
 

@@ -29,7 +29,7 @@ cpu_unified_memory_allocator::create_unified_buffer(std::size_t size,
                                                     std::size_t alignment,
                                                     device_queue &queue )
 {
-    dynamic_cast<cpu_device_queue&>(queue);
+    std::ignore = dynamic_cast<cpu_device_queue&>(queue);
     return create_unified_buffer_impl(size, alignment);
 }
 

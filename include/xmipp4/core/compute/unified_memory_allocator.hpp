@@ -4,6 +4,7 @@
 
 #include "device_memory_allocator.hpp"
 #include "host_memory_allocator.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 
 namespace xmipp4 
@@ -46,16 +47,19 @@ public:
                           std::size_t alignment, 
                           device_queue &queue ) = 0;
 
+    XMIPP4_CORE_API
     std::shared_ptr<device_buffer> 
     create_device_buffer(std::size_t size, 
                          std::size_t alignment,
                          device_queue &queue ) final;
 
+    XMIPP4_CORE_API
     std::shared_ptr<host_buffer> 
     create_host_buffer(std::size_t size, 
                        std::size_t alignment,
                        device_queue &queue ) final;
 
+    XMIPP4_CORE_API
     std::shared_ptr<host_buffer> 
     create_host_buffer(std::size_t size, std::size_t alignment) final;
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/compute/unified_buffer.hpp>
+#include "../unified_buffer.hpp"
 
 namespace xmipp4 
 {

@@ -3,12 +3,7 @@ permissions:
   contents: read
 
 on:
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
-
   workflow_call:
     inputs:
       extensions:
@@ -33,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Reuse linter
-        run: sudo apt-get install -y python3-reuse
+        run: pip install reuse
 
       - name: Find source code files without valid SPDX license header
         run: |

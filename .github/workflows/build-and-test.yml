@@ -117,3 +117,7 @@ jobs:
 
       - name: Build with conda
         run: conda build conda
+
+  perform_static_checks:
+    name: static-checks
+    uses: gigabit-clowns/xmipp4-core/.github/workflows/static-check.yml@ms_spdx

@@ -17,7 +17,6 @@ namespace compute
 class cpu_unified_copy final
     : public unified_copy
 {
-public:
     // Intentionally empty. No overrides    
 
 }; 

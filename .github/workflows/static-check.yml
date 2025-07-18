@@ -1,0 +1,63 @@
+name: Perform static checks
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+  workflow_call:
+    inputs:
+      extensions:
+        description: |
+          Comma-separated list of file extensions to scan
+          (include the leading dot). By default, C/C++ and Python
+          file types are skipped.
+        type: "string"
+        required: false
+        default: ".c,.h,.cpp,.hpp,.inl,.py"
+      skip:
+        description: Comma-separated list of files (or globs) to skip.
+        type: "string"
+        required: false
+        default: ""
+
+jobs:
+  static-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Reuse linter
+        run: sudo apt-get install -y python3-reuse
+
+      - name: Find source code files without valid SPDX license header
+        run: |
+          # Build an include/exclude specification
+          IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
+          IFS=',' read -r -a skips <<< "${{ inputs.skip }}"
+
+          # Construct a find command that:
+          #  - looks for our extensions
+          #  - prunes skip patterns
+          find_args=()
+          for extension in "${extensions[@]}"; do
+            find_args+=(-name "*${extension}" -o)
+          done
+          unset 'find_args[${#find_args[@]}-1]' # remove trailing -o
+
+          # Build prune clauses
+          prune_args=()
+          for pat in "${skips[@]}"; do
+            [[ -z "$pat" ]] && continue
+            prune_args+=(-path "$pat" -prune -o)
+          done
+
+          # Final find invocation
+          find . "${prune_args[@]}" \( "${find_args[@]}" \) -type f \
+            -print0 \
+          | xargs -0 reuse lint --fail-on error

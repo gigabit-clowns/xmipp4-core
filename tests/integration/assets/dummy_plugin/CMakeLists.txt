@@ -5,7 +5,6 @@ add_library(dummy_plugin MODULE ${SOURCES})
 set_target_properties(
 	dummy_plugin
 	PROPERTIES 
-		CXX_STANDARD 20
 		DEFINE_SYMBOL "XMIPP4_DUMMY_PLUGIN_EXPORTING"
 )
 target_link_libraries(

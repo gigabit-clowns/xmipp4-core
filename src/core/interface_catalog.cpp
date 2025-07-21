@@ -2,9 +2,9 @@
 
 #include <xmipp4/core/interface_catalog.hpp>
 
-#include "plugin_loader.hpp"
-
 #include <xmipp4/core/plugin.hpp>
+
+#include <plugin_loader.hpp>
 
 #include <vector>
 #include <cstdlib>

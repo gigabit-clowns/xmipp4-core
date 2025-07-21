@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/system/memory_mapped_file.hpp>
 
-#include "memory_mapped_file_handle.hpp"
+#include <system/memory_mapped_file_handle.hpp>
 
 namespace xmipp4
 {

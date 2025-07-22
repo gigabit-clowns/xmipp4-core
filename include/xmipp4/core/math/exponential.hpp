@@ -10,32 +10,25 @@ namespace math
 {
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp(F exponent) noexcept;
+F exp(F exponent) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp2(F exponent) noexcept;
+F exp2(F exponent) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept;
+F exp10(F exponent) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log(F x) noexcept;
+F log(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log2(F x) noexcept;
+F log2(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log10(F x) noexcept;
+F log10(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-logn(F n, F x) noexcept;
+F logn(F n, F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

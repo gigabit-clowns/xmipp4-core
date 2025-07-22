@@ -12,20 +12,16 @@ namespace math
 {
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline0(F x) noexcept;
+F bspline0(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline1(F x) noexcept;
+F bspline1(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline2(F x) noexcept;
+F bspline2(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline3(F x) noexcept;
+F bspline3(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

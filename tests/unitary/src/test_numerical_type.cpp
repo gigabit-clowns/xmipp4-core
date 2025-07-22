@@ -69,3 +69,171 @@ TEST_CASE( "from_string with numerical_type should produce correct results", "[n
         REQUIRE(type == expected_type);
     }
 }
+
+TEST_CASE( "is_unsigned should return true with unsigned numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::uint8,
+        numerical_type::uint16,
+        numerical_type::uint32,
+        numerical_type::uint64
+    );
+
+    REQUIRE( is_unsigned(type) == true );
+}
+
+TEST_CASE( "is_unsigned should return false with signed numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::int8,
+        numerical_type::int16,
+        numerical_type::int32,
+        numerical_type::int64,
+        numerical_type::float16,
+        numerical_type::brain_float16,
+        numerical_type::float32,
+        numerical_type::float64,
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
+
+    REQUIRE( is_unsigned(type) == false );
+}
+
+TEST_CASE( "is_integer should return true with integral numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::int8,
+        numerical_type::uint8,
+        numerical_type::int16,
+        numerical_type::uint16,
+        numerical_type::int32,
+        numerical_type::uint32,
+        numerical_type::int64,
+        numerical_type::uint64
+    );
+
+    REQUIRE( is_integer(type) == true );
+}
+
+TEST_CASE( "is_integer should return false with non integral numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::float16,
+        numerical_type::brain_float16,
+        numerical_type::float32,
+        numerical_type::float64,
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
+
+    REQUIRE( is_integer(type) == false );
+}
+
+TEST_CASE( "is_float should return true with floating point numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::float16,
+        numerical_type::brain_float16,
+        numerical_type::float32,
+        numerical_type::float64
+    );
+
+    REQUIRE( is_float(type) == true );
+}
+
+TEST_CASE( "is_float should return false with non floating point numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::int8,
+        numerical_type::uint8,
+        numerical_type::int16,
+        numerical_type::uint16,
+        numerical_type::int32,
+        numerical_type::uint32,
+        numerical_type::int64,
+        numerical_type::uint64,
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
+
+    REQUIRE( is_float(type) == false );
+}
+
+TEST_CASE( "is_complex should return true with complex numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
+
+    REQUIRE( is_complex(type) == true );
+}
+
+TEST_CASE( "is_complex should return false with non complex numerical_types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::int8,
+        numerical_type::uint8,
+        numerical_type::int16,
+        numerical_type::uint16,
+        numerical_type::int32,
+        numerical_type::uint32,
+        numerical_type::int64,
+        numerical_type::uint64,
+        numerical_type::float16,
+        numerical_type::brain_float16,
+        numerical_type::float32,
+        numerical_type::float64
+    );
+
+    REQUIRE( is_complex(type) == false );
+}
+
+TEST_CASE( "make_complex should return the equivalent complex type for supported floating point types", "[numerical_type]" ) 
+{
+    numerical_type floating_type;
+    numerical_type expected_complex_type;
+
+    std::tie(floating_type, expected_complex_type) = GENERATE(
+        table<numerical_type, numerical_type>({
+            {numerical_type::float16, numerical_type::complex_float16},
+            {numerical_type::float32, numerical_type::complex_float32},
+            {numerical_type::float64, numerical_type::complex_float64}
+        })
+    );
+
+    REQUIRE( make_complex(floating_type) == expected_complex_type );
+}
+
+TEST_CASE( "make_complex should return unknown for unsupported types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::int8,
+        numerical_type::uint8,
+        numerical_type::int16,
+        numerical_type::uint16,
+        numerical_type::int32,
+        numerical_type::uint32,
+        numerical_type::int64,
+        numerical_type::uint64,
+        numerical_type::brain_float16
+    );
+
+    REQUIRE( make_complex(type) == numerical_type::unknown );
+}
+
+TEST_CASE( "make_complex should return return itself with complex types", "[numerical_type]" ) 
+{
+    const auto type = GENERATE(
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
+
+    REQUIRE( make_complex(type) == type );
+}

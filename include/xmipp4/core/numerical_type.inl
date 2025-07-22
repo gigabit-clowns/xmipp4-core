@@ -3,8 +3,10 @@
 #pragma once
 
 #include "numerical_type.hpp"
+#include "fixed_float.hpp"
 
 #include <cstdint>
+#include <complex>
 #include <unordered_map>
 
 namespace xmipp4
@@ -22,13 +24,13 @@ XMIPP4_INLINE_CONSTEXPR std::size_t get_size(numerical_type type) noexcept
     case numerical_type::uint32: return sizeof(std::uint32_t);
     case numerical_type::int64: return sizeof(std::int64_t);
     case numerical_type::uint64: return sizeof(std::uint64_t);
-    case numerical_type::float16: return 2; // Not available in C
-    case numerical_type::brain_float16: return 2; // Not available in C
-    case numerical_type::float32: return 4; // sizeof(float) not guaranteed to be 4
-    case numerical_type::float64: return 8; // sizeof(double) not guaranteed to be 8
-    case numerical_type::complex_float16: return 4; // Same reason as its real equivalent
-    case numerical_type::complex_float32: return 8; // Same reason as its real equivalent
-    case numerical_type::complex_float64: return 16; // Same reason as its real equivalent
+    case numerical_type::float16: return sizeof(float16_t);
+    case numerical_type::brain_float16: return 2; // Not available
+    case numerical_type::float32: return sizeof(float32_t); 
+    case numerical_type::float64: return  sizeof(float32_t);
+    case numerical_type::complex_float16: return sizeof(std::complex<float16_t>);
+    case numerical_type::complex_float32: return sizeof(std::complex<float32_t>);
+    case numerical_type::complex_float64: return sizeof(std::complex<float32_t>);
     default: return 0;
     }
 }
@@ -100,6 +102,9 @@ numerical_type make_complex(numerical_type type) noexcept
     case numerical_type::float16: return numerical_type::complex_float16;
     case numerical_type::float32: return numerical_type::complex_float32;
     case numerical_type::float64: return numerical_type::complex_float64;
+    case numerical_type::complex_float16: return numerical_type::complex_float16;
+    case numerical_type::complex_float32: return numerical_type::complex_float32;
+    case numerical_type::complex_float64: return numerical_type::complex_float64;
     default: return numerical_type::unknown;
     } 
 }

@@ -13,7 +13,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE( "exp should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "exp should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -30,7 +30,7 @@ TEMPLATE_TEST_CASE( "exp should produce correct numerical results", "[math]", fl
     REQUIRE( xmipp4::math::exp(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "exp2 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "exp2 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -47,7 +47,7 @@ TEMPLATE_TEST_CASE( "exp2 should produce correct numerical results", "[math]", f
     REQUIRE( xmipp4::math::exp2(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -64,7 +64,7 @@ TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", 
     REQUIRE( xmipp4::math::exp10(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -83,19 +83,19 @@ TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", fl
     REQUIRE( xmipp4::math::log(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log with 0 as input should produce infinity", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(+0.0, -0.0);
     REQUIRE( xmipp4::math::log(value) == -std::numeric_limits<TestType>::infinity() );
 }
 
-TEMPLATE_TEST_CASE( "log with negative values as input should produce NaN", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(-1.0, -10.0, -100.0);
     REQUIRE( std::isnan(xmipp4::math::log(value)) );
 }
 
-TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -114,19 +114,19 @@ TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", f
     REQUIRE( xmipp4::math::log2(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log2 with 0 as input should produce infinity", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log2 with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(+0.0, -0.0);
     REQUIRE( xmipp4::math::log2(value) == -std::numeric_limits<TestType>::infinity() );
 }
 
-TEMPLATE_TEST_CASE( "log2 with negative values as input should produce NaN", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log2 with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(-1.0, -10.0, -100.0);
     REQUIRE( std::isnan(xmipp4::math::log2(value)) );
 }
 
-TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -146,13 +146,13 @@ TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", 
 }
 
 
-TEMPLATE_TEST_CASE( "log10 with 0 as input should produce infinity", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log10 with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(+0.0, -0.0);
     REQUIRE( xmipp4::math::log10(value) == -std::numeric_limits<TestType>::infinity() );
 }
 
-TEMPLATE_TEST_CASE( "log10 with negative values as input should produce NaN", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "log10 with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
     const TestType value = GENERATE(-1.0, -10.0, -100.0);
     REQUIRE( std::isnan(xmipp4::math::log10(value)) );

@@ -15,7 +15,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE("cos produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("cos produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -35,7 +35,7 @@ TEMPLATE_TEST_CASE("cos produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::cos(-x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE("sin produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("sin produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("sin produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::sin(-x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE("sincos produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("sincos produces correct results", "[math]", float, double, long double)
 {
     TestType x = GENERATE(0.5, 1.35, 133.0, 12.0, 6.53, -6.26);
 
@@ -64,7 +64,7 @@ TEMPLATE_TEST_CASE("sincos produces correct results", "[math]", float, double)
     REQUIRE( sc.second == Catch::Approx(cos(x)) );
 }
 
-TEMPLATE_TEST_CASE("tan produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("tan produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -82,7 +82,7 @@ TEMPLATE_TEST_CASE("tan produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::tan(-x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE("acos produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("acos produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -100,13 +100,13 @@ TEMPLATE_TEST_CASE("acos produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::acos(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE("acos produces NaN for invalid input", "[math]", float, double)
+TEMPLATE_TEST_CASE("acos produces NaN for invalid input", "[math]", float, double, long double)
 {
     TestType input = GENERATE(1.1, -1.1);
     REQUIRE(std::isnan(acos(input)));
 }
 
-TEMPLATE_TEST_CASE("asin produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("asin produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -122,13 +122,13 @@ TEMPLATE_TEST_CASE("asin produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::asin(-x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE("asin produces NaN for invalid input", "[math]", float, double)
+TEMPLATE_TEST_CASE("asin produces NaN for invalid input", "[math]", float, double, long double)
 {
     TestType input = GENERATE(1.1, -1.1);
     REQUIRE( std::isnan(xmipp4::math::asin(input)) );
 }
 
-TEMPLATE_TEST_CASE("atan produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("atan produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -148,7 +148,7 @@ TEMPLATE_TEST_CASE("atan produces correct results", "[math]", float, double)
     REQUIRE( xmipp4::math::atan(-x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE("atan2 produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("atan2 produces correct results", "[math]", float, double, long double)
 {
     std::pair<TestType, TestType> args;
     TestType expected;

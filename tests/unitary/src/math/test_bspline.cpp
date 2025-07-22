@@ -9,7 +9,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE("bspline0 should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("bspline0 should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -25,7 +25,7 @@ TEMPLATE_TEST_CASE("bspline0 should produce correct numerical results", "[math]"
     REQUIRE(bspline0(-x) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("bspline1 should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("bspline1 should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -42,7 +42,7 @@ TEMPLATE_TEST_CASE("bspline1 should produce correct numerical results", "[math]"
     REQUIRE(bspline1(-x) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("bspline2 should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("bspline2 should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -62,7 +62,7 @@ TEMPLATE_TEST_CASE("bspline2 should produce correct numerical results", "[math]"
     REQUIRE(bspline2(-x) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("bspline3 should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("bspline3 should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(

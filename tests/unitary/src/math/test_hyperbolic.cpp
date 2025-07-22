@@ -14,7 +14,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double)
     REQUIRE(cosh(-x) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -48,7 +48,7 @@ TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double)
     REQUIRE(sinh(-x) == Catch::Approx(-expected));
 }
 
-TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -65,7 +65,7 @@ TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double)
     REQUIRE(tanh(-x) == Catch::Approx(-expected));
 }
 
-TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -79,13 +79,13 @@ TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double)
     REQUIRE(acosh(x) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("acosh produces NaN for invalid input", "[math]", float, double)
+TEMPLATE_TEST_CASE("acosh produces NaN for invalid input", "[math]", float, double, long double)
 {
     const TestType input = GENERATE(0.5, -1.0);
     REQUIRE( std::isnan(acosh(input)) );
 }
 
-TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -102,7 +102,7 @@ TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double)
     REQUIRE(asinh(-x) == Catch::Approx(-expected));
 }
 
-TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double)
+TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -118,7 +118,7 @@ TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double)
     REQUIRE(atanh(-x) == Catch::Approx(-expected));
 }
 
-TEMPLATE_TEST_CASE("atanh produces NaN for invalid input", "[math]", float, double)
+TEMPLATE_TEST_CASE("atanh produces NaN for invalid input", "[math]", float, double, long double)
 {
     const TestType input = GENERATE(1.1, -1.1);
     REQUIRE( std::isnan(atanh(input)) );

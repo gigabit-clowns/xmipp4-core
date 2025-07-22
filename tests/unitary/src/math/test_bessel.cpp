@@ -13,7 +13,7 @@
 using namespace xmipp4::math;
 
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_j0 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_j0 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -37,7 +37,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_j0 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_jn(0, -x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_j1 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_j1 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -61,7 +61,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_j1 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_jn(1, -x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_jn should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_jn should produce correct numerical results", "[math]", float, double, long double ) 
 {
     int n;
     TestType x, expected;
@@ -92,7 +92,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_jn should produce correct numerical resu
     REQUIRE( cylindrical_bessel_jn(n, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_y0 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_y0 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -119,7 +119,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_y0 should produce correct numerical resu
     }
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -140,13 +140,13 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_yn(1, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should return NaN for negative values", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should return NaN for negative values", "[math]", float, double, long double ) 
 {
     REQUIRE( std::isnan(cylindrical_bessel_y1(-1.0)) );
     REQUIRE( std::isnan(cylindrical_bessel_yn(1, -1.0)) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should produce correct numerical results", "[math]", float, double, long double ) 
 {
     int n;
     TestType x, expected;
@@ -171,13 +171,13 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should produce correct numerical resu
     REQUIRE( cylindrical_bessel_yn(n, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should return NaN for negative values", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should return NaN for negative values", "[math]", float, double, long double ) 
 {
     REQUIRE( std::isnan(cylindrical_bessel_yn(2, -1.0)) );
     REQUIRE( std::isnan(cylindrical_bessel_yn(-3, -1.0)) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_i0 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_i0 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -199,7 +199,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_i0 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_in(0, -x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_i1 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_i1 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -221,7 +221,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_i1 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_in(1, -x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_in should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_in should produce correct numerical results", "[math]", float, double, long double ) 
 {
     int n;
     TestType x, expected;
@@ -251,7 +251,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_in should produce correct numerical resu
     REQUIRE( cylindrical_bessel_in(-n, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -270,13 +270,13 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should produce correct numerical resu
     REQUIRE( cylindrical_bessel_kn(0, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should return NaN for negative values", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should return NaN for negative values", "[math]", float, double, long double ) 
 {
     REQUIRE( std::isnan(cylindrical_bessel_k0(-1.0)) );
     REQUIRE( std::isnan(cylindrical_bessel_kn(0, -1.0)) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should produce correct numerical results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -302,7 +302,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should produce correct numerical resu
     REQUIRE( std::isnan(cylindrical_bessel_kn(1, -1.0f)) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should produce correct numerical results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should produce correct numerical results", "[math]", float, double, long double ) 
 {
     int n;
     TestType x, expected;
@@ -326,7 +326,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should produce correct numerical resu
     REQUIRE( cylindrical_bessel_kn(-n, x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should return NaN with negative values", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should return NaN with negative values", "[math]", float, double, long double ) 
 {
     REQUIRE( std::isnan(cylindrical_bessel_kn(2, -1.0)) );
     REQUIRE( std::isnan(cylindrical_bessel_kn(-3, -1.0)) );

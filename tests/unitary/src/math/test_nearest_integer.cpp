@@ -10,7 +10,7 @@
 using namespace xmipp4::math;
 
 
-TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -27,7 +27,7 @@ TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", f
     REQUIRE(xmipp4::math::trunc(-input) == Catch::Approx(-expected));
 }
 
-TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -47,7 +47,7 @@ TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", f
     REQUIRE(xmipp4::math::floor(input) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", fl
     REQUIRE(xmipp4::math::ceil(input) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("round should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("round should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(

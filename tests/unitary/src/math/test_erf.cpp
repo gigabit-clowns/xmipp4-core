@@ -9,7 +9,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE("erf should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("erf should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(
@@ -27,7 +27,7 @@ TEMPLATE_TEST_CASE("erf should produce correct numerical results", "[math]", flo
     REQUIRE( xmipp4::math::erf(-x) == Catch::Approx(-expected) );
 }
 
-TEMPLATE_TEST_CASE("erfc should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("erfc should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(

@@ -14,7 +14,7 @@
 
 using namespace xmipp4::math;
 
-TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", float, double, int, unsigned int)
+TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", float, double, long double, int, unsigned int)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -29,7 +29,7 @@ TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", 
     REQUIRE(xmipp4::math::square(input) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType base, exp, expected;
     std::tie(base, exp, expected) = GENERATE(
@@ -48,7 +48,7 @@ TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", flo
     REQUIRE(xmipp4::math::pow(base, exp) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -66,13 +66,13 @@ TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", fl
     REQUIRE(xmipp4::math::sqrt(input) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("sqrt should return NaN for negative input", "[math]", float, double)
+TEMPLATE_TEST_CASE("sqrt should return NaN for negative input", "[math]", float, double, long double)
 {
     TestType neg = static_cast<TestType>(-1.0);
     REQUIRE( std::isnan(xmipp4::math::sqrt(neg)) );
 }
 
-TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
@@ -90,13 +90,13 @@ TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", f
     REQUIRE(xmipp4::math::rsqrt(input) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("rsqrt should return NaN for negative input", "[math]", float, double)
+TEMPLATE_TEST_CASE("rsqrt should return NaN for negative input", "[math]", float, double, long double)
 {
     TestType neg = static_cast<TestType>(-1.0);
     REQUIRE( std::isnan(xmipp4::math::rsqrt(neg)) );
 }
 
-TEMPLATE_TEST_CASE("cbrt should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("cbrt should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType input, expected;
     std::tie(input, expected) = GENERATE(

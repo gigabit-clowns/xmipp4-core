@@ -38,7 +38,7 @@ TEST_CASE( "factorial function should overflow when input produces out of range 
     REQUIRE( factorial(uint8_t(6)) == 208 );
 }
 
-TEMPLATE_TEST_CASE( "large_factorial should produce numerically correct results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "large_factorial should produce numerically correct results", "[math]", float, double, long double ) 
 {
     std::size_t x;
     TestType expected;
@@ -66,7 +66,7 @@ TEMPLATE_TEST_CASE( "large_factorial should produce numerically correct results"
     REQUIRE( large_factorial<TestType>(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "gamma function should produce numerically correct results", "[math]", float, double ) 
+TEMPLATE_TEST_CASE( "gamma function should produce numerically correct results", "[math]", float, double, long double ) 
 {
     TestType x, expected;
     std::tie(x, expected) = GENERATE(

@@ -10,7 +10,7 @@
 using namespace xmipp4::math;
 
 
-TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType a, b, c, expected;
     std::tie(a, b, c, expected) = GENERATE(
@@ -22,7 +22,7 @@ TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[ma
     REQUIRE(multiply_add(a, b, c) == Catch::Approx(expected));
 }
 
-TEMPLATE_TEST_CASE("mod should produce correct numerical results", "[math]", float, double)
+TEMPLATE_TEST_CASE("mod should produce correct numerical results", "[math]", float, double, long double)
 {
     TestType a, b, expected;
     std::tie(a, b, expected) = GENERATE(

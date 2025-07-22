@@ -2,138 +2,123 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <xmipp4/core/math/hyperbolic.hpp>
-
 #include <xmipp4/core/math/constants.hpp>
 
 #include <limits>
-#include <map>
+#include <cmath>
 
 using namespace xmipp4::math;
 
-TEST_CASE( "cosh", "[math]" ) 
+TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 1.0},
-        {0.1, 1.00500416806},
-        {2.0, 3.76219569108},
-        {4.2, 33.3506633089},
-        {6.0, 201.715636122},
-    };
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 1.0},
+            {0.1, 1.00500416806},
+            {2.0, 3.76219569108},
+            {4.2, 33.3506633089},
+            {6.0, 201.715636122},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::cosh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(-sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(-static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(cosh(x) == Catch::Approx(expected));
+    REQUIRE(cosh(-x) == Catch::Approx(expected));
 }
 
-TEST_CASE( "sinh", "[math]" ) 
+TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.10016675002},
-        {2.0, 3.62686040785},
-        {4.2, 33.3356677321},
-        {6.0, 201.71315737},
-    };
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {0.1, 0.10016675002},
+            {2.0, 3.62686040785},
+            {4.2, 33.3356677321},
+            {6.0, 201.71315737},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::sinh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::sinh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::sinh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::sinh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(sinh(x) == Catch::Approx(expected));
+    REQUIRE(sinh(-x) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "tanh", "[math]" ) 
+TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.09966799462},
-        {2.0, 0.96402758007},
-        {4.2, 0.99955036646},
-        {6.0, 0.99998771165},
-    };
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {0.1, 0.09966799462},
+            {2.0, 0.96402758007},
+            {4.2, 0.99955036646},
+            {6.0, 0.99998771165},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::tanh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::tanh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::tanh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::tanh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(tanh(x) == Catch::Approx(expected));
+    REQUIRE(tanh(-x) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "acosh", "[math]" ) 
+TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {1.0, 0.0},
-        {1.5, 0.962423650119207},
-        {10.0, 2.993222846126381},
-    };
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {1.0, 0.0},
+            {1.5, 0.962423650119207},
+            {10.0, 2.993222846126381},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::acosh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::acosh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
-
-    REQUIRE( std::isnan(xmipp4::math::acosh(0.5)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(0.5f)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(-1.0)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(-1.0f)) );
+    REQUIRE(acosh(x) == Catch::Approx(expected));
 }
 
-TEST_CASE( "asinh", "[math]" ) 
+TEMPLATE_TEST_CASE("acosh produces NaN for invalid input", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.099834078899208},
-        {1.0, 0.881373587019543},
-        {10.0, 2.998222950297970},
-        {100.0, 5.298342365610589},
-    };
-
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::asinh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::asinh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::asinh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::asinh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    const TestType input = GENERATE(0.5, -1.0);
+    REQUIRE( std::isnan(acosh(input)) );
 }
 
-TEST_CASE( "atanh", "[math]" ) 
+TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.100335347731076},
-        {0.5, 0.549306144334055},
-        {0.9, 1.472219489583220},
-        {1.0, std::numeric_limits<double>::infinity()},
-    };
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {0.1, 0.099834078899208},
+            {1.0, 0.881373587019543},
+            {10.0, 2.998222950297970},
+            {100.0, 5.298342365610589},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::atanh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::atanh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::atanh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::atanh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(asinh(x) == Catch::Approx(expected));
+    REQUIRE(asinh(-x) == Catch::Approx(-expected));
+}
 
-    REQUIRE( std::isnan(xmipp4::math::atanh(1.1)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(1.1f)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(-1.1)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(-1.1f)) );
+TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double)
+{
+    TestType x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {0.1, 0.100335347731076},
+            {0.5, 0.549306144334055},
+            {0.9, 1.472219489583220},
+            {1.0, std::numeric_limits<TestType>::infinity()},
+        })
+    );
+    REQUIRE(atanh(x) == Catch::Approx(expected));
+    REQUIRE(atanh(-x) == Catch::Approx(-expected));
+}
+
+TEMPLATE_TEST_CASE("atanh produces NaN for invalid input", "[math]", float, double)
+{
+    const TestType input = GENERATE(1.1, -1.1);
+    REQUIRE( std::isnan(atanh(input)) );
 }

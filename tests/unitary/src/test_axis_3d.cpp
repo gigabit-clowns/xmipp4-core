@@ -97,15 +97,14 @@ TEST_CASE( "dot product with axis_3d should return zero when one of the inputs i
         axis_3d::zero,
         axis_3d::x,
         axis_3d::y,
-        axis_3d::z,
-        axis_3d::negative_x,
-        axis_3d::negative_y,
-        axis_3d::negative_z
+        axis_3d::z
     );
     const auto zero = axis_3d::zero;
 
     REQUIRE( dot(axis, zero) == 0 );
     REQUIRE( dot(zero, axis) == 0 );
+    REQUIRE( dot(-axis, zero) == 0 );
+    REQUIRE( dot(zero, -axis) == 0 );
 }
     
 TEST_CASE( "dot product with axis_3d should return one when both axis_3d-s are non-zero and equal", "[axis_3d]" ) 

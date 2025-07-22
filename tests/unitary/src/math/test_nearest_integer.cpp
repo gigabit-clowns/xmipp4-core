@@ -2,94 +2,84 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <xmipp4/core/math/nearest_integer.hpp>
-
-#include <map>
 
 using namespace xmipp4::math;
 
 
-TEST_CASE( "trunc", "[math]" ) 
+TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 5.0},
-        {5.78, 5.0},
-    };
+    TestType input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {1.0, 1.0},
+            {5.24, 5.0},
+            {5.5, 5.0},
+            {5.78, 5.0},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::trunc(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::trunc(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::trunc(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::trunc(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(xmipp4::math::trunc(input) == Catch::Approx(expected));
+    REQUIRE(xmipp4::math::trunc(-input) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "floor", "[math]" ) 
+TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 5.0},
-        {5.78, 5.0},
-        {-1.0, -1.0},
-        {-5.24, -6.0},
-        {-5.5, -6.0},
-        {-5.78, -6.0},
-    };
+    TestType input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {1.0, 1.0},
+            {5.24, 5.0},
+            {5.5, 5.0},
+            {5.78, 5.0},
+            {-1.0, -1.0},
+            {-5.24, -6.0},
+            {-5.5, -6.0},
+            {-5.78, -6.0},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::floor(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::floor(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(xmipp4::math::floor(input) == Catch::Approx(expected));
 }
 
-TEST_CASE( "ceil", "[math]" ) 
+TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 6.0},
-        {5.5, 6.0},
-        {5.78, 6.0},
-        {-1.0, -1.0},
-        {-5.24, -5.0},
-        {-5.5, -5.0},
-        {-5.78, -5.0},
-    };
+    TestType input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {1.0, 1.0},
+            {5.24, 6.0},
+            {5.5, 6.0},
+            {5.78, 6.0},
+            {-1.0, -1.0},
+            {-5.24, -5.0},
+            {-5.5, -5.0},
+            {-5.78, -5.0},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::ceil(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::ceil(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(xmipp4::math::ceil(input) == Catch::Approx(expected));
 }
 
-TEST_CASE( "round", "[math]" ) 
+TEMPLATE_TEST_CASE("round should produce correct numerical results", "[math]", float, double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 6.0},
-        {5.78, 6.0},
-    };
+    TestType input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<TestType, TestType>({
+            {0.0, 0.0},
+            {1.0, 1.0},
+            {5.24, 5.0},
+            {5.5, 6.0},
+            {5.78, 6.0},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::round(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::round(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::round(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::round(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(xmipp4::math::round(input) == Catch::Approx(expected));
+    REQUIRE(xmipp4::math::round(-input) == Catch::Approx(-expected));
 }

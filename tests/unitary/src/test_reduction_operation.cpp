@@ -38,9 +38,12 @@ TEST_CASE( "from_string with reduction_operation should produce correct results"
             {"invalid", false, reduction_operation::sum} // op value doesn't matter if invalid
         })
     );
+
     reduction_operation reduction;
     bool valid = from_string(input_str, reduction);
     REQUIRE(valid == expected_valid);
     if (expected_valid)
+    {
         REQUIRE( reduction == expected_reduction );
+    }
 }

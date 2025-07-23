@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <xmipp4/core/multidimensional/slice.hpp>
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-
-#include <xmipp4/core/multidimensional/slice.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <type_traits>
 #include <sstream>
@@ -453,195 +454,126 @@ TEST_CASE( "output slice to a std::ostream should produce the expected strings",
 TEST_CASE( "sanitize_slice should throw with a stride of zero" )
 {
     const dynamic_slice input(2, 5, 0);
-    const auto first_extent = 0;
-    const auto last_extent = 10;
+    const std::size_t extent = GENERATE(0, 1, 10, 20);
 
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::invalid_argument );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), "Slice step cannot be zero.");
-    }
+    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::invalid_argument );
+    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), "Slice step cannot be zero.");
+}
+
+TEST_CASE( "sanitize_slice should pass correct positive start values" )
+{
+    const auto extent = 16;
+    const std::ptrdiff_t count = 1;
+    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
+    const std::ptrdiff_t start = GENERATE(0, 8, 15);
+
+    dynamic_slice input(start, count, step);
+    const auto output = sanitize_slice(input, extent);
+    REQUIRE(output.get_start() == static_cast<std::size_t>(start));
+    REQUIRE(output.get_count() == count);
+    REQUIRE(output.get_step() == step);
 }
 
 TEST_CASE( "sanitize_slice should replace correct negative start values" )
 {
     const auto extent = 16;
-    const auto first_start = -extent;
-    const auto last_start = 0;
-
-    for (auto start = first_start; start < last_start; ++start) 
-    {
-        dynamic_slice input(start, 1, 1);
-        const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == start+extent); // TODO parametrize
-        REQUIRE(output.get_count() == 1);
-        REQUIRE(output.get_step() == 1);
-    }
-}
-
-TEST_CASE( "sanitize_slice should throw with out of bounds negative start values" )
-{
-    const dynamic_slice input(-10, 1, 1);
-    const auto first_extent = 1;
-    const auto last_extent = 10;
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        std::ostringstream oss;
-        oss << "Slice start negative index " << input.get_start() // TODO parametrize
-            << " is out of bounds for extent " << extent;
-        const auto err_msg = oss.str();
-
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
-    }
-}
-
-TEST_CASE( "sanitize_slice should produce a correct result with a valid forwards slice" )
-{
-    const dynamic_slice input(2, 5, 3); // 2, 5, 8, 11, 14
-    const auto first_extent = 15;
-    const auto last_extent = 20;
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == 2);
-        REQUIRE(output.get_count() == 5);
-        REQUIRE(output.get_step() == 3);
-    }
-}
-
-TEST_CASE( "sanitize_slice should complete end values for forwards slices" )
-{
-    const auto first_extent = 2;
-    const auto last_extent = 16;
+    const std::ptrdiff_t count = 1;
+    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
+    std::ptrdiff_t start;
+    std::size_t expected;
+    std::tie(start, expected) = GENERATE(
+        table<std::ptrdiff_t, std::size_t>({
+            {-1, 15},
+            {-4, 12},
+            {-16, 0}
+        })
+    );
     
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        const auto step = 3;
-        const auto start = 2;
-        const dynamic_slice input(start, end(), step); 
-        const auto expected_count = (extent - start + step - 1) / step; // TODO parametrize
-
-        const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == start);
-        REQUIRE(output.get_count() == expected_count);
-        REQUIRE(output.get_step() == step);
-    }
+    dynamic_slice input(start, count, step);
+    const auto output = sanitize_slice(input, extent);
+    REQUIRE(output.get_start() == expected);
+    REQUIRE(output.get_count() == count);
+    REQUIRE(output.get_step() == step);
 }
 
-TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice start index" )
+TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
 {
-    const dynamic_slice input(4, 5, 3); 
-    const auto first_extent = 0;
-    const auto last_extent = input.get_start();
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        std::ostringstream oss;
-        oss << "Slice start index " << input.get_start() // TODO parametrize
-            << " is out of bounds for extent " << extent 
-            << " when step is positive and slice is non-empty.";
-        const auto err_msg = oss.str();
-
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
-    }
-}
-
-TEST_CASE( "sanitize_slice should throw with an out of bounds forwards slice count value" )
-{
-    const dynamic_slice input(2, 5, 3); // 2, 5, 8, 11, 14
-    const auto first_extent = input.get_start();
-    const auto last_extent = 15;
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        std::ostringstream oss;
-        oss << "Slice count " << input.get_count()  // TODO parametrize
-            << " start index " << input.get_start()
-            << " and step " << input.get_step()
-            << " overflows extent " << extent;
-        const auto err_msg = oss.str();
-
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
-    }
-}
-
-TEST_CASE( "sanitize_slice should produce a correct result with a valid backwards slice" )
-{
-    const dynamic_slice input(15, 6, -3); // 15, 12, 9, 6, 3, 0
-    const auto first_extent = 16;
-    const auto last_extent = 20;
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == 15);
-        REQUIRE(output.get_count() == 6);
-        REQUIRE(output.get_step() == -3);
-    }
-}
-
-TEST_CASE( "sanitize_slice should complete end values for backwards slices" )
-{
-    const auto first_extent = 2;
-    const auto last_extent = 16;
-    
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        const auto abs_step = 3;
-        const dynamic_slice input(-2, end(), -abs_step); 
-        const auto start = extent - 2;
-        const auto expected_count = (start + abs_step - 1) / abs_step + 1; // TODO parametrize
-
-        const auto output = sanitize_slice(input, extent);
-        REQUIRE(output.get_start() == start);
-        REQUIRE(output.get_count() == expected_count);
-        REQUIRE(output.get_step() == -abs_step);
-    }
-
-}
-
-TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice start index" )
-{
-    const dynamic_slice input(15, 6, -3); // 15, 12, 9, 6, 3, 0
-    const auto first_extent = 0;
-    const auto last_extent = input.get_start() + 1;
-
-    for (auto extent = first_extent; extent < last_extent; ++extent) 
-    {
-        std::ostringstream oss;
-        oss << "Slice start index " << input.get_start() // TODO parametrize
-            << " is out of bounds for extent " << extent 
-            << " when step is negative and slice is non-empty.";
-        const auto err_msg = oss.str();
-
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
-    }
-}
-
-TEST_CASE( "sanitize_slice should throw with an out of bounds backwards slice count value" )
-{
-    const auto first_start = 0;
-    const auto last_start = 15;
     const auto extent = 16;
+    const std::ptrdiff_t count = 1;
+    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
+    std::ptrdiff_t start;
+    std::string expected_error_msg;
+    std::tie(start, expected_error_msg) = GENERATE(
+        table<std::ptrdiff_t, std::string>({
+            {16, "Non-empty slice's start index 16 is out of bounds for extent 16." },
+            {25, "Non-empty slice's start index 25 is out of bounds for extent 16." },
+            {99, "Non-empty slice's start index 99 is out of bounds for extent 16." },
+            {-17, "Non-empty slice's start index -17 is out of bounds for extent 16." },
+            {-50, "Non-empty slice's start index -50 is out of bounds for extent 16." },
+        })
+    );
+    
+    dynamic_slice input(start, count, step);
+    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), expected_error_msg );
+}
 
-    for (auto start = first_start; start < last_start; ++start)
-    {
-        const dynamic_slice input(start, 6, -3);
+TEST_CASE( "sanitize_slice should complete end values" )
+{
+    const auto extent = 16;
+    const std::ptrdiff_t count = end();
+    std::ptrdiff_t start;
+    std::ptrdiff_t step;
+    std::size_t expected_count;
+    std::tie(start, step, expected_count) = GENERATE(
+        table<std::ptrdiff_t, std::ptrdiff_t, std::size_t>({
+            { 0, 1, 16 },
+            { 1, 1, 15 },
+            { 4, 1, 12 },
+            { 15, 1, 1 },
+            { 0, 4, 4 },
+            { 3, 4, 4 },
+            { 4, 4, 3 },
+            { 15, 4, 1 },
+            { 15, -1, 16 },
+            { 14, -1, 15 },
+            { 12, -1, 13 },
+            { 0, -1, 1 },
+            { 15, -4, 4 },
+            { 12, -4, 4 },
+            { 11, -4, 3 },
+            { 0, -4, 1 },
+        })
+    );
 
-        std::ostringstream oss;
-        oss << "Reversed slice with count " << input.get_count() // TODO parametrize
-            << " start index " << input.get_start()
-            << " and step " << input.get_step()
-            << " underflows 0";
-        const auto err_msg = oss.str();
+    const dynamic_slice input(start, count, step);
+    const auto output = sanitize_slice(input, extent);
+    REQUIRE(output.get_start() == start);
+    REQUIRE(output.get_count() == expected_count);
+    REQUIRE(output.get_step() == step);
+}
 
-        REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-        REQUIRE_THROWS_WITH( sanitize_slice(input, extent), err_msg);
-    }
+
+TEST_CASE( "sanitize_slice should throw with an out of bounds slice count value" )
+{
+    const auto extent = 16;
+    std::ptrdiff_t start;
+    std::size_t count;
+    std::ptrdiff_t step;
+    std::string expected_error_msg;
+    std::tie(start, count, step, expected_error_msg) = GENERATE(
+        table<std::ptrdiff_t, std::size_t, std::ptrdiff_t, std::string>({
+            {0, 17, 1, "Slice count 17 start index 0 and step 1 overflows extent 16" },
+            {2, 15, 1, "Slice count 15 start index 2 and step 1 overflows extent 16" },
+            {0, 5, 4, "Slice count 5 start index 0 and step 4 overflows extent 16"},
+            {6, 3, 5, "Slice count 3 start index 6 and step 5 overflows extent 16"},
+            {15, 17, -1, "Reversed slice with count 17 start index 15 and step -1 underflows 0"},
+            {10, 12, -1, "Reversed slice with count 12 start index 10 and step -1 underflows 0"},
+            {4, 3, -4, "Reversed slice with count 3 start index 4 and step -4 underflows 0"},
+        })
+    );
+    
+    dynamic_slice input(start, count, step);
+    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
+    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), expected_error_msg );
 }

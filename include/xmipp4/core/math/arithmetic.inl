@@ -4,6 +4,7 @@
 
 #include "../platform/builtin.h"
 
+#include <iterator>
 #include <cmath>
 
 namespace xmipp4

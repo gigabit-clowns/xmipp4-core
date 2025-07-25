@@ -464,7 +464,7 @@ TEST_CASE( "sanitize_slice should pass correct positive start values" )
 {
     const auto extent = 16;
     const std::ptrdiff_t count = 1;
-    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
+    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10, 30);
     const std::ptrdiff_t start = GENERATE(0, 8, 15);
 
     dynamic_slice input(start, count, step);
@@ -472,6 +472,18 @@ TEST_CASE( "sanitize_slice should pass correct positive start values" )
     REQUIRE(output.get_start() == static_cast<std::size_t>(start));
     REQUIRE(output.get_count() == count);
     REQUIRE(output.get_step() == step);
+}
+
+TEST_CASE( "sanitize_slice should tolerate past-the-end start when forwards strided and zero-sized" )
+{
+    const std::ptrdiff_t start = GENERATE(0, 8, 16, 32);
+    const std::size_t count = GENERATE(std::size_t(0), static_cast<std::size_t>(end()));
+    const std::ptrdiff_t step = GENERATE(1, 2, 10);
+    const auto extent = start;
+
+    dynamic_slice input(start, count, step);
+    const auto output = sanitize_slice(input, extent);
+    REQUIRE(output.get_start() == static_cast<std::size_t>(start));
 }
 
 TEST_CASE( "sanitize_slice should replace correct negative start values" )
@@ -500,16 +512,20 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
 {
     const auto extent = 16;
     const std::ptrdiff_t count = 1;
-    const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
+    std::ptrdiff_t step;
     std::ptrdiff_t start;
     std::string expected_error_msg;
-    std::tie(start, expected_error_msg) = GENERATE(
-        table<std::ptrdiff_t, std::string>({
-            {17, "Non-empty slice's start index 17 is out of bounds for extent 16." },
-            {25, "Non-empty slice's start index 25 is out of bounds for extent 16." },
-            {99, "Non-empty slice's start index 99 is out of bounds for extent 16." },
-            {-17, "Non-empty slice's start index -17 is out of bounds for extent 16." },
-            {-50, "Non-empty slice's start index -50 is out of bounds for extent 16." },
+    std::tie(start, step, expected_error_msg) = GENERATE(
+        table<std::ptrdiff_t, std::ptrdiff_t, std::string>({
+            {17, 1, "Slice's start index 17 is out of bounds for extent 16." },
+            {17, 20, "Slice's start index 17 is out of bounds for extent 16." },
+            {20, 1, "Slice's start index 20 is out of bounds for extent 16." },
+            {99, 1, "Slice's start index 99 is out of bounds for extent 16." },
+            {-17, 1, "Slice's negative start index -17 is out of bounds for extent 16." },
+            {-17, -32, "Slice's negative start index -17 is out of bounds for extent 16." },
+            {16, -1, "Backwards slice's start index 16 is out of bounds for extent 16." },
+            {17, -1, "Backwards slice's start index 17 is out of bounds for extent 16." },
+            {99, -1, "Backwards slice's start index 99 is out of bounds for extent 16." },
         })
     );
     

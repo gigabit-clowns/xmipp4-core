@@ -11,10 +11,16 @@ namespace xmipp4
 {
 
 /**
+ * @brief Alias for half floating point type.
+ * 
+ */
+using half = half_float::half;
+
+/**
  * @brief 16 bit floating point number representation.
  * 
  */
-using float16_t = half_float::half;
+using float16_t = half;
 static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
 static_assert(std::numeric_limits<float16_t>::is_iec559, "float16_t should be IEC 559 compliant");
 

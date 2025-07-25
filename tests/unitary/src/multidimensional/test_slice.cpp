@@ -505,7 +505,7 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
     std::string expected_error_msg;
     std::tie(start, expected_error_msg) = GENERATE(
         table<std::ptrdiff_t, std::string>({
-            {16, "Non-empty slice's start index 16 is out of bounds for extent 16." },
+            {17, "Non-empty slice's start index 17 is out of bounds for extent 16." },
             {25, "Non-empty slice's start index 25 is out of bounds for extent 16." },
             {99, "Non-empty slice's start index 99 is out of bounds for extent 16." },
             {-17, "Non-empty slice's start index -17 is out of bounds for extent 16." },

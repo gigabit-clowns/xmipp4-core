@@ -448,30 +448,19 @@ inline
 void sanitize_slice_start(dynamic_slice &slice, std::size_t extent)
 {
     const auto start = slice.get_start();
-    const auto count = slice.get_count();
 
-    if (count > 0)
+    if (start < -static_cast<std::ptrdiff_t>(extent) || 
+        start > static_cast<std::ptrdiff_t>(extent) )
     {
-        if (start < -static_cast<std::ptrdiff_t>(extent) || 
-            start >= static_cast<std::ptrdiff_t>(extent) )
-        {
-            std::ostringstream oss;
-            oss << "Non-empty slice's start index " << start 
-                << " is out of bounds for extent " << extent << ".";
-            throw std::out_of_range(oss.str());
-        }
-
-        if (start < 0)
-        {
-            slice.set_start(start + extent);
-        }
+        std::ostringstream oss;
+        oss << "Non-empty slice's start index " << start 
+            << " is out of bounds for extent " << extent << ".";
+        throw std::out_of_range(oss.str());
     }
-    else
+
+    if (start < 0)
     {
-        if (start < 0)
-        {
-            slice.set_start(0);
-        }
+        slice.set_start(start + extent);
     }
 }
 

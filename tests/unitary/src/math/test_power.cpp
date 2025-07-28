@@ -56,9 +56,9 @@ TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", fl
             {0.0, 0.0},
             {0.0144, 0.12},
             {0.01, 0.1},
-            {0.5, static_cast<TestType>(sqrt1_2<double>())},
+            {0.5, sqrt1_2<TestType>()},
             {1.0, 1.0},
-            {2.0, static_cast<TestType>(sqrt2<double>())},
+            {2.0, sqrt2<TestType>()},
             {144.0, 12.0},
         })
     );
@@ -68,7 +68,7 @@ TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", fl
 
 TEMPLATE_TEST_CASE("sqrt should return NaN for negative input", "[math]", float, double, long double)
 {
-    TestType neg = static_cast<TestType>(-1.0);
+    const auto neg = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
     REQUIRE( std::isnan(xmipp4::math::sqrt(neg)) );
 }
 

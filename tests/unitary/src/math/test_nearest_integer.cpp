@@ -12,14 +12,15 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {1.0, 1.0},
-            {5.24, 5.0},
-            {5.5, 5.0},
-            {5.78, 5.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(5.0)},
+            {T(5.78), T(5.0)},
         })
     );
 
@@ -29,18 +30,19 @@ TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", f
 
 TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {1.0, 1.0},
-            {5.24, 5.0},
-            {5.5, 5.0},
-            {5.78, 5.0},
-            {-1.0, -1.0},
-            {-5.24, -6.0},
-            {-5.5, -6.0},
-            {-5.78, -6.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(5.0)},
+            {T(5.78), T(5.0)},
+            {T(-1.0), T(-1.0)},
+            {T(-5.24), T(-6.0)},
+            {T(-5.5), T(-6.0)},
+            {T(-5.78), T(-6.0)},
         })
     );
 
@@ -49,18 +51,19 @@ TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", f
 
 TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {1.0, 1.0},
-            {5.24, 6.0},
-            {5.5, 6.0},
-            {5.78, 6.0},
-            {-1.0, -1.0},
-            {-5.24, -5.0},
-            {-5.5, -5.0},
-            {-5.78, -5.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(6.0)},
+            {T(5.5), T(6.0)},
+            {T(5.78), T(6.0)},
+            {T(-1.0), T(-1.0)},
+            {T(-5.24), T(-5.0)},
+            {T(-5.5), T(-5.0)},
+            {T(-5.78), T(-5.0)},
         })
     );
 
@@ -69,14 +72,15 @@ TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", fl
 
 TEMPLATE_TEST_CASE("round should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {1.0, 1.0},
-            {5.24, 5.0},
-            {5.5, 6.0},
-            {5.78, 6.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(6.0)},
+            {T(5.78), T(6.0)},
         })
     );
 

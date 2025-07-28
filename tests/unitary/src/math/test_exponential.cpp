@@ -15,15 +15,16 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE( "exp should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {-20.0, 2.061153622438558e-09},
-            {-10.0, 4.539992976248485e-05},
-            {-1.0, 0.367879441171442},
-            {0.0, 1.0},
-            {0.5, 1.648721270700128},
-            {10.0, 2.202646579480672e+04},
+        table<T, T>({
+            {T(-20.0), T(2.061153622438558e-09)},
+            {T(-10.0), T(4.539992976248485e-05)},
+            {T(-1.0), T(0.367879441171442)},
+            {T(0.0), T(1.0)},
+            {T(0.5), T(1.648721270700128)},
+            {T(10.0), T(2.202646579480672e+04)},
         })
     );
 
@@ -32,15 +33,16 @@ TEMPLATE_TEST_CASE( "exp should produce correct numerical results", "[math]", fl
 
 TEMPLATE_TEST_CASE( "exp2 should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {-20.0, 9.536743164062500e-07},
-            {-10.0, 9.765625000000000e-04},
-            {-1.0, 0.5},
-            {0.0, 1.0},
-            {0.5, 1.414213562373095},
-            {10.0, 1024.0},
+        table<T, T>({
+            {T(-20.0), T(9.536743164062500e-07)},
+            {T(-10.0), T(9.765625000000000e-04)},
+            {T(-1.0), T(0.5)},
+            {T(0.0), T(1.0)},
+            {T(0.5), T(1.414213562373095)},
+            {T(10.0), T(1024.0)},
         })
     );
 
@@ -49,15 +51,16 @@ TEMPLATE_TEST_CASE( "exp2 should produce correct numerical results", "[math]", f
 
 TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {-20.0, 1e-20},
-            {-10.0, 1e-10},
-            {-1.0, 0.1},
-            {0.0, 1.0},
-            {0.5, 3.162277660168380},
-            {10.0, 1e10},
+        table<T, T>({
+            {T(-20.0), 1e-20},
+            {T(-10.0), 1e-10},
+            {T(-1.0), T(0.1)},
+            {T(0.0), T(1.0)},
+            {T(0.5), T(3.162277660168380)},
+            {T(10.0), 1e10},
         })
     );
 
@@ -66,17 +69,18 @@ TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", 
 
 TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.01, -4.605170185988091},
-            {0.1, -2.302585092994046},
-            {0.5, -0.693147180559945},
-            {1.0, 0.0},
-            {5.0, 1.609437912434100},
-            {10.0, 2.302585092994046},
-            {50.0, 3.912023005428146},
-            {1e6, 13.815510557964274},
+        table<T, T>({
+            {T(0.01), T(-4.605170185988091)},
+            {T(0.1), T(-2.302585092994046)},
+            {T(0.5), T(-0.693147180559945)},
+            {T(1.0), T(0.0)},
+            {T(5.0), T(1.609437912434100)},
+            {T(10.0), T(2.302585092994046)},
+            {T(50.0), T(3.912023005428146)},
+            {1e6, T(13.815510557964274)},
         })
     );
 
@@ -85,29 +89,32 @@ TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", fl
 
 TEMPLATE_TEST_CASE( "log with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(+0.0, -0.0);
-    REQUIRE( xmipp4::math::log(value) == -std::numeric_limits<TestType>::infinity() );
+    using T = TestType;
+    const T value = GENERATE(T(+0.0), T(-0.0));
+    REQUIRE( xmipp4::math::log(value) == -std::numeric_limits<T>::infinity() );
 }
 
 TEMPLATE_TEST_CASE( "log with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(-1.0, -10.0, -100.0);
+    using T = TestType;
+    const T value = GENERATE(T(-1.0), T(-10.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::log(value)) );
 }
 
 TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.01, -6.643856189774724},
-            {0.1, -3.321928094887362},
-            {0.5, -1.0},
-            {1.0, 0.0},
-            {2.0, 1.0},
-            {5.0, 2.321928094887362},
-            {10.0, 3.321928094887362},
-            {1e6, 19.931568569324174},
+        table<T, T>({
+            {T(0.01), T(-6.643856189774724)},
+            {T(0.1), T(-3.321928094887362)},
+            {T(0.5), T(-1.0)},
+            {T(1.0), T(0.0)},
+            {T(2.0), T(1.0)},
+            {T(5.0), T(2.321928094887362)},
+            {T(10.0), T(3.321928094887362)},
+            {1e6, T(19.931568569324174)},
         })
     );
 
@@ -116,29 +123,32 @@ TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", f
 
 TEMPLATE_TEST_CASE( "log2 with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(+0.0, -0.0);
-    REQUIRE( xmipp4::math::log2(value) == -std::numeric_limits<TestType>::infinity() );
+    using T = TestType;
+    const T value = GENERATE(T(+0.0), T(-0.0));
+    REQUIRE( xmipp4::math::log2(value) == -std::numeric_limits<T>::infinity() );
 }
 
 TEMPLATE_TEST_CASE( "log2 with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(-1.0, -10.0, -100.0);
+    using T = TestType;
+    const T value = GENERATE(T(-1.0), T(-10.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::log2(value)) );
 }
 
 TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", float, double, long double ) 
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.01, -2.0},
-            {0.1, -1.0},
-            {0.5, -0.301029995663981},
-            {1.0, 0.0},
-            {2.0, 0.301029995663981},
-            {5.0, 0.698970004336019},
-            {10.0, 1.0},
-            {1e6, 6.0},
+        table<T, T>({
+            {T(0.01), T(-2.0)},
+            {T(0.1), T(-1.0)},
+            {T(0.5), T(-0.301029995663981)},
+            {T(1.0), T(0.0)},
+            {T(2.0), T(0.301029995663981)},
+            {T(5.0), T(0.698970004336019)},
+            {T(10.0), T(1.0)},
+            {1e6, T(6.0)},
         })
     );
 
@@ -148,13 +158,15 @@ TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", 
 
 TEMPLATE_TEST_CASE( "log10 with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(+0.0, -0.0);
-    REQUIRE( xmipp4::math::log10(value) == -std::numeric_limits<TestType>::infinity() );
+    using T = TestType;
+    const T value = GENERATE(T(+0.0), T(-0.0));
+    REQUIRE( xmipp4::math::log10(value) == -std::numeric_limits<T>::infinity() );
 }
 
 TEMPLATE_TEST_CASE( "log10 with negative values as input should produce NaN", "[math]", float, double, long double ) 
 {
-    const TestType value = GENERATE(-1.0, -10.0, -100.0);
+    using T = TestType;
+    const T value = GENERATE(T(-1.0), T(-10.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::log10(value)) );
 }
 

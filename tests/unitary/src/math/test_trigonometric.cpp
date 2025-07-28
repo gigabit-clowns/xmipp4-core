@@ -17,17 +17,18 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("cos produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 1.0},
-            {0.1, 0.99500416527},
-            {2.0, -0.41614683654},
-            {4.2, -0.49026082134},
-            {6.0, 0.96017028665},
-            {static_cast<TestType>(2*pi<double>()), 1.0},
-            {static_cast<TestType>(pi<double>()), -1.0},
-            {static_cast<TestType>(pi_4<double>()), static_cast<TestType>(sqrt1_2<double>())},
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.1), T(0.99500416527)},
+            {T(2.0), T(-0.41614683654)},
+            {T(4.2), T(-0.49026082134)},
+            {T(6.0), T(0.96017028665)},
+            {2*pi<T>(), T(1.0)},
+            {pi<T>(), T(-1.0)},
+            {pi_4<T>(), sqrt1_2<T>()},
         })
     );
 
@@ -37,17 +38,18 @@ TEMPLATE_TEST_CASE("cos produces correct results", "[math]", float, double, long
 
 TEMPLATE_TEST_CASE("sin produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.09983341664},
-            {2.0, 0.90929742682},
-            {4.2, -0.87157577241},
-            {6.0, -0.27941549819},
-            {static_cast<TestType>(pi_2<double>()), 1.0},
-            {static_cast<TestType>(3*pi_2<double>()), -1.0},
-            {static_cast<TestType>(pi_4<double>()), static_cast<TestType>(sqrt1_2<double>())},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.09983341664)},
+            {T(2.0), T(0.90929742682)},
+            {T(4.2), T(-0.87157577241)},
+            {T(6.0), T(-0.27941549819)},
+            {pi_2<T>(), T(1.0)},
+            {3*pi_2<T>(), T(-1.0)},
+            {pi_4<T>(), sqrt1_2<T>()},
         })
     );
 
@@ -57,7 +59,8 @@ TEMPLATE_TEST_CASE("sin produces correct results", "[math]", float, double, long
 
 TEMPLATE_TEST_CASE("sincos produces correct results", "[math]", float, double, long double)
 {
-    TestType x = GENERATE(0.5, 1.35, 133.0, 12.0, 6.53, -6.26);
+    using T = TestType;
+    T x = GENERATE(T(0.5), T(1.35), T(133.0), T(12.0), T(6.53), T(-6.26));
 
     const auto sc = xmipp4::math::sincos(x);
     REQUIRE( sc.first == Catch::Approx(sin(x)) );
@@ -66,15 +69,16 @@ TEMPLATE_TEST_CASE("sincos produces correct results", "[math]", float, double, l
 
 TEMPLATE_TEST_CASE("tan produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.10033467208},
-            {2.0, -2.18503986326},
-            {4.2, 1.77777977451},
-            {6.0, -0.29100619138},
-            {static_cast<TestType>(pi_4<double>()), 1.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.10033467208)},
+            {T(2.0), T(-2.18503986326)},
+            {T(4.2), T(1.77777977451)},
+            {T(6.0), T(-0.29100619138)},
+            {pi_4<T>(), T(1.0)},
         })
     );
 
@@ -84,16 +88,17 @@ TEMPLATE_TEST_CASE("tan produces correct results", "[math]", float, double, long
 
 TEMPLATE_TEST_CASE("acos produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {-1.0, static_cast<TestType>(pi<double>())},
-            {-0.5, 2.0943951},
-            {-0.1, 1.67096375},
-            {0.0, static_cast<TestType>(pi_2<double>())},
-            {0.1, 1.47062891},
-            {0.5, 1.04719755},
-            {1.0, 0.0},
+        table<T, T>({
+            {T(-1.0), pi<T>()},
+            {T(-0.5), T(2.0943951)},
+            {T(-0.1), T(1.67096375)},
+            {T(0.0), pi_2<T>()},
+            {T(0.1), T(1.47062891)},
+            {T(0.5), T(1.04719755)},
+            {T(1.0), T(0.0)},
         })
     );
 
@@ -102,19 +107,21 @@ TEMPLATE_TEST_CASE("acos produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("acos produces NaN for invalid input", "[math]", float, double, long double)
 {
-    TestType input = GENERATE(1.1, -1.1);
+    using T = TestType;
+    T input = GENERATE(T(1.1), T(-1.1));
     REQUIRE(std::isnan(acos(input)));
 }
 
 TEMPLATE_TEST_CASE("asin produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.100167421},
-            {0.5, 0.523598776},
-            {1.0, static_cast<TestType>(pi_2<double>())},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.100167421)},
+            {T(0.5), T(0.523598776)},
+            {T(1.0), pi_2<T>()},
         })
     );
 
@@ -124,23 +131,25 @@ TEMPLATE_TEST_CASE("asin produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("asin produces NaN for invalid input", "[math]", float, double, long double)
 {
-    TestType input = GENERATE(1.1, -1.1);
+    using T = TestType;
+    T input = GENERATE(T(1.1), T(-1.1));
     REQUIRE( std::isnan(xmipp4::math::asin(input)) );
 }
 
 TEMPLATE_TEST_CASE("atan produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.0996686525},
-            {0.5, 0.463647609},
-            {1.0, static_cast<TestType>(pi_4<double>())},
-            {5.0, 1.37340077},
-            {8.0, 1.44644133},
-            {100.0, 1.56079666},
-            {std::numeric_limits<TestType>::infinity(), static_cast<TestType>(pi_2<double>())},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.0996686525)},
+            {T(0.5), T(0.463647609)},
+            {T(1.0), pi_4<T>()},
+            {T(5.0), T(1.37340077)},
+            {T(8.0), T(1.44644133)},
+            {T(100.0), T(1.56079666)},
+            {std::numeric_limits<T>::infinity(), pi_2<T>()},
         })
     );
 
@@ -150,16 +159,17 @@ TEMPLATE_TEST_CASE("atan produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("atan2 produces correct results", "[math]", float, double, long double)
 {
-    std::pair<TestType, TestType> args;
-    TestType expected;
+    using T = TestType;
+    std::pair<T, T> args;
+    T expected;
     std::tie(args, expected) = GENERATE(
-        table<std::pair<TestType, TestType>, TestType>({
-            {{0.0, 0.0}, 0.0},
-            {{0.0, 1.0}, 0.0},
-            {{1.0, 1.0}, static_cast<TestType>(pi_4<double>())},
-            {{1.0, 0.0}, static_cast<TestType>(pi_2<double>())},
-            {{1.0, -1.0}, static_cast<TestType>(3*pi_4<double>())},
-            {{0.0, -1.0}, static_cast<TestType>(pi<double>())},
+        table<std::pair<T, T>, T>({
+            {{T(0.0), T(0.0)}, T(0.0)},
+            {{T(0.0), T(1.0)}, T(0.0)},
+            {{T(1.0), T(1.0)}, pi_4<T>()},
+            {{T(1.0), T(0.0)}, pi_2<T>()},
+            {{T(1.0), T(-1.0)}, 3*pi_4<T>()},
+            {{T(0.0), T(-1.0)}, pi<T>()},
         })
     );
 

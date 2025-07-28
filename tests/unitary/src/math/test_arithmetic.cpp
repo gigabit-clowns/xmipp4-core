@@ -12,11 +12,12 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType a, b, c, expected;
+    using T = TestType;
+    T a, b, c, expected;
     std::tie(a, b, c, expected) = GENERATE(
-        table<TestType, TestType, TestType, TestType>({
-            {2.31, 1.35, 2.21, 5.3285},
-            {-2.5252, 5.23565, 73.2121, 59.99103662}
+        table<T, T, T, T>({
+            {T(2.31), T(1.35), T(2.21), T(5.3285)},
+            {T(-2.5252), T(5.23565), T(73.2121), T(59.99103662)}
         })
     );
     REQUIRE(multiply_add(a, b, c) == Catch::Approx(expected));
@@ -24,10 +25,11 @@ TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[ma
 
 TEMPLATE_TEST_CASE("mod should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType a, b, expected;
+    using T = TestType;
+    T a, b, expected;
     std::tie(a, b, expected) = GENERATE(
-        table<TestType, TestType, TestType>({
-            {2.31, 1.35, 0.96},
+        table<T, T, T>({
+            {T(2.31), T(1.35), T(0.96)},
         })
     );
     REQUIRE(mod(a, b) == Catch::Approx(expected));

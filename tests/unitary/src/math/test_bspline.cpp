@@ -11,14 +11,15 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("bspline0 should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 1.0},
-            {0.25, 1.0},
-            {0.75, 0.0},
-            {1.0, 0.0},
-            {10.0, 0.0},
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.25), T(1.0)},
+            {T(0.75), T(0.0)},
+            {T(1.0), T(0.0)},
+            {T(10.0), T(0.0)},
         })
     );
     REQUIRE(bspline0(+x) == Catch::Approx(expected));
@@ -27,15 +28,16 @@ TEMPLATE_TEST_CASE("bspline0 should produce correct numerical results", "[math]"
 
 TEMPLATE_TEST_CASE("bspline1 should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 1.0},
-            {0.25, 0.75},
-            {0.5, 0.5},
-            {0.75, 0.25},
-            {1.0, 0.0},
-            {10.0, 0.0},
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.25), T(0.75)},
+            {T(0.5), T(0.5)},
+            {T(0.75), T(0.25)},
+            {T(1.0), T(0.0)},
+            {T(10.0), T(0.0)},
         })
     );
     REQUIRE(bspline1(+x) == Catch::Approx(expected));
@@ -44,18 +46,19 @@ TEMPLATE_TEST_CASE("bspline1 should produce correct numerical results", "[math]"
 
 TEMPLATE_TEST_CASE("bspline2 should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.75},
-            {0.25, 0.6875},
-            {0.5, 0.5},
-            {0.75, 0.28125},
-            {1.0, 0.125},
-            {1.25, 0.03125},
-            {1.5, 0.0},
-            {2.0, 0.0},
-            {10.0, 0.0},
+        table<T, T>({
+            {T(0.0), T(0.75)},
+            {T(0.25), T(0.6875)},
+            {T(0.5), T(0.5)},
+            {T(0.75), T(0.28125)},
+            {T(1.0), T(0.125)},
+            {T(1.25), T(0.03125)},
+            {T(1.5), T(0.0)},
+            {T(2.0), T(0.0)},
+            {T(10.0), T(0.0)},
         })
     );
     REQUIRE(bspline2(+x) == Catch::Approx(expected));
@@ -64,16 +67,17 @@ TEMPLATE_TEST_CASE("bspline2 should produce correct numerical results", "[math]"
 
 TEMPLATE_TEST_CASE("bspline3 should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 2.0/3.0},
-            {0.5, 0.4791666666666666666666},
-            {1.0, 0.1666666666666666666666},
-            {1.5, 0.0208333333333333333333},
-            {2.0, 0.0},
-            {2.5, 0.0},
-            {10.0, 0.0},
+        table<T, T>({
+            {T(0.0), T(2.0)/T(3.0)},
+            {T(0.5), T(0.4791666666666666666666)},
+            {T(1.0), T(0.1666666666666666666666)},
+            {T(1.5), T(0.0208333333333333333333)},
+            {T(2.0), T(0.0)},
+            {T(2.5), T(0.0)},
+            {T(10.0), T(0.0)},
         })
     );
     REQUIRE(bspline3(+x) == Catch::Approx(expected));

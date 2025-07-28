@@ -16,9 +16,10 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", float, double, long double, int, unsigned int)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
+        table<T, T>({
             {0, 0},
             {-1, 1},
             {-2, 4},
@@ -31,17 +32,18 @@ TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", 
 
 TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType base, exp, expected;
+    using T = TestType;
+    T base, exp, expected;
     std::tie(base, exp, expected) = GENERATE(
-        table<TestType, TestType, TestType>({
-            {0.0, 0.0, 1.0},
-            {1.0, 0.0, 1.0},
-            {2.0, 0.0, 1.0},
-            {-1.0, 0.0, 1.0},
-            {2.0, 2.0, 4.0},
-            {2.0, -2.0, 0.25},
-            {2.0, 0.5, static_cast<TestType>(sqrt2<double>())},
-            {4.64, 4.313, static_cast<TestType>(749.362662244)},
+        table<T, T, T>({
+            {T(0.0), T(0.0), T(1.0)},
+            {T(1.0), T(0.0), T(1.0)},
+            {T(2.0), T(0.0), T(1.0)},
+            {T(-1.0), T(0.0), T(1.0)},
+            {T(2.0), T(2.0), T(4.0)},
+            {T(2.0), T(-2.0), T(0.25)},
+            {T(2.0), T(0.5), sqrt2<T>()},
+            {T(4.64), T(4.313), T(749.362662244)},
         })
     );
 
@@ -50,16 +52,17 @@ TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", flo
 
 TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.0144, 0.12},
-            {0.01, 0.1},
-            {0.5, sqrt1_2<TestType>()},
-            {1.0, 1.0},
-            {2.0, sqrt2<TestType>()},
-            {144.0, 12.0},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.0144), T(0.12)},
+            {T(0.01), T(0.1)},
+            {T(0.5), sqrt1_2<T>()},
+            {T(1.0), T(1.0)},
+            {T(2.0), sqrt2<T>()},
+            {T(144.0), T(12.0)},
         })
     );
 
@@ -68,22 +71,24 @@ TEMPLATE_TEST_CASE("sqrt should produce correct numerical results", "[math]", fl
 
 TEMPLATE_TEST_CASE("sqrt should return NaN for negative input", "[math]", float, double, long double)
 {
-    const auto neg = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    using T = TestType;
+    const auto neg = GENERATE(T(-1e-3), T(-1.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::sqrt(neg)) );
 }
 
 TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, std::numeric_limits<TestType>::infinity()},
-            {0.0144, 8.333333333333333333},
-            {0.01, 10.0},
-            {0.5, sqrt2<TestType>()},
-            {1.0, 1.0},
-            {2.0, sqrt1_2<TestType>()},
-            {144.0, 0.0833333333333333333333},
+        table<T, T>({
+            {T(0.0), std::numeric_limits<T>::infinity()},
+            {T(0.0144), T(8.333333333333333333)},
+            {T(0.01), T(10.0)},
+            {T(0.5), sqrt2<T>()},
+            {T(1.0), T(1.0)},
+            {T(2.0), sqrt1_2<T>()},
+            {T(144.0), T(0.0833333333333333333333)},
         })
     );
 
@@ -92,20 +97,22 @@ TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", f
 
 TEMPLATE_TEST_CASE("rsqrt should return NaN for negative input", "[math]", float, double, long double)
 {
-    TestType neg = static_cast<TestType>(-1.0);
+    using T = TestType;
+    const auto neg = GENERATE(T(-1e-3), T(-1.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::rsqrt(neg)) );
 }
 
 TEMPLATE_TEST_CASE("cbrt should produce correct numerical results", "[math]", float, double, long double)
 {
-    TestType input, expected;
+    using T = TestType;
+    T input, expected;
     std::tie(input, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.001728, 0.12},
-            {0.001, 0.1},
-            {1.0, 1.0},
+        table<T, T>({
+            {T(0.001728), T(0.12)},
+            {T(0.001), T(0.1)},
+            {T(1.0), T(1.0)},
             {1e3, 10},
-            {1728, 12.0},
+            {1728, T(12.0)},
         })
     );
 

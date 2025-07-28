@@ -16,14 +16,15 @@ using namespace xmipp4::math;
 
 TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 1.0},
-            {0.1, 1.00500416806},
-            {2.0, 3.76219569108},
-            {4.2, 33.3506633089},
-            {6.0, 201.715636122},
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.1), T(1.00500416806)},
+            {T(2.0), T(3.76219569108)},
+            {T(4.2), T(33.3506633089)},
+            {T(6.0), T(201.715636122)},
         })
     );
 
@@ -33,14 +34,15 @@ TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.10016675002},
-            {2.0, 3.62686040785},
-            {4.2, 33.3356677321},
-            {6.0, 201.71315737},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.10016675002)},
+            {T(2.0), T(3.62686040785)},
+            {T(4.2), T(33.3356677321)},
+            {T(6.0), T(201.71315737)},
         })
     );
 
@@ -50,14 +52,15 @@ TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.09966799462},
-            {2.0, 0.96402758007},
-            {4.2, 0.99955036646},
-            {6.0, 0.99998771165},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.09966799462)},
+            {T(2.0), T(0.96402758007)},
+            {T(4.2), T(0.99955036646)},
+            {T(6.0), T(0.99998771165)},
         })
     );
 
@@ -67,12 +70,13 @@ TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double, lon
 
 TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {1.0, 0.0},
-            {1.5, 0.962423650119207},
-            {10.0, 2.993222846126381},
+        table<T, T>({
+            {T(1.0), T(0.0)},
+            {T(1.5), T(0.962423650119207)},
+            {T(10.0), T(2.993222846126381)},
         })
     );
 
@@ -81,20 +85,22 @@ TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double, lo
 
 TEMPLATE_TEST_CASE("acosh produces NaN for invalid input", "[math]", float, double, long double)
 {
-    const TestType input = GENERATE(0.5, -1.0);
+    using T = TestType;
+    const T input = GENERATE(T(0.5), T(-1.0));
     REQUIRE( std::isnan(acosh(input)) );
 }
 
 TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.099834078899208},
-            {1.0, 0.881373587019543},
-            {10.0, 2.998222950297970},
-            {100.0, 5.298342365610589},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.099834078899208)},
+            {T(1.0), T(0.881373587019543)},
+            {T(10.0), T(2.998222950297970)},
+            {T(100.0), T(5.298342365610589)},
         })
     );
 
@@ -104,14 +110,15 @@ TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double, lo
 
 TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double, long double)
 {
-    TestType x, expected;
+    using T = TestType;
+    T x, expected;
     std::tie(x, expected) = GENERATE(
-        table<TestType, TestType>({
-            {0.0, 0.0},
-            {0.1, 0.100335347731076},
-            {0.5, 0.549306144334055},
-            {0.9, 1.472219489583220},
-            {1.0, std::numeric_limits<TestType>::infinity()},
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.100335347731076)},
+            {T(0.5), T(0.549306144334055)},
+            {T(0.9), T(1.472219489583220)},
+            {T(1.0), std::numeric_limits<T>::infinity()},
         })
     );
     REQUIRE(atanh(x) == Catch::Approx(expected));
@@ -120,6 +127,7 @@ TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double, lo
 
 TEMPLATE_TEST_CASE("atanh produces NaN for invalid input", "[math]", float, double, long double)
 {
-    const TestType input = GENERATE(1.1, -1.1);
+    using T = TestType;
+    const T input = GENERATE(T(1.1), T(-1.1));
     REQUIRE( std::isnan(atanh(input)) );
 }

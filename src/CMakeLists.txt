@@ -87,6 +87,7 @@ if(MINGW)
 			XMIPP4_NO_BUILTIN
 	)
 endif()
+
 # Install library's binary files and headers
 install(
 	TARGETS ${XMIPP4_CORE_LIBRARY_TARGET}

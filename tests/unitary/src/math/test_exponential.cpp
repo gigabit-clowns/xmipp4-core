@@ -55,12 +55,12 @@ TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", 
     T x, expected;
     std::tie(x, expected) = GENERATE(
         table<T, T>({
-            {T(-20.0), 1e-20},
-            {T(-10.0), 1e-10},
+            {T(-20.0), T(1e-20)},
+            {T(-10.0), T(1e-10)},
             {T(-1.0), T(0.1)},
             {T(0.0), T(1.0)},
             {T(0.5), T(3.162277660168380)},
-            {T(10.0), 1e10},
+            {T(10.0), T(1e10)},
         })
     );
 

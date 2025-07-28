@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/system/dynamic_library.hpp>
 
-#include <system/dynamic_library_handle.hpp>
+#include "dynamic_library_handle.hpp"
 
 #include <sstream>
 

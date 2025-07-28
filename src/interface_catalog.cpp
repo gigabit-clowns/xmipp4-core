@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/plugin.hpp>
 
-#include <plugin_loader.hpp>
+#include "plugin_loader.hpp"
 
 #include <vector>
 #include <cstdlib>

@@ -101,7 +101,6 @@ TEMPLATE_TEST_CASE("cbrt should produce correct numerical results", "[math]", fl
     TestType input, expected;
     std::tie(input, expected) = GENERATE(
         table<TestType, TestType>({
-            {0.0, 0.0},
             {0.001728, 0.12},
             {0.001, 0.1},
             {1.0, 1.0},

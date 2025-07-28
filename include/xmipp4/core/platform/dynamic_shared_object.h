@@ -59,8 +59,12 @@
  * The functions declared as public core API will be exported to the shared object. 
  * 
  */
-#if defined(XMIPP4_CORE_EXPORTING)
-    #define XMIPP4_CORE_API XMIPP4_EXPORT
+#if defined(XMIPP4_CORE_NO_EXPORTS)
+    #define XMIPP4_CORE_API 
 #else
-    #define XMIPP4_CORE_API XMIPP4_IMPORT
+    #if defined(XMIPP4_CORE_EXPORTING)
+        #define XMIPP4_CORE_API XMIPP4_EXPORT
+    #else
+        #define XMIPP4_CORE_API XMIPP4_IMPORT
+    #endif
 #endif

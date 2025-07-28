@@ -111,12 +111,13 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_y0 should produce correct numerical resu
 
     REQUIRE( cylindrical_bessel_y0(x) == Catch::Approx(expected) );
     REQUIRE( cylindrical_bessel_yn(0, x) == Catch::Approx(expected) );
+}
 
-    if (x < 0.0)
-    {
-        REQUIRE( std::isnan(cylindrical_bessel_y0(x)) );
-        REQUIRE( std::isnan(cylindrical_bessel_yn(0, x)) );
-    }
+TEMPLATE_TEST_CASE( "cylindrical_bessel_y' should return NaN for negative values", "[math]", float, double, long double ) 
+{
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_y0(x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(0, x)) );
 }
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should produce correct numerical results", "[math]", float, double, long double ) 
@@ -142,8 +143,9 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should produce correct numerical resu
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_y1 should return NaN for negative values", "[math]", float, double, long double ) 
 {
-    REQUIRE( std::isnan(cylindrical_bessel_y1(-1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_yn(1, -1.0)) );
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_y1(x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(1, x)) );
 }
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should produce correct numerical results", "[math]", float, double, long double ) 
@@ -173,8 +175,9 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should produce correct numerical resu
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_yn should return NaN for negative values", "[math]", float, double, long double ) 
 {
-    REQUIRE( std::isnan(cylindrical_bessel_yn(2, -1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_yn(-3, -1.0)) );
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_yn(2, x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_yn(-3, x)) );
 }
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_i0 should produce correct numerical results", "[math]", float, double, long double ) 
@@ -272,8 +275,9 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should produce correct numerical resu
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_k0 should return NaN for negative values", "[math]", float, double, long double ) 
 {
-    REQUIRE( std::isnan(cylindrical_bessel_k0(-1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_kn(0, -1.0)) );
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_k0(x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_kn(0, x)) );
 }
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should produce correct numerical results", "[math]", float, double, long double ) 
@@ -293,13 +297,13 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should produce correct numerical resu
 
     REQUIRE( cylindrical_bessel_k1(x) == Catch::Approx(expected) );
     REQUIRE( cylindrical_bessel_kn(1, x) == Catch::Approx(expected) );
-    
-    REQUIRE( std::isnan(cylindrical_bessel_k1(-1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_kn(1, -1.0)) );
+}   
 
-    REQUIRE( std::isnan(cylindrical_bessel_k1(-1.0f)) );
-    REQUIRE( std::isnan(cylindrical_bessel_kn(1, -1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_kn(1, -1.0f)) );
+TEMPLATE_TEST_CASE( "cylindrical_bessel_k1 should return NaN with negative values", "[math]", float, double, long double ) 
+{    
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_k1(x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_kn(1, x)) );
 }
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should produce correct numerical results", "[math]", float, double, long double ) 
@@ -328,6 +332,7 @@ TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should produce correct numerical resu
 
 TEMPLATE_TEST_CASE( "cylindrical_bessel_kn should return NaN with negative values", "[math]", float, double, long double ) 
 {
-    REQUIRE( std::isnan(cylindrical_bessel_kn(2, -1.0)) );
-    REQUIRE( std::isnan(cylindrical_bessel_kn(-3, -1.0)) );
+    const auto x = GENERATE(TestType(-1e-3), TestType(-1.0), TestType(-100.0));
+    REQUIRE( std::isnan(cylindrical_bessel_kn(2, x)) );
+    REQUIRE( std::isnan(cylindrical_bessel_kn(-3, x)) );
 }

@@ -19,7 +19,7 @@ add_executable(
 target_link_libraries(
 	${TESTS_NAME} 
 	PRIVATE 
-		xmipp4-core-detail
+		_xmipp4-core_detail
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
 )

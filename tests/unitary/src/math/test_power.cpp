@@ -80,9 +80,9 @@ TEMPLATE_TEST_CASE("rsqrt should produce correct numerical results", "[math]", f
             {0.0, std::numeric_limits<TestType>::infinity()},
             {0.0144, 8.333333333333333333},
             {0.01, 10.0},
-            {0.5, static_cast<TestType>(sqrt2<double>())},
+            {0.5, sqrt2<TestType>()},
             {1.0, 1.0},
-            {2.0, static_cast<TestType>(sqrt1_2<double>())},
+            {2.0, sqrt1_2<TestType>()},
             {144.0, 0.0833333333333333333333},
         })
     );

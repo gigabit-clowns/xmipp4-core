@@ -20,14 +20,14 @@ TEMPLATE_TEST_CASE("square should produce correct numerical results", "[math]", 
     T input, expected;
     std::tie(input, expected) = GENERATE(
         table<T, T>({
-            {0, 0},
-            {-1, 1},
-            {-2, 4},
-            {16, 256},
+            {T(0), T(0)},
+            {T(-1), T(1)},
+            {T(-2), T(4)},
+            {T(16), T(256)},
         })
     );
 
-    REQUIRE(xmipp4::math::square(input) == Catch::Approx(expected));
+    REQUIRE(xmipp4::math::square(input) == expected);
 }
 
 TEMPLATE_TEST_CASE("pow should produce correct numerical results", "[math]", float, double, long double)
@@ -111,8 +111,8 @@ TEMPLATE_TEST_CASE("cbrt should produce correct numerical results", "[math]", fl
             {T(0.001728), T(0.12)},
             {T(0.001), T(0.1)},
             {T(1.0), T(1.0)},
-            {1e3, 10},
-            {1728, T(12.0)},
+            {T(1e3), T(10.0)},
+            {T(1728.0), T(12.0)},
         })
     );
 

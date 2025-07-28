@@ -80,7 +80,7 @@ TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", fl
             {T(5.0), T(1.609437912434100)},
             {T(10.0), T(2.302585092994046)},
             {T(50.0), T(3.912023005428146)},
-            {1e6, T(13.815510557964274)},
+            {T(1e6), T(13.815510557964274)},
         })
     );
 
@@ -114,7 +114,7 @@ TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", f
             {T(2.0), T(1.0)},
             {T(5.0), T(2.321928094887362)},
             {T(10.0), T(3.321928094887362)},
-            {1e6, T(19.931568569324174)},
+            {T(1e6), T(19.931568569324174)},
         })
     );
 
@@ -148,13 +148,12 @@ TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", 
             {T(2.0), T(0.301029995663981)},
             {T(5.0), T(0.698970004336019)},
             {T(10.0), T(1.0)},
-            {1e6, T(6.0)},
+            {T(1e6), T(6.0)},
         })
     );
 
     REQUIRE( xmipp4::math::log10(x) == Catch::Approx(expected) );
 }
-
 
 TEMPLATE_TEST_CASE( "log10 with 0 as input should produce infinity", "[math]", float, double, long double ) 
 {
@@ -169,17 +168,3 @@ TEMPLATE_TEST_CASE( "log10 with negative values as input should produce NaN", "[
     const T value = GENERATE(T(-1.0), T(-10.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::log10(value)) );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

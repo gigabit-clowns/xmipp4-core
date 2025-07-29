@@ -1,35 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file cpu_unified_buffer.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Defines the compute::cpu_unified_buffer interface
- * @date 2024-10-29
- * 
- */
-
-#include "../device_buffer.hpp"
-#include "../host_buffer.hpp"
+#include "../unified_buffer.hpp"
 
 namespace xmipp4 
 {
@@ -37,28 +10,37 @@ namespace compute
 {
 
 /**
- * @brief Interface merging the interfaces of host_buffer and device_buffer.
- * 
- * This interface unifies host_buffer and device_buffer interfaces, as
- * when using the host as a compute device, both buffers types are 
- * equivalent
+ * @brief Implementation of unified_buffer with malloc.
  * 
  */
-class cpu_unified_buffer
-    : public device_buffer
-    , public host_buffer
+class cpu_unified_buffer final
+    : public unified_buffer
 {
 public:
-    std::size_t get_size() const noexcept override = 0;
-    void* get_data() noexcept override = 0;
-    const void* get_data() const noexcept override = 0;
+    cpu_unified_buffer() noexcept;
+    cpu_unified_buffer(std::size_t size, std::size_t alignment);
+    cpu_unified_buffer(const cpu_unified_buffer &other) = delete;
+    cpu_unified_buffer(cpu_unified_buffer &&other) noexcept;
+    ~cpu_unified_buffer() override;
 
-    cpu_unified_buffer* get_device_accessible_alias() noexcept final;
-    const cpu_unified_buffer* get_device_accessible_alias() const noexcept final;
-    cpu_unified_buffer* get_host_accessible_alias() noexcept final;
-    const cpu_unified_buffer* get_host_accessible_alias() const noexcept final;
-    
-    void record_queue(device_queue &queue) override = 0;
+    cpu_unified_buffer& 
+    operator=(const cpu_unified_buffer &other) = delete;
+    cpu_unified_buffer& 
+    operator=(cpu_unified_buffer &&other) noexcept;
+
+    void swap(cpu_unified_buffer &other) noexcept;
+    void reset() noexcept;
+
+    std::size_t get_size() const noexcept override;
+
+    void* get_data() noexcept override;
+    const void* get_data() const noexcept override;
+
+    void record_queue(device_queue &queue) override;
+
+private:
+    std::size_t m_size;
+    void* m_data;
 
 }; 
 

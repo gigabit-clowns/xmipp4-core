@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file trigonometric.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of trigonometric.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "trigonometric.hpp"
 
@@ -71,8 +45,7 @@ inline long double cos(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cos(F angle) noexcept
+F cos(F angle) noexcept
 {
     return detail::cos(angle);
 }
@@ -115,8 +88,7 @@ inline long double sin(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sin(F angle) noexcept
+F sin(F angle) noexcept
 {
     return detail::sin(angle);
 }
@@ -216,8 +188,7 @@ inline long double tan(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-tan(F angle) noexcept
+F tan(F angle) noexcept
 {
     return detail::tan(angle);
 }
@@ -260,8 +231,7 @@ inline long double acos(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-acos(F ratio) noexcept
+F acos(F ratio) noexcept
 {
     return detail::acos(ratio);
 }
@@ -305,8 +275,7 @@ inline long double asin(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-asin(F ratio) noexcept
+F asin(F ratio) noexcept
 {
     return detail::asin(ratio);
 }
@@ -349,8 +318,7 @@ inline long double atan(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atan(F ratio) noexcept
+F atan(F ratio) noexcept
 {
     return detail::atan(ratio);
 }
@@ -393,8 +361,7 @@ inline long double atan2(long double y, long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atan2(F y, F x) noexcept
+F atan2(F y, F x) noexcept
 {
     return detail::atan2(y, x);
 }

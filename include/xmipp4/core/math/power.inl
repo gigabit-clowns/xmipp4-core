@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file power.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of power.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "power.hpp"
 
@@ -101,8 +75,7 @@ inline long double pow(long double base, long double exp) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-pow(F base, F exp) noexcept
+F pow(F base, F exp) noexcept
 {
     return detail::pow(base, exp);
 }
@@ -145,16 +118,14 @@ inline long double sqrt(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sqrt(F x) noexcept
+F sqrt(F x) noexcept
 {
     return detail::sqrt(x);
 }
 
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-rsqrt(F x) noexcept
+F rsqrt(F x) noexcept
 {
     return F(1) / sqrt(x);
 }
@@ -197,8 +168,7 @@ inline long double cbrt(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cbrt(F x) noexcept
+F cbrt(F x) noexcept
 {
     return detail::cbrt(x);
 }

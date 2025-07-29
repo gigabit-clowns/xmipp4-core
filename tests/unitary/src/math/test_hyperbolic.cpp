@@ -1,165 +1,133 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_hyperbolic.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for hyperbolic.hpp
- * @date 2024-04-15
- * 
- */
-
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_approx.hpp>
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <xmipp4/core/math/hyperbolic.hpp>
 
 #include <xmipp4/core/math/constants.hpp>
 
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+
 #include <limits>
-#include <map>
+#include <cmath>
 
 using namespace xmipp4::math;
 
-TEST_CASE( "cosh", "[math]" ) 
+TEMPLATE_TEST_CASE("cosh produces correct results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 1.0},
-        {0.1, 1.00500416806},
-        {2.0, 3.76219569108},
-        {4.2, 33.3506633089},
-        {6.0, 201.715636122},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.1), T(1.00500416806)},
+            {T(2.0), T(3.76219569108)},
+            {T(4.2), T(33.3506633089)},
+            {T(6.0), T(201.715636122)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::cosh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(-sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::cosh(-static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(cosh(x) == Catch::Approx(expected));
+    REQUIRE(cosh(-x) == Catch::Approx(expected));
 }
 
-TEST_CASE( "sinh", "[math]" ) 
+TEMPLATE_TEST_CASE("sinh produces correct results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.10016675002},
-        {2.0, 3.62686040785},
-        {4.2, 33.3356677321},
-        {6.0, 201.71315737},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.10016675002)},
+            {T(2.0), T(3.62686040785)},
+            {T(4.2), T(33.3356677321)},
+            {T(6.0), T(201.71315737)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::sinh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::sinh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::sinh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::sinh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(sinh(x) == Catch::Approx(expected));
+    REQUIRE(sinh(-x) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "tanh", "[math]" ) 
+TEMPLATE_TEST_CASE("tanh produces correct results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.09966799462},
-        {2.0, 0.96402758007},
-        {4.2, 0.99955036646},
-        {6.0, 0.99998771165},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.09966799462)},
+            {T(2.0), T(0.96402758007)},
+            {T(4.2), T(0.99955036646)},
+            {T(6.0), T(0.99998771165)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::tanh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::tanh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::tanh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::tanh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(tanh(x) == Catch::Approx(expected));
+    REQUIRE(tanh(-x) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "acosh", "[math]" ) 
+TEMPLATE_TEST_CASE("acosh produces correct results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {1.0, 0.0},
-        {1.5, 0.962423650119207},
-        {10.0, 2.993222846126381},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(1.0), T(0.0)},
+            {T(1.5), T(0.962423650119207)},
+            {T(10.0), T(2.993222846126381)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::acosh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::acosh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
-
-    REQUIRE( std::isnan(xmipp4::math::acosh(0.5)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(0.5f)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(-1.0)) );
-    REQUIRE( std::isnan(xmipp4::math::acosh(-1.0f)) );
+    REQUIRE(acosh(x) == Catch::Approx(expected));
 }
 
-TEST_CASE( "asinh", "[math]" ) 
+TEMPLATE_TEST_CASE("acosh produces NaN for invalid input", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.099834078899208},
-        {1.0, 0.881373587019543},
-        {10.0, 2.998222950297970},
-        {100.0, 5.298342365610589},
-    };
-
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::asinh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::asinh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::asinh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::asinh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    using T = TestType;
+    const T input = GENERATE(T(0.5), T(-1.0));
+    REQUIRE( std::isnan(acosh(input)) );
 }
 
-TEST_CASE( "atanh", "[math]" ) 
+TEMPLATE_TEST_CASE("asinh produces correct results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.100335347731076},
-        {0.5, 0.549306144334055},
-        {0.9, 1.472219489583220},
-        {1.0, std::numeric_limits<double>::infinity()},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.099834078899208)},
+            {T(1.0), T(0.881373587019543)},
+            {T(10.0), T(2.998222950297970)},
+            {T(100.0), T(5.298342365610589)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::atanh(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::atanh(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::atanh(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::atanh(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(asinh(x) == Catch::Approx(expected));
+    REQUIRE(asinh(-x) == Catch::Approx(-expected));
+}
 
-    REQUIRE( std::isnan(xmipp4::math::atanh(1.1)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(1.1f)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(-1.1)) );
-    REQUIRE( std::isnan(xmipp4::math::atanh(-1.1f)) );
+TEMPLATE_TEST_CASE("atanh produces correct results", "[math]", float, double, long double)
+{
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.100335347731076)},
+            {T(0.5), T(0.549306144334055)},
+            {T(0.9), T(1.472219489583220)},
+            {T(1.0), std::numeric_limits<T>::infinity()},
+        })
+    );
+    REQUIRE(atanh(x) == Catch::Approx(expected));
+    REQUIRE(atanh(-x) == Catch::Approx(-expected));
+}
+
+TEMPLATE_TEST_CASE("atanh produces NaN for invalid input", "[math]", float, double, long double)
+{
+    using T = TestType;
+    const T input = GENERATE(T(1.1), T(-1.1));
+    REQUIRE( std::isnan(atanh(input)) );
 }

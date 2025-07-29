@@ -1,53 +1,37 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_arithmetic.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for arithmetic.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <xmipp4/core/math/arithmetic.hpp>
 
 using namespace xmipp4::math;
 
 
-TEST_CASE( "multiply_add", "[math]" ) 
+TEMPLATE_TEST_CASE("multiply_add should produce correct numerical results", "[math]", float, double, long double)
 {
-    REQUIRE( xmipp4::math::multiply_add(2.31, 1.35, 2.21) == Catch::Approx(5.3285) );
-    REQUIRE( xmipp4::math::multiply_add(2.31f, 1.35f, 2.21f) == Catch::Approx(5.3285f) );
-
-    REQUIRE( xmipp4::math::multiply_add(-2.5252, 5.23565, 73.2121) == Catch::Approx(59.99103662) );
-    REQUIRE( xmipp4::math::multiply_add(-2.5252f, 5.23565f, 73.2121f) == Catch::Approx(59.99103662) );
+    using T = TestType;
+    T a, b, c, expected;
+    std::tie(a, b, c, expected) = GENERATE(
+        table<T, T, T, T>({
+            {T(2.31), T(1.35), T(2.21), T(5.3285)},
+            {T(-2.5252), T(5.23565), T(73.2121), T(59.99103662)}
+        })
+    );
+    REQUIRE(multiply_add(a, b, c) == Catch::Approx(expected));
 }
 
-TEST_CASE( "mod", "[math]" ) 
+TEMPLATE_TEST_CASE("mod should produce correct numerical results", "[math]", float, double, long double)
 {
-    REQUIRE( xmipp4::math::mod(2.31, 1.35) == Catch::Approx(0.96) );
-    REQUIRE( xmipp4::math::mod(2.31f, 1.35f) == Catch::Approx(0.96) );
-    
-    REQUIRE( xmipp4::math::mod(2.31, -1.35) == Catch::Approx(0.96) );
-    REQUIRE( xmipp4::math::mod(2.31f, -1.35f) == Catch::Approx(0.96) );
+    using T = TestType;
+    T a, b, expected;
+    std::tie(a, b, expected) = GENERATE(
+        table<T, T, T>({
+            {T(2.31), T(1.35), T(0.96)},
+        })
+    );
+    REQUIRE(mod(a, b) == Catch::Approx(expected));
+    REQUIRE(mod(-a, b) == Catch::Approx(-expected));
 }

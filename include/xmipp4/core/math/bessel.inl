@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file bessel.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of bessel.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "bessel.hpp"
 
@@ -57,8 +31,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_j0(F ax) noexcept
+bool is_small_for_cylindrical_bessel_j0(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
     return ax < threshold;
@@ -66,8 +39,7 @@ is_small_for_cylindrical_bessel_j0(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j0_small(F ax) noexcept
+F cylindrical_bessel_j0_small(F ax) noexcept
 {
     const auto y = square(ax);
 
@@ -96,8 +68,7 @@ cylindrical_bessel_j0_small(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j0_large(F ax) noexcept
+F cylindrical_bessel_j0_large(F ax) noexcept
 {       
     const auto z = F(8)/ax;
     const auto y = square(z);
@@ -129,8 +100,7 @@ cylindrical_bessel_j0_large(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j0(F x) noexcept
+F cylindrical_bessel_j0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -170,8 +140,7 @@ inline long double cylindrical_bessel_j0(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j0(F x) noexcept
+F cylindrical_bessel_j0(F x) noexcept
 {
     return detail::cylindrical_bessel_j0(x);
 }
@@ -185,8 +154,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_j1(F ax) noexcept
+bool is_small_for_cylindrical_bessel_j1(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
     return ax < threshold;
@@ -194,8 +162,7 @@ is_small_for_cylindrical_bessel_j1(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1_small(F x) noexcept
+F cylindrical_bessel_j1_small(F x) noexcept
 {
     const auto y = square(x);
 
@@ -224,8 +191,7 @@ cylindrical_bessel_j1_small(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1_large(F x, F ax) noexcept
+F cylindrical_bessel_j1_large(F x, F ax) noexcept
 {
     const auto z = F(8)/ax;
     const auto y = square(z);
@@ -258,8 +224,7 @@ cylindrical_bessel_j1_large(F x, F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1(F x) noexcept
+F cylindrical_bessel_j1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -299,8 +264,7 @@ inline long double cylindrical_bessel_j1(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_j1(F x) noexcept
+F cylindrical_bessel_j1(F x) noexcept
 {
     return detail::cylindrical_bessel_j1(x);
 }
@@ -314,8 +278,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn_iterative(int n, F x, F eps = F(1e-12)) noexcept
+F cylindrical_bessel_jn_iterative(int n, F x, F eps = F(1e-12)) noexcept
 {
     int sign = 1;
     if (n < 0)
@@ -366,8 +329,7 @@ cylindrical_bessel_jn_iterative(int n, F x, F eps = F(1e-12)) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn(int n, F x) noexcept
+F cylindrical_bessel_jn(int n, F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -410,8 +372,7 @@ inline long double cylindrical_bessel_jn(int n, long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_jn(int n, F x) noexcept
+F cylindrical_bessel_jn(int n, F x) noexcept
 {
     return detail::cylindrical_bessel_jn(n, x);
 }
@@ -425,8 +386,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_y0(F ax) noexcept
+bool is_small_for_cylindrical_bessel_y0(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
     return ax < threshold;
@@ -434,8 +394,7 @@ is_small_for_cylindrical_bessel_y0(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0_small(F x) noexcept
+F cylindrical_bessel_y0_small(F x) noexcept
 {
     const auto y = square(x);
 
@@ -464,8 +423,7 @@ cylindrical_bessel_y0_small(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0_large(F x) noexcept
+F cylindrical_bessel_y0_large(F x) noexcept
 {
     const auto z = F(8)/x;
     const auto y = square(z);
@@ -497,8 +455,7 @@ cylindrical_bessel_y0_large(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0_finite(F x) noexcept
+F cylindrical_bessel_y0_finite(F x) noexcept
 {
     return  is_small_for_cylindrical_bessel_y0(x) ?
             cylindrical_bessel_y0_small(x) :
@@ -507,8 +464,7 @@ cylindrical_bessel_y0_finite(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0(F x) noexcept
+F cylindrical_bessel_y0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -560,8 +516,7 @@ inline long double cylindrical_bessel_y0(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y0(F x) noexcept
+F cylindrical_bessel_y0(F x) noexcept
 {
     return detail::cylindrical_bessel_y0(x);
 }
@@ -575,8 +530,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_y1(F ax) noexcept
+bool is_small_for_cylindrical_bessel_y1(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 8;
     return ax < threshold;
@@ -584,8 +538,7 @@ is_small_for_cylindrical_bessel_y1(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1_small(F x) noexcept
+F cylindrical_bessel_y1_small(F x) noexcept
 {
     const auto y = square(x);
 
@@ -615,8 +568,7 @@ cylindrical_bessel_y1_small(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1_large(F x) noexcept
+F cylindrical_bessel_y1_large(F x) noexcept
 {
     const auto z = F(8)/x;
     const auto y = square(z);
@@ -648,8 +600,7 @@ cylindrical_bessel_y1_large(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1_finite(F x) noexcept
+F cylindrical_bessel_y1_finite(F x) noexcept
 {
     return  is_small_for_cylindrical_bessel_y1(x) ?
             cylindrical_bessel_y1_small(x) :
@@ -658,8 +609,7 @@ cylindrical_bessel_y1_finite(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1(F x) noexcept
+F cylindrical_bessel_y1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -711,8 +661,7 @@ inline long double cylindrical_bessel_y1(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_y1(F x) noexcept
+F cylindrical_bessel_y1(F x) noexcept
 {
     return detail::cylindrical_bessel_y1(x);
 }
@@ -726,8 +675,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn_iterative_finite(unsigned n, F x) noexcept
+F cylindrical_bessel_yn_iterative_finite(unsigned n, F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -746,8 +694,7 @@ cylindrical_bessel_yn_iterative_finite(unsigned n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn_iterative(int n, F x) noexcept
+F cylindrical_bessel_yn_iterative(int n, F x) noexcept
 {
     int sign = 1;
     if (n < 0)
@@ -775,8 +722,7 @@ cylindrical_bessel_yn_iterative(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn(int n, F x) noexcept
+F cylindrical_bessel_yn(int n, F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -819,8 +765,7 @@ inline long double cylindrical_bessel_yn(int n, long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_yn(int n, F x) noexcept
+F cylindrical_bessel_yn(int n, F x) noexcept
 {
     return detail::cylindrical_bessel_yn(n, x);
 }
@@ -834,8 +779,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_i0(F ax) noexcept
+bool is_small_for_cylindrical_bessel_i0(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
     return ax < threshold;
@@ -843,8 +787,7 @@ is_small_for_cylindrical_bessel_i0(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i0_small(F ax) noexcept
+F cylindrical_bessel_i0_small(F ax) noexcept
 {
     const auto y = square(ax / F(3.75));
 
@@ -863,8 +806,7 @@ cylindrical_bessel_i0_small(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i0_large(F ax) noexcept
+F cylindrical_bessel_i0_large(F ax) noexcept
 {
     const auto y = F(3.75) / ax;
 
@@ -887,8 +829,7 @@ cylindrical_bessel_i0_large(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i0(F x) noexcept
+F cylindrical_bessel_i0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -902,8 +843,7 @@ cylindrical_bessel_i0(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i0(F x) noexcept
+F cylindrical_bessel_i0(F x) noexcept
 {
     return detail::cylindrical_bessel_i0(x);
 }
@@ -917,8 +857,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_i1(F ax) noexcept
+bool is_small_for_cylindrical_bessel_i1(F ax) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 3.75;
     return ax < threshold;
@@ -926,8 +865,7 @@ is_small_for_cylindrical_bessel_i1(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i1_small(F ax) noexcept
+F cylindrical_bessel_i1_small(F ax) noexcept
 {
     const auto y = square(ax/F(3.75));
 
@@ -946,8 +884,7 @@ cylindrical_bessel_i1_small(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i1_large(F ax) noexcept
+F cylindrical_bessel_i1_large(F ax) noexcept
 {
     const auto y = F(3.75) / ax;
 
@@ -970,8 +907,7 @@ cylindrical_bessel_i1_large(F ax) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i1(F x) noexcept
+F cylindrical_bessel_i1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -989,8 +925,7 @@ cylindrical_bessel_i1(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_i1(F x) noexcept
+F cylindrical_bessel_i1(F x) noexcept
 {
     return detail::cylindrical_bessel_i1(x);
 }
@@ -1004,8 +939,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_in_iterative(int n, F x) noexcept
+F cylindrical_bessel_in_iterative(int n, F x) noexcept
 {
     F result;
 
@@ -1046,8 +980,7 @@ cylindrical_bessel_in_iterative(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_in(int n, F x) noexcept
+F cylindrical_bessel_in(int n, F x) noexcept
 {
     switch (n)
     {
@@ -1061,8 +994,7 @@ cylindrical_bessel_in(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_in(int n, F x) noexcept
+F cylindrical_bessel_in(int n, F x) noexcept
 {
     return detail::cylindrical_bessel_in(n, x);
 }
@@ -1076,8 +1008,7 @@ namespace detail
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_k0(F x) noexcept
+bool is_small_for_cylindrical_bessel_k0(F x) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 2;
     return x < threshold;
@@ -1085,8 +1016,7 @@ is_small_for_cylindrical_bessel_k0(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k0_small(F x) noexcept
+F cylindrical_bessel_k0_small(F x) noexcept
 {
     const auto y = square(x) / F(4);
 
@@ -1107,8 +1037,7 @@ cylindrical_bessel_k0_small(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k0_large(F x) noexcept
+F cylindrical_bessel_k0_large(F x) noexcept
 {
     const auto y = F(2)/x;
 
@@ -1129,8 +1058,7 @@ cylindrical_bessel_k0_large(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k0_finite(F x) noexcept
+F cylindrical_bessel_k0_finite(F x) noexcept
 {
     return  is_small_for_cylindrical_bessel_k0(x) ?
             cylindrical_bessel_k0_small(x) :
@@ -1139,8 +1067,7 @@ cylindrical_bessel_k0_finite(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k0(F x) noexcept
+F cylindrical_bessel_k0(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -1166,8 +1093,7 @@ cylindrical_bessel_k0(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k0(F x) noexcept
+F cylindrical_bessel_k0(F x) noexcept
 {
     return detail::cylindrical_bessel_k0(x);
 }
@@ -1181,8 +1107,7 @@ namespace detail
     
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, bool>::type
-is_small_for_cylindrical_bessel_k1(F x) noexcept
+bool is_small_for_cylindrical_bessel_k1(F x) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F threshold = 2;
     return x < threshold;
@@ -1190,8 +1115,7 @@ is_small_for_cylindrical_bessel_k1(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k1_small(F x) noexcept
+F cylindrical_bessel_k1_small(F x) noexcept
 {
     const auto y = square(x)/F(4);
 
@@ -1212,8 +1136,7 @@ cylindrical_bessel_k1_small(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k1_large(F x) noexcept
+F cylindrical_bessel_k1_large(F x) noexcept
 {
     const auto y = F(2)/x;
 
@@ -1234,8 +1157,7 @@ cylindrical_bessel_k1_large(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k1_finite(F x) noexcept
+F cylindrical_bessel_k1_finite(F x) noexcept
 {
     return  is_small_for_cylindrical_bessel_k1(x) ?
             cylindrical_bessel_k1_small(x) :
@@ -1244,8 +1166,7 @@ cylindrical_bessel_k1_finite(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k1(F x) noexcept
+F cylindrical_bessel_k1(F x) noexcept
 {
     // Based on:
     // https://www.atnf.csiro.au/computing/software/gipsy/sub/bessel.c
@@ -1271,8 +1192,7 @@ cylindrical_bessel_k1(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_k1(F x) noexcept
+F cylindrical_bessel_k1(F x) noexcept
 {
     return detail::cylindrical_bessel_k1(x);
 }
@@ -1286,8 +1206,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_kn_iterative_finite(int n, F x) noexcept
+F cylindrical_bessel_kn_iterative_finite(int n, F x) noexcept
 {
     n = math::abs(n);
 
@@ -1307,8 +1226,7 @@ cylindrical_bessel_kn_iterative_finite(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_kn_iterative(int n, F x) noexcept
+F cylindrical_bessel_kn_iterative(int n, F x) noexcept
 {
     F result;
 
@@ -1330,8 +1248,7 @@ cylindrical_bessel_kn_iterative(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_kn(int n, F x) noexcept
+F cylindrical_bessel_kn(int n, F x) noexcept
 {
     switch (n)
     {
@@ -1345,8 +1262,7 @@ cylindrical_bessel_kn(int n, F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cylindrical_bessel_kn(int n, F x) noexcept
+F cylindrical_bessel_kn(int n, F x) noexcept
 {
     return detail::cylindrical_bessel_kn(n, x);
 }

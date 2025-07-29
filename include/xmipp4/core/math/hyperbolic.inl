@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file hyperbolic.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of hyperbolic.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "hyperbolic.hpp"
 
@@ -71,8 +45,7 @@ inline long double cosh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cosh(F angle) noexcept
+F cosh(F angle) noexcept
 {
     return detail::cosh(angle);
 }
@@ -115,8 +88,7 @@ inline long double sinh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sinh(F angle) noexcept
+F sinh(F angle) noexcept
 {
     return detail::sinh(angle);
 }
@@ -159,8 +131,7 @@ inline long double tanh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-tanh(F angle) noexcept
+F tanh(F angle) noexcept
 {
     return detail::tanh(angle);
 }
@@ -203,8 +174,7 @@ inline long double acosh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-acosh(F ratio) noexcept
+F acosh(F ratio) noexcept
 {
     return detail::acosh(ratio);
 }
@@ -248,8 +218,7 @@ inline long double asinh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-asinh(F ratio) noexcept
+F asinh(F ratio) noexcept
 {
     return detail::asinh(ratio);
 }
@@ -292,8 +261,7 @@ inline long double atanh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atanh(F ratio) noexcept
+F atanh(F ratio) noexcept
 {
     return detail::atanh(ratio);
 }

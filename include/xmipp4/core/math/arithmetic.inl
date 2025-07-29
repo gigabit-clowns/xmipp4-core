@@ -1,35 +1,10 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file arithmetic.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of arithmetic.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "arithmetic.hpp"
 
 #include "../platform/builtin.h"
 
+#include <iterator>
 #include <cmath>
 
 namespace xmipp4
@@ -71,8 +46,7 @@ inline long double multiply_add(long double x, long double y, long double z) noe
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-multiply_add(F x, F y, F z) noexcept
+F multiply_add(F x, F y, F z) noexcept
 {
     return detail::multiply_add(x, y, z);
 }
@@ -115,8 +89,7 @@ inline long double mod(long double num, long double den) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-mod(F num, F den) noexcept
+F mod(F num, F den) noexcept
 {
     return detail::mod(num, den);
 }
@@ -125,8 +98,7 @@ mod(F num, F den) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sign(F x) noexcept
+F sign(F x) noexcept
 {
     switch (std::fpclassify(x))
     {
@@ -143,8 +115,7 @@ sign(F x) noexcept
 
 template <typename BidirIt, typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
+F evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
 {
     F y = 0;
     if (first != last)

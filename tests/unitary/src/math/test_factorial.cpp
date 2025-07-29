@@ -1,35 +1,11 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_factorial.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for factorial.hpp
- * @date 2024-04-12
- * 
- */
-
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_approx.hpp>
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <xmipp4/core/math/factorial.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <map>
 #include <limits>
@@ -37,28 +13,76 @@
 
 using namespace xmipp4::math;
 
-TEST_CASE( "factorial", "[math]" ) 
+TEMPLATE_TEST_CASE( "factorial should produce expected values for small inputs", "[math]", std::uint16_t, std::uint32_t, std::uint64_t ) 
 {
-    REQUIRE( factorial(0U) == 1U );
-    REQUIRE( factorial(1U) == 1U );
-    REQUIRE( factorial(2U) == 2U );
-    REQUIRE( factorial(5U) == 120U );
-    REQUIRE( factorial(uint8_t(6)) == 208 ); // Overflow
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {0, 1},
+            {1, 1},
+            {2, 2},
+            {3, 6},
+            {4, 24},
+            {5, 120},
+            {6, 720},
+            {7, 5040},
+            {8, 40320},
+        })
+    );
+
+    REQUIRE( factorial(x) == expected);
 }
 
-TEST_CASE( "large_factorial", "[math]" ) 
+TEST_CASE( "factorial function should overflow when input produces out of range results", "[math]" ) 
 {
-    REQUIRE( large_factorial<double>(0U) == Catch::Approx(1.0) );
-    REQUIRE( large_factorial<double>(1U) == Catch::Approx(1.0) );
-    REQUIRE( large_factorial<double>(2U) == Catch::Approx(2.0) );
-    REQUIRE( large_factorial<double>(16U) == Catch::Approx(2.092279e+13) );
+    REQUIRE( factorial(uint8_t(6)) == 208 );
 }
 
-TEST_CASE( "gamma", "[math]" ) 
+TEMPLATE_TEST_CASE( "large_factorial should produce numerically correct results", "[math]", float, double, long double ) 
 {
-    REQUIRE( xmipp4::math::gamma(0.0) == std::numeric_limits<double>::infinity() );
-    REQUIRE( xmipp4::math::gamma(1.0) == Catch::Approx(1.0) );
-    REQUIRE( xmipp4::math::gamma(2.0) == Catch::Approx(1.0) );
-    REQUIRE( xmipp4::math::gamma(16.0) == Catch::Approx(1.307674368e+12) );
-    REQUIRE( xmipp4::math::gamma(-1.5) == Catch::Approx(2.363271801207355) );
+    using T = TestType;
+    std::size_t x;
+    T expected;
+    std::tie(x, expected) = GENERATE(
+        table<std::size_t, T>({
+            {0U, T(1.0)},
+            {1U, T(1.0)},
+            {2U, T(2.0)},
+            {3U, T(6.0)},
+            {4U, T(24.0)},
+            {5U, T(120.0)},
+            {6U, T(720.0)},
+            {7U, T(5040.0)},
+            {8U, T(40320.0)},
+            {9U, T(362880.0)},
+            {10U, T(3628800.0)},
+            {12U, T(479001600.0)},
+            {13U, T(6227020800.0)},
+            {14U, T(87178291200.0)},
+            {15U, T(1307674368000.0)},
+            {16U, T(20922789888000.0)},
+        })
+    );
+
+    REQUIRE( large_factorial<T>(x) == Catch::Approx(expected) );
+}
+
+TEMPLATE_TEST_CASE( "gamma function should produce numerically correct results", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), std::numeric_limits<T>::infinity()},
+            {T(1.0), T(1.0)},
+            {T(2.0), T(1.0)},
+            {T(5.0), T(24.0)},
+            {T(10.3), T(716430.68906237720512) },
+            {T(-1.5), T(2.363271801207355) },
+            {T(-7.6), T(0.00019104791914) },
+        })
+    );
+
+    REQUIRE( xmipp4::math::gamma(x) == Catch::Approx(expected) );
 }

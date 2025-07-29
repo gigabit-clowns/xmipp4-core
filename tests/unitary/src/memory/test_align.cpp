@@ -1,75 +1,98 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_align.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for memory/align.hpp
- * @date 2024-03-10
- * 
- */
-
-#include <catch2/catch_test_macros.hpp>
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <xmipp4/core/memory/align.hpp>
 
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+
 using namespace xmipp4;
 
-TEST_CASE( "get alignment", "[align]" ) 
+TEST_CASE( "get_alignment returns correct alignment for address and pointer", "[align]" ) 
 {
-	const std::uintptr_t offset = 0xABCD0100;
-	REQUIRE( memory::get_alignment(offset) == 0x100 );
+	std::uintptr_t address;
+	std::size_t expected_alignment;
+	std::tie(address, expected_alignment) = GENERATE(
+		table<std::uintptr_t, std::size_t>({
+			{0xABCD0001, 0x01},
+			{0xABCD0002, 0x02},
+			{0xABCD0100, 0x100},
+			{0xABCD0200, 0x200},
+			{0xABCD0400, 0x400},
+			{0xABCD0800, 0x800}
+		})
+	);
 
-	void* pointer = reinterpret_cast<void*>(offset);
-	REQUIRE( memory::get_alignment(pointer) == 0x100 );
+	void* pointer = reinterpret_cast<void*>(address);
+
+	REQUIRE( memory::get_alignment(address) == expected_alignment );
+	REQUIRE( memory::get_alignment(pointer) == expected_alignment );
 }
 
-TEST_CASE( "align floor", "[align]" ) 
+TEST_CASE( "align_floor aligns address and pointer down to nearest boundary", "[align]" ) 
 {
-	const std::uintptr_t offset = 0xA1010100;
-	REQUIRE( memory::align_floor(offset, 0x10) == offset );
-	REQUIRE( memory::align_floor(offset, 0x100) == offset );
-	REQUIRE( memory::align_floor(offset, 0x1000) == 0xA1010000 );
+	std::uintptr_t address;
+	std::size_t alignment;
+	std::uintptr_t expected;
+	std::tie(address, alignment, expected) = GENERATE(
+		table<std::uintptr_t, std::size_t, std::uintptr_t>({
+			{0xA1010100, 0x10,   0xA1010100},
+			{0xA1010100, 0x100,  0xA1010100},
+			{0xA1010100, 0x1000, 0xA1010000},
+			{0xA1010111, 0x10,   0xA1010110},
+			{0xA1010111, 0x100,  0xA1010100},
+			{0xA1010111, 0x1000, 0xA1010000},
+			{0x000000FF, 0x10,   0x000000F0},
+			{0x00001001, 0x100,  0x00001000}
+		})
+	);
 
-	void* pointer = reinterpret_cast<void*>(offset);
-	REQUIRE( memory::align_floor(pointer, 0x10) == pointer );
-	REQUIRE( memory::align_floor(pointer, 0x100) == pointer );
-	REQUIRE( memory::align_floor(pointer, 0x1000) == reinterpret_cast<void*>(uintptr_t(0xA1010000)) );
+	void* pointer = reinterpret_cast<void*>(address);
+
+	REQUIRE( memory::align_floor(address, alignment) == expected );
+	REQUIRE( memory::align_floor(pointer, alignment) == reinterpret_cast<void*>(expected) );
 }
 
-TEST_CASE( "align ceil", "[align]" ) 
+TEST_CASE( "align_ceil aligns address and pointer up to nearest boundary", "[align]" ) 
 {
-	const std::uintptr_t offset = 0xA1010100;
-	REQUIRE( memory::align_ceil(offset, 0x10) == offset );
-	REQUIRE( memory::align_ceil(offset, 0x100) == offset );
-	REQUIRE( memory::align_ceil(offset, 0x1000) == 0xA1011000 );
+	std::uintptr_t address;
+	std::size_t alignment;
+	std::uintptr_t expected;
+	std::tie(address, alignment, expected) = GENERATE(
+		table<std::uintptr_t, std::size_t, std::uintptr_t>({
+			{0xA1010100, 0x10,   0xA1010100},
+			{0xA1010100, 0x100,  0xA1010100},
+			{0xA1010100, 0x1000, 0xA1011000},
+			{0xA1010111, 0x10,   0xA1010120},
+			{0xA1010111, 0x100,  0xA1010200},
+			{0xA1010111, 0x1000, 0xA1011000},
+			{0x000000FF, 0x10,   0x00000100},
+			{0x00001001, 0x100,  0x00001100}
+		})
+	);
 
-	void* pointer = reinterpret_cast<void*>(offset);
-	REQUIRE( memory::align_ceil(pointer, 0x10) == pointer );
-	REQUIRE( memory::align_ceil(pointer, 0x100) == pointer );
-	REQUIRE( memory::align_ceil(pointer, 0x1000) == reinterpret_cast<void*>(uintptr_t(0xA1011000)) );
+	void* pointer = reinterpret_cast<void*>(address);
+
+	REQUIRE( memory::align_ceil(address, alignment) == expected );
+	REQUIRE( memory::align_ceil(pointer, alignment) == reinterpret_cast<void*>(expected) );
 }
 
-TEST_CASE( "offset_bytes", "[align]" ) 
+TEST_CASE( "offset_bytes computes pointer offset correctly for positive and negative values", "[align]" ) 
 {
-	std::uint32_t data;
-	std::uint32_t* next = memory::offset_bytes(&data, sizeof(std::uint32_t));
-	REQUIRE( next == &data+1 );
+	std::uintptr_t base;
+	std::ptrdiff_t offset;
+	std::tie(base, offset) = GENERATE(
+		table<std::uintptr_t, std::ptrdiff_t>({
+			{0x4000, 0},
+			{0x1000, 1},
+			{0x2000, 2},
+			{0x3000, 3},
+			{0x1000, -1},
+			{0x2000, -2},
+			{0x3000, -3}
+		})
+	);
+
+	std::uint32_t* data = reinterpret_cast<std::uint32_t*>(base);
+	std::uint32_t* result = memory::offset_bytes(data, offset*sizeof(std::uint32_t));
+	REQUIRE( result == data + offset );
 }

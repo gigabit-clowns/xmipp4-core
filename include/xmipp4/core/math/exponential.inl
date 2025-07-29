@@ -1,30 +1,4 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file exponential.inl
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Implementation of exponential.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include "exponential.hpp"
 
@@ -72,8 +46,7 @@ inline long double exp(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp(F exponent) noexcept
+F exp(F exponent) noexcept
 {
     return detail::exp(exponent);
 }
@@ -116,8 +89,7 @@ inline long double exp2(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp2(F exponent) noexcept
+F exp2(F exponent) noexcept
 {
     return detail::exp2(exponent);
 }
@@ -131,8 +103,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept
+F exp10(F exponent) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F base = 10;
     return pow(base, exponent);
@@ -165,8 +136,7 @@ inline long double exp10(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept
+F exp10(F exponent) noexcept
 {
     return detail::exp10(exponent);
 }
@@ -209,8 +179,7 @@ inline long double expm1(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-expm1(F exponent) noexcept
+F expm1(F exponent) noexcept
 {
     return detail::expm1(exponent);
 }
@@ -253,8 +222,7 @@ inline long double log(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log(F x) noexcept
+F log(F x) noexcept
 {
     return detail::log(x);
 }
@@ -297,8 +265,7 @@ inline long double log2(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log2(F x) noexcept
+F log2(F x) noexcept
 {
     return detail::log2(x);
 }
@@ -341,8 +308,7 @@ inline long double log10(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log10(F x) noexcept
+F log10(F x) noexcept
 {
     return detail::log10(x);
 }
@@ -353,8 +319,7 @@ log10(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-logn(F n, F x) noexcept
+F logn(F n, F x) noexcept
 {
     return log(x) / log(n);
 }
@@ -397,8 +362,7 @@ inline long double log1p(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log1p(F x) noexcept
+F log1p(F x) noexcept
 {
     return detail::log1p(x);
 }
@@ -406,8 +370,7 @@ log1p(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log_add(F log_x, F log_y) noexcept
+F log_add(F log_x, F log_y) noexcept
 {
     if (log_x < log_y)
     {

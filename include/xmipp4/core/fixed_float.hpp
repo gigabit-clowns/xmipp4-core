@@ -1,44 +1,28 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file fixed_float.hpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Fixed width floating point types.
- * @date 2024-11-25
- * 
- */
-
 #include <half.hpp>
+
+#include <limits>
+#include <type_traits>
 
 namespace xmipp4
 {
 
 /**
+ * @brief Alias for half floating point type.
+ * 
+ */
+using half = half_float::half;
+
+/**
  * @brief 16 bit floating point number representation.
  * 
  */
-using float16_t = half_float::half;
+using float16_t = half;
 static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
+static_assert(std::numeric_limits<float16_t>::is_iec559, "float16_t should be IEC 559 compliant");
 
 /**
  * @brief 32 bit floating point number representation.
@@ -46,6 +30,7 @@ static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
  */
 using float32_t = float;
 static_assert(sizeof(float32_t) == 4, "float32_t should be 4 bytes long");
+static_assert(std::numeric_limits<float32_t>::is_iec559, "float32_t should be IEC 559 compliant");
 
 /**
  * @brief 64 bit floating point number representation.
@@ -53,5 +38,21 @@ static_assert(sizeof(float32_t) == 4, "float32_t should be 4 bytes long");
  */
 using float64_t = double;
 static_assert(sizeof(float64_t) == 8, "float64_t should be 8 bytes long");
+static_assert(std::numeric_limits<float64_t>::is_iec559, "float64_t should be IEC 559 compliant");
+
+/**
+ * @brief Type trait to check if the type is one of the fixed-point 
+ * floating point types.
+ * 
+ * This trait evaluates to true if the type is either float16_t, float32_t, or 
+ * float64_t.
+ * 
+ * @tparam T Type to be checked.
+ */
+template<typename T>
+using is_fixed_float = 
+    std::integral_constant<bool, std::is_same<T, float16_t>::value || 
+                                 std::is_same<T, float32_t>::value || 
+                                 std::is_same<T, float64_t>::value >;
 
 } // namespace xmipp4

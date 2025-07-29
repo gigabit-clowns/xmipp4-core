@@ -1,34 +1,10 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_abs.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for abs.hpp
- * @date 2024-04-11
- * 
- */
-
-#include <catch2/catch_test_macros.hpp>
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <xmipp4/core/math/abs.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <limits>
 #include <cstdint>
@@ -36,26 +12,24 @@
 using namespace xmipp4::math;
 
 
-TEST_CASE( "abs", "[math]" ) 
+TEMPLATE_TEST_CASE( "abs should return the same result when input is positive", "[math]", float, double, long double, int, unsigned int )
 {
-    REQUIRE( abs(static_cast<uint8_t>(1)) == 1 );
-    REQUIRE( abs(static_cast<uint8_t>(255)) == 255 );
-    REQUIRE( abs(static_cast<uint64_t>(1)) == 1 );
-    REQUIRE( abs(static_cast<uint64_t>(545465)) == 545465 );
+    using T = TestType;
+    T input = GENERATE(0, 1, 255, 1000, 123456789);
+    REQUIRE( xmipp4::math::abs(input) == input );
+}
 
-    REQUIRE( abs(static_cast<int8_t>(0)) == 0 );
-    REQUIRE( abs(static_cast<int8_t>(1)) == 1 );
-    REQUIRE( abs(static_cast<int8_t>(-128)) == 128 );
-    REQUIRE( abs(static_cast<int64_t>(0)) == 0 );
-    REQUIRE( abs(static_cast<int64_t>(1)) == 1 );
-    REQUIRE( abs(static_cast<int64_t>(-643214)) == 643214 );
+TEMPLATE_TEST_CASE( "abs should return the same negated result when input is negative", "[math]", float, double, long double, int )
+{
+    using T = TestType;
+    T input = GENERATE(0, 1, 255, 1000, 123456789);
+    REQUIRE( xmipp4::math::abs(-input) == input );
+}
 
-    REQUIRE( abs(0.0f) == 0.0f );
-    REQUIRE( abs(1.0f) == 1.0f );
-    REQUIRE( abs(-1.0f) == 1.0f );
-    REQUIRE( abs(-std::numeric_limits<float>::infinity()) == std::numeric_limits<float>::infinity() );
-    REQUIRE( abs(0.0) == 0.0 );
-    REQUIRE( abs(1.0) == 1.0 );
-    REQUIRE( abs(-1.0) == 1.0 );
-    REQUIRE( abs(-std::numeric_limits<double>::infinity()) == std::numeric_limits<double>::infinity() );
+TEMPLATE_TEST_CASE( "abs should return inf when input is plus or minus inf", "[math]", float, double, long double )
+{
+    using T = TestType;
+    const auto input = std::numeric_limits<T>::infinity();
+    REQUIRE( xmipp4::math::abs(input) == input );
+    REQUIRE( xmipp4::math::abs(-input) == input );
 }

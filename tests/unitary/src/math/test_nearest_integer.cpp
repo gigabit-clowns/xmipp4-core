@@ -1,121 +1,89 @@
-/***************************************************************************
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
- *
- *  All comments concerning this program package may be sent to the
- *  e-mail address 'xmipp@cnb.csic.es'
- ***************************************************************************/
-
-/**
- * @file test_nearest_integer.cpp
- * @author Oier Lauzirika Zarrabeitia (oierlauzi@bizkaia.eu)
- * @brief Tests for nearest_integer.hpp
- * @date 2024-04-15
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <xmipp4/core/math/nearest_integer.hpp>
-
-#include <map>
 
 using namespace xmipp4::math;
 
 
-TEST_CASE( "trunc", "[math]" ) 
+TEMPLATE_TEST_CASE("trunc should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 5.0},
-        {5.78, 5.0},
-    };
+    using T = TestType;
+    T input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(5.0)},
+            {T(5.78), T(5.0)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::trunc(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::trunc(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::trunc(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::trunc(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(xmipp4::math::trunc(input) == Catch::Approx(expected));
+    REQUIRE(xmipp4::math::trunc(-input) == Catch::Approx(-expected));
 }
 
-TEST_CASE( "floor", "[math]" ) 
+TEMPLATE_TEST_CASE("floor should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 5.0},
-        {5.78, 5.0},
-        {-1.0, -1.0},
-        {-5.24, -6.0},
-        {-5.5, -6.0},
-        {-5.78, -6.0},
-    };
+    using T = TestType;
+    T input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(5.0)},
+            {T(5.78), T(5.0)},
+            {T(-1.0), T(-1.0)},
+            {T(-5.24), T(-6.0)},
+            {T(-5.5), T(-6.0)},
+            {T(-5.78), T(-6.0)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::floor(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::floor(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(xmipp4::math::floor(input) == Catch::Approx(expected));
 }
 
-TEST_CASE( "ceil", "[math]" ) 
+TEMPLATE_TEST_CASE("ceil should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 6.0},
-        {5.5, 6.0},
-        {5.78, 6.0},
-        {-1.0, -1.0},
-        {-5.24, -5.0},
-        {-5.5, -5.0},
-        {-5.78, -5.0},
-    };
+    using T = TestType;
+    T input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(6.0)},
+            {T(5.5), T(6.0)},
+            {T(5.78), T(6.0)},
+            {T(-1.0), T(-1.0)},
+            {T(-5.24), T(-5.0)},
+            {T(-5.5), T(-5.0)},
+            {T(-5.78), T(-5.0)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::ceil(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::ceil(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-    }
+    REQUIRE(xmipp4::math::ceil(input) == Catch::Approx(expected));
 }
 
-TEST_CASE( "round", "[math]" ) 
+TEMPLATE_TEST_CASE("round should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {5.24, 5.0},
-        {5.5, 6.0},
-        {5.78, 6.0},
-    };
+    using T = TestType;
+    T input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.0)},
+            {T(5.24), T(5.0)},
+            {T(5.5), T(6.0)},
+            {T(5.78), T(6.0)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::round(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::round(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::round(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::round(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE(xmipp4::math::round(input) == Catch::Approx(expected));
+    REQUIRE(xmipp4::math::round(-input) == Catch::Approx(-expected));
 }

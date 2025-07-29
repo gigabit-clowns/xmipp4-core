@@ -367,7 +367,6 @@ F log1p(F x) noexcept
     return detail::log1p(x);
 }
 
-
 template <typename F>
 inline
 F log_add(F log_x, F log_y) noexcept
@@ -377,7 +376,7 @@ F log_add(F log_x, F log_y) noexcept
         std::swap(log_x, log_y);
     }
 
-    const auto minus_difference = log_x - log_y;
+    const auto minus_difference = log_y - log_x; // -(log_x - log_y)
     return log_x + log1p(exp(minus_difference));
 }
 

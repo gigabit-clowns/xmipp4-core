@@ -6,9 +6,7 @@
 
 #include "array_point_operation.hpp"
 
-#include <vector>
 #include <functional>
-#include <cstddef>
 
 namespace xmipp4 
 {
@@ -17,80 +15,48 @@ namespace multidimensional
 
 array& add(const array& lhs, const array& rhs, array &output)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::plus<>(), 
-        output
-    );
+    return point_operation<2>()({lhs, rhs}, std::plus<>(), output);
 }
 
 std::shared_ptr<array> 
 add(const array& lhs, const array& rhs, array_allocator &allocator)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::plus<>(), 
-        allocator
-    );
+    return point_operation<2>()({lhs, rhs}, std::plus<>(), allocator);
 }
 
 array& subtract(const array& lhs, const array& rhs, array &output)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::minus<>(), 
-        output
-    );
+    return point_operation<2>()({lhs, rhs}, std::minus<>(), output);
 }
 
 std::shared_ptr<array> 
 subtract(const array& lhs, const array& rhs, array_allocator &allocator)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::minus<>(), 
-        allocator
-    );
+    return point_operation<2>()({lhs, rhs}, std::minus<>(), allocator);
 }
 
 array& multiply(const array& lhs, const array& rhs, array &output)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::multiplies<>(), 
-        output
-    );
+    return point_operation<2>()({lhs, rhs}, std::multiplies<>(), output);
 }
 
 std::shared_ptr<array> 
 multiply(const array& lhs, const array& rhs, array_allocator &allocator)
 {
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::multiplies<>(), 
-        allocator
-    );
+    return point_operation<2>()({lhs, rhs}, std::multiplies<>(), allocator);
 }
 
 array& divide(const array& lhs, const array& rhs, array &output)
 {
 
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::divides<>(), 
-        output
-    );
+    return point_operation<2>()({lhs, rhs}, std::divides<>(), output);
 }
 
 std::shared_ptr<array> 
 divide(const array& lhs, const array& rhs, array_allocator &allocator)
 {
 
-    return point_operation(
-        std::array<const array&, 2>{lhs, rhs}, 
-        std::divides<>(), 
-        allocator
-    );
+    return point_operation<2>()({lhs, rhs}, std::divides<>(), allocator);
 }
 
 } // namespace multidimensional

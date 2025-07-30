@@ -13,18 +13,26 @@ namespace multidimensional
 class array;
 class array_allocator;
 
-template <std::size_t N, typename F>
-array& 
-point_operation(const std::array<const array&, N> &inputs, 
-                F &&operation, 
-                array &output );
+template <std::size_t N>
+class point_operation
+{
+public:
+    using input_array_references_type = std::array<const array&, N>;
 
-template <std::size_t N, typename F>
-std::shared_ptr<array>
-point_operation(const std::array<const array&, N> &inputs, 
-                F &&operation, 
-                array_allocator &allocator );
+    template <typename F>
+    array& 
+    operator()(const input_array_references_type &inputs, 
+               F &&operation, 
+               array &output );
 
+    template <typename F>
+    std::shared_ptr<array>
+    operator()(const input_array_references_type &inputs, 
+               F &&operation, 
+               array_allocator &allocator );
+
+
+};
 
 } // namespace multidimensional
 } // namespace xmipp4

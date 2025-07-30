@@ -19,5 +19,7 @@ array& fill_zeros(array& x);
 
 array& fill_ones(array& x);
 
+array& copy(const array& from, array& to);
+
 } // namespace multidimensional
 } // namespace xmipp4

@@ -74,6 +74,23 @@ public:
      * 
      */
     virtual numerical_type get_numeric_type() const noexcept = 0;
+
+    /**
+     * @brief Obtain a view to this array.
+     * 
+     * @return std::shared_ptr<view_type> The view to this array.
+     */
+    XMIPP4_NODISCARD
+    virtual std::shared_ptr<view_type> view() = 0;
+    
+    /**
+     * @brief Obtain a view to this array.
+     * 
+     * @return std::shared_ptr<const_view_type> The view to this array.
+     */
+    XMIPP4_NODISCARD
+    virtual std::shared_ptr<const_view_type> view() const = 0;
+
     /**
      * @brief Apply a set of dynamic subscripts to this layout.
      * 

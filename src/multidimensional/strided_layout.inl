@@ -4,7 +4,7 @@
 
 #include "strided_layout.hpp"
 
-#include "checks.hpp"
+#include <xmipp4/core/multidimensional/checks.hpp>
 
 #include <algorithm>
 

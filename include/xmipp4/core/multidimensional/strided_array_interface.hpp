@@ -198,7 +198,7 @@ public:
      */
     virtual void 
     broadcast_extents_to_layout(std::vector<std::size_t> &extents,
-                                std::size_t trailing_dimensions = 0) = 0;
+                                std::size_t trailing_dimensions = 0) const = 0;
 
     /**
      * @brief Perform a broadcast of the array to match the provided extents.

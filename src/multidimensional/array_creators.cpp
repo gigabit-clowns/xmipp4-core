@@ -12,9 +12,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array;
-class array_allocator;
-
 std::shared_ptr<array> 
 make_empty_array(numerical_type data_type,
                  std::size_t count, 

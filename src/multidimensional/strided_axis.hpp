@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "slice.hpp"
-#include "../platform/constexpr.hpp"
-#include "../platform/attributes.hpp"
+#include <xmipp4/core/multidimensional/slice.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
+#include <xmipp4/core/platform/attributes.hpp>
 
 #include <cstddef>
 

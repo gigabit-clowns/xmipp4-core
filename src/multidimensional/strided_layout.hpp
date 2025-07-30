@@ -6,9 +6,10 @@
 #include <cstddef>
 
 #include "strided_axis.hpp"
-#include "dynamic_subscript.hpp"
-#include "../span.hpp"
-#include "../platform/attributes.hpp"
+
+#include <xmipp4/core/multidimensional/dynamic_subscript.hpp>
+#include <xmipp4/core/span.hpp>
+#include <xmipp4/core/platform/attributes.hpp>
 
 namespace xmipp4 
 {

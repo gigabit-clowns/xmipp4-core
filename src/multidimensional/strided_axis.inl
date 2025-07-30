@@ -2,8 +2,8 @@
 
 #include "strided_axis.hpp"
 
-#include "index.hpp"
-#include "../math/abs.hpp"
+#include <xmipp4/core/multidimensional/index.hpp>
+#include <xmipp4/core/math/abs.hpp>
 
 namespace xmipp4
 {

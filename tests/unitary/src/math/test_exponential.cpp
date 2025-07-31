@@ -67,6 +67,23 @@ TEMPLATE_TEST_CASE( "exp10 should produce correct numerical results", "[math]", 
     REQUIRE( xmipp4::math::exp10(x) == Catch::Approx(expected) );
 }
 
+TEMPLATE_TEST_CASE( "expm1 should produce correct numerical results", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(1.71828182846)},
+            {T(-1.0), T(-0.632120558829)},
+            {T(0.5), T(0.6487212707)},
+            {T(0.1), T(0.105170918076)},
+        })
+    );
+
+    REQUIRE( xmipp4::math::expm1(x) == Catch::Approx(expected) );
+}
+
 TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", float, double, long double ) 
 {
     using T = TestType;
@@ -87,7 +104,7 @@ TEMPLATE_TEST_CASE( "log should produce correct numerical results", "[math]", fl
     REQUIRE( xmipp4::math::log(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log with 0 as input should produce infinity", "[math]", float, double, long double ) 
+TEMPLATE_TEST_CASE( "log with 0 as input should produce negative infinity", "[math]", float, double, long double ) 
 {
     using T = TestType;
     const T value = GENERATE(T(+0.0), T(-0.0));
@@ -121,7 +138,7 @@ TEMPLATE_TEST_CASE( "log2 should produce correct numerical results", "[math]", f
     REQUIRE( xmipp4::math::log2(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log2 with 0 as input should produce infinity", "[math]", float, double, long double ) 
+TEMPLATE_TEST_CASE( "log2 with 0 as input should produce negative infinity", "[math]", float, double, long double ) 
 {
     using T = TestType;
     const T value = GENERATE(T(+0.0), T(-0.0));
@@ -155,7 +172,7 @@ TEMPLATE_TEST_CASE( "log10 should produce correct numerical results", "[math]", 
     REQUIRE( xmipp4::math::log10(x) == Catch::Approx(expected) );
 }
 
-TEMPLATE_TEST_CASE( "log10 with 0 as input should produce infinity", "[math]", float, double, long double ) 
+TEMPLATE_TEST_CASE( "log10 with 0 as input should produce negative infinity", "[math]", float, double, long double ) 
 {
     using T = TestType;
     const T value = GENERATE(T(+0.0), T(-0.0));
@@ -167,4 +184,53 @@ TEMPLATE_TEST_CASE( "log10 with negative values as input should produce NaN", "[
     using T = TestType;
     const T value = GENERATE(T(-1.0), T(-10.0), T(-100.0));
     REQUIRE( std::isnan(xmipp4::math::log10(value)) );
+}
+
+TEMPLATE_TEST_CASE( "log1p should produce correct numerical results", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(1.0), T(0.69314718056)},
+            {T(0.5), T(0.405465108108)},
+            {T(10.0), T(2.3978952728)},
+
+        })
+    );
+
+    REQUIRE( xmipp4::math::log1p(x) == Catch::Approx(expected) );
+}
+
+TEMPLATE_TEST_CASE( "log1p with -1 as input should produce negative infinity", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    const auto value = T(-1.0);
+    REQUIRE( xmipp4::math::log1p(value) == -std::numeric_limits<T>::infinity() );
+}
+
+TEMPLATE_TEST_CASE( "log1p with values less than 1 as input should produce NaN", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    const T value = GENERATE(T(-1.1), T(-10.0), T(-100.0));
+    REQUIRE( std::isnan(xmipp4::math::log1p(value)) );
+}
+
+TEMPLATE_TEST_CASE( "log_add should produce correct numerical results", "[math]", float, double, long double ) 
+{
+    using T = TestType;
+    T x, y, expected;
+    std::tie(x, y, expected) = GENERATE(
+        table<T, T, T>({
+            {T(0.0), T(0.0), T(0.69314718056)},
+            {T(1.0), T(0.0), T(1.31326168752)},
+            {T(1.0), T(1.0), T(1.69314718056)},
+            {T(1.0), T(-1.0), T(1.12692801104)},
+            {T(10.0), T(20.0), T(20.0000453989)},
+        })
+    );
+
+    REQUIRE( xmipp4::math::log_add(x, y) == Catch::Approx(expected) );
+    REQUIRE( xmipp4::math::log_add(y, x) == Catch::Approx(expected) );
 }

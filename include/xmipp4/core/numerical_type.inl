@@ -3,6 +3,7 @@
 #pragma once
 
 #include "numerical_type.hpp"
+#include "fixed_float.hpp"
 
 #include "fixed_float.hpp"
 

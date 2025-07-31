@@ -5,8 +5,11 @@
 #include "numerical_type.hpp"
 #include "fixed_float.hpp"
 
+#include "fixed_float.hpp"
+
 #include <cstdint>
 #include <complex>
+#include <array>
 #include <unordered_map>
 
 namespace xmipp4
@@ -108,6 +111,288 @@ numerical_type make_complex(numerical_type type) noexcept
     default: return numerical_type::unknown;
     } 
 }
+
+XMIPP4_INLINE_CONSTEXPR 
+numerical_type common_type(numerical_type x, numerical_type y) noexcept
+{
+    if (x == numerical_type::unknown || y == numerical_type::unknown)
+    {
+        return numerical_type::unknown;
+    }
+
+    XMIPP4_CONST_CONSTEXPR std::size_t N = 
+        static_cast<std::size_t>(numerical_type::count);
+
+    XMIPP4_CONST_CONSTEXPR std::array<std::array<numerical_type, N>, N> LUT = {
+        std::array<numerical_type, N>{ // numerical_type::int8
+            numerical_type::int8,
+            numerical_type::int8,
+            numerical_type::int16,
+            numerical_type::int16,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::uint8
+            numerical_type::int8,
+            numerical_type::uint8,
+            numerical_type::int16,
+            numerical_type::uint16,
+            numerical_type::int32,
+            numerical_type::uint32,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::int16
+            numerical_type::int16,
+            numerical_type::int16,
+            numerical_type::int16,
+            numerical_type::int16,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::uint16
+            numerical_type::int16,
+            numerical_type::uint16,
+            numerical_type::int16,
+            numerical_type::uint16,
+            numerical_type::int32,
+            numerical_type::uint32,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::int32
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int32,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::uint32
+            numerical_type::int32,
+            numerical_type::uint32,
+            numerical_type::int32,
+            numerical_type::uint32,
+            numerical_type::int32,
+            numerical_type::uint32,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::int64
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::int64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::uint64 
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::int64,
+            numerical_type::uint64,
+            numerical_type::float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::float16
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float16,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::bfloat16
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::brain_float16,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::float32
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float32,
+            numerical_type::float64,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::float64
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::complex_float16
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+            numerical_type::complex_float16,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::complex_float32
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+            numerical_type::complex_float32,
+            numerical_type::complex_float32,
+            numerical_type::complex_float64,
+        },
+        std::array<numerical_type, N>{ // numerical_type::complex_float64
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+            numerical_type::complex_float64,
+        }
+    };
+
+    const auto index1 = static_cast<std::size_t>(x);
+    const auto index2 = static_cast<std::size_t>(y);
+    if (index1 < N && index2 < N)
+    {
+        return LUT[index1][index2];
+    }
+    else
+    {
+        return numerical_type::unknown;
+    }
+}
+
 
 XMIPP4_INLINE_CONSTEXPR 
 const char* to_string(numerical_type type) noexcept

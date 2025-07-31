@@ -1,48 +1,55 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
 #include <xmipp4/core/math/erf.hpp>
 
-#include <map>
-#include <set>
-
 using namespace xmipp4::math;
 
-TEST_CASE( "erf", "[math]" ) 
+TEMPLATE_TEST_CASE("erf should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::map<double, double> ground_truth = 
-    {
-        {0.0, 0.0},
-        {0.1, 0.112462916018285},
-        {0.5, 0.520499877813047},
-        {1.0, 0.842700792949715},
-        {2.0, 0.995322265018953},
-        {10.0, 1.0},
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(0.0)},
+            {T(0.1), T(0.112462916018285)},
+            {T(0.5), T(0.520499877813047)},
+            {T(1.0), T(0.842700792949715)},
+            {T(2.0), T(0.995322265018953)},
+            {T(10.0), T(1.0)},
+        })
+    );
 
-    for(const auto& sample : ground_truth)
-    {
-        REQUIRE( xmipp4::math::erf(sample.first) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::erf(static_cast<float>(sample.first)) == Catch::Approx(sample.second) );
-        REQUIRE( xmipp4::math::erf(-sample.first) == Catch::Approx(-sample.second) );
-        REQUIRE( xmipp4::math::erf(-static_cast<float>(sample.first)) == Catch::Approx(-sample.second) );
-    }
+    REQUIRE( xmipp4::math::erf(x) == Catch::Approx(expected) );
+    REQUIRE( xmipp4::math::erf(-x) == Catch::Approx(-expected) );
 }
 
-TEST_CASE( "erfc", "[math]" ) 
+TEMPLATE_TEST_CASE("erfc should produce correct numerical results", "[math]", float, double, long double)
 {
-    const std::set<double> test_values = 
-    {
-        0.0, 0.1, 3.5, 1.5, 1.0, 100.0
-    };
+    using T = TestType;
+    T x, expected;
+    std::tie(x, expected) = GENERATE(
+        table<T, T>({
+            {T(0.0), T(1.0)},
+            {T(0.1), T(0.887537083982) },
+            {T(0.5), T(0.479500122187) },
+            {T(1.0), T(0.15729920705) },
+            {T(2.0), T(0.004677734981) },
+            {T(100.0), T(0.0)},
+        })
+    );
 
-    for(const auto& sample : test_values)
-    {
-        REQUIRE( xmipp4::math::erfc(sample) == Catch::Approx(1.0 - xmipp4::math::erf(sample)) );
-        REQUIRE( xmipp4::math::erfc(static_cast<float>(sample)) == Catch::Approx(1.0 - xmipp4::math::erf(sample)) );
-        REQUIRE( xmipp4::math::erfc(-sample) == Catch::Approx(1.0 - xmipp4::math::erf(-sample)) );
-        REQUIRE( xmipp4::math::erfc(-static_cast<float>(sample)) == Catch::Approx(1.0 - xmipp4::math::erf(-sample)) );
-    }
+    REQUIRE( xmipp4::math::erfc(x) == Catch::Approx(expected) );
+    REQUIRE( xmipp4::math::erfc(-x) == Catch::Approx(T(2.0) - expected) );
+}
+
+TEMPLATE_TEST_CASE("erfc and erf should produce complementary results", "[math]", double)
+{
+    using T = TestType;
+    const auto x = GENERATE(T(0.0), T(0.1), T(3.5), T(1.5), T(1.0), T(100.0));
+    REQUIRE(xmipp4::math::erfc(x) == Catch::Approx(T(1.0) - xmipp4::math::erf(x)));
 }

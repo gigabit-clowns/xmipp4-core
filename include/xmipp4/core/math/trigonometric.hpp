@@ -13,12 +13,10 @@ namespace math
 {
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cos(F angle) noexcept;
+F cos(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sin(F angle) noexcept;
+F sin(F angle) noexcept;
 
 template <typename F>
 typename std::enable_if<std::is_floating_point<F>::value, void>::type
@@ -29,24 +27,19 @@ typename std::enable_if<std::is_floating_point<F>::value, std::pair<F, F>>::type
 sincos(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-tan(F angle) noexcept;
+F tan(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-acos(F ratio) noexcept;
+F acos(F ratio) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-asin(F ratio) noexcept;
+F asin(F ratio) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atan(F ratio) noexcept;
+F atan(F ratio) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atan2(F y, F x) noexcept;
+F atan2(F y, F x) noexcept;
 
 template <typename I>
 XMIPP4_CONSTEXPR

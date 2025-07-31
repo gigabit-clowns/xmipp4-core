@@ -6,6 +6,7 @@
 #include "../platform/constexpr.hpp"
 
 #include <cstdint>
+#include <cstddef>
 
 namespace xmipp4
 {

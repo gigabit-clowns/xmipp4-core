@@ -7,27 +7,24 @@
 using namespace xmipp4;
 
 
-TEST_CASE( "version constructor and getters", "[version]" ) 
+TEST_CASE( "version constructor should produce expected values", "[version]" ) 
 {
-    SECTION( "piecewise constructor" )
-    {
-        version v(1234, 567, 890);
-        REQUIRE( v.get_major() == 1234 );
-        REQUIRE( v.get_minor() == 567 );
-        REQUIRE( v.get_patch() == 890 );
-    }
-
-    SECTION( "copy constructor" )
-    {
-        version v(2345, 678, 901);
-        version v2(v);
-        REQUIRE( v2.get_major() == 2345 );
-        REQUIRE( v2.get_minor() == 678 );
-        REQUIRE( v2.get_patch() == 901 );
-    }
+    version v(1234, 567, 890);
+    REQUIRE( v.get_major() == 1234 );
+    REQUIRE( v.get_minor() == 567 );
+    REQUIRE( v.get_patch() == 890 );
 }
 
-TEST_CASE( "version setters and getters", "[version]" ) 
+TEST_CASE( "version copy constructor should produce expected values", "[version]" ) 
+{
+    version v(2345, 678, 901);
+    version v2(v);
+    REQUIRE( v2.get_major() == 2345 );
+    REQUIRE( v2.get_minor() == 678 );
+    REQUIRE( v2.get_patch() == 901 );
+}
+
+TEST_CASE( "version setters should modify stored values", "[version]" ) 
 {
     version v(1, 2, 3);
     v.set_major(3971);
@@ -38,7 +35,7 @@ TEST_CASE( "version setters and getters", "[version]" )
     REQUIRE( v.get_patch() == 997 );
 }
 
-TEST_CASE( "version overflow", "[version]" ) 
+TEST_CASE( "version should overflow with very large values", "[version]" ) 
 {
     version v(4096, 1024, 1024);
     REQUIRE( v.get_major() == 0 );

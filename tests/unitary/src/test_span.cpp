@@ -8,7 +8,7 @@
 
 using namespace xmipp4;
 
-TEST_CASE( "default construct span", "[span]" )
+TEST_CASE( "span default construction yields empty span", "[span]" )
 {
     span<int, 0> empty_span;
     REQUIRE(empty_span.size() == 0);
@@ -19,7 +19,7 @@ TEST_CASE( "default construct span", "[span]" )
     REQUIRE(dynamic_span.data() == nullptr);
 }
 
-TEST_CASE( "construct span from data and size", "[span]" )
+TEST_CASE( "span construction from data and size", "[span]" )
 {
     std::array<int, 8> data;
 
@@ -32,7 +32,7 @@ TEST_CASE( "construct span from data and size", "[span]" )
     REQUIRE(dynamic_span.data() == data.data());
 }
 
-TEST_CASE( "copy construct span", "[span]" )
+TEST_CASE( "span copy construction preserves data and size", "[span]" )
 {
     std::array<int, 8> data;
 

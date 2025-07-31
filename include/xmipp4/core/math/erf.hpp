@@ -10,12 +10,10 @@ namespace math
 {
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-erf(F x) noexcept;
+F erf(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-erfc(F x) noexcept;
+F erfc(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

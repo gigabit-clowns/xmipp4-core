@@ -45,8 +45,7 @@ inline long double trunc(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-trunc(F x) noexcept
+F trunc(F x) noexcept
 {
     return detail::trunc(x);
 }
@@ -89,8 +88,7 @@ inline long double floor(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-floor(F x) noexcept
+F floor(F x) noexcept
 {
     return detail::floor(x);
 }
@@ -133,8 +131,7 @@ inline long double ceil(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-ceil(F x) noexcept
+F ceil(F x) noexcept
 {
     return detail::ceil(x);
 }
@@ -177,8 +174,7 @@ inline long double round(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-round(F x) noexcept
+F round(F x) noexcept
 {
     return detail::round(x);
 }

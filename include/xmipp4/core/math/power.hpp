@@ -27,20 +27,16 @@ typename std::enable_if<std::is_floating_point<F>::value, F>::type
 square(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-pow(F base, F exponent) noexcept;
+F pow(F base, F exponent) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sqrt(F x) noexcept;
+F sqrt(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-rsqrt(F x) noexcept;
+F rsqrt(F x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cbrt(F x) noexcept;
+F cbrt(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

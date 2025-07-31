@@ -148,6 +148,8 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
             directory, 
             e.what()
         );
+
+        std::ignore = e; // To avoid compiler warnings with log disabled
     }
 
     for (const auto& entry : iterator) 

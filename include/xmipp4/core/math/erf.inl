@@ -45,8 +45,7 @@ inline long double erf(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-erf(F x) noexcept
+F erf(F x) noexcept
 {
     return detail::erf(x);
 }
@@ -89,8 +88,7 @@ inline long double erfc(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-erfc(F x) noexcept
+F erfc(F x) noexcept
 {
     return detail::erfc(x);
 }

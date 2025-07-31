@@ -22,8 +22,7 @@ typename std::enable_if<std::is_unsigned<U>::value, T>::type
 large_factorial(U x) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-gamma(F x) noexcept;
+F gamma(F x) noexcept;
 
 } // namespace math
 } // namespace xmipp4

@@ -11,8 +11,7 @@ namespace math
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline0(F x) noexcept
+F bspline0(F x) noexcept
 {
     const auto ax = std::abs(x);
     return ax < F(0.5) ? F(1.0) : F(0.0);
@@ -20,8 +19,7 @@ bspline0(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline1(F x) noexcept
+F bspline1(F x) noexcept
 {
     const auto ax = std::abs(x);
     return ax < F(1.0) ? F(1.0) - ax : F(0.0);
@@ -29,8 +27,7 @@ bspline1(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline2(F x) noexcept
+F bspline2(F x) noexcept
 {
     F result = 0.0;
 
@@ -49,8 +46,7 @@ bspline2(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-bspline3(F x) noexcept
+F bspline3(F x) noexcept
 {
     F result = 0.0;
 

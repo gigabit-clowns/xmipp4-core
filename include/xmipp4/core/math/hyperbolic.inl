@@ -45,8 +45,7 @@ inline long double cosh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cosh(F angle) noexcept
+F cosh(F angle) noexcept
 {
     return detail::cosh(angle);
 }
@@ -89,8 +88,7 @@ inline long double sinh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sinh(F angle) noexcept
+F sinh(F angle) noexcept
 {
     return detail::sinh(angle);
 }
@@ -133,8 +131,7 @@ inline long double tanh(long double angle) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-tanh(F angle) noexcept
+F tanh(F angle) noexcept
 {
     return detail::tanh(angle);
 }
@@ -177,8 +174,7 @@ inline long double acosh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-acosh(F ratio) noexcept
+F acosh(F ratio) noexcept
 {
     return detail::acosh(ratio);
 }
@@ -222,8 +218,7 @@ inline long double asinh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-asinh(F ratio) noexcept
+F asinh(F ratio) noexcept
 {
     return detail::asinh(ratio);
 }
@@ -266,8 +261,7 @@ inline long double atanh(long double ratio) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atanh(F ratio) noexcept
+F atanh(F ratio) noexcept
 {
     return detail::atanh(ratio);
 }

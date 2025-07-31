@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/axis_3d.hpp>
 
@@ -9,177 +10,244 @@ using namespace xmipp4;
 
 TEST_CASE( "operator-", "[axis_3d]" ) 
 {
-    REQUIRE( -axis_3d::zero == axis_3d::zero );
-    REQUIRE( -axis_3d::x == axis_3d::negative_x );
-    REQUIRE( -axis_3d::y == axis_3d::negative_y );
-    REQUIRE( -axis_3d::z == axis_3d::negative_z );
-    REQUIRE( -axis_3d::negative_x == axis_3d::x );
-    REQUIRE( -axis_3d::negative_y == axis_3d::y );
-    REQUIRE( -axis_3d::negative_z == axis_3d::z );
+    axis_3d input;
+    axis_3d expected;
+    std::tie(input, expected) = GENERATE(
+        table<axis_3d, axis_3d>({
+            {axis_3d::zero, axis_3d::zero},
+            {axis_3d::x, axis_3d::negative_x},
+            {axis_3d::y, axis_3d::negative_y},
+            {axis_3d::z, axis_3d::negative_z},
+            {axis_3d::negative_x, axis_3d::x},
+            {axis_3d::negative_y, axis_3d::y},
+            {axis_3d::negative_z, axis_3d::z}
+        })
+    );
+
+    REQUIRE( -input == expected );
 }
 
-TEST_CASE( "is_positive", "[axis_3d]" ) 
+TEST_CASE( "is_positive should return true with positive axis_3d", "[axis_3d]" ) 
 {
-    REQUIRE( is_positive(axis_3d::zero) == false );
-    REQUIRE( is_positive(axis_3d::x) == true );
-    REQUIRE( is_positive(axis_3d::y) == true );
-    REQUIRE( is_positive(axis_3d::z) == true );
-    REQUIRE( is_positive(axis_3d::negative_x) == false );
-    REQUIRE( is_positive(axis_3d::negative_y) == false );
-    REQUIRE( is_positive(axis_3d::negative_z) == false );
+    const auto axis = GENERATE(
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+
+    REQUIRE( is_positive(axis) == true );
 }
 
-TEST_CASE( "is_negative", "[axis_3d]" ) 
+TEST_CASE( "is_positive should return false with non positive axis_3d", "[axis_3d]" ) 
 {
-    REQUIRE( is_negative(axis_3d::zero) == false );
-    REQUIRE( is_negative(axis_3d::x) == false );
-    REQUIRE( is_negative(axis_3d::y) == false );
-    REQUIRE( is_negative(axis_3d::z) == false );
-    REQUIRE( is_negative(axis_3d::negative_x) == true );
-    REQUIRE( is_negative(axis_3d::negative_y) == true );
-    REQUIRE( is_negative(axis_3d::negative_z) == true );
+    const auto axis = GENERATE(
+        axis_3d::zero,
+        axis_3d::negative_x,
+        axis_3d::negative_y,
+        axis_3d::negative_z
+    );
+
+    REQUIRE( is_positive(axis) == false );
 }
 
-TEST_CASE( "next_axis", "[axis_3d]" ) 
+TEST_CASE( "is_negative should return true with negative axis_3d", "[axis_3d]" ) 
 {
-    REQUIRE( next_axis(axis_3d::zero) == axis_3d::zero );
-    REQUIRE( next_axis(axis_3d::x) == axis_3d::y );
-    REQUIRE( next_axis(axis_3d::y) == axis_3d::z );
-    REQUIRE( next_axis(axis_3d::z) == axis_3d::x );
-    REQUIRE( next_axis(axis_3d::negative_x) == axis_3d::negative_z );
-    REQUIRE( next_axis(axis_3d::negative_y) == axis_3d::negative_x );
-    REQUIRE( next_axis(axis_3d::negative_z) == axis_3d::negative_y );
+    const auto axis = GENERATE(
+        axis_3d::negative_x,
+        axis_3d::negative_y,
+        axis_3d::negative_z
+    );
+
+    REQUIRE( is_negative(axis) == true );
 }
 
-TEST_CASE( "dot", "[axis_3d]" ) 
+TEST_CASE( "is_negative should return false with non negative axis_3d", "[axis_3d]" ) 
 {
-    SECTION( "One of the elements is zero" )
-    {
-        REQUIRE( dot(axis_3d::zero, axis_3d::zero) == 0 );
-        REQUIRE( dot(axis_3d::x, axis_3d::zero) == 0 );
-        REQUIRE( dot(axis_3d::zero, axis_3d::y) == 0 );
-        REQUIRE( dot(axis_3d::negative_z, axis_3d::zero) == 0 );
-    }
-    
-    SECTION( "Same axis" )
-    {
-        REQUIRE( dot(axis_3d::x, axis_3d::x) == 1 );
-        REQUIRE( dot(axis_3d::y, axis_3d::y) == 1 );
-        REQUIRE( dot(axis_3d::z, axis_3d::z) == 1 );
-        REQUIRE( dot(axis_3d::negative_x, axis_3d::negative_x) == 1 );
-        REQUIRE( dot(axis_3d::negative_y, axis_3d::negative_y) == 1 );
-        REQUIRE( dot(axis_3d::negative_z, axis_3d::negative_z) == 1 );
-    }
-    
-    SECTION( "Opposite axis" )
-    {
-        REQUIRE( dot(axis_3d::x, axis_3d::negative_x) == -1 );
-        REQUIRE( dot(axis_3d::y, axis_3d::negative_y) == -1 );
-        REQUIRE( dot(axis_3d::z, axis_3d::negative_z) == -1 );
-        REQUIRE( dot(axis_3d::negative_x, axis_3d::x) == -1 );
-        REQUIRE( dot(axis_3d::negative_y, axis_3d::y) == -1 );
-        REQUIRE( dot(axis_3d::negative_z, axis_3d::z) == -1 );
-    }
-    
-    SECTION( "Different axis" )
-    {
-        REQUIRE( dot(axis_3d::x, axis_3d::y) == 0 );
-        REQUIRE( dot(axis_3d::y, axis_3d::negative_x) == 0 );
-        REQUIRE( dot(axis_3d::negative_z, axis_3d::negative_y) == 0 );
-    }
+    const auto axis = GENERATE(
+        axis_3d::zero,
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+
+    REQUIRE( is_negative(axis) == false );
 }
 
-TEST_CASE( "cross", "[axis_3d]" ) 
+TEST_CASE( "next_axis should return the next axis_3d in sequence", "[axis_3d]" ) 
 {
-    SECTION( "One of the elements is zero" )
-    {
-        REQUIRE( cross(axis_3d::zero, axis_3d::zero) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::x, axis_3d::zero) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::zero, axis_3d::y) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_z, axis_3d::zero) == axis_3d::zero );
-    }
+    axis_3d input, expected;
+    std::tie(input, expected) = GENERATE(
+        table<axis_3d, axis_3d>({
+            {axis_3d::zero, axis_3d::zero},
+            {axis_3d::x, axis_3d::y},
+            {axis_3d::y, axis_3d::z},
+            {axis_3d::z, axis_3d::x},
+            {axis_3d::negative_x, axis_3d::negative_z},
+            {axis_3d::negative_y, axis_3d::negative_x},
+            {axis_3d::negative_z, axis_3d::negative_y}
+        })
+    );
+
+    REQUIRE( next_axis(input) == expected );
+}
+
+TEST_CASE( "dot product with axis_3d should return zero when one of the inputs is zero", "[axis_3d]" ) 
+{
+    const auto axis = GENERATE(
+        axis_3d::zero,
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+    const auto zero = axis_3d::zero;
+
+    REQUIRE( dot(axis, zero) == 0 );
+    REQUIRE( dot(zero, axis) == 0 );
+    REQUIRE( dot(-axis, zero) == 0 );
+    REQUIRE( dot(zero, -axis) == 0 );
+}
     
-    SECTION( "Same axis" )
-    {
-        REQUIRE( cross(axis_3d::x, axis_3d::x) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::y, axis_3d::y) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::z, axis_3d::z) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_x, axis_3d::negative_x) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_y, axis_3d::negative_y) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_z, axis_3d::negative_z) == axis_3d::zero );
-    }
+TEST_CASE( "dot product with axis_3d should return one when both axis_3d-s are non-zero and equal", "[axis_3d]" ) 
+{
+    const auto axis = GENERATE(
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+
+    REQUIRE( dot(axis, axis) == 1 );
+    REQUIRE( dot(-axis, -axis) == 1 );
+}
+
+TEST_CASE( "dot product with axis_3d should return minus one when both axis_3d-s are opposite", "[axis_3d]" ) 
+{
+    const auto axis = GENERATE(
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+
+    REQUIRE( dot(axis, -axis) == -1 );
+    REQUIRE( dot(-axis, axis) == -1 );
+}
+
+TEST_CASE( "dot product with axis_3d should return zero when axis_3d-s are orthogonal", "[axis_3d]" ) 
+{
+    axis_3d a, b;
+    std::tie(a, b) = GENERATE(
+        table<axis_3d, axis_3d>({
+            {axis_3d::x, axis_3d::y},
+            {axis_3d::z, axis_3d::x},
+            {axis_3d::y, axis_3d::negative_x},
+            {axis_3d::negative_z, axis_3d::negative_y},
+            {axis_3d::x, axis_3d::negative_y}
+        })
+    );
+
+
+    REQUIRE( dot(a, b) == 0 );
+    REQUIRE( dot(b, a) == 0 );
+}
+
+TEST_CASE( "cross product with axis_3d should return zero when one of the inputs is zero", "[axis_3d]" ) 
+{
+    const auto axis = GENERATE(
+        axis_3d::zero,
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z,
+        axis_3d::negative_x,
+        axis_3d::negative_y,
+        axis_3d::negative_z
+    );
+    const auto zero = axis_3d::zero;
+
+    REQUIRE( cross(axis, zero) == axis_3d::zero );
+    REQUIRE( cross(zero, axis) == axis_3d::zero );
+}
     
-    SECTION( "Opposite axis" )
-    {
-        REQUIRE( cross(axis_3d::x, axis_3d::negative_x) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::y, axis_3d::negative_y) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::z, axis_3d::negative_z) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_x, axis_3d::x) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_y, axis_3d::y) == axis_3d::zero );
-        REQUIRE( cross(axis_3d::negative_z, axis_3d::z) == axis_3d::zero );
-    }
-    
-    SECTION( "Different axis" )
-    {
-        SECTION( "Standard basis" )
-        {
-            REQUIRE( cross(axis_3d::x, axis_3d::y) == axis_3d::z );
-            REQUIRE( cross(axis_3d::y, axis_3d::z) == axis_3d::x );
-            REQUIRE( cross(axis_3d::z, axis_3d::x) == axis_3d::y );
-        }
-        SECTION( "Reversed standard basis" )
-        {
-            REQUIRE( cross(axis_3d::y, axis_3d::x) == axis_3d::negative_z );
-            REQUIRE( cross(axis_3d::z, axis_3d::y) == axis_3d::negative_x );
-            REQUIRE( cross(axis_3d::x, axis_3d::z) == axis_3d::negative_y );
-        }
-        SECTION( "Random combinations" )
-        {
-            REQUIRE( cross(axis_3d::negative_y, axis_3d::x) == axis_3d::z );
-            REQUIRE( cross(axis_3d::z, axis_3d::negative_y) == axis_3d::x );
-            REQUIRE( cross(axis_3d::negative_z, axis_3d::negative_y) == axis_3d::negative_x );
-            REQUIRE( cross(axis_3d::negative_x, axis_3d::z) == axis_3d::y );
-            REQUIRE( cross(axis_3d::negative_x, axis_3d::negative_y) == axis_3d::z );
-        }
-    }
+TEST_CASE( "cross product with axis_3d should return zero when both axis_3d-s are equal or opposite", "[axis_3d]" ) 
+{
+    const auto axis = GENERATE(
+        axis_3d::x,
+        axis_3d::y,
+        axis_3d::z
+    );
+
+    REQUIRE( cross(axis, axis) == axis_3d::zero );
+    REQUIRE( cross(axis, -axis) == axis_3d::zero );
+    REQUIRE( cross(-axis, axis) == axis_3d::zero );
+    REQUIRE( cross(-axis, -axis) == axis_3d::zero );
+}
+
+TEST_CASE( "cross product with othrogonal axis_3d should return the correct result", "[axis_3d]" ) 
+{
+    axis_3d a, b, expected;
+    std::tie(a, b, expected) = GENERATE(
+        table<axis_3d, axis_3d, axis_3d>({
+            {axis_3d::x, axis_3d::y, axis_3d::z},
+            {axis_3d::y, axis_3d::z, axis_3d::x},
+            {axis_3d::z, axis_3d::x, axis_3d::y}
+        })
+    );
+
+    REQUIRE( cross(a, b) == expected );
+    REQUIRE( cross(a, -b) == -expected );
+    REQUIRE( cross(-a, b) == -expected );
+    REQUIRE( cross(-a, -b) == expected );
+
+    REQUIRE( cross(b, a) == -expected );
+    REQUIRE( cross(b, -a) == expected );
+    REQUIRE( cross(-b, a) == expected );
+    REQUIRE( cross(-b, -a) == -expected );
 }
 
 TEST_CASE( "to_string with axis_3d should produce correct results", "[axis_3d]" ) 
 {
-    REQUIRE( std::string(to_string(axis_3d::x)) == "x" ); 
-    REQUIRE( std::string(to_string(axis_3d::y)) == "y" ); 
-    REQUIRE( std::string(to_string(axis_3d::z)) == "z" ); 
-    REQUIRE( std::string(to_string(axis_3d::zero)) == "0" ); 
-    REQUIRE( std::string(to_string(axis_3d::negative_x)) == "-x" ); 
-    REQUIRE( std::string(to_string(axis_3d::negative_y)) == "-y" ); 
-    REQUIRE( std::string(to_string(axis_3d::negative_z)) == "-z" ); 
+    axis_3d input;
+    std::string expected;
+    std::tie(input, expected) = GENERATE(
+        table<axis_3d, std::string>({
+            {axis_3d::x, "x"},
+            {axis_3d::y, "y"},
+            {axis_3d::z, "z"},
+            {axis_3d::zero, "0"},
+            {axis_3d::negative_x, "-x"},
+            {axis_3d::negative_y, "-y"},
+            {axis_3d::negative_z, "-z"}
+        })
+    );
+
+    REQUIRE( std::string(to_string(input)) == expected );
 }
 
 TEST_CASE( "from_string with axis_3d should produce correct results", "[axis_3d]" ) 
 {
-   axis_3d axis;
+    std::string input;
+    axis_3d expected_axis;
+    bool expected_result;
+    std::tie(input, expected_axis, expected_result) = GENERATE(
+        table<std::string, axis_3d, bool>({
+            {"0", axis_3d::zero, true},
+            {"zero", axis_3d::zero, true},
+            {"x", axis_3d::x, true},
+            {"+x", axis_3d::x, true},
+            {"y", axis_3d::y, true},
+            {"+y", axis_3d::y, true},
+            {"z", axis_3d::z, true},
+            {"+z", axis_3d::z, true},
+            {"-x", axis_3d::negative_x, true},
+            {"-y", axis_3d::negative_y, true},
+            {"-z", axis_3d::negative_z, true},
+            {"invalid", axis_3d::zero, false}
+        })
+    );
 
-   REQUIRE( from_string("0", axis) ); 
-   REQUIRE( axis == axis_3d::zero ); 
-   REQUIRE( from_string("zero", axis) ); 
-   REQUIRE( axis == axis_3d::zero ); 
-   REQUIRE( from_string("x", axis) ); 
-   REQUIRE( axis == axis_3d::x ); 
-   REQUIRE( from_string("+x", axis) ); 
-   REQUIRE( axis == axis_3d::x ); 
-   REQUIRE( from_string("y", axis) ); 
-   REQUIRE( axis == axis_3d::y ); 
-   REQUIRE( from_string("+y", axis) ); 
-   REQUIRE( axis == axis_3d::y ); 
-   REQUIRE( from_string("z", axis) ); 
-   REQUIRE( axis == axis_3d::z ); 
-   REQUIRE( from_string("+z", axis) ); 
-   REQUIRE( axis == axis_3d::z ); 
-   REQUIRE( from_string("-x", axis) ); 
-   REQUIRE( axis == axis_3d::negative_x ); 
-   REQUIRE( from_string("-y", axis) ); 
-   REQUIRE( axis == axis_3d::negative_y ); 
-   REQUIRE( from_string("-z", axis) ); 
-   REQUIRE( axis == axis_3d::negative_z ); 
-   REQUIRE( !from_string("invalid", axis) ); 
+    axis_3d axis;
+    bool result = from_string(input, axis);
+    REQUIRE( result == expected_result );
+    if (result)
+    {
+        REQUIRE( axis == expected_axis );
+    }
 }

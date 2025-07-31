@@ -69,8 +69,7 @@ inline long double gamma(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-gamma(F x) noexcept
+F gamma(F x) noexcept
 {
     return detail::gamma(x);
 }

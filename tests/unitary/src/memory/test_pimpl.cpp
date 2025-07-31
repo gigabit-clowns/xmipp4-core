@@ -23,7 +23,7 @@ struct test_implementation
 using test_pimpl = memory::pimpl<test_implementation>;
 
 
-TEST_CASE( "construct a pointer to implementation", "[pimpl]" ) 
+TEST_CASE( "pimpl constructor initializes implementation correctly", "[pimpl]" ) 
 {
     test_pimpl x(1, 2.3, "Lorem ipsum");
     REQUIRE( static_cast<bool>(x) == true );
@@ -41,7 +41,7 @@ TEST_CASE( "construct a pointer to implementation", "[pimpl]" )
     REQUIRE( x->third == "Hello world" );
 }
 
-TEST_CASE( "construct a pointer to implementation from other", "[pimpl]" ) 
+TEST_CASE( "pimpl copy and move semantics behave as expected", "[pimpl]" ) 
 {
     test_pimpl x(1, 2.3, "Lorem ipsum");
 
@@ -115,7 +115,7 @@ TEST_CASE( "construct a pointer to implementation from other", "[pimpl]" )
     }
 }
 
-TEST_CASE( "construct a deferred pointer to implementation", "[pimpl]" ) 
+TEST_CASE( "pimpl defer_construct creates empty implementation", "[pimpl]" ) 
 {
     test_pimpl x(memory::defer_construct);
     REQUIRE( static_cast<bool>(x) == false );

@@ -75,8 +75,7 @@ inline long double pow(long double base, long double exp) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-pow(F base, F exp) noexcept
+F pow(F base, F exp) noexcept
 {
     return detail::pow(base, exp);
 }
@@ -119,16 +118,14 @@ inline long double sqrt(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sqrt(F x) noexcept
+F sqrt(F x) noexcept
 {
     return detail::sqrt(x);
 }
 
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-rsqrt(F x) noexcept
+F rsqrt(F x) noexcept
 {
     return F(1) / sqrt(x);
 }
@@ -171,8 +168,7 @@ inline long double cbrt(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cbrt(F x) noexcept
+F cbrt(F x) noexcept
 {
     return detail::cbrt(x);
 }

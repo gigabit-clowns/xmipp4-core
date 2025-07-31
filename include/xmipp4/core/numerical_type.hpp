@@ -37,6 +37,10 @@ enum class numerical_type
     complex_float16,
     complex_float32,
     complex_float64,
+
+    // Add here
+
+    count
 };
 
 /**
@@ -101,6 +105,16 @@ XMIPP4_CONSTEXPR bool is_complex(numerical_type type) noexcept;
  * @return numerical_type.
  */
 XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
+
+/**
+ * @brief Get the common type of two numerical types.
+ * 
+ * @param x First numerical type.
+ * @param y Second numerical type.
+ * @return numerical_type The common type.
+ */
+XMIPP4_CONSTEXPR 
+numerical_type common_type(numerical_type x, numerical_type y) noexcept;
 
 
 

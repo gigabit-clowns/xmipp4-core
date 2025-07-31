@@ -57,7 +57,7 @@ TEST_CASE( "from_string with numerical_type should produce correct results", "[n
             {"complex_float16", true, numerical_type::complex_float16},
             {"complex_float32", true, numerical_type::complex_float32},
             {"complex_float64", true, numerical_type::complex_float64},
-            {"invalid", false, numerical_type::unknown} // el valor no importa si es inválido
+            {"invalid", false, numerical_type::unknown} 
         })
     );
 

@@ -5,7 +5,6 @@ add_library(faulty_plugin1 MODULE ${SOURCES})
 set_target_properties(
 	faulty_plugin1
 	PROPERTIES 
-		CXX_STANDARD 20
 		DEFINE_SYMBOL "XMIPP4_FAULTY_PLUGIN1_EXPORTING"
 )
 target_link_libraries(

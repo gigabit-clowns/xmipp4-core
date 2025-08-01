@@ -23,17 +23,15 @@ dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
 {
 }
 
-template <typename I, typename>
 XMIPP4_INLINE_CONSTEXPR
-dynamic_subscript::dynamic_subscript(I index) noexcept
+dynamic_subscript::dynamic_subscript(std::ptrdiff_t index) noexcept
     : m_data{index}
     , m_type(subscript_type::index)
 {
 }
 
-template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR
-dynamic_subscript::dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept
+dynamic_subscript::dynamic_subscript(const dynamic_slice &slice) noexcept
     : m_data{
         static_cast<std::ptrdiff_t>(slice.get_start()), 
         static_cast<std::ptrdiff_t>(slice.get_count()), 

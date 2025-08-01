@@ -58,26 +58,20 @@ public:
     /**
      * @brief Construct a dynamic_subscript holding an index.
      * 
-     * @tparam I Index type. 
      * @param index The index that is assigned to this object.
 
      */
-    template <typename I, typename = typename std::enable_if<is_index<I>::value>::type>
     XMIPP4_CONSTEXPR
-    dynamic_subscript(I index) noexcept;
+    dynamic_subscript(std::ptrdiff_t index) noexcept;
 
     /**
      * @brief Construct a dynamic_subscript holding a slice.
      * 
-     * @tparam Start Type of the start value.
-     * @tparam Stop Type of the stop value.
-     * @tparam Step Type of the step value.
      * @param slice the slice that is assigned to this object.
      * 
      */
-    template <typename Start, typename Stop, typename Step>
     XMIPP4_CONSTEXPR
-    dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept;
+    dynamic_subscript(const dynamic_slice &slice) noexcept;
 
     dynamic_subscript(const dynamic_subscript &other) = default;
     dynamic_subscript(dynamic_subscript &&other) = default;

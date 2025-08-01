@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#pragma once
+#include <xmipp4/core/multidimensional/index.hpp>
 
-#include "index.hpp"
-
-#include <type_traits>
 #include <sstream>
 #include <stdexcept>
 
@@ -13,12 +10,9 @@ namespace xmipp4
 namespace multidimensional
 {
 
-template <typename T>
-inline
-typename std::enable_if<is_index<T>::value, std::size_t>::type
-sanitize_index(T index, std::size_t extent)
+std::size_t sanitize_index(std::ptrdiff_t index, std::size_t extent)
 {
-    auto result = static_cast<std::ptrdiff_t>(index);
+    auto result = index;
     
     if (result < 0)
     {

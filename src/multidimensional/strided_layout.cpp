@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#pragma once
-
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
-
-#include <xmipp4/core/multidimensional/checks.hpp>
 
 #include "strided_axis.hpp"
 
@@ -16,6 +12,46 @@ namespace xmipp4
 {
 namespace multidimensional
 {
+
+template <typename ForwardIt>
+static
+void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
+{
+    // Based on:
+    // https://en.cppreference.com/w/cpp/algorithm/is_permutation
+    // The former function could be re-used, provided that something
+    // like boost::counting_iterator is available.
+
+    if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
+    {
+        throw std::invalid_argument(
+            "Axis permutation's length does not match the required count"
+        );
+    }
+
+    // Skip common prefix
+    std::size_t i = 0;
+    while (first != last && *first == i)
+    {
+        ++first;
+        ++i;
+    }
+
+    // For the rest, check that it is a permutation
+    while (i < count)
+    {
+        // Ensure the current value appears in the range.
+        auto ite = std::find(first, last, i);
+        if (ite == last)
+        {
+            std::ostringstream oss;
+            oss << "Value " << i << " is missing in the axis permutation";
+            throw std::invalid_argument(oss.str());
+        }
+
+        ++i;
+    }
+}
 
 class apply_subscripts_helper
 {
@@ -170,6 +206,8 @@ private:
 class strided_layout::implementation
 {
 public:
+    implementation() = default;
+
     implementation(std::vector<strided_axis> &&axes,
                    std::ptrdiff_t offset ) noexcept
         : m_axes(std::move(axes))
@@ -377,9 +415,9 @@ public:
 private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
+    numerical_type m_data_type;
 
 };
-
 
 
 
@@ -420,33 +458,71 @@ strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 XMIPP4_NODISCARD
 strided_layout strided_layout::transpose() const
 {
-
+    if (get_rank() > 1)
+    {   
+        XMIPP4_ASSERT( m_implementation );
+        return strided_layout(m_implementation->transpose());
+    }
+    else
+    {
+        return *this; // Empty or single axis. Not modified.
+    }
 }
 
 XMIPP4_NODISCARD
 strided_layout strided_layout::permute(span<const std::size_t> order) const
 {
-
+    if (m_implementation)
+    {
+        return strided_layout(m_implementation->permute(order));
+    }
+    else
+    {
+        implementation().permute(order); // Arg validation
+        return strided_layout();
+    }
 }
 
 XMIPP4_NODISCARD
 strided_layout 
 strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
 {
-
+    if (m_implementation)
+    {
+        return strided_layout(m_implementation->swap_axes(axis1, axis2));
+    }
+    else
+    {
+        throw std::logic_error("Cannot swap axes on an empty layout");
+    }
 }
 
 XMIPP4_NODISCARD
 strided_layout strided_layout::squeeze() const
 {
-
+    if (m_implementation)
+    {
+        return strided_layout(m_implementation->squeeze());
+    }
+    else
+    {
+        return strided_layout();
+    }
 }
 
 XMIPP4_NODISCARD
 strided_layout 
 strided_layout::broadcast_to(span<const std::size_t> extents) const
 {
-
+    if (m_implementation)
+    {
+        return strided_layout(m_implementation->broadcast_to(extents));
+    }
+    else
+    {
+        implementation().broadcast_to(extents); // Arg validation
+        return strided_layout();
+    }
 }
 
 } // namespace multidimensional

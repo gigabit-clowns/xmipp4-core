@@ -3,6 +3,7 @@
 #pragma once
 
 #include "dynamic_subscript.hpp"
+#include "../numerical_type.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
 

@@ -105,6 +105,13 @@ array::array(array&& other) noexcept = default;
 array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
+array::array(strided_layout layout, std::shared_ptr<storage> storage)
+    : array(
+        std::make_shared<implementation>(std::move(layout), std::move(storage))
+    )
+{
+}
+
 array::array(std::shared_ptr<implementation> impl) noexcept
     : m_implementation(std::move(impl))
 {

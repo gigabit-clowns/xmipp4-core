@@ -3,6 +3,7 @@
 #pragma once
 
 #include "dynamic_subscript.hpp"
+#include "strided_layout.hpp"
 #include "../numerical_type.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
@@ -21,6 +22,7 @@ class array
 {
 public:
     array();
+    array(strided_layout layout, std::shared_ptr<storage> storage);
     array(const array& other) = delete;
     array(array&& other) noexcept;
     ~array();

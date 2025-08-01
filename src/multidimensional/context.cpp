@@ -3,6 +3,7 @@
 #include <xmipp4/core/multidimensional/context.hpp>
 
 #include <xmipp4/core/multidimensional/allocator.hpp>
+#include <xmipp4/core/multidimensional/strided_layout_policy.hpp>
 #include <xmipp4/core/compute/device.hpp>
 #include <xmipp4/core/compute/device_queue.hpp>
 
@@ -54,11 +55,22 @@ public:
         return m_scratch_allocator.get();
     }
 
+    void set_layout_policy(std::shared_ptr<strided_layout_policy> policy) noexcept
+    {
+        m_layout_policy = std::move(policy);
+    }
+
+    strided_layout_policy* get_layout_policy() const noexcept
+    {
+        return m_layout_policy.get();
+    }
+
 private:
     std::shared_ptr<compute::device> m_device;
     std::shared_ptr<compute::device_queue> m_queue;
     std::shared_ptr<allocator> m_allocator;
     std::shared_ptr<allocator> m_scratch_allocator;
+    std::shared_ptr<strided_layout_policy> m_layout_policy;
 
 };
 
@@ -122,12 +134,34 @@ allocator* context::get_scratch_allocator() const noexcept
            nullptr ;
 }
 
+void context::set_layout_policy(std::shared_ptr<strided_layout_policy> policy) noexcept
+{
+    create_if_null();
+    m_implementation->set_layout_policy(std::move(policy));
+}
+
+strided_layout_policy* context::get_layout_policy() const noexcept
+{
+    return m_implementation ? 
+           m_implementation->get_layout_policy() : 
+           nullptr ;
+}
+
 void context::create_if_null()
 {
     if (!m_implementation)
     {
         m_implementation = std::make_unique<implementation>();
     }
+}
+
+
+
+static context default_context;
+
+const context& get_default_context() noexcept
+{
+    return default_context;
 }
 
 } // namespace multidimensional

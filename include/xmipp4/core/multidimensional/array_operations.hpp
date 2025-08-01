@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "array.hpp"
+#include "context.hpp"
 #include "../numerical_type.hpp"
 
 namespace xmipp4 
@@ -13,11 +15,11 @@ class array;
 
 array& fill(array& x /* TODO */);
 
-array& fill_zeros(array& x);
+array& fill_zeros(array& x, const context &context = get_default_context());
 
-array& fill_ones(array& x);
+array& fill_ones(array& x, const context &context = get_default_context());
 
-array& copy(const array& from, array& to);
+array& copy(const array& from, array& to, const context &context = get_default_context());
 
 } // namespace multidimensional
 } // namespace xmipp4

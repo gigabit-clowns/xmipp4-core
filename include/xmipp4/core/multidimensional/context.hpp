@@ -18,6 +18,7 @@ namespace multidimensional
 {
 
 class allocator;
+class strided_layout_policy;
 
 class context
 {
@@ -46,6 +47,10 @@ public:
 
     allocator* get_scratch_allocator() const noexcept;
 
+    void set_layout_policy(std::shared_ptr<strided_layout_policy> policy) noexcept;
+
+    strided_layout_policy* get_layout_policy() const noexcept;
+
 private:
     class implementation;
     std::unique_ptr<implementation> m_implementation;
@@ -53,6 +58,8 @@ private:
     void create_if_null();
 
 };
+
+const context& get_default_context() noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

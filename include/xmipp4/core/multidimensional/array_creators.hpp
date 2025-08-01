@@ -3,6 +3,7 @@
 #pragma once
 
 #include "array.hpp"
+#include "context.hpp"
 
 namespace xmipp4 
 {
@@ -15,17 +16,17 @@ class array_allocator;
 array
 make_empty_array(numerical_type data_type,
                  /*TBD*/
-                 array_allocator& allocator = get_default_array_allocator() );
+                const context &context = get_default_context() );
 
 array
 make_zeros_array(numerical_type data_type,
                  /*TBD*/
-                 array_allocator& allocator = get_default_array_allocator() );
+                 const context &context = get_default_context() );
 
 array
 make_ones_array(numerical_type data_type,
                 /*TBD*/
-                array_allocator& allocator = get_default_array_allocator() );
+                const context &context = get_default_context() );
 
 } // namespace multidimensional
 } // namespace xmipp4

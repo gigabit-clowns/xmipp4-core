@@ -269,7 +269,7 @@ namespace detail
 XMIPP4_INLINE_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
-                 const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept
+                 const slice &slice) noexcept
 {
     const auto start = slice.get_start();
     const auto count = slice.get_count();
@@ -288,7 +288,7 @@ void apply_slice(strided_axis &axis,
 inline
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
-                 const dynamic_slice &slice)
+                 const slice &slice)
 {
     const auto sanitized_slice = sanitize_slice(slice, axis.get_extent());
     detail::apply_slice(axis, offset, sanitized_slice);

@@ -283,7 +283,7 @@ TEST_CASE("apply_slice should increment the offset and modify the axis", "[strid
 {
     const std::ptrdiff_t initial_offset = 24;
     const strided_axis initial_axis(16, -5);
-    const dynamic_slice slice(2, 5, 3);
+    const slice slice(2, 5, 3);
 
     auto axis = initial_axis;
     auto offset = initial_offset;
@@ -297,7 +297,7 @@ TEST_CASE("apply_slice should throw with an out of range index", "[strided_axis]
 {
     const std::ptrdiff_t initial_offset = 24;
     const strided_axis initial_axis(16, -5);
-    const dynamic_slice slice(12, 5, 3);
+    const slice slice(12, 5, 3);
 
     auto axis = initial_axis;
     auto offset = initial_offset;

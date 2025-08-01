@@ -336,7 +336,7 @@ void apply_index(const strided_axis &axis,
  */
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
-                 const dynamic_slice &slice);
+                 const slice &slice);
 
 } // namespace multidimensional
 } // namespace xmipp4

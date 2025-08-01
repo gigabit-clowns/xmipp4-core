@@ -31,7 +31,7 @@ dynamic_subscript::dynamic_subscript(std::ptrdiff_t index) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-dynamic_subscript::dynamic_subscript(const dynamic_slice &slice) noexcept
+dynamic_subscript::dynamic_subscript(const slice &slice) noexcept
     : m_data{
         static_cast<std::ptrdiff_t>(slice.get_start()), 
         static_cast<std::ptrdiff_t>(slice.get_count()), 
@@ -62,7 +62,7 @@ std::ptrdiff_t dynamic_subscript::get_index() const
 }
 
 inline
-dynamic_slice dynamic_subscript::get_slice() const
+slice dynamic_subscript::get_slice() const
 {
     if (m_type != subscript_type::slice)
     {

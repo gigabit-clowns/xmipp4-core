@@ -23,7 +23,7 @@ namespace multidimensional
  * - ellipsis_tag
  * - new_axis_tag
  * - index (std::ptrdiff_t)
- * - slice (dynamic_slice)
+ * - slice (slice)
  * 
  */
 class dynamic_subscript
@@ -71,7 +71,7 @@ public:
      * 
      */
     XMIPP4_CONSTEXPR
-    dynamic_subscript(const dynamic_slice &slice) noexcept;
+    dynamic_subscript(const slice &slice) noexcept;
 
     dynamic_subscript(const dynamic_subscript &other) = default;
     dynamic_subscript(dynamic_subscript &&other) = default;
@@ -105,10 +105,10 @@ public:
      * This method shall only be called if get_subscript_type() returns
      * subscript_type::slice. Otherwise an exception is thrown.
      * 
-     * @return dynamic_slice The slice held by this object.
+     * @return slice The slice held by this object.
      * @throws std::logic_error
      */
-    dynamic_slice get_slice() const;
+    slice get_slice() const;
 
 private:
     using storage_type = std::array<std::ptrdiff_t, 3>;
@@ -134,7 +134,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os,
  * - ellipsis_tag
  * - new_axis_tag
  * - std::ptrdiff_t
- * - dynamic_slice
+ * - slice
  * 
  * @param subscript The subscript to be evaluated.
  * @return auto result of calling func with the evaluated argument.

@@ -4,8 +4,6 @@
 
 #include "../numerical_type.hpp"
 
-#include <memory>
-
 namespace xmipp4 
 {
 namespace multidimensional

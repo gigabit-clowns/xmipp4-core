@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "array_allocator.hpp"
-#include "../numerical_type.hpp"
-
-#include <memory>
+#include "array.hpp"
 
 namespace xmipp4 
 {
@@ -15,25 +12,19 @@ namespace multidimensional
 class array;
 class array_allocator;
 
-std::shared_ptr<array> 
+array
 make_empty_array(numerical_type data_type,
-                 std::size_t count, 
-                 std::size_t *extents,
-                 std::ptrdiff_t *strides = nullptr,
+                 /*TBD*/
                  array_allocator& allocator = get_default_array_allocator() );
 
-std::shared_ptr<array> 
+array
 make_zeros_array(numerical_type data_type,
-                 std::size_t count, 
-                 std::size_t *extents,
-                 std::ptrdiff_t *strides = nullptr,
+                 /*TBD*/
                  array_allocator& allocator = get_default_array_allocator() );
 
-std::shared_ptr<array> 
+array
 make_ones_array(numerical_type data_type,
-                std::size_t count, 
-                std::size_t *extents,
-                std::ptrdiff_t *strides = nullptr,
+                /*TBD*/
                 array_allocator& allocator = get_default_array_allocator() );
 
 } // namespace multidimensional

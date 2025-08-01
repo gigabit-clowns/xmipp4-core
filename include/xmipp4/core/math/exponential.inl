@@ -46,8 +46,7 @@ inline long double exp(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp(F exponent) noexcept
+F exp(F exponent) noexcept
 {
     return detail::exp(exponent);
 }
@@ -90,8 +89,7 @@ inline long double exp2(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp2(F exponent) noexcept
+F exp2(F exponent) noexcept
 {
     return detail::exp2(exponent);
 }
@@ -105,8 +103,7 @@ namespace detail
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept
+F exp10(F exponent) noexcept
 {
     XMIPP4_CONST_CONSTEXPR F base = 10;
     return pow(base, exponent);
@@ -139,10 +136,52 @@ inline long double exp10(long double exponent) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-exp10(F exponent) noexcept
+F exp10(F exponent) noexcept
 {
     return detail::exp10(exponent);
+}
+
+
+
+
+
+namespace detail
+{
+
+inline float expm1(float exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1f)
+    return XMIPP4_BUILTIN(expm1f)(exponent);
+#else
+    return expm1f(exponent);
+#endif
+}
+
+inline double expm1(double exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1)
+    return XMIPP4_BUILTIN(expm1)(exponent);
+#else
+    return ::expm1(exponent);
+#endif
+}
+
+inline long double expm1(long double exponent) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(expm1l)
+    return XMIPP4_BUILTIN(expm1l)(exponent);
+#else
+    return expm1l(exponent);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+F expm1(F exponent) noexcept
+{
+    return detail::expm1(exponent);
 }
 
 
@@ -183,8 +222,7 @@ inline long double log(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log(F x) noexcept
+F log(F x) noexcept
 {
     return detail::log(x);
 }
@@ -227,8 +265,7 @@ inline long double log2(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log2(F x) noexcept
+F log2(F x) noexcept
 {
     return detail::log2(x);
 }
@@ -271,8 +308,7 @@ inline long double log10(long double x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-log10(F x) noexcept
+F log10(F x) noexcept
 {
     return detail::log10(x);
 }
@@ -283,10 +319,65 @@ log10(F x) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-logn(F n, F x) noexcept
+F logn(F n, F x) noexcept
 {
     return log(x) / log(n);
+}
+
+
+
+
+
+namespace detail
+{
+
+inline float log1p(float x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1pf)
+    return XMIPP4_BUILTIN(log1pf)(x);
+#else
+    return log1pf(x);
+#endif
+}
+
+inline double log1p(double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1p)
+    return XMIPP4_BUILTIN(log1p)(x);
+#else
+    return ::log1p(x);
+#endif
+}
+
+inline long double log1p(long double x) noexcept
+{
+#if XMIPP4_HAS_BUILTIN(log1pl)
+    return XMIPP4_BUILTIN(log1pl)(x);
+#else
+    return log1pl(x);
+#endif
+}
+
+} // namespace detail
+
+template <typename F>
+inline
+F log1p(F x) noexcept
+{
+    return detail::log1p(x);
+}
+
+template <typename F>
+inline
+F log_add(F log_x, F log_y) noexcept
+{
+    if (log_x < log_y)
+    {
+        std::swap(log_x, log_y);
+    }
+
+    const auto minus_difference = log_y - log_x; // -(log_x - log_y)
+    return log_x + log1p(exp(minus_difference));
 }
 
 } // namespace math

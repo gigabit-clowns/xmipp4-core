@@ -3,8 +3,12 @@
 #pragma once
 
 #include "numerical_type.hpp"
+#include "fixed_float.hpp"
+
+#include "fixed_float.hpp"
 
 #include <cstdint>
+#include <complex>
 #include <array>
 #include <unordered_map>
 
@@ -23,13 +27,13 @@ XMIPP4_INLINE_CONSTEXPR std::size_t get_size(numerical_type type) noexcept
     case numerical_type::uint32: return sizeof(std::uint32_t);
     case numerical_type::int64: return sizeof(std::int64_t);
     case numerical_type::uint64: return sizeof(std::uint64_t);
-    case numerical_type::float16: return 2; // Not available in C
-    case numerical_type::brain_float16: return 2; // Not available in C
-    case numerical_type::float32: return 4; // sizeof(float) not guaranteed to be 4
-    case numerical_type::float64: return 8; // sizeof(double) not guaranteed to be 8
-    case numerical_type::complex_float16: return 4; // Same reason as its real equivalent
-    case numerical_type::complex_float32: return 8; // Same reason as its real equivalent
-    case numerical_type::complex_float64: return 16; // Same reason as its real equivalent
+    case numerical_type::float16: return sizeof(float16_t);
+    case numerical_type::brain_float16: return 2; // Not available
+    case numerical_type::float32: return sizeof(float32_t); 
+    case numerical_type::float64: return  sizeof(float32_t);
+    case numerical_type::complex_float16: return sizeof(std::complex<float16_t>);
+    case numerical_type::complex_float32: return sizeof(std::complex<float32_t>);
+    case numerical_type::complex_float64: return sizeof(std::complex<float32_t>);
     default: return 0;
     }
 }
@@ -101,6 +105,9 @@ numerical_type make_complex(numerical_type type) noexcept
     case numerical_type::float16: return numerical_type::complex_float16;
     case numerical_type::float32: return numerical_type::complex_float32;
     case numerical_type::float64: return numerical_type::complex_float64;
+    case numerical_type::complex_float16: return numerical_type::complex_float16;
+    case numerical_type::complex_float32: return numerical_type::complex_float32;
+    case numerical_type::complex_float64: return numerical_type::complex_float64;
     default: return numerical_type::unknown;
     } 
 }
@@ -117,7 +124,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
         static_cast<std::size_t>(numerical_type::count);
 
     XMIPP4_CONST_CONSTEXPR std::array<std::array<numerical_type, N>, N> LUT = {
-        { // numerical_type::int8
+        std::array<numerical_type, N>{ // numerical_type::int8
             numerical_type::int8,
             numerical_type::int8,
             numerical_type::int16,
@@ -134,7 +141,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::uint8
+        std::array<numerical_type, N>{ // numerical_type::uint8
             numerical_type::int8,
             numerical_type::uint8,
             numerical_type::int16,
@@ -151,7 +158,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::int16
+        std::array<numerical_type, N>{ // numerical_type::int16
             numerical_type::int16,
             numerical_type::int16,
             numerical_type::int16,
@@ -168,11 +175,11 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::uint16
-            numerical_type::int16,
-            numerical_type::uint16,
+        std::array<numerical_type, N>{ // numerical_type::uint16
             numerical_type::int16,
             numerical_type::uint16,
+            numerical_type::int16,
+            numerical_type::uint16,
             numerical_type::int32,
             numerical_type::uint32,
             numerical_type::int64,
@@ -185,7 +192,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::int32
+        std::array<numerical_type, N>{ // numerical_type::int32
             numerical_type::int32,
             numerical_type::int32,
             numerical_type::int32,
@@ -202,7 +209,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::uint32
+        std::array<numerical_type, N>{ // numerical_type::uint32
             numerical_type::int32,
             numerical_type::uint32,
             numerical_type::int32,
@@ -219,7 +226,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::int64
+        std::array<numerical_type, N>{ // numerical_type::int64
             numerical_type::int64,
             numerical_type::int64,
             numerical_type::int64,
@@ -236,7 +243,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::uint64 
+        std::array<numerical_type, N>{ // numerical_type::uint64 
             numerical_type::int64,
             numerical_type::uint64,
             numerical_type::int64,
@@ -253,7 +260,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::float16
+        std::array<numerical_type, N>{ // numerical_type::float16
             numerical_type::float16,
             numerical_type::float16,
             numerical_type::float16,
@@ -270,15 +277,15 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::bfloat16
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
-            numerical_type::float16,
+        std::array<numerical_type, N>{ // numerical_type::bfloat16
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
+            numerical_type::brain_float16,
             numerical_type::float32,
             numerical_type::brain_float16,
             numerical_type::float32,
@@ -287,7 +294,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::float32
+        std::array<numerical_type, N>{ // numerical_type::float32
             numerical_type::float32,
             numerical_type::float32,
             numerical_type::float32,
@@ -304,7 +311,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::float64
+        std::array<numerical_type, N>{ // numerical_type::float64
             numerical_type::float64,
             numerical_type::float64,
             numerical_type::float64,
@@ -321,7 +328,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float64,
             numerical_type::complex_float64,
         },
-        { // numerical_type::complex_float16
+        std::array<numerical_type, N>{ // numerical_type::complex_float16
             numerical_type::complex_float16,
             numerical_type::complex_float16,
             numerical_type::complex_float16,
@@ -338,7 +345,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::complex_float32
+        std::array<numerical_type, N>{ // numerical_type::complex_float32
             numerical_type::complex_float32,
             numerical_type::complex_float32,
             numerical_type::complex_float32,
@@ -355,7 +362,7 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float32,
             numerical_type::complex_float64,
         },
-        { // numerical_type::complex_float64
+        std::array<numerical_type, N>{ // numerical_type::complex_float64
             numerical_type::complex_float64,
             numerical_type::complex_float64,
             numerical_type::complex_float64,
@@ -371,12 +378,19 @@ numerical_type common_type(numerical_type x, numerical_type y) noexcept
             numerical_type::complex_float64,
             numerical_type::complex_float64,
             numerical_type::complex_float64,
-        },
+        }
     };
 
     const auto index1 = static_cast<std::size_t>(x);
     const auto index2 = static_cast<std::size_t>(y);
-    return LUT[index1][index2];
+    if (index1 < N && index2 < N)
+    {
+        return LUT[index1][index2];
+    }
+    else
+    {
+        return numerical_type::unknown;
+    }
 }
 
 

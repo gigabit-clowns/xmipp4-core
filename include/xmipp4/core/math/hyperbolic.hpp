@@ -10,28 +10,22 @@ namespace math
 {
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-cosh(F angle) noexcept;
+F cosh(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sinh(F angle) noexcept;
+F sinh(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-tanh(F angle) noexcept;
+F tanh(F angle) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-acosh(F ratio) noexcept;
+F acosh(F ratio) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-asinh(F ratio) noexcept;
+F asinh(F ratio) noexcept;
 
 template <typename F>
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-atanh(F ratio) noexcept;
+F atanh(F ratio) noexcept;
 
 } // namespace math
 } // namespace xmipp4

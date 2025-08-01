@@ -445,50 +445,44 @@ namespace detail
 {
 
 inline
-void sanitize_slice_negative_start(dynamic_slice &slice, std::size_t extent)
-{
-    const auto start = slice.get_start();
-    if (start < 0)
-    {
-        if (start < -static_cast<std::ptrdiff_t>(extent))
-        {
-            std::ostringstream oss;
-            oss << "Slice start negative index " << start 
-                << " is out of bounds for extent " << extent;
-            throw std::out_of_range(oss.str());
-        }
-
-        slice.set_start(start+extent);
-    }
-}
-
-inline
 void sanitize_slice_start(dynamic_slice &slice, std::size_t extent)
-{   
+{
     const auto start = slice.get_start();
     const auto count = slice.get_count();
     const auto step = slice.get_step();
-    if (step > 0)
+
+    if (start < -static_cast<std::ptrdiff_t>(extent))
     {
-        if (count > 0 && start > static_cast<std::ptrdiff_t>(extent))
+        std::ostringstream oss;
+        oss << "Slice's negative start index " << start 
+            << " is out of bounds for extent " << extent << ".";
+        throw std::out_of_range(oss.str());
+    }
+
+    if (step > 0 || count == 0)
+    {
+        if (start > static_cast<std::ptrdiff_t>(extent) )
         {
             std::ostringstream oss;
-            oss << "Slice start index " << start 
-                << " is out of bounds for extent " << extent 
-                << " when step is positive and slice is non-empty.";
+            oss << "Slice's start index " << start 
+                << " is out of bounds for extent " << extent << ".";
             throw std::out_of_range(oss.str());
         }
     }
-    else // step < 0
+    else
     {
-        if (count > 0 && start >= static_cast<std::ptrdiff_t>(extent))
+        if (start >= static_cast<std::ptrdiff_t>(extent) )
         {
             std::ostringstream oss;
-            oss << "Slice start index " << start 
-                << " is out of bounds for extent " << extent 
-                << " when step is negative and slice is non-empty.";
+            oss << "Backwards slice's start index " << start 
+                << " is out of bounds for extent " << extent << ".";
             throw std::out_of_range(oss.str());
         }
+    }
+
+    if (start < 0)
+    {
+        slice.set_start(start + extent);
     }
 }
 
@@ -521,7 +515,7 @@ void sanitize_slice_count(dynamic_slice &slice, std::size_t extent)
         const auto abs_step = -step;
         if (count == end())
         {
-            const auto new_count = (start + abs_step - 1) / abs_step + 1;
+            const auto new_count = start / abs_step + 1;
             slice.set_count(new_count);
         }
         else if (count > 0U && abs_step*static_cast<std::ptrdiff_t>(count-1) > start)
@@ -555,7 +549,6 @@ sanitize_slice(const slice<Start, Count, Step>& slice, std::size_t extent)
     dynamic_slice result(slice);
 
     detail::sanitize_slice_step(result);
-    detail::sanitize_slice_negative_start(result, extent);
     detail::sanitize_slice_start(result, extent);
     detail::sanitize_slice_count(result, extent);
 

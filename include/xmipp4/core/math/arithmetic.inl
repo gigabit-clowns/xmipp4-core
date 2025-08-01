@@ -4,6 +4,7 @@
 
 #include "../platform/builtin.h"
 
+#include <iterator>
 #include <cmath>
 
 namespace xmipp4
@@ -45,8 +46,7 @@ inline long double multiply_add(long double x, long double y, long double z) noe
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-multiply_add(F x, F y, F z) noexcept
+F multiply_add(F x, F y, F z) noexcept
 {
     return detail::multiply_add(x, y, z);
 }
@@ -89,8 +89,7 @@ inline long double mod(long double num, long double den) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-mod(F num, F den) noexcept
+F mod(F num, F den) noexcept
 {
     return detail::mod(num, den);
 }
@@ -99,8 +98,7 @@ mod(F num, F den) noexcept
 
 template <typename F>
 inline
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-sign(F x) noexcept
+F sign(F x) noexcept
 {
     switch (std::fpclassify(x))
     {
@@ -117,8 +115,7 @@ sign(F x) noexcept
 
 template <typename BidirIt, typename F>
 XMIPP4_INLINE_CONSTEXPR
-typename std::enable_if<std::is_floating_point<F>::value, F>::type
-evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
+F evaluate_polynomial(BidirIt first, BidirIt last, F x) noexcept
 {
     F y = 0;
     if (first != last)

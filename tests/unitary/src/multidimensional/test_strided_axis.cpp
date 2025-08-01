@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <catch2/catch_test_macros.hpp>
-
 #include <xmipp4/core/multidimensional/strided_axis.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <array>
 #include <utility>
@@ -156,24 +157,26 @@ TEST_CASE("broadcast with right axis of extent 1 should broadcast it")
 
 TEST_CASE("broadcast with unequal extents should fail and leave axes unmodified", "[strided_axis]")
 {
-    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
-        std::pair<std::size_t, std::size_t>(76, 0),
-        std::pair<std::size_t, std::size_t>(0, 3),
-        std::pair<std::size_t, std::size_t>(2, 4),
-        std::pair<std::size_t, std::size_t>(252, 308)
-    };
+    std::size_t size1;
+    std::size_t size2;
+    std::tie(size1, size2) = GENERATE(
+        table<std::size_t, std::size_t>({
+            {76, 0},
+            {0, 3},
+            {2, 3},
+            {100, 101}
+        })
+    );
 
-    for (const auto &test_case : test_cases)
-    {
-        const strided_axis initial_axis1(test_case.first, 345);
-        const strided_axis initial_axis2(test_case.second, 654);
+    const strided_axis initial_axis1(size1, 345);
+    const strided_axis initial_axis2(size2, 654);
 
-        auto axis1 = initial_axis1;
-        auto axis2 = initial_axis2;
-        REQUIRE( !broadcast(axis1, axis2) );
-        REQUIRE(axis1 == initial_axis1 );
-        REQUIRE(axis2 == initial_axis2 );
-    }
+    auto axis1 = initial_axis1;
+    auto axis2 = initial_axis2;
+    REQUIRE( !broadcast(axis1, axis2) );
+    REQUIRE(axis1 == initial_axis1 );
+    REQUIRE(axis2 == initial_axis2 );
+   
 }
 
 TEST_CASE("broadcast_axis_to_extent with equal extents should succeed and leave axis unmodified", "[strided_axis]")
@@ -197,22 +200,22 @@ TEST_CASE("broadcast_axis_to_extent with an axis of extent 1 should broadcast it
 
 TEST_CASE("broadcast_axis_to_extent with unequal extents should fail and leave axis unmodified", "[strided_axis]")
 {
-    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
-        std::pair<std::size_t, std::size_t>(0, 1),
-        std::pair<std::size_t, std::size_t>(43, 0),
-        std::pair<std::size_t, std::size_t>(12, 1),
-        std::pair<std::size_t, std::size_t>(654, 345)
-    };
+    std::size_t size1;
+    std::size_t size2;
+    std::tie(size1, size2) = GENERATE(
+        table<std::size_t, std::size_t>({
+            {76, 0},
+            {0, 3},
+            {2, 3},
+            {100, 101}
+        })
+    );
 
-    for (const auto &test_case : test_cases)
-    {
-        const auto initial_axis = make_contiguous_axis(test_case.first);
-        const auto extent = test_case.second;
+    const auto initial_axis = make_contiguous_axis(size1);
 
-        auto axis = initial_axis;
-        REQUIRE( !broadcast_axis_to_extent(axis, extent) );
-        REQUIRE( axis == initial_axis );
-    }
+    auto axis = initial_axis;
+    REQUIRE( !broadcast_axis_to_extent(axis, size2) );
+    REQUIRE( axis == initial_axis );
 }
 
 TEST_CASE("broadcast_extent_to_axis with equal extents should succeed and leave extent unmodified", "[strided_axis]")
@@ -236,22 +239,23 @@ TEST_CASE("broadcast_extent_to_axis with an extent 1 should broadcast it")
 
 TEST_CASE("broadcast_extent_to_axis with unequal extents should fail and leave extent unmodified", "[strided_axis]")
 {
-    const std::array<std::pair<std::size_t, std::size_t>, 4> test_cases = {
-        std::pair<std::size_t, std::size_t>(0, 1),
-        std::pair<std::size_t, std::size_t>(76, 0),
-        std::pair<std::size_t, std::size_t>(13, 1),
-        std::pair<std::size_t, std::size_t>(252, 308)
-    };
+    std::size_t size1;
+    std::size_t size2;
+    std::tie(size1, size2) = GENERATE(
+        table<std::size_t, std::size_t>({
+            {76, 0},
+            {0, 3},
+            {2, 3},
+            {100, 101}
+        })
+    );
 
-    for (const auto &test_case : test_cases)
-    {
-        const auto initial_extent = test_case.first;
-        const auto axis = make_contiguous_axis(test_case.second);
+    const auto initial_extent = size1;
+    const auto axis = make_contiguous_axis(size2);
 
-        auto extent = initial_extent;
-        REQUIRE( !broadcast_extent_to_axis(extent, axis) );
-        REQUIRE( extent == initial_extent );
-    }
+    auto extent = initial_extent;
+    REQUIRE( !broadcast_extent_to_axis(extent, axis) );
+    REQUIRE( extent == initial_extent );
 }
 
 TEST_CASE("apply_index should increment the offset as expected", "[strided_axis]")

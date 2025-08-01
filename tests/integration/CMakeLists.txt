@@ -18,10 +18,6 @@ add_executable(
     ${TESTS_NAME}
     ${TEST_SOURCES}
 )
-set_target_properties(
-	${TESTS_NAME} PROPERTIES 
-	CXX_STANDARD 20
-)
 target_link_libraries(
 	${TESTS_NAME} 
 	PRIVATE 

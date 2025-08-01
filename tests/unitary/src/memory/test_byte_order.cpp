@@ -6,7 +6,7 @@
 
 using namespace xmipp4::memory;
 
-TEST_CASE( "reverse byte order", "[byte_order]" ) 
+TEST_CASE( "reverse_byte_order correctly reverses byte order for integral types", "[byte_order]" ) 
 {
     SECTION( "int8_t" )
     {

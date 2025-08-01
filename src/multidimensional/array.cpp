@@ -24,7 +24,7 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
     if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
     {
         throw std::invalid_argument(
-            "permutation's length does not match the required count"
+            "Axis permutation's length does not match the required count"
         );
     }
 
@@ -44,7 +44,7 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
         if (ite == last)
         {
             std::ostringstream oss;
-            oss << "value " << i << " is missing in the permutation";
+            oss << "Value " << i << " is missing in the axis permutation";
             throw std::invalid_argument(oss.str());
         }
 

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#pragma once
-
 #include <xmipp4/core/multidimensional/array.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
@@ -107,7 +105,15 @@ array::array(array&& other) noexcept = default;
 array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
+array::array(std::shared_ptr<implementation> impl) noexcept
+    : m_implementation(std::move(impl))
+{
+}
 
+array::array(implementation &&impl)
+    : array(std::make_shared<implementation>(std::move(impl)))
+{
+}
 
 numerical_type array::get_data_type() const noexcept
 {

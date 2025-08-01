@@ -421,7 +421,25 @@ private:
 
 
 
+strided_layout::strided_layout() noexcept = default;
+strided_layout::strided_layout(const strided_layout &other) noexcept = default;
+strided_layout::strided_layout(strided_layout &&other) noexcept = default;
+strided_layout::~strided_layout() = default;
 
+strided_layout&
+strided_layout::operator=(const strided_layout &other) noexcept = default;
+strided_layout&
+strided_layout::operator=(strided_layout &&other) noexcept = default;
+
+strided_layout::strided_layout(std::shared_ptr<implementation> impl) noexcept
+    : m_implementation(std::move(impl))
+{
+}
+
+strided_layout::strided_layout(implementation &&impl)
+    : m_implementation(std::make_shared<implementation>(std::move(impl)))
+{
+}
 
 XMIPP4_NODISCARD
 std::size_t strided_layout::get_rank() const noexcept
@@ -453,6 +471,14 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
+    if (m_implementation)
+    {
+        return strided_layout(m_implementation->apply_subscripts(subscripts));
+    }
+    else
+    {
+        return strided_layout(implementation().apply_subscripts(subscripts));
+    }
 }
 
 XMIPP4_NODISCARD

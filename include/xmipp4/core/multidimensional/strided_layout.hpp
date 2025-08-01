@@ -19,11 +19,11 @@ class strided_layout
 {
 public:
     strided_layout() noexcept;
-    strided_layout(const strided_layout &other);
+    strided_layout(const strided_layout &other) noexcept;
     strided_layout(strided_layout &&other) noexcept;
     ~strided_layout();
 
-    strided_layout& operator=(const strided_layout &other);
+    strided_layout& operator=(const strided_layout &other) noexcept;
     strided_layout& operator=(strided_layout &&other) noexcept;
 
     /**

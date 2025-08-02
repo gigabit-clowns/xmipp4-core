@@ -39,10 +39,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install memcheck tool
-        uses: ./.github/composites/install-memtool
-        id: install-memtool
-
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
         with:
@@ -56,17 +52,8 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Run tests with memory check
-        uses: ./.github/composites/run-memtool
-        id: run-memtool
-        #with:
-        #  drmemory: ${{ steps.install-memtool.outputs.drmemory }}
-      
-      - name: Show memory leak logs (if exist)
-        if: steps.run-memtool.outputs.exist-memleaks == 'true'
-        uses: ./.github/composites/show-memleaks
-        with:
-          test-numbers: ${{ steps.run-memtool.outputs.test-numbers }}
+      - name: Run tests
+        uses: ./.github/composites/run-ctest
 
   build_with_pip:
     name: pip

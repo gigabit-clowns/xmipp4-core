@@ -1,0 +1,52 @@
+name: Run Tests with memcheck
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test_with_cmake:
+    name: CMake
+    env:
+      BUILD_TYPE: Debug
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install memcheck tool
+        uses: ./.github/composites/install-memtool
+        id: install-memtool
+
+      - name: Configure and build with CMake
+        uses: threeal/cmake-action@v2
+        with:
+          source-dir: ${{ github.workspace }}
+          build-dir: "${{ github.workspace }}/build"
+          c-compiler: gcc
+          cxx-compiler: g++
+          options: |
+            CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          run-build: true
+          build-args: --config ${{ env.BUILD_TYPE }}
+
+      - name: Run tests with memory check
+        uses: ./.github/composites/run-ctest
+        id: run-ctest
+        with:
+          check-memleaks: true
+
+      - name: Show memory leak logs (if exist)
+        if: steps.run-ctest.outputs.exist-memleaks == 'true'
+        uses: ./.github/composites/show-memleaks
+        with:
+          test-numbers: ${{ steps.run-ctest.outputs.memleak-test-numbers }}

@@ -8,6 +8,7 @@
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
 
+#include <array>
 #include <memory>
 
 namespace xmipp4 
@@ -67,7 +68,25 @@ public:
     XMIPP4_NODISCARD
     std::shared_ptr<const storage> share_storage() const noexcept;
 
-    
+    /**
+     * @brief Apply a set of subscripts to this layout.
+     * 
+     * @tparam Args Types of the arguments. Must be std::ptrdiff_t, slice,
+     * new_axis_tag or ellipsis_tag.
+     * @param args Subscripts to be applied to this array.
+     * @see apply_subscripts
+     * @return array The resulting array.
+     * 
+     */
+    template <typename... Args>
+    XMIPP4_NODISCARD 
+    array operator()(Args&& ...args)
+    {
+        const std::array<dynamic_subscript, sizeof...(Args)> subscripts = {
+            std::forward<Args>(args)...
+        };
+        return apply_subscripts(make_span(subscripts));
+    }
     
     /**
      * @brief Get the rank of the array, i.e. the number of axes.
@@ -98,7 +117,7 @@ public:
      * @brief Apply a set of dynamic subscripts to this layout.
      * 
      * @param subscripts The subscripts.
-     * @return std::shared_ptr<array> The resulting layout.
+     * @return array The resulting layout.
      * @throws std::invalid_argument If not all subscripts are processed.
      * Or subscript is out of bounds
      */
@@ -108,7 +127,7 @@ public:
     /**
      * @brief Reverse the order of the axes.
      * 
-     * @return std::shared_ptr<array> The resulting layout.
+     * @return array The resulting array.
      */
     XMIPP4_NODISCARD
     array transpose();
@@ -119,7 +138,7 @@ public:
      * @param order Order acquired by the new layout. Must have the same 
      * size as the amount of dimensions and it must feature strictly one
      * instance of each number in [0, rank).
-     * @return std::shared_ptr<array> Permuted layout.
+     * @return array Permuted array.
      * @throws std::invalid_argument If the permutation order is invalid.
      */
     XMIPP4_NODISCARD
@@ -132,7 +151,7 @@ public:
      * Negative values indicate axes begining from the end.
      * @param axis2 Index of the second axis. Must be in [-rank, rank).
      * Negative values indicate axes begining from the end.
-     * @return std::shared_ptr<array> Permuted layout.
+     * @return array Permuted array.
      * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
@@ -141,7 +160,7 @@ public:
     /**
      * @brief Remove insignificant axes from the layout.
      * 
-     * @return std::shared_ptr<const array> The resulting layout.
+     * @return array The resulting array.
      */
     XMIPP4_NODISCARD
     array squeeze();
@@ -155,7 +174,7 @@ public:
      * 
      * @param extents Extents to broadcast to.
      * untouched. Must be greater or equal to rank. Defaults to zero.
-     * @return std::shared_ptr<array> The resulting broadcasted layout.
+     * @return array The resulting broadcasted array.
      * @throws std::invalid_argument If the layout has more axes than extents.
      * @throws std::invalid_argument If the axes cannot be broadcasted to the 
      * provided extents.

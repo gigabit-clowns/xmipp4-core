@@ -421,7 +421,7 @@ public:
         {
             auto &axis = axes[i];
             const auto extent = extents[i];
-            if (!multidimensional::broadcast_axis_to_extent(axis, extent))
+            if (!multidimensional::broadcast_to(axis, extent))
             {
                 std::ostringstream oss;
                 oss << "Can not broadcast axis of extent " << axis.get_extent()

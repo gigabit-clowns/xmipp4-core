@@ -53,7 +53,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        uses: ./.github/composites/run-memtool
+        run: ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
   build_with_pip:
     name: pip

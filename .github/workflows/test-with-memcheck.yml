@@ -40,7 +40,8 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests with memory check
-        run: ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+        uses: ./.github/composites/run-memtool
+        id: run-memtool
 
       - name: Show memory leak logs (if exist)
         if: steps.run-memtool.outputs.exist-memleaks == 'true'

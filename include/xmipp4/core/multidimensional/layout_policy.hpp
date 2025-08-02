@@ -10,7 +10,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class strided_layout_policy
+class layout_policy
 {
 public:
     virtual 

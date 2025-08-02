@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_test_with_cmake:
-    name: CMake
+  test_with_memchecks:
+    name: Test with memchecks
     env:
       BUILD_TYPE: Debug
     runs-on: ubuntu-latest

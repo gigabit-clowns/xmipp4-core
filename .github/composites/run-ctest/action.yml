@@ -39,13 +39,27 @@ runs:
       run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Run tests with memory check (Linux)
-      if: runner.os == 'Linux' && inputs.check-memleaks
+      if: runner.os == 'Linux' && inputs.check-memleaks == true
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure | tee ${{ github.workspace }}/memcheck_output.txt
 
+    #- name: Run tests with memory check (Windows)
+    #  if: runner.os == 'Windows' && inputs.check-memleaks
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: bash
+    #  run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+
+    #- name: Run tests with memory check (MacOS)
+    #  if: runner.os == 'macOS' && inputs.check-memleaks
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: bash
+    #  run: |
+    #    export MallocStackLogging=1
+    #    leaks --fullContent --atExit -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+
     - name: Check if there are any memory leaks
-      if: inputs.check-memleaks
+      if: inputs.check-memleaks == true
       id: check-memleaks
       shell: bash
       run: |
@@ -72,7 +86,7 @@ runs:
         echo "exist-memleaks=$EXIST_MEMLEAKS" >> "$GITHUB_OUTPUT"
 
     - name: Get number of tests with memory leaks
-      if: inputs.check-memleaks
+      if: inputs.check-memleaks == true
       id: get-memleak-tests
       shell: bash
       run: |
@@ -95,17 +109,3 @@ runs:
           fi
         fi
         echo "test-numbers=$TEST_NUMBERS" >> "$GITHUB_OUTPUT"
-
-    #- name: Run tests with memory check (Windows)
-    #  if: runner.os == 'Windows' && inputs.check-memleaks
-    #  working-directory: "${{ github.workspace }}/build"
-    #  shell: bash
-    #  run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
-
-    #- name: Run tests with memory check (MacOS)
-    #  if: runner.os == 'macOS' && inputs.check-memleaks
-    #  working-directory: "${{ github.workspace }}/build"
-    #  shell: bash
-    #  run: |
-    #    export MallocStackLogging=1
-    #    leaks --fullContent --atExit -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure

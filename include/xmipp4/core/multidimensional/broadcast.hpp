@@ -9,6 +9,18 @@ namespace xmipp4
 namespace multidimensional
 {
 
+/**
+ * @brief Perform a broadcast operation between two sets of extents.
+ * 
+ * This operation pads the smallest set of extents with ones at the beginning. 
+ * Then, both sets are iterated jointly. If both elements are equal, none of
+ * them is modified. If unequal but one of them is 1, it is replaced by the
+ * other. Otherwise an exception is thrown.
+ * 
+ * @param extents1 The first set of extents.
+ * @param extents2 The second set of extents.
+ * @throws std::logic_error when one of of the extents cannot be broadcasted.
+ */
 void broadcast_extents(std::vector<std::size_t> &extents1, 
                        std::vector<std::size_t> &extents2 );  
 

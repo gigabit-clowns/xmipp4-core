@@ -11,7 +11,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void broadcast_to(std::vector<std::size_t> &from, span<const std::size_t> to);
+void broadcast_step(std::vector<std::size_t> &consensus, 
+                    span<const std::size_t> to);
 
 } // namespace multidimensional
 } // namespace xmipp4

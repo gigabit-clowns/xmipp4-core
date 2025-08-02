@@ -13,7 +13,7 @@ namespace multidimensional
 {
 
 static
-void broadcast_to_extent(std::size_t &from, std::size_t to)
+void broadcast_step(std::size_t &from, std::size_t to)
 {
     if (from != to)
     {
@@ -21,7 +21,7 @@ void broadcast_to_extent(std::size_t &from, std::size_t to)
         {
             from = to;
         }
-        else
+        else if(to != 1)
         {
             std::ostringstream oss;
             oss << "Cannot broadcast extent of " << from << " items into to an "
@@ -31,24 +31,25 @@ void broadcast_to_extent(std::size_t &from, std::size_t to)
     }
 }
 
-void broadcast_to(std::vector<std::size_t> &from, span<const std::size_t> to)
+void broadcast_step(std::vector<std::size_t> &consensus, 
+                    span<const std::size_t> to)
 {
-    if (from.size() > to.size())
+    if (consensus.size() > to.size())
     {
         std::ostringstream oss;
-        oss << "Cannot broadcast " << from.size() << "-dimensional extents into"
-            << to.size() << "-dimensions.";
+        oss << "Cannot broadcast " << consensus.size() << "-dimensional extents"
+            << " into" << to.size() << "-dimensions.";
         throw std::logic_error(oss.str());
     }
 
-    const auto padding = to.size() - from.size();
-    from.insert(from.cbegin(), padding, 1U);
+    const auto padding = to.size() - consensus.size();
+    consensus.insert(consensus.cbegin(), padding, 1U);
 
-    XMIPP4_ASSERT( from.size() == to.size() );
+    XMIPP4_ASSERT( consensus.size() == to.size() );
     const auto n = to.size();
     for (std::size_t i = 0; i < n; ++i)
     {
-        broadcast_to_extent(from[i], to[i]);
+        broadcast_step(consensus[i], to[i]);
     }
 }
 

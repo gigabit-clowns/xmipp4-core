@@ -53,6 +53,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
+        working-directory: "${{ github.workspace }}/build"
         run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
   build_with_pip:

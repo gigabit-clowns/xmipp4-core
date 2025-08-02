@@ -13,43 +13,47 @@ namespace multidimensional
 {
 
 static
-void broadcast_step(std::size_t &from, std::size_t to)
+void broadcast_extent(std::size_t &extent1, std::size_t &extent2)
 {
-    if (from != to)
+    if (extent1 != extent2)
     {
-        if (from == 1)
+        if (extent1 == 1)
         {
-            from = to;
+            extent1 = extent2;
         }
-        else if(to != 1)
+        else if (extent2 == 1)
+        {
+            extent2 = extent1;
+        }
+        else
         {
             std::ostringstream oss;
-            oss << "Cannot broadcast extent of " << from << " items into to an "
-                << " extent of " << to << " items.";
+            oss << "Cannot broadcast extents " << extent1 << " and " << extent2;
             throw std::logic_error(oss.str());
         }
     }
 }
 
-void broadcast_step(std::vector<std::size_t> &consensus, 
-                    span<const std::size_t> to)
+void broadcast_extents(std::vector<std::size_t> &extents1, 
+                       std::vector<std::size_t> &extents2 )
 {
-    if (consensus.size() > to.size())
+    if (extents1.size() < extents2.size())
     {
-        std::ostringstream oss;
-        oss << "Cannot broadcast " << consensus.size() << "-dimensional extents"
-            << " into" << to.size() << "-dimensions.";
-        throw std::logic_error(oss.str());
+        const auto padding = extents2.size() - extents1.size();
+        extents1.insert(extents1.cbegin(), padding, 1U);
+    }
+    
+    if (extents2.size() < extents1.size())
+    {
+        const auto padding = extents1.size() - extents2.size();
+        extents2.insert(extents2.cbegin(), padding, 1U);
     }
 
-    const auto padding = to.size() - consensus.size();
-    consensus.insert(consensus.cbegin(), padding, 1U);
-
-    XMIPP4_ASSERT( consensus.size() == to.size() );
-    const auto n = to.size();
+    XMIPP4_ASSERT( extents1.size() == extents2.size() );
+    const auto n = extents1.size();
     for (std::size_t i = 0; i < n; ++i)
     {
-        broadcast_step(consensus[i], to[i]);
+        broadcast_extent(extents1[i], extents2[i]);
     }
 }
 

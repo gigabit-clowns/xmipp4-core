@@ -35,6 +35,20 @@ public:
     std::size_t get_rank() const noexcept;
 
     /**
+     * @brief Get the extents of the layout.
+     * 
+     * @param extents Output parameter where the extents are written.
+     */
+    void get_extents(std::vector<std::size_t> &extents) const;
+
+    /**
+     * @brief Get the strides of the layout.
+     * 
+     * @param extents Output parameter where the strides are written.
+     */
+    void get_strides(std::vector<std::ptrdiff_t> &strides) const;
+
+    /**
      * @brief Get the offset of the layout.
      * 
      * @return std::size_t The offset.

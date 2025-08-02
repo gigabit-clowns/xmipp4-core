@@ -252,6 +252,27 @@ public:
         return m_axes.size();
     }
 
+    void get_extents(std::vector<std::size_t> &extents) const
+    {
+        XMIPP4_ASSERT(extents.empty());
+        extents.reserve(m_axes.size());
+        for (const auto &axis : m_axes)
+        {
+            extents.push_back(axis.get_extent());
+        }
+    }
+
+    void get_strides(std::vector<std::ptrdiff_t> &strides) const
+    {
+        XMIPP4_ASSERT(strides.empty());
+        strides.clear();
+        strides.reserve(m_axes.size());
+        for (const auto &axis : m_axes)
+        {
+            strides.push_back(axis.get_stride());
+        }
+    }
+
     std::ptrdiff_t get_offset() const noexcept
     {
         return m_offset;
@@ -445,6 +466,24 @@ XMIPP4_NODISCARD
 std::size_t strided_layout::get_rank() const noexcept
 {
     return m_implementation ? m_implementation->get_rank() : 0U;
+}
+
+void strided_layout::get_extents(std::vector<std::size_t> &extents) const
+{
+    extents.clear();
+    if (m_implementation)
+    {
+        m_implementation->get_extents(extents);
+    }
+}
+
+void strided_layout::get_strides(std::vector<std::ptrdiff_t> &strides) const
+{
+    strides.clear();
+    if (m_implementation)
+    {
+        m_implementation->get_strides(strides);
+    }
 }
 
 XMIPP4_NODISCARD

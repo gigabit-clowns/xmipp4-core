@@ -42,6 +42,16 @@ public:
         return m_storage;
     }
 
+    std::size_t get_rank() const noexcept
+    {
+        return m_layout.get_rank();
+    }
+
+    void get_extents(std::vector<std::size_t> &extents) const
+    {
+        m_layout.get_extents(extents);
+    }
+
     implementation apply_subscripts(span<const dynamic_subscript> subscripts)
     {
         return implementation(
@@ -157,6 +167,23 @@ std::shared_ptr<const storage> array::share_storage() const noexcept
     return m_implementation ? 
            m_implementation->share_storage() : 
            nullptr ;
+}
+
+XMIPP4_NODISCARD
+std::size_t array::get_rank() const noexcept
+{
+    return m_implementation ? 
+           m_implementation->get_rank() : 
+           0U ;
+}
+
+void array::get_extents(std::vector<std::size_t> &extents) const
+{
+    extents.clear();
+    if (m_implementation)
+    {
+        m_implementation->get_extents(extents);
+    }
 }
 
 XMIPP4_NODISCARD

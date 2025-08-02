@@ -67,6 +67,23 @@ public:
     XMIPP4_NODISCARD
     std::shared_ptr<const storage> share_storage() const noexcept;
 
+    
+    
+    /**
+     * @brief Get the rank of the array, i.e. the number of axes.
+     * 
+     * @return std::size_t The number of axes in the array.
+     */
+    XMIPP4_NODISCARD
+    std::size_t get_rank() const noexcept;
+
+    /**
+     * @brief Get the extents of the layout.
+     * 
+     * @param extents Output parameter where the extents are written.
+     */
+    void get_extents(std::vector<std::size_t> &extents) const;
+
 
 
     /**

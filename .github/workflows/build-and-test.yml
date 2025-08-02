@@ -54,7 +54,7 @@ jobs:
 
       - name: Run tests
         working-directory: "${{ github.workspace }}/build"
-        run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+        uses: ./.github/composites/run-ctest
 
   build_with_pip:
     name: pip

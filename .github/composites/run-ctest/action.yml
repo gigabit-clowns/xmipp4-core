@@ -1,7 +1,11 @@
-name: "Run test with memory checks"
-description: "Runs test with memcheck for every OS"
+name: "Run CMake tests"
+description: "Runs CMake tests for every OS"
 
-#inputs:
+inputs:
+  check-memleaks:
+    description: "If set to true, test will be run checking for memory leaks."
+    required: false
+    default: false
 #  drmemory:
 #    description: "Full path to Dr. Memory executable"
 #    required: false
@@ -9,32 +13,39 @@ outputs:
   exist-memleaks:
     description: "If True, the tests run show memory leaks." 
     value: ${{ steps.check-memleaks.outputs.exist-memleaks }}
-  test-numbers:
+  memleak-test-numbers:
     description: "Numbers of the tests with memory leaks." 
     value: ${{ steps.get-memleak-tests.outputs.test-numbers }}
 
 runs:
   using: "composite"
   steps:
-    - name: Run tests with memory check (Linux)
-      if: runner.os == 'Linux'
-      working-directory: "${{ github.workspace }}/build"
-      shell: bash
-      run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure | tee ${{ github.workspace }}/memcheck_output.txt
-    
-    - name: Run tests without memory check (Windows)
-      if: runner.os == 'Windows'
-      working-directory: "${{ github.workspace }}/build"
-      shell: cmd
-      run: ctest -T test --rerun-failed --output-on-failure
-    
-    - name: Run tests without memory check (MacOS)
-      if: runner.os == 'macOS'
+    - name: Run tests without memory check (Linux)
+      if: runner.os == 'Linux' && inputs.check-memleaks == false
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
-    
+
+    - name: Run tests without memory check (Windows)
+      if: runner.os == 'Windows' && inputs.check-memleaks == false
+      working-directory: "${{ github.workspace }}/build"
+      shell: cmd
+      run: ctest -T test --rerun-failed --output-on-failure
+
+    - name: Run tests without memory check (MacOS)
+      if: runner.os == 'macOS' && inputs.check-memleaks == false
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+
+    - name: Run tests with memory check (Linux)
+      if: runner.os == 'Linux' && inputs.check-memleaks
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure | tee ${{ github.workspace }}/memcheck_output.txt
+
     - name: Check if there are any memory leaks
+      if: inputs.check-memleaks
       id: check-memleaks
       shell: bash
       run: |
@@ -59,8 +70,9 @@ runs:
           echo "Log file with test execution not found."
         fi
         echo "exist-memleaks=$EXIST_MEMLEAKS" >> "$GITHUB_OUTPUT"
-    
+
     - name: Get number of tests with memory leaks
+      if: inputs.check-memleaks
       id: get-memleak-tests
       shell: bash
       run: |
@@ -83,15 +95,15 @@ runs:
           fi
         fi
         echo "test-numbers=$TEST_NUMBERS" >> "$GITHUB_OUTPUT"
-    
+
     #- name: Run tests with memory check (Windows)
-    #  if: runner.os == 'Windows'
+    #  if: runner.os == 'Windows' && inputs.check-memleaks
     #  working-directory: "${{ github.workspace }}/build"
     #  shell: bash
     #  run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
     #- name: Run tests with memory check (MacOS)
-    #  if: runner.os == 'macOS'
+    #  if: runner.os == 'macOS' && inputs.check-memleaks
     #  working-directory: "${{ github.workspace }}/build"
     #  shell: bash
     #  run: |

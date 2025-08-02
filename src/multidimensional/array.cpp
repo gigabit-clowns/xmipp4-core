@@ -16,15 +16,17 @@ class array::implementation
 public:
     implementation() = default;
     implementation(strided_layout layout, 
-                   std::shared_ptr<storage> storage ) noexcept
+                   std::shared_ptr<storage> storage,
+                   numerical_type data_type ) noexcept
         : m_layout(std::move(layout))
         , m_storage(std::move(storage))
+        , m_data_type(data_type)
     {
     }
 
     numerical_type get_data_type() const noexcept
     {
-        return numerical_type::unknown; // TODO
+        return m_data_type;
     }
 
     const strided_layout& get_layout() const noexcept
@@ -56,7 +58,8 @@ public:
     {
         return implementation(
             get_layout().apply_subscripts(subscripts),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
@@ -64,7 +67,8 @@ public:
     {
         return implementation(
             get_layout().transpose(),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
@@ -72,7 +76,8 @@ public:
     {
         return implementation(
             get_layout().permute(order),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
@@ -80,7 +85,8 @@ public:
     {
         return implementation(
             get_layout().swap_axes(axis1, axis2),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
@@ -88,7 +94,8 @@ public:
     {
         return implementation(
             get_layout().squeeze(),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
@@ -96,13 +103,15 @@ public:
     {
         return implementation(
             get_layout().broadcast_to(extents),
-            share_storage()
+            share_storage(),
+            get_data_type()
         );
     }
 
 private:
     strided_layout m_layout;
     std::shared_ptr<storage> m_storage;
+    numerical_type m_data_type;
 
 };
 
@@ -115,9 +124,15 @@ array::array(array&& other) noexcept = default;
 array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
-array::array(strided_layout layout, std::shared_ptr<storage> storage)
+array::array(strided_layout layout, 
+             std::shared_ptr<storage> storage, 
+             numerical_type data_type )
     : array(
-        std::make_shared<implementation>(std::move(layout), std::move(storage))
+        std::make_shared<implementation>(
+            std::move(layout), 
+            std::move(storage), 
+            data_type
+        )
     )
 {
 }

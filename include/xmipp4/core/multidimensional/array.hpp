@@ -23,7 +23,9 @@ class array
 {
 public:
     array();
-    array(strided_layout layout, std::shared_ptr<storage> storage);
+    array(strided_layout layout, 
+          std::shared_ptr<storage> storage, 
+          numerical_type data_type );
     array(const array& other) = delete;
     array(array&& other) noexcept;
     ~array();

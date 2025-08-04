@@ -392,6 +392,25 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
+    bool extents_equal(span<const std::size_t> extents) const noexcept
+    {
+        if (m_axes.size() != extents.size())
+        {
+            return false;
+        }
+
+        const auto n = m_axes.size();
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (m_axes[i].get_extent() != extents[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     implementation broadcast_to(span<const std::size_t> extents) const
     {
         if (m_axes.size() > extents.size())
@@ -512,7 +531,15 @@ strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
     if (m_implementation)
     {
-        return strided_layout(m_implementation->apply_subscripts(subscripts));
+        if (subscripts.empty())
+        {
+            return *this;
+        }
+        else
+        {
+            const auto &impl = *m_implementation;
+            return strided_layout(impl.apply_subscripts(subscripts));
+        }
     }
     else
     {
@@ -526,7 +553,8 @@ strided_layout strided_layout::transpose() const
     if (get_rank() > 1)
     {   
         XMIPP4_ASSERT( m_implementation );
-        return strided_layout(m_implementation->transpose());
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.transpose());
     }
     else
     {
@@ -539,7 +567,8 @@ strided_layout strided_layout::permute(span<const std::size_t> order) const
 {
     if (m_implementation)
     {
-        return strided_layout(m_implementation->permute(order));
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.permute(order));
     }
     else
     {
@@ -554,7 +583,8 @@ strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
 {
     if (m_implementation)
     {
-        return strided_layout(m_implementation->swap_axes(axis1, axis2));
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.swap_axes(axis1, axis2));
     }
     else
     {
@@ -567,7 +597,8 @@ strided_layout strided_layout::squeeze() const
 {
     if (m_implementation)
     {
-        return strided_layout(m_implementation->squeeze());
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.squeeze());
     }
     else
     {
@@ -581,13 +612,21 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
 {
     if (m_implementation)
     {
-        return strided_layout(m_implementation->broadcast_to(extents));
+        const auto &impl = *m_implementation;
+        if (impl.extents_equal(extents))
+        {
+            return *this;
+        }
+        else
+        {
+            return strided_layout(impl.broadcast_to(extents));
+        }
     }
     else
     {
-        implementation().broadcast_to(extents); // Arg validation
-        return strided_layout();
+        return strided_layout(implementation().broadcast_to(extents));
     }
+
 }
 
 } // namespace multidimensional

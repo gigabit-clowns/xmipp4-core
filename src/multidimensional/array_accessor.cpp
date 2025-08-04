@@ -8,6 +8,12 @@
 #include <vector>
 #include <numeric>
 
+/**
+ * The algorithms and data structured featured in this code are mostly based on:
+ * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/TensorIterator.cpp
+ * 
+ */
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -74,6 +80,13 @@ private:
 class array_accessor::implementation
 {
 public:
+    implementation(std::vector<std::size_t> extents)
+        : m_extents(std::move(extents))
+        , m_operands()
+        , m_number_of_outputs(0)
+    {
+    }
+
     void add_output(const strided_layout &layout)
     {
         if (m_number_of_outputs != m_operands.size())
@@ -88,7 +101,7 @@ public:
 
     void add_input(const strided_layout &layout)
     {
-        add_operand(layout);
+        add_operand(layout.broadcast_to(make_span(m_extents)));
     }
 
     void set_storage(std::size_t index, std::shared_ptr<storage> storage)

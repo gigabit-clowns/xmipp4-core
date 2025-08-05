@@ -3,7 +3,6 @@
 #pragma once
 
 #include <typeinfo>
-#include <vector>
 #include <memory>
 #include <functional>
 
@@ -12,12 +11,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array;
+class array_iterator;
 
 class kernel_registry
 {
 public:
-    using kernel_function_type = std::function<void(std::vector<array>)>;
+    using kernel_function_type = std::function<void(const array_iterator&)>; // TODO define
 
     kernel_registry();
     kernel_registry(const kernel_registry &other) = delete;

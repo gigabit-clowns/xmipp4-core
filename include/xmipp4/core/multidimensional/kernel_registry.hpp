@@ -12,11 +12,13 @@ namespace multidimensional
 {
 
 class array_iterator;
+class context;
 
 class kernel_registry
 {
 public:
-    using kernel_function_type = std::function<void(const array_iterator&)>; // TODO define
+    using kernel_function_type = 
+        std::function<void(const array_iterator&, const context&)>;
 
     kernel_registry();
     kernel_registry(const kernel_registry &other) = delete;

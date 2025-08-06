@@ -35,12 +35,12 @@ public:
                const std::type_info &backend_key ) const noexcept
     {
         const auto ite = m_kernels.find(kernel_key(operation_key, backend_key));
-        if (ite == m_kernels.cend())
+        if (ite != m_kernels.cend())
         {
-            return nullptr;
+            return &(ite->second);
         }
 
-        return &(ite->second);
+        return nullptr;
     }
 
 private:

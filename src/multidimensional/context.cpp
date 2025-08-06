@@ -3,9 +3,9 @@
 #include <xmipp4/core/multidimensional/context.hpp>
 
 #include <xmipp4/core/multidimensional/allocator.hpp>
-#include <xmipp4/core/multidimensional/strided_layout_policy.hpp>
 #include <xmipp4/core/compute/device.hpp>
 #include <xmipp4/core/compute/device_queue.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
 namespace xmipp4 
 {
@@ -84,8 +84,7 @@ context& context::operator=(context &&other) noexcept = default;
 
 void context::set_device(std::shared_ptr<compute::device> device) noexcept
 {
-    create_if_null();
-    m_implementation->set_device(std::move(device));
+    create_if_null().set_device(std::move(device));
 }
 
 compute::device* context::get_device() const noexcept
@@ -97,8 +96,7 @@ compute::device* context::get_device() const noexcept
 
 void context::set_device_queue(std::shared_ptr<compute::device_queue> queue) noexcept
 {
-    create_if_null();
-    m_implementation->set_device_queue(std::move(queue));
+    create_if_null().set_device_queue(std::move(queue));
 }
 
 compute::device_queue* context::get_device_queue() const noexcept
@@ -110,8 +108,7 @@ compute::device_queue* context::get_device_queue() const noexcept
 
 void context::set_allocator(std::shared_ptr<allocator> allocator) noexcept
 {
-    create_if_null();
-    m_implementation->set_allocator(std::move(allocator));
+    create_if_null().set_allocator(std::move(allocator));
 }
 
 allocator* context::get_allocator() const noexcept
@@ -123,8 +120,7 @@ allocator* context::get_allocator() const noexcept
 
 void context::set_scratch_allocator(std::shared_ptr<allocator> allocator) noexcept
 {
-    create_if_null();
-    m_implementation->set_scratch_allocator(std::move(allocator));
+    create_if_null().set_scratch_allocator(std::move(allocator));
 }
 
 allocator* context::get_scratch_allocator() const noexcept
@@ -136,8 +132,7 @@ allocator* context::get_scratch_allocator() const noexcept
 
 void context::set_layout_policy(std::shared_ptr<strided_layout_policy> policy) noexcept
 {
-    create_if_null();
-    m_implementation->set_layout_policy(std::move(policy));
+    create_if_null().set_layout_policy(std::move(policy));
 }
 
 strided_layout_policy* context::get_layout_policy() const noexcept
@@ -147,12 +142,15 @@ strided_layout_policy* context::get_layout_policy() const noexcept
            nullptr ;
 }
 
-void context::create_if_null()
+context::implementation& context::create_if_null()
 {
     if (!m_implementation)
     {
         m_implementation = std::make_unique<implementation>();
     }
+
+    XMIPP4_ASSERT( m_implementation );
+    return *m_implementation;
 }
 
 

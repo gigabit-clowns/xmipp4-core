@@ -115,11 +115,13 @@ public:
      */
     strided_layout_policy* get_layout_policy() const noexcept;
 
+
+
 private:
     class implementation;
     std::unique_ptr<implementation> m_implementation;
 
-    void create_if_null();
+    implementation& create_if_null();
 
 };
 

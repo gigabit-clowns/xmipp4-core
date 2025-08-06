@@ -55,6 +55,13 @@ public:
     storage* get_storage() noexcept;
 
     /**
+     * @brief Get the storage of this array.
+     * 
+     * @return const storage* The storage.
+     */
+    const storage* get_storage() const noexcept;
+
+    /**
      * @brief Get a ref-counted pointer to the storage of this array.
      * 
      * @return std::shared_ptr<storage> The storage.
@@ -85,7 +92,7 @@ public:
     array operator()(Args&& ...args)
     {
         const std::array<dynamic_subscript, sizeof...(Args)> subscripts = {
-            std::forward<Args>(args)...
+            dynamic_subscript(std::forward<Args>(args))...
         };
         return apply_subscripts(make_span(subscripts));
     }

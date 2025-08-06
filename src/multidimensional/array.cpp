@@ -168,6 +168,13 @@ storage* array::get_storage() noexcept
            nullptr ;
 }
 
+const storage* array::get_storage() const noexcept
+{
+    return m_implementation ? 
+           m_implementation->get_storage() : 
+           nullptr ;
+}
+
 XMIPP4_NODISCARD
 std::shared_ptr<storage> array::share_storage() noexcept
 {

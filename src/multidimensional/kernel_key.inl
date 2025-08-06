@@ -46,10 +46,10 @@ bool operator!=(const kernel_key &lhs, const kernel_key &rhs) noexcept
 namespace std
 {
 
-template<>
 inline
-size_t
-hash<xmipp4::multidimensional::kernel_key>::operator()(const key_type &key) const noexcept
+std::size_t
+hash<xmipp4::multidimensional::kernel_key>::operator()
+(const xmipp4::multidimensional::kernel_key &key) const noexcept
 {
     const hash<type_index> sub_hasher;
     

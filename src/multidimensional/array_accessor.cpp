@@ -6,7 +6,6 @@
 #include <xmipp4/core/multidimensional/storage.hpp>
 
 #include <vector>
-#include <numeric>
 
 /**
  * The algorithms and data structured featured in this code are mostly based on:
@@ -101,7 +100,7 @@ public:
 
     void add_input(const strided_layout &layout)
     {
-        add_operand(layout.broadcast_to(make_span(m_extents)));
+        add_operand(layout);
     }
 
     void set_storage(std::size_t index, std::shared_ptr<storage> storage)
@@ -134,7 +133,7 @@ public:
         return get_number_of_operands() - get_number_of_outputs();
     }
 
-    void sort()
+    void sort_axes_by_locality()
     {
         const auto n = get_number_of_dimensions();
         if (n <= 1)
@@ -142,8 +141,12 @@ public:
             return; // Trivial
         }
 
+        // Start with reversed indices n-1, n-2 ... 1, 0
         std::vector<std::size_t> permutation(n);
-        std::iota(permutation.rbegin(), permutation.rend(), std::size_t(0));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            permutation[i] = n - i - 1;
+        }
 
         // Insertion sort with support for ambiguous comparisons
         for (std::size_t i = 1; i < n; ++i)
@@ -172,9 +175,13 @@ public:
         permute(std::move(permutation));
     }
 
-    void coalesce()
+    void coalesce_contiguous_axes()
     {
         const auto n = get_number_of_dimensions();
+        if (n <= 1)
+        {
+            return; // Trivial
+        }
 
         std::size_t prev = 0;
         for (std::size_t curr = 1; curr < n;  ++curr)
@@ -211,6 +218,7 @@ private:
 
     void add_operand(const strided_layout &layout)
     {
+        // TODO handle validation
         m_operands.emplace_back(layout);
     }
 
@@ -281,6 +289,93 @@ private:
     }
 
 };
+
+
+
+
+
+array_accessor::array_accessor() noexcept = default;
+
+array_accessor::array_accessor(std::vector<std::size_t> extents)
+    : m_implementation(std::make_unique<implementation>(std::move(extents)))
+{
+}
+
+array_accessor::array_accessor(array_accessor&&) noexcept = default;
+array_accessor::~array_accessor() = default;
+
+array_accessor& 
+array_accessor::operator=(array_accessor&&) noexcept = default;
+
+void array_accessor::set_extents(std::vector<std::size_t> extents)
+{
+    if (m_implementation)
+    {
+        throw std::logic_error("Can only set extents once");
+    }
+
+    m_implementation = std::make_unique<implementation>(std::move(extents));
+}
+
+void array_accessor::add_output(const strided_layout &layout)
+{
+    if (!m_implementation)
+    {
+        std::vector<std::size_t> extents;
+        layout.get_extents(extents);
+
+        m_implementation = std::make_unique<implementation>(std::move(extents));
+    }
+
+    XMIPP4_ASSERT( m_implementation );
+    m_implementation->add_output(layout);
+}
+
+void array_accessor::add_input(const strided_layout &layout)
+{
+    if (!m_implementation)
+    {
+        // TODO decide what to do
+    }
+    
+    m_implementation->add_input(layout);
+}
+
+void array_accessor::sort_axes_by_locality()
+{
+    if (m_implementation)
+    {
+        m_implementation->sort_axes_by_locality();
+    }
+}
+
+void array_accessor::coalesce_contiguous_axes()
+{
+    if (m_implementation)
+    {
+        m_implementation->coalesce_contiguous_axes();
+    }
+}
+
+std::size_t array_accessor::get_number_of_dimensions() const noexcept
+{
+    return m_implementation ? m_implementation->get_number_of_dimensions() : 0;
+}
+
+std::size_t array_accessor::get_number_of_operands() const noexcept
+{
+    return m_implementation ? m_implementation->get_number_of_operands() : 0;
+}
+
+std::size_t array_accessor::get_number_of_outputs() const noexcept
+{
+    return m_implementation ? m_implementation->get_number_of_outputs() : 0;
+}
+
+std::size_t array_accessor::get_number_of_inputs() const noexcept
+{
+    return m_implementation ? m_implementation->get_number_of_inputs() : 0;
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

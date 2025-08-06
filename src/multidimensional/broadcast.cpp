@@ -59,5 +59,3 @@ void broadcast_extents(std::vector<std::size_t> &extents1,
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-

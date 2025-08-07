@@ -452,6 +452,28 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
+    std::tuple<implementation, implementation>
+    split_at(std::ptrdiff_t index) const
+    {
+        const auto sanitized_index = sanitize_index(index, get_rank());
+        const auto first = m_axes.cbegin();
+        const auto middle = first + sanitized_index;
+        const auto last = m_axes.cend();
+
+        std::vector<strided_axis> outer_axes;
+        outer_axes.reserve(sanitized_index);
+        std::copy(first, middle, std::back_inserter(outer_axes));
+
+        std::vector<strided_axis> inner_axes;
+        inner_axes.reserve(get_rank() - sanitized_index);
+        std::copy(middle, last, std::back_inserter(inner_axes));
+
+        return std::make_tuple(
+            implementation(std::move(outer_axes), get_offset()),
+            implementation(std::move(inner_axes), 0)
+        );
+    }
+
 private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
@@ -627,6 +649,41 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
         return strided_layout(implementation().broadcast_to(extents));
     }
 
+}
+
+XMIPP4_NODISCARD
+std::tuple<strided_layout, strided_layout> 
+strided_layout::split_at(std::ptrdiff_t index) const
+{
+    std::tuple<strided_layout, strided_layout> result;
+
+    if (index == 0)
+    {
+        // Inner takes all
+        result = std::make_tuple(strided_layout(), *this);
+    }
+    else if (index == get_rank())
+    {
+        // Outer takes all
+        result = std::make_tuple(*this, strided_layout());
+    }
+    else if (m_implementation)
+    {
+        // Split
+        implementation outer;
+        implementation inner;
+        std::tie(outer, inner) = m_implementation->split_at(index);
+        result = std::make_tuple(
+            strided_layout(std::move(outer)),
+            strided_layout(std::move(inner))
+        );
+    }
+    else
+    {
+        throw std::invalid_argument("index for split_at is out of bounds");
+    }
+
+    return result;
 }
 
 } // namespace multidimensional

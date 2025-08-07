@@ -142,6 +142,21 @@ public:
     XMIPP4_NODISCARD
     strided_layout broadcast_to(span<const std::size_t> extents) const;
 
+    /**
+     * @brief Split the layout into an outer and inner layout.
+     * 
+     * Axes from [0, index) returned in the outer layout.
+     * Axes from [index, end) are returned in the inner layout.
+     * 
+     * @param index Index at which the layout is split. Must be in 
+     * [-extent, extent).
+     * @return std::tuple<strided_layout, strided_layout> Tuple of 
+     * (outer_layout, inner_layout)
+     */
+    XMIPP4_NODISCARD
+    std::tuple<strided_layout, strided_layout> 
+    split_at(std::ptrdiff_t index) const;
+
 private:
     class implementation;
     std::shared_ptr<implementation> m_implementation;

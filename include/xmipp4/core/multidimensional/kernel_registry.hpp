@@ -12,14 +12,12 @@ namespace multidimensional
 {
 
 class array_iterator;
+class kernel_handle;
 class context;
 
 class kernel_registry
 {
 public:
-    using kernel_function_type = 
-        std::function<void(const array_iterator&, const context&)>;
-
     kernel_registry();
     kernel_registry(const kernel_registry &other) = delete;
     kernel_registry(kernel_registry &&other) noexcept;
@@ -29,16 +27,10 @@ public:
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
     bool register_kernel(const std::type_info &operation_key,
-                         const std::type_info &backend_key,
-                         const kernel_function_type &kernel );
+                         std::unique_ptr<kernel_handle> kernel );
 
-    bool register_kernel(const std::type_info &operation_key,
-                         const std::type_info &backend_key,
-                         kernel_function_type &&kernel );
-    
-    const kernel_function_type* 
-    get_kernel(const std::type_info &operation_key,
-               const std::type_info &backend_key ) const noexcept;
+    const kernel_handle*
+    get_kernel(const std::type_info &operation_key) const noexcept;
 
 private:
     class implementation;

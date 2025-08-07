@@ -4,9 +4,8 @@
 
 #include <xmipp4/core/platform/assert.hpp>
 
-#include "kernel_key.hpp"
-
 #include <unordered_map>
+#include <typeindex>
 
 namespace xmipp4 
 {
@@ -16,35 +15,39 @@ namespace multidimensional
 class kernel_registry::implementation
 {
 public:
-    template <typename F>
-    bool register_kernel(const std::type_info &operation_key,
-                         const std::type_info &backend_key,
-                         F &&kernel )
+    bool register_kernel(const std::type_info &operation_key, 
+                         std::unique_ptr<kernel_handle> kernel)
     {
-        bool inserted;
-        std::tie(std::ignore, inserted) = m_kernels.emplace(
-            kernel_key(operation_key, backend_key),
-            std::forward<F>(kernel)
-        );
+        bool inserted = false;
+
+        if (kernel)
+        {
+            std::tie(std::ignore, inserted) = m_kernels.emplace(
+                operation_key,
+                std::move(kernel)
+            );
+        }
 
         return inserted;
     }
 
-    const kernel_function_type* 
-    get_kernel(const std::type_info &operation_key,
-               const std::type_info &backend_key ) const noexcept
+    const kernel_handle* 
+    get_kernel(const std::type_info &operation_key) const noexcept
     {
-        const auto ite = m_kernels.find(kernel_key(operation_key, backend_key));
+        const kernel_handle *result = nullptr;
+
+        const auto ite = m_kernels.find(operation_key);
         if (ite != m_kernels.cend())
         {
-            return &(ite->second);
+            result = ite->second.get();
+            XMIPP4_ASSERT( result );
         }
 
-        return nullptr;
+        return result;
     }
 
 private:
-    std::unordered_map<kernel_key, kernel_function_type> m_kernels;
+    std::unordered_map<std::type_index, std::unique_ptr<kernel_handle>> m_kernels;
 
 };
 
@@ -62,33 +65,19 @@ kernel_registry&
 kernel_registry::operator=(kernel_registry &&other) noexcept = default;
 
 bool kernel_registry::register_kernel(const std::type_info &operation_key,
-                                      const std::type_info &backend_key,
-                                      const kernel_function_type &kernel )
+                                      std::unique_ptr<kernel_handle> kernel )
 {
     return create_if_null().register_kernel(
         operation_key, 
-        backend_key, 
-        kernel
-    );
-}
-
-bool kernel_registry::register_kernel(const std::type_info &operation_key,
-                                      const std::type_info &backend_key,
-                                      kernel_function_type &&kernel )
-{
-    return create_if_null().register_kernel(
-        operation_key, 
-        backend_key, 
         std::move(kernel)
     );
 }
 
-const kernel_registry::kernel_function_type* 
-kernel_registry::get_kernel(const std::type_info &operation_key,
-                            const std::type_info &backend_key ) const noexcept
+const kernel_handle* 
+kernel_registry::get_kernel(const std::type_info &operation_key) const noexcept
 {
     return m_implementation ? 
-           m_implementation->get_kernel(operation_key, backend_key) :
+           m_implementation->get_kernel(operation_key) :
            nullptr ;
 }
 

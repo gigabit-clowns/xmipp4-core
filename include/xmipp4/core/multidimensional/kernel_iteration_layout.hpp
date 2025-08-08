@@ -11,19 +11,19 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class strided_layout;
-
-class array_access_layout
+class kernel_iteration_layout
 {
 public:
-    array_access_layout() noexcept;
-    explicit array_access_layout(std::vector<std::size_t> batch_extents);
-    array_access_layout(const array_access_layout&) = delete;
-    array_access_layout(array_access_layout&& other) noexcept;
-    ~array_access_layout();
+    kernel_iteration_layout() noexcept;
+    explicit kernel_iteration_layout(std::vector<std::size_t> batch_extents);
+    kernel_iteration_layout(const kernel_iteration_layout&) = delete;
+    kernel_iteration_layout(kernel_iteration_layout&& other) noexcept;
+    ~kernel_iteration_layout();
 
-    array_access_layout& operator=(const array_access_layout&) = delete;
-    array_access_layout& operator=(array_access_layout&& other) noexcept;
+    kernel_iteration_layout& 
+    operator=(const kernel_iteration_layout&) = delete;
+    kernel_iteration_layout& 
+    operator=(kernel_iteration_layout&& other) noexcept;
 
     void add_operand(std::vector<std::size_t> extents,
                      std::vector<std::ptrdiff_t> strides,
@@ -34,9 +34,9 @@ public:
 
     std::size_t get_number_of_operands() const noexcept;
     span<const std::size_t> get_batch_extents() const;
-    span<const std::size_t> get_kernel_extents(std::size_t operand) const;
+    span<const std::size_t> get_core_extents(std::size_t operand) const;
     span<const std::ptrdiff_t> get_batch_strides(std::size_t operand) const;
-    span<const std::ptrdiff_t> get_kernel_strides(std::size_t operand) const;
+    span<const std::ptrdiff_t> get_core_strides(std::size_t operand) const;
 
 private:
     class operand;

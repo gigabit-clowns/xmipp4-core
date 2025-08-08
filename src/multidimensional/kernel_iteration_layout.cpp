@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_access_layout.hpp>
+#include <xmipp4/core/multidimensional/kernel_iteration_layout.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
@@ -18,28 +18,28 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array_access_layout::operand
+class kernel_iteration_layout::operand
 {
 public:
     operand(std::vector<std::size_t> kernel_extents,
             std::vector<std::ptrdiff_t> strides,
             std::ptrdiff_t offset )
-        : m_kernel_extents(std::move(kernel_extents))
+        : m_core_extents(std::move(kernel_extents))
         , m_strides(std::move(strides))
         , m_offset(offset)
     {
     }
 
-    span<const std::size_t> get_kernel_extents() const noexcept
+    span<const std::size_t> get_core_extents() const noexcept
     {
-        return make_span(m_kernel_extents);
+        return make_span(m_core_extents);
     }
 
-    span<const std::ptrdiff_t> get_kernel_strides() const noexcept
+    span<const std::ptrdiff_t> get_core_strides() const noexcept
     {
         return span<const std::ptrdiff_t>(
             m_strides.data() + get_number_of_batch_axes(),
-            get_number_of_kernel_axes()
+            get_number_of_core_axes()
         );
     }
 
@@ -91,23 +91,23 @@ public:
     }
 
 private:
-    std::vector<std::size_t> m_kernel_extents;
+    std::vector<std::size_t> m_core_extents;
     std::vector<std::ptrdiff_t> m_strides;
     std::ptrdiff_t m_offset;
  
-    std::size_t get_number_of_kernel_axes() const noexcept
+    std::size_t get_number_of_core_axes() const noexcept
     {
-        return m_kernel_extents.size();
+        return m_core_extents.size();
     }
 
     std::size_t get_number_of_batch_axes() const noexcept
     {
-        return m_strides.size() - m_kernel_extents.size();
+        return m_strides.size() - m_core_extents.size();
     }
 
 };
 
-class array_access_layout::implementation
+class kernel_iteration_layout::implementation
 {
 public:
     implementation(std::vector<std::size_t> batch_extents)
@@ -161,9 +161,9 @@ public:
         return make_span(m_batch_extents);
     }
     
-    span<const std::size_t> get_kernel_extents(std::size_t operand) const
+    span<const std::size_t> get_core_extents(std::size_t operand) const
     {
-        return m_operands.at(operand).get_kernel_extents();
+        return m_operands.at(operand).get_core_extents();
     }
 
     span<const std::ptrdiff_t> get_batch_strides(std::size_t operand) const
@@ -171,9 +171,9 @@ public:
         return m_operands.at(operand).get_batch_strides();
     }
 
-    span<const std::ptrdiff_t> get_kernel_strides(std::size_t operand) const
+    span<const std::ptrdiff_t> get_core_strides(std::size_t operand) const
     {
-        return m_operands.at(operand).get_kernel_strides();
+        return m_operands.at(operand).get_core_strides();
     }
 
 private:
@@ -335,26 +335,26 @@ private:
 
 
 
-array_access_layout::array_access_layout() noexcept = default;
+kernel_iteration_layout::kernel_iteration_layout() noexcept = default;
 
-array_access_layout::array_access_layout(std::vector<std::size_t> batch_extents)
+kernel_iteration_layout::kernel_iteration_layout(std::vector<std::size_t> batch_extents)
     : m_implementation(
         std::make_unique<implementation>(std::move(batch_extents))
     )
 {
 }
 
-array_access_layout::array_access_layout(array_access_layout&& other) noexcept = default;
+kernel_iteration_layout::kernel_iteration_layout(kernel_iteration_layout&& other) noexcept = default;
 
-array_access_layout::~array_access_layout() = default;
+kernel_iteration_layout::~kernel_iteration_layout() = default;
 
-array_access_layout& 
-array_access_layout::operator=(array_access_layout&& other) noexcept = default;
+kernel_iteration_layout& 
+kernel_iteration_layout::operator=(kernel_iteration_layout&& other) noexcept = default;
 
-void array_access_layout::add_operand(std::vector<std::size_t> extents,
-                                      std::vector<std::ptrdiff_t> strides,
-                                      std::ptrdiff_t offset, 
-                                      std::size_t kernel_dimensions )
+void kernel_iteration_layout::add_operand(std::vector<std::size_t> extents,
+                                std::vector<std::ptrdiff_t> strides,
+                                std::ptrdiff_t offset, 
+                                std::size_t kernel_dimensions )
 {
     if (extents.size() != strides.size())
     {
@@ -391,7 +391,7 @@ void array_access_layout::add_operand(std::vector<std::size_t> extents,
     );
 }
 
-void array_access_layout::optimize_batch()
+void kernel_iteration_layout::optimize_batch()
 {
     if (m_implementation)
     {
@@ -399,19 +399,19 @@ void array_access_layout::optimize_batch()
     }
 }
 
-std::size_t array_access_layout::get_number_of_operands() const noexcept
+std::size_t kernel_iteration_layout::get_number_of_operands() const noexcept
 {
     return m_implementation ? m_implementation->get_number_of_operands() : 0;
 }
 
 span<const std::size_t> 
-array_access_layout::get_batch_extents() const
+kernel_iteration_layout::get_batch_extents() const
 {
     if (!m_implementation)
     {
         throw std::logic_error(
             "Cannot call get_batch_extents on an uninitialized "
-            "array_access_layout"
+            "kernel_iteration_layout"
         );
     }
 
@@ -419,27 +419,27 @@ array_access_layout::get_batch_extents() const
 }
 
 span<const std::size_t> 
-array_access_layout::get_kernel_extents(std::size_t operand) const
+kernel_iteration_layout::get_core_extents(std::size_t operand) const
 {
     if (!m_implementation)
     {
         throw std::logic_error(
-            "Cannot call get_kernel_extents on an uninitialized "
-            "array_access_layout"
+            "Cannot call get_core_extents on an uninitialized "
+            "kernel_iteration_layout"
         );
     }
 
-    return m_implementation->get_kernel_extents(operand);
+    return m_implementation->get_core_extents(operand);
 }
 
 span<const std::ptrdiff_t> 
-array_access_layout::get_batch_strides(std::size_t operand) const
+kernel_iteration_layout::get_batch_strides(std::size_t operand) const
 {
     if (!m_implementation)
     {
         throw std::logic_error(
             "Cannot call get_batch_strides on an uninitialized "
-            "array_access_layout"
+            "kernel_iteration_layout"
         );
     }
 
@@ -447,17 +447,17 @@ array_access_layout::get_batch_strides(std::size_t operand) const
 }
 
 span<const std::ptrdiff_t> 
-array_access_layout::get_kernel_strides(std::size_t operand) const
+kernel_iteration_layout::get_core_strides(std::size_t operand) const
 {
     if (!m_implementation)
     {
         throw std::logic_error(
-            "Cannot call get_kernel_strides on an uninitialized "
-            "array_access_layout"
+            "Cannot call get_core_strides on an uninitialized "
+            "kernel_iteration_layout"
         );
     }
 
-    return m_implementation->get_kernel_strides(operand);
+    return m_implementation->get_core_strides(operand);
 }
 
 } // namespace multidimensional

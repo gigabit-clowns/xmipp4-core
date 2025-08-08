@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/multidimensional/broadcast.hpp>
 
+#include <xmipp4/core/multidimensional/broadcast_error.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <stdexcept>
@@ -13,8 +14,10 @@ namespace multidimensional
 {
 
 static
-void broadcast_extent(std::size_t &extent1, std::size_t &extent2)
+bool broadcast_extent(std::size_t &extent1, std::size_t &extent2)
 {
+    bool result = true;
+
     if (extent1 != extent2)
     {
         if (extent1 == 1)
@@ -27,11 +30,11 @@ void broadcast_extent(std::size_t &extent1, std::size_t &extent2)
         }
         else
         {
-            std::ostringstream oss;
-            oss << "Cannot broadcast extents " << extent1 << " and " << extent2;
-            throw std::logic_error(oss.str());
+            result = false;
         }
     }
+
+    return result;
 }
 
 void broadcast_extents(std::vector<std::size_t> &extents1, 
@@ -53,7 +56,10 @@ void broadcast_extents(std::vector<std::size_t> &extents1,
     const auto n = extents1.size();
     for (std::size_t i = 0; i < n; ++i)
     {
-        broadcast_extent(extents1[i], extents2[i]);
+        if (!broadcast_extent(extents1[i], extents2[i]))
+        {
+            throw broadcast_error(extents1, extents2);
+        }
     }
 }
 

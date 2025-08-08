@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/kernel_iteration_layout.hpp>
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/multidimensional/broadcast_error.hpp>
 
 #include <vector>
 #include <numeric>
@@ -357,11 +357,13 @@ private:
                 }
                 else
                 {
-                    std::ostringstream oss;
-                    oss << "Could not broadcast operand batch extent " 
-                        << extents[i] 
-                        << " into " << m_batch_extents[i];
-                    throw std::invalid_argument(oss.str());
+                    throw broadcast_error(
+                        m_batch_extents,
+                        std::vector(
+                            extents.cbegin(), 
+                            std::prev(extents.cend(), core_dimensions)
+                        )
+                    );
                 }
             }
 

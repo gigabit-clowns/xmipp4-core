@@ -29,9 +29,8 @@ public:
                      std::vector<std::ptrdiff_t> strides,
                      std::ptrdiff_t offset, 
                      std::size_t kernel_dimensions );
-   
-    void sort_batch_axes_by_locality();
-    void coalesce_contiguous_batch_axes();
+    
+    void optimize_batch();
 
     std::size_t get_number_of_operands() const noexcept;
     span<const std::size_t> get_batch_extents() const;

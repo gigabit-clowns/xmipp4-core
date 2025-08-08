@@ -145,82 +145,10 @@ public:
         );
     }
 
-    void sort_batch_axes_by_locality()
+    void optimize_batch()
     {
-        const auto n = get_number_of_batch_axes();
-        if (n <= 1)
-        {
-            return; // Trivial
-        }
-
-        // Start with reversed indices n-1, n-2 ... 1, 0
-        std::vector<std::size_t> permutation(n);
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            permutation[i] = n - i - 1;
-        }
-
-        // Insertion sort with support for ambiguous comparisons
-        for (std::size_t i = 1; i < n; ++i)
-        {
-            const auto index1 = i;
-            for (std::size_t j = 1; j <= i; ++j)
-            {
-                const auto index0 = i - j;
-                const auto comparison = compare_batch_strides(
-                    permutation[index0], 
-                    permutation[index1]
-                );
-
-                if (comparison > 0)
-                {
-                    std::swap(permutation[index0], permutation[index1]);
-                    j = 0;
-                } 
-                else if (comparison < 0) 
-                {
-                    break;
-                }
-            }
-        }
-
-        permute_batch_axes(std::move(permutation));
-    }
-
-    void coalesce_contiguous_batch_axes()
-    {
-        const auto n = get_number_of_batch_axes();
-        if (n <= 1)
-        {
-            return; // Trivial
-        }
-
-        std::size_t prev = 0;
-        for (std::size_t curr = 1; curr < n;  ++curr)
-        {
-            if (can_coalesce_batch_axes(prev, curr))
-            {
-                if (m_batch_extents[prev] == 1)
-                {
-                    swap_batch_axes(prev, curr);
-                }
-                else
-                {
-                    m_batch_extents[prev] *= m_batch_extents[curr];
-                }
-
-            }
-            else
-            {
-                ++prev;
-                if (prev != curr)
-                {
-                    swap_batch_axes(prev, curr);
-                }
-            }
-        }
-
-        trim_batch_axes(prev+1);
+        sort_batch_axes_by_locality();
+        coalesce_contiguous_batch_axes();
     }
 
     std::size_t get_number_of_operands() const noexcept
@@ -323,6 +251,84 @@ private:
         }
     }
 
+    void sort_batch_axes_by_locality()
+    {
+        const auto n = get_number_of_batch_axes();
+        if (n <= 1)
+        {
+            return; // Trivial
+        }
+
+        // Start with reversed indices n-1, n-2 ... 1, 0
+        std::vector<std::size_t> permutation(n);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            permutation[i] = n - i - 1;
+        }
+
+        // Insertion sort with support for ambiguous comparisons
+        for (std::size_t i = 1; i < n; ++i)
+        {
+            const auto index1 = i;
+            for (std::size_t j = 1; j <= i; ++j)
+            {
+                const auto index0 = i - j;
+                const auto comparison = compare_batch_strides(
+                    permutation[index0], 
+                    permutation[index1]
+                );
+
+                if (comparison > 0)
+                {
+                    std::swap(permutation[index0], permutation[index1]);
+                    j = 0;
+                } 
+                else if (comparison < 0) 
+                {
+                    break;
+                }
+            }
+        }
+
+        permute_batch_axes(std::move(permutation));
+    }
+
+    void coalesce_contiguous_batch_axes()
+    {
+        const auto n = get_number_of_batch_axes();
+        if (n <= 1)
+        {
+            return; // Trivial
+        }
+
+        std::size_t prev = 0;
+        for (std::size_t curr = 1; curr < n;  ++curr)
+        {
+            if (can_coalesce_batch_axes(prev, curr))
+            {
+                if (m_batch_extents[prev] == 1)
+                {
+                    swap_batch_axes(prev, curr);
+                }
+                else
+                {
+                    m_batch_extents[prev] *= m_batch_extents[curr];
+                }
+
+            }
+            else
+            {
+                ++prev;
+                if (prev != curr)
+                {
+                    swap_batch_axes(prev, curr);
+                }
+            }
+        }
+
+        trim_batch_axes(prev+1);
+    }
+
 };
 
 
@@ -385,19 +391,11 @@ void array_access_layout::add_operand(std::vector<std::size_t> extents,
     );
 }
 
-void array_access_layout::sort_batch_axes_by_locality()
+void array_access_layout::optimize_batch()
 {
     if (m_implementation)
     {
-        m_implementation->sort_batch_axes_by_locality();
-    }
-}
-
-void array_access_layout::coalesce_contiguous_batch_axes()
-{
-    if (m_implementation)
-    {
-        m_implementation->coalesce_contiguous_batch_axes();
+        m_implementation->optimize_batch();
     }
 }
 

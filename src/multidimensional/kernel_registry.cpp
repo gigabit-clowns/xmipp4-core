@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/multidimensional/kernel_registry.hpp>
 
+#include <xmipp4/core/multidimensional/kernel_builder.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <unordered_map>
@@ -15,29 +16,29 @@ namespace multidimensional
 class kernel_registry::implementation
 {
 public:
-    bool register_kernel(const std::type_info &operation_key, 
-                         std::unique_ptr<kernel_handle> kernel)
+    bool register_kernel_builder(const std::type_info &operation_key, 
+                                 std::unique_ptr<kernel_builder> builder )
     {
         bool inserted = false;
 
-        if (kernel)
+        if (builder)
         {
-            std::tie(std::ignore, inserted) = m_kernels.emplace(
+            std::tie(std::ignore, inserted) = m_builders.emplace(
                 operation_key,
-                std::move(kernel)
+                std::move(builder)
             );
         }
 
         return inserted;
     }
 
-    const kernel_handle* 
-    get_kernel(const std::type_info &operation_key) const noexcept
+    const kernel_builder* 
+    get_kernel_builder(const std::type_info &operation_key) const noexcept
     {
-        const kernel_handle *result = nullptr;
+        const kernel_builder *result = nullptr;
 
-        const auto ite = m_kernels.find(operation_key);
-        if (ite != m_kernels.cend())
+        const auto ite = m_builders.find(operation_key);
+        if (ite != m_builders.cend())
         {
             result = ite->second.get();
             XMIPP4_ASSERT( result );
@@ -47,7 +48,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<kernel_handle>> m_kernels;
+    std::unordered_map<std::type_index, std::unique_ptr<kernel_builder>> m_builders;
 
 };
 
@@ -64,20 +65,20 @@ kernel_registry::~kernel_registry() = default;
 kernel_registry& 
 kernel_registry::operator=(kernel_registry &&other) noexcept = default;
 
-bool kernel_registry::register_kernel(const std::type_info &operation_key,
-                                      std::unique_ptr<kernel_handle> kernel )
+bool kernel_registry::register_kernel_builder(const std::type_info &operation_key,
+                                              std::unique_ptr<kernel_builder> builder )
 {
-    return create_if_null().register_kernel(
+    return create_if_null().register_kernel_builder(
         operation_key, 
-        std::move(kernel)
+        std::move(builder)
     );
 }
 
-const kernel_handle* 
-kernel_registry::get_kernel(const std::type_info &operation_key) const noexcept
+const kernel_builder* 
+kernel_registry::get_kernel_builder(const std::type_info &operation_key) const noexcept
 {
     return m_implementation ? 
-           m_implementation->get_kernel(operation_key) :
+           m_implementation->get_kernel_builder(operation_key) :
            nullptr ;
 }
 

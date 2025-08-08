@@ -11,9 +11,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array_iterator;
-class kernel_handle;
-class context;
+class kernel_builder;
 
 class kernel_registry
 {
@@ -26,11 +24,11 @@ public:
     kernel_registry& operator=(const kernel_registry &other) = delete;
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
-    bool register_kernel(const std::type_info &operation_key,
-                         std::unique_ptr<kernel_handle> kernel );
+    bool register_kernel_builder(const std::type_info &operation_key,
+                                 std::unique_ptr<kernel_builder> builder );
 
-    const kernel_handle*
-    get_kernel(const std::type_info &operation_key) const noexcept;
+    const kernel_builder*
+    get_kernel_builder(const std::type_info &operation_key) const noexcept;
 
 private:
     class implementation;

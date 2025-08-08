@@ -6,9 +6,11 @@
 
 #include <vector>
 #include <numeric>
+#include <sstream>
 
 /**
- * The algorithms and data structured featured in this code are based on:
+ * Some of the algorithms and data structured featured in this code are based 
+ * on:
  * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/TensorIterator.cpp
  * 
  */
@@ -118,26 +120,17 @@ public:
     void add_operand(std::vector<std::size_t> extents,
                      std::vector<std::ptrdiff_t> strides,
                      std::ptrdiff_t offset, 
-                     std::size_t kernel_dimensions )
+                     std::size_t core_dimensions )
     {
         XMIPP4_ASSERT( extents.size() == strides.size() );
-        XMIPP4_ASSERT( kernel_dimensions <= extents.size() );
+        XMIPP4_ASSERT( core_dimensions <= extents.size() );
 
-        const auto batch_extents_end = 
-            std::prev(extents.cend(), kernel_dimensions);
-        const auto equal_batch_extents = std::equal(
-            m_batch_extents.cbegin(), m_batch_extents.cend(), 
-            extents.cbegin(), batch_extents_end
+        broadcast_operand(extents, strides, core_dimensions);
+        extents.erase(
+            extents.cbegin(), 
+            std::prev(extents.cend(), core_dimensions)
         );
-        if (!equal_batch_extents)
-        {
-            throw std::invalid_argument(
-                "provided batch size does not match with the configured "
-                "batch size"
-            );
-        }
 
-        extents.erase(extents.cbegin(), batch_extents_end);
         m_operands.emplace_back(
             std::move(extents),
             std::move(strides),
@@ -327,6 +320,53 @@ private:
         }
 
         trim_batch_axes(prev+1);
+    }
+
+    void broadcast_operand(std::vector<std::size_t> &extents,
+                           std::vector<std::ptrdiff_t> &strides,
+                           std::size_t core_dimensions )
+    {
+        const auto batch_dimensions = get_number_of_batch_axes();
+
+        if ((batch_dimensions + core_dimensions) < extents.size())
+        {
+            std::ostringstream oss;
+            oss << "Operand with " << extents.size() - core_dimensions 
+                << " batch dimensions exceeds the batch dimensionality "
+                << batch_dimensions
+                << " required in the kernel_iteration_layout";
+
+            throw std::invalid_argument(oss.str());
+        }
+
+        const auto padding = 
+            get_number_of_batch_axes() + core_dimensions - extents.size();
+        extents.insert(extents.cbegin(), padding, 1);
+        strides.insert(strides.cbegin(), padding, 0);
+
+        XMIPP4_ASSERT( extents.size() == batch_dimensions + core_dimensions );
+        for (std::size_t i = 0; i < get_number_of_batch_axes(); ++i)
+        {
+            if (m_batch_extents[i] != extents[i])
+            {
+                if (extents[i] == 1)
+                {
+                    // Broadcast axis
+                    extents[i] = m_batch_extents[i];
+                    strides[i] = 0;
+                }
+                else
+                {
+                    std::ostringstream oss;
+                    oss << "Could not broadcast operand batch extent " 
+                        << extents[i] 
+                        << " into " << m_batch_extents[i];
+                    throw std::invalid_argument(oss.str());
+                }
+            }
+
+            XMIPP4_ASSERT( m_batch_extents[i] == extents[i] );
+        }
     }
 
 };

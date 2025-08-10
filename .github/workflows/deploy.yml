@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+  pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
 
 jobs:
@@ -15,6 +19,7 @@ jobs:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
     permissions:
       contents: read
+    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'dependabot/')
     strategy:
       matrix:
         include:
@@ -178,7 +183,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
-    if: startsWith(github.event.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -36,7 +36,6 @@ private:
     std::mutex m_mutex;
     std::condition_variable m_arouse_condition_variable;
     std::condition_variable m_completed_condition_variable;
-    std::condition_variable m_sequential_condition_variable;
     std::atomic<std::size_t> m_progress;
     function_type m_current_function;
     std::size_t m_current_work_size;

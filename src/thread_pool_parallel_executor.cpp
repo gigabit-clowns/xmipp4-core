@@ -2,6 +2,8 @@
 
 #include "thread_pool_parallel_executor.hpp"
 
+#include <xmipp4/core/platform/assert.hpp>
+
 namespace xmipp4 
 {
 
@@ -31,14 +33,18 @@ void thread_pool_parallel_executor::execute(function_type function,
                                             std::size_t work_size,
                                             std::size_t grain_size )
 {
-    if (function)
+    if (function && work_size)
     {
+        if (grain_size == 0)
+        {
+            throw std::invalid_argument("grain_size must be greater than 0");
+        }
+
         std::unique_lock<std::mutex> lock(m_mutex);
 
-        // Wait until any previous execution has been completed
-        while(m_current_function)
+        if (m_current_function)
         {
-            m_sequential_condition_variable.wait(lock);
+            throw std::logic_error("Cannot concurrently call execute()");
         }
 
         // Set up work
@@ -55,9 +61,8 @@ void thread_pool_parallel_executor::execute(function_type function,
             m_completed_condition_variable.wait(lock);
         }
         
-        // Mark as completed and awake the next call to execute(), if any
+        // Mark as completed
         m_current_function = function_type();
-        m_sequential_condition_variable.notify_one();
     }
 }
 

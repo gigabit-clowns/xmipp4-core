@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/parallel_executor.hpp>
+#include <xmipp4/core/parallel/parallel_executor.hpp>
 
 #include <vector>
 #include <mutex>
@@ -11,6 +11,8 @@
 #include <atomic>
 
 namespace xmipp4 
+{
+namespace parallel
 {
 
 class thread_pool_parallel_executor
@@ -50,4 +52,5 @@ private:
 
 };
 
+} // namespace parallel
 } // namespace xmipp4

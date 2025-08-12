@@ -6,6 +6,8 @@
 
 namespace xmipp4 
 {
+namespace parallel
+{
 
 thread_pool_parallel_executor::thread_pool_parallel_executor(std::size_t num_workers)
     : m_exit(false)
@@ -116,4 +118,5 @@ void thread_pool_parallel_executor::signal_exit()
     m_arouse_condition_variable.notify_all();
 }
 
+} // namespace parallel
 } // namespace xmipp4

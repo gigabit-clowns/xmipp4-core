@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include <xmipp4/core/parallel_executor.hpp>
+#include <xmipp4/core/parallel/parallel_executor.hpp>
 
 namespace xmipp4 
+{
+namespace parallel
 {
 
 class dummy_parallel_executor
@@ -27,4 +29,5 @@ public:
 
 };
 
+} // namespace parallel
 } // namespace xmipp4

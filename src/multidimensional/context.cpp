@@ -65,12 +65,23 @@ public:
         return m_layout_policy.get();
     }
 
+    void set_parallel_executor(std::shared_ptr<parallel::parallel_executor> parallel_executor) noexcept
+    {
+        m_parallel_executor = std::move(parallel_executor);
+    }
+
+    parallel::parallel_executor* get_parallel_executor() const noexcept
+    {
+        return m_parallel_executor.get();
+    }
+
 private:
     std::shared_ptr<compute::device> m_device;
     std::shared_ptr<compute::device_queue> m_queue;
     std::shared_ptr<allocator> m_allocator;
     std::shared_ptr<allocator> m_scratch_allocator;
     std::shared_ptr<strided_layout_policy> m_layout_policy;
+    std::shared_ptr<parallel::parallel_executor> m_parallel_executor;
 
 };
 
@@ -139,6 +150,19 @@ strided_layout_policy* context::get_layout_policy() const noexcept
 {
     return m_implementation ? 
            m_implementation->get_layout_policy() : 
+           nullptr ;
+}
+
+void context::set_parallel_executor(std::shared_ptr<parallel::parallel_executor> parallel_executor) noexcept
+{
+    create_if_null().set_parallel_executor(std::move(parallel_executor));
+}
+
+
+parallel::parallel_executor* context::get_parallel_executor() const noexcept
+{
+    return m_implementation ? 
+           m_implementation->get_parallel_executor() : 
            nullptr ;
 }
 

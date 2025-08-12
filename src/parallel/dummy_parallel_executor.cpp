@@ -6,6 +6,8 @@
 
 namespace xmipp4 
 {
+namespace parallel
+{
 
 void dummy_parallel_executor::execute(function_type function, 
                                       std::size_t work_size,
@@ -28,4 +30,5 @@ void dummy_parallel_executor::execute(function_type function,
     }
 }
 
+} // namespace parallel
 } // namespace xmipp4

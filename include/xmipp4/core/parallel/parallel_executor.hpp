@@ -6,6 +6,8 @@
 
 namespace xmipp4 
 {
+namespace parallel
+{
 
 class parallel_executor
 {
@@ -21,4 +23,5 @@ public:
 
 };
 
+} // namespace parallel
 } // namespace xmipp4

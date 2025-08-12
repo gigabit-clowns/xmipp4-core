@@ -11,6 +11,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - '.github/workflows/deploy.yml'
+      - 'pyproject.toml'
 
   workflow_dispatch:
 
@@ -19,7 +22,6 @@ jobs:
     name: Build wheels for ${{ matrix.os }} (${{ matrix.architectures }})
     permissions:
       contents: read
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'dependabot/')
     strategy:
       matrix:
         include:
@@ -52,7 +54,6 @@ jobs:
 
   build_sdist:
     name: Build source distribution
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'dependabot/')
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -93,7 +94,6 @@ jobs:
     name: Build conda packages
     permissions:
       contents: read
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'dependabot/')
     strategy:
       matrix:
         os:
@@ -151,7 +151,6 @@ jobs:
     name: Build Doxygen documentation
     permissions:
       contents: read
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'dependabot/')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository

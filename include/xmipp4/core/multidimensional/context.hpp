@@ -145,7 +145,5 @@ private:
 
 };
 
-const context& get_default_context() noexcept;
-
 } // namespace multidimensional
 } // namespace xmipp4

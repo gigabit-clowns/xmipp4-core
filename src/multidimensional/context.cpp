@@ -5,6 +5,7 @@
 #include <xmipp4/core/multidimensional/allocator.hpp>
 #include <xmipp4/core/compute/device.hpp>
 #include <xmipp4/core/compute/device_queue.hpp>
+#include <xmipp4/core/parallel/parallel_executor.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 namespace xmipp4 
@@ -175,15 +176,6 @@ context::implementation& context::create_if_null()
 
     XMIPP4_ASSERT( m_implementation );
     return *m_implementation;
-}
-
-
-
-static context default_context;
-
-const context& get_default_context() noexcept
-{
-    return default_context;
 }
 
 } // namespace multidimensional

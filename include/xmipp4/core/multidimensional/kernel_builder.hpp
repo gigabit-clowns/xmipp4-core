@@ -13,7 +13,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array_access_layout;
+class kernel_iteration_layout;
 class storage;
 class context;
 class kernel;
@@ -25,7 +25,7 @@ public:
 
     virtual 
     std::unique_ptr<kernel> 
-    build(const array_access_layout &access_layout,
+    build(const kernel_iteration_layout &iteration_layout,
           span<const numerical_type> numerical_types,
           const context &context,
           const const_any_reference &parameters = {} ) = 0;

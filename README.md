@@ -2,6 +2,7 @@
 Core library for the xmipp4 framework
 
 [![Build and Test](https://github.com/gigabit-clowns/xmipp4-core/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/gigabit-clowns/xmipp4-core/actions/workflows/build-and-test.yml)
+[![Run tests with memcheck](https://github.com/gigabit-clowns/xmipp4-core/actions/workflows/test-with-memcheck.yml/badge.svg)](https://github.com/gigabit-clowns/xmipp4-core/actions/workflows/test-with-memcheck.yml)
 
 ## SonarCloud status
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_xmipp4-core&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_xmipp4-core)

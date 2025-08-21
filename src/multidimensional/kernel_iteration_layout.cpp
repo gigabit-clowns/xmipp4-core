@@ -69,9 +69,7 @@ public:
         }
         else
         {
-            const auto cmp_gt = static_cast<int>(stride_i > stride_j);
-            const auto cmp_lt = static_cast<int>(stride_i < stride_j);
-            return cmp_gt - cmp_lt;
+            return stride_i - stride_j;
         }
     }
 
@@ -189,7 +187,7 @@ private:
             }
         }
 
-        return 0;
+        return m_batch_extents[i] - m_batch_extents[j]; // Untie with extents
     }
 
     void swap_batch_axes(std::size_t i, std::size_t j) noexcept

@@ -8,6 +8,11 @@
 
 namespace xmipp4 
 {
+namespace compute
+{
+    class backend;
+} // namespace compute
+
 namespace multidimensional
 {
 
@@ -25,10 +30,12 @@ public:
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
     bool register_kernel_builder(const std::type_info &operation_key,
+                                 const compute::backend &backend_key,
                                  std::unique_ptr<kernel_builder> builder );
 
     const kernel_builder*
-    get_kernel_builder(const std::type_info &operation_key) const noexcept;
+    get_kernel_builder(const std::type_info &operation_key,
+                       const compute::backend &backend_key ) const noexcept;
 
 private:
     class implementation;

@@ -5,6 +5,8 @@
 #include <xmipp4/core/multidimensional/kernel_builder.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
+#include "kernel_key.hpp"
+
 #include <unordered_map>
 #include <typeindex>
 
@@ -17,6 +19,7 @@ class kernel_registry::implementation
 {
 public:
     bool register_kernel_builder(const std::type_info &operation_key, 
+                                 const compute::backend &backend_key,
                                  std::unique_ptr<kernel_builder> builder )
     {
         bool inserted = false;
@@ -24,7 +27,7 @@ public:
         if (builder)
         {
             std::tie(std::ignore, inserted) = m_builders.emplace(
-                operation_key,
+                kernel_key(operation_key, &backend_key),
                 std::move(builder)
             );
         }
@@ -33,11 +36,14 @@ public:
     }
 
     const kernel_builder* 
-    get_kernel_builder(const std::type_info &operation_key) const noexcept
+    get_kernel_builder(const std::type_info &operation_key,
+                       const compute::backend &backend_key ) const noexcept
     {
         const kernel_builder *result = nullptr;
 
-        const auto ite = m_builders.find(operation_key);
+        const auto ite = m_builders.find(
+            kernel_key(operation_key, &backend_key)
+        );
         if (ite != m_builders.cend())
         {
             result = ite->second.get();
@@ -48,7 +54,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<kernel_builder>> m_builders;
+    std::unordered_map<kernel_key, std::unique_ptr<kernel_builder>> m_builders;
 
 };
 
@@ -66,19 +72,22 @@ kernel_registry&
 kernel_registry::operator=(kernel_registry &&other) noexcept = default;
 
 bool kernel_registry::register_kernel_builder(const std::type_info &operation_key,
+                                              const compute::backend &backend_key,
                                               std::unique_ptr<kernel_builder> builder )
 {
     return create_if_null().register_kernel_builder(
         operation_key, 
+        backend_key,
         std::move(builder)
     );
 }
 
 const kernel_builder* 
-kernel_registry::get_kernel_builder(const std::type_info &operation_key) const noexcept
+kernel_registry::get_kernel_builder(const std::type_info &operation_key,
+                                    const compute::backend &backend_key ) const noexcept
 {
     return m_implementation ? 
-           m_implementation->get_kernel_builder(operation_key) :
+           m_implementation->get_kernel_builder(operation_key, backend_key) :
            nullptr ;
 }
 

@@ -11,7 +11,9 @@ namespace xmipp4
 {
 namespace compute
 {
-    class backend; 
+
+class device_backend; 
+
 } // namespace compute
 
 namespace multidimensional
@@ -21,7 +23,7 @@ class kernel_key
 {
 public:
     kernel_key(const std::type_info &operation_key, 
-               const compute::backend *backend_key ) noexcept;
+               const compute::device_backend *backend_key ) noexcept;
     kernel_key(const kernel_key &other) = default;
     kernel_key(kernel_key &&other) = default;
     ~kernel_key() = default;
@@ -30,11 +32,11 @@ public:
     kernel_key& operator=(kernel_key &&other) = default;
 
     std::type_index get_operation_key() const noexcept;
-    const compute::backend * get_backend_key() const noexcept;
+    const compute::device_backend * get_backend_key() const noexcept;
 
 private:
     std::type_index m_operation_key;
-    const compute::backend *m_backend_key;
+    const compute::device_backend *m_backend_key;
 
 };
 

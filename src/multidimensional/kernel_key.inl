@@ -9,7 +9,7 @@ namespace multidimensional
 
 inline
 kernel_key::kernel_key(const std::type_info &operation_key, 
-                       const compute::backend *backend_key ) noexcept
+                       const compute::device_backend *backend_key ) noexcept
     : m_operation_key(operation_key)
     , m_backend_key(backend_key)
 {
@@ -22,7 +22,7 @@ std::type_index kernel_key::get_operation_key() const noexcept
 }
 
 inline
-const compute::backend *
+const compute::device_backend *
 kernel_key::get_backend_key() const noexcept
 {
     return m_backend_key;
@@ -53,7 +53,7 @@ hash<xmipp4::multidimensional::kernel_key>::operator()
 (const xmipp4::multidimensional::kernel_key &key) const noexcept
 {
     const hash<type_index> operation_hasher;
-    const hash<const xmipp4::compute::backend *> backend_hasher;
+    const hash<const xmipp4::compute::device_backend *> backend_hasher;
 
     return
         operation_hasher(key.get_operation_key()) ^

@@ -3,12 +3,15 @@
 #include <xmipp4/core/multidimensional/kernel_registry.hpp>
 
 #include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/compute/device_backend.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "kernel_key.hpp"
 
 #include <unordered_map>
 #include <typeindex>
+#include <sstream>
 
 namespace xmipp4 
 {
@@ -19,7 +22,7 @@ class kernel_registry::implementation
 {
 public:
     bool register_kernel_builder(const std::type_info &operation_key, 
-                                 const compute::backend &backend_key,
+                                 const compute::device_backend &backend_key,
                                  std::unique_ptr<kernel_builder> builder )
     {
         bool inserted = false;
@@ -37,7 +40,7 @@ public:
 
     const kernel_builder* 
     get_kernel_builder(const std::type_info &operation_key,
-                       const compute::backend &backend_key ) const noexcept
+                       const compute::device_backend &backend_key ) const noexcept
     {
         const kernel_builder *result = nullptr;
 
@@ -72,7 +75,7 @@ kernel_registry&
 kernel_registry::operator=(kernel_registry &&other) noexcept = default;
 
 bool kernel_registry::register_kernel_builder(const std::type_info &operation_key,
-                                              const compute::backend &backend_key,
+                                              const compute::device_backend &backend_key,
                                               std::unique_ptr<kernel_builder> builder )
 {
     return create_if_null().register_kernel_builder(
@@ -84,7 +87,7 @@ bool kernel_registry::register_kernel_builder(const std::type_info &operation_ke
 
 const kernel_builder* 
 kernel_registry::get_kernel_builder(const std::type_info &operation_key,
-                                    const compute::backend &backend_key ) const noexcept
+                                    const compute::device_backend &backend_key ) const noexcept
 {
     return m_implementation ? 
            m_implementation->get_kernel_builder(operation_key, backend_key) :

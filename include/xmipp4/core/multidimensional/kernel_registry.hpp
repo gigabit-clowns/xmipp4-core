@@ -10,13 +10,17 @@ namespace xmipp4
 {
 namespace compute
 {
-    class backend;
+
+class device_backend;
+
 } // namespace compute
 
 namespace multidimensional
 {
 
+class kernel;
 class kernel_builder;
+class kernel_iteration_layout;
 
 class kernel_registry
 {
@@ -30,12 +34,12 @@ public:
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
     bool register_kernel_builder(const std::type_info &operation_key,
-                                 const compute::backend &backend_key,
+                                 const compute::device_backend &backend_key,
                                  std::unique_ptr<kernel_builder> builder );
 
     const kernel_builder*
     get_kernel_builder(const std::type_info &operation_key,
-                       const compute::backend &backend_key ) const noexcept;
+                       const compute::device_backend &backend_key ) const noexcept;
 
 private:
     class implementation;

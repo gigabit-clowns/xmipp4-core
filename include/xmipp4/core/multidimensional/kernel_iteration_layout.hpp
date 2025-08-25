@@ -11,6 +11,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
+// TODO separate into kernel_iteration_layout and builder
 class kernel_iteration_layout
 {
 public:

@@ -175,7 +175,7 @@ jobs:
         build-args: --target doxygen
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v4
       with:
         path: ${{ github.workspace }}/build/doc/doxygen/html
 

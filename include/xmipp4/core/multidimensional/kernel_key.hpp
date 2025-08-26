@@ -9,21 +9,12 @@
 
 namespace xmipp4 
 {
-namespace compute
-{
-
-class device_backend; 
-
-} // namespace compute
-
 namespace multidimensional
 {
 
 class kernel_key
 {
 public:
-    kernel_key(const std::type_info &operation_key, 
-               const compute::device_backend *backend_key ) noexcept;
     kernel_key(const kernel_key &other) = default;
     kernel_key(kernel_key &&other) = default;
     ~kernel_key() = default;
@@ -31,12 +22,15 @@ public:
     kernel_key& operator=(const kernel_key &other) = default;
     kernel_key& operator=(kernel_key &&other) = default;
 
-    std::type_index get_operation_key() const noexcept;
-    const compute::device_backend * get_backend_key() const noexcept;
+    std::type_index get_tag_type() const noexcept;
+
+    template <typename Tag>
+    static kernel_key from_tag() noexcept;
 
 private:
-    std::type_index m_operation_key;
-    const compute::device_backend *m_backend_key;
+    explicit kernel_key(std::type_index tag_type) noexcept;
+
+    std::type_index m_tag_type;
 
 };
 

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "kernel_key.hpp"
+
 #include <typeinfo>
 #include <memory>
 #include <functional>
@@ -33,13 +35,10 @@ public:
     kernel_registry& operator=(const kernel_registry &other) = delete;
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
-    bool register_kernel_builder(const std::type_info &operation_key,
-                                 const compute::device_backend &backend_key,
+    bool register_kernel_builder(kernel_key key,
                                  std::unique_ptr<kernel_builder> builder );
 
-    const kernel_builder*
-    get_kernel_builder(const std::type_info &operation_key,
-                       const compute::device_backend &backend_key ) const noexcept;
+    const kernel_builder * get_kernel_builder(kernel_key key) const noexcept;
 
 private:
     class implementation;

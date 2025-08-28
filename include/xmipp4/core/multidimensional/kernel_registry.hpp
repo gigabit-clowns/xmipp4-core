@@ -36,9 +36,12 @@ public:
     kernel_registry& operator=(kernel_registry &&other) noexcept;
 
     bool register_kernel_builder(kernel_key key,
+                                 const compute::device_backend &backend,
                                  std::unique_ptr<kernel_builder> builder );
 
-    const kernel_builder * get_kernel_builder(kernel_key key) const noexcept;
+    const kernel_builder * 
+    get_kernel_builder(kernel_key key,
+                       const compute::device_backend &backend ) const noexcept;
 
 private:
     class implementation;

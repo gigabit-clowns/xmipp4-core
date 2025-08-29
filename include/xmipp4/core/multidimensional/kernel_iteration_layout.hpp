@@ -29,7 +29,7 @@ public:
     void add_operand(std::vector<std::size_t> extents,
                      std::vector<std::ptrdiff_t> strides,
                      std::ptrdiff_t offset, 
-                     std::size_t kernel_dimensions );
+                     std::size_t core_dimensions );
     
     void optimize_batch();
 

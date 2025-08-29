@@ -392,9 +392,9 @@ kernel_iteration_layout&
 kernel_iteration_layout::operator=(kernel_iteration_layout&& other) noexcept = default;
 
 void kernel_iteration_layout::add_operand(std::vector<std::size_t> extents,
-                                std::vector<std::ptrdiff_t> strides,
-                                std::ptrdiff_t offset, 
-                                std::size_t kernel_dimensions )
+                                          std::vector<std::ptrdiff_t> strides,
+                                          std::ptrdiff_t offset, 
+                                          std::size_t core_dimensions )
 {
     if (extents.size() != strides.size())
     {
@@ -403,10 +403,10 @@ void kernel_iteration_layout::add_operand(std::vector<std::size_t> extents,
         );
     }
 
-    if (kernel_dimensions > extents.size())
+    if (core_dimensions > extents.size())
     {
         throw std::invalid_argument(
-            "kernel_dimensions is out of bounds"
+            "core_dimensions is out of bounds"
         );
     }
 
@@ -414,7 +414,7 @@ void kernel_iteration_layout::add_operand(std::vector<std::size_t> extents,
     {
         std::vector<std::size_t> batch_extents(
             extents.cbegin(), 
-            std::prev(extents.cend(), kernel_dimensions)
+            std::prev(extents.cend(), core_dimensions)
         );
 
         m_implementation = std::make_unique<implementation>(
@@ -427,7 +427,7 @@ void kernel_iteration_layout::add_operand(std::vector<std::size_t> extents,
         std::move(extents),
         std::move(strides),
         offset,
-        kernel_dimensions
+        core_dimensions
     );
 }
 

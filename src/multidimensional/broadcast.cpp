@@ -3,6 +3,7 @@
 #include <xmipp4/core/multidimensional/broadcast.hpp>
 
 #include <xmipp4/core/multidimensional/broadcast_error.hpp>
+#include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <stdexcept>
@@ -61,6 +62,53 @@ void broadcast_extents(std::vector<std::size_t> &extents1,
             throw broadcast_error(extents1, extents2);
         }
     }
+}
+
+
+namespace detail
+{
+
+template <typename T>
+void compute_consensus_extents(span<const T> operands,
+                               std::vector<std::size_t> &consensus_extents )
+{
+    std::vector<std::size_t> operand_extents;
+    for (const auto &operand : operands)
+    {
+        operand.get_extents(operand_extents);
+        broadcast_extents(consensus_extents, operand_extents);
+    }
+}
+
+void broadcast_to(span<strided_layout> operands, 
+                  span<const std::size_t> consensus_extents )
+{
+    for (std::size_t i = 0; i < operands.size(); ++i)
+    {
+        operands[i] = operands[i].broadcast_to(consensus_extents);
+    }
+}
+
+template <typename T>
+void broadcast(span<T> operands,
+               std::vector<std::size_t> &consensus_extents )
+{
+    compute_consensus_extents(
+        span<const T>(operands.data(), operands.size()), 
+        consensus_extents
+    );
+    broadcast_to(
+        operands, 
+        make_span(consensus_extents)
+    );
+}
+
+} // namespace detail
+
+void broadcast(span<strided_layout> operands, 
+               std::vector<std::size_t> &consensus_extents )
+{
+    detail::broadcast(operands, consensus_extents);
 }
 
 } // namespace multidimensional

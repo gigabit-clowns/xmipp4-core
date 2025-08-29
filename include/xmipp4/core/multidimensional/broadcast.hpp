@@ -2,12 +2,16 @@
 
 #pragma once
 
+#include "../span.hpp"
+
 #include <vector>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
+
+class strided_layout;
 
 /**
  * @brief Perform a broadcast operation between two sets of extents.
@@ -23,6 +27,9 @@ namespace multidimensional
  */
 void broadcast_extents(std::vector<std::size_t> &extents1, 
                        std::vector<std::size_t> &extents2 );  
+
+void broadcast(span<strided_layout> operands, 
+               std::vector<std::size_t> &consensus_extents );
 
 } // namespace multidimensional
 } // namespace xmipp4

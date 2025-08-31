@@ -6,6 +6,11 @@
 #include <xmipp4/core/multidimensional/allocator.hpp>
 #include <xmipp4/core/multidimensional/broadcast.hpp>
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/multidimensional/kernel_iteration_layout.hpp>
+#include <xmipp4/core/multidimensional/kernel_key.hpp>
+#include <xmipp4/core/multidimensional/kernel_registry.hpp>
+#include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/kernel.hpp>
 
 namespace xmipp4 
 {
@@ -38,6 +43,8 @@ array add(const array &a, const array &b, const context &ctx, array *out)
             b.get_data_type()
         };
 
+        // TODO check all in the same device.
+
     }
     else
     {
@@ -61,11 +68,49 @@ array add(const array &a, const array &b, const context &ctx, array *out)
             ctx.get_allocator()->allocate(0, 0, nullptr), // TODO
             data_types[0]
         );
+
+        // TODO check all in the same device.
     }
 
-    // TODO build iteration layout
-    // TODO get kernel and launch it
+    kernel_iteration_layout iteration_layout;
+    std::vector<std::ptrdiff_t> strides;
+    for (const auto &layout : layouts)
+    {
+        layout.get_strides(strides);
+        iteration_layout.add_operand(
+            extents, 
+            std::move(strides), 
+            layout.get_offset(), 
+            layout.get_rank()
+        );
+    }
 
+    const auto key = kernel_key::from_tag<void>(); // TODO determine. this is the only difference with multiply.
+    kernel_registry registry; // TODO
+    const auto builder = registry.get_kernel_builder(
+        key, 
+        result.get_storage()->get_backend()
+    );
+
+    // TODO check builder
+
+    const auto kernel = builder->build(iteration_layout, make_span(data_types), ctx);
+
+    std::array<storage *, 2> outputs = {
+        result.get_storage()
+    };
+    std::array<const storage *, 2> inputs = {
+        a.get_storage(),
+        b.get_storage()
+    };
+
+    kernel->launch(
+        make_span(outputs),
+        make_span(inputs),
+        ctx
+    );
+
+    return result;
 }
 
 array multiply(const array &a, const array &b, const context &ctx, array *out)

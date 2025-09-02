@@ -666,7 +666,7 @@ strided_layout::split_at(std::ptrdiff_t index) const
         // Inner takes all
         result = std::make_tuple(strided_layout(), *this);
     }
-    else if (index == get_rank())
+    else if (index == static_cast<ptrdiff_t>(get_rank()))
     {
         // Outer takes all
         result = std::make_tuple(*this, strided_layout());
@@ -685,6 +685,34 @@ strided_layout::split_at(std::ptrdiff_t index) const
     else
     {
         throw std::invalid_argument("index for split_at is out of bounds");
+    }
+
+    return result;
+}
+
+XMIPP4_NODISCARD
+strided_layout strided_layout::make_contiguous_layout(span<const std::size_t> extents)
+{
+    strided_layout result;
+
+    if (!extents.empty())
+    {
+        std::vector<strided_axis> axes;
+        axes.reserve(extents.size());
+
+        for (const auto extent : extents)
+        {
+            axes.emplace_back(extent, 0);
+        }
+
+        std::ptrdiff_t stride = 1;
+        for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)
+        {
+            ite->set_stride(stride);
+            stride *= ite->get_extent();
+        }
+
+        result = strided_layout(implementation(std::move(axes), 0));
     }
 
     return result;

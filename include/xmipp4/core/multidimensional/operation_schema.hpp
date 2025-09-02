@@ -10,6 +10,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
+class layout_policy;
 class strided_layout;
 
 class operation_schema
@@ -24,7 +25,8 @@ public:
     void deduce_output(span<numerical_type> output_numerical_types, 
                        span<strided_layout> output_layouts,
                        span<const numerical_type> input_numerical_types,
-                       span<const strided_layout> input_layouts ) const = 0;
+                       span<const strided_layout> input_layouts,
+                       const layout_policy &policy  ) const = 0;
 
     virtual 
     kernel_iteration_layout 

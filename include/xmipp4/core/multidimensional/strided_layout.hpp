@@ -157,6 +157,16 @@ public:
     std::tuple<strided_layout, strided_layout> 
     split_at(std::ptrdiff_t index) const;
 
+    /**
+     * @brief Create a contiguous layout from the provided extents.
+     * 
+     * @param extents Extents of the layout.
+     * @return strided_layout The resulting layout.
+     */
+    XMIPP4_NODISCARD
+    static
+    strided_layout make_contiguous_layout(span<const std::size_t> extents);
+
 private:
     class implementation;
     std::shared_ptr<implementation> m_implementation;

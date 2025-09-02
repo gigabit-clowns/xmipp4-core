@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/context.hpp>
-#include <xmipp4/core/multidimensional/operation_key.hpp>
+#include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/multidimensional/operation_schema.hpp>
 
 namespace xmipp4 
@@ -12,7 +12,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void dispatch(const operation_key &key,
+void dispatch(const operation_id &key,
               const operation_schema &schema, 
               span<array> outputs, 
               span<const array> inputs, 

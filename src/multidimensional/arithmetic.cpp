@@ -7,7 +7,7 @@
 #include <xmipp4/core/multidimensional/broadcast.hpp>
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/kernel_iteration_layout.hpp>
-#include <xmipp4/core/multidimensional/operation_key.hpp>
+#include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/multidimensional/kernel_registry.hpp>
 #include <xmipp4/core/multidimensional/kernel_builder.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
@@ -17,10 +17,10 @@ namespace xmipp4
 namespace multidimensional
 {
 
-const operation_key& get_add_operation_key() noexcept
+const operation_id& get_add_operation_id() noexcept
 {
     struct tag {};
-    static const operation_key key = operation_key::from_tag<tag>();
+    static const operation_id key = operation_id::from_tag<tag>();
     return key;
 }
 

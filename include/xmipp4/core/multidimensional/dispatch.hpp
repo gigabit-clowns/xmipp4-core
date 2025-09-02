@@ -11,11 +11,11 @@ namespace multidimensional
 {
 
 class array;
-class operation_key;
+class operation_id;
 class context;
 class operation_schema;
 
-void dispatch(const operation_key &key, 
+void dispatch(const operation_id &key, 
               const operation_schema &schema,
               span<array> outputs, 
               span<const array> inputs, 

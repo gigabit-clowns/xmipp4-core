@@ -13,6 +13,9 @@ namespace multidimensional
 {
 
 class context;
+class operation_key;
+
+const operation_key& get_add_operation_key() noexcept;
 
 array add(const array &a, 
           const array &b, 

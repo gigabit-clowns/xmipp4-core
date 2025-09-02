@@ -637,12 +637,16 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
         const auto &impl = *m_implementation;
         if (impl.extents_equal(extents))
         {
-            return *this;
+            return *this; // Re-use
         }
         else
         {
             return strided_layout(impl.broadcast_to(extents));
         }
+    }
+    else if(extents.empty())
+    {
+        return strided_layout();
     }
     else
     {

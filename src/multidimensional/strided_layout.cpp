@@ -684,7 +684,9 @@ strided_layout::split_at(std::ptrdiff_t index) const
     }
     else
     {
-        throw std::invalid_argument("index for split_at is out of bounds");
+        throw std::out_of_range(
+            "index for split_at is out of bounds for an empty layout"
+        );
     }
 
     return result;
@@ -699,11 +701,14 @@ strided_layout strided_layout::make_contiguous_layout(span<const std::size_t> ex
     {
         std::vector<strided_axis> axes;
         axes.reserve(extents.size());
-
-        for (const auto extent : extents)
-        {
-            axes.emplace_back(extent, 0);
-        }
+        std::transform(
+            extents.begin(), extents.end(),
+            std::back_inserter(axes),
+            [] (std::size_t extent) -> strided_axis
+            {
+                return strided_axis(extent, 0);
+            }
+        );
 
         std::ptrdiff_t stride = 1;
         for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)

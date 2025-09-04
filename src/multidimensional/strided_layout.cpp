@@ -61,7 +61,7 @@ public:
     std::vector<strided_axis> 
     process(BidirIt1 first_subscript, BidirIt1 last_subscript,
             BidirIt2 first_axis, BidirIt2 last_axis,
-            std::ptrdiff_t offset )
+            std::ptrdiff_t &offset )
     {
         std::vector<strided_axis> axes; 
 

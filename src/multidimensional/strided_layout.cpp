@@ -493,7 +493,7 @@ strided_layout::operator=(const strided_layout &other) noexcept = default;
 strided_layout&
 strided_layout::operator=(strided_layout &&other) noexcept = default;
 
-strided_layout::strided_layout(std::shared_ptr<implementation> impl) noexcept
+strided_layout::strided_layout(std::shared_ptr<const implementation> impl) noexcept
     : m_implementation(std::move(impl))
 {
 }

@@ -169,10 +169,12 @@ public:
 
 private:
     class implementation;
-    std::shared_ptr<implementation> m_implementation;
+    std::shared_ptr<const implementation> m_implementation; // Copy-on-write
 
-    explicit strided_layout(std::shared_ptr<implementation> impl) noexcept;
-    explicit strided_layout(implementation &&impl);
+    explicit 
+    strided_layout(std::shared_ptr<const implementation> impl) noexcept;
+    explicit 
+    strided_layout(implementation &&impl);
 
 };
 

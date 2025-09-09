@@ -3,24 +3,29 @@
 #pragma once
 
 #include "../span.hpp"
+#include "../numerical_type.hpp"
 #include "../const_any_reference.hpp"
+
+#include <stdexcept>
 
 namespace xmipp4 
 {
+
 namespace multidimensional
 {
 
-class array;
 class operation_id;
+class kernel_iteration_layout;
+class storage;
 class context;
-class operation_schema;
 
 void dispatch(const operation_id &key, 
-              const operation_schema &schema,
-              span<array> outputs, 
-              span<const array> inputs, 
-              const context &ctx,
-              const_any_reference params = {});
+              const kernel_iteration_layout &iteration_layout,
+              span<numerical_type> numerical_types,
+              span<storage * const> read_write_operands, 
+              span<const storage * const> read_only_operands, 
+              const context &context,
+              const_any_reference parameters = {});
 
 } // namespace multidimensional
 } // namespace xmipp4

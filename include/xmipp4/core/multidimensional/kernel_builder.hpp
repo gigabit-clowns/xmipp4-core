@@ -24,8 +24,8 @@ public:
     virtual ~kernel_builder() = default;
 
     virtual 
-    std::unique_ptr<kernel> 
-    build(const kernel_iteration_layout &iteration_layout, // TODO maybe by value
+    std::shared_ptr<kernel> 
+    build(const kernel_iteration_layout &iteration_layout,
           span<const numerical_type> numerical_types,
           const context &context,
           const const_any_reference &parameters = {} ) const = 0;

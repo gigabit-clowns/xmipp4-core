@@ -2,72 +2,123 @@
 
 #include <xmipp4/core/multidimensional/dispatch.hpp>
 
-#include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/context.hpp>
+#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/multidimensional/storage.hpp>
+#include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/kernel_registry.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
-#include <xmipp4/core/multidimensional/operation_schema.hpp>
 
 namespace xmipp4 
 {
+namespace compute
+{
+
+class device;
+class device_backend;
+
+} // namespace compute
 namespace multidimensional
 {
 
-void dispatch(const operation_id &key,
-              const operation_schema &schema, 
-              span<array> outputs, 
-              span<const array> inputs, 
-              const context &ctx,
-              bool deduce_output, 
-              const_any_reference params )
+template <typename Storage>
+static const compute::device *
+get_common_device(span<Storage * const> operands, 
+                  const compute::device * common_device = nullptr )
 {
-    std::vector<std::size_t> extents;
-
-    // Populate structures
-    const std::size_t n_operands = outputs.size() + inputs.size();
-    std::vector<strided_layout> layouts;
-    std::vector<numerical_type> data_types;
-    std::vector<storage *> output_storages;
-    std::vector<const storage *> input_storages;
-    layouts.reserve(n_operands);
-    data_types.reserve(n_operands);
-    output_storages.reserve(outputs.size());
-    input_storages.reserve(inputs.size());
-
-    for (auto &output : outputs)
+    if (common_device == nullptr && !operands.empty())
     {
-        layouts.push_back(output.get_layout());
-        data_types.push_back(output.get_data_type());
-        output_storages.push_back(output.get_storage());
-    }
-    for (const auto &input : inputs)
-    {
-        layouts.push_back(input.get_layout());
-        data_types.push_back(input.get_data_type());
-        input_storages.push_back(input.get_storage());
+        const auto *operand = operands.front();
+        XMIPP4_ASSERT( operand );
+
+        common_device = &(operand->get_device());
+        operands = span<Storage * const>(
+            std::next(operands.begin()),
+            operands.end()
+        );
     }
 
-    // Dispatch
-    kernel_iteration_layout iteration_layout = 
-        schema.build_iteration_layout(make_span(layouts));
+    for (const auto * operand : operands)
+    {
+        XMIPP4_ASSERT( operand );
+        const auto &current_device = operand->get_device();
+        if (common_device != &current_device)
+        {
+            std::terminate(); // TODO determine error and throw
+        }
+    }
 
-    kernel_registry registry; // TODO
-    const auto builder = registry.get_kernel_builder(
-        key, 
-        result.get_storage()->get_backend() // TODO
+    return common_device;
+}
+
+static const compute::device &
+find_device(span<storage * const> outputs, 
+            span<const storage * const> inputs,
+            const context &context )
+{
+    const auto *device = get_common_device(outputs);
+    device = get_common_device(inputs, device);
+
+    if (!device)
+    {
+        device = context.get_device();
+    }
+
+    if (!device)
+    {
+        std::terminate(); // TODO determine error and throw
+    }
+
+    return *device;
+}
+
+static const compute::device_backend &
+find_backend(const compute::device &device)
+{
+    // TODO
+}
+
+void dispatch(const operation_id &key,
+              const kernel_iteration_layout &iteration_layout,
+              span<numerical_type> numerical_types,
+              span<storage * const> read_write_operands, 
+              span<const storage * const> read_only_operands, 
+              const context &context,
+              const_any_reference parameters )
+{
+    kernel_registry registry; // TODO obtain
+
+    const auto &device = find_device(
+        read_write_operands, 
+        read_only_operands, 
+        context
     );
+    const auto &backend = find_backend(device);
+    const auto builder = registry.get_kernel_builder(key, backend);
+    if (!builder)
+    {
+        std::terminate(); // TODO determine error and throw
+    }
 
     const auto kernel = builder->build(
         iteration_layout, 
-        make_span(data_types), 
-        ctx
-    );
-    kernel->launch(
-        make_span(output_storages),
-        make_span(input_storages),
-        ctx
+        numerical_types, 
+        context,
+        parameters
     );
 
-    return result;
+    if (!kernel)
+    {
+        std::terminate(); // TODO determine error and throw
+    }
+
+    kernel->launch(
+        iteration_layout, 
+        numerical_types, 
+        read_write_operands, 
+        read_only_operands, 
+        context
+    );
 }
 
 } // namespace multidimensional

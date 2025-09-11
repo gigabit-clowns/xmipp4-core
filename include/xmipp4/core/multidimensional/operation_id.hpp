@@ -11,7 +11,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-// TODO string based
 class operation_id
 {
 public:

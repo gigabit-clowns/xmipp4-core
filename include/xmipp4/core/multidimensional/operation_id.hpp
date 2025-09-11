@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <typeinfo>
-#include <typeindex>
+#include <string>
 #include <functional>
 #include <cstddef>
 
@@ -12,9 +11,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
+// TODO string based
 class operation_id
 {
 public:
+    explicit operation_id(const std::string &name);
+    explicit operation_id(std::string &&name);
     operation_id(const operation_id &other) = default;
     operation_id(operation_id &&other) = default;
     ~operation_id() = default;
@@ -22,15 +24,10 @@ public:
     operation_id& operator=(const operation_id &other) = default;
     operation_id& operator=(operation_id &&other) = default;
 
-    std::type_index get_tag_type() const noexcept;
-
-    template <typename Tag>
-    static operation_id from_tag() noexcept;
+    const std::string & get_name() const noexcept;
 
 private:
-    explicit operation_id(std::type_index tag_type) noexcept;
-
-    std::type_index m_tag_type;
+    std::string m_name;
 
 };
 

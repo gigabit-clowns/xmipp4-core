@@ -8,22 +8,21 @@ namespace multidimensional
 {
 
 inline
-operation_id::operation_id(std::type_index tag_type) noexcept
-    : m_tag_type(tag_type)
+operation_id::operation_id(const std::string &name)
+    : m_name(name)
 {
 }
 
 inline
-std::type_index operation_id::get_tag_type() const noexcept
+operation_id::operation_id(std::string &&name)
+    : m_name(std::move(name))
 {
-    return m_tag_type;
 }
 
-template <typename Tag>
 inline
-operation_id operation_id::from_tag() noexcept
+const std::string & operation_id::get_name() const noexcept
 {
-    return operation_id(typeid(Tag));
+    return m_name;
 }
 
 
@@ -31,7 +30,7 @@ operation_id operation_id::from_tag() noexcept
 inline
 bool operator==(const operation_id &lhs, const operation_id &rhs) noexcept
 {
-    return lhs.get_tag_type() == rhs.get_tag_type();
+    return lhs.get_name() == rhs.get_name();
 }
 
 inline
@@ -51,8 +50,7 @@ std::size_t
 hash<xmipp4::multidimensional::operation_id>::operator()
 (const xmipp4::multidimensional::operation_id &key) const noexcept
 {
-    const hash<type_index> type_hasher;
-    return type_hasher(key.get_tag_type());
+    return hash<string>()(key.get_name());
 }
 
 } // namespace std

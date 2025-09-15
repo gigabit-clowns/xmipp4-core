@@ -35,7 +35,7 @@ kernel_access_layout_builder::operator=(
 	kernel_access_layout_builder&& other
 ) noexcept = default;
 
-void kernel_access_layout_builder::add_operand(
+kernel_access_layout_builder& kernel_access_layout_builder::add_operand(
 	const strided_layout &layout,
 	numerical_type data_type,
 	std::size_t core_dimensions 
@@ -75,6 +75,8 @@ void kernel_access_layout_builder::add_operand(
 		data_type,
 		core_dimensions
 	);
+
+	return *this;
 }
 
 kernel_access_layout kernel_access_layout_builder::build()

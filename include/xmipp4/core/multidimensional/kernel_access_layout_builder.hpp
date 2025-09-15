@@ -30,9 +30,11 @@ public:
     kernel_access_layout_builder& 
     operator=(kernel_access_layout_builder&& other) noexcept;
 
-    void add_operand(const strided_layout &layout,
-                     numerical_type data_type, 
-                     std::size_t core_dimensions );
+    kernel_access_layout_builder& add_operand(
+        const strided_layout &layout,
+        numerical_type data_type,
+        std::size_t core_dimensions
+    );
     
     kernel_access_layout build();
 

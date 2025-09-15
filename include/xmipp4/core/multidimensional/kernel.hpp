@@ -17,8 +17,7 @@ class kernel
 public:
     virtual ~kernel() = default;
 
-    virtual void launch(const kernel_iteration_layout &iteration_layout,
-                        span<const numerical_type> numerical_types,
+    virtual void launch(const kernel_access_layout &iteration_layout,
                         span<storage *const> read_write_operands,
                         span<const storage *const> read_only_operands, 
                         const context &context ) = 0;

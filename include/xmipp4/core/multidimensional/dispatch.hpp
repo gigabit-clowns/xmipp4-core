@@ -15,13 +15,12 @@ namespace multidimensional
 {
 
 class operation_id;
-class kernel_iteration_layout;
+class kernel_access_layout;
 class storage;
 class context;
 
 void dispatch(const operation_id &key, 
-              const kernel_iteration_layout &iteration_layout,
-              span<numerical_type> numerical_types,
+              const kernel_access_layout &iteration_layout,
               span<storage * const> read_write_operands, 
               span<const storage * const> read_only_operands, 
               const context &context,

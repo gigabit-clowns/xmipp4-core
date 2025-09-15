@@ -22,7 +22,6 @@ namespace multidimensional
 
 class kernel;
 class kernel_builder;
-class kernel_iteration_layout;
 
 class kernel_registry
 {

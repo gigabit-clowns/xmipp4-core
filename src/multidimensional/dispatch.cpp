@@ -79,8 +79,7 @@ find_backend(const compute::device &device)
 }
 
 void dispatch(const operation_id &key,
-              const kernel_iteration_layout &iteration_layout,
-              span<numerical_type> numerical_types,
+              const kernel_access_layout &iteration_layout,
               span<storage * const> read_write_operands, 
               span<const storage * const> read_only_operands, 
               const context &context,
@@ -102,7 +101,6 @@ void dispatch(const operation_id &key,
 
     const auto kernel = builder->build(
         iteration_layout, 
-        numerical_types, 
         context,
         parameters
     );
@@ -114,7 +112,6 @@ void dispatch(const operation_id &key,
 
     kernel->launch(
         iteration_layout, 
-        numerical_types, 
         read_write_operands, 
         read_only_operands, 
         context

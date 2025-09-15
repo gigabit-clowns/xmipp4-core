@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "kernel_iteration_layout.hpp"
+#include "kernel_access_layout.hpp"
 #include "../numerical_type.hpp"
 
 namespace xmipp4 
@@ -29,7 +29,7 @@ public:
                        const layout_policy &policy  ) const = 0;
 
     virtual 
-    kernel_iteration_layout 
+    kernel_access_layout 
     build_iteration_layout(const span<strided_layout> operands) const = 0;
 
 };

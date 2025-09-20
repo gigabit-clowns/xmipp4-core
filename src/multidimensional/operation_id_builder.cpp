@@ -10,7 +10,7 @@ namespace multidimensional
 template <typename Str>
 static void nest_impl(std::ostringstream &oss, Str&& namespace_name)
 {
-    const char *separator = "::";
+    const char separator = '.';
     oss << std::forward<Str>(namespace_name) << separator;
 }
 

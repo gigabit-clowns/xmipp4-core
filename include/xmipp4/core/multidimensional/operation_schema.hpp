@@ -12,6 +12,7 @@ namespace multidimensional
 
 class layout_policy;
 class strided_layout;
+class kernel_access_layout_builder;
 
 class operation_schema
 {
@@ -29,8 +30,11 @@ public:
                        const layout_policy &policy  ) const = 0;
 
     virtual 
-    kernel_access_layout 
-    build_iteration_layout(const span<strided_layout> operands) const = 0;
+    void add_operand(
+        kernel_access_layout_builder &builder, 
+        const strided_layout &layout,
+        numerical_type data_type 
+    ) const = 0;
 
 };
 

@@ -3,7 +3,12 @@
 #include <xmipp4/core/multidimensional/operation.hpp>
 
 #include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/kernel_registry.hpp>
+#include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/kernel_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/kernel_access_layout.hpp>
 #include <xmipp4/core/multidimensional/allocator.hpp>
+#include <xmipp4/core/multidimensional/operation_schema.hpp>
 #include <xmipp4/core/multidimensional/context.hpp>
 
 #include <stdexcept>
@@ -13,14 +18,23 @@ namespace xmipp4
 namespace multidimensional
 {
 
+operation::operation(
+	kernel_access_layout m_access_layout,
+	std::shared_ptr<kernel> m_kernel
+)
+	: m_access_layout(std::move(m_access_layout))
+	, m_kernel(std::move(m_kernel))
+{
+}
+
 void operation::launch(
 	span<array> read_write_operands, 
 	span<const array> read_only_operands, 
 	const context &context
 )
 {
-	allocate_output(read_write_operands, context);
-	validate_operands(read_write_operands, read_only_operands);
+	// allocate_output(read_write_operands, context);
+	// validate_operands(read_write_operands, read_only_operands);
 
 	// TODO extract as function
 	std::vector<storage *> read_write_storages;
@@ -55,6 +69,7 @@ void operation::launch(
 	);
 }
 
+/*
 void operation::allocate_output(
 	span<array> read_write_operands, 
 	const context &context
@@ -93,6 +108,36 @@ void operation::allocate_output(
 		}
 	}
 }
+*/
+
+operation make_operation(
+    const operation_id &id,
+    const compute::device_backend &backend,
+    span<const strided_layout> layouts,
+    span<const numerical_type> data_types,
+    const context &context
+)
+{
+	if (layouts.size() != data_types.size())
+	{
+		throw std::invalid_argument("Layouts and data types size mismatch");
+	}
+
+	const kernel_registry registry; // TODO obtain from context
+	const auto *kernel_builder = registry.get_kernel_builder(id, backend);
+	if (!kernel_builder)
+	{
+		std::terminate(); // TODO throw
+	}
+
+	kernel_access_layout access_layout; // TODO build from schema
+	auto kernel = kernel_builder->build(access_layout, context);
+
+	return operation(
+		std::move(access_layout),
+		std::move(kernel)
+	);
+}	
 
 } // namespace multidimensional
 } // namespace xmipp4

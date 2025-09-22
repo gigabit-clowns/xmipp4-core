@@ -17,6 +17,7 @@ class kernel_access_layout_implementation;
 class kernel_access_layout
 {
 public:
+    kernel_access_layout();
     explicit kernel_access_layout(
         std::unique_ptr<const kernel_access_layout_implementation> implementation
     );

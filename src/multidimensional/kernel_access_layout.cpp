@@ -11,6 +11,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
+kernel_access_layout::kernel_access_layout() = default;
+
 kernel_access_layout::kernel_access_layout(
     std::unique_ptr<const kernel_access_layout_implementation> implementation
 )

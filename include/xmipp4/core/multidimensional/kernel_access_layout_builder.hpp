@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "kernel_access_layout_build_flags.hpp"
 #include "kernel_access_layout.hpp"
 #include "../span.hpp"
 #include "../numerical_type.hpp"
@@ -19,6 +20,8 @@ class kernel_access_layout_implementation;
 class kernel_access_layout_builder
 {
 public:
+    static const kernel_access_layout_build_flags default_flags;
+
     kernel_access_layout_builder() noexcept;
     explicit kernel_access_layout_builder(std::vector<std::size_t> batch_extents);
     kernel_access_layout_builder(const kernel_access_layout_builder&) = delete;
@@ -36,7 +39,9 @@ public:
         std::size_t core_dimensions
     );
     
-    kernel_access_layout build();
+    kernel_access_layout build(
+        kernel_access_layout_build_flags flags = default_flags
+    );
 
 private:
     std::unique_ptr<kernel_access_layout_implementation> m_implementation;

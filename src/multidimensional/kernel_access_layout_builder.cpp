@@ -11,6 +11,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
+const kernel_access_layout_build_flags 
+kernel_access_layout_builder::default_flags = {
+	kernel_access_layout_build_flag_bits::reorder,
+	kernel_access_layout_build_flag_bits::coalesce
+};
+
 kernel_access_layout_builder::kernel_access_layout_builder() noexcept = default;
 
 kernel_access_layout_builder::kernel_access_layout_builder(
@@ -79,12 +85,21 @@ kernel_access_layout_builder& kernel_access_layout_builder::add_operand(
 	return *this;
 }
 
-kernel_access_layout kernel_access_layout_builder::build()
+kernel_access_layout kernel_access_layout_builder::build(
+	kernel_access_layout_build_flags flags
+)
 {
 	if (m_implementation)
 	{
-		m_implementation->sort_batch_axes_by_locality();
-		m_implementation->coalesce_contiguous_batch_axes();
+		if (flags.contains(kernel_access_layout_build_flag_bits::reorder))
+		{
+			m_implementation->sort_batch_axes_by_locality();
+		}
+		
+		if (flags.contains(kernel_access_layout_build_flag_bits::coalesce))
+		{
+			m_implementation->coalesce_contiguous_batch_axes();
+		}
 	}
 
 	return kernel_access_layout(std::move(m_implementation));

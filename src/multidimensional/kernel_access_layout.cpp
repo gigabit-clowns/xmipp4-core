@@ -81,7 +81,7 @@ void kernel_access_layout::require_implementation(
     {
         std::ostringstream oss;
         oss << "Cannot call " << function_name;
-        oss << " on a moved kernel_access_layout";
+        oss << " on a moved or un-initialized kernel_access_layout";
     }
 }
 

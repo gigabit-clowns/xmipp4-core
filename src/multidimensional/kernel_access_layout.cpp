@@ -61,6 +61,12 @@ kernel_access_layout::get_core_strides(std::size_t operand) const
     return m_implementation->get_core_strides(operand);
 }
 
+std::ptrdiff_t kernel_access_layout::get_offset(std::size_t operand) const
+{
+    require_implementation("get_offset");
+    return m_implementation->get_offset(operand);
+}
+
 numerical_type kernel_access_layout::get_data_type(std::size_t operand) const
 {
     require_implementation("get_data_type");

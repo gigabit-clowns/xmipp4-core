@@ -51,6 +51,8 @@ public:
 
     span<const std::ptrdiff_t> get_core_strides(std::size_t operand) const;
 
+    std::ptrdiff_t get_offset(std::size_t operand) const;
+
     numerical_type get_data_type(std::size_t operand) const;
 
 private:

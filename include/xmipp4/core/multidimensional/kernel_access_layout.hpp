@@ -34,6 +34,7 @@ public:
     span<const std::size_t> get_core_extents(std::size_t operand) const;
     span<const std::ptrdiff_t> get_batch_strides(std::size_t operand) const;
     span<const std::ptrdiff_t> get_core_strides(std::size_t operand) const;
+    std::ptrdiff_t get_offset(std::size_t operand) const;
     numerical_type get_data_type(std::size_t operand) const;
 
 private:

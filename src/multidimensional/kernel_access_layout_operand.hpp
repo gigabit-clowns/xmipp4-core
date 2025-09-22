@@ -28,6 +28,8 @@ public:
 
     span<const std::ptrdiff_t> get_batch_strides() const noexcept;
 
+    std::ptrdiff_t get_offset() const noexcept;
+
     numerical_type get_data_type() const noexcept;
 
     bool get_stride(std::size_t index) const noexcept;

@@ -49,6 +49,12 @@ kernel_access_layout_operand::get_batch_strides() const noexcept
 }
 
 inline
+std::ptrdiff_t kernel_access_layout_operand::get_offset() const noexcept
+{
+    return m_offset;
+}
+
+inline
 numerical_type kernel_access_layout_operand::get_data_type() const noexcept
 {
     return m_data_type;

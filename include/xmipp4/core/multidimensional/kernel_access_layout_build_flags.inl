@@ -12,8 +12,10 @@ const char* to_string(kernel_access_layout_build_flag_bits x) noexcept
 {
     switch (x)
     {
-    case kernel_access_layout_build_flag_bits::reorder:     return "reorder";
-    case kernel_access_layout_build_flag_bits::coalesce:    return "coalesce";
+    case kernel_access_layout_build_flag_bits::reorder_batches:     
+        return "reorder_batches";
+    case kernel_access_layout_build_flag_bits::coalesce_batches:    
+        return "coalesce_batches";
     default: return "";
     }
 }

@@ -12,12 +12,22 @@ namespace xmipp4
 namespace multidimensional
 {
 
+/**
+ * @brief Flags to control the behavior of the kernel_access_layout build 
+ * behavior.
+ * 
+ */
 enum class kernel_access_layout_build_flag_bits
 {
-    reorder = binary::bit(0),
-    coalesce = binary::bit(1),
+    reorder_batches = binary::bit(0), ///< Reorder batch axes by memory locality.
+    coalesce_batches = binary::bit(1), ///< Coalesce contiguous batch axes.
 };
 
+/**
+ * @brief Set of kernel_access_layout_build_flag_bits used to control the 
+ * kernel_access_layout build behavior.
+ * 
+ */
 using kernel_access_layout_build_flags 
     = binary::flagset<kernel_access_layout_build_flag_bits>;
 

@@ -13,8 +13,8 @@ namespace multidimensional
 
 const kernel_access_layout_build_flags 
 kernel_access_layout_builder::default_flags = {
-	kernel_access_layout_build_flag_bits::reorder,
-	kernel_access_layout_build_flag_bits::coalesce
+	kernel_access_layout_build_flag_bits::reorder_batches,
+	kernel_access_layout_build_flag_bits::coalesce_batches
 };
 
 kernel_access_layout_builder::kernel_access_layout_builder() noexcept = default;
@@ -91,12 +91,12 @@ kernel_access_layout kernel_access_layout_builder::build(
 {
 	if (m_implementation)
 	{
-		if (flags.contains(kernel_access_layout_build_flag_bits::reorder))
+		if (flags.contains(kernel_access_layout_build_flag_bits::reorder_batches))
 		{
 			m_implementation->sort_batch_axes_by_locality();
 		}
 		
-		if (flags.contains(kernel_access_layout_build_flag_bits::coalesce))
+		if (flags.contains(kernel_access_layout_build_flag_bits::coalesce_batches))
 		{
 			m_implementation->coalesce_contiguous_batch_axes();
 		}

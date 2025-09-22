@@ -2,16 +2,9 @@
 
 #include <xmipp4/core/multidimensional/arithmetic.hpp>
 
-#include <xmipp4/core/multidimensional/context.hpp>
-#include <xmipp4/core/multidimensional/allocator.hpp>
-#include <xmipp4/core/multidimensional/broadcast.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/kernel_access_layout.hpp>
-#include <xmipp4/core/multidimensional/operation_id.hpp>
-#include <xmipp4/core/multidimensional/operation_id_builder.hpp>
-#include <xmipp4/core/multidimensional/kernel_registry.hpp>
-#include <xmipp4/core/multidimensional/kernel_builder.hpp>
-#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/multidimensional/operation.hpp>
+
+#include "core_operation_id.hpp"
 
 namespace xmipp4 
 {
@@ -20,10 +13,7 @@ namespace multidimensional
 
 const operation_id& get_add_operation_id() noexcept
 {
-    static const operation_id id = operation_id_builder()
-        .nest("core")
-        .build("add");
-
+    static const auto id = make_core_operation_id("add"); 
     return id;
 }
 

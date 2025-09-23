@@ -26,6 +26,9 @@ public:
     strided_layout& operator=(const strided_layout &other) noexcept;
     strided_layout& operator=(strided_layout &&other) noexcept;
 
+    bool operator==(const strided_layout &other) const noexcept;
+    bool operator!=(const strided_layout &other) const noexcept;
+
     /**
      * @brief Get the number of axis in the layout
      * 

@@ -247,6 +247,42 @@ public:
         }
     }
 
+    bool operator==(const implementation &other) const noexcept
+    {
+        if (m_offset != other.m_offset)
+        {
+            return false;
+        }
+
+        if (m_axes.size() != other.m_axes.size())
+        {
+            return false;
+        }
+
+        const auto n = m_axes.size();
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const auto &axis1 = m_axes[i];
+            const auto &axis2 = other.m_axes[i];
+
+            const auto extent1 = axis1.get_extent();
+            const auto extent2 = axis2.get_extent();
+            if (extent1 != extent2)
+            {
+                return false;
+            }
+
+            const auto stride1 = axis1.get_stride();
+            const auto stride2 = axis2.get_stride();
+            if (extent1 != 1 && stride1 != stride2)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     std::size_t get_rank() const noexcept
     {
         return m_axes.size();
@@ -501,6 +537,33 @@ strided_layout::strided_layout(std::shared_ptr<const implementation> impl) noexc
 strided_layout::strided_layout(implementation &&impl)
     : m_implementation(std::make_shared<implementation>(std::move(impl)))
 {
+}
+
+
+bool strided_layout::operator==(const strided_layout &other) const noexcept
+{
+    if (m_implementation == other.m_implementation)
+    {
+        return true; // Same or both null
+    }
+    else if (m_implementation && other.m_implementation)
+    {
+        return *m_implementation == *other.m_implementation;
+    }
+    else if (m_implementation)
+    {
+        return *m_implementation == implementation();
+    }
+    else // if (other.m_implementation)
+    {
+        XMIPP4_ASSERT(other.m_implementation);
+        return implementation() == *other.m_implementation;
+    }
+}
+
+bool strided_layout::operator!=(const strided_layout &other) const noexcept
+{
+    return !(*this == other);
 }
 
 XMIPP4_NODISCARD

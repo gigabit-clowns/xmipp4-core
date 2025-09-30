@@ -170,6 +170,14 @@ public:
     static
     strided_layout make_contiguous_layout(span<const std::size_t> extents);
 
+    XMIPP4_NODISCARD
+    static
+    strided_layout make_custom_layout(
+        span<const std::size_t> extents, 
+        span<const std::ptrdiff_t> strides, 
+        std::ptrdiff_t offset = 0
+    );
+
 private:
     class implementation;
     std::shared_ptr<const implementation> m_implementation; // Copy-on-write

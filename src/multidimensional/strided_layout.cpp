@@ -790,5 +790,35 @@ strided_layout strided_layout::make_contiguous_layout(
     return result;
 }
 
+XMIPP4_NODISCARD
+strided_layout strided_layout::make_custom_layout(
+    span<const std::size_t> extents, 
+    span<const std::ptrdiff_t> strides, 
+    std::ptrdiff_t offset
+)
+{
+    if (extents.size() != strides.size())
+    {
+        throw std::invalid_argument(
+            "Extents and strides must have the same number of elements"
+        );
+    }
+    
+    const auto count = extents.size();
+    if (count == 0 && offset == 0)
+    {
+        return strided_layout(); // Empty layout
+    }
+
+    std::vector<strided_axis> axes;
+    axes.reserve(count);
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        axes.emplace_back(extents[i], strides[i]);
+    }
+
+    return strided_layout(implementation(std::move(axes), offset));
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

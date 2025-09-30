@@ -28,8 +28,5 @@ class strided_layout;
 void broadcast_extents(std::vector<std::size_t> &extents1, 
                        std::vector<std::size_t> &extents2 );  
 
-void broadcast(span<strided_layout> operands, 
-               std::vector<std::size_t> &consensus_extents );
-
 } // namespace multidimensional
 } // namespace xmipp4

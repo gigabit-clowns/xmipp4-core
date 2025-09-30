@@ -84,10 +84,9 @@ private:
                           std::vector<strided_axis> &axes,
                           std::vector<strided_axis>::iterator head_ite )
     {
-        while (first_axis != last_axis && first_subscript != last_subscript)
+        while (first_subscript != last_subscript)
         {
             const auto &subscript = *first_subscript;
-            const auto &axis = *first_axis;
 
             switch (subscript.get_subscript_type())
             {
@@ -110,13 +109,15 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index(axis, offset, subscript.get_index());
+                check_axes_for_index(first_axis, last_axis);
+                apply_index(*first_axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                head_ite = axes.insert(head_ite, axis);
+                check_axes_for_slice(first_axis, last_axis);
+                head_ite = axes.insert(head_ite, *first_axis);
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
                 ++first_axis;
@@ -149,10 +150,9 @@ private:
                            std::vector<strided_axis> &axes,
                            std::vector<strided_axis>::iterator head_ite )
     {
-        while (first_axis != last_axis && first_subscript != last_subscript)
+        while (first_subscript != last_subscript)
         {
             const auto &subscript = *std::prev(last_subscript);
-            const auto &axis = *std::prev(last_axis);
 
             switch (subscript.get_subscript_type())
             {
@@ -169,13 +169,15 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                apply_index(axis, offset, subscript.get_index());
+                check_axes_for_index(first_axis, last_axis);
+                apply_index(*std::prev(last_axis), offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                head_ite = axes.insert(head_ite, axis);
+                check_axes_for_slice(first_axis, last_axis);
+                head_ite = axes.insert(head_ite, *std::prev(last_axis));
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
                 --last_axis;
@@ -196,6 +198,32 @@ private:
         if (first_axis != last_axis)
         {
             axes.insert(head_ite, first_axis, last_axis);
+        }
+    }
+
+    template <typename BidirIt>
+    static
+    void check_axes_for_index(BidirIt first_axis, BidirIt last_axis)
+    {
+        if (first_axis == last_axis)
+        {
+            throw std::invalid_argument(
+                "An index subscript was encountered, but there are "
+                "no more axes to process"
+            );
+        }
+    }
+
+    template <typename BidirIt>
+    static
+    void check_axes_for_slice(BidirIt first_axis, BidirIt last_axis)
+    {
+        if (first_axis == last_axis)
+        {
+            throw std::invalid_argument(
+                "A slice subscript was encountered, but there are "
+                "no more axes to process"
+            );
         }
     }
 
@@ -488,28 +516,6 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
-    std::tuple<implementation, implementation>
-    split_at(std::ptrdiff_t index) const
-    {
-        const auto sanitized_index = sanitize_index(index, get_rank());
-        const auto first = m_axes.cbegin();
-        const auto middle = first + sanitized_index;
-        const auto last = m_axes.cend();
-
-        std::vector<strided_axis> outer_axes;
-        outer_axes.reserve(sanitized_index);
-        std::copy(first, middle, std::back_inserter(outer_axes));
-
-        std::vector<strided_axis> inner_axes;
-        inner_axes.reserve(get_rank() - sanitized_index);
-        std::copy(middle, last, std::back_inserter(inner_axes));
-
-        return std::make_tuple(
-            implementation(std::move(outer_axes), get_offset()),
-            implementation(std::move(inner_axes), 0)
-        );
-    }
-
 private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
@@ -718,43 +724,6 @@ strided_layout::broadcast_to(span<const std::size_t> extents) const
         return strided_layout(implementation().broadcast_to(extents));
     }
 
-}
-
-XMIPP4_NODISCARD
-std::tuple<strided_layout, strided_layout> 
-strided_layout::split_at(std::ptrdiff_t index) const
-{
-    std::tuple<strided_layout, strided_layout> result;
-
-    if (index == 0)
-    {
-        // Inner takes all
-        result = std::make_tuple(strided_layout(), *this);
-    }
-    else if (index == static_cast<ptrdiff_t>(get_rank()))
-    {
-        // Outer takes all
-        result = std::make_tuple(*this, strided_layout());
-    }
-    else if (m_implementation)
-    {
-        // Split
-        implementation outer;
-        implementation inner;
-        std::tie(outer, inner) = m_implementation->split_at(index);
-        result = std::make_tuple(
-            strided_layout(std::move(outer)),
-            strided_layout(std::move(inner))
-        );
-    }
-    else
-    {
-        throw std::out_of_range(
-            "index for split_at is out of bounds for an empty layout"
-        );
-    }
-
-    return result;
 }
 
 XMIPP4_NODISCARD

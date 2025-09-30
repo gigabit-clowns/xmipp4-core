@@ -291,10 +291,18 @@ TEST_CASE("broadcast_to in strided_layout should fill in the left and promote ax
 
 TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")
 {
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = {56, 24, 1, 10, 8};
 
+    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast layout with 6 axes into a shape of 5 dimensions." );
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
 {
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = {120, 55, 24, 1, 10, 8};
 
+    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast axis of extent 56 into an extent of 55." );
 }

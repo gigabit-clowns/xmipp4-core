@@ -529,7 +529,9 @@ strided_layout::operator=(const strided_layout &other) noexcept = default;
 strided_layout&
 strided_layout::operator=(strided_layout &&other) noexcept = default;
 
-strided_layout::strided_layout(std::shared_ptr<const implementation> impl) noexcept
+strided_layout::strided_layout(
+    std::shared_ptr<const implementation> impl
+) noexcept
     : m_implementation(std::move(impl))
 {
 }
@@ -756,7 +758,9 @@ strided_layout::split_at(std::ptrdiff_t index) const
 }
 
 XMIPP4_NODISCARD
-strided_layout strided_layout::make_contiguous_layout(span<const std::size_t> extents)
+strided_layout strided_layout::make_contiguous_layout(
+    span<const std::size_t> extents
+)
 {
     strided_layout result;
 

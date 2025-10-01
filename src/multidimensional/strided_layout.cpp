@@ -45,7 +45,7 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
         if (ite == last)
         {
             std::ostringstream oss;
-            oss << "Value " << i << " is missing in the axis permutation";
+            oss << "Index " << i << " is missing in the axis permutation";
             throw std::invalid_argument(oss.str());
         }
 

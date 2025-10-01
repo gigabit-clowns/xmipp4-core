@@ -165,27 +165,42 @@ TEST_CASE("default constructed strided_layout should have no axes and an offset 
 
 TEST_CASE("compute_storage_requirement in strided_layout should return the correct size", "[strided_layout]")
 {
-
+    const auto layout = make_test_layout();
+    const std::size_t expected_storage = 20 + 7*2 + 9*16 + 23*320 + 55*7680 + 119*860160 + 1;
+    REQUIRE( layout.compute_storage_requirement() == expected_storage );
 }
 
 TEST_CASE("compute_storage_requirement in strided_layout should return 0 if there is a zero-sized axis", "[strided_layout]")
 {
+    std::array<std::size_t, 6> extents = 
+    {
+        120, 
+        56, 
+        0, 
+        1, 
+        10, 
+        8
+    };
+    const auto layout = strided_layout::make_contiguous_layout(
+        xmipp4::make_span(extents)
+    );
 
+    REQUIRE( layout.compute_storage_requirement() == 0 );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
-
+    // TODO
 }
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes after an ellipsis", "[strided_layout]" )
 {
-  
+    // TODO
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should produce the expected result", "[strided_layout]" )
 {
-   
+    // TODO
 }
 
 TEST_CASE( "apply_subscripts with no subscripts in a default constructed layout should succeed", "[strided_layout]" )
@@ -358,32 +373,99 @@ TEST_CASE( "apply_subscripts with an slice in a default constructed layout shoul
 
 TEST_CASE("transpose in strided_layout should reverse the order of its axes", "[strided_layout]")
 {
+    const auto layout = make_test_layout();
+    const auto transposed = layout.transpose();
 
+    std::vector<std::size_t> obtained_extents;
+    transposed.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = {8, 10, 1, 24, 56, 120};
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    transposed.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = {2, 16, 160, 320, 7680, 860160};
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( transposed.get_offset() == layout.get_offset() );
 }
 
 TEST_CASE("transpose in a default constructed strided_layout should return another empty layout ", "[strided_layout]")
 {
+    const strided_layout layout;
 
+    const auto transposed = layout.transpose();
+
+    const strided_layout expected_layout;
+    REQUIRE( transposed == expected_layout );
 }
 
 TEST_CASE("permute in strided_layout with valid permutation should correctly alter the order of the axes", "[strided_layout]")
 {
+    // TODO
+}
 
+TEST_CASE("permute in strided_layout with valid permutation should throw if not provided with a correct permutation", "[strided_layout]")
+{
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> permutation = {0, 1, 2, 3, 4, 4};
+
+    REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Index 5 is missing in the axis permutation" );
 }
 
 TEST_CASE("permute in a default constructed strided_layout and empty permutation should succeed and return empty permutation", "[strided_layout]")
 {
+    const strided_layout layout;
+    const std::vector<std::size_t> permutation;
 
+    const auto permuted = layout.permute(xmipp4::make_span(permutation));
+
+    const strided_layout expected_layout;
+    REQUIRE( permuted == expected_layout );
 }
 
 TEST_CASE("permute in a default constructed strided_layout and non-empty permutation should throw", "[strided_layout]")
 {
+    const strided_layout layout;
+    const std::vector<std::size_t> permutation = {0};
 
+    REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Axis permutation's length does not match the required count" );
 }
 
 TEST_CASE("swap_axes in strided_layout should swap the requested axes", "[strided_layout]")
 {
+    const auto layout = make_test_layout();
+    const auto swapped = layout.swap_axes(1, 2);
 
+    std::vector<std::size_t> obtained_extents;
+    swapped.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120, 
+        24, 
+        56, 
+        1, 
+        10, 
+        8
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    swapped.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        
+        860160,
+        320,
+        7680,
+        160,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( swapped.get_offset() == layout.get_offset() );
 }
 
 TEST_CASE("swap_axes in strided_layout should throw when one of the axes is out of bounds", "[strided_layout]")
@@ -409,17 +491,21 @@ TEST_CASE("swap_axes in default constructed strided_layout should always fail", 
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")
 {
-
+    // TODO
 }
 
 TEST_CASE("squeeze in default constructed strided_layout should return an empty layout", "[strided_layout]")
 {
+    const strided_layout layout;
+    const auto squeezed = layout.squeeze();
 
+    const strided_layout expected_layout;
+    REQUIRE( squeezed == expected_layout );
 }
 
 TEST_CASE("broadcast_to in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
 {
-
+    // TODO
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")

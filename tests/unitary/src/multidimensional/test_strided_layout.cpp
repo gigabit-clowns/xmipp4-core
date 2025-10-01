@@ -10,7 +10,23 @@
 
 using namespace xmipp4::multidimensional;
 
-static strided_layout make_test_layout()
+template <std::size_t N>
+static 
+strided_layout make_custom_layout(
+    const std::array<std::size_t, N> &extents,
+    const std::array<std::ptrdiff_t, N> &strides,
+    std::ptrdiff_t offset
+)
+{
+    return strided_layout::make_custom_layout(
+        xmipp4::make_span(extents),
+        xmipp4::make_span(strides),
+        offset
+    );
+}
+
+static 
+strided_layout make_test_layout()
 {
     const std::array<std::size_t, 6> extents = 
     {
@@ -21,12 +37,10 @@ static strided_layout make_test_layout()
         // TODO
     };
     const auto offset = 20;
-    return strided_layout::make_custom_layout(
-        xmipp4::make_span(extents),
-        xmipp4::make_span(strides),
-        offset
-    );
+
+    return make_custom_layout(extents, strides, offset);
 }
+
 
 // TODO constructors and getters
 
@@ -85,17 +99,17 @@ TEST_CASE( "apply_subscripts with a new_axis in a default constructed layout sho
     const strided_layout layout;
     const std::vector<dynamic_subscript> subscripts = 
     {
-        ellipsis(),
+        new_axis(),
     };
 
     const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
     
-    const std::vector<std::size_t> expected_extents = {1};
-    const std::vector<std::ptrdiff_t> expected_strides = {0};
+    const std::array<std::size_t, 1> expected_extents = {1};
+    const std::array<std::ptrdiff_t, 1> expected_strides = {0};
     const std::ptrdiff_t expected_offset = 0;
-    const auto expected_layout = strided_layout::make_custom_layout(
-        xmipp4::make_span(expected_extents),
-        xmipp4::make_span(expected_strides),
+    const auto expected_layout = make_custom_layout(
+        expected_extents,
+        expected_strides,
         expected_offset
     );
 
@@ -258,19 +272,19 @@ TEST_CASE("swap_axes in strided_layout should throw when one of the axes is out 
     const auto layout = make_test_layout();
 
     REQUIRE_THROWS_AS( layout.swap_axes(6, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "axis1 exceeds bounds" );
+    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
     REQUIRE_THROWS_AS( layout.swap_axes(0, 6), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 6), "axis2 exceeds bounds" );
+    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
 }
 
 TEST_CASE("swap_axes in default constructed strided_layout should always fail", "[strided_layout]")
 {
-    const auto layout = make_test_layout();
+    const strided_layout layout;
 
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 0), "axis1 exceeds bounds" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 1), "axis1 exceeds bounds" );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::logic_error );
+    REQUIRE_THROWS_WITH( layout.swap_axes(0, 0), "Cannot swap axes on an empty layout" );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::logic_error );
+    REQUIRE_THROWS_WITH( layout.swap_axes(0, 1), "Cannot swap axes on an empty layout" );
 }
 
 

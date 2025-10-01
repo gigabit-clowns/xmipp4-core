@@ -509,7 +509,37 @@ TEST_CASE("transpose in a default constructed strided_layout should return anoth
 
 TEST_CASE("permute in strided_layout with valid permutation should correctly alter the order of the axes", "[strided_layout]")
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> permutation = {0, 3, 1, 2, 4, 5};
+    const auto permuted = layout.permute(xmipp4::make_span(permutation));
+
+    std::vector<std::size_t> obtained_extents;
+    permuted.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120,
+        1,
+        56,
+        24, 
+        10, 
+        8
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    permuted.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        860160,
+        160,
+        7680,
+        320,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+ 
+    REQUIRE( permuted.get_offset() == layout.get_offset() );
 }
 
 TEST_CASE("permute in strided_layout with valid permutation should throw if not provided with a correct permutation", "[strided_layout]")
@@ -599,7 +629,34 @@ TEST_CASE("swap_axes in default constructed strided_layout should always fail", 
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const auto squeezed = layout.squeeze();
+
+    std::vector<std::size_t> obtained_extents;
+    squeezed.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120, 
+        56, 
+        24, 
+        10, 
+        8
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    squeezed.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        860160,
+        7680,
+        320,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( squeezed.get_offset() == 20 );
 }
 
 TEST_CASE("squeeze in default constructed strided_layout should return an empty layout", "[strided_layout]")
@@ -613,7 +670,41 @@ TEST_CASE("squeeze in default constructed strided_layout should return an empty 
 
 TEST_CASE("broadcast_to in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = 
+    {
+        16,
+        40,
+        120, 
+        56, 
+        24, 
+        9, 
+        10, 
+        8
+    };
+
+    const auto broadcasted = layout.broadcast_to(xmipp4::make_span(target_extents));
+
+    std::vector<std::size_t> obtained_extents;
+    broadcasted.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == target_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    broadcasted.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        0,
+        0,
+        860160,
+        7680,
+        320,
+        0,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( broadcasted.get_offset() == 20 );
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")

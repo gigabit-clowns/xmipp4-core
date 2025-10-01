@@ -42,7 +42,115 @@ strided_layout make_test_layout()
 }
 
 
-// TODO constructors and getters
+
+TEST_CASE("make_contiguous_layout should create a strided_layout with the expected extents and strides", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const auto layout = strided_layout::make_contiguous_layout(
+        xmipp4::make_span(extents)
+    );
+
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        107520,
+        1920,
+        80,
+        80,
+        8,
+        1
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( layout.get_offset() == 0 );
+    REQUIRE( layout.get_rank() == extents.size() );
+}
+
+TEST_CASE("make_custom_layout should create a strided_layout with expected extents and strides", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        107520,
+        7680,
+        320,
+        160,
+        16,
+        2
+    };
+    const auto offset = 1234;
+    const auto layout = strided_layout::make_custom_layout(
+        xmipp4::make_span(extents),
+        xmipp4::make_span(strides),
+        offset
+    );
+
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    REQUIRE( obtained_strides == strides );
+
+    REQUIRE( layout.get_offset() == offset );
+    REQUIRE( layout.get_rank() == extents.size() );
+}
+
+TEST_CASE("make_custom_layout with inhomogeneous arrays should throw", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        107520,
+        7680,
+        160,
+        16,
+        2
+    };
+    const auto offset = 1234;
+    
+    REQUIRE_THROWS_AS( 
+        strided_layout::make_custom_layout(
+            xmipp4::make_span(extents),
+            xmipp4::make_span(strides),
+            offset
+        ),
+        std::invalid_argument
+    );
+
+    REQUIRE_THROWS_WITH( 
+        strided_layout::make_custom_layout(
+            xmipp4::make_span(extents),
+            xmipp4::make_span(strides),
+            offset
+        ),
+        "Extents and strides must have the same number of elements"
+    );
+}
+
+TEST_CASE("default constructed strided_layout should have no axes and an offset of zero", "[strided_layout]")
+{
+    const strided_layout layout;
+
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents;
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides;
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( layout.get_offset() == 0 );
+    REQUIRE( layout.get_rank() == 0 );
+}
 
 TEST_CASE("compute_storage_requirement in strided_layout should return the correct size", "[strided_layout]")
 {

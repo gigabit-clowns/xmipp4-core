@@ -140,6 +140,21 @@ TEST_CASE("flagset raw cast", "[flagset]")
     REQUIRE(static_cast<int32_t>(flags) == 0x60000002);
 }
 
+TEST_CASE("flagset contains", "[flagset]") 
+{
+    test_int32_flags flags = {
+        test_int32_flag_bits::b,
+        test_int32_flag_bits::y,
+        test_int32_flag_bits::z,
+    };
+    REQUIRE(flags.contains(test_int32_flag_bits::a) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::b) == true);
+    REQUIRE(flags.contains(test_int32_flag_bits::c) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::x) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::y) == true);
+    REQUIRE(flags.contains(test_int32_flag_bits::z) == true);
+}
+
 TEST_CASE("flagset all_of", "[flagset]") 
 {
     test_int32_flags flags = {

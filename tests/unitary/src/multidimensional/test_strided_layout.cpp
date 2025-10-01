@@ -38,8 +38,7 @@ strided_layout make_test_layout()
         8
     };
     const std::array<std::ptrdiff_t, 6> strides = 
-    {
-        
+    {       
         860160,
         7680,
         320,
@@ -190,17 +189,126 @@ TEST_CASE("compute_storage_requirement in strided_layout should return 0 if ther
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        1
+    };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        56, 
+        24, 
+        1, 
+        10, 
+        8
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        7680,
+        320,
+        160,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( result.get_offset() == layout.get_offset() + 1*860160 );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes after an ellipsis", "[strided_layout]" )
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        ellipsis(),
+        1
+    };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120, 
+        56, 
+        24, 
+        1, 
+        10
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        860160,
+        7680,
+        320,
+        160,
+        16
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( result.get_offset() == layout.get_offset() + 1*2 );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should produce the expected result", "[strided_layout]" )
 {
-    // TODO
+    const auto layout = make_test_layout();
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        odd(), // Selects half of the elements in the axis with 120 elements
+        new_axis(), // Inserts phantom axis between 120 and 56 sized axes
+        ellipsis(), // Absorbs 56 and 24 sized axes.
+        0, // Squeezes 1-sized axis
+        even(), // Selects half of the elements in the axis with 10 elements
+        new_axis(), // Inserts an axis between 10 and 8 sized axes
+        new_axis(), // Inserts an axis between 10 and 8 sized axes
+        6 // Selects the 7th element in the 8 element axis
+    };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        60, 
+        1,
+        56, 
+        24, 
+        5, 
+        1,
+        1
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        1720320,
+        0,
+        7680,
+        320,
+        32,
+        0,
+        0
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    const std::ptrdiff_t expected_offset = 860192;
+    REQUIRE( result.get_offset() == expected_offset );
 }
 
 TEST_CASE( "apply_subscripts with no subscripts in a default constructed layout should succeed", "[strided_layout]" )

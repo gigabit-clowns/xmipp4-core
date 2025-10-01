@@ -30,11 +30,22 @@ strided_layout make_test_layout()
 {
     const std::array<std::size_t, 6> extents = 
     {
-        120, 56, 24, 1, 10, 8
+        120, 
+        56, 
+        24, 
+        1, 
+        10, 
+        8
     };
     const std::array<std::ptrdiff_t, 6> strides = 
     {
-        // TODO
+        
+        860160,
+        7680,
+        320,
+        160,
+        16,
+        2
     };
     const auto offset = 20;
 

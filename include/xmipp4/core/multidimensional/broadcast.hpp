@@ -23,7 +23,7 @@ class strided_layout;
  * 
  * @param extents1 The first set of extents.
  * @param extents2 The second set of extents.
- * @throws std::logic_error when one of of the extents cannot be broadcasted.
+ * @throws std::broadcast_error when one of of the extents cannot be broadcasted.
  */
 void broadcast_extents(std::vector<std::size_t> &extents1, 
                        std::vector<std::size_t> &extents2 );  

@@ -620,9 +620,9 @@ TEST_CASE("swap_axes in default constructed strided_layout should always fail", 
 {
     const strided_layout layout;
 
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::logic_error );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::out_of_range );
     REQUIRE_THROWS_WITH( layout.swap_axes(0, 0), "Cannot swap axes on an empty layout" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::logic_error );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::out_of_range );
     REQUIRE_THROWS_WITH( layout.swap_axes(0, 1), "Cannot swap axes on an empty layout" );
 }
 

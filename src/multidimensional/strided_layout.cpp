@@ -125,16 +125,11 @@ private:
                 break;
 
             default:
-                throw std::logic_error("Unknown subscript type encountered");
+                throw std::invalid_argument("Unknown subscript type encountered");
                 break;
             }
         }
         
-        if (first_subscript != last_subscript)
-        {
-            throw std::invalid_argument("Not all subscripts were processed");
-        }
-
         // Copy reminder
         if (first_axis != last_axis)
         {
@@ -184,14 +179,9 @@ private:
                 break;
 
             default:
-                throw std::logic_error("Unknown subscript type encountered");
+                throw std::invalid_argument("Unknown subscript type encountered");
                 break;
             }
-        }
-        
-        if (first_subscript != last_subscript)
-        {
-            throw std::invalid_argument("Not all subscripts were processed");
         }
 
         // Copy reminder
@@ -681,7 +671,7 @@ strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     }
     else
     {
-        throw std::logic_error("Cannot swap axes on an empty layout");
+        throw std::out_of_range("Cannot swap axes on an empty layout");
     }
 }
 

@@ -16,6 +16,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
+
 /**
  * @brief Class describing a runtime defined subscript.
  * 
@@ -95,7 +96,7 @@ public:
      * subscript_type::index. Otherwise an exception is thrown.
      * 
      * @return std::ptrdiff_t The index held by this object.
-     * @throws std::logic_error
+     * @throws bad_dynamic_subscript_access
      */
     std::ptrdiff_t get_index() const;
 
@@ -106,7 +107,7 @@ public:
      * subscript_type::slice. Otherwise an exception is thrown.
      * 
      * @return slice The slice held by this object.
-     * @throws std::logic_error
+     * @throws bad_dynamic_subscript_access
      */
     slice get_slice() const;
 
@@ -118,6 +119,13 @@ private:
 
 };
 
+class bad_dynamic_subscript_access
+    : public std::logic_error
+{
+public:
+    using std::logic_error::logic_error;
+
+};
 
 
 template <typename T>

@@ -55,7 +55,7 @@ std::ptrdiff_t dynamic_subscript::get_index() const
     {
         std::ostringstream oss;
         oss << "Cannot call get_index on a " << *this;
-        throw std::logic_error(oss.str());
+        throw bad_dynamic_subscript_access(oss.str());
     }
 
     return m_data[0];
@@ -68,7 +68,7 @@ slice dynamic_subscript::get_slice() const
     {
         std::ostringstream oss;
         oss << "Cannot call get_slice on a " << *this;
-        throw std::logic_error(oss.str());
+        throw bad_dynamic_subscript_access(oss.str());
     }
 
     return make_slice(m_data[0], m_data[1], m_data[2]);

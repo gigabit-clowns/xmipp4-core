@@ -115,7 +115,7 @@ public:
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return strided_layout Permuted layout.
-     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
+     * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
     strided_layout swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const;

@@ -509,7 +509,6 @@ public:
 private:
     std::vector<strided_axis> m_axes;
     std::ptrdiff_t m_offset;
-    numerical_type m_data_type;
 
 };
 

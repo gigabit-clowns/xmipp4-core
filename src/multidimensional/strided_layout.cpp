@@ -126,7 +126,7 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
-                break;
+
             }
         }
         
@@ -156,7 +156,6 @@ private:
                     "Two ellipsis tags were encountered when processing "
                     "subscripts"
                 );
-                break;
 
             case dynamic_subscript::subscript_type::new_axis:
                 head_ite = axes.insert(head_ite, make_phantom_axis());
@@ -180,7 +179,7 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
-                break;
+
             }
         }
 

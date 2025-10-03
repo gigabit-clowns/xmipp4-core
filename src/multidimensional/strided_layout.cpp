@@ -109,14 +109,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_non_empty_axes(first_axis, last_axis, "index");
+                check_non_empty_axes_for_index(first_axis, last_axis);
                 apply_index(*first_axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_non_empty_axes(first_axis, last_axis, "slice");
+                check_non_empty_axes_for_slice(first_axis, last_axis);
                 head_ite = axes.insert(head_ite, *first_axis);
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
@@ -163,14 +163,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_non_empty_axes(first_axis, last_axis, "index");
+                check_non_empty_axes_for_index(first_axis, last_axis);
                 apply_index(*std::prev(last_axis), offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_non_empty_axes(first_axis, last_axis, "slice");
+                check_non_empty_axes_for_slice(first_axis, last_axis);
                 head_ite = axes.insert(head_ite, *std::prev(last_axis));
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
@@ -190,6 +190,7 @@ private:
         }
     }
 
+
     template <typename BidirIt>
     static
     void check_non_empty_axes(
@@ -201,11 +202,31 @@ private:
         if (first_axis == last_axis)
         {
             std::ostringstream oss;
-            oss << "An " << subscript_type 
+            oss << subscript_type 
                 << " subscript was encountered, but there are "
                    "no more axes to process";
             throw std::invalid_argument(oss.str());
         }
+    }
+
+    template <typename BidirIt>
+    static
+    void check_non_empty_axes_for_slice(
+        BidirIt first_axis, 
+        BidirIt last_axis
+    )
+    {
+        check_non_empty_axes(first_axis, last_axis, "A slice");
+    }
+
+    template <typename BidirIt>
+    static
+    void check_non_empty_axes_for_index(
+        BidirIt first_axis, 
+        BidirIt last_axis
+    )
+    {
+        check_non_empty_axes(first_axis, last_axis, "An index");
     }
 
 };
@@ -222,38 +243,6 @@ public:
         : m_axes(std::move(axes))
         , m_offset(offset)
     {
-    }
-
-    implementation(const std::size_t *extents, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset )
-        : m_offset(offset)
-    {
-        m_axes.reserve(rank);
-        for (std::size_t i = 0; i < rank; ++i)
-        {
-            m_axes.emplace_back(extents[i], 0);
-        }
-
-        std::size_t stride = 1;
-        for(auto ite = m_axes.rbegin(); ite != m_axes.rend(); ++ite)
-        {
-            ite->set_stride(stride);
-            stride *= ite->get_extent();
-        }
-    }
-
-    implementation(const std::size_t *extents, 
-                   const std::ptrdiff_t *strides, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset )
-        : m_offset(offset)
-    {
-        m_axes.reserve(rank);
-        for (std::size_t i = 0; i < rank; ++i)
-        {
-            m_axes.emplace_back(extents[i], strides[i]);
-        }
     }
 
     bool operator==(const implementation &other) const noexcept
@@ -310,7 +299,6 @@ public:
     void get_strides(std::vector<std::ptrdiff_t> &strides) const
     {
         XMIPP4_ASSERT(strides.empty());
-        strides.clear();
         strides.reserve(m_axes.size());
         for (const auto &axis : m_axes)
         {
@@ -327,14 +315,12 @@ public:
     {
         std::size_t result = 0;
 
-        bool zero_extent = false;
         for (const auto &axis : m_axes)
         {
             const auto extent = axis.get_extent();
             if (extent == 0)
             {
-                zero_extent = true;
-                break;
+                return 0;
             }
 
             const auto stride = axis.get_stride();
@@ -345,17 +331,7 @@ public:
             }
         }
 
-        if (zero_extent)
-        {
-            result = 0;
-        }
-        else
-        {
-            ++result;
-            result += m_offset;
-        }
-
-        return result;
+        return m_offset + result + 1;
     }
 
     std::size_t compute_element_count() const noexcept

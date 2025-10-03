@@ -38,8 +38,10 @@ bool broadcast_extent(std::size_t &extent1, std::size_t &extent2)
     return true;
 }
 
-void broadcast_extents(std::vector<std::size_t> &extents1, 
-                       std::vector<std::size_t> &extents2 )
+void broadcast_extents(
+    std::vector<std::size_t> &extents1, 
+    std::vector<std::size_t> &extents2 
+)
 {
     if (extents1.size() < extents2.size())
     {

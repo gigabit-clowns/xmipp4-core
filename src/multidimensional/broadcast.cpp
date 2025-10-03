@@ -17,25 +17,25 @@ namespace multidimensional
 static
 bool broadcast_extent(std::size_t &extent1, std::size_t &extent2)
 {
-    bool success = true;
-
-    if (extent1 != extent2)
+    if (extent1 == extent2)
     {
-        if (extent1 == 1)
-        {
-            extent1 = extent2;
-        }
-        else if (extent2 == 1)
-        {
-            extent2 = extent1;
-        }
-        else
-        {
-            success = false;
-        }
+        return true;
     }
 
-    return success;
+    if (extent1 == 1)
+    {
+        extent1 = extent2;
+    }
+    else if (extent2 == 1)
+    {
+        extent2 = extent1;
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void broadcast_extents(std::vector<std::size_t> &extents1, 

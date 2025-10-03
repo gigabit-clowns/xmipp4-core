@@ -114,7 +114,7 @@ template<typename B>
 XMIPP4_INLINE_CONSTEXPR bool 
 flagset<B>::contains(const bit_type& bit) const noexcept
 {
-    return static_cast<bool>(*this & flagset(bit));
+    return any_of(flagset(bit));
 }
 
 template<typename B>

@@ -10,6 +10,7 @@
 #include "slice.hpp"
 #include "index.hpp"
 #include "../platform/attributes.hpp"
+#include "../platform/cpp_explicit.hpp"
 
 namespace xmipp4 
 {
@@ -46,14 +47,14 @@ public:
      * @brief Construct a dynamic_subscript holding an ellipsis_tag.
      * 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(ellipsis_tag) noexcept;
 
     /**
      * @brief Construct a dynamic_subscript holding a new_axis_tag.
      * 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(new_axis_tag) noexcept;
 
     /**
@@ -62,7 +63,7 @@ public:
      * @param index The index that is assigned to this object.
 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(std::ptrdiff_t index) noexcept;
 
     /**
@@ -71,7 +72,7 @@ public:
      * @param slice the slice that is assigned to this object.
      * 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(const slice &slice) noexcept;
 
     dynamic_subscript(const dynamic_subscript &other) = default;

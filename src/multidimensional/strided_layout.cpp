@@ -109,14 +109,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_axes_for_index(first_axis, last_axis);
+                check_non_empty_axes(first_axis, last_axis, "index");
                 apply_index(*first_axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_axes_for_slice(first_axis, last_axis);
+                check_non_empty_axes(first_axis, last_axis, "slice");
                 head_ite = axes.insert(head_ite, *first_axis);
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
@@ -163,14 +163,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_axes_for_index(first_axis, last_axis);
+                check_non_empty_axes(first_axis, last_axis, "index");
                 apply_index(*std::prev(last_axis), offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_axes_for_slice(first_axis, last_axis);
+                check_non_empty_axes(first_axis, last_axis, "slice");
                 head_ite = axes.insert(head_ite, *std::prev(last_axis));
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
@@ -192,27 +192,19 @@ private:
 
     template <typename BidirIt>
     static
-    void check_axes_for_index(BidirIt first_axis, BidirIt last_axis)
+    void check_non_empty_axes(
+        BidirIt first_axis, 
+        BidirIt last_axis, 
+        const char *subscript_type
+    )
     {
         if (first_axis == last_axis)
         {
-            throw std::invalid_argument(
-                "An index subscript was encountered, but there are "
-                "no more axes to process"
-            );
-        }
-    }
-
-    template <typename BidirIt>
-    static
-    void check_axes_for_slice(BidirIt first_axis, BidirIt last_axis)
-    {
-        if (first_axis == last_axis)
-        {
-            throw std::invalid_argument(
-                "A slice subscript was encountered, but there are "
-                "no more axes to process"
-            );
+            std::ostringstream oss;
+            oss << "An " << subscript_type 
+                << " subscript was encountered, but there are "
+                   "no more axes to process";
+            throw std::invalid_argument(oss.str());
         }
     }
 

@@ -146,13 +146,6 @@ flagset<B>::only_of(const flagset& other) const noexcept
 }
 
 template<typename B>
-XMIPP4_INLINE_CONSTEXPR bool 
-flagset<B>::test(bit_type bit) const noexcept
-{
-    return any_of(flagset(bit));
-}
-
-template<typename B>
 XMIPP4_INLINE_CONSTEXPR int 
 flagset<B>::count() const noexcept
 {

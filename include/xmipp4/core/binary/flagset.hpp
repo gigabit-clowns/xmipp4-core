@@ -237,15 +237,6 @@ public:
     XMIPP4_CONSTEXPR bool only_of(const flagset& other) const noexcept;
 
     /**
-     * @brief Checks if a particular flag is present
-     * 
-     * @param bit The flag to be tested
-     * @return true if the flag is present
-     * @return false if the flag is absent
-     */
-    XMIPP4_CONSTEXPR bool test(bit_type bit) const noexcept;
-
-    /**
      * @brief Counts the number of flags that are present
      * 
      * @return int The number of flags present here

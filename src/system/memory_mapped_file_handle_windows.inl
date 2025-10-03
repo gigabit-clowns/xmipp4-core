@@ -18,9 +18,9 @@ inline DWORD access_flags_to_open_access(access_flags access,
 {
     DWORD result = 0;
     
-    if(access.test(access_flag_bits::read)) 
+    if(access.contains(access_flag_bits::read)) 
         result |= GENERIC_READ;
-    if(access.test(access_flag_bits::write) && !copy_on_write) 
+    if(access.contains(access_flag_bits::write) && !copy_on_write) 
         result |= GENERIC_WRITE;
 
     return result;
@@ -31,14 +31,14 @@ inline DWORD access_flags_to_memory_map_protect(access_flags access,
 {
     DWORD result;
 
-    if (access.test(access_flag_bits::write))
+    if (access.contains(access_flag_bits::write))
     {
         if (copy_on_write)
             result = PAGE_WRITECOPY;
         else
             result = PAGE_READWRITE;
     }
-    else if (access.test(access_flag_bits::read))
+    else if (access.contains(access_flag_bits::read))
     {
         result = PAGE_READONLY;
     }
@@ -55,16 +55,16 @@ inline DWORD access_flags_to_view_access(access_flags access,
 {
     DWORD result;
 
-    if(copy_on_write && access.test(access_flag_bits::write))
+    if(copy_on_write && access.contains(access_flag_bits::write))
     {
         result = FILE_MAP_COPY;
     }
     else
     {
         result = 0;
-        if(access.test(access_flag_bits::read)) 
+        if(access.contains(access_flag_bits::read)) 
             result |= FILE_MAP_READ;
-        if(access.test(access_flag_bits::write)) 
+        if(access.contains(access_flag_bits::write)) 
             result |= FILE_MAP_WRITE;
     }
 

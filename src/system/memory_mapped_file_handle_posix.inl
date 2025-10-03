@@ -54,11 +54,11 @@ inline int access_flags_to_mmap_prot_flags(access_flags access) noexcept
 {
     int prot = PROT_NONE;
 
-    if (access.test(access_flag_bits::read)) 
+    if (access.contains(access_flag_bits::read)) 
     {
         prot |= PROT_READ;
     }
-    if (access.test(access_flag_bits::write)) 
+    if (access.contains(access_flag_bits::write)) 
     {
         prot |= PROT_WRITE;
     }

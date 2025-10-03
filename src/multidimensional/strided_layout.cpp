@@ -372,7 +372,7 @@ public:
         return std::accumulate(
             m_axes.cbegin(), m_axes.cend(),
             std::size_t(1),
-            [] (std::size_t current, const strided_axis &axis) -> std::size_t
+            [] (std::size_t current, const strided_axis &axis)
             {
                 return current * axis.get_extent();
             }
@@ -729,7 +729,7 @@ strided_layout strided_layout::make_contiguous_layout(
         std::transform(
             extents.begin(), extents.end(),
             std::back_inserter(axes),
-            [] (std::size_t extent) -> strided_axis
+            [] (std::size_t extent)
             {
                 return strided_axis(extent, 0);
             }

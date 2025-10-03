@@ -126,6 +126,7 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
+
             }
         }
         
@@ -178,6 +179,7 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
+
             }
         }
 

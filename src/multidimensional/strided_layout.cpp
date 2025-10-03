@@ -109,14 +109,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_axes_for_index(first_axis, last_axis);
+                check_non_empty_axes_for_index(first_axis, last_axis);
                 apply_index(*first_axis, offset, subscript.get_index());
                 ++first_subscript;
                 ++first_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_axes_for_slice(first_axis, last_axis);
+                check_non_empty_axes_for_slice(first_axis, last_axis);
                 head_ite = axes.insert(head_ite, *first_axis);
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 ++first_subscript;
@@ -126,7 +126,6 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
-                break;
             }
         }
         
@@ -156,7 +155,6 @@ private:
                     "Two ellipsis tags were encountered when processing "
                     "subscripts"
                 );
-                break;
 
             case dynamic_subscript::subscript_type::new_axis:
                 head_ite = axes.insert(head_ite, make_phantom_axis());
@@ -164,14 +162,14 @@ private:
                 break;
 
             case dynamic_subscript::subscript_type::index:
-                check_axes_for_index(first_axis, last_axis);
+                check_non_empty_axes_for_index(first_axis, last_axis);
                 apply_index(*std::prev(last_axis), offset, subscript.get_index());
                 --last_subscript;
                 --last_axis;
                 break;
             
             case dynamic_subscript::subscript_type::slice:
-                check_axes_for_slice(first_axis, last_axis);
+                check_non_empty_axes_for_slice(first_axis, last_axis);
                 head_ite = axes.insert(head_ite, *std::prev(last_axis));
                 apply_slice(*head_ite, offset, subscript.get_slice());
                 --last_subscript;
@@ -180,7 +178,6 @@ private:
 
             default:
                 throw std::invalid_argument("Unknown subscript type encountered");
-                break;
             }
         }
 
@@ -191,30 +188,43 @@ private:
         }
     }
 
+
     template <typename BidirIt>
     static
-    void check_axes_for_index(BidirIt first_axis, BidirIt last_axis)
+    void check_non_empty_axes(
+        BidirIt first_axis, 
+        BidirIt last_axis, 
+        const char *subscript_type
+    )
     {
         if (first_axis == last_axis)
         {
-            throw std::invalid_argument(
-                "An index subscript was encountered, but there are "
-                "no more axes to process"
-            );
+            std::ostringstream oss;
+            oss << subscript_type 
+                << " subscript was encountered, but there are "
+                   "no more axes to process";
+            throw std::invalid_argument(oss.str());
         }
     }
 
     template <typename BidirIt>
     static
-    void check_axes_for_slice(BidirIt first_axis, BidirIt last_axis)
+    void check_non_empty_axes_for_slice(
+        BidirIt first_axis, 
+        BidirIt last_axis
+    )
     {
-        if (first_axis == last_axis)
-        {
-            throw std::invalid_argument(
-                "A slice subscript was encountered, but there are "
-                "no more axes to process"
-            );
-        }
+        check_non_empty_axes(first_axis, last_axis, "A slice");
+    }
+
+    template <typename BidirIt>
+    static
+    void check_non_empty_axes_for_index(
+        BidirIt first_axis, 
+        BidirIt last_axis
+    )
+    {
+        check_non_empty_axes(first_axis, last_axis, "An index");
     }
 
 };
@@ -231,38 +241,6 @@ public:
         : m_axes(std::move(axes))
         , m_offset(offset)
     {
-    }
-
-    implementation(const std::size_t *extents, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset )
-        : m_offset(offset)
-    {
-        m_axes.reserve(rank);
-        for (std::size_t i = 0; i < rank; ++i)
-        {
-            m_axes.emplace_back(extents[i], 0);
-        }
-
-        std::size_t stride = 1;
-        for(auto ite = m_axes.rbegin(); ite != m_axes.rend(); ++ite)
-        {
-            ite->set_stride(stride);
-            stride *= ite->get_extent();
-        }
-    }
-
-    implementation(const std::size_t *extents, 
-                   const std::ptrdiff_t *strides, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset )
-        : m_offset(offset)
-    {
-        m_axes.reserve(rank);
-        for (std::size_t i = 0; i < rank; ++i)
-        {
-            m_axes.emplace_back(extents[i], strides[i]);
-        }
     }
 
     bool operator==(const implementation &other) const noexcept
@@ -319,7 +297,6 @@ public:
     void get_strides(std::vector<std::ptrdiff_t> &strides) const
     {
         XMIPP4_ASSERT(strides.empty());
-        strides.clear();
         strides.reserve(m_axes.size());
         for (const auto &axis : m_axes)
         {
@@ -336,14 +313,12 @@ public:
     {
         std::size_t result = 0;
 
-        bool zero_extent = false;
         for (const auto &axis : m_axes)
         {
             const auto extent = axis.get_extent();
             if (extent == 0)
             {
-                zero_extent = true;
-                break;
+                return 0;
             }
 
             const auto stride = axis.get_stride();
@@ -354,17 +329,7 @@ public:
             }
         }
 
-        if (zero_extent)
-        {
-            result = 0;
-        }
-        else
-        {
-            ++result;
-            result += m_offset;
-        }
-
-        return result;
+        return m_offset + result + 1;
     }
 
     std::size_t compute_element_count() const noexcept
@@ -372,7 +337,7 @@ public:
         return std::accumulate(
             m_axes.cbegin(), m_axes.cend(),
             std::size_t(1),
-            [] (std::size_t current, const strided_axis &axis) -> std::size_t
+            [] (std::size_t current, const strided_axis &axis)
             {
                 return current * axis.get_extent();
             }
@@ -611,17 +576,15 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
+    if (subscripts.empty())
+    {
+        return *this; // No change
+    }
+
     if (m_implementation)
     {
-        if (subscripts.empty())
-        {
-            return *this;
-        }
-        else
-        {
-            const auto &impl = *m_implementation;
-            return strided_layout(impl.apply_subscripts(subscripts));
-        }
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.apply_subscripts(subscripts));
     }
     else
     {
@@ -632,16 +595,14 @@ strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 XMIPP4_NODISCARD
 strided_layout strided_layout::transpose() const
 {
-    if (get_rank() > 1)
+    if (get_rank() <= 1)
     {   
-        XMIPP4_ASSERT( m_implementation );
-        const auto &impl = *m_implementation;
-        return strided_layout(impl.transpose());
-    }
-    else
-    {
         return *this; // Empty or single axis. Not modified.
     }
+
+    XMIPP4_ASSERT( m_implementation );
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.transpose());
 }
 
 XMIPP4_NODISCARD
@@ -663,15 +624,13 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
 {
-    if (m_implementation)
-    {
-        const auto &impl = *m_implementation;
-        return strided_layout(impl.swap_axes(axis1, axis2));
-    }
-    else
+    if (!m_implementation)
     {
         throw std::out_of_range("Cannot swap axes on an empty layout");
     }
+
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.swap_axes(axis1, axis2));
 }
 
 XMIPP4_NODISCARD
@@ -720,32 +679,30 @@ strided_layout strided_layout::make_contiguous_layout(
     span<const std::size_t> extents
 )
 {
-    strided_layout result;
-
-    if (!extents.empty())
+    if (extents.empty())
     {
-        std::vector<strided_axis> axes;
-        axes.reserve(extents.size());
-        std::transform(
-            extents.begin(), extents.end(),
-            std::back_inserter(axes),
-            [] (std::size_t extent) -> strided_axis
-            {
-                return strided_axis(extent, 0);
-            }
-        );
-
-        std::ptrdiff_t stride = 1;
-        for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)
-        {
-            ite->set_stride(stride);
-            stride *= ite->get_extent();
-        }
-
-        result = strided_layout(implementation(std::move(axes), 0));
+        return strided_layout(); // Empty layout
     }
 
-    return result;
+    std::vector<strided_axis> axes;
+    axes.reserve(extents.size());
+    std::transform(
+        extents.begin(), extents.end(),
+        std::back_inserter(axes),
+        [] (std::size_t extent)
+        {
+            return strided_axis(extent, 0);
+        }
+    );
+
+    std::ptrdiff_t stride = 1;
+    for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)
+    {
+        ite->set_stride(stride);
+        stride *= ite->get_extent();
+    }
+
+    return strided_layout(implementation(std::move(axes), 0));
 }
 
 XMIPP4_NODISCARD

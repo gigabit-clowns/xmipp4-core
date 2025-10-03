@@ -71,6 +71,5 @@
     #endif
 
 #else
-    #pragma message ("Could not determine float byte ordering. Defaulting to system byte order")
     #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER
 #endif

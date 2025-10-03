@@ -578,17 +578,15 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {
+    if (subscripts.empty())
+    {
+        return *this; // No change
+    }
+
     if (m_implementation)
     {
-        if (subscripts.empty())
-        {
-            return *this;
-        }
-        else
-        {
-            const auto &impl = *m_implementation;
-            return strided_layout(impl.apply_subscripts(subscripts));
-        }
+        const auto &impl = *m_implementation;
+        return strided_layout(impl.apply_subscripts(subscripts));
     }
     else
     {
@@ -599,16 +597,14 @@ strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 XMIPP4_NODISCARD
 strided_layout strided_layout::transpose() const
 {
-    if (get_rank() > 1)
+    if (get_rank() <= 1)
     {   
-        XMIPP4_ASSERT( m_implementation );
-        const auto &impl = *m_implementation;
-        return strided_layout(impl.transpose());
-    }
-    else
-    {
         return *this; // Empty or single axis. Not modified.
     }
+
+    XMIPP4_ASSERT( m_implementation );
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.transpose());
 }
 
 XMIPP4_NODISCARD
@@ -630,15 +626,13 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
 {
-    if (m_implementation)
-    {
-        const auto &impl = *m_implementation;
-        return strided_layout(impl.swap_axes(axis1, axis2));
-    }
-    else
+    if (!m_implementation)
     {
         throw std::out_of_range("Cannot swap axes on an empty layout");
     }
+
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.swap_axes(axis1, axis2));
 }
 
 XMIPP4_NODISCARD
@@ -687,32 +681,30 @@ strided_layout strided_layout::make_contiguous_layout(
     span<const std::size_t> extents
 )
 {
-    strided_layout result;
-
-    if (!extents.empty())
+    if (extents.empty())
     {
-        std::vector<strided_axis> axes;
-        axes.reserve(extents.size());
-        std::transform(
-            extents.begin(), extents.end(),
-            std::back_inserter(axes),
-            [] (std::size_t extent)
-            {
-                return strided_axis(extent, 0);
-            }
-        );
-
-        std::ptrdiff_t stride = 1;
-        for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)
-        {
-            ite->set_stride(stride);
-            stride *= ite->get_extent();
-        }
-
-        result = strided_layout(implementation(std::move(axes), 0));
+        return strided_layout(); // Empty layout
     }
 
-    return result;
+    std::vector<strided_axis> axes;
+    axes.reserve(extents.size());
+    std::transform(
+        extents.begin(), extents.end(),
+        std::back_inserter(axes),
+        [] (std::size_t extent)
+        {
+            return strided_axis(extent, 0);
+        }
+    );
+
+    std::ptrdiff_t stride = 1;
+    for (auto ite = axes.rbegin(); ite != axes.rend(); ++ite)
+    {
+        ite->set_stride(stride);
+        stride *= ite->get_extent();
+    }
+
+    return strided_layout(implementation(std::move(axes), 0));
 }
 
 XMIPP4_NODISCARD

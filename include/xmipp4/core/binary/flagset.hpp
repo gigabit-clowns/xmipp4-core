@@ -192,6 +192,15 @@ public:
     XMIPP4_CONSTEXPR underlying_type get_bits() const noexcept;
 
     /**
+     * @brief Tests if the requested flag is set.
+     * 
+     * @param bit The flag to be tested.
+     * @return true If the bit is set.
+     * @return false If the bit is not set.
+     */
+    XMIPP4_CONSTEXPR bool contains(const bit_type& bit) const noexcept;
+
+    /**
      * @brief Checks if all of a set of flags are present in this
      * 
      * @param other The set of flags that needs to be present here
@@ -226,15 +235,6 @@ public:
      * @return false If any of the disallowed flags is present
      */
     XMIPP4_CONSTEXPR bool only_of(const flagset& other) const noexcept;
-
-    /**
-     * @brief Checks if a particular flag is present
-     * 
-     * @param bit The flag to be tested
-     * @return true if the flag is present
-     * @return false if the flag is absent
-     */
-    XMIPP4_CONSTEXPR bool test(bit_type bit) const noexcept;
 
     /**
      * @brief Counts the number of flags that are present

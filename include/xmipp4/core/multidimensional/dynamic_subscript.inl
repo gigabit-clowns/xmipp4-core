@@ -23,17 +23,15 @@ dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
 {
 }
 
-template <typename I, typename>
 XMIPP4_INLINE_CONSTEXPR
-dynamic_subscript::dynamic_subscript(I index) noexcept
+dynamic_subscript::dynamic_subscript(std::ptrdiff_t index) noexcept
     : m_data{index}
     , m_type(subscript_type::index)
 {
 }
 
-template <typename Start, typename Stop, typename Step>
 XMIPP4_INLINE_CONSTEXPR
-dynamic_subscript::dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept
+dynamic_subscript::dynamic_subscript(const slice &slice) noexcept
     : m_data{
         static_cast<std::ptrdiff_t>(slice.get_start()), 
         static_cast<std::ptrdiff_t>(slice.get_count()), 
@@ -57,20 +55,20 @@ std::ptrdiff_t dynamic_subscript::get_index() const
     {
         std::ostringstream oss;
         oss << "Cannot call get_index on a " << *this;
-        throw std::logic_error(oss.str());
+        throw bad_dynamic_subscript_access(oss.str());
     }
 
     return m_data[0];
 }
 
 inline
-dynamic_slice dynamic_subscript::get_slice() const
+slice dynamic_subscript::get_slice() const
 {
     if (m_type != subscript_type::slice)
     {
         std::ostringstream oss;
         oss << "Cannot call get_slice on a " << *this;
-        throw std::logic_error(oss.str());
+        throw bad_dynamic_subscript_access(oss.str());
     }
 
     return make_slice(m_data[0], m_data[1], m_data[2]);

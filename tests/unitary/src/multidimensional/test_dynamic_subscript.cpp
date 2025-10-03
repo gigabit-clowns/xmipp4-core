@@ -45,7 +45,7 @@ TEST_CASE("construct dynamic_subscript from constant index", "[dynamic_subscript
 TEST_CASE("calling get_index on a dynamic_subscript that holds another value should throw", "[dynamic_subscript]")
 {
     dynamic_subscript s(new_axis());
-    REQUIRE_THROWS_AS( s.get_index(), std::logic_error );
+    REQUIRE_THROWS_AS( s.get_index(), bad_dynamic_subscript_access );
     REQUIRE_THROWS_WITH( s.get_index(), "Cannot call get_index on a dynamic_subscript(new_axis_tag)" );
 }
 
@@ -86,7 +86,7 @@ TEST_CASE("copy-assign dynamic_subscript from slice", "[dynamic_subscript]")
 TEST_CASE("calling get_slice on a dynamic_subscript that holds another value should throw", "[dynamic_subscript]")
 {
     dynamic_subscript s(ellipsis());
-    REQUIRE_THROWS_AS( s.get_slice(), std::logic_error );
+    REQUIRE_THROWS_AS( s.get_slice(), bad_dynamic_subscript_access );
     REQUIRE_THROWS_WITH( s.get_slice(), "Cannot call get_slice on a dynamic_subscript(ellipsis_tag)" );
 }
 

@@ -10,11 +10,13 @@
 #include "slice.hpp"
 #include "index.hpp"
 #include "../platform/attributes.hpp"
+#include "../platform/cpp_explicit.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
+
 
 /**
  * @brief Class describing a runtime defined subscript.
@@ -23,7 +25,7 @@ namespace multidimensional
  * - ellipsis_tag
  * - new_axis_tag
  * - index (std::ptrdiff_t)
- * - slice (dynamic_slice)
+ * - slice (slice)
  * 
  */
 class dynamic_subscript
@@ -45,39 +47,33 @@ public:
      * @brief Construct a dynamic_subscript holding an ellipsis_tag.
      * 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(ellipsis_tag) noexcept;
 
     /**
      * @brief Construct a dynamic_subscript holding a new_axis_tag.
      * 
      */
-    XMIPP4_CONSTEXPR
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
     dynamic_subscript(new_axis_tag) noexcept;
 
     /**
      * @brief Construct a dynamic_subscript holding an index.
      * 
-     * @tparam I Index type. 
      * @param index The index that is assigned to this object.
 
      */
-    template <typename I, typename = typename std::enable_if<is_index<I>::value>::type>
-    XMIPP4_CONSTEXPR
-    dynamic_subscript(I index) noexcept;
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+    dynamic_subscript(std::ptrdiff_t index) noexcept;
 
     /**
      * @brief Construct a dynamic_subscript holding a slice.
      * 
-     * @tparam Start Type of the start value.
-     * @tparam Stop Type of the stop value.
-     * @tparam Step Type of the step value.
      * @param slice the slice that is assigned to this object.
      * 
      */
-    template <typename Start, typename Stop, typename Step>
-    XMIPP4_CONSTEXPR
-    dynamic_subscript(const slice<Start, Stop, Step> &slice) noexcept;
+    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+    dynamic_subscript(const slice &slice) noexcept;
 
     dynamic_subscript(const dynamic_subscript &other) = default;
     dynamic_subscript(dynamic_subscript &&other) = default;
@@ -101,7 +97,7 @@ public:
      * subscript_type::index. Otherwise an exception is thrown.
      * 
      * @return std::ptrdiff_t The index held by this object.
-     * @throws std::logic_error
+     * @throws bad_dynamic_subscript_access
      */
     std::ptrdiff_t get_index() const;
 
@@ -111,10 +107,10 @@ public:
      * This method shall only be called if get_subscript_type() returns
      * subscript_type::slice. Otherwise an exception is thrown.
      * 
-     * @return dynamic_slice The slice held by this object.
-     * @throws std::logic_error
+     * @return slice The slice held by this object.
+     * @throws bad_dynamic_subscript_access
      */
-    dynamic_slice get_slice() const;
+    slice get_slice() const;
 
 private:
     using storage_type = std::array<std::ptrdiff_t, 3>;
@@ -124,6 +120,13 @@ private:
 
 };
 
+class bad_dynamic_subscript_access
+    : public std::logic_error
+{
+public:
+    using std::logic_error::logic_error;
+
+};
 
 
 template <typename T>
@@ -140,7 +143,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os,
  * - ellipsis_tag
  * - new_axis_tag
  * - std::ptrdiff_t
- * - dynamic_slice
+ * - slice
  * 
  * @param subscript The subscript to be evaluated.
  * @return auto result of calling func with the evaluated argument.

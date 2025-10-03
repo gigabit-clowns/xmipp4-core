@@ -6,443 +6,265 @@
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
 #include <algorithm>
+#include <array>
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("construct a strided_layout from its components", "[strided_layout]")
+template <std::size_t N>
+static 
+strided_layout make_custom_layout(
+    const std::array<std::size_t, N> &extents,
+    const std::array<std::ptrdiff_t, N> &strides,
+    std::ptrdiff_t offset
+)
 {
-    const std::vector<strided_axis> axes = 
-    {
-        strided_axis(123, 135),
-        strided_axis(543, 432),
-        strided_axis(305, 543),
-        strided_axis(234, 432),
-    };
-    const std::size_t offset = 54634552;
-
-    const strided_layout layout(std::vector<strided_axis>(axes), offset);
-
-    REQUIRE( layout.get_offset() == offset );   
-    REQUIRE( layout.get_rank() == axes.size() );
-    
-    strided_axis axis;
-    for (std::size_t i = 0; i < axes.size(); ++i)
-    {
-        REQUIRE( layout.get_axis(i, axis) );
-        REQUIRE( axis.get_extent() == axes[i].get_extent() );
-        REQUIRE( axis.get_stride() == axes[i].get_stride() );
-    }
-}
-
-TEST_CASE("construct a strided_layout from its components as a pointer", "[strided_layout]")
-{
-    const std::vector<strided_axis> axes = 
-    {
-        strided_axis(123, 135),
-        strided_axis(543, 432),
-        strided_axis(305, 543),
-        strided_axis(234, 432),
-    };
-    const std::size_t offset = 54634552;
-
-    const strided_layout layout(axes.data(), axes.size(), offset);
-
-    REQUIRE( layout.get_offset() == offset );   
-    REQUIRE( layout.get_rank() == axes.size() );
-    
-    strided_axis axis;
-    for (std::size_t i = 0; i < axes.size(); ++i)
-    {
-        REQUIRE( layout.get_axis(i, axis) );
-        REQUIRE( axis.get_extent() == axes[i].get_extent() );
-        REQUIRE( axis.get_stride() == axes[i].get_stride() );
-    }
-}
-
-TEST_CASE("construct a column-major strided_layout from extents", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        16,
-        1,
-        5,
-        6
-    };
-    const std::size_t offset = 40;
-
-    const strided_layout layout(extents.data(), extents.size(), offset);
-
-    REQUIRE( layout.get_offset() == offset );   
-    REQUIRE( layout.get_rank() == extents.size() );
-    
-    const std::vector<std::ptrdiff_t> expected_strides = 
-    {
-        1*5*6,
-        5*6,
-        6,
-        1,
-    };
-
-    strided_axis axis;
-    for (std::size_t i = 0; i < extents.size(); ++i)
-    {
-        REQUIRE( layout.get_axis(i, axis) );
-        REQUIRE( axis.get_extent() == extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
-}
-
-TEST_CASE("construct a strided_layout from separate lists", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 7631;
-
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(), 
+    return strided_layout::make_custom_layout(
+        xmipp4::make_span(extents),
+        xmipp4::make_span(strides),
         offset
     );
+}
+
+static 
+strided_layout make_test_layout()
+{
+    const std::array<std::size_t, 6> extents = 
+    {
+        120, 
+        56, 
+        24, 
+        1, 
+        10, 
+        8
+    };
+    const std::array<std::ptrdiff_t, 6> strides = 
+    {       
+        860160,
+        7680,
+        320,
+        160,
+        16,
+        2
+    };
+    const auto offset = 20;
+
+    return make_custom_layout(extents, strides, offset);
+}
+
+
+
+TEST_CASE("make_contiguous_layout should create a strided_layout with the expected extents and strides", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const auto layout = strided_layout::make_contiguous_layout(
+        xmipp4::make_span(extents)
+    );
+
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        107520,
+        1920,
+        80,
+        80,
+        8,
+        1
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( layout.get_offset() == 0 );
+    REQUIRE( layout.get_rank() == extents.size() );
+}
+
+TEST_CASE("make_custom_layout should create a strided_layout with expected extents and strides", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        107520,
+        7680,
+        320,
+        160,
+        16,
+        2
+    };
+    const auto offset = 1234;
+    const auto layout = strided_layout::make_custom_layout(
+        xmipp4::make_span(extents),
+        xmipp4::make_span(strides),
+        offset
+    );
+
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    REQUIRE( obtained_strides == strides );
 
     REQUIRE( layout.get_offset() == offset );
     REQUIRE( layout.get_rank() == extents.size() );
+}
+
+TEST_CASE("make_custom_layout with inhomogeneous arrays should throw", "[strided_layout]")
+{
+    const std::vector<std::size_t> extents = {120, 56, 24, 1, 10, 8};
+    const std::vector<std::ptrdiff_t> strides = 
+    {
+        107520,
+        7680,
+        160,
+        16,
+        2
+    };
+    const auto offset = 1234;
     
-    strided_axis axis;
-    for (std::size_t i = 0; i < extents.size(); ++i)
-    {
-        REQUIRE( layout.get_axis(i, axis) );
-        REQUIRE( axis.get_extent() == extents[i] );
-        REQUIRE( axis.get_stride() == strides[i] );
-    }
-}
-
-TEST_CASE("get_axes in strided_layout should provide the correct contents", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
+    REQUIRE_THROWS_AS( 
+        strided_layout::make_custom_layout(
+            xmipp4::make_span(extents),
+            xmipp4::make_span(strides),
+            offset
+        ),
+        std::invalid_argument
     );
 
-    const auto count = layout.get_rank();
-    std::vector<std::size_t> read_extents(count);
-    std::vector<std::ptrdiff_t> read_strides(count);
-    const auto read = 
-        layout.get_axes(read_extents.data(), read_strides.data(), count);
-
-    REQUIRE( read == count );
-    REQUIRE( read_extents == extents );
-    REQUIRE( read_strides == strides );
-}
-
-TEST_CASE("get_axes in strided_layout should tolerate a null stride pointer", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
+    REQUIRE_THROWS_WITH( 
+        strided_layout::make_custom_layout(
+            xmipp4::make_span(extents),
+            xmipp4::make_span(strides),
+            offset
+        ),
+        "Extents and strides must have the same number of elements"
     );
-
-    const auto count = layout.get_rank();
-    std::vector<std::size_t> read_extents(count);
-    const auto read = 
-        layout.get_axes(read_extents.data(), nullptr, count);
-
-    REQUIRE( read == count );
-    REQUIRE( read_extents == extents );
 }
 
-TEST_CASE("get_axes in strided_layout should tolerate null extent pointer", "[strided_layout]")
+TEST_CASE("default constructed strided_layout should have no axes and an offset of zero", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
-    );
+    const strided_layout layout;
 
-    const auto count = layout.get_rank();
-    std::vector<std::ptrdiff_t> read_strides(count);
-    const auto read = 
-        layout.get_axes(nullptr, read_strides.data(), count);
+    std::vector<std::size_t> obtained_extents;
+    layout.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents;
+    REQUIRE( obtained_extents == expected_extents );
 
-    REQUIRE( read == count );
-    REQUIRE( read_strides == strides );
+    std::vector<std::ptrdiff_t> obtained_strides;
+    layout.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides;
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( layout.get_offset() == 0 );
+    REQUIRE( layout.get_rank() == 0 );
 }
 
-TEST_CASE("get_axes in strided_layout should not overflow the buffer", "[strided_layout]")
+TEST_CASE("compute_storage_requirement in strided_layout should return the correct size", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
-    );
-
-    const auto count = 2;
-    std::vector<std::size_t> read_extents(count);
-    std::vector<std::ptrdiff_t> read_strides(count);
-    const auto read = 
-        layout.get_axes(read_extents.data(), read_strides.data(), count);
-
-    REQUIRE( read == count );
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        REQUIRE(read_extents[i] == extents[i]);
-        REQUIRE(read_strides[i] == strides[i]);
-    }
+    const auto layout = make_test_layout();
+    const std::size_t expected_storage = 20 + 7*2 + 9*16 + 23*320 + 55*7680 + 119*860160 + 1;
+    REQUIRE( layout.compute_storage_requirement() == expected_storage );
 }
-
-TEST_CASE("get_axes axis in strided_layout should succeed for all valid indices", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
-    );
-
-    const auto count = layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        REQUIRE( layout.get_axis(i, axis) );
-        REQUIRE( axis.get_extent() == extents[i]);
-        REQUIRE( axis.get_stride() == strides[i]);
-    }
-}
-
-TEST_CASE("get_axes axis in strided_layout should fail for out of range indices", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size()
-    );
-
-    const auto count = layout.get_rank();
-    const strided_axis initial_axis(245, 2435);
-    auto axis = initial_axis;
-    for (std::size_t i = count; i < count+128; ++i)
-    {
-        REQUIRE( !layout.get_axis(i, axis) );
-        REQUIRE( axis == initial_axis );
-    }
-}
-
-TEST_CASE("compute_storage_requirement in strided_layout should return the last index + 1", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        32, 16, 12, 6
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        1, 32, 512, 8192
-    };
-    const auto offset = 20;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-
-    const auto expected_size = 31 + 15*32 + 11*512 + 5*8192 + offset + 1;
-    const auto size = layout.compute_storage_requirement();
-
-    REQUIRE( expected_size == size );
-}
-
 
 TEST_CASE("compute_storage_requirement in strided_layout should return 0 if there is a zero-sized axis", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
+    std::array<std::size_t, 6> extents = 
     {
-        32, 0, 12, 6
+        120, 
+        56, 
+        0, 
+        1, 
+        10, 
+        8
     };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        1, 32, 512, 8192
-    };
-    const auto offset = 20;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
+    const auto layout = strided_layout::make_contiguous_layout(
+        xmipp4::make_span(extents)
     );
 
-    const auto size = layout.compute_storage_requirement();
-
-    REQUIRE( size == 0 );
+    REQUIRE( layout.compute_storage_requirement() == 0 );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
-        0,
-        0
-    };
-
-    const auto subscripted_layout = layout.apply_subscripts(xmipp4::make_span(subscripts));
-
-    const std::vector<std::size_t> expected_extents = 
-    {
-        24,
-        1,
-        10,
-        8
-    };
-    const std::vector<std::ptrdiff_t> expected_strides = 
-    {
-        1*8*10*1,
-        1*8*10, 
-        1*8, 
         1
     };
 
-    REQUIRE( subscripted_layout.get_offset() == offset );
-    REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
 
-    const auto count = subscripted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
     {
-        subscripted_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == expected_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
+        56, 
+        24, 
+        1, 
+        10, 
+        8
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        7680,
+        320,
+        160,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( result.get_offset() == layout.get_offset() + 1*860160 );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes after an ellipsis", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         ellipsis(),
-        0,
-        0
-    };
-
-    const auto subscripted_layout = layout.apply_subscripts(xmipp4::make_span(subscripts));
-
-    const std::vector<std::size_t> expected_extents = 
-    {
-        120,
-        56,
-        24,
         1
     };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120, 
+        56, 
+        24, 
+        1, 
+        10
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        8*10*1*24*56,
-        8*10*1*24,
-        8*10*1,
-        8*10
+        860160,
+        7680,
+        320,
+        160,
+        16
     };
+    REQUIRE( obtained_strides == expected_strides );
 
-    REQUIRE( subscripted_layout.get_offset() == offset );
-    REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
-
-    const auto count = subscripted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        subscripted_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == expected_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
+    REQUIRE( result.get_offset() == layout.get_offset() + 1*2 );
 }
-
 
 TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should produce the expected result", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         odd(), // Selects half of the elements in the axis with 120 elements
@@ -455,56 +277,90 @@ TEST_CASE( "apply_subscripts in strided_layout with a complex subscript should p
         6 // Selects the 7th element in the 8 element axis
     };
 
-    const auto subscripted_layout = layout.apply_subscripts(xmipp4::make_span(subscripts));
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
 
+    std::vector<std::size_t> obtained_extents;
+    result.get_extents(obtained_extents);
     const std::vector<std::size_t> expected_extents = 
     {
-        60,
+        60, 
         1,
-        56,
-        24,
-        5,
+        56, 
+        24, 
+        5, 
         1,
         1
     };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    result.get_strides(obtained_strides);
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        56*24*1*10*8 * 2, // *2 because odd elements
-        0,       
-        8*10*1*24,
-        8*10*1,
-        8 * 2, // *2 because even
+        1720320,
+        0,
+        7680,
+        320,
+        32,
         0,
         0
     };
+    REQUIRE( obtained_strides == expected_strides );
 
-    const std::ptrdiff_t expected_offset = offset + 107520 + 6;
+    const std::ptrdiff_t expected_offset = 860192;
+    REQUIRE( result.get_offset() == expected_offset );
+}
 
-    REQUIRE( subscripted_layout.get_offset() == expected_offset );
-    REQUIRE( subscripted_layout.get_rank() == expected_extents.size() );
+TEST_CASE( "apply_subscripts with no subscripts in a default constructed layout should succeed", "[strided_layout]" )
+{
+    const strided_layout layout;
+    const std::vector<dynamic_subscript> subscripts;
 
-    const auto count = subscripted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    const strided_layout expected_layout;
+    REQUIRE( result == expected_layout );
+}
+
+TEST_CASE( "apply_subscripts with an ellipsis in a default constructed layout should succeed", "[strided_layout]" )
+{
+    const strided_layout layout;
+    const std::vector<dynamic_subscript> subscripts = 
     {
-        subscripted_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == expected_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
+        ellipsis(),
+    };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+
+    const strided_layout expected_layout;
+    REQUIRE( result == expected_layout );
+}
+
+TEST_CASE( "apply_subscripts with a new_axis in a default constructed layout should succeed", "[strided_layout]" )
+{
+    const strided_layout layout;
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        new_axis(),
+    };
+
+    const auto result = layout.apply_subscripts(xmipp4::make_span(subscripts));
+    
+    const std::array<std::size_t, 1> expected_extents = {1};
+    const std::array<std::ptrdiff_t, 1> expected_strides = {0};
+    const std::ptrdiff_t expected_offset = 0;
+    const auto expected_layout = make_custom_layout(
+        expected_extents,
+        expected_strides,
+        expected_offset
+    );
+
+    REQUIRE( result == expected_layout );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with two ellipsis should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         ellipsis(),
@@ -518,16 +374,7 @@ TEST_CASE( "apply_subscripts in strided_layout with two ellipsis should throw", 
 
 TEST_CASE( "apply_subscripts in strided_layout with too many subscripts should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         6,
@@ -540,21 +387,12 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts should t
     };
 
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "Not all subscripts were processed" );
+    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "An index subscript was encountered, but there are no more axes to process" );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with too many subscripts and ellipsis should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         6,
@@ -568,21 +406,12 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts and elli
     };
 
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "Not all subscripts were processed" );
+    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "A slice subscript was encountered, but there are no more axes to process" );
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with out of bounds index should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         120
@@ -593,16 +422,7 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds index should t
 
 TEST_CASE( "apply_subscripts in strided_layout with out of bounds index after ellipsis should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         ellipsis(),
@@ -614,16 +434,7 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds index after el
 
 TEST_CASE( "apply_subscripts in strided_layout with out of bounds slice should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         make_slice(121)
@@ -634,16 +445,7 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds slice should t
 
 TEST_CASE( "apply_subscripts in strided_layout with out of bounds slice after ellipsis should throw", "[strided_layout]" )
 {
-    const std::vector<std::size_t> extents = 
-    {
-        120, 56, 24, 1, 10, 8
-    };
-    const std::size_t offset = 16;
-    const strided_layout layout(
-        extents.data(),
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
     const std::vector<dynamic_subscript> subscripts = 
     {
         ellipsis(),
@@ -653,485 +455,272 @@ TEST_CASE( "apply_subscripts in strided_layout with out of bounds slice after el
     REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::out_of_range );
 }
 
+TEST_CASE( "apply_subscripts with an index in a default constructed layout should throw", "[strided_layout]" )
+{
+    const strided_layout layout;
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        0
+    };
+
+    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "An index subscript was encountered, but there are no more axes to process" );
+}
+
+TEST_CASE( "apply_subscripts with an slice in a default constructed layout should throw", "[strided_layout]" )
+{
+    const strided_layout layout;
+    const std::vector<dynamic_subscript> subscripts = 
+    {
+        make_slice(1)
+    };
+
+    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "A slice subscript was encountered, but there are no more axes to process" );
+}
+
 TEST_CASE("transpose in strided_layout should reverse the order of its axes", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
+    const auto transposed = layout.transpose();
 
-    const auto transposed_layout = layout.transpose();
+    std::vector<std::size_t> obtained_extents;
+    transposed.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = {8, 10, 1, 24, 56, 120};
+    REQUIRE( obtained_extents == expected_extents );
 
-    REQUIRE( transposed_layout.get_rank() == layout.get_rank() );
-    REQUIRE( transposed_layout.get_offset() == layout.get_offset() );
+    std::vector<std::ptrdiff_t> obtained_strides;
+    transposed.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = {2, 16, 160, 320, 7680, 860160};
+    REQUIRE( obtained_strides == expected_strides );
 
-    const auto count = transposed_layout.get_rank();
-    std::vector<std::size_t> read_extents(count);
-    std::vector<std::ptrdiff_t> read_strides(count);
-    transposed_layout.get_axes(read_extents.data(), read_strides.data(), count);
-
-    REQUIRE( std::equal(extents.cbegin(), extents.cend(), read_extents.crbegin()) );
-    REQUIRE( std::equal(strides.cbegin(), strides.cend(), read_strides.crbegin()) );
+    REQUIRE( transposed.get_offset() == layout.get_offset() );
 }
 
-TEST_CASE("permute in strided_layout should correctly alter the order of the axes", "[strided_layout]")
+TEST_CASE("transpose in a default constructed strided_layout should return another empty layout ", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> permutation = 
-    {
-        0, 3, 2, 1
-    };
+    const strided_layout layout;
 
-    const auto permuted_layout = layout.permute(xmipp4::make_span(permutation));
+    const auto transposed = layout.transpose();
 
-    REQUIRE( permuted_layout.get_rank() == layout.get_rank() );
-    REQUIRE( permuted_layout.get_offset() == layout.get_offset() );
-
-    const auto count = permuted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        permuted_layout.get_axis(i, axis);
-        const auto index = permutation[i];
-        REQUIRE( axis.get_extent() == extents[index] );
-        REQUIRE( axis.get_stride() == strides[index] );
-    }
+    const strided_layout expected_layout;
+    REQUIRE( transposed == expected_layout );
 }
 
-TEST_CASE("permute in strided_layout should throw with an invalid permutation", "[strided_layout]")
+TEST_CASE("permute in strided_layout with valid permutation should correctly alter the order of the axes", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> permutation = {0, 3, 1, 2, 4, 5};
+    const auto permuted = layout.permute(xmipp4::make_span(permutation));
+
+    std::vector<std::size_t> obtained_extents;
+    permuted.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
     {
-        123, 563, 1234, 245
+        120,
+        1,
+        56,
+        24, 
+        10, 
+        8
     };
-    const std::vector<std::ptrdiff_t> strides = 
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    permuted.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        23, 63, 12434, 532
+        860160,
+        160,
+        7680,
+        320,
+        16,
+        2
     };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> permutation = 
-    {
-        0, 3, 4, 1
-    };
+    REQUIRE( obtained_strides == expected_strides );
+ 
+    REQUIRE( permuted.get_offset() == layout.get_offset() );
+}
+
+TEST_CASE("permute in strided_layout with valid permutation should throw if not provided with a correct permutation", "[strided_layout]")
+{
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> permutation = {0, 1, 2, 3, 4, 4};
 
     REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Index 5 is missing in the axis permutation" );
+}
+
+TEST_CASE("permute in a default constructed strided_layout and empty permutation should succeed and return empty permutation", "[strided_layout]")
+{
+    const strided_layout layout;
+    const std::vector<std::size_t> permutation;
+
+    const auto permuted = layout.permute(xmipp4::make_span(permutation));
+
+    const strided_layout expected_layout;
+    REQUIRE( permuted == expected_layout );
+}
+
+TEST_CASE("permute in a default constructed strided_layout and non-empty permutation should throw", "[strided_layout]")
+{
+    const strided_layout layout;
+    const std::vector<std::size_t> permutation = {0};
+
+    REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Axis permutation's length does not match the required count" );
 }
 
 TEST_CASE("swap_axes in strided_layout should swap the requested axes", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
+    const auto swapped = layout.swap_axes(1, 2);
 
-    const auto swapped_layout = layout.swap_axes(0, 2);
-
-    REQUIRE( swapped_layout.get_rank() == layout.get_rank() );
-    REQUIRE( swapped_layout.get_offset() == layout.get_offset() );
-
-    const std::vector<std::size_t> equivalent_permutation = 
+    std::vector<std::size_t> obtained_extents;
+    swapped.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
     {
-        2, 1, 0, 3
+        120, 
+        24, 
+        56, 
+        1, 
+        10, 
+        8
     };
-    const auto count = swapped_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    swapped.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        swapped_layout.get_axis(i, axis);
-        const auto index = equivalent_permutation[i];
-        REQUIRE( axis.get_extent() == extents[index] );
-        REQUIRE( axis.get_stride() == strides[index] );
-    }
+        
+        860160,
+        320,
+        7680,
+        160,
+        16,
+        2
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( swapped.get_offset() == layout.get_offset() );
 }
 
 TEST_CASE("swap_axes in strided_layout should throw when one of the axes is out of bounds", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
 
-    REQUIRE_THROWS_AS( layout.swap_axes(4, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(4, 0), "axis1 exceeds bounds" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 4), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 4), "axis2 exceeds bounds" );
+    REQUIRE_THROWS_AS( layout.swap_axes(6, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 6), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
 }
+
+TEST_CASE("swap_axes in default constructed strided_layout should always fail", "[strided_layout]")
+{
+    const strided_layout layout;
+
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(0, 0), "Cannot swap axes on an empty layout" );
+    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.swap_axes(0, 1), "Cannot swap axes on an empty layout" );
+}
+
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 1, 563, 1234, 1, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 6, 63, 12434, 8, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
+    const auto layout = make_test_layout();
+    const auto squeezed = layout.squeeze();
 
-    const auto squeezed_layout = layout.squeeze();
-
-    REQUIRE( squeezed_layout.get_rank() == 4 );
-    REQUIRE( squeezed_layout.get_offset() == layout.get_offset() );
-
+    std::vector<std::size_t> obtained_extents;
+    squeezed.get_extents(obtained_extents);
     const std::vector<std::size_t> expected_extents = 
     {
-        123, 563, 1234, 245
+        120, 
+        56, 
+        24, 
+        10, 
+        8
     };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    squeezed.get_strides(obtained_strides);
     const std::vector<std::ptrdiff_t> expected_strides = 
     {
-        23, 63, 12434, 532
-    };
-
-    const auto count = squeezed_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        squeezed_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == expected_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
-}
-
-TEST_CASE("broadcast_extents_to_layout in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-
-    std::vector<std::size_t> broadcast_extents =
-    {
-        1, 245
-    };
-
-    layout.broadcast_extents_to_layout(broadcast_extents);
-    REQUIRE( broadcast_extents == extents );
-}
-TEST_CASE("broadcast_extents_to_layout in strided_layout should fill in the left and promote axes with extent 1, leaving trailing dimensions out", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245, 543, 453
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532, 343, 355
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-
-    std::vector<std::size_t> broadcast_extents =
-    {
-        1, 245
-    };
-
-    const auto trailing_dimensions = 2;
-    layout.broadcast_extents_to_layout(broadcast_extents, trailing_dimensions);
-
-    const std::vector<std::size_t> expected_extents = 
-    {
-        123, 563, 1234, 245
-    };
-    REQUIRE( broadcast_extents == expected_extents );
-}
-
-TEST_CASE("broadcast_extents_to_layout in strided_layout should throw when the provided extents have more axes than the layout", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-
-    std::vector<std::size_t> broadcast_extents =
-    {
-        7, 123, 563, 1234, 245
-    };
-
-    REQUIRE_THROWS_AS( layout.broadcast_extents_to_layout(broadcast_extents), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_extents_to_layout(broadcast_extents), "Can not broadcast shape with 5 axes into a layout of 4 axes with 0 trailing dimensions" );
-}
-
-TEST_CASE("broadcast_extents_to_layout in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-
-    std::vector<std::size_t> broadcast_extents =
-    {
+        860160,
+        7680,
+        320,
+        16,
         2
     };
+    REQUIRE( obtained_strides == expected_strides );
 
-    REQUIRE_THROWS_AS( layout.broadcast_extents_to_layout(broadcast_extents), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_extents_to_layout(broadcast_extents), "Can not broadcast extent 2 into an axis of extent 245" );
+    REQUIRE( squeezed.get_offset() == 20 );
 }
 
-TEST_CASE("broadcast_extents_to_layout in strided_layout should throw if requesting too many trailing axes", "[strided_layout]")
+TEST_CASE("squeeze in default constructed strided_layout should return an empty layout", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
+    const strided_layout layout;
+    const auto squeezed = layout.squeeze();
 
-    std::vector<std::size_t> broadcast_extents =
+    const strided_layout expected_layout;
+    REQUIRE( squeezed == expected_layout );
+}
+
+TEST_CASE("broadcast_to in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
+{
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = 
     {
+        16,
+        40,
+        120, 
+        56, 
+        24, 
+        9, 
+        10, 
+        8
+    };
+
+    const auto broadcasted = layout.broadcast_to(xmipp4::make_span(target_extents));
+
+    std::vector<std::size_t> obtained_extents;
+    broadcasted.get_extents(obtained_extents);
+    REQUIRE( obtained_extents == target_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    broadcasted.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        0,
+        0,
+        860160,
+        7680,
+        320,
+        0,
+        16,
         2
     };
+    REQUIRE( obtained_strides == expected_strides );
 
-    REQUIRE_THROWS_AS( layout.broadcast_extents_to_layout(broadcast_extents, 5), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_extents_to_layout(broadcast_extents, 5), "Requesting more trailing dimensions than axes in the layout" );
+    REQUIRE( broadcasted.get_offset() == 20 );
 }
 
-TEST_CASE("broadcast_layout_to_extents in strided_layout should fill in the left and promote axes with extent 1", "[strided_layout]")
+TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 1,  1, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        3, 23, 63, 12434
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> target_extents =
-    {
-        9, 7, 123, 5, 8, 245
-    };
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = {56, 24, 1, 10, 8};
 
-    const auto broadcasted_layout = layout.broadcast_layout_to_extents(xmipp4::make_span(target_extents));
-
-    REQUIRE( broadcasted_layout.get_rank() == target_extents.size() );
-    REQUIRE( broadcasted_layout.get_offset() == layout.get_offset() );
-
-    const std::vector<std::size_t> expected_strides =
-    {
-        0, 0, 3, 0, 0, 12434
-    };
-
-    const auto count = broadcasted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        broadcasted_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == target_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
+    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast layout with 6 axes into a shape of 5 dimensions." );
 }
 
-TEST_CASE("broadcast_layout_to_extents in strided_layout should fill in the left and promote axes with extent 1 while passing through trailing dimensions", "[strided_layout]")
+TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
 {
-    const std::vector<std::size_t> extents = 
-    {
-        123, 1,  1, 245, 234, 123
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        3, 23, 63, 12434, 322, 342
-    };
-    const std::size_t offset = 7533;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> target_extents =
-    {
-        9, 7, 123, 5, 8, 245
-    };
+    const auto layout = make_test_layout();
+    const std::vector<std::size_t> target_extents = {120, 55, 24, 1, 10, 8};
 
-    const auto trailing_dimensions = 2;
-    const auto broadcasted_layout = layout.broadcast_layout_to_extents(
-        xmipp4::make_span(target_extents),
-        trailing_dimensions
-    );
-
-    REQUIRE( broadcasted_layout.get_rank() == target_extents.size() + trailing_dimensions );
-    REQUIRE( broadcasted_layout.get_offset() == layout.get_offset() );
-
-    const std::vector<std::size_t> expected_extents =
-    {
-        9, 7, 123, 5, 8, 245, 234, 123
-    };
-    const std::vector<std::size_t> expected_strides =
-    {
-        0, 0, 3, 0, 0, 12434, 322, 342
-    };
-
-    const auto count = broadcasted_layout.get_rank();
-    strided_axis axis;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-        broadcasted_layout.get_axis(i, axis);
-        REQUIRE( axis.get_extent() == expected_extents[i] );
-        REQUIRE( axis.get_stride() == expected_strides[i] );
-    }
-}
-
-TEST_CASE("broadcast_layout_to_extents in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 1,  1, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        3, 23, 63, 12434
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> target_extents =
-    {
-        8, 245
-    };
-
-    REQUIRE_THROWS_AS( layout.broadcast_layout_to_extents(xmipp4::make_span(target_extents), 1), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_layout_to_extents(xmipp4::make_span(target_extents), 1), "Can not broadcast layout with 4 axes into a shape of 2 axes and 1 trailing dimensions." );
-}
-
-TEST_CASE("broadcast_layout_to_extents in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
-{
-    const std::vector<std::size_t> extents = 
-    {
-        123, 563, 1234, 245
-    };
-    const std::vector<std::ptrdiff_t> strides = 
-    {
-        23, 63, 12434, 532
-    };
-    const std::size_t offset = 47683;
-    const strided_layout layout(
-        extents.data(),
-        strides.data(), 
-        extents.size(),
-        offset
-    );
-    const std::vector<std::size_t> target_extents =
-    {
-        2, 563, 1234, 245
-    };
-
-    REQUIRE_THROWS_AS( layout.broadcast_layout_to_extents(xmipp4::make_span(target_extents)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_layout_to_extents(xmipp4::make_span(target_extents)), "Can not broadcast axis of extent 123 into an extent of 2." );
+    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
+    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast axis of extent 56 into an extent of 55." );
 }

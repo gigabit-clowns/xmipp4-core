@@ -112,6 +112,13 @@ flagset<B>::get_bits() const noexcept
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR bool 
+flagset<B>::contains(const bit_type& bit) const noexcept
+{
+    return any_of(flagset(bit));
+}
+
+template<typename B>
+XMIPP4_INLINE_CONSTEXPR bool 
 flagset<B>::all_of(const flagset& other) const noexcept
 {
     return (*this & other) == other;
@@ -136,13 +143,6 @@ XMIPP4_INLINE_CONSTEXPR bool
 flagset<B>::only_of(const flagset& other) const noexcept
 {
     return other.all_of(*this);
-}
-
-template<typename B>
-XMIPP4_INLINE_CONSTEXPR bool 
-flagset<B>::test(bit_type bit) const noexcept
-{
-    return any_of(flagset(bit));
 }
 
 template<typename B>

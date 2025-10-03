@@ -2,33 +2,31 @@
 
 #pragma once
 
+#include "../span.hpp"
+
 #include <vector>
-#include <tuple>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
+class strided_layout;
+
 /**
- * @brief Function to broadcast multiple layouts/arrays into a common
- * shape.
+ * @brief Perform a broadcast operation between two sets of extents.
  * 
- * @tparam Broadcastables Broadastable types. These types must implement
- * broadcast_extents_to_layout and broadcast_layout_to_extents methods.
- * @param extents Input/output extents. The contents of extents participate
- * in the broadcasting operation. Leave it empty to avoid this. The resulting
- * consensus shape will be stored in this variable.
- * @param items Items to be broadcasted.
- * @return std::tuple<Broadcastables...> Broadcasted items. When successful,
- * all of the returned items will have the same shape as the values
- * written in extents.
+ * This operation pads the smallest set of extents with ones at the beginning. 
+ * Then, both sets are iterated jointly. If both elements are equal, none of
+ * them is modified. If unequal but one of them is 1, it is replaced by the
+ * other. Otherwise an exception is thrown.
+ * 
+ * @param extents1 The first set of extents.
+ * @param extents2 The second set of extents.
+ * @throws std::broadcast_error when one of of the extents cannot be broadcasted.
  */
-template <typename... Broadcastables>
-std::tuple<Broadcastables...> broadcast(std::vector<std::size_t> &extents,
-                                        const Broadcastables&... items );
+void broadcast_extents(std::vector<std::size_t> &extents1, 
+                       std::vector<std::size_t> &extents2 );  
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "broadcast.inl"

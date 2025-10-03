@@ -2,120 +2,54 @@
 
 #pragma once
 
-#include <vector>
-#include <cstddef>
-
-#include "strided_axis.hpp"
 #include "dynamic_subscript.hpp"
+#include "../numerical_type.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
+
+#include <memory>
+#include <cstddef>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
-/**
- * @brief Class describing element layout on a multidimensional array
- * 
- */
 class strided_layout
 {
 public:
-    strided_layout() = default;
+    strided_layout() noexcept;
+    strided_layout(const strided_layout &other) noexcept;
+    strided_layout(strided_layout &&other) noexcept;
+    ~strided_layout();
+
+    strided_layout& operator=(const strided_layout &other) noexcept;
+    strided_layout& operator=(strided_layout &&other) noexcept;
+
+    bool operator==(const strided_layout &other) const noexcept;
+    bool operator!=(const strided_layout &other) const noexcept;
 
     /**
-     * @brief Construct a dynamic layout from its components.
+     * @brief Get the number of axis in the layout
      * 
-     * @param axes Axes used in the dynamic layout
-     * @param offset Offset used in the dynamic layout
-     */
-    strided_layout(std::vector<strided_axis> &&axes,
-                   std::ptrdiff_t offset ) noexcept;
-
-    /**
-     * @brief Construct a new column-major dynamic layout.
-     * 
-     * @param extents Array with the extents of the layout. The first rank
-     * elements must be dereferenceable.
-     * @param rank Number of elements in the arrays.
-     * @param offset Offset of the layout. Defaults to zero.
-     * 
-     */
-    strided_layout(const std::size_t *extents, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset = 0 );
-    /**
-     * @brief Construct a new dynamic layout from its components.
-     * 
-     * @param extents Array with the extents of the layout. The first rank
-     * elements must be dereferenceable.
-     * @param strides Array with the strides of the layout. The first rank
-     * elements must be dereferenceable.
-     * @param rank Number of elements in the arrays.
-     * @param offset Offset of the layout. Defaults to zero.
-     * 
-     */
-    strided_layout(const std::size_t *extents, 
-                   const std::ptrdiff_t *strides, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset = 0 );
-
-    /**
-     * @brief Construct a new dynamic layout from a list of axes.
-     * 
-     * @param axes Array with axis descriptors.
-     * @param rank Number of elements in the array.
-     * @param offset Offset of the layout. Defaults to zero.
-     * 
-     */
-    strided_layout(const strided_axis *axes, 
-                   std::size_t rank,
-                   std::ptrdiff_t offset = 0 );
-
-    strided_layout(const strided_layout &other) = default;
-    strided_layout(strided_layout &&other) = default;
-    ~strided_layout() = default;
-
-    strided_layout& operator=(const strided_layout &other) = default;
-    strided_layout& operator=(strided_layout &&other) = default;
-
-    /**
-     * @brief Get the rank of the layout.
-     * 
-     * The rank of a layout is the number of dimensions.
-     * 
-     * @return std::size_t The rank.
-     * 
+     * @return std::size_t 
      */
     XMIPP4_NODISCARD
     std::size_t get_rank() const noexcept;
 
     /**
-     * @brief Get the axis parameters component wise.
+     * @brief Get the extents of the layout.
      * 
-     * @param extents Array of std::size_t-s. May be null. In case it is not, it
-     * must be dereferenceable in [extents, extents+count).
-     * @param strides Array of std::ptrdiff_t-s. May be null. In case it is not, 
-     * it must be dereferenceable in [strides, strides+count).
-     * @param count Element counts of the arrays.
-     * @return std::size_t Number of elements written; min(rank, count).
-     * 
+     * @param extents Output parameter where the extents are written.
      */
-    std::size_t get_axes(std::size_t *extents, 
-                         std::ptrdiff_t *strides,
-                         std::size_t count ) const noexcept;
+    void get_extents(std::vector<std::size_t> &extents) const;
 
     /**
-     * @brief Get the axis parameters for one of the axes.
+     * @brief Get the strides of the layout.
      * 
-     * @param index Index of the axis.
-     * @param out Axis descriptor where the requested axis is written.
-     * @return true Index is valid and axis descriptor was written.
-     * @return false Index is out of bounds and the output was not written.
-     * 
+     * @param extents Output parameter where the strides are written.
      */
-    bool get_axis(std::size_t index, strided_axis &out) const noexcept;
+    void get_strides(std::vector<std::ptrdiff_t> &strides) const;
 
     /**
      * @brief Get the offset of the layout.
@@ -132,6 +66,15 @@ public:
      */
     XMIPP4_NODISCARD
     std::size_t compute_storage_requirement() const noexcept;
+
+    /**
+     * @brief Computes the number of elements referenced by te layout.
+     * 
+     * @return std::size_t Number of elements.
+     */
+    XMIPP4_NODISCARD
+    std::size_t compute_element_count() const noexcept;
+
 
 
     /**
@@ -172,10 +115,10 @@ public:
      * @param axis1 Index of the first axis. Must be in [0, rank).
      * @param axis2 Index of the second axis. Must be in [0, rank).
      * @return strided_layout Permuted layout.
-     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
+     * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
-    strided_layout swap_axes(std::size_t axis1, std::size_t axis2) const;
+    strided_layout swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const;
 
     /**
      * @brief Remove insignificant axes of the layout.
@@ -186,66 +129,50 @@ public:
     strided_layout squeeze() const;
 
     /**
-     * @brief Broadcast a shape to match this layout.
-     * 
-     * This function modifies the provided extents to match this layout upto
-     * the last trailing_dimensions. The last trailing dimensions are not 
-     * considered in the algorithm. This is useful to broadcast batch dimensions
-     * while keeping trailing dimensions.
-     * 
-     * @param extents Extents to be broadcasted. Input/output parameter.
-     * @param trailing_dimensions Number of dimensions at the end left 
-     * untouched. Must be greater or equal to rank. Defaults to zero.
-     * @throws std::invalid_argument If the extents has more axes than this
-     * layout.
-     * @throws std::invalid_argument If the extent can not be broadcasted to 
-     * this layout.
-     */
-    void broadcast_extents_to_layout(std::vector<std::size_t> &extents,
-                                     std::size_t trailing_dimensions = 0) const;
-
-    /**
      * @brief Perform a broadcast of the layout to match the provided extents.
      * 
      * This function modifies the layout to match the provided extents by 
      * adding phantom axes or adjusting existing axes as needed upto the last 
-     * trailing_dimensions. The last trailing dimensions from this layout are 
-     * not considered in the algorithm and they are passed-through to the 
-     * result. This is useful to broadcast batch dimensions while keeping
-     * trailing dimensions.
+     * trailing_dimensions. 
      * 
      * @param extents Extents to broadcast to.
-     * @param trailing_dimensions Number of dimensions at the end left 
      * untouched. Must be greater or equal to rank. Defaults to zero.
      * @return strided_layout The resulting broadcasted layout.
      * @throws std::invalid_argument If the layout has more axes than extents.
      * @throws std::invalid_argument If the axes cannot be broadcasted to the 
      * provided extents.
      */
-    strided_layout 
-    broadcast_layout_to_extents(span<const std::size_t> extents,
-                                std::size_t trailing_dimensions = 0 ) const;
+    XMIPP4_NODISCARD
+    strided_layout broadcast_to(span<const std::size_t> extents) const;
+
+    /**
+     * @brief Create a contiguous layout from the provided extents.
+     * 
+     * @param extents Extents of the layout.
+     * @return strided_layout The resulting layout.
+     */
+    XMIPP4_NODISCARD
+    static
+    strided_layout make_contiguous_layout(span<const std::size_t> extents);
+
+    XMIPP4_NODISCARD
+    static
+    strided_layout make_custom_layout(
+        span<const std::size_t> extents, 
+        span<const std::ptrdiff_t> strides, 
+        std::ptrdiff_t offset = 0
+    );
 
 private:
-    std::vector<strided_axis> m_axes;
-    std::ptrdiff_t m_offset;
+    class implementation;
+    std::shared_ptr<const implementation> m_implementation; // Copy-on-write
 
-    class apply_subscripts_helper;
-
-};
-
-
-
-template <typename T>
-struct layout_traits;
-
-template <>
-struct layout_traits<strided_layout>
-{
+    explicit 
+    strided_layout(std::shared_ptr<const implementation> impl) noexcept;
+    explicit 
+    strided_layout(implementation &&impl);
 
 };
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-#include "strided_layout.inl"

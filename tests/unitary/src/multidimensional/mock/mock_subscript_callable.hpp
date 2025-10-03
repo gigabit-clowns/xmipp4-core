@@ -18,7 +18,7 @@ public:
     MAKE_MOCK1(function_call, void(ellipsis_tag), const);
     MAKE_MOCK1(function_call, void(new_axis_tag), const);
     MAKE_MOCK1(function_call, void(std::ptrdiff_t), const);
-    MAKE_MOCK1(function_call, void(dynamic_slice), const);
+    MAKE_MOCK1(function_call, void(slice), const);
 
     template <typename T>
     void operator()(T &&arg) const

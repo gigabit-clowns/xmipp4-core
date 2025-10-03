@@ -2,8 +2,8 @@
 
 #include "strided_axis.hpp"
 
-#include "index.hpp"
-#include "../math/abs.hpp"
+#include <xmipp4/core/multidimensional/index.hpp>
+#include <xmipp4/core/math/abs.hpp>
 
 namespace xmipp4
 {
@@ -198,7 +198,7 @@ bool broadcast(strided_axis &axis1, strided_axis &axis2) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool broadcast_axis_to_extent(strided_axis &axis, std::size_t extent) noexcept
+bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept
 {
     bool result = true;
 
@@ -208,28 +208,6 @@ bool broadcast_axis_to_extent(strided_axis &axis, std::size_t extent) noexcept
         if(axis_extent == 1)
         {
             axis = make_phantom_axis(extent);
-        }
-        else
-        {
-            result = false; // Unable to broadcast
-        }
-    }
-
-    return result;
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool broadcast_extent_to_axis(std::size_t &extent,
-                              const strided_axis &axis) noexcept
-{
-    bool result = true;
-
-    const auto axis_extent = axis.get_extent();
-    if(axis_extent != extent)
-    {
-        if(extent == 1)
-        {
-            extent = axis_extent;
         }
         else
         {
@@ -269,7 +247,7 @@ namespace detail
 XMIPP4_INLINE_CONSTEXPR
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
-                 const slice<std::size_t, std::size_t, std::ptrdiff_t> &slice) noexcept
+                 const slice &slice) noexcept
 {
     const auto start = slice.get_start();
     const auto count = slice.get_count();
@@ -288,7 +266,7 @@ void apply_slice(strided_axis &axis,
 inline
 void apply_slice(strided_axis &axis,
                  std::ptrdiff_t &offset,
-                 const dynamic_slice &slice)
+                 const slice &slice)
 {
     const auto sanitized_slice = sanitize_slice(slice, axis.get_extent());
     detail::apply_slice(axis, offset, sanitized_slice);

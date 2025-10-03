@@ -64,23 +64,6 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag);
 XMIPP4_CONSTEXPR
 new_axis_tag new_axis() noexcept;
 
-
-
-template <typename T>
-class subscript_traits;
-
-template <>
-class subscript_traits<ellipsis_tag>
-{
-
-};
-
-template <>
-class subscript_traits<new_axis_tag>
-{
-
-};
-
 } // namespace multidimensional
 } // namespace xmipp4
 

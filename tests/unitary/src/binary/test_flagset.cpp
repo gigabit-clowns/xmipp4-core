@@ -48,7 +48,7 @@ TEST_CASE( "flagset empty constructor should not have any flags", "[flagset]" )
         })
     );
         
-    REQUIRE(flags.test(flag) == expected_result );
+    REQUIRE(flags.contains(flag) == expected_result );
 }
 
 TEST_CASE( "flagset constructor from a bit should not have the provided bit", "[flagset]" ) 
@@ -68,7 +68,7 @@ TEST_CASE( "flagset constructor from a bit should not have the provided bit", "[
         })
     );
         
-    REQUIRE(flags.test(flag) == expected_result );
+    REQUIRE(flags.contains(flag) == expected_result );
 }
 
 
@@ -89,7 +89,7 @@ TEST_CASE( "flagset constructor from raw should not have the provided bits", "[f
         })
     );
 
-    REQUIRE(flags.test(flag) == expected_result );
+    REQUIRE(flags.contains(flag) == expected_result );
 }
 
 TEST_CASE( "flagset constructor from initializer should not have the provided bits", "[flagset]" ) 
@@ -114,7 +114,7 @@ TEST_CASE( "flagset constructor from initializer should not have the provided bi
         })
     );
 
-    REQUIRE(flags.test(flag) == expected_result );
+    REQUIRE(flags.contains(flag) == expected_result );
 }
 
 TEST_CASE("flagset bool cast", "[flagset]") 
@@ -138,6 +138,21 @@ TEST_CASE("flagset raw cast", "[flagset]")
         test_int32_flag_bits::z,
     };
     REQUIRE(static_cast<int32_t>(flags) == 0x60000002);
+}
+
+TEST_CASE("flagset contains", "[flagset]") 
+{
+    test_int32_flags flags = {
+        test_int32_flag_bits::b,
+        test_int32_flag_bits::y,
+        test_int32_flag_bits::z,
+    };
+    REQUIRE(flags.contains(test_int32_flag_bits::a) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::b) == true);
+    REQUIRE(flags.contains(test_int32_flag_bits::c) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::x) == false);
+    REQUIRE(flags.contains(test_int32_flag_bits::y) == true);
+    REQUIRE(flags.contains(test_int32_flag_bits::z) == true);
 }
 
 TEST_CASE("flagset all_of", "[flagset]") 
@@ -183,17 +198,6 @@ TEST_CASE("flagset only_of", "[flagset]")
     REQUIRE(flags.only_of({test_int32_flag_bits::b, test_int32_flag_bits::y, test_int32_flag_bits::z}) == true);
     REQUIRE(flags.only_of({test_int32_flag_bits::b, test_int32_flag_bits::y, test_int32_flag_bits::z, test_int32_flag_bits::x }) == true);
     REQUIRE(flags.only_of({test_int32_flag_bits::a, test_int32_flag_bits::z}) == false);
-}
-
-TEST_CASE("flagset test", "[flagset]") 
-{
-    test_int32_flags flags = {
-        test_int32_flag_bits::b,
-        test_int32_flag_bits::y,
-        test_int32_flag_bits::z,
-    };
-    REQUIRE(flags.test(test_int32_flag_bits::b) == true);
-    REQUIRE(flags.test(test_int32_flag_bits::c) == false);
 }
 
 TEST_CASE("flagset count and parity", "[flagset]") 

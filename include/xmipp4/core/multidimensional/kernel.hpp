@@ -11,6 +11,7 @@ namespace multidimensional
 
 class storage;
 class context;
+class kernel_access_layout;
 
 class kernel
 {

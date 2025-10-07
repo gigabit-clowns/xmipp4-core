@@ -161,10 +161,32 @@ public:
      * @param axis2 Index of the second axis. Must be in [-rank, rank).
      * Negative values indicate axes begining from the end.
      * @return array Permuted array.
-     * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
+     * @throws std::out_of_bounds If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
-    array matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2);
+    array matrix_transpose(
+        std::ptrdiff_t axis1 = -2, 
+        std::ptrdiff_t axis2 = -1
+    );
+    
+    /**
+     * @brief Obtain a view of the matrix diagonal defined by the provided
+     * two axes.
+     * 
+     * @param axis1 Index of the first axis. Must be in [-rank, rank).
+     * Negative values indicate axes begining from the end.
+     * @param axis2 Index of the second axis. Must be in [-rank, rank).
+     * Negative values indicate axes begining from the end. Can not semantically
+     * equal axis1.
+     * @return array A view to the diagonal.
+     * @throws std::out_of_bounds If either axis1 or axis2 exceeds bounds.
+     * @throws std::invalid_argument if axis1 equals axis2
+     */
+    XMIPP4_NODISCARD
+    array matrix_diagonal(
+        std::ptrdiff_t axis1 = -2, 
+        std::ptrdiff_t axis2 = -1
+    );
 
     /**
      * @brief Remove insignificant axes from the layout.

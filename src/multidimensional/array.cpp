@@ -90,6 +90,15 @@ public:
         );
     }
 
+    implementation matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
+    {
+        return implementation(
+            get_layout().matrix_diagonal(axis1, axis2),
+            share_storage(),
+            get_data_type()
+        );
+    }
+
     implementation squeeze()
     {
         return implementation(
@@ -263,6 +272,19 @@ array array::matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
     else
     {
         return array(implementation().matrix_transpose(axis1, axis2));
+    }
+}
+
+XMIPP4_NODISCARD
+array array::matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
+{
+    if (m_implementation)
+    {
+        return array(m_implementation->matrix_diagonal(axis1, axis2));
+    }
+    else
+    {
+        return array(implementation().matrix_diagonal(axis1, axis2));
     }
 }
 

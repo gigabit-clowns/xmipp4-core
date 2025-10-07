@@ -400,6 +400,52 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
+    implementation diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+    {
+        const auto n = m_axes.size();
+        auto index1 = sanitize_index(axis1, n);
+        auto index2 = sanitize_index(axis2, n);
+        if (axis1 == axis2)
+        {
+            throw std::invalid_argument(
+                "axis1 and axis2 must represent different axes"
+            );
+        }
+
+        if (index1 > index2)
+        {
+            std::swap(index1, index2); // Sort
+        }
+
+        std::vector<strided_axis> axes;
+        axes.reserve(n - 1);
+        XMIPP4_ASSERT(index1 < index2);
+        std::copy(
+            m_axes.cbegin(), 
+            std::next(m_axes.cbegin(), index1),
+            std::back_inserter(axes)
+        );
+        std::copy(
+            std::next(m_axes.cbegin(), index1+1),
+            std::next(m_axes.cbegin(), index2),
+            std::back_inserter(axes)
+        );
+        std::copy(
+            std::next(m_axes.cbegin(), index2+1),
+            std::next(m_axes.cend()),
+            std::back_inserter(axes)
+        );
+
+        XMIPP4_ASSERT(axes.size() == n - 2);
+        const auto &axis_a = m_axes[index1];
+        const auto &axis_b = m_axes[index2];
+        const auto extent = std::min(axis_a.get_extent(), axis_b.get_extent());
+        const auto stride = axis_a.get_stride() + axis_b.get_stride();
+        axes.emplace_back(extent, stride);
+        
+        return implementation(std::move(axes), m_offset);
+    }
+
     implementation squeeze() const
     {
         std::vector<strided_axis> axes;
@@ -633,6 +679,19 @@ strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
 
     const auto &impl = *m_implementation;
     return strided_layout(impl.swap_axes(axis1, axis2));
+}
+
+XMIPP4_NODISCARD
+strided_layout 
+strided_layout::diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+{
+    if (!m_implementation)
+    {
+        throw std::out_of_range("Cannot call diagonal on an empty layout");
+    }
+
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.diagonal(axis1, axis2));
 }
 
 XMIPP4_NODISCARD

@@ -112,13 +112,29 @@ public:
     /**
      * @brief Swap two axes.
      * 
-     * @param axis1 Index of the first axis. Must be in [0, rank).
-     * @param axis2 Index of the second axis. Must be in [0, rank).
+     * @param axis1 Index of the first axis. Must be in [-rank, rank).
+     * @param axis2 Index of the second axis. Must be in [-rank, rank).
      * @return strided_layout Permuted layout.
      * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
     strided_layout swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const;
+
+    /**
+     * @brief Obtains a layout view to the matrix diagonal defined by two axes.
+     * 
+     * @param axis1 First axis of the diagonal. Must be in [-rank, rank).
+     * @param axis1 Second axis of the diagonal. Must be in [-rank, rank).
+     * Cannot be equal to axis1.
+     * @return strided_layout The resulting layout of the diagonal.
+     * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
+     * @throws std::invalid_argument If axis1 and axis2 are equal.
+     */
+    XMIPP4_NODISCARD
+    strided_layout diagonal(
+        std::ptrdiff_t axis1 = -1, 
+        std::ptrdiff_t axis2 = -2
+    ) const;
 
     /**
      * @brief Remove insignificant axes of the layout.

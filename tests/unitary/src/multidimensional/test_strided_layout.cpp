@@ -626,6 +626,57 @@ TEST_CASE("matrix_transpose in default constructed strided_layout should always 
     REQUIRE_THROWS_WITH( layout.matrix_transpose(0, 1), "Cannot swap axes on an empty layout" );
 }
 
+TEST_CASE("matrix_diagonal in strided_layout should return a layout with the diagonal elements", "[strided_layout]")
+{
+    const auto layout = make_test_layout();
+    const auto swapped = layout.matrix_diagonal(-2, 1);
+
+    std::vector<std::size_t> obtained_extents;
+    swapped.get_extents(obtained_extents);
+    const std::vector<std::size_t> expected_extents = 
+    {
+        120, 
+        24, 
+        1, 
+        8,
+        10
+    };
+    REQUIRE( obtained_extents == expected_extents );
+
+    std::vector<std::ptrdiff_t> obtained_strides;
+    swapped.get_strides(obtained_strides);
+    const std::vector<std::ptrdiff_t> expected_strides = 
+    {
+        860160,
+        320,
+        160,
+        2,
+        7680 + 16,
+    };
+    REQUIRE( obtained_strides == expected_strides );
+
+    REQUIRE( swapped.get_offset() == layout.get_offset() );
+}
+
+TEST_CASE("matrix_diagonal in strided_layout should throw when one of the axes is out of bounds", "[strided_layout]")
+{
+    const auto layout = make_test_layout();
+
+    REQUIRE_THROWS_AS( layout.matrix_diagonal(6, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_diagonal(6, 0), "Index 6 is out of bounds for extent 6" );
+    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 6), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_diagonal(6, 0), "Index 6 is out of bounds for extent 6" );
+}
+
+TEST_CASE("matrix_transpose in default constructed strided_layout should always fail", "[strided_layout]")
+{
+    const strided_layout layout;
+
+    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_diagonal(0, 0), "Cannot call matrix_diagonal on an empty layout" );
+    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 1), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_diagonal(0, 1), "Cannot call matrix_diagonal on an empty layout" );
+}
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")
 {

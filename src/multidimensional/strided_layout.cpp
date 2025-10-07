@@ -421,7 +421,7 @@ public:
         axes.reserve(n - 1);
         XMIPP4_ASSERT(index1 < index2);
         std::copy(
-            m_axes.cbegin(), 
+            m_axes.cbegin(),
             std::next(m_axes.cbegin(), index1),
             std::back_inserter(axes)
         );
@@ -432,11 +432,11 @@ public:
         );
         std::copy(
             std::next(m_axes.cbegin(), index2+1),
-            std::next(m_axes.cend()),
+            m_axes.cend(),
             std::back_inserter(axes)
         );
+        XMIPP4_ASSERT(axes.size() == (n - 2));
 
-        XMIPP4_ASSERT(axes.size() == n - 2);
         const auto &axis_a = m_axes[index1];
         const auto &axis_b = m_axes[index2];
         const auto extent = std::min(axis_a.get_extent(), axis_b.get_extent());

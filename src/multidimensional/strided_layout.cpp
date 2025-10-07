@@ -443,6 +443,7 @@ public:
         const auto stride = axis_a.get_stride() + axis_b.get_stride();
         axes.emplace_back(extent, stride);
         
+        XMIPP4_ASSERT(axes.size() == (n - 1));
         return implementation(std::move(axes), m_offset);
     }
 

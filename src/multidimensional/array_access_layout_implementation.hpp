@@ -55,13 +55,13 @@ private:
     std::vector<std::size_t> m_batch_extents;
     std::vector<array_access_layout_operand> m_operands;
 
-    int compare_batch_strides(std::size_t i, std::size_t j) noexcept;
+    int compare_strides(std::size_t i, std::size_t j) noexcept;
 
-    void swap_batch_axes(std::size_t i, std::size_t j) noexcept;
+    void swap_axes(std::size_t i, std::size_t j) noexcept;
 
-    void permute_batch_axes(std::vector<std::size_t> permutation);
+    void permute_axes(std::vector<std::size_t> permutation);
 
-    bool can_coalesce_batch_axes(std::size_t i, std::size_t j);
+    bool can_coalesce_axes(std::size_t i, std::size_t j);
 
     void trim_batch_axes(std::size_t n);
 

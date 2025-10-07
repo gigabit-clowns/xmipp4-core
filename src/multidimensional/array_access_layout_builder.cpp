@@ -20,17 +20,6 @@ array_access_layout_builder::default_flags = {
 array_access_layout_builder::array_access_layout_builder() noexcept = default;
 
 array_access_layout_builder::array_access_layout_builder(
-	std::vector<std::size_t> batch_extents
-)
-	: m_implementation(
-		std::make_unique<array_access_layout_implementation>(
-			std::move(batch_extents)
-		)
-	)
-{
-}
-
-array_access_layout_builder::array_access_layout_builder(
 	array_access_layout_builder&& other
 ) noexcept = default;
 
@@ -40,6 +29,24 @@ array_access_layout_builder&
 array_access_layout_builder::operator=(
 	array_access_layout_builder&& other
 ) noexcept = default;
+
+array_access_layout_builder& array_access_layout_builder::set_batch_extents(
+	std::vector<std::size_t> batch_extents
+)
+{
+	if (m_implementation)
+	{
+		throw std::logic_error(
+			"Batch extents can only be set once and before adding any operand"
+		);
+	}
+
+	m_implementation = std::make_unique<array_access_layout_implementation>(
+		std::move(batch_extents)
+	);
+
+	return *this;
+}
 
 array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout,
@@ -67,7 +74,7 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 			extents.cbegin(), 
 			std::prev(extents.cend(), core_dimensions)
 		);
-
+		
 		m_implementation = std::make_unique<array_access_layout_implementation>(
 			std::move(batch_extents)
 		);

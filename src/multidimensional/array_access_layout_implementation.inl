@@ -59,10 +59,11 @@ void array_access_layout_implementation::sort_batch_axes_by_locality()
 
     // Start with reversed indices n-1, n-2 ... 1, 0
     std::vector<std::size_t> permutation(n);
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        permutation[i] = n - i - 1;
-    }
+    std::generate(
+        permutation.begin(), 
+        permutation.end(), 
+        [n = n]() mutable { return --n; }
+    );
 
     // Insertion sort with support for ambiguous comparisons
     for (std::size_t i = 1; i < n; ++i)
@@ -71,7 +72,7 @@ void array_access_layout_implementation::sort_batch_axes_by_locality()
         for (std::size_t j = 1; j <= i; ++j)
         {
             const auto index0 = i - j;
-            const auto comparison = compare_batch_strides(
+            const auto comparison = compare_strides(
                 permutation[index0], 
                 permutation[index1]
             );
@@ -88,7 +89,7 @@ void array_access_layout_implementation::sort_batch_axes_by_locality()
         }
     }
 
-    permute_batch_axes(std::move(permutation));
+    permute_axes(std::move(permutation));
 }
 
 inline
@@ -103,15 +104,15 @@ void array_access_layout_implementation::coalesce_contiguous_batch_axes()
     std::size_t prev = 0;
     for (std::size_t curr = 1; curr < n;  ++curr)
     {
-        if (can_coalesce_batch_axes(prev, curr))
+        if (can_coalesce_axes(prev, curr))
         {
             if (m_batch_extents[prev] == 1)
             {
-                swap_batch_axes(prev, curr);
+                swap_axes(prev, curr);
             }
             else
             {
-                m_batch_extents[prev] *= m_batch_extents[curr];
+                m_batch_extents[prev] *= m_batch_extents[curr]; // TODO write on the operand
             }
 
         }
@@ -120,7 +121,7 @@ void array_access_layout_implementation::coalesce_contiguous_batch_axes()
             ++prev;
             if (prev != curr)
             {
-                swap_batch_axes(prev, curr);
+                swap_axes(prev, curr);
             }
         }
     }
@@ -171,7 +172,7 @@ array_access_layout_implementation::get_data_type(std::size_t operand) const
 }
 
 inline
-int array_access_layout_implementation::compare_batch_strides(
+int array_access_layout_implementation::compare_strides(
     std::size_t i, 
     std::size_t j
 ) noexcept
@@ -189,7 +190,7 @@ int array_access_layout_implementation::compare_batch_strides(
 }
 
 inline
-void array_access_layout_implementation::swap_batch_axes(
+void array_access_layout_implementation::swap_axes(
     std::size_t i, 
     std::size_t j
 ) noexcept
@@ -202,7 +203,7 @@ void array_access_layout_implementation::swap_batch_axes(
 }
 
 inline
-void array_access_layout_implementation::permute_batch_axes(
+void array_access_layout_implementation::permute_axes(
     std::vector<std::size_t> permutation
 )
 {
@@ -210,14 +211,14 @@ void array_access_layout_implementation::permute_batch_axes(
     const auto n = permutation.size();
     for (size_t i = 0; i < n; ++i) {
         while (permutation[i] != i) {
-            swap_batch_axes(i, permutation[i]);
+            swap_axes(i, permutation[i]);
             std::swap(permutation[i], permutation[permutation[i]]);
         }
     }
 }
 
 inline
-bool array_access_layout_implementation::can_coalesce_batch_axes(
+bool array_access_layout_implementation::can_coalesce_axes(
     std::size_t i, 
     std::size_t j
 )

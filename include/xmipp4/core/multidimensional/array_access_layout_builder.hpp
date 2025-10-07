@@ -23,7 +23,6 @@ public:
     static const array_access_layout_build_flags default_flags;
 
     array_access_layout_builder() noexcept;
-    explicit array_access_layout_builder(std::vector<std::size_t> batch_extents);
     array_access_layout_builder(const array_access_layout_builder&) = delete;
     array_access_layout_builder(array_access_layout_builder&& other) noexcept;
     ~array_access_layout_builder();
@@ -32,6 +31,10 @@ public:
     operator=(const array_access_layout_builder&) = delete;
     array_access_layout_builder& 
     operator=(array_access_layout_builder&& other) noexcept;
+
+    array_access_layout_builder& set_batch_extents(
+        std::vector<std::size_t> batch_extents
+    );
 
     array_access_layout_builder& add_operand(
         const strided_layout &layout,

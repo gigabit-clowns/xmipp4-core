@@ -151,8 +151,7 @@ public:
      * @brief Perform a broadcast of the layout to match the provided extents.
      * 
      * This function modifies the layout to match the provided extents by 
-     * adding phantom axes or adjusting existing axes as needed upto the last 
-     * trailing_dimensions. 
+     * adding phantom axes or adjusting existing axes.
      * 
      * @param extents Extents to broadcast to.
      * untouched. Must be greater or equal to rank. Defaults to zero.

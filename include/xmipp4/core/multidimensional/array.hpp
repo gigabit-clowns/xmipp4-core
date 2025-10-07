@@ -164,7 +164,7 @@ public:
      * @throws std::invalid_argument If either axis1 or axis2 exceeds bounds.
      */
     XMIPP4_NODISCARD
-    array swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2);
+    array matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2);
 
     /**
      * @brief Remove insignificant axes from the layout.

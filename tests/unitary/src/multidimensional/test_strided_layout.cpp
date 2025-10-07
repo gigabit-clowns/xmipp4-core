@@ -571,10 +571,10 @@ TEST_CASE("permute in a default constructed strided_layout and non-empty permuta
     REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Axis permutation's length does not match the required count" );
 }
 
-TEST_CASE("swap_axes in strided_layout should swap the requested axes", "[strided_layout]")
+TEST_CASE("matrix_transpose in strided_layout should swap the requested axes", "[strided_layout]")
 {
     const auto layout = make_test_layout();
-    const auto swapped = layout.swap_axes(1, 2);
+    const auto swapped = layout.matrix_transpose(1, 2);
 
     std::vector<std::size_t> obtained_extents;
     swapped.get_extents(obtained_extents);
@@ -606,24 +606,24 @@ TEST_CASE("swap_axes in strided_layout should swap the requested axes", "[stride
     REQUIRE( swapped.get_offset() == layout.get_offset() );
 }
 
-TEST_CASE("swap_axes in strided_layout should throw when one of the axes is out of bounds", "[strided_layout]")
+TEST_CASE("matrix_transpose in strided_layout should throw when one of the axes is out of bounds", "[strided_layout]")
 {
     const auto layout = make_test_layout();
 
-    REQUIRE_THROWS_AS( layout.swap_axes(6, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 6), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(6, 0), "Index 6 is out of bounds for extent 6" );
+    REQUIRE_THROWS_AS( layout.matrix_transpose(6, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_transpose(6, 0), "Index 6 is out of bounds for extent 6" );
+    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 6), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_transpose(6, 0), "Index 6 is out of bounds for extent 6" );
 }
 
-TEST_CASE("swap_axes in default constructed strided_layout should always fail", "[strided_layout]")
+TEST_CASE("matrix_transpose in default constructed strided_layout should always fail", "[strided_layout]")
 {
     const strided_layout layout;
 
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 0), "Cannot swap axes on an empty layout" );
-    REQUIRE_THROWS_AS( layout.swap_axes(0, 1), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.swap_axes(0, 1), "Cannot swap axes on an empty layout" );
+    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 0), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_transpose(0, 0), "Cannot swap axes on an empty layout" );
+    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 1), std::out_of_range );
+    REQUIRE_THROWS_WITH( layout.matrix_transpose(0, 1), "Cannot swap axes on an empty layout" );
 }
 
 

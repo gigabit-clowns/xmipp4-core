@@ -388,7 +388,7 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
-    implementation swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+    implementation matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     {
         const auto n = m_axes.size();
         const auto index1 = sanitize_index(axis1, n);
@@ -400,7 +400,7 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
-    implementation diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+    implementation matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     {
         const auto n = m_axes.size();
         auto index1 = sanitize_index(axis1, n);
@@ -670,7 +670,9 @@ strided_layout strided_layout::permute(span<const std::size_t> order) const
 
 XMIPP4_NODISCARD
 strided_layout 
-strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+strided_layout::matrix_transpose(
+    std::ptrdiff_t axis1, 
+    std::ptrdiff_t axis2) const
 {
     if (!m_implementation)
     {
@@ -678,20 +680,25 @@ strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     }
 
     const auto &impl = *m_implementation;
-    return strided_layout(impl.swap_axes(axis1, axis2));
+    return strided_layout(impl.matrix_transpose(axis1, axis2));
 }
 
 XMIPP4_NODISCARD
 strided_layout 
-strided_layout::diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+strided_layout::matrix_diagonal(
+    std::ptrdiff_t axis1, 
+    std::ptrdiff_t axis2
+) const
 {
     if (!m_implementation)
     {
-        throw std::out_of_range("Cannot call diagonal on an empty layout");
+        throw std::out_of_range(
+            "Cannot call matrix_diagonal on an empty layout"
+        );
     }
 
     const auto &impl = *m_implementation;
-    return strided_layout(impl.diagonal(axis1, axis2));
+    return strided_layout(impl.matrix_diagonal(axis1, axis2));
 }
 
 XMIPP4_NODISCARD

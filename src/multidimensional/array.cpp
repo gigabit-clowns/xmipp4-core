@@ -81,10 +81,10 @@ public:
         );
     }
 
-    implementation swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
+    implementation matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
     {
         return implementation(
-            get_layout().swap_axes(axis1, axis2),
+            get_layout().matrix_transpose(axis1, axis2),
             share_storage(),
             get_data_type()
         );
@@ -254,15 +254,15 @@ array array::permute(span<const std::size_t> order)
 }
 
 XMIPP4_NODISCARD
-array array::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
+array array::matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
 {
     if (m_implementation)
     {
-        return array(m_implementation->swap_axes(axis1, axis2));
+        return array(m_implementation->matrix_transpose(axis1, axis2));
     }
     else
     {
-        return array(implementation().swap_axes(axis1, axis2));
+        return array(implementation().matrix_transpose(axis1, axis2));
     }
 }
 

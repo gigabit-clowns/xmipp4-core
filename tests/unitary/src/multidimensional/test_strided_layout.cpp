@@ -668,7 +668,7 @@ TEST_CASE("matrix_diagonal in strided_layout should throw when one of the axes i
     REQUIRE_THROWS_WITH( layout.matrix_diagonal(6, 0), "Index 6 is out of bounds for extent 6" );
 }
 
-TEST_CASE("matrix_transpose in default constructed strided_layout should always fail", "[strided_layout]")
+TEST_CASE("matrix_diagonal in default constructed strided_layout should always fail", "[strided_layout]")
 {
     const strided_layout layout;
 

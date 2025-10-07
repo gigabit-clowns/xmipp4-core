@@ -1,47 +1,47 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/kernel_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
-#include "kernel_access_layout_implementation.hpp"
+#include "array_access_layout_implementation.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
-const kernel_access_layout_build_flags 
-kernel_access_layout_builder::default_flags = {
-	kernel_access_layout_build_flag_bits::reorder_batches,
-	kernel_access_layout_build_flag_bits::coalesce_batches
+const array_access_layout_build_flags 
+array_access_layout_builder::default_flags = {
+	array_access_layout_build_flag_bits::reorder_batches,
+	array_access_layout_build_flag_bits::coalesce_batches
 };
 
-kernel_access_layout_builder::kernel_access_layout_builder() noexcept = default;
+array_access_layout_builder::array_access_layout_builder() noexcept = default;
 
-kernel_access_layout_builder::kernel_access_layout_builder(
+array_access_layout_builder::array_access_layout_builder(
 	std::vector<std::size_t> batch_extents
 )
 	: m_implementation(
-		std::make_unique<kernel_access_layout_implementation>(
+		std::make_unique<array_access_layout_implementation>(
 			std::move(batch_extents)
 		)
 	)
 {
 }
 
-kernel_access_layout_builder::kernel_access_layout_builder(
-	kernel_access_layout_builder&& other
+array_access_layout_builder::array_access_layout_builder(
+	array_access_layout_builder&& other
 ) noexcept = default;
 
-kernel_access_layout_builder::~kernel_access_layout_builder() = default;
+array_access_layout_builder::~array_access_layout_builder() = default;
 
-kernel_access_layout_builder& 
-kernel_access_layout_builder::operator=(
-	kernel_access_layout_builder&& other
+array_access_layout_builder& 
+array_access_layout_builder::operator=(
+	array_access_layout_builder&& other
 ) noexcept = default;
 
-kernel_access_layout_builder& kernel_access_layout_builder::add_operand(
+array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout,
 	numerical_type data_type,
 	std::size_t core_dimensions 
@@ -68,7 +68,7 @@ kernel_access_layout_builder& kernel_access_layout_builder::add_operand(
 			std::prev(extents.cend(), core_dimensions)
 		);
 
-		m_implementation = std::make_unique<kernel_access_layout_implementation>(
+		m_implementation = std::make_unique<array_access_layout_implementation>(
 			std::move(batch_extents)
 		);
 	}
@@ -85,24 +85,24 @@ kernel_access_layout_builder& kernel_access_layout_builder::add_operand(
 	return *this;
 }
 
-kernel_access_layout kernel_access_layout_builder::build(
-	kernel_access_layout_build_flags flags
+array_access_layout array_access_layout_builder::build(
+	array_access_layout_build_flags flags
 )
 {
 	if (m_implementation)
 	{
-		if (flags.contains(kernel_access_layout_build_flag_bits::reorder_batches))
+		if (flags.contains(array_access_layout_build_flag_bits::reorder_batches))
 		{
 			m_implementation->sort_batch_axes_by_locality();
 		}
 		
-		if (flags.contains(kernel_access_layout_build_flag_bits::coalesce_batches))
+		if (flags.contains(array_access_layout_build_flag_bits::coalesce_batches))
 		{
 			m_implementation->coalesce_contiguous_batch_axes();
 		}
 	}
 
-	return kernel_access_layout(std::move(m_implementation));
+	return array_access_layout(std::move(m_implementation));
 }
 
 } // namespace multidimensional

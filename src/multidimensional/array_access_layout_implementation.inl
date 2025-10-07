@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "kernel_access_layout_operand.hpp"
+#include "array_access_layout_operand.hpp"
 
 /**
  * Some of the algorithms and data structured featured in this code are based 
@@ -15,7 +15,7 @@ namespace multidimensional
 {
 
 inline
-kernel_access_layout_implementation::kernel_access_layout_implementation(
+array_access_layout_implementation::array_access_layout_implementation(
     std::vector<std::size_t> batch_extents
 )
     : m_batch_extents(std::move(batch_extents))
@@ -23,7 +23,7 @@ kernel_access_layout_implementation::kernel_access_layout_implementation(
 }
 
 inline
-void kernel_access_layout_implementation::add_operand(
+void array_access_layout_implementation::add_operand(
     std::vector<std::size_t> extents,
     std::vector<std::ptrdiff_t> strides,
     std::ptrdiff_t offset, 
@@ -49,9 +49,9 @@ void kernel_access_layout_implementation::add_operand(
 }
 
 inline
-void kernel_access_layout_implementation::sort_batch_axes_by_locality()
+void array_access_layout_implementation::sort_batch_axes_by_locality()
 {
-    const auto n = get_number_of_batch_axes();
+    const auto n = m_batch_extents.size();
     if (n <= 1)
     {
         return; // Trivial
@@ -92,9 +92,9 @@ void kernel_access_layout_implementation::sort_batch_axes_by_locality()
 }
 
 inline
-void kernel_access_layout_implementation::coalesce_contiguous_batch_axes()
+void array_access_layout_implementation::coalesce_contiguous_batch_axes()
 {
-    const auto n = get_number_of_batch_axes();
+    const auto n = m_batch_extents.size();
     if (n <= 1)
     {
         return; // Trivial
@@ -130,69 +130,55 @@ void kernel_access_layout_implementation::coalesce_contiguous_batch_axes()
 
 inline
 std::size_t 
-kernel_access_layout_implementation::get_number_of_operands() const noexcept
+array_access_layout_implementation::get_number_of_operands() const noexcept
 {
     return m_operands.size();
 }
 
 inline
-std::size_t 
-kernel_access_layout_implementation::get_number_of_batch_axes() const noexcept
-{
-    return m_batch_extents.size();
-}
-
-inline
 span<const std::size_t> 
-kernel_access_layout_implementation::get_batch_extents() const noexcept
+array_access_layout_implementation::get_batch_extents() const noexcept
 {
     return make_span(m_batch_extents);
 }
 
 inline
 span<const std::size_t> 
-kernel_access_layout_implementation::get_core_extents(std::size_t operand) const
+array_access_layout_implementation::get_extents(std::size_t operand) const
 {
-    return m_operands.at(operand).get_core_extents();
+    return m_operands.at(operand).get_extents();
 }
 
 inline
 span<const std::ptrdiff_t> 
-kernel_access_layout_implementation::get_batch_strides(std::size_t operand) const
+array_access_layout_implementation::get_strides(std::size_t operand) const
 {
-    return m_operands.at(operand).get_batch_strides();
-}
-
-inline
-span<const std::ptrdiff_t> 
-kernel_access_layout_implementation::get_core_strides(std::size_t operand) const
-{
-    return m_operands.at(operand).get_core_strides();
+    return m_operands.at(operand).get_strides();
 }
 
 inline
 std::ptrdiff_t 
-kernel_access_layout_implementation::get_offset(std::size_t operand) const
+array_access_layout_implementation::get_offset(std::size_t operand) const
 {
     return m_operands.at(operand).get_offset();
 }
 
 inline
 numerical_type 
-kernel_access_layout_implementation::get_data_type(std::size_t operand) const
+array_access_layout_implementation::get_data_type(std::size_t operand) const
 {
     return m_operands.at(operand).get_data_type();
 }
 
 inline
-int kernel_access_layout_implementation::compare_batch_strides(
+int array_access_layout_implementation::compare_batch_strides(
     std::size_t i, 
     std::size_t j
 ) noexcept
 {
     for (const auto &operand : m_operands)
     {
-        const auto cmp = operand.compare_batch_strides(i, j);
+        const auto cmp = operand.compare_strides(i, j);
         if (cmp != 0)
         {
             return cmp;
@@ -203,7 +189,7 @@ int kernel_access_layout_implementation::compare_batch_strides(
 }
 
 inline
-void kernel_access_layout_implementation::swap_batch_axes(
+void array_access_layout_implementation::swap_batch_axes(
     std::size_t i, 
     std::size_t j
 ) noexcept
@@ -211,12 +197,12 @@ void kernel_access_layout_implementation::swap_batch_axes(
     std::swap(m_batch_extents[i], m_batch_extents[j]);
     for (auto &operand : m_operands)
     {
-        operand.swap_batch_axes(i, j);
+        operand.swap_axes(i, j);
     }
 }
 
 inline
-void kernel_access_layout_implementation::permute_batch_axes(
+void array_access_layout_implementation::permute_batch_axes(
     std::vector<std::size_t> permutation
 )
 {
@@ -231,7 +217,7 @@ void kernel_access_layout_implementation::permute_batch_axes(
 }
 
 inline
-bool kernel_access_layout_implementation::can_coalesce_batch_axes(
+bool array_access_layout_implementation::can_coalesce_batch_axes(
     std::size_t i, 
     std::size_t j
 )
@@ -245,8 +231,9 @@ bool kernel_access_layout_implementation::can_coalesce_batch_axes(
 
     for (const auto &operand : m_operands)
     {
-        const auto stride_i = operand.get_stride(i);
-        const auto stride_j = operand.get_stride(j);
+        const auto strides = operand.get_strides();
+        const auto stride_i = strides[i];
+        const auto stride_j = strides[j];
         if (extent_i * stride_i != stride_j) 
         {
             return false;
@@ -257,7 +244,7 @@ bool kernel_access_layout_implementation::can_coalesce_batch_axes(
 }
 
 inline
-void kernel_access_layout_implementation::trim_batch_axes(std::size_t n)
+void array_access_layout_implementation::trim_batch_axes(std::size_t n)
 {
     m_batch_extents.resize(n);
     for (auto &operand : m_operands)
@@ -267,13 +254,13 @@ void kernel_access_layout_implementation::trim_batch_axes(std::size_t n)
 }
 
 inline
-void kernel_access_layout_implementation::broadcast_operand(
+void array_access_layout_implementation::broadcast_operand(
     std::vector<std::size_t> &extents,
     std::vector<std::ptrdiff_t> &strides,
     std::size_t core_dimensions 
 )
 {
-    const auto batch_dimensions = get_number_of_batch_axes();
+    const auto batch_dimensions = m_batch_extents.size();
 
     if ((batch_dimensions + core_dimensions) < extents.size())
     {
@@ -281,18 +268,18 @@ void kernel_access_layout_implementation::broadcast_operand(
         oss << "Operand with " << extents.size() - core_dimensions 
             << " batch dimensions exceeds the batch dimensionality "
             << batch_dimensions
-            << " required in the kernel_access_layout";
+            << " required in the array_access_layout";
 
         throw std::invalid_argument(oss.str());
     }
 
     const auto padding = 
-        get_number_of_batch_axes() + core_dimensions - extents.size();
+        batch_dimensions + core_dimensions - extents.size();
     extents.insert(extents.cbegin(), padding, 1);
     strides.insert(strides.cbegin(), padding, 0);
 
     XMIPP4_ASSERT( extents.size() == batch_dimensions + core_dimensions );
-    for (std::size_t i = 0; i < get_number_of_batch_axes(); ++i)
+    for (std::size_t i = 0; i < batch_dimensions; ++i)
     {
         if (m_batch_extents[i] != extents[i])
         {

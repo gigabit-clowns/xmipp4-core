@@ -4,7 +4,6 @@
 
 #include "../span.hpp"
 #include "../numerical_type.hpp"
-#include "../const_any_reference.hpp"
 
 #include <memory>
 
@@ -13,7 +12,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class kernel_access_layout;
+class array_access_layout;
 class storage;
 class context;
 class kernel;
@@ -26,8 +25,8 @@ public:
     virtual 
     std::shared_ptr<kernel> 
     build(const kernel_access_layout &iteration_layout,
-          const context &context,
-          const const_any_reference &parameters = {} ) const = 0;
+          const context &context
+          /*TODO parameters*/ ) const = 0;
 
 };
 

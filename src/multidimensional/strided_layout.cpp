@@ -388,7 +388,7 @@ public:
         return implementation(std::move(axes), m_offset);
     }
 
-    implementation swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+    implementation matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     {
         const auto n = m_axes.size();
         const auto index1 = sanitize_index(axis1, n);
@@ -397,6 +397,53 @@ public:
         auto axes = m_axes;
         std::swap(axes[index1], axes[index2]);
 
+        return implementation(std::move(axes), m_offset);
+    }
+
+    implementation matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+    {
+        const auto n = m_axes.size();
+        auto index1 = sanitize_index(axis1, n);
+        auto index2 = sanitize_index(axis2, n);
+        if (axis1 == axis2)
+        {
+            throw std::invalid_argument(
+                "axis1 and axis2 must represent different axes"
+            );
+        }
+
+        if (index1 > index2)
+        {
+            std::swap(index1, index2); // Sort
+        }
+
+        std::vector<strided_axis> axes;
+        axes.reserve(n - 1);
+        XMIPP4_ASSERT(index1 < index2);
+        std::copy(
+            m_axes.cbegin(),
+            std::next(m_axes.cbegin(), index1),
+            std::back_inserter(axes)
+        );
+        std::copy(
+            std::next(m_axes.cbegin(), index1+1),
+            std::next(m_axes.cbegin(), index2),
+            std::back_inserter(axes)
+        );
+        std::copy(
+            std::next(m_axes.cbegin(), index2+1),
+            m_axes.cend(),
+            std::back_inserter(axes)
+        );
+        XMIPP4_ASSERT(axes.size() == (n - 2));
+
+        const auto &axis_a = m_axes[index1];
+        const auto &axis_b = m_axes[index2];
+        const auto extent = std::min(axis_a.get_extent(), axis_b.get_extent());
+        const auto stride = axis_a.get_stride() + axis_b.get_stride();
+        axes.emplace_back(extent, stride);
+        
+        XMIPP4_ASSERT(axes.size() == (n - 1));
         return implementation(std::move(axes), m_offset);
     }
 
@@ -624,7 +671,9 @@ strided_layout strided_layout::permute(span<const std::size_t> order) const
 
 XMIPP4_NODISCARD
 strided_layout 
-strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
+strided_layout::matrix_transpose(
+    std::ptrdiff_t axis1, 
+    std::ptrdiff_t axis2) const
 {
     if (!m_implementation)
     {
@@ -632,7 +681,25 @@ strided_layout::swap_axes(std::ptrdiff_t axis1, std::ptrdiff_t axis2) const
     }
 
     const auto &impl = *m_implementation;
-    return strided_layout(impl.swap_axes(axis1, axis2));
+    return strided_layout(impl.matrix_transpose(axis1, axis2));
+}
+
+XMIPP4_NODISCARD
+strided_layout 
+strided_layout::matrix_diagonal(
+    std::ptrdiff_t axis1, 
+    std::ptrdiff_t axis2
+) const
+{
+    if (!m_implementation)
+    {
+        throw std::out_of_range(
+            "Cannot call matrix_diagonal on an empty layout"
+        );
+    }
+
+    const auto &impl = *m_implementation;
+    return strided_layout(impl.matrix_diagonal(axis1, axis2));
 }
 
 XMIPP4_NODISCARD

@@ -15,7 +15,6 @@ namespace compute
 {
 
 class device;
-class device_create_parameters;
 
 /**
  * @brief Abstract class that represents a compute backend.
@@ -60,11 +59,9 @@ public:
      * @brief Create a device handle for the given device identifier.
      * 
      * @param id The identifier of the device.
-     * @param params Parameters used for device instantiation.
      * @return std::shared_ptr<device> The device handle.
      */
-    virtual std::shared_ptr<device> 
-    create_device(std::size_t id, const device_create_parameters &params) = 0;
+    virtual std::shared_ptr<device> create_device(std::size_t id) = 0;
 
 }; 
 

@@ -12,13 +12,8 @@ namespace compute
 {
 
 class device_queue;
-class device_memory_allocator;
-class host_memory_allocator;
-class device_to_host_transfer;
-class host_to_device_transfer;
-class device_copy;
 class device_event;
-class device_to_host_event;
+class memory_resource;
 
 
 
@@ -41,52 +36,22 @@ public:
     device& operator=(device &&other) = default;
 
     /**
+     * @brief Enumerates all the memory resources accessible by this device.
+     * 
+     * @param resources Output parameter where resources are written.
+     */
+    virtual
+    void enumerate_memory_resources(
+        std::vector<std::shared_ptr<memory_resource>> &resources
+    ) = 0;
+
+    /**
      * @brief Create a device queue.
      * 
      * @return std::shared_ptr<device_queue> 
      */
     virtual std::shared_ptr<device_queue>
     create_device_queue() = 0;
-
-    /**
-     * @brief Create a memory allocator for this device.
-     * 
-     * @return std::shared_ptr<device_memory_allocator> 
-     */
-    virtual std::shared_ptr<device_memory_allocator> 
-    create_device_memory_allocator() = 0;
-
-    /**
-     * @brief Create a memory allocator for the host.
-     * 
-     * @return std::shared_ptr<host_memory_allocator> 
-     */
-    virtual std::shared_ptr<host_memory_allocator> 
-    create_host_memory_allocator() = 0;
-
-    /**
-     * @brief Create a host to device transfer engine.
-     * 
-     * @return std::shared_ptr<host_to_device_transfer> 
-     */
-    virtual std::shared_ptr<host_to_device_transfer> 
-    create_host_to_device_transfer() = 0;
-
-    /**
-     * @brief Create a device to host transfer engine.
-     * 
-     * @return std::shared_ptr<device_to_host_transfer> 
-     */
-    virtual std::shared_ptr<device_to_host_transfer> 
-    create_device_to_host_transfer() = 0;
-
-    /**
-     * @brief Create a device buffer copy engine.
-     * 
-     * @return std::shared_ptr<device_copy> 
-     */
-    virtual std::shared_ptr<device_copy> 
-    create_device_copy() = 0;
 
     /**
      * @brief Create an intra-device synchronization primitive.

@@ -28,7 +28,7 @@ public:
     memory_resource& operator=(memory_resource &&other) = default;
 
     virtual
-    memory_resource_flags get_affinity_flags() const noexcept = 0;
+    memory_resource_flags get_flags() const noexcept = 0;
 
     virtual
     std::shared_ptr<memory_allocator> create_allocator() = 0;

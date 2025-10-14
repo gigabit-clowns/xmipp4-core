@@ -13,6 +13,7 @@ namespace compute
 
 class buffer;
 class device_queue;
+class memory_resource;
 
 
 
@@ -26,6 +27,9 @@ public:
 
     memory_allocator& operator=(const memory_allocator &other) = default;
     memory_allocator& operator=(memory_allocator &&other) = default;
+
+    virtual
+    memory_resource& get_memory_resource() const noexcept = 0;
 
     virtual
     std::shared_ptr<buffer> allocate(

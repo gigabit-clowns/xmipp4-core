@@ -10,14 +10,9 @@ namespace xmipp4
 namespace compute
 {
 
-class device;
-    
-} // namespace compute
+class memory_resource;
 
-namespace multidimensional
-{
-
-class storage
+class buffer
 {
 public:
     /**
@@ -28,13 +23,13 @@ public:
     virtual std::size_t get_size() const noexcept = 0;
 
     /**
-     * @brief Get the device where this buffer is stored. 
+     * @brief Get the memory_resource where this buffer is stored. 
      * 
-     * @return compute::device& The device where the buffer is stored.
+     * @return memory_resource& The resource where the buffer is stored.
      */
-    virtual compute::device& get_device() const noexcept = 0;
+    virtual memory_resource& get_memory_resource() const noexcept = 0;
 
 };
 
-} // namespace multidimensional
+} // namespace compute
 } // namespace xmipp4

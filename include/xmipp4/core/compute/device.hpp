@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../platform/dynamic_shared_object.h"
 
@@ -13,6 +14,7 @@ namespace compute
 
 class device_queue;
 class device_event;
+class device_to_host_event;
 class memory_resource;
 
 

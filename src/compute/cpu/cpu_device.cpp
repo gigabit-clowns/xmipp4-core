@@ -2,9 +2,8 @@
 
 #include <xmipp4/core/compute/cpu/cpu_device.hpp>
 
+#include <xmipp4/core/compute/cpu/cpu_memory_resource.hpp>
 #include <xmipp4/core/compute/cpu/cpu_device_queue.hpp>
-#include <xmipp4/core/compute/cpu/cpu_unified_memory_allocator.hpp>
-#include <xmipp4/core/compute/cpu/cpu_unified_copy.hpp>
 #include <xmipp4/core/compute/cpu/cpu_event.hpp>
 
 namespace xmipp4
@@ -12,57 +11,46 @@ namespace xmipp4
 namespace compute
 {
 
-cpu_device::cpu_device()
-    : m_queue_pool()
-    , m_allocator(std::make_shared<cpu_unified_memory_allocator>())
-    , m_transfer(std::make_shared<cpu_unified_copy>())
-    , m_event(std::make_shared<cpu_event>())
+void cpu_device::enumerate_memory_resources(
+    std::vector<std::shared_ptr<memory_resource>> &resources
+)
 {
+    if (!m_memory_resource)
+    {
+        m_memory_resource = std::make_shared<cpu_memory_resource>();
+    }
+
+    resources = { m_memory_resource };
 }
 
-cpu_device_queue_pool& cpu_device::get_queue_pool()
+std::shared_ptr<device_queue> cpu_device::create_device_queue()
 {
-    return m_queue_pool;
-}
+    if (!m_queue)
+    {
+        m_queue = std::make_shared<cpu_device_queue>();
+    }
 
-std::shared_ptr<device_memory_allocator> 
-cpu_device::create_device_memory_allocator() 
-{
-    return m_allocator;
-}
-
-std::shared_ptr<host_memory_allocator> 
-cpu_device::create_host_memory_allocator() 
-{
-    return m_allocator;
-}
-
-std::shared_ptr<host_to_device_transfer> 
-cpu_device::create_host_to_device_transfer()
-{
-    return m_transfer;
-}
-
-std::shared_ptr<device_to_host_transfer> 
-cpu_device::create_device_to_host_transfer()
-{
-    return m_transfer;
-}
-
-std::shared_ptr<device_copy> 
-cpu_device::create_device_copy()
-{
-    return m_transfer;
+    return m_queue;
 }
 
 std::shared_ptr<device_event> cpu_device::create_device_event()
 {
+    if (!m_event)
+    {
+        m_event = std::make_shared<cpu_event>();
+    }
+    
     return m_event;
 }
 
 std::shared_ptr<device_to_host_event> 
 cpu_device::create_device_to_host_event()
 {
+    if (!m_event)
+    {
+        m_event = std::make_shared<cpu_event>();
+    }
+
     return m_event;
 }
 

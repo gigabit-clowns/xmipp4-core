@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "memory_resource_flags.hpp"
+#include "memory_resource_kind.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -13,6 +13,7 @@ namespace compute
 {
 
 class memory_allocator;
+class device;
 
 
 
@@ -28,7 +29,7 @@ public:
     memory_resource& operator=(memory_resource &&other) = default;
 
     virtual
-    memory_resource_flags get_flags() const noexcept = 0;
+    memory_resource_kind get_kind() const noexcept = 0;
 
     virtual
     std::shared_ptr<memory_allocator> create_allocator() = 0;

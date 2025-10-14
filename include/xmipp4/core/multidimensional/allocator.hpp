@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
+
 #include <memory>
 
 namespace xmipp4 
@@ -18,13 +20,15 @@ namespace multidimensional
 
 class storage;
 
-class allocator
+class XMIPP4_CORE_API allocator
 {
 public:
     virtual 
-    std::shared_ptr<storage> allocate(std::size_t size, 
-                                      std::size_t alignment, 
-                                      compute::device_queue *queue ) = 0;
+    std::shared_ptr<storage> allocate(
+        std::size_t size, 
+        std::size_t alignment, 
+        compute::device_queue *queue 
+    ) = 0;
 
 };
 

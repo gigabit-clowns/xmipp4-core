@@ -33,7 +33,7 @@ public:
      * @return void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
-    virtual void* get_host_ptr() noexcept;
+    virtual void* get_host_ptr() noexcept = 0;
 
     /**
      * @brief Get a host accessible pointer to the data.
@@ -45,7 +45,7 @@ public:
      * @return const void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
-    virtual const void* get_host_ptr() const noexcept;
+    virtual const void* get_host_ptr() const noexcept = 0;
 
     /**
      * @brief Get the size in bytes for this buffer.

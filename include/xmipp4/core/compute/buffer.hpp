@@ -15,6 +15,38 @@ class memory_resource;
 class buffer
 {
 public:
+    buffer() = default;
+    buffer(const buffer &other) = default;
+    buffer(buffer &&other) = default;
+    virtual ~buffer() = default;
+
+    buffer& operator=(const buffer &other) = default;
+    buffer& operator=(buffer &&other) = default;
+
+    /**
+     * @brief Get a host accessible pointer to the data.
+     * 
+     * This method only returns a pointer if the data is accessible by the 
+     * host, i.e., if the kind of the underlying memory_resource is one of:
+     * device_mapped, host_staging, unified or managed.
+     * 
+     * @return void* Pointer to the data. nullptr if the buffer is not
+     * host accessible.
+     */
+    virtual void* get_host_ptr() noexcept;
+
+    /**
+     * @brief Get a host accessible pointer to the data.
+     * 
+     * This method only returns a pointer if the data is accessible by the 
+     * host, i.e., if the kind of the underlying memory_resource is one of:
+     * device_mapped, host_staging, unified or managed.
+     * 
+     * @return void* Pointer to the data. nullptr if the buffer is not
+     * host accessible.
+     */
+    virtual const void* get_host_ptr() const noexcept;
+
     /**
      * @brief Get the size in bytes for this buffer.
      * 

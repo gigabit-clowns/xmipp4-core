@@ -13,18 +13,26 @@
 
 namespace xmipp4 
 {
+namespace compute
+{
+
+class buffer;
+
+} // namespace compute
+
 namespace multidimensional
 {
 
-class storage;
 class strided_layout;
 
 class array
 {
 public:
+    using storage_type = compute::buffer;
+
     array();
     array(strided_layout layout, 
-          std::shared_ptr<storage> storage, 
+          std::shared_ptr<storage_type> storage, 
           numerical_type data_type );
     array(const array& other) = delete;
     array(array&& other) noexcept;
@@ -50,32 +58,32 @@ public:
     /**
      * @brief Get the storage of this array.
      * 
-     * @return storage* The storage.
+     * @return storage_type* The storage.
      */
-    storage* get_storage() noexcept;
+    storage_type* get_storage() noexcept;
 
     /**
      * @brief Get the storage of this array.
      * 
-     * @return const storage* The storage.
+     * @return const storage_type* The storage.
      */
-    const storage* get_storage() const noexcept;
+    const storage_type* get_storage() const noexcept;
 
     /**
      * @brief Get a ref-counted pointer to the storage of this array.
      * 
-     * @return std::shared_ptr<storage> The storage.
+     * @return std::shared_ptr<storage_type> The storage.
      */
     XMIPP4_NODISCARD
-    std::shared_ptr<storage> share_storage() noexcept;
+    std::shared_ptr<storage_type> share_storage() noexcept;
 
     /**
      * @brief Get a ref-counted pointer to read only storage of this array.
      * 
-     * @return std::shared_ptr<const storage> The storage.
+     * @return std::shared_ptr<const storage_type> The storage.
      */
     XMIPP4_NODISCARD
-    std::shared_ptr<const storage> share_storage() const noexcept;
+    std::shared_ptr<const storage_type> share_storage() const noexcept;
 
     /**
      * @brief Apply a set of subscripts to this layout.

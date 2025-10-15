@@ -3,7 +3,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/storage.hpp>
+#include <xmipp4/core/compute/buffer.hpp>
 
 namespace xmipp4 
 {
@@ -16,7 +16,7 @@ class array::implementation
 public:
     implementation() = default;
     implementation(strided_layout layout, 
-                   std::shared_ptr<storage> storage,
+                   std::shared_ptr<storage_type> storage,
                    numerical_type data_type ) noexcept
         : m_layout(std::move(layout))
         , m_storage(std::move(storage))
@@ -34,12 +34,12 @@ public:
         return m_layout;
     }
 
-    storage* get_storage() noexcept
+    storage_type* get_storage() noexcept
     {
         return m_storage.get();
     }
 
-    std::shared_ptr<storage> share_storage() noexcept
+    std::shared_ptr<storage_type> share_storage() noexcept
     {
         return m_storage;
     }
@@ -119,7 +119,7 @@ public:
 
 private:
     strided_layout m_layout;
-    std::shared_ptr<storage> m_storage;
+    std::shared_ptr<storage_type> m_storage;
     numerical_type m_data_type;
 
 };
@@ -134,7 +134,7 @@ array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
 array::array(strided_layout layout, 
-             std::shared_ptr<storage> storage, 
+             std::shared_ptr<storage_type> storage, 
              numerical_type data_type )
     : array(
         std::make_shared<implementation>(
@@ -170,14 +170,14 @@ strided_layout array::get_layout() const noexcept
            strided_layout() ;
 }
 
-storage* array::get_storage() noexcept
+array::storage_type* array::get_storage() noexcept
 {
     return m_implementation ? 
            m_implementation->get_storage() : 
            nullptr ;
 }
 
-const storage* array::get_storage() const noexcept
+const array::storage_type* array::get_storage() const noexcept
 {
     return m_implementation ? 
            m_implementation->get_storage() : 
@@ -185,7 +185,7 @@ const storage* array::get_storage() const noexcept
 }
 
 XMIPP4_NODISCARD
-std::shared_ptr<storage> array::share_storage() noexcept
+std::shared_ptr<array::storage_type> array::share_storage() noexcept
 {
     return m_implementation ? 
            m_implementation->share_storage() : 
@@ -193,7 +193,7 @@ std::shared_ptr<storage> array::share_storage() noexcept
 }
 
 XMIPP4_NODISCARD
-std::shared_ptr<const storage> array::share_storage() const noexcept
+std::shared_ptr<const array::storage_type> array::share_storage() const noexcept
 {
     return m_implementation ? 
            m_implementation->share_storage() : 

@@ -13,10 +13,9 @@ class cpu_memory_resource final
     : public memory_resource
 {
 public:
-    // TODO   
+    memory_resource_kind get_kind() const noexcept override;
 
-private:
-
+    std::shared_ptr<memory_allocator> create_allocator() override;
 
 }; 
 

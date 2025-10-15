@@ -44,7 +44,7 @@ public:
      */
     virtual
     void enumerate_memory_resources(
-        std::vector<std::shared_ptr<memory_resource>> &resources
+        std::vector<std::shared_ptr<memory_resource>> &resources // TODO decide if owning
     ) = 0;
 
     /**

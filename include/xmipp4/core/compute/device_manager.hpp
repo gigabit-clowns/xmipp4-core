@@ -70,9 +70,8 @@ public:
      * @param params Parameters used for device instantiation.
      * @return std::shared_ptr<device> The device handle.
      */
-    XMIPP4_CORE_API std::shared_ptr<device> 
-    create_device(const device_index &index,
-                  const device_create_parameters &params ) const;
+    XMIPP4_CORE_API 
+    std::shared_ptr<device> create_device(const device_index &index) const;
 
 }; 
 

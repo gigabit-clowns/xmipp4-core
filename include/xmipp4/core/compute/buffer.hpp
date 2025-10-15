@@ -42,7 +42,7 @@ public:
      * host, i.e., if the kind of the underlying memory_resource is one of:
      * device_mapped, host_staging, unified or managed.
      * 
-     * @return void* Pointer to the data. nullptr if the buffer is not
+     * @return const void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
     virtual const void* get_host_ptr() const noexcept;

@@ -30,7 +30,7 @@ std::shared_ptr<device_queue> cpu_device::create_device_queue()
         m_queue = std::make_shared<cpu_device_queue>();
     }
 
-    return m_queue;
+    return m_queue; // Stateless. Return always the same.
 }
 
 std::shared_ptr<device_event> cpu_device::create_device_event()
@@ -40,7 +40,7 @@ std::shared_ptr<device_event> cpu_device::create_device_event()
         m_event = std::make_shared<cpu_event>();
     }
     
-    return m_event;
+    return m_event; // Stateless. Return always the same.
 }
 
 std::shared_ptr<device_to_host_event> 
@@ -51,7 +51,7 @@ cpu_device::create_device_to_host_event()
         m_event = std::make_shared<cpu_event>();
     }
 
-    return m_event;
+    return m_event; // Stateless. Return always the same.
 }
 
 } // namespace compute

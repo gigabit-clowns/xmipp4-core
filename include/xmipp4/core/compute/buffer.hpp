@@ -10,6 +10,7 @@ namespace xmipp4
 namespace compute
 {
 
+class device_queue;
 class memory_resource;
 
 class buffer
@@ -60,6 +61,27 @@ public:
      * @return memory_resource& The resource where the buffer is stored.
      */
     virtual memory_resource& get_memory_resource() const noexcept = 0;
+
+    /**
+     * @brief Acknowledge that this buffer is being used in a device_queue.
+     * 
+     * Due to the asynchronous nature of the device_queue-s, the buffer may
+     * be needed after its destruction on the application code. By default,
+     * protections against this race condition only exist with the queue used
+     * to allocate this buffer (if any). When using this buffer in additional 
+     * queues, this method should be called to synchronize its destruction.
+     * 
+     * This method should only be used if the memory resource associated to 
+     * this buffer has a device associated to it.
+     * 
+     * @param queue The queue where this buffer in being used.
+     * @param exclusive If true, it disregards all previous queues where it was 
+     * being used and it synchronizes only with the new one. This is useful
+     * if the new queue is externally synchronized such that all other accesses 
+     * are guaranteed to have been concluded before they're completed at the 
+     * provided queue.
+     */
+    virtual void record_queue(device_queue &queue, bool exclusive=false) = 0;
 
 };
 

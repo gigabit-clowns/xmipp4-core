@@ -43,7 +43,7 @@ public:
      * @return void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
-    virtual void* get_host_ptr() noexcept = 0;
+    virtual void* get_host_ptr() noexcept = 0; // TODO decide if delegating to a buffer_host_mapping object or similar
 
     /**
      * @brief Get a host accessible pointer to the data.

@@ -55,25 +55,6 @@ public:
      * 
      * @param source The buffer from which data is copied. It's memory_resource
      * must equal to the memory resource returned by get_source_memory_resource.
-     * @param destination The buffer from which data is copied. It must have 
-     * the same size as the source memory buffer. It's memory_resource must 
-     * equal to the memory resource returned by get_destination_memory_resource.
-     * @param queue The queue where the transfer is enqueued. When provided,
-     * it must belong to the same target device as the source and destination 
-     * memory_resource-s. If null, the transfer is performed synchronously.
-     */
-    virtual
-    void copy(
-        const buffer &source, 
-        buffer &destination, 
-        device_queue *queue
-    ) const = 0;
-    
-    /**
-     * @brief Copy the contents of a buffer into another.
-     * 
-     * @param source The buffer from which data is copied. It's memory_resource
-     * must equal to the memory resource returned by get_source_memory_resource.
      * @param destination The buffer from which data is copied. It's 
      * memory_resource must equal to the memory resource returned by 
      * get_destination_memory_resource.

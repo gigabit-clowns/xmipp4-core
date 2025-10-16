@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
+
 #include <cstddef>
 #include <typeinfo>
 
@@ -13,7 +15,7 @@ namespace compute
 class device_queue;
 class memory_resource;
 
-class buffer
+class XMIPP4_CORE_API buffer
 {
 public:
     buffer() = default;

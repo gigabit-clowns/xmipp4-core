@@ -33,22 +33,6 @@ public:
 
     memory_transfer& operator=(const memory_transfer &other) = default;
     memory_transfer& operator=(memory_transfer &&other) = default;
-
-    /**
-     * @brief Get the source memory resource from which copies are carried out.
-     * 
-     * @return memory_resource& The source memory resource.
-     */
-    virtual 
-    memory_resource& get_source_memory_resource() const noexcept = 0;
-
-    /**
-     * @brief Get the source memory resource to which copies are carried out.
-     * 
-     * @return memory_resource& The destination memory resource.
-     */
-    virtual 
-    memory_resource& get_destination_memory_resource() const noexcept = 0;
     
     /**
      * @brief Copy the contents of a buffer into another.

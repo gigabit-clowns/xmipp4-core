@@ -38,13 +38,15 @@ public:
     device& operator=(device &&other) = default;
 
     /**
-     * @brief Enumerates all the memory resources accessible by this device.
+     * @brief Enumerates all the memory resources known by this device.
      * 
-     * @param resources Output parameter where resources are written.
+     * @param resources Output parameter where resources are written. The 
+     * resources are owned by this device object and the  caller should not 
+     * attempt to free free them.
      */
     virtual
     void enumerate_memory_resources(
-        std::vector<std::shared_ptr<memory_resource>> &resources // TODO decide if owning
+        std::vector<memory_resource*> &resources
     ) = 0;
 
     /**

@@ -13,6 +13,7 @@ namespace compute
 {
 
 class memory_allocator;
+class memory_transfer;
 class device;
 
 
@@ -61,6 +62,14 @@ public:
      */
     virtual
     std::shared_ptr<memory_allocator> create_allocator() = 0;
+
+    /**
+     * @brief Get an instance of memory_transfer specialized for transferring
+     * data within this memory_resource.
+     * 
+     * @return memory_transfer& The memory_transfer object.
+     */
+    memory_transfer& get_memory_transfer() noexcept;
 
 }; 
 

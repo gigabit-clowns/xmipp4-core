@@ -15,6 +15,13 @@ namespace compute
 class device_queue;
 class memory_resource;
 
+
+
+/**
+ * @brief Represents an untyped memory allocation at a given memory
+ * resource.
+ * 
+ */
 class XMIPP4_CORE_API buffer
 {
 public:
@@ -76,7 +83,9 @@ public:
      * This method should only be used if the memory resource associated to 
      * this buffer has a device associated to it.
      * 
-     * @param queue The queue where this buffer in being used.
+     * @param queue The queue where this buffer in being used. It must have
+     * been created from the same device as the device targeted by the 
+     * memory_resource.
      * @param exclusive If true, it disregards all previous queues where it was 
      * being used and it synchronizes only with the new one. This is useful
      * if the new queue is externally synchronized such that all other accesses 

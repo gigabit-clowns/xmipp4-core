@@ -41,7 +41,7 @@ public:
      * @brief Enumerates all the memory resources known by this device.
      * 
      * @param resources Output parameter where resources are written. The 
-     * resources are owned by this device object and the  caller should not 
+     * resources are owned by this device object and the caller should not 
      * attempt to free free them.
      */
     virtual

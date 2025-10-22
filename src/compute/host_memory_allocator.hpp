@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "../memory_allocator.hpp"
+#include <xmipp4/core/compute/memory_allocator.hpp>
 
 namespace xmipp4 
 {
 namespace compute
 {
 
-class cpu_memory_allocator final
+class host_memory_allocator
     : public memory_allocator
 {
 public:
@@ -21,7 +21,7 @@ public:
         device_queue *queue
     ) override;
 
-}; 
+};
 
 } // namespace compute
 } // namespace xmipp4

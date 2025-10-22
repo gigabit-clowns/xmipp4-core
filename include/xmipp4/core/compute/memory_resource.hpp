@@ -63,6 +63,15 @@ public:
     virtual
     std::shared_ptr<memory_allocator> create_allocator() = 0;
 
+    /**
+     * @brief Get a memory_transfer object to copy data within this 
+     * memory resource.
+     * 
+     * @return const memory_transfer& The memory transfer object.
+     */
+    virtual
+    const memory_transfer& get_intra_resource_transfer() const = 0;
+
 }; 
 
 

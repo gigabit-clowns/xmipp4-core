@@ -26,7 +26,7 @@ public:
     ~cpu_device() override = default;
 
     void enumerate_memory_resources(
-        std::vector<std::shared_ptr<memory_resource>> &resources
+        std::vector<memory_resource*> &resources
     ) override;
 
     std::shared_ptr<device_queue> create_device_queue() override;
@@ -35,11 +35,6 @@ public:
 
     std::shared_ptr<device_to_host_event> 
     create_device_to_host_event() override;
-
-private:
-    std::shared_ptr<cpu_memory_resource> m_memory_resource;
-    std::shared_ptr<cpu_device_queue> m_queue;
-    std::shared_ptr<cpu_event> m_event;
 
 }; 
 

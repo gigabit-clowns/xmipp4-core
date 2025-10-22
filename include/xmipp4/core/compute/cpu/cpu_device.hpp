@@ -29,11 +29,9 @@ public:
         std::vector<memory_resource*> &resources
     ) override;
 
-    std::shared_ptr<memory_transfer>
-    create_memory_transfer(
-        const memory_resource &source,
-        const memory_resource &destination
-    ) override;
+    bool can_access_memory_resource(
+        const memory_resource &resource
+    ) const override;
 
     std::shared_ptr<device_queue> create_device_queue() override;
 

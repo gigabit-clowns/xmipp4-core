@@ -16,7 +16,6 @@ class device_queue;
 class device_event;
 class device_to_host_event;
 class memory_resource;
-class memory_transfer;
 
 
 /**
@@ -46,24 +45,25 @@ public:
      */
     virtual
     void enumerate_memory_resources(
-        std::vector<memory_resource*> &resources
+        std::vector<memory_resource*> &resources // Evaluate output type
     ) = 0;
 
     /**
-     * @brief Create a memory transfer object capable of transferring data
-     * between the given source and destination memory resources.
+     * @brief Evaluates whether this device can access the given memory 
+     * resource.
      * 
-     * @param source Source memory resource. Must be one of the returned by
-     * enumerate_memory_resources.
-     * @param destination Destination memory resource. Must be one of the
-     * returned by enumerate_memory_resources.
-     * @return std::shared_ptr<memory_transfer> The created memory transfer. 
+     * Certain memory_resource-s are accessible by definition. This includes
+     * any memory_resource enumerated by this device whose kind satisfies
+     * is_device_accessible. However, some other memory_resource-s can
+     * also be accessible. This method is suited to query those cases in
+     * runtime.
+     * 
+     * @param resource The resource to evaluated.
+     * @return true If the device can access the resource.
+     * @return false If the device cannot access the resource.
      */
-    virtual std::shared_ptr<memory_transfer>
-    create_memory_transfer(
-        const memory_resource &source,
-        const memory_resource &destination
-    ) = 0;
+    virtual 
+    bool can_access_memory_resource(const memory_resource &resource) const = 0;
 
     /**
      * @brief Create a device queue.

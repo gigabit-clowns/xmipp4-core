@@ -21,26 +21,11 @@ void cpu_device::enumerate_memory_resources(
     resources = { &host_memory_resource };
 }
 
-std::shared_ptr<memory_transfer> cpu_device::create_memory_transfer(
-    const memory_resource &source,
-    const memory_resource &destination
-)
+bool cpu_device::can_access_memory_resource(
+    const memory_resource &resource
+) const
 {
-    if (!is_host_accessible(source.get_kind()))
-    {
-        throw std::invalid_argument(
-            "Source memory_resource is not host accessible."
-        );
-    }
-
-    if (!is_host_accessible(destination.get_kind()))
-    {
-        throw std::invalid_argument(
-            "Destination memory_resource is not host accessible."
-        );
-    }
-
-    return std::make_shared<host_memory_transfer>();
+    return is_host_accessible(resource.get_kind());
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()

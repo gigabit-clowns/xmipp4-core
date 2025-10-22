@@ -83,9 +83,11 @@ memory_resource& host_buffer::get_memory_resource() const noexcept
     return host_memory_resource::get();
 }
 
-void host_buffer::record_queue(device_queue &queue, bool exclusive)
+void host_buffer::record_queue(device_queue&, bool)
 {
-    // TODO throw error
+    std::logic_error(
+        "host_buffer does not support device queues."
+    );
 }
 
 } // namespace compute

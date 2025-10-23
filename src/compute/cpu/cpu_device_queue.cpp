@@ -9,7 +9,7 @@ namespace compute
 
 void cpu_device_queue::wait_until_completed() const
 {
-    // NO-OP
+    // No-op
 }
 
 bool cpu_device_queue::is_idle() const noexcept

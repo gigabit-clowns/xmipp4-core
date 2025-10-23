@@ -4,6 +4,7 @@
 
 #include <xmipp4/core/compute/buffer.hpp>
 #include <xmipp4/core/compute/copy_region.hpp>
+#include <xmipp4/core/compute/device_queue.hpp>
 #include <xmipp4/core/memory/byte.hpp>
 
 #include <stdexcept>
@@ -25,9 +26,9 @@ void host_memory_transfer::copy(
 {
     if (queue)
     {
-        throw std::invalid_argument(
-            "host_memory_transfer does not support device queues."
-        );
+        // As host copy is synchronous, we need to wait until all previous
+        // operations in the provided queue are finished.
+        queue->wait_until_completed();
     }
 
     const auto *src_ptr = static_cast<const memory::byte*>(source.get_host_ptr());

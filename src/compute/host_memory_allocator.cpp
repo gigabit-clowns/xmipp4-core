@@ -5,6 +5,8 @@
 #include "host_buffer.hpp"
 #include "host_memory_resource.hpp"
 
+#include <xmipp4/core/compute/device_queue.hpp>
+
 #include <stdexcept>
 
 namespace xmipp4
@@ -25,9 +27,9 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
 {
     if (queue)
     {
-        throw std::invalid_argument(
-            "Host memory allocator does not support device queues."
-        );
+        // As host allocation is synchronous, we need to wait until all previous
+        // operations in the provided queue are finished.
+        queue->wait_until_completed();
     }
 
     return std::make_shared<host_buffer>(size, alignment);

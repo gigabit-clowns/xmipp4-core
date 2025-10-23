@@ -10,7 +10,7 @@ namespace compute
 {
 
 /**
- * @brief Abstract class describing a command device_queue.
+ * @brief Abstract class describing a command queue or stream.
  * 
  */
 class XMIPP4_CORE_API device_queue
@@ -33,8 +33,8 @@ public:
     /**
      * @brief Check if the queue has completed processing.
      * 
-     * @return true Queue has finished processing.
-     * @return false Queue is busy processing.
+     * @return true if queue has finished processing.
+     * @return false if queue is busy processing.
      */
     virtual bool is_idle() const noexcept = 0;
 

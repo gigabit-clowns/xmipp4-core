@@ -18,7 +18,7 @@ namespace compute
  * buffers together with an element count. 
  * 
  * @note Unless otherwise specified, these offsets and counts 
- * represent in bytes.
+ * are represented in bytes.
  * 
  */
 class copy_region

@@ -36,11 +36,8 @@ public:
     /**
      * @brief Copy the contents of a buffer into another.
      * 
-     * @param source The buffer from which data is copied. It's memory_resource
-     * must equal to the memory resource returned by get_source_memory_resource.
-     * @param destination The buffer from which data is copied. It's 
-     * memory_resource must equal to the memory resource returned by 
-     * get_destination_memory_resource.
+     * @param source The buffer from which data is copied. 
+     * @param destination The buffer from which data is copied.
      * @param regions Set of regions to be copied. All of them must be valid
      * for both source and destination buffers.
      * @param queue The queue where the transfer is enqueued. When provided,

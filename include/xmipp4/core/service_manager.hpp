@@ -13,9 +13,9 @@ namespace xmipp4
 {
 
 /**
- * @brief Abstract class defining the interface of a backend manager.
+ * @brief Abstract class defining the interface of a service manager.
  * 
- * An backend manager keeps track of all known implementations of a given
+ * A service manager keeps track of all known implementations of a given
  * interface and provides utilities to access the most relevant implementation
  * for a given context. This is a base class for collecting them on an
  * service_catalog.

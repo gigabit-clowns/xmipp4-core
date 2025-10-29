@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <string>
 
 namespace xmipp4
 {
 
 class plugin;
-class interface_catalog;
+class service_catalog;
 
 /**
  * @brief Class managing a set of plugins.
@@ -66,8 +66,9 @@ public:
 
 private:
     class implementation;
-    memory::pimpl<implementation> m_implementation;
+    std::unique_ptr<implementation> m_implementation;
 
+	void create_if_null();
 };
 
 
@@ -127,6 +128,6 @@ void discover_plugins(plugin_manager &manager);
  */
 XMIPP4_CORE_API
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    interface_catalog &catalog );
+                                    service_catalog &catalog );
 
 } // namespace xmipp4

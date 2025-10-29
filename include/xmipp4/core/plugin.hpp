@@ -10,7 +10,7 @@
 namespace xmipp4
 {
 
-class interface_catalog;
+class service_catalog;
 
 /**
  * @brief Abstract class representing a plugin interface.
@@ -49,7 +49,7 @@ public:
      * 
      * @param catalog The catalog where this plugin will be registered.
      */
-    virtual void register_at(interface_catalog& catalog) const = 0;
+    virtual void register_at(service_catalog& catalog) const = 0;
 
 };
 

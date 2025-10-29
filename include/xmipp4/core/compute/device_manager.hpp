@@ -5,7 +5,7 @@
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "device_backend.hpp"
-#include "../backend_manager.hpp"
+#include "../service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -27,7 +27,7 @@ class device_create_parameters;
  * 
  */
 class device_manager final
-    : public basic_backend_manager<device_backend>
+    : public basic_service_manager<device_backend>
 {
 public:
     XMIPP4_CORE_API device_manager();

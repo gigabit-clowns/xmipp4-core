@@ -61,11 +61,11 @@ public:
 
     basic_service_manager() = default;
     basic_service_manager(const basic_service_manager &other) = delete;
-    basic_service_manager(basic_service_manager &&other) = default;
+    basic_service_manager(basic_service_manager &&other) noexcept = default;
     ~basic_service_manager() override = default;
 
     basic_service_manager& operator=(const basic_service_manager &other) = delete;
-    basic_service_manager& operator=(basic_service_manager &&other) = default;
+    basic_service_manager& operator=(basic_service_manager &&other) noexcept = default;
 
     /**
      * @brief Register a new implementation.

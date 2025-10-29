@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/compute/memory_transfer_backend.hpp>
 
-#include "host_memory_transfer.hpp"
+#include "host_memory_transfer_backend.hpp"
 #include "memory_transfer_key.hpp"
 
 #include <vector>
@@ -83,7 +83,9 @@ memory_transfer_manager::operator=(
 
 void memory_transfer_manager::register_builtin_backends()
 {
-    // TODO
+    register_backend(
+        std::make_unique<host_memory_transfer_backend>()
+    );
 }
 
 bool memory_transfer_manager::register_backend(

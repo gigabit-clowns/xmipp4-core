@@ -25,6 +25,7 @@ public:
         const memory_resource& source, 
         const memory_resource& destination
     ) noexcept;
+
     memory_transfer_key(const memory_transfer_key &other) = default;
     memory_transfer_key(memory_transfer_key &&other) noexcept = default;
     ~memory_transfer_key() = default;

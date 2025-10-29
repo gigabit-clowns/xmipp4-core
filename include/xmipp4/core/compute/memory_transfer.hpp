@@ -54,17 +54,5 @@ public:
 
 }; 
 
-/**
- * @brief Get a memory_transfer that can copy data to and from host memory.
- * 
- * The returned object is able to copy data between any memory resource
- * as long as they are host accessible, i.e, get_host_ptr() does not return
- * nullptr.
- * 
- * @return const memory_transfer& The memory transfer object able to handle
- * host memory transfers.
- */
-const memory_transfer& get_host_memory_transfer() noexcept;
-
 } // namespace compute
 } // namespace xmipp4

@@ -3,7 +3,6 @@
 #include "strided_axis.hpp"
 
 #include <xmipp4/core/multidimensional/index.hpp>
-#include <xmipp4/core/math/abs.hpp>
 
 namespace xmipp4
 {
@@ -64,7 +63,9 @@ std::ptrdiff_t strided_axis::get_stride() const noexcept
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t strided_axis::get_stride_magnitude() const noexcept
 {
-    return math::abs(get_stride());
+    return m_stride < 0 ? 
+        static_cast<std::size_t>(-m_stride) :
+        static_cast<std::size_t>(m_stride);
 }
 
 
@@ -170,7 +171,7 @@ std::size_t get_axis_pivot_offset(const strided_axis &axis) noexcept
 {
     const auto extent = axis.get_extent();
     const auto stride = axis.get_stride();
-    return (stride < 0) && (extent > 1) ? (extent-1)*math::abs(stride) : 0;
+    return (stride < 0) && (extent > 1) ? (extent-1)*axis.get_stride_magnitude() : 0;
 }
 
 XMIPP4_INLINE_CONSTEXPR

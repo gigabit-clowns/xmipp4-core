@@ -28,6 +28,8 @@ public:
         }
 
         m_backends.push_back(std::move(backend));
+        m_cache.clear(); // Invalidate cache
+
         return true;
     }
 

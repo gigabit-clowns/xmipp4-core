@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../backend_manager.hpp"
+#include "../service_manager.hpp"
 
 #include <memory>
 
@@ -21,7 +21,7 @@ class memory_transfer_backend;
  * 
  */
 class memory_transfer_manager
-    : public backend_manager
+    : public service_manager
 {
 public:
     memory_transfer_manager() noexcept;

@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <string>
 
 namespace xmipp4
@@ -66,8 +66,9 @@ public:
 
 private:
     class implementation;
-    memory::pimpl<implementation> m_implementation;
+    std::unique_ptr<implementation> m_implementation;
 
+	void create_if_null();
 };
 
 

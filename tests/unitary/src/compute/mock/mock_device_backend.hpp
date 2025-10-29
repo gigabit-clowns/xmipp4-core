@@ -21,7 +21,7 @@ public:
     MAKE_MOCK0(get_priority, backend_priority (), const noexcept override);
     MAKE_MOCK1(enumerate_devices, void (std::vector<std::size_t>&), const override);
     MAKE_MOCK2(get_device_properties, bool (std::size_t, device_properties&), const override);
-    MAKE_MOCK2(create_device, std::shared_ptr<device> (std::size_t, const device_create_parameters&), override);
+    MAKE_MOCK1(create_device, std::shared_ptr<device> (std::size_t), override);
 
 };
 

@@ -24,6 +24,8 @@ std::shared_ptr<memory_transfer> host_memory_transfer_backend::create_transfer(
         XMIPP4_ASSERT( m_transfer );
         return m_transfer;
     }
+
+    return nullptr;
 }
 
 

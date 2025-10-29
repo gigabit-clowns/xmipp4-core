@@ -3,7 +3,6 @@
 #include <xmipp4/core/compute/device_manager.hpp>
 
 #include <xmipp4/core/compute/device.hpp>
-#include <xmipp4/core/compute/device_create_parameters.hpp>
 #include <xmipp4/core/version.hpp>
 
 #include <algorithm>

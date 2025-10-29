@@ -19,8 +19,6 @@ public:
 
     std::shared_ptr<memory_allocator> create_allocator() override;
 
-    const memory_transfer& get_intra_resource_transfer() const override;
-
     static host_memory_resource& get() noexcept;
 
 private:

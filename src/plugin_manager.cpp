@@ -76,24 +76,44 @@ plugin_manager::operator=(plugin_manager&& other) noexcept = default;
 
 void plugin_manager::add_plugin(const plugin& plugin)
 {
+	create_if_null();
     m_implementation->add_plugin(plugin);
 }
 
 const plugin* plugin_manager::load_plugin(const std::string &path)
 {
+	create_if_null();
     return m_implementation->load_plugin(path);
 }
 
 std::size_t plugin_manager::get_plugin_count() const noexcept
 {
-    return m_implementation->get_plugin_count();
+	if (!m_implementation)
+	{
+		return 0;
+	}
+	else
+	{
+		return m_implementation->get_plugin_count();
+	}
 }
 
 const plugin& plugin_manager::get_plugin(std::size_t index) const
 {
+	if (!m_implementation)
+	{
+		throw std::out_of_range("No plugins loaded");
+	}
     return m_implementation->get_plugin(index);
 }
 
+void plugin_manager::create_if_null()
+{
+	if (!m_implementation)
+	{
+		m_implementation = std::make_unique<implementation>();
+	}
+}
 
 
 

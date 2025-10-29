@@ -59,7 +59,7 @@ private:
 };
 
 service_catalog::service_catalog(bool register_builtin_backends)
-    : m_implementation(register_builtin_backends)
+    : m_implementation(std::make_unique<implementation>(register_builtin_backends))
 {
 }
 

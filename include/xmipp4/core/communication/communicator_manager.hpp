@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "communicator_backend.hpp"
-#include "../backend_manager.hpp"
+#include "../service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -23,7 +23,7 @@ class communicator;
  * 
  */
 class communicator_manager final
-    : public basic_backend_manager<communicator_backend>
+    : public basic_service_manager<communicator_backend>
 {
 public:
     XMIPP4_CORE_API communicator_manager();

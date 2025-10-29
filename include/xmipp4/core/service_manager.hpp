@@ -13,26 +13,26 @@ namespace xmipp4
 {
 
 /**
- * @brief Abstract class defining the interface of a backend manager.
+ * @brief Abstract class defining the interface of a service manager.
  * 
- * An backend manager keeps track of all known implementations of a given
+ * A service manager keeps track of all known implementations of a given
  * interface and provides utilities to access the most relevant implementation
  * for a given context. This is a base class for collecting them on an
- * interface_catalog.
+ * service_catalog.
  * 
- * @see interface_catalog
+ * @see service_catalog
  * 
  */
-class XMIPP4_CORE_API backend_manager
+class XMIPP4_CORE_API service_manager
 {
 public:
-    backend_manager() = default;
-    backend_manager(const backend_manager& other) = default;
-    backend_manager(backend_manager&& other) = default;
-    virtual ~backend_manager() = default;
+    service_manager() = default;
+    service_manager(const service_manager& other) = default;
+    service_manager(service_manager&& other) = default;
+    virtual ~service_manager() = default;
 
-    backend_manager& operator=(const backend_manager& other) = default;
-    backend_manager& operator=(backend_manager&& other) = default;
+    service_manager& operator=(const service_manager& other) = default;
+    service_manager& operator=(service_manager&& other) = default;
 
     /**
      * @brief Register backends bundled with the core.access_flag_bits
@@ -48,8 +48,8 @@ public:
 };
 
 template <typename B>
-class basic_backend_manager
-    : public backend_manager
+class basic_service_manager
+    : public service_manager
 {
 public:
     /**
@@ -59,13 +59,13 @@ public:
      */
     using backend_type = B;
 
-    basic_backend_manager() = default;
-    basic_backend_manager(const basic_backend_manager &other) = delete;
-    basic_backend_manager(basic_backend_manager &&other) = default;
-    ~basic_backend_manager() override = default;
+    basic_service_manager() = default;
+    basic_service_manager(const basic_service_manager &other) = delete;
+    basic_service_manager(basic_service_manager &&other) noexcept = default;
+    ~basic_service_manager() override = default;
 
-    basic_backend_manager& operator=(const basic_backend_manager &other) = delete;
-    basic_backend_manager& operator=(basic_backend_manager &&other) = default;
+    basic_service_manager& operator=(const basic_service_manager &other) = delete;
+    basic_service_manager& operator=(basic_service_manager &&other) noexcept = default;
 
     /**
      * @brief Register a new implementation.
@@ -121,4 +121,4 @@ private:
 
 } // namespace xmipp4
 
-#include "backend_manager.inl"
+#include "service_manager.inl"

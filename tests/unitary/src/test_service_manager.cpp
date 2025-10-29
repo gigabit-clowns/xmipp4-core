@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/backend_manager.hpp>
+#include <xmipp4/core/service_manager.hpp>
 
 #include "mock/mock_backend.hpp"
 
@@ -9,7 +9,7 @@
 
 using namespace xmipp4;
 
-TEST_CASE( "register backend", "[backend_manager]" ) 
+TEST_CASE( "register backend", "[service_manager]" ) 
 {
     // Setup mocks
     auto mock1 = std::make_unique<mock_backend>();
@@ -25,7 +25,7 @@ TEST_CASE( "register backend", "[backend_manager]" )
         .TIMES(1);
 
     // Test
-    basic_backend_manager<backend> manager;
+    basic_service_manager<backend> manager;
     manager.register_backend(std::move(mock1));
     manager.register_backend(std::move(mock2));
 
@@ -38,7 +38,7 @@ TEST_CASE( "register backend", "[backend_manager]" )
     REQUIRE( backends[1] == name2 );
 }
 
-TEST_CASE( "query device backend", "[backend_manager]" ) 
+TEST_CASE( "query device backend", "[service_manager]" ) 
 {
     // Setup mocks
     auto mock1 = std::make_unique<mock_backend>();
@@ -54,7 +54,7 @@ TEST_CASE( "query device backend", "[backend_manager]" )
         .TIMES(2);
 
     // Test
-    basic_backend_manager<backend> manager;
+    basic_service_manager<backend> manager;
     manager.register_backend(std::move(mock1));
     manager.register_backend(std::move(mock2));
 
@@ -70,7 +70,7 @@ TEST_CASE( "query device backend", "[backend_manager]" )
     REQUIRE( manager.get_backend("not-a-backend") == nullptr );
 }
 
-TEST_CASE( "register the same device backend twice", "[backend_manager]" ) 
+TEST_CASE( "register the same device backend twice", "[service_manager]" ) 
 {
     // Setup mocks
     const std::string name = "mock";
@@ -85,7 +85,7 @@ TEST_CASE( "register the same device backend twice", "[backend_manager]" )
         .TIMES(1);
 
     // Test
-    basic_backend_manager<backend> manager;
+    basic_service_manager<backend> manager;
     manager.register_backend(std::move(mock1));
     manager.register_backend(std::move(mock2));
 

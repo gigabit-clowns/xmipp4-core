@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "backend_manager.hpp"
+#include "service_manager.hpp"
 #include "memory/pimpl.hpp"
 #include "platform/dynamic_shared_object.h"
 
@@ -14,14 +14,14 @@ namespace xmipp4
 {
 
 /**
- * @brief Stores a single instance of each type backend_manager.
+ * @brief Stores a single instance of each type service_manager.
  * 
  * The interface catalog allows to centralize interface managers.
  * 
- * @see backend_manager
+ * @see service_manager
  * 
  */
-class interface_catalog
+class service_catalog
 {
 public:
     /**
@@ -33,14 +33,14 @@ public:
      * 
      */
     XMIPP4_CORE_API 
-    explicit interface_catalog(bool register_builtin_backends = true);
-    interface_catalog(const interface_catalog& other) = delete;
-    XMIPP4_CORE_API interface_catalog(interface_catalog&& other) noexcept;
-    XMIPP4_CORE_API ~interface_catalog();
+    explicit service_catalog(bool register_builtin_backends = true);
+    service_catalog(const service_catalog& other) = delete;
+    XMIPP4_CORE_API service_catalog(service_catalog&& other) noexcept;
+    XMIPP4_CORE_API ~service_catalog();
 
-    interface_catalog& operator=(const interface_catalog& other) = delete;
+    service_catalog& operator=(const service_catalog& other) = delete;
     XMIPP4_CORE_API 
-    interface_catalog& operator=(interface_catalog&& other) noexcept;
+    service_catalog& operator=(service_catalog&& other) noexcept;
 
     /**
      * @brief Get a concrete interface manager.
@@ -49,26 +49,26 @@ public:
      * a given type, it constructs a new concrete interface manager of that
      * type. If called previously, it returns the same instance.
      * 
-     * @tparam T interface manager. Must be child class of backend_manager.
+     * @tparam T interface manager. Must be child class of service_manager.
      * @return T& the requested interface manager.
      */
     template <typename T>
-    typename std::enable_if<std::is_convertible<T*, backend_manager*>::value, T&>::type
-    get_backend_manager();
+    typename std::enable_if<std::is_convertible<T*, service_manager*>::value, T&>::type
+    get_service_manager();
 
 private:
     class implementation;
     memory::pimpl<implementation> m_implementation;
 
     XMIPP4_CORE_API
-    backend_manager* get_backend_manager(std::type_index type);
+    service_manager* get_service_manager(std::type_index type);
 
     XMIPP4_CORE_API
-    void create_backend_manager(std::type_index type,
-                                  std::unique_ptr<backend_manager> manager );
+    void create_service_manager(std::type_index type,
+                                  std::unique_ptr<service_manager> manager );
 
 };
 
 } // namespace xmipp4
 
-#include "interface_catalog.inl"
+#include "service_catalog.inl"

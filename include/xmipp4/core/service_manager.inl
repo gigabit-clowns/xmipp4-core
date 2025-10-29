@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "backend_manager.hpp"
+#include "service_manager.hpp"
 
 namespace xmipp4 
 {
 
 template <typename B>
 inline
-bool basic_backend_manager<B>::register_backend(std::unique_ptr<backend_type> backend)
+bool basic_service_manager<B>::register_backend(std::unique_ptr<backend_type> backend)
 {
     bool inserted = false;
     if (backend)
@@ -25,7 +25,7 @@ bool basic_backend_manager<B>::register_backend(std::unique_ptr<backend_type> ba
 
 template <typename B>
 inline
-void basic_backend_manager<B>::enumerate_backends(std::vector<std::string> &backends) const
+void basic_service_manager<B>::enumerate_backends(std::vector<std::string> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());
@@ -37,8 +37,8 @@ void basic_backend_manager<B>::enumerate_backends(std::vector<std::string> &back
 
 template <typename B>
 inline
-typename basic_backend_manager<B>::backend_type* 
-basic_backend_manager<B>::get_backend(const std::string &name) const
+typename basic_service_manager<B>::backend_type* 
+basic_service_manager<B>::get_backend(const std::string &name) const
 {
     backend_type *result = nullptr;
     
@@ -53,7 +53,7 @@ basic_backend_manager<B>::get_backend(const std::string &name) const
 
 template <typename B>
 inline
-void basic_backend_manager<B>::get_backends(std::vector<backend_type*> &backends) const
+void basic_service_manager<B>::get_backends(std::vector<backend_type*> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());
@@ -65,7 +65,7 @@ void basic_backend_manager<B>::get_backends(std::vector<backend_type*> &backends
 
 template <typename B>
 inline
-void basic_backend_manager<B>::get_available_backends(std::vector<backend_type*> &backends) const
+void basic_service_manager<B>::get_available_backends(std::vector<backend_type*> &backends) const
 {
     backends.clear();
     backends.reserve(m_backends.size());

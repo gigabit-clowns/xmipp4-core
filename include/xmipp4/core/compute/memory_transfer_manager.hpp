@@ -36,7 +36,7 @@ public:
     std::shared_ptr<memory_transfer> create_transfer(
         const memory_resource& src,
         const memory_resource& dst
-    ) const;
+    );
 
 private:
     class implementation;

@@ -5,6 +5,7 @@
 #include <xmipp4/core/compute/memory_transfer_backend.hpp>
 
 #include "host_memory_transfer.hpp"
+#include "memory_transfer_key.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -33,15 +34,22 @@ public:
     std::shared_ptr<memory_transfer> create_transfer(
         const memory_resource& src,
         const memory_resource& dst
-    ) const
+    )
     {
-        // TODO retrieve from cache
+        const memory_transfer_key key(src, dst);
+        const auto ite = m_cache.find(key);
+        if (ite != m_cache.end())
+        {
+            XMIPP4_ASSERT(  ite->second );
+            return ite->second;
+        }
 
         for (const auto& backend : m_backends)
         {
             const auto transfer = backend->create_transfer(src, dst);
             if (transfer)
             {
+                m_cache.emplace(key, transfer);
                 return transfer;
             }
         }
@@ -51,7 +59,10 @@ public:
 
 private:
     std::vector<std::unique_ptr<memory_transfer_backend>> m_backends;
-    // TODO cache
+    std::unordered_map<
+        memory_transfer_key, 
+        std::shared_ptr<memory_transfer>
+    > m_cache;
 
 };
 
@@ -86,7 +97,7 @@ bool memory_transfer_manager::register_backend(
 std::shared_ptr<memory_transfer> memory_transfer_manager::create_transfer(
     const memory_resource& src,
     const memory_resource& dst
-) const
+)
 {
     if (!m_implementation)
     {

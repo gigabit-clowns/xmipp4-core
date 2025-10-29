@@ -14,7 +14,7 @@
 using namespace xmipp4;
 using namespace xmipp4::compute;
 
-TEST_CASE( "enumerate devices", "[device_manager]" ) 
+TEST_CASE( "enumerate devices in device_manager should list all items", "[device_manager]" ) 
 {
     // Setup mocks
     auto mock1 = std::make_unique<mock_device_backend>();

@@ -16,7 +16,6 @@ class memory_allocator;
 class memory_transfer;
 class device;
 
-
 /**
  * @brief A memory_resource describes a physical memory region.
  * 

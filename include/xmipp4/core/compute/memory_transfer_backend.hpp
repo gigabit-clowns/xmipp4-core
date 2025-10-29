@@ -12,6 +12,11 @@ namespace compute
 class memory_resource;
 class memory_transfer;
 
+/**
+ * @brief The memory_transfer_backend interface allows to instantiate 
+ * memory_transfer objects for specific memory_resource combinations.
+ * 
+ */
 class memory_transfer_backend
 {
 public:
@@ -41,7 +46,6 @@ public:
     ) const = 0;
 
 };  
-
 
 } // namespace compute
 } // namespace xmipp4

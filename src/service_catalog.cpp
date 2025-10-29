@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/interface_catalog.hpp>
+#include <xmipp4/core/service_catalog.hpp>
 
 #include <xmipp4/core/plugin.hpp>
 
@@ -13,7 +13,7 @@
 namespace xmipp4
 {
 
-class interface_catalog::implementation
+class service_catalog::implementation
 {
 public:
     explicit implementation(bool register_builtin_backends)
@@ -58,26 +58,26 @@ private:
 
 };
 
-interface_catalog::interface_catalog(bool register_builtin_backends)
+service_catalog::service_catalog(bool register_builtin_backends)
     : m_implementation(register_builtin_backends)
 {
 }
 
-interface_catalog::interface_catalog(interface_catalog&& other) noexcept = default;
+service_catalog::service_catalog(service_catalog&& other) noexcept = default;
 
-interface_catalog::~interface_catalog() = default;
+service_catalog::~service_catalog() = default;
 
-interface_catalog& 
-interface_catalog::operator=(interface_catalog&& other) noexcept = default;
+service_catalog& 
+service_catalog::operator=(service_catalog&& other) noexcept = default;
 
 
 service_manager* 
-interface_catalog::get_service_manager(std::type_index type)
+service_catalog::get_service_manager(std::type_index type)
 {
     return m_implementation->get_service_manager(type);
 }
     
-void interface_catalog::create_service_manager(std::type_index type,
+void service_catalog::create_service_manager(std::type_index type,
                                                   std::unique_ptr<service_manager> manager )
 {
     m_implementation->create_service_manager(type, std::move(manager));

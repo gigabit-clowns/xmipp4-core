@@ -11,7 +11,7 @@ namespace xmipp4
 {
 
 class plugin;
-class interface_catalog;
+class service_catalog;
 
 /**
  * @brief Class managing a set of plugins.
@@ -127,6 +127,6 @@ void discover_plugins(plugin_manager &manager);
  */
 XMIPP4_CORE_API
 std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    interface_catalog &catalog );
+                                    service_catalog &catalog );
 
 } // namespace xmipp4

@@ -18,9 +18,9 @@ namespace xmipp4
  * An backend manager keeps track of all known implementations of a given
  * interface and provides utilities to access the most relevant implementation
  * for a given context. This is a base class for collecting them on an
- * interface_catalog.
+ * service_catalog.
  * 
- * @see interface_catalog
+ * @see service_catalog
  * 
  */
 class XMIPP4_CORE_API service_manager

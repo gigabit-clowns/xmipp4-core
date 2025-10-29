@@ -21,7 +21,7 @@ namespace xmipp4
  * @see service_manager
  * 
  */
-class interface_catalog
+class service_catalog
 {
 public:
     /**
@@ -33,14 +33,14 @@ public:
      * 
      */
     XMIPP4_CORE_API 
-    explicit interface_catalog(bool register_builtin_backends = true);
-    interface_catalog(const interface_catalog& other) = delete;
-    XMIPP4_CORE_API interface_catalog(interface_catalog&& other) noexcept;
-    XMIPP4_CORE_API ~interface_catalog();
+    explicit service_catalog(bool register_builtin_backends = true);
+    service_catalog(const service_catalog& other) = delete;
+    XMIPP4_CORE_API service_catalog(service_catalog&& other) noexcept;
+    XMIPP4_CORE_API ~service_catalog();
 
-    interface_catalog& operator=(const interface_catalog& other) = delete;
+    service_catalog& operator=(const service_catalog& other) = delete;
     XMIPP4_CORE_API 
-    interface_catalog& operator=(interface_catalog&& other) noexcept;
+    service_catalog& operator=(service_catalog&& other) noexcept;
 
     /**
      * @brief Get a concrete interface manager.
@@ -71,4 +71,4 @@ private:
 
 } // namespace xmipp4
 
-#include "interface_catalog.inl"
+#include "service_catalog.inl"

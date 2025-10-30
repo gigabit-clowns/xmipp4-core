@@ -20,14 +20,14 @@ class memory_transfer_backend;
  * to create memory_transfer objects between different memory_resource-s.
  * 
  */
-class memory_transfer_manager
+class memory_transfer_manager final
     : public service_manager
 {
 public:
     memory_transfer_manager() noexcept;
     memory_transfer_manager(const memory_transfer_manager &other) = delete;
     memory_transfer_manager(memory_transfer_manager &&other) noexcept;
-    virtual ~memory_transfer_manager();
+    ~memory_transfer_manager() override;
 
     memory_transfer_manager&
     operator=(const memory_transfer_manager &other) = delete;

@@ -21,8 +21,7 @@ public:
             const memory_resource& src,
             const memory_resource& dst
         ),
-        const,
-        override
+        const override
     );
 
 };

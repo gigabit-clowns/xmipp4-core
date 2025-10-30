@@ -53,7 +53,9 @@ void host_buffer::reset() noexcept
 {
     if (m_data)
     {
-        // TODO
+        memory::aligned_free(m_data);
+        m_data = nullptr;
+        m_size = 0;
     }
 }
 

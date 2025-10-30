@@ -4,6 +4,7 @@
 
 #include "host_memory_resource.hpp"
 
+#include <xmipp4/core/compute/device_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/memory/aligned_alloc.hpp>
 
@@ -85,11 +86,9 @@ memory_resource& host_buffer::get_memory_resource() const noexcept
     return host_memory_resource::get();
 }
 
-void host_buffer::record_queue(device_queue&, bool)
+void host_buffer::record_queue(device_queue& queue, bool)
 {
-    std::logic_error(
-        "host_buffer does not support device queues."
-    );
+    queue.wait_until_completed(); // Synchronous operation
 }
 
 } // namespace compute

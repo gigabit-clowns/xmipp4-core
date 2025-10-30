@@ -23,7 +23,7 @@ host_buffer::host_buffer(std::size_t size, std::size_t alignment)
     : m_size(memory::align_ceil(size, alignment))
     , m_data(memory::aligned_alloc(m_size, alignment))
 {
-    if(m_data == nullptr)
+    if(m_data == nullptr && m_size != 0)
     {
         throw std::bad_alloc();
     }

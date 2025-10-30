@@ -75,4 +75,3 @@ TEST_CASE( "memory_transfer_manager should return nullptr when unsupported", "[m
     REQUIRE( transfer == nullptr );
     
 }   
-

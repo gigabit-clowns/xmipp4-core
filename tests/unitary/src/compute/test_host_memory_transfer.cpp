@@ -94,7 +94,8 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
     mock_buffer source;
     host_buffer destination(1024, 16);
 
-    REQUIRE_CALL(const_cast<const mock_buffer&>(source), get_host_ptr())
+    const auto &const_source = source;
+    REQUIRE_CALL(const_source, get_host_ptr())
         .TIMES(2)
         .RETURN(nullptr);
 

@@ -30,8 +30,7 @@ host_buffer::host_buffer(std::size_t size, std::size_t alignment)
 }
 
 host_buffer::host_buffer(host_buffer &&other) noexcept
-    : m_size(0)
-    , m_data(nullptr)
+    : host_buffer()
 {
     swap(other);
 }

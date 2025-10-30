@@ -65,9 +65,6 @@ bool operator!=(
 namespace std
 {
 
-template <typename T>
-struct hash;
-
 template<>
 struct hash<xmipp4::compute::memory_transfer_key>
 {

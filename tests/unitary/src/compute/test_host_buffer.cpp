@@ -2,8 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/compute/memory_resource.hpp>
 #include <compute/host_buffer.hpp>
+
+#include <xmipp4/core/compute/memory_resource.hpp>
 
 #include "mock/mock_device_queue.hpp"
 

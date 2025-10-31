@@ -17,6 +17,37 @@ namespace compute
 
 host_memory_transfer host_memory_transfer::m_instance;
 
+
+static
+void copy_bytes(
+    const memory::byte *src_ptr, 
+    std::size_t src_size, 
+    memory::byte* dst_ptr, 
+    std::size_t dst_size,
+    const copy_region &region
+)
+{
+    const auto src_offset = region.get_source_offset();
+    const auto dst_offset = region.get_destination_offset();
+    const auto byte_count = region.get_count();
+
+    if (src_offset + byte_count > src_size)
+    {
+        throw std::out_of_range(
+            "Copy region exceeds source buffer size."
+        );
+    }
+
+    if (dst_offset + byte_count > dst_size)
+    {
+        throw std::out_of_range(
+            "Copy region exceeds destination buffer size."
+        );
+    }
+
+    std::memcpy(dst_ptr+dst_offset, src_ptr+src_offset, byte_count);
+}
+
 void host_memory_transfer::copy(
     const buffer &source, 
     buffer &destination,
@@ -47,27 +78,11 @@ void host_memory_transfer::copy(
         );
     }
 
+    const auto src_size = source.get_size();
+    const auto dst_size = destination.get_size();
     for (const auto &region : regions)
     {
-        const auto src_offset = region.get_source_offset();
-        const auto dst_offset = region.get_destination_offset();
-        const auto byte_count = region.get_count();
-
-        if (src_offset + byte_count > source.get_size())
-        {
-            throw std::out_of_range(
-                "Copy region exceeds source buffer size."
-            );
-        }
-
-        if (dst_offset + byte_count > destination.get_size())
-        {
-            throw std::out_of_range(
-                "Copy region exceeds destination buffer size."
-            );
-        }
-
-        std::memcpy(dst_ptr+dst_offset, src_ptr+src_offset, byte_count);
+        copy_bytes(src_ptr, src_size, dst_ptr, dst_size, region);
     }
 }
     

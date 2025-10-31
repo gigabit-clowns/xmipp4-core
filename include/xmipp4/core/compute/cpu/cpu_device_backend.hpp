@@ -31,8 +31,7 @@ public:
 
 
     std::shared_ptr<device>
-    create_device(std::size_t id,
-                  const device_create_parameters &params ) override;
+    create_device(std::size_t id) override;
 
     static bool register_at(device_manager &manager);
 

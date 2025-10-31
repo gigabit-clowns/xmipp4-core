@@ -53,15 +53,14 @@ bool device_manager::get_device_properties(const device_index &index,
 }
 
 std::shared_ptr<device> 
-device_manager::create_device(const device_index& index,
-                              const device_create_parameters &params ) const
+device_manager::create_device(const device_index& index) const
 {
     std::shared_ptr<device> result;
 
     auto *backend = get_backend(index.get_backend_name());
     if (backend)
     {
-        result = backend->create_device(index.get_device_id(), params);
+        result = backend->create_device(index.get_device_id());
     }
 
     return result;

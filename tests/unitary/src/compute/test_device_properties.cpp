@@ -8,7 +8,7 @@
 
 using namespace xmipp4::compute;
 
-TEST_CASE( "set attributes in device properties", "[compute]" )
+TEST_CASE( "setting and getting attributes in device_properties should preserve them", "[compute]" )
 {
     device_properties prop;
     prop.set_name("XMIPP A1234 SuperFast");

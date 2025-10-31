@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../platform/dynamic_shared_object.h"
 
@@ -11,15 +12,10 @@ namespace xmipp4
 namespace compute
 {
 
-class device_queue_pool;
-class device_memory_allocator;
-class host_memory_allocator;
-class device_to_host_transfer;
-class host_to_device_transfer;
-class device_copy;
+class device_queue;
 class device_event;
 class device_to_host_event;
-
+class memory_resource;
 
 
 /**
@@ -41,56 +37,46 @@ public:
     device& operator=(device &&other) = default;
 
     /**
-     * @brief Get a reference to the queue pool.
+     * @brief Enumerates all the memory resources known by this device.
      * 
-     * @return device_queue_pool& The queue pool.
+     * @param resources Output parameter where resources are written. The 
+     * resources are owned by this device object and the caller should not 
+     * attempt to free free them.
      */
-    virtual device_queue_pool& get_queue_pool() = 0;
+    virtual
+    void enumerate_memory_resources(
+        std::vector<memory_resource*> &resources // Evaluate output type
+    ) = 0;
 
     /**
-     * @brief Create a memory allocator for this device.
+     * @brief Evaluates whether this device can access the given memory 
+     * resource.
      * 
-     * @return std::shared_ptr<device_memory_allocator> 
+     * Certain memory_resource-s are accessible by definition. This includes
+     * any memory_resource enumerated by this device whose kind satisfies
+     * is_device_accessible. However, some other memory_resource-s can
+     * also be accessible. This method is suited to query those cases in
+     * runtime.
+     * 
+     * @param resource The resource to evaluated.
+     * @return true If the device can access the resource.
+     * @return false If the device cannot access the resource.
      */
-    virtual std::shared_ptr<device_memory_allocator> 
-    create_device_memory_allocator() = 0;
+    virtual 
+    bool can_access_memory_resource(const memory_resource &resource) const = 0;
 
     /**
-     * @brief Create a memory allocator for the host.
+     * @brief Create a device queue.
      * 
-     * @return std::shared_ptr<host_memory_allocator> 
+     * @return std::shared_ptr<device_queue> The created device queue.
      */
-    virtual std::shared_ptr<host_memory_allocator> 
-    create_host_memory_allocator() = 0;
-
-    /**
-     * @brief Create a host to device transfer engine.
-     * 
-     * @return std::shared_ptr<host_to_device_transfer> 
-     */
-    virtual std::shared_ptr<host_to_device_transfer> 
-    create_host_to_device_transfer() = 0;
-
-    /**
-     * @brief Create a device to host transfer engine.
-     * 
-     * @return std::shared_ptr<device_to_host_transfer> 
-     */
-    virtual std::shared_ptr<device_to_host_transfer> 
-    create_device_to_host_transfer() = 0;
-
-    /**
-     * @brief Create a device buffer copy engine.
-     * 
-     * @return std::shared_ptr<device_copy> 
-     */
-    virtual std::shared_ptr<device_copy> 
-    create_device_copy() = 0;
+    virtual std::shared_ptr<device_queue>
+    create_device_queue() = 0;
 
     /**
      * @brief Create an intra-device synchronization primitive.
      * 
-     * @return std::shared_ptr<device_event> 
+     * @return std::shared_ptr<device_event> The created device event.
      */
     virtual std::shared_ptr<device_event>
     create_device_event() = 0;
@@ -98,7 +84,8 @@ public:
     /**
      * @brief Create a device to host synchronization primitive.
      * 
-     * @return std::shared_ptr<device_to_host_event> 
+     * @return std::shared_ptr<device_to_host_event> The created 
+     * device_to_host_event.
      */
     virtual std::shared_ptr<device_to_host_event>
     create_device_to_host_event() = 0;

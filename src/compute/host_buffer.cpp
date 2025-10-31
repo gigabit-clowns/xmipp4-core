@@ -1,80 +1,97 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/compute/host_buffer.hpp>
+#include "host_buffer.hpp"
 
-#include <xmipp4/core/compute/checks.hpp>
+#include "host_memory_resource.hpp"
+
+#include <xmipp4/core/compute/device_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
-
-#include <stdexcept>
-#include <cstring>
+#include <xmipp4/core/memory/aligned_alloc.hpp>
 
 namespace xmipp4
 {
 namespace compute
 {
 
-template <typename DstBuffer, typename SrcBuffer>
-static
-std::shared_ptr<DstBuffer> 
-get_device_accessible_alias_impl(const std::shared_ptr<SrcBuffer> &buffer) noexcept
+host_buffer::host_buffer() noexcept
+    : m_size(0)
+    , m_data(nullptr)
 {
-    std::shared_ptr<DstBuffer> result;
+}
 
-    if (buffer)
+host_buffer::host_buffer(std::size_t size, std::size_t alignment)
+    : m_size(memory::align_ceil(size, alignment))
+    , m_data(memory::aligned_alloc(m_size, alignment))
+{
+    if(m_data == nullptr && m_size != 0)
     {
-        auto *alias = buffer->get_device_accessible_alias();
-        if (alias)
-        {
-            result = std::shared_ptr<DstBuffer>(buffer, alias);
-        }
+        throw std::bad_alloc();
+    }
+}
+
+host_buffer::host_buffer(host_buffer &&other) noexcept
+    : host_buffer()
+{
+    swap(other);
+}
+
+host_buffer::~host_buffer()
+{
+    reset();
+}
+
+host_buffer& host_buffer::operator=(host_buffer &&other) noexcept
+{
+    if (this != &other)
+    {
+        reset();
+        swap(other);
     }
 
-    return result;
+    return *this;
 }
 
-
-
-std::shared_ptr<device_buffer> 
-get_device_accessible_alias(const std::shared_ptr<host_buffer> &buffer) noexcept
+void host_buffer::reset() noexcept
 {
-    return get_device_accessible_alias_impl<device_buffer>(buffer);
-}
-
-std::shared_ptr<const device_buffer> 
-get_device_accessible_alias(const std::shared_ptr<const host_buffer> &buffer) noexcept
-{
-    return get_device_accessible_alias_impl<const device_buffer>(buffer);
-}
-
-void copy(const host_buffer &src_buffer, host_buffer &dst_buffer)
-{
-    const auto count = require_same_buffer_size(
-        src_buffer.get_size(), dst_buffer.get_size()
-    );
-    std::memcpy(
-        dst_buffer.get_data(),
-        src_buffer.get_data(),
-        count
-    );
-}
-
-void copy(const host_buffer &src_buffer, host_buffer &dst_buffer,
-          span<const copy_region> regions )
-{
-    const auto* src_data = src_buffer.get_data();
-    auto* dst_data = dst_buffer.get_data();
-    const auto src_count = src_buffer.get_size();
-    const auto dst_count = dst_buffer.get_size();
-    for (const copy_region &region : regions)
+    if (m_data)
     {
-        require_valid_region(region, src_count, dst_count);
-        std::memcpy(
-            memory::offset_bytes(dst_data, region.get_destination_offset()),
-            memory::offset_bytes(src_data, region.get_source_offset()),
-            region.get_count()
-        );
+        memory::aligned_free(m_data);
+        m_data = nullptr;
+        m_size = 0;
     }
+}
+
+void host_buffer::swap(host_buffer &other) noexcept
+{
+    std::swap(m_size, other.m_size);
+    std::swap(m_data, other.m_data);
+}
+
+void* host_buffer::get_host_ptr() noexcept
+{
+    return m_data;
+}
+
+const void* host_buffer::get_host_ptr() const noexcept
+{
+    return m_data;
+}
+
+std::size_t host_buffer::get_size() const noexcept
+{
+    return m_size;
+}
+
+memory_resource& host_buffer::get_memory_resource() const noexcept
+{
+    return host_memory_resource::get();
+}
+
+void host_buffer::record_queue(device_queue& queue, bool)
+{
+    queue.wait_until_completed(); // Synchronous operation
 }
 
 } // namespace compute
 } // namespace xmipp4
+

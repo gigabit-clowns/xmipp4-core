@@ -55,8 +55,7 @@ bool cpu_device_backend::get_device_properties(std::size_t id,
 }
 
 std::shared_ptr<device> 
-cpu_device_backend::create_device(std::size_t id, 
-                                   const device_create_parameters& )
+cpu_device_backend::create_device(std::size_t id)
 {
     std::shared_ptr<device> result;
 

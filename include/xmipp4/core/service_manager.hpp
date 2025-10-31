@@ -35,7 +35,7 @@ public:
     service_manager& operator=(service_manager&& other) = default;
 
     /**
-     * @brief Register backends bundled with the core.access_flag_bits
+     * @brief Register backends bundled with the core library.
      * 
      * This usually loads fallback implementations that are always 
      * available although they may not be the most efficient or performant.

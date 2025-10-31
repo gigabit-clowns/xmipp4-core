@@ -1,194 +1,137 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/compute/host_buffer.hpp>
-#include <xmipp4/core/compute/device_queue.hpp>
-
-#include <vector>
-
-#include "mock/mock_host_buffer.hpp"
-
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers.hpp>
 
-using namespace xmipp4;
+#include <compute/host_buffer.hpp>
+
+#include <xmipp4/core/compute/memory_resource.hpp>
+
+#include "mock/mock_device_queue.hpp"
+
+#include <sstream>
+
+
 using namespace xmipp4::compute;
 
-TEST_CASE( "get_device_accessible_alias should return null when null is provided", "[host_buffer]" )
+TEST_CASE( "default constructing a host_buffer should create an empty buffer", "[host_buffer]" )
 {
-    std::shared_ptr<host_buffer> buffer;
-    REQUIRE( get_device_accessible_alias(buffer) == nullptr );
-    std::shared_ptr<const host_buffer> const_buffer;
-    REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
+    host_buffer buffer;
+
+    REQUIRE( buffer.get_size() == 0 );
+    REQUIRE( buffer.get_host_ptr() == nullptr );
 }
 
-TEST_CASE( "get_device_accessible_alias should return null when buffer is not aliasable", "[host_buffer]" )
+TEST_CASE( "constructing a host_buffer should allocate enough space", "[host_buffer]" )
 {
-    auto mock = std::make_shared<mock_host_buffer>();
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
 
-    REQUIRE_CALL(*mock, get_device_accessible_alias())
-        .RETURN(nullptr)
-        .TIMES(1);
-    std::shared_ptr<host_buffer> buffer = mock;
-    REQUIRE( get_device_accessible_alias(buffer) == nullptr );
+    host_buffer buffer(size, alignment);
 
-    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
-        .RETURN(nullptr)
-        .TIMES(1);
-    std::shared_ptr<const host_buffer> const_buffer = mock;
-    REQUIRE( get_device_accessible_alias(const_buffer) == nullptr );
+    std::memset(buffer.get_host_ptr(), 0, buffer.get_size()); // Should not segfault
+
+    REQUIRE( buffer.get_size() >= size );
+    REQUIRE( reinterpret_cast<std::uintptr_t>(buffer.get_host_ptr()) % alignment == 0 );
 }
 
-TEST_CASE( "get_device_accessible_alias should return the alias when buffer is aliasable", "[host_buffer]" )
+TEST_CASE( "move constructing a host_buffer should move its resources", "[host_buffer]" )
 {
-    auto mock = std::make_shared<mock_host_buffer>();
-    auto *alias = reinterpret_cast<device_buffer*>(std::uintptr_t(0xDEADBEEF)); 
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
 
-    REQUIRE_CALL(*mock, get_device_accessible_alias())
-        .RETURN(alias)
-        .TIMES(1);
-    std::shared_ptr<host_buffer> buffer = mock;
-    REQUIRE( get_device_accessible_alias(buffer).get() == alias );
+    host_buffer buffer1(size, alignment);
+    const auto original_size = buffer1.get_size();
+    const auto original_ptr = buffer1.get_host_ptr();
 
-    REQUIRE_CALL(static_cast<const mock_host_buffer&>(*mock), get_device_accessible_alias())
-        .RETURN(alias)
-        .TIMES(1);
-    std::shared_ptr<const host_buffer> const_buffer = mock;
-    REQUIRE( get_device_accessible_alias(const_buffer).get() == alias );
+    REQUIRE( original_size >= size );
+    REQUIRE( original_ptr != nullptr );
+
+    auto buffer2 = std::move(buffer1);
+    REQUIRE( buffer2.get_size() == original_size );
+    REQUIRE( buffer2.get_host_ptr() == original_ptr );
+    REQUIRE( buffer1.get_size() == 0 );
+    REQUIRE( buffer1.get_host_ptr() == nullptr );
 }
 
-TEST_CASE( "copy host buffer", "[host_buffer]" )
+TEST_CASE( "move assigning a host_buffer should move its resources", "[host_buffer]" )
 {
-    const std::size_t n = 1024;
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
 
-    std::vector<std::uint8_t> src_data(n);
-    const void *src_ptr = src_data.data();
-    mock_host_buffer src_buffer;
-    REQUIRE_CALL(src_buffer, get_size())
-        .RETURN(n)
-        .TIMES(1);
-    const mock_host_buffer &const_src_buffer = src_buffer;
-    REQUIRE_CALL(const_src_buffer, get_data())
-        .RETURN(src_ptr)
-        .TIMES(1);
+    host_buffer buffer1(size, alignment);
+    const auto original_size = buffer1.get_size();
+    const auto original_ptr = buffer1.get_host_ptr();
 
-    std::vector<std::uint8_t> dst_data(n);
-    void *dst_ptr = dst_data.data();
-    mock_host_buffer dst_buffer;
-    REQUIRE_CALL(dst_buffer, get_size())
-        .RETURN(n)
-        .TIMES(1);
-    REQUIRE_CALL(dst_buffer, get_data())
-        .RETURN(dst_ptr)
-        .TIMES(1);
+    REQUIRE( original_size >= size );
+    REQUIRE( original_ptr != nullptr );
 
-    // populate
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        src_data[i] = i*i + 2*i + 1;
-    }
-
-    copy(src_buffer, dst_buffer);
-
-    // check
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        REQUIRE( dst_data[i] == src_data[i] );
-    }
+    host_buffer buffer2(size + 2048, alignment);
+    buffer2 = std::move(buffer1);
+    REQUIRE( buffer2.get_size() == original_size );
+    REQUIRE( buffer2.get_host_ptr() == original_ptr );
+    REQUIRE( buffer1.get_size() == 0 );
+    REQUIRE( buffer1.get_host_ptr() == nullptr );
 }
 
-TEST_CASE( "copy host buffer with different size should throw", "[host_buffer]" )
+TEST_CASE( "resetting a host_buffer should free its resources", "[host_buffer]" )
 {
-    mock_host_buffer src;
-    REQUIRE_CALL(src, get_size())
-        .RETURN(8)
-        .TIMES(2);
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
 
-    mock_host_buffer dst;
-    REQUIRE_CALL(dst, get_size())
-        .RETURN(10)
-        .TIMES(2);
+    host_buffer buffer(size, alignment);
+    REQUIRE( buffer.get_size() >= size );
+    REQUIRE( buffer.get_host_ptr() != nullptr );
 
-    REQUIRE_THROWS_AS( copy(src, dst), std::invalid_argument ); 
-    REQUIRE_THROWS_WITH( copy(src, dst), "Both buffers must have the same size" ); 
+    buffer.reset();
+    REQUIRE( buffer.get_size() == 0 );
+    REQUIRE( buffer.get_host_ptr() == nullptr );
 }
 
-TEST_CASE( "copy host buffer regions", "[host_buffer]" )
+TEST_CASE( "swapping two host_buffers should exchange their resources", "[host_buffer]" )
 {
-    std::vector<std::uint8_t> src_data(1024);
-    const void *src_ptr = src_data.data();
-    mock_host_buffer src_buffer;
-    REQUIRE_CALL(src_buffer, get_size())
-        .RETURN(1024)
-        .TIMES(1);
-    const mock_host_buffer &const_src_buffer = src_buffer;
-    REQUIRE_CALL(const_src_buffer, get_data())
-        .RETURN(src_ptr)
-        .TIMES(1);
+    const std::size_t size1 = 1024;
+    const std::size_t size2 = 2048;
+    const std::size_t alignment = 64;
 
-    std::vector<std::uint8_t> dst_data(2048);
-    void *dst_ptr = dst_data.data();
-    mock_host_buffer dst_buffer;
-    REQUIRE_CALL(dst_buffer, get_size())
-        .RETURN(2048)
-        .TIMES(1);
-    REQUIRE_CALL(dst_buffer, get_data())
-        .RETURN(dst_ptr)
-        .TIMES(1);
+    host_buffer buffer1(size1, alignment);
+    host_buffer buffer2(size2, alignment);
 
-    std::array<copy_region, 2> regions = {
-        copy_region(512, 0, 512),
-        copy_region(0, 1536, 512),
-    };
+    const auto original_size1 = buffer1.get_size();
+    const auto original_ptr1 = buffer1.get_host_ptr();
+    const auto original_size2 = buffer2.get_size();
+    const auto original_ptr2 = buffer2.get_host_ptr();
 
-    // populate
-    for (std::size_t i = 0; i < 1024; ++i)
-    {
-        src_data[i] = 4*i*i + i + 2;
-    }
+    buffer1.swap(buffer2);
 
-    copy(src_buffer, dst_buffer, make_span(regions));
-
-    // check
-    for (std::size_t i = 0; i < 512; ++i)
-    {
-        REQUIRE( dst_data[i] == src_data[i+512] );
-    }
-    for (std::size_t i = 0; i < 512; ++i)
-    {
-        REQUIRE( dst_data[i+1536] == src_data[i] );
-    }
+    REQUIRE( buffer1.get_size() == original_size2 );
+    REQUIRE( buffer1.get_host_ptr() == original_ptr2 );
+    REQUIRE( buffer2.get_size() == original_size1 );
+    REQUIRE( buffer2.get_host_ptr() == original_ptr1 );
 }
 
-TEST_CASE( "copy out of bounds host buffer regions", "[host_buffer]" )
+TEST_CASE( "recording a device_queue on a host_buffer should synchronize the queue", "[host_buffer]" )
 {
-    mock_host_buffer src;
-    REQUIRE_CALL(src, get_size())
-        .RETURN(1024)
-        .TIMES(4);
-    const mock_host_buffer &const_src = src;
-    REQUIRE_CALL(const_src, get_data())
-        .RETURN(nullptr)
-        .TIMES(4);
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
 
-    mock_host_buffer dst;
-    REQUIRE_CALL(dst, get_size())
-        .RETURN(512)
-        .TIMES(4);
-    REQUIRE_CALL(dst, get_data())
-        .RETURN(nullptr)
-        .TIMES(4);
+    host_buffer buffer(size, alignment);
+    mock_device_queue queue;
 
-    std::array<copy_region, 1> regions;
-    
-    regions = {
-        copy_region(1024, 0, 1),
-    };
-    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::out_of_range ); 
-    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Source region must be within buffer bounds" ); 
+    REQUIRE_CALL(queue, wait_until_completed());
+    buffer.record_queue(queue, false);
 
-    regions = {
-        copy_region(0, 512, 1),
-    };
-    REQUIRE_THROWS_AS( copy(src, dst, make_span(regions)), std::out_of_range ); 
-    REQUIRE_THROWS_WITH( copy(src, dst, make_span(regions)), "Destination region must be within buffer bounds" ); 
+    REQUIRE_CALL(queue, wait_until_completed());
+    buffer.record_queue(queue, true);
+}
+
+TEST_CASE( "host_buffer should return the host memory resource in get_memory_resource", "[host_buffer]" )
+{
+    const std::size_t size = 1024;
+    const std::size_t alignment = 64;
+
+    host_buffer buffer(size, alignment);
+    auto& resource1 = buffer.get_memory_resource();
+    auto& resource2 = get_host_memory_resource();
+
+    REQUIRE( &resource1 == &resource2 );
 }

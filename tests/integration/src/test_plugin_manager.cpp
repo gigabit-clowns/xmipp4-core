@@ -40,24 +40,18 @@ TEST_CASE( "load invalid plugin in the plugin manager should throw", "[plugin_ma
     );
     REQUIRE( manager.get_plugin_count() == 0 );
 
-    REQUIRE_THROWS_AS( 
-        manager.load_plugin(get_mock_plugin_path("faulty_plugin1")), 
-        plugin_load_error 
-    );
-    REQUIRE_THROWS_WITH( 
-        manager.load_plugin(get_mock_plugin_path("faulty_plugin1")),
-        "xmipp4_get_plugin returned NULL."
-    );
+	REQUIRE_THROWS_MATCHES( 
+		manager.load_plugin(get_mock_plugin_path("faulty_plugin1")),
+		plugin_load_error,
+		"xmipp4_get_plugin returned NULL."
+	);
     REQUIRE( manager.get_plugin_count() == 0 );
 
-    REQUIRE_THROWS_AS( 
-        manager.load_plugin(get_mock_plugin_path("faulty_plugin2")), 
-        plugin_load_error
-    );
-    REQUIRE_THROWS_WITH( 
-        manager.load_plugin(get_mock_plugin_path("faulty_plugin2")), 
-        "xmipp4_get_plugin symbol could not be found in shared object."
-    );
+	REQUIRE_THROWS_MATCHES( 
+		manager.load_plugin(get_mock_plugin_path("faulty_plugin2")),
+		plugin_load_error,
+		"xmipp4_get_plugin symbol could not be found in shared object."
+	);
     REQUIRE( manager.get_plugin_count() == 0 );
 }
 

@@ -125,23 +125,15 @@ TEST_CASE("make_custom_layout with inhomogeneous arrays should throw", "[strided
     };
     const auto offset = 1234;
     
-    REQUIRE_THROWS_AS( 
-        strided_layout::make_custom_layout(
-            xmipp4::make_span(extents),
-            xmipp4::make_span(strides),
-            offset
-        ),
-        std::invalid_argument
-    );
-
-    REQUIRE_THROWS_WITH( 
-        strided_layout::make_custom_layout(
-            xmipp4::make_span(extents),
-            xmipp4::make_span(strides),
-            offset
-        ),
-        "Extents and strides must have the same number of elements"
-    );
+	REQUIRE_THROWS_MATCHES(
+		strided_layout::make_custom_layout(
+			xmipp4::make_span(extents),
+			xmipp4::make_span(strides),
+			offset
+		),
+		std::invalid_argument,
+		"Extents and strides must have the same number of elements"
+	);
 }
 
 TEST_CASE("default constructed strided_layout should have no axes and an offset of zero", "[strided_layout]")
@@ -368,8 +360,11 @@ TEST_CASE( "apply_subscripts in strided_layout with two ellipsis should throw", 
         ellipsis()
     };
 
-    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "Two ellipsis tags were encountered when processing subscripts" );
+	REQUIRE_THROWS_MATCHES(
+		layout.apply_subscripts(xmipp4::make_span(subscripts)),
+		std::invalid_argument,
+		"Two ellipsis tags were encountered when processing subscripts"
+	);
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with too many subscripts should throw", "[strided_layout]" )
@@ -386,8 +381,11 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts should t
         2
     };
 
-    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "An index subscript was encountered, but there are no more axes to process" );
+	REQUIRE_THROWS_MATCHES(
+		layout.apply_subscripts(xmipp4::make_span(subscripts)),
+		std::invalid_argument,
+		"An index subscript was encountered, but there are no more axes to process"
+	);
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with too many subscripts and ellipsis should throw", "[strided_layout]" )
@@ -405,8 +403,11 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts and elli
         2
     };
 
-    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "A slice subscript was encountered, but there are no more axes to process" );
+	REQUIRE_THROWS_MATCHES(
+		layout.apply_subscripts(xmipp4::make_span(subscripts)),
+		std::invalid_argument,
+		"A slice subscript was encountered, but there are no more axes to process"
+	);
 }
 
 TEST_CASE( "apply_subscripts in strided_layout with out of bounds index should throw", "[strided_layout]" )
@@ -463,8 +464,11 @@ TEST_CASE( "apply_subscripts with an index in a default constructed layout shoul
         0
     };
 
-    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "An index subscript was encountered, but there are no more axes to process" );
+	REQUIRE_THROWS_MATCHES(
+		layout.apply_subscripts(xmipp4::make_span(subscripts)),
+		std::invalid_argument,
+		"An index subscript was encountered, but there are no more axes to process"
+	);
 }
 
 TEST_CASE( "apply_subscripts with an slice in a default constructed layout should throw", "[strided_layout]" )
@@ -475,8 +479,11 @@ TEST_CASE( "apply_subscripts with an slice in a default constructed layout shoul
         make_slice(1)
     };
 
-    REQUIRE_THROWS_AS( layout.apply_subscripts(xmipp4::make_span(subscripts)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.apply_subscripts(xmipp4::make_span(subscripts)), "A slice subscript was encountered, but there are no more axes to process" );
+	REQUIRE_THROWS_MATCHES(
+		layout.apply_subscripts(xmipp4::make_span(subscripts)),
+		std::invalid_argument,
+		"A slice subscript was encountered, but there are no more axes to process"
+	);
 }
 
 TEST_CASE("transpose in strided_layout should reverse the order of its axes", "[strided_layout]")
@@ -547,8 +554,11 @@ TEST_CASE("permute in strided_layout with valid permutation should throw if not 
     const auto layout = make_test_layout();
     const std::vector<std::size_t> permutation = {0, 1, 2, 3, 4, 4};
 
-    REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Index 5 is missing in the axis permutation" );
+	REQUIRE_THROWS_MATCHES(
+		layout.permute(xmipp4::make_span(permutation)),
+		std::invalid_argument,
+		"Index 5 is missing in the axis permutation"
+	);
 }
 
 TEST_CASE("permute in a default constructed strided_layout and empty permutation should succeed and return empty permutation", "[strided_layout]")
@@ -567,8 +577,11 @@ TEST_CASE("permute in a default constructed strided_layout and non-empty permuta
     const strided_layout layout;
     const std::vector<std::size_t> permutation = {0};
 
-    REQUIRE_THROWS_AS( layout.permute(xmipp4::make_span(permutation)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.permute(xmipp4::make_span(permutation)), "Axis permutation's length does not match the required count" );
+	REQUIRE_THROWS_MATCHES(
+		layout.permute(xmipp4::make_span(permutation)),
+		std::invalid_argument,
+		"Axis permutation's length does not match the required count"
+	);
 }
 
 TEST_CASE("matrix_transpose in strided_layout should swap the requested axes", "[strided_layout]")
@@ -610,20 +623,32 @@ TEST_CASE("matrix_transpose in strided_layout should throw when one of the axes 
 {
     const auto layout = make_test_layout();
 
-    REQUIRE_THROWS_AS( layout.matrix_transpose(6, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_transpose(6, 0), "Index 6 is out of bounds for extent 6" );
-    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 6), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_transpose(6, 0), "Index 6 is out of bounds for extent 6" );
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_transpose(6, 0),
+		std::out_of_range,
+		"Index 6 is out of bounds for extent 6"
+	);
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_transpose(0, 6),
+		std::out_of_range,
+		"Index 6 is out of bounds for extent 6" // TODO: Check if this message is correct
+	);
 }
 
 TEST_CASE("matrix_transpose in default constructed strided_layout should always fail", "[strided_layout]")
 {
     const strided_layout layout;
 
-    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_transpose(0, 0), "Cannot swap axes on an empty layout" );
-    REQUIRE_THROWS_AS( layout.matrix_transpose(0, 1), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_transpose(0, 1), "Cannot swap axes on an empty layout" );
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_transpose(0, 0),
+		std::out_of_range,
+		"Cannot swap axes on an empty layout"
+	);
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_transpose(0, 1),
+		std::out_of_range,
+		"Cannot swap axes on an empty layout"
+	);
 }
 
 TEST_CASE("matrix_diagonal in strided_layout should return a layout with the diagonal elements", "[strided_layout]")
@@ -662,20 +687,32 @@ TEST_CASE("matrix_diagonal in strided_layout should throw when one of the axes i
 {
     const auto layout = make_test_layout();
 
-    REQUIRE_THROWS_AS( layout.matrix_diagonal(6, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_diagonal(6, 0), "Index 6 is out of bounds for extent 6" );
-    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 6), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_diagonal(6, 0), "Index 6 is out of bounds for extent 6" );
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_diagonal(6, 0),
+		std::out_of_range,
+		"Index 6 is out of bounds for extent 6"
+	);
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_diagonal(0, 6),
+		std::out_of_range,
+		"Index 6 is out of bounds for extent 6" // TODO: Check if this message is correct
+	);
 }
 
 TEST_CASE("matrix_diagonal in default constructed strided_layout should always fail", "[strided_layout]")
 {
     const strided_layout layout;
 
-    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 0), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_diagonal(0, 0), "Cannot call matrix_diagonal on an empty layout" );
-    REQUIRE_THROWS_AS( layout.matrix_diagonal(0, 1), std::out_of_range );
-    REQUIRE_THROWS_WITH( layout.matrix_diagonal(0, 1), "Cannot call matrix_diagonal on an empty layout" );
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_diagonal(0, 0),
+		std::out_of_range,
+		"Cannot call matrix_diagonal on an empty layout"
+	);
+	REQUIRE_THROWS_MATCHES(
+		layout.matrix_diagonal(0, 1),
+		std::out_of_range,
+		"Cannot call matrix_diagonal on an empty layout"
+	);
 }
 
 TEST_CASE("squeeze in strided_layout should remove all axes of extent 1", "[strided_layout]")
@@ -763,8 +800,11 @@ TEST_CASE("broadcast_to in strided_layout should throw when the provided extents
     const auto layout = make_test_layout();
     const std::vector<std::size_t> target_extents = {56, 24, 1, 10, 8};
 
-    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast layout with 6 axes into a shape of 5 dimensions." );
+	REQUIRE_THROWS_MATCHES(
+		layout.broadcast_to(xmipp4::make_span(target_extents)),
+		std::invalid_argument,
+		"Can not broadcast layout with 6 axes into a shape of 5 dimensions." // TODO: Use cannot instead of can not? Maybe could not?
+	);
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadcastable", "[strided_layout]")
@@ -772,6 +812,9 @@ TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadca
     const auto layout = make_test_layout();
     const std::vector<std::size_t> target_extents = {120, 55, 24, 1, 10, 8};
 
-    REQUIRE_THROWS_AS( layout.broadcast_to(xmipp4::make_span(target_extents)), std::invalid_argument );
-    REQUIRE_THROWS_WITH( layout.broadcast_to(xmipp4::make_span(target_extents)), "Can not broadcast axis of extent 56 into an extent of 55." );
+	REQUIRE_THROWS_MATCHES(
+		layout.broadcast_to(xmipp4::make_span(target_extents)),
+		std::invalid_argument,
+		"Can not broadcast axis of extent 56 into an extent of 55." // TODO: Use cannot instead of can not? Maybe could not?
+	);
 }

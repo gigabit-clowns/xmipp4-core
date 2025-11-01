@@ -103,8 +103,11 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
         copy_region(0, 0, 64),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::invalid_argument);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Source buffer is not host accessible.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::invalid_argument,
+		"Source buffer is not host accessible."
+	);
 
 }
 
@@ -122,8 +125,11 @@ TEST_CASE( "copy in host_memory_transfer should throw if the destination is not 
         copy_region(0, 0, 64),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::invalid_argument);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Destination buffer is not host accessible.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::invalid_argument,
+		"Destination buffer is not host accessible."
+	);
 
 }
 
@@ -138,8 +144,11 @@ TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds
         copy_region(1025, 0, 1024),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::out_of_range);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Copy region exceeds source buffer size.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::out_of_range,
+		"Copy region exceeds source buffer size."
+	);
 
 }
 
@@ -154,7 +163,10 @@ TEST_CASE( "copy in host_memory_transfer should throw if a destination region ex
         copy_region(1024, 1, 1024),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::out_of_range);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Copy region exceeds destination buffer size.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::out_of_range,
+		"Copy region exceeds destination buffer size."
+	);
 
 }

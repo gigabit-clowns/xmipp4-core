@@ -112,6 +112,9 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         "Could not disambiguate among multiple "
         "communicator_backend-s. Ensure that only one has "
         "been installed.";
-    REQUIRE_THROWS_AS( manager.get_preferred_backend(), ambiguous_backend_error );
-    REQUIRE_THROWS_WITH( manager.get_preferred_backend(), message );
+	REQUIRE_THROWS_MATCHES( 
+		manager.get_preferred_backend(),
+		ambiguous_backend_error,
+		message
+	);
 }

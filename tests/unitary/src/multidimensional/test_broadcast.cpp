@@ -49,6 +49,9 @@ TEST_CASE("broadcast_extents with incompatible axis should fail", "[broadcast]")
     std::vector<std::size_t> extents1 = {5, 1, 4, 3};
     std::vector<std::size_t> extents2 = {5, 6, 2, 3};
 
-    REQUIRE_THROWS_AS( broadcast_extents(extents1, extents2), broadcast_error );
-    REQUIRE_THROWS_WITH( broadcast_extents(extents1, extents2), "Broadcast error: extents (5, 6, 4, 3) and (5, 6, 2, 3) are not compatible." );
+	REQUIRE_THROWS_MATCHES( 
+		broadcast_extents(extents1, extents2),
+		broadcast_error,
+		"Broadcast error: extents (5, 6, 4, 3) and (5, 6, 2, 3) are not compatible."
+	);
 }

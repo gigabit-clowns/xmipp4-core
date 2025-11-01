@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
@@ -133,7 +133,7 @@ TEST_CASE("make_custom_layout with inhomogeneous arrays should throw", "[strided
 			offset
 		),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Extents and strides must have the same number of elements")
+		Catch::Matchers::Message("Extents and strides must have the same number of elements")
 	);
 }
 
@@ -364,7 +364,7 @@ TEST_CASE( "apply_subscripts in strided_layout with two ellipsis should throw", 
 	REQUIRE_THROWS_MATCHES(
 		layout.apply_subscripts(xmipp4::make_span(subscripts)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Two ellipsis tags were encountered when processing subscripts")
+		Catch::Matchers::Message("Two ellipsis tags were encountered when processing subscripts")
 	);
 }
 
@@ -385,7 +385,7 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts should t
 	REQUIRE_THROWS_MATCHES(
 		layout.apply_subscripts(xmipp4::make_span(subscripts)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("An index subscript was encountered, but there are no more axes to process")
+		Catch::Matchers::Message("An index subscript was encountered, but there are no more axes to process")
 	);
 }
 
@@ -407,7 +407,7 @@ TEST_CASE( "apply_subscripts in strided_layout with too many subscripts and elli
 	REQUIRE_THROWS_MATCHES(
 		layout.apply_subscripts(xmipp4::make_span(subscripts)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("A slice subscript was encountered, but there are no more axes to process")
+		Catch::Matchers::Message("A slice subscript was encountered, but there are no more axes to process")
 	);
 }
 
@@ -468,7 +468,7 @@ TEST_CASE( "apply_subscripts with an index in a default constructed layout shoul
 	REQUIRE_THROWS_MATCHES(
 		layout.apply_subscripts(xmipp4::make_span(subscripts)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("An index subscript was encountered, but there are no more axes to process")
+		Catch::Matchers::Message("An index subscript was encountered, but there are no more axes to process")
 	);
 }
 
@@ -483,7 +483,7 @@ TEST_CASE( "apply_subscripts with an slice in a default constructed layout shoul
 	REQUIRE_THROWS_MATCHES(
 		layout.apply_subscripts(xmipp4::make_span(subscripts)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("A slice subscript was encountered, but there are no more axes to process")
+		Catch::Matchers::Message("A slice subscript was encountered, but there are no more axes to process")
 	);
 }
 
@@ -558,7 +558,7 @@ TEST_CASE("permute in strided_layout with valid permutation should throw if not 
 	REQUIRE_THROWS_MATCHES(
 		layout.permute(xmipp4::make_span(permutation)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Index 5 is missing in the axis permutation")
+		Catch::Matchers::Message("Index 5 is missing in the axis permutation")
 	);
 }
 
@@ -581,7 +581,7 @@ TEST_CASE("permute in a default constructed strided_layout and non-empty permuta
 	REQUIRE_THROWS_MATCHES(
 		layout.permute(xmipp4::make_span(permutation)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Axis permutation's length does not match the required count")
+		Catch::Matchers::Message("Axis permutation's length does not match the required count")
 	);
 }
 
@@ -627,12 +627,12 @@ TEST_CASE("matrix_transpose in strided_layout should throw when one of the axes 
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(6, 0),
 		std::out_of_range,
-		Catch::Matchers::Equals("Index 6 is out of bounds for extent 6")
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6")
 	);
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 6),
 		std::out_of_range,
-		Catch::Matchers::Equals("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
 	);
 }
 
@@ -643,12 +643,12 @@ TEST_CASE("matrix_transpose in default constructed strided_layout should always 
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Equals("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Cannot swap axes on an empty layout")
 	);
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 1),
 		std::out_of_range,
-		Catch::Matchers::Equals("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Cannot swap axes on an empty layout")
 	);
 }
 
@@ -691,12 +691,12 @@ TEST_CASE("matrix_diagonal in strided_layout should throw when one of the axes i
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(6, 0),
 		std::out_of_range,
-		Catch::Matchers::Equals("Index 6 is out of bounds for extent 6")
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6")
 	);
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 6),
 		std::out_of_range,
-		Catch::Matchers::Equals("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
 	);
 }
 
@@ -707,12 +707,12 @@ TEST_CASE("matrix_diagonal in default constructed strided_layout should always f
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Equals("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
 	);
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 1),
 		std::out_of_range,
-		Catch::Matchers::Equals("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
 	);
 }
 
@@ -804,7 +804,7 @@ TEST_CASE("broadcast_to in strided_layout should throw when the provided extents
 	REQUIRE_THROWS_MATCHES(
 		layout.broadcast_to(xmipp4::make_span(target_extents)),
 		std::invalid_argument,
-		Catch::Matchers::Contains("Can not broadcast layout with 6 axes into a shape of 5 dimensions.") // TODO: Use cannot instead of can not? Maybe could not?
+		Catch::Matchers::Message("Can not broadcast layout with 6 axes into a shape of 5 dimensions.") // TODO: Use cannot instead of can not? Maybe could not?
 	);
 }
 
@@ -816,6 +816,6 @@ TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadca
 	REQUIRE_THROWS_MATCHES(
 		layout.broadcast_to(xmipp4::make_span(target_extents)),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Can not broadcast axis of extent 56 into an extent of 55.") // TODO: Use cannot instead of can not? Maybe could not?
+		Catch::Matchers::Message("Can not broadcast axis of extent 56 into an extent of 55.") // TODO: Use cannot instead of can not? Maybe could not?
 	);
 }

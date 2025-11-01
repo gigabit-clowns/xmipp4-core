@@ -11,7 +11,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
@@ -116,6 +116,6 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
 	REQUIRE_THROWS_MATCHES( 
 		manager.get_preferred_backend(),
 		ambiguous_backend_error,
-		Catch::Matchers::Equals(message)
+		Catch::Matchers::Message(message)
 	);
 }

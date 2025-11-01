@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include <compute/host_memory_transfer.hpp>
 #include <compute/host_buffer.hpp>
@@ -107,7 +107,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
 	REQUIRE_THROWS_MATCHES(
 		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Source buffer is not host accessible.")
+		Catch::Matchers::Message("Source buffer is not host accessible.")
 	);
 
 }
@@ -129,7 +129,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if the destination is not 
 	REQUIRE_THROWS_MATCHES(
 		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
 		std::invalid_argument,
-		Catch::Matchers::Equals("Destination buffer is not host accessible.")
+		Catch::Matchers::Message("Destination buffer is not host accessible.")
 	);
 
 }
@@ -148,7 +148,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds
 	REQUIRE_THROWS_MATCHES(
 		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
 		std::out_of_range,
-		Catch::Matchers::Equals("Copy region exceeds source buffer size.")
+		Catch::Matchers::Message("Copy region exceeds source buffer size.")
 	);
 
 }
@@ -167,7 +167,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if a destination region ex
 	REQUIRE_THROWS_MATCHES(
 		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
 		std::out_of_range,
-		Catch::Matchers::Equals("Copy region exceeds destination buffer size.")
+		Catch::Matchers::Message("Copy region exceeds destination buffer size.")
 	);
 
 }

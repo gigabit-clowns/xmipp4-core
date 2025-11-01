@@ -632,7 +632,7 @@ TEST_CASE("matrix_transpose in strided_layout should throw when one of the axes 
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 6),
 		std::out_of_range,
-		Catch::Matchers::Message("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6")
 	);
 }
 
@@ -696,7 +696,7 @@ TEST_CASE("matrix_diagonal in strided_layout should throw when one of the axes i
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 6),
 		std::out_of_range,
-		Catch::Matchers::Message("Index 6 is out of bounds for extent 6") // TODO: Check if this message is correct
+		Catch::Matchers::Message("Index 6 is out of bounds for extent 6")
 	);
 }
 
@@ -804,7 +804,7 @@ TEST_CASE("broadcast_to in strided_layout should throw when the provided extents
 	REQUIRE_THROWS_MATCHES(
 		layout.broadcast_to(xmipp4::make_span(target_extents)),
 		std::invalid_argument,
-		Catch::Matchers::Message("Can not broadcast layout with 6 axes into a shape of 5 dimensions.") // TODO: Use cannot instead of can not? Maybe could not?
+		Catch::Matchers::Message("Cannot broadcast layout with 6 axes into a shape of 5 dimensions.")
 	);
 }
 
@@ -816,6 +816,6 @@ TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadca
 	REQUIRE_THROWS_MATCHES(
 		layout.broadcast_to(xmipp4::make_span(target_extents)),
 		std::invalid_argument,
-		Catch::Matchers::Message("Can not broadcast axis of extent 56 into an extent of 55.") // TODO: Use cannot instead of can not? Maybe could not?
+		Catch::Matchers::Message("Cannot broadcast axis of extent 56 into an extent of 55.")
 	);
 }

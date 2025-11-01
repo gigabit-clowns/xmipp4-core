@@ -511,7 +511,7 @@ public:
             if (!multidimensional::broadcast_to(axis, extent))
             {
                 std::ostringstream oss;
-                oss << "Can not broadcast axis of extent " << axis.get_extent()
+                oss << "Cannot broadcast axis of extent " << axis.get_extent()
                     << " into an extent of " << extent << ".";
                 throw std::invalid_argument(oss.str());
             }

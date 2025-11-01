@@ -97,7 +97,6 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
 
     const auto &const_source = source;
     REQUIRE_CALL(const_source, get_host_ptr())
-        .TIMES(1)
         .RETURN(nullptr);
 
     const std::array<copy_region, 1> regions = {{
@@ -119,7 +118,6 @@ TEST_CASE( "copy in host_memory_transfer should throw if the destination is not 
     host_buffer source(1024, 16);
 
     REQUIRE_CALL(destination, get_host_ptr())
-        .TIMES(1)
         .RETURN(nullptr);
 
     const std::array<copy_region, 1> regions = {{

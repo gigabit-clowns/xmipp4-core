@@ -3,7 +3,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
-#include <xmipp4/core/compute/buffer.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
 
 namespace xmipp4 
 {

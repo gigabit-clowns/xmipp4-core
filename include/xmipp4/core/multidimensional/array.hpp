@@ -13,12 +13,12 @@
 
 namespace xmipp4 
 {
-namespace compute
+namespace hardware
 {
 
 class buffer;
 
-} // namespace compute
+} // namespace hardware
 
 namespace multidimensional
 {
@@ -28,7 +28,7 @@ class strided_layout;
 class array
 {
 public:
-    using storage_type = compute::buffer;
+    using storage_type = hardware::buffer;
 
     array();
     array(strided_layout layout, 

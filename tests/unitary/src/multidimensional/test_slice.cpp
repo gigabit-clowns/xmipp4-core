@@ -86,7 +86,7 @@ TEST_CASE( "sanitize_slice should throw with a stride of zero" )
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::invalid_argument,
-		"Slice step cannot be zero."
+		Catch::Matchers::Message("Slice step cannot be zero.")
 	);
 }
 
@@ -163,7 +163,7 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::out_of_range,
-		expected_error_msg
+		Catch::Matchers::Message(expected_error_msg)
 	);
 }
 
@@ -226,6 +226,6 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds slice count value"
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::out_of_range,
-		expected_error_msg
+		Catch::Matchers::Message(expected_error_msg)
 	);
 }

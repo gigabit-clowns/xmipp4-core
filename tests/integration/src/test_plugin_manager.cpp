@@ -43,14 +43,14 @@ TEST_CASE( "load invalid plugin in the plugin manager should throw", "[plugin_ma
 	REQUIRE_THROWS_MATCHES( 
 		manager.load_plugin(get_mock_plugin_path("faulty_plugin1")),
 		plugin_load_error,
-		"xmipp4_get_plugin returned NULL."
+		Catch::Matchers::Message("xmipp4_get_plugin returned NULL.")
 	);
     REQUIRE( manager.get_plugin_count() == 0 );
 
 	REQUIRE_THROWS_MATCHES( 
 		manager.load_plugin(get_mock_plugin_path("faulty_plugin2")),
 		plugin_load_error,
-		"xmipp4_get_plugin symbol could not be found in shared object."
+		Catch::Matchers::Message("xmipp4_get_plugin symbol could not be found in shared object.")
 	);
     REQUIRE( manager.get_plugin_count() == 0 );
 }

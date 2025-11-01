@@ -115,6 +115,6 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
 	REQUIRE_THROWS_MATCHES( 
 		manager.get_preferred_backend(),
 		ambiguous_backend_error,
-		message
+		Catch::Matchers::Message(message)
 	);
 }

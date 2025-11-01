@@ -57,6 +57,6 @@ TEST_CASE("sanitize_index with an out of bounds index should throw", "[index]")
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_index(index, extent),
 		std::out_of_range,
-		expected_error_msg
+		Catch::Matchers::Message(expected_error_msg)
 	);
 }

@@ -52,6 +52,6 @@ TEST_CASE("broadcast_extents with incompatible axis should fail", "[broadcast]")
 	REQUIRE_THROWS_MATCHES( 
 		broadcast_extents(extents1, extents2),
 		broadcast_error,
-		"Broadcast error: extents (5, 6, 4, 3) and (5, 6, 2, 3) are not compatible."
+		Catch::Matchers::Message("Broadcast error: extents (5, 6, 4, 3) and (5, 6, 2, 3) are not compatible.")
 	);
 }

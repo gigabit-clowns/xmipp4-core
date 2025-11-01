@@ -30,9 +30,9 @@ template<typename B>
 struct flag_traits;
 
 template<>
-struct flag_traits<compute::example_flag_bits>
+struct flag_traits<hardware::example_flag_bits>
 {
-    using flagset_type = compute::example_flags;
+    using flagset_type = hardware::example_flags;
 
     static inline XMIPP4_CONST_CONSTEXPR flagset_type all = 
     {

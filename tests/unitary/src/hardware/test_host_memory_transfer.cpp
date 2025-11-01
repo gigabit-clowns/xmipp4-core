@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include <hardware/host_memory_transfer.hpp>
 #include <hardware/host_buffer.hpp>
@@ -96,15 +97,17 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
 
     const auto &const_source = source;
     REQUIRE_CALL(const_source, get_host_ptr())
-        .TIMES(2)
         .RETURN(nullptr);
 
     const std::array<copy_region, 1> regions = {{
         copy_region(0, 0, 64),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::invalid_argument);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Source buffer is not host accessible.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::invalid_argument,
+		Catch::Matchers::Message("Source buffer is not host accessible.")
+	);
 
 }
 
@@ -115,15 +118,17 @@ TEST_CASE( "copy in host_memory_transfer should throw if the destination is not 
     host_buffer source(1024, 16);
 
     REQUIRE_CALL(destination, get_host_ptr())
-        .TIMES(2)
         .RETURN(nullptr);
 
     const std::array<copy_region, 1> regions = {{
         copy_region(0, 0, 64),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::invalid_argument);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Destination buffer is not host accessible.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::invalid_argument,
+		Catch::Matchers::Message("Destination buffer is not host accessible.")
+	);
 
 }
 
@@ -138,8 +143,11 @@ TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds
         copy_region(1025, 0, 1024),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::out_of_range);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Copy region exceeds source buffer size.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::out_of_range,
+		Catch::Matchers::Message("Copy region exceeds source buffer size.")
+	);
 
 }
 
@@ -154,7 +162,10 @@ TEST_CASE( "copy in host_memory_transfer should throw if a destination region ex
         copy_region(1024, 1, 1024),
     }};
 
-    REQUIRE_THROWS_AS(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), std::out_of_range);
-    REQUIRE_THROWS_WITH(transfer.copy(source, destination, xmipp4::make_span(regions), nullptr), "Copy region exceeds destination buffer size.");
+	REQUIRE_THROWS_MATCHES(
+		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		std::out_of_range,
+		Catch::Matchers::Message("Copy region exceeds destination buffer size.")
+	);
 
 }

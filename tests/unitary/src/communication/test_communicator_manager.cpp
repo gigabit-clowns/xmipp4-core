@@ -11,6 +11,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
@@ -90,7 +91,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
         .RETURN(true)
-        .TIMES(2);
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
@@ -102,7 +103,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
         .RETURN(true)
-        .TIMES(2);
+        .TIMES(1);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));
@@ -112,6 +113,9 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         "Could not disambiguate among multiple "
         "communicator_backend-s. Ensure that only one has "
         "been installed.";
-    REQUIRE_THROWS_AS( manager.get_preferred_backend(), ambiguous_backend_error );
-    REQUIRE_THROWS_WITH( manager.get_preferred_backend(), message );
+	REQUIRE_THROWS_MATCHES( 
+		manager.get_preferred_backend(),
+		ambiguous_backend_error,
+		Catch::Matchers::Message(message)
+	);
 }

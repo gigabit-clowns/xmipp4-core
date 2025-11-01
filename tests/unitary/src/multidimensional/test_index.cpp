@@ -4,6 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
 
@@ -54,6 +55,9 @@ TEST_CASE("sanitize_index with an out of bounds index should throw", "[index]")
         })
     );
 
-    REQUIRE_THROWS_AS( sanitize_index(index, extent), std::out_of_range );
-    REQUIRE_THROWS_WITH( sanitize_index(index, extent), expected_error_msg);
+	REQUIRE_THROWS_MATCHES( 
+		sanitize_index(index, extent),
+		std::out_of_range,
+		Catch::Matchers::Message(expected_error_msg)
+	);
 }

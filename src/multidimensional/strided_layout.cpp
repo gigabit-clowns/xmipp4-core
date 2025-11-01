@@ -484,7 +484,7 @@ public:
         if (m_axes.size() > extents.size())
         {
             std::ostringstream oss;
-            oss << "Can not broadcast layout with " << m_axes.size()
+            oss << "Cannot broadcast layout with " << m_axes.size()
                 << " axes into a shape of " << extents.size()
                 << " dimensions.";
             throw std::invalid_argument(oss.str());
@@ -511,7 +511,7 @@ public:
             if (!multidimensional::broadcast_to(axis, extent))
             {
                 std::ostringstream oss;
-                oss << "Can not broadcast axis of extent " << axis.get_extent()
+                oss << "Cannot broadcast axis of extent " << axis.get_extent()
                     << " into an extent of " << extent << ".";
                 throw std::invalid_argument(oss.str());
             }

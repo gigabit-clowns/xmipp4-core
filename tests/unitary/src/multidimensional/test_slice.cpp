@@ -4,6 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
 #include <type_traits>
@@ -86,7 +87,7 @@ TEST_CASE( "sanitize_slice should throw with a stride of zero" )
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::invalid_argument,
-		Catch::Matchers::Message("Slice step cannot be zero.")
+		Catch::Matchers::Equals("Slice step cannot be zero.")
 	);
 }
 
@@ -163,7 +164,7 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::out_of_range,
-		Catch::Matchers::Message(expected_error_msg)
+		Catch::Matchers::Equals(expected_error_msg)
 	);
 }
 
@@ -226,6 +227,6 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds slice count value"
 	REQUIRE_THROWS_MATCHES( 
 		sanitize_slice(input, extent),
 		std::out_of_range,
-		Catch::Matchers::Message(expected_error_msg)
+		Catch::Matchers::Equals(expected_error_msg)
 	);
 }

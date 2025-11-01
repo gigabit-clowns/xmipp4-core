@@ -9,6 +9,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 using namespace xmipp4::multidimensional;
 
@@ -48,7 +49,7 @@ TEST_CASE("calling get_index on a dynamic_subscript that holds another value sho
 	REQUIRE_THROWS_MATCHES( 
 		s.get_index(),
 		bad_dynamic_subscript_access,
-		Catch::Matchers::Message("Cannot call get_index on a dynamic_subscript(new_axis_tag)")
+		Catch::Matchers::Equals("Cannot call get_index on a dynamic_subscript(new_axis_tag)")
 	);
 }
 
@@ -92,7 +93,7 @@ TEST_CASE("calling get_slice on a dynamic_subscript that holds another value sho
 	REQUIRE_THROWS_MATCHES( 
 		s.get_slice(),
 		bad_dynamic_subscript_access,
-		Catch::Matchers::Message("Cannot call get_slice on a dynamic_subscript(ellipsis_tag)")
+		Catch::Matchers::Equals("Cannot call get_slice on a dynamic_subscript(ellipsis_tag)")
 	);
 }
 

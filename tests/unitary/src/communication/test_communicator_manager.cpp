@@ -91,7 +91,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
         .RETURN(true)
-        .TIMES(2);
+        .TIMES(1);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
@@ -103,7 +103,7 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
         .RETURN(true)
-        .TIMES(2);
+        .TIMES(1);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));

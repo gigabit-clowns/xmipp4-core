@@ -4,6 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
 #include <type_traits>
@@ -83,8 +84,11 @@ TEST_CASE( "sanitize_slice should throw with a stride of zero" )
     const slice input(2, 5, 0);
     const std::size_t extent = GENERATE(0, 1, 10, 20);
 
-    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::invalid_argument );
-    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), "Slice step cannot be zero.");
+	REQUIRE_THROWS_MATCHES( 
+		sanitize_slice(input, extent),
+		std::invalid_argument,
+		Catch::Matchers::Message("Slice step cannot be zero.")
+	);
 }
 
 TEST_CASE( "sanitize_slice should pass correct positive start values" )
@@ -157,8 +161,11 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
     );
     
     slice input(start, count, step);
-    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), expected_error_msg );
+	REQUIRE_THROWS_MATCHES( 
+		sanitize_slice(input, extent),
+		std::out_of_range,
+		Catch::Matchers::Message(expected_error_msg)
+	);
 }
 
 TEST_CASE( "sanitize_slice should complete end values" )
@@ -217,6 +224,9 @@ TEST_CASE( "sanitize_slice should throw with an out of bounds slice count value"
     );
     
     slice input(start, count, step);
-    REQUIRE_THROWS_AS( sanitize_slice(input, extent), std::out_of_range );
-    REQUIRE_THROWS_WITH( sanitize_slice(input, extent), expected_error_msg );
+	REQUIRE_THROWS_MATCHES( 
+		sanitize_slice(input, extent),
+		std::out_of_range,
+		Catch::Matchers::Message(expected_error_msg)
+	);
 }

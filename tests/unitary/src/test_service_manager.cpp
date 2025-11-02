@@ -15,14 +15,12 @@ TEST_CASE( "register backend", "[service_manager]" )
     auto mock1 = std::make_unique<mock_backend>();
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1)
-        .TIMES(1);
+        .RETURN(name1);
 
     auto mock2 = std::make_unique<mock_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2)
-        .TIMES(1);
+        .RETURN(name2);
 
     // Test
     basic_service_manager<backend> manager;
@@ -76,13 +74,11 @@ TEST_CASE( "register the same device backend twice", "[service_manager]" )
     const std::string name = "mock";
     auto mock1 = std::make_unique<mock_backend>();
     REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name)
-        .TIMES(1);
+        .RETURN(name);
 
     auto mock2 = std::make_unique<mock_backend>();
     REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name)
-        .TIMES(1);
+        .RETURN(name);
 
     // Test
     basic_service_manager<backend> manager;

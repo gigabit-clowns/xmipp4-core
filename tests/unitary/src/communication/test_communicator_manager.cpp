@@ -27,29 +27,24 @@ TEST_CASE( "get_preferred_backend should return the best available backend", "[c
         .RETURN(backend_priority::normal)
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
-        .RETURN(true)
-        .TIMES(1);
+        .RETURN(true);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2)
-        .TIMES(1);
+        .RETURN(name2);
     REQUIRE_CALL(*mock2, get_priority())
         .RETURN(backend_priority::fallback)
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
-        .RETURN(true)
-        .TIMES(1);
+        .RETURN(true);
 
     auto mock3 = std::make_unique<mock_communicator_backend>();
     const std::string name3 = "mock3";
     REQUIRE_CALL(*mock3, get_name())
-        .RETURN(name3)
-        .TIMES(1);
+        .RETURN(name3);
     REQUIRE_CALL(*mock3, is_available())
-        .RETURN(false)
-        .TIMES(1);
+        .RETURN(false);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));
@@ -66,11 +61,9 @@ TEST_CASE( "get_preferred_backend should return null with no available backends"
     auto mock1 = std::make_unique<mock_communicator_backend>();
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1)
-        .TIMES(1);
+        .RETURN(name1);
     REQUIRE_CALL(*mock1, is_available())
-        .RETURN(false)
-        .TIMES(1);
+        .RETURN(false);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));
@@ -84,26 +77,22 @@ TEST_CASE( "get_preferred_backend should throw with multiple backends with same 
     auto mock1 = std::make_unique<mock_communicator_backend>();
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1)
-        .TIMES(1);
+        .RETURN(name1);
     REQUIRE_CALL(*mock1, get_priority())
         .RETURN(backend_priority::normal)
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock1, is_available())
-        .RETURN(true)
-        .TIMES(1);
+        .RETURN(true);
 
     auto mock2 = std::make_unique<mock_communicator_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2)
-        .TIMES(1);
+        .RETURN(name2);
     REQUIRE_CALL(*mock2, get_priority())
         .RETURN(backend_priority::normal)
         .TIMES(AT_LEAST(1));
     REQUIRE_CALL(*mock2, is_available())
-        .RETURN(true)
-        .TIMES(1);
+        .RETURN(true);
 
     communicator_manager manager;
     manager.register_backend(std::move(mock1));

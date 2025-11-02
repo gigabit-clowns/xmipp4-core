@@ -20,20 +20,16 @@ TEST_CASE( "enumerate devices in device_manager should list all items", "[device
     auto mock1 = std::make_unique<mock_device_backend>();
     const std::string name1 = "mock1";
     REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1)
-        .TIMES(1);
+        .RETURN(name1);
     REQUIRE_CALL(*mock1, enumerate_devices(ANY(std::vector<std::size_t>&)))
-        .SIDE_EFFECT(_1 = {0, 1, 2, 3, 4})   
-        .TIMES(1);
+        .SIDE_EFFECT(_1 = {0, 1, 2, 3, 4});
 
     auto mock2 = std::make_unique<mock_device_backend>();
     const std::string name2 = "mock2";
     REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2)
-        .TIMES(1);
+        .RETURN(name2);
     REQUIRE_CALL(*mock2, enumerate_devices(ANY(std::vector<std::size_t>&)))
-        .SIDE_EFFECT(_1 = {6, 7, 8, 9})
-        .TIMES(1);
+        .SIDE_EFFECT(_1 = {6, 7, 8, 9});
 
     // Test
     device_manager manager;

@@ -38,6 +38,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+    
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2

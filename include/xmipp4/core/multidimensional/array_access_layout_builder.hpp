@@ -17,6 +17,12 @@ namespace multidimensional
 class strided_layout;
 class array_access_layout_implementation;
 
+/**
+ * @brief Factory class to obtain instances of array_access_layout.
+ * 
+ * @see array_access_layout
+ * 
+ */
 class array_access_layout_builder
 {
 public:
@@ -36,15 +42,45 @@ public:
     array_access_layout_builder& 
     operator=(array_access_layout_builder&& other) noexcept;
 
+    /**
+     * @brief Set the extents of the iteration space.
+     * 
+     * This method can only be called once at most for each layout creation and
+     * it must be called before any call to add_operand.
+     * 
+     * @param extents Extents of the iteration space.
+     * @return array_access_layout_builder& A reference to *this.
+     */
     array_access_layout_builder& set_extents(
-        std::vector<std::size_t> batch_extents
+        std::vector<std::size_t> extents
     );
 
+    /**
+     * @brief Add an operand to the layout.
+     *
+     * If set_extents has not been called, the first call to this method will
+     * set the extents of the operand as the extents of the iteration space.
+     *  
+     * @param layout Layout of the operand.
+     * @param data_type Data type of the operand.
+     * @return array_access_layout_builder& A reference to *this.
+     */
     array_access_layout_builder& add_operand(
         const strided_layout &layout,
         numerical_type data_type
     );
 
+    /**
+     * @brief Build the array_access_layout from the operands contained in 
+     * this builder.
+     * 
+     * The building process can apply certain optimizations to the joint
+     * layout which can be controlled though the flags parameter.
+     * 
+     * @param flags Flags controlling the optimizations applied to the joint
+     * layout. By default, all optimizations are enabled.
+     * @return array_access_layout The newly built array_access_layout.
+     */
     array_access_layout build(
         array_access_layout_build_flags flags = default_flags
     );

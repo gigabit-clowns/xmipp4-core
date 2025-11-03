@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "scikit-build-core==0.10"
+    "scikit-build-core==0.11.*"
 ]
 build-backend = "scikit_build_core.build"
 
@@ -20,12 +20,11 @@ classifiers = [
     "Operating System :: POSIX",
     "Operating System :: MacOS",
     "Operating System :: Windows",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: C++"
 ]
 
 readme = {file = "README.md", content-type = "text/markdown"}
-license = {file = "LICENSE"}
+license = "GPL-3.0-only"
 
 requires-python = ">=3.7"
 dependencies = []

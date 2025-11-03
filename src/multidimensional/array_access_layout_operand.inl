@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "array_access_layout_operand.hpp"
+
+namespace xmipp4 
+{
+namespace multidimensional
+{
+
+inline
+array_access_layout_operand::array_access_layout_operand(
+    std::vector<std::ptrdiff_t> strides,
+    std::ptrdiff_t offset,
+    numerical_type data_type
+)
+    : m_strides(std::move(strides))
+    , m_offset(offset)
+    , m_data_type(data_type)
+{
+}
+
+inline
+span<const std::ptrdiff_t> 
+array_access_layout_operand::get_strides() const noexcept
+{
+    return make_span(m_strides);
+}
+
+inline
+std::ptrdiff_t array_access_layout_operand::get_offset() const noexcept
+{
+    return m_offset;
+}
+
+inline
+numerical_type array_access_layout_operand::get_data_type() const noexcept
+{
+    return m_data_type;
+}
+
+inline
+int array_access_layout_operand::compare_strides(
+    std::size_t i, 
+    std::size_t j
+) const noexcept
+{
+    const auto stride_i = m_strides[i];
+    const auto stride_j = m_strides[j];
+
+    if (stride_i == 0 || stride_j == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return stride_i - stride_j;
+    }
+}
+
+inline
+void array_access_layout_operand::swap_axes(
+    std::size_t i, 
+    std::size_t j
+) noexcept
+{
+    std::swap(m_strides[i], m_strides[j]);
+}
+
+void array_access_layout_operand::trim_batch_axes(std::size_t n)
+{
+    m_strides.resize(n);
+}
+
+} // namespace multidimensional
+} // namespace xmipp4

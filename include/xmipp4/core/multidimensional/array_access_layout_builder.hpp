@@ -32,14 +32,13 @@ public:
     array_access_layout_builder& 
     operator=(array_access_layout_builder&& other) noexcept;
 
-    array_access_layout_builder& set_batch_extents(
+    array_access_layout_builder& set_extents(
         std::vector<std::size_t> batch_extents
     );
 
     array_access_layout_builder& add_operand(
         const strided_layout &layout,
-        numerical_type data_type,
-        std::size_t core_dimensions = 0
+        numerical_type data_type
     );
 
     array_access_layout build(

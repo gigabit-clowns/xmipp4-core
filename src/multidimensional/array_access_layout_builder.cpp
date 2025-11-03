@@ -13,8 +13,8 @@ namespace multidimensional
 
 const array_access_layout_build_flags 
 array_access_layout_builder::default_flags = {
-	array_access_layout_build_flag_bits::reorder_batches,
-	array_access_layout_build_flag_bits::coalesce_batches
+	array_access_layout_build_flag_bits::enable_reordering,
+	array_access_layout_build_flag_bits::enable_coalescing
 };
 
 array_access_layout_builder::array_access_layout_builder() noexcept = default;
@@ -30,19 +30,19 @@ array_access_layout_builder::operator=(
 	array_access_layout_builder&& other
 ) noexcept = default;
 
-array_access_layout_builder& array_access_layout_builder::set_batch_extents(
-	std::vector<std::size_t> batch_extents
+array_access_layout_builder& array_access_layout_builder::set_extents(
+	std::vector<std::size_t> extents
 )
 {
 	if (m_implementation)
 	{
 		throw std::logic_error(
-			"Batch extents can only be set once and before adding any operand"
+			"Extents can only be set once and before adding any operand"
 		);
 	}
 
 	m_implementation = std::make_unique<array_access_layout_implementation>(
-		std::move(batch_extents)
+		std::move(extents)
 	);
 
 	return *this;
@@ -50,17 +50,9 @@ array_access_layout_builder& array_access_layout_builder::set_batch_extents(
 
 array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout,
-	numerical_type data_type,
-	std::size_t core_dimensions 
+	numerical_type data_type
 )
 {
-	if (core_dimensions > layout.get_rank())
-	{
-		throw std::invalid_argument(
-			"core_dimensions is out of bounds"
-		);
-	}
-
 	std::vector<std::size_t> extents;
 	std::vector<std::ptrdiff_t> strides;
 	const auto offset = layout.get_offset();
@@ -70,14 +62,8 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 
 	if (!m_implementation)
 	{
-		std::vector<std::size_t> batch_extents(
-			extents.cbegin(), 
-			std::prev(extents.cend(), core_dimensions)
-		);
-		
-		m_implementation = std::make_unique<array_access_layout_implementation>(
-			std::move(batch_extents)
-		);
+		m_implementation = 
+			std::make_unique<array_access_layout_implementation>(extents);
 	}
 
 	XMIPP4_ASSERT( m_implementation );
@@ -85,8 +71,7 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 		std::move(extents),
 		std::move(strides),
 		offset,
-		data_type,
-		core_dimensions
+		data_type
 	);
 
 	return *this;
@@ -98,12 +83,12 @@ array_access_layout array_access_layout_builder::build(
 {
 	if (m_implementation)
 	{
-		if (flags.contains(array_access_layout_build_flag_bits::reorder_batches))
+		if (flags.contains(array_access_layout_build_flag_bits::enable_reordering))
 		{
 			m_implementation->sort_batch_axes_by_locality();
 		}
 		
-		if (flags.contains(array_access_layout_build_flag_bits::coalesce_batches))
+		if (flags.contains(array_access_layout_build_flag_bits::enable_coalescing))
 		{
 			m_implementation->coalesce_contiguous_batch_axes();
 		}

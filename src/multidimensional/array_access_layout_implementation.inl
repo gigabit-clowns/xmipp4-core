@@ -16,9 +16,9 @@ namespace multidimensional
 
 inline
 array_access_layout_implementation::array_access_layout_implementation(
-    std::vector<std::size_t> batch_extents
+    std::vector<std::size_t> extents
 )
-    : m_batch_extents(std::move(batch_extents))
+    : m_extents(std::move(extents))
 {
 }
 
@@ -27,21 +27,12 @@ void array_access_layout_implementation::add_operand(
     std::vector<std::size_t> extents,
     std::vector<std::ptrdiff_t> strides,
     std::ptrdiff_t offset, 
-    numerical_type data_type,
-    std::size_t core_dimensions 
+    numerical_type data_type
 )
 {
     XMIPP4_ASSERT( extents.size() == strides.size() );
-    XMIPP4_ASSERT( core_dimensions <= extents.size() );
-
-    broadcast_operand(extents, strides, core_dimensions);
-    extents.erase(
-        extents.cbegin(), 
-        std::prev(extents.cend(), core_dimensions)
-    );
-
+    broadcast_operand(extents, strides);
     m_operands.emplace_back(
-        std::move(extents),
         std::move(strides),
         offset,
         data_type
@@ -51,7 +42,7 @@ void array_access_layout_implementation::add_operand(
 inline
 void array_access_layout_implementation::sort_batch_axes_by_locality()
 {
-    const auto n = m_batch_extents.size();
+    const auto n = m_extents.size();
     if (n <= 1)
     {
         return; // Trivial
@@ -95,7 +86,7 @@ void array_access_layout_implementation::sort_batch_axes_by_locality()
 inline
 void array_access_layout_implementation::coalesce_contiguous_batch_axes()
 {
-    const auto n = m_batch_extents.size();
+    const auto n = m_extents.size();
     if (n <= 1)
     {
         return; // Trivial
@@ -106,13 +97,13 @@ void array_access_layout_implementation::coalesce_contiguous_batch_axes()
     {
         if (can_coalesce_axes(prev, curr))
         {
-            if (m_batch_extents[prev] == 1)
+            if (m_extents[prev] == 1)
             {
                 swap_axes(prev, curr);
             }
             else
             {
-                m_batch_extents[prev] *= m_batch_extents[curr]; // TODO write on the operand
+                m_extents[prev] *= m_extents[curr]; // TODO write on the operand
             }
 
         }
@@ -138,16 +129,9 @@ array_access_layout_implementation::get_number_of_operands() const noexcept
 
 inline
 span<const std::size_t> 
-array_access_layout_implementation::get_batch_extents() const noexcept
+array_access_layout_implementation::get_extents() const noexcept
 {
-    return make_span(m_batch_extents);
-}
-
-inline
-span<const std::size_t> 
-array_access_layout_implementation::get_extents(std::size_t operand) const
-{
-    return m_operands.at(operand).get_extents();
+    return make_span(m_extents);
 }
 
 inline
@@ -186,7 +170,7 @@ int array_access_layout_implementation::compare_strides(
         }
     }
 
-    return m_batch_extents[i] - m_batch_extents[j]; // Untie with extents
+    return m_extents[i] - m_extents[j]; // Untie with extents
 }
 
 inline
@@ -195,7 +179,7 @@ void array_access_layout_implementation::swap_axes(
     std::size_t j
 ) noexcept
 {
-    std::swap(m_batch_extents[i], m_batch_extents[j]);
+    std::swap(m_extents[i], m_extents[j]);
     for (auto &operand : m_operands)
     {
         operand.swap_axes(i, j);
@@ -223,8 +207,8 @@ bool array_access_layout_implementation::can_coalesce_axes(
     std::size_t j
 )
 {
-    const auto extent_i = m_batch_extents[i];
-    const auto extent_j = m_batch_extents[j];
+    const auto extent_i = m_extents[i];
+    const auto extent_j = m_extents[j];
     if (extent_i == 1 || extent_j == 1)
     {
         return true;
@@ -235,7 +219,7 @@ bool array_access_layout_implementation::can_coalesce_axes(
         const auto strides = operand.get_strides();
         const auto stride_i = strides[i];
         const auto stride_j = strides[j];
-        if (extent_i * stride_i != stride_j) 
+        if (static_cast<std::ptrdiff_t>(extent_i) * stride_i != stride_j) 
         {
             return false;
         }
@@ -247,7 +231,7 @@ bool array_access_layout_implementation::can_coalesce_axes(
 inline
 void array_access_layout_implementation::trim_batch_axes(std::size_t n)
 {
-    m_batch_extents.resize(n);
+    m_extents.resize(n);
     for (auto &operand : m_operands)
     {
         operand.trim_batch_axes(n);
@@ -257,52 +241,42 @@ void array_access_layout_implementation::trim_batch_axes(std::size_t n)
 inline
 void array_access_layout_implementation::broadcast_operand(
     std::vector<std::size_t> &extents,
-    std::vector<std::ptrdiff_t> &strides,
-    std::size_t core_dimensions 
+    std::vector<std::ptrdiff_t> &strides
 )
 {
-    const auto batch_dimensions = m_batch_extents.size();
+    const auto n = m_extents.size();
 
-    if ((batch_dimensions + core_dimensions) < extents.size())
+    if (n < extents.size())
     {
         std::ostringstream oss;
-        oss << "Operand with " << extents.size() - core_dimensions 
-            << " batch dimensions exceeds the batch dimensionality "
-            << batch_dimensions
+        oss << "Operand with " << extents.size() 
+            << " dimensions exceeds the dimensionality " << n
             << " required in the array_access_layout";
 
         throw std::invalid_argument(oss.str());
     }
 
-    const auto padding = 
-        batch_dimensions + core_dimensions - extents.size();
+    const auto padding = n - extents.size();
     extents.insert(extents.cbegin(), padding, 1);
     strides.insert(strides.cbegin(), padding, 0);
 
-    XMIPP4_ASSERT( extents.size() == batch_dimensions + core_dimensions );
-    for (std::size_t i = 0; i < batch_dimensions; ++i)
+    for (std::size_t i = 0; i < n; ++i)
     {
-        if (m_batch_extents[i] != extents[i])
+        if (m_extents[i] != extents[i])
         {
             if (extents[i] == 1)
             {
                 // Broadcast axis
-                extents[i] = m_batch_extents[i];
+                extents[i] = m_extents[i];
                 strides[i] = 0;
             }
             else
             {
-                throw broadcast_error(
-                    m_batch_extents,
-                    std::vector<std::size_t>(
-                        extents.cbegin(), 
-                        std::prev(extents.cend(), core_dimensions)
-                    )
-                );
+                throw broadcast_error(m_extents, extents);
             }
         }
 
-        XMIPP4_ASSERT( m_batch_extents[i] == extents[i] );
+        XMIPP4_ASSERT( m_extents[i] == extents[i] );
     }
 }
 

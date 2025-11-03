@@ -30,22 +30,10 @@ array_access_layout::~array_access_layout() = default;
 array_access_layout& 
 array_access_layout::operator=(array_access_layout&& other) noexcept = default;
 
-std::size_t array_access_layout::get_number_of_operands() const noexcept
-{
-    return m_implementation ? m_implementation->get_number_of_operands() : 0;
-}
-
-span<const std::size_t> array_access_layout::get_batch_extents() const
-{
-    require_implementation("get_batch_extents");
-    return m_implementation->get_batch_extents();
-}
-
-span<const std::size_t> 
-array_access_layout::get_extents(std::size_t operand) const
+span<const std::size_t> array_access_layout::get_extents() const
 {
     require_implementation("get_extents");
-    return m_implementation->get_extents(operand);
+    return m_implementation->get_extents();
 }
 
 span<const std::ptrdiff_t> 

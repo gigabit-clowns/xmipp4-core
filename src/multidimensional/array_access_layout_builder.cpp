@@ -11,12 +11,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-const array_access_layout_build_flags 
-array_access_layout_builder::default_flags = {
-	array_access_layout_build_flag_bits::enable_reordering,
-	array_access_layout_build_flag_bits::enable_coalescing
-};
-
 array_access_layout_builder::array_access_layout_builder() noexcept = default;
 
 array_access_layout_builder::array_access_layout_builder(

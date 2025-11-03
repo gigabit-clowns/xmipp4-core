@@ -20,7 +20,11 @@ class array_access_layout_implementation;
 class array_access_layout_builder
 {
 public:
-    static const array_access_layout_build_flags default_flags;
+    static XMIPP4_CONST_CONSTEXPR 
+    array_access_layout_build_flags default_flags = {
+        array_access_layout_build_flag_bits::enable_reordering,
+        array_access_layout_build_flag_bits::enable_coalescing
+    };
 
     array_access_layout_builder() noexcept;
     array_access_layout_builder(const array_access_layout_builder&) = delete;

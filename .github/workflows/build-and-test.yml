@@ -73,6 +73,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Upgrade pip & packaging for ubuntu 22.04
+        if: runner.os == 'ubuntu-22.04'
+        run: python -m pip install --upgrade pip packaging
+
       - name: Install xmipp4-core with pip
         run: pip install . -v
 

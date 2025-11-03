@@ -60,6 +60,10 @@ public:
      *
      * If set_extents has not been called, the first call to this method will
      * set the extents of the operand as the extents of the iteration space.
+     * 
+     * When the iteration space extents are defined, operands that do not
+     * match these extents are broadcasted to be consistent. Note that
+     * iteration space is never broadcasted.
      *  
      * @param layout Layout of the operand.
      * @param data_type Data type of the operand.

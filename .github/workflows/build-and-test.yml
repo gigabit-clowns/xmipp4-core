@@ -85,6 +85,9 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: python -m pip install --upgrade pip packaging
 
+      - name: Test
+        run: pwd
+
       - name: Install xmipp4-core with pip
         run: pip install . -v
 
@@ -120,8 +123,11 @@ jobs:
   sonar-scan:
     name: SonarQube Scan
     needs: build_and_test_with_cmake
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
+      - name: Test
+        run: pwd
+
       - name: Checkout repository
         uses: actions/checkout@v5
 

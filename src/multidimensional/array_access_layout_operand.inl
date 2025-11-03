@@ -66,6 +66,7 @@ void array_access_layout_operand::swap_axes(
     std::swap(m_strides[i], m_strides[j]);
 }
 
+inline
 void array_access_layout_operand::trim_batch_axes(std::size_t n)
 {
     m_strides.resize(n);

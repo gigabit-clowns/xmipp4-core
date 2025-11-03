@@ -56,10 +56,12 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Upload compilation database (macOS only)
+        uses: actions/upload-artifact@v5
+        if: matrix.os == 'macos-latest'
+        with:
+          name: compilation-database
+          path: build/compile_commands.json
 
   build_with_pip:
     name: pip
@@ -114,3 +116,21 @@ jobs:
 
       - name: Build with conda
         run: conda build conda
+
+  sonar-scan:
+    name: SonarQube Scan
+    needs: build_and_test_with_cmake
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v6
+        with:
+          name: compilation-database
+          path: ${{ github.workspace }}/build
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

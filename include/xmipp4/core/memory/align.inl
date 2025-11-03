@@ -24,6 +24,19 @@ std::size_t get_alignment(std::uintptr_t address) noexcept
 
 template <typename T>
 XMIPP4_NODISCARD inline
+bool is_aligned(T* address, std::size_t alignment) noexcept
+{
+    return is_aligned(reinterpret_cast<std::uintptr_t>(address), alignment);
+}
+
+XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
+bool is_aligned(std::uintptr_t address, std::size_t alignment) noexcept
+{
+    return address % alignment == 0;
+}
+
+template <typename T>
+XMIPP4_NODISCARD inline
 T* align_floor(T* address, std::size_t alignment) noexcept
 {
     align_floor_inplace(reinterpret_cast<std::uintptr_t&>(address), alignment);

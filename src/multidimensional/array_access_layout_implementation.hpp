@@ -26,7 +26,9 @@ class array_access_layout_implementation
 {
 public:
     array_access_layout_implementation() = default;
-    array_access_layout_implementation(std::vector<std::size_t> extents);
+    explicit array_access_layout_implementation(
+        std::vector<std::size_t> extents
+    );
 
     void add_operand(
         std::vector<std::size_t> extents,

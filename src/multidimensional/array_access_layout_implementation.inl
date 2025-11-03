@@ -40,7 +40,7 @@ void array_access_layout_implementation::add_operand(
 }
 
 inline
-void array_access_layout_implementation::sort_batch_axes_by_locality()
+void array_access_layout_implementation::sort_axes_by_locality()
 {
     const auto n = m_extents.size();
     if (n <= 1)
@@ -84,7 +84,7 @@ void array_access_layout_implementation::sort_batch_axes_by_locality()
 }
 
 inline
-void array_access_layout_implementation::coalesce_contiguous_batch_axes()
+void array_access_layout_implementation::coalesce_contiguous_axes()
 {
     const auto n = m_extents.size();
     if (n <= 1)
@@ -117,7 +117,7 @@ void array_access_layout_implementation::coalesce_contiguous_batch_axes()
         }
     }
 
-    trim_batch_axes(prev+1);
+    trim_axes(prev+1);
 }
 
 inline
@@ -229,12 +229,12 @@ bool array_access_layout_implementation::can_coalesce_axes(
 }
 
 inline
-void array_access_layout_implementation::trim_batch_axes(std::size_t n)
+void array_access_layout_implementation::trim_axes(std::size_t n)
 {
     m_extents.resize(n);
     for (auto &operand : m_operands)
     {
-        operand.trim_batch_axes(n);
+        operand.trim_axes(n);
     }
 }
 

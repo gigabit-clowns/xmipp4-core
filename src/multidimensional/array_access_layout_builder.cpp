@@ -85,12 +85,12 @@ array_access_layout array_access_layout_builder::build(
 	{
 		if (flags.contains(array_access_layout_build_flag_bits::enable_reordering))
 		{
-			m_implementation->sort_batch_axes_by_locality();
+			m_implementation->sort_axes_by_locality();
 		}
 		
 		if (flags.contains(array_access_layout_build_flag_bits::enable_coalescing))
 		{
-			m_implementation->coalesce_contiguous_batch_axes();
+			m_implementation->coalesce_contiguous_axes();
 		}
 	}
 

@@ -32,7 +32,7 @@ public:
 
     void swap_axes(std::size_t i, std::size_t j) noexcept;
 
-    void trim_batch_axes(std::size_t n);
+    void trim_axes(std::size_t n);
 
 private:
     std::vector<std::ptrdiff_t> m_strides;

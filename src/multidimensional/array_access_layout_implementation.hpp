@@ -34,9 +34,9 @@ public:
         numerical_type data_type
     );
 
-    void sort_batch_axes_by_locality();
+    void sort_axes_by_locality();
 
-    void coalesce_contiguous_batch_axes();
+    void coalesce_contiguous_axes();
 
     std::size_t get_number_of_operands() const noexcept;
 
@@ -60,7 +60,7 @@ private:
 
     bool can_coalesce_axes(std::size_t i, std::size_t j);
 
-    void trim_batch_axes(std::size_t n);
+    void trim_axes(std::size_t n);
 
     void broadcast_operand(
         std::vector<std::size_t> &extents,

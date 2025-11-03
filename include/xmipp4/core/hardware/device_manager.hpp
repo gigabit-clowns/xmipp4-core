@@ -18,7 +18,6 @@ namespace hardware
 
 class device;
 class device_backend;
-class device_create_parameters;
 
 
 

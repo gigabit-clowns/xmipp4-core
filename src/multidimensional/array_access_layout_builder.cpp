@@ -83,12 +83,19 @@ array_access_layout array_access_layout_builder::build(
 {
 	if (m_implementation)
 	{
-		if (flags.contains(array_access_layout_build_flag_bits::enable_reordering))
+		const auto enable_reordering = flags.contains(
+			array_access_layout_build_flag_bits::enable_reordering
+		);
+		const auto enable_coalescing = flags.contains(
+			array_access_layout_build_flag_bits::enable_coalescing
+		);
+
+
+		if (enable_reordering)
 		{
 			m_implementation->sort_axes_by_locality();
 		}
-		
-		if (flags.contains(array_access_layout_build_flag_bits::enable_coalescing))
+		if (enable_coalescing)
 		{
 			m_implementation->coalesce_contiguous_axes();
 		}

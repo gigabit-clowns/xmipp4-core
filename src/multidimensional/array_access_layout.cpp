@@ -30,41 +30,62 @@ array_access_layout::~array_access_layout() = default;
 array_access_layout& 
 array_access_layout::operator=(array_access_layout&& other) noexcept = default;
 
+std::size_t array_access_layout::get_number_of_operands() const noexcept
+{
+    if (m_implementation)
+    {
+        return m_implementation->get_number_of_operands();
+    }
+    else
+    {
+        return 0UL;
+    }
+}
+
 span<const std::size_t> array_access_layout::get_extents() const
 {
-    require_implementation("get_extents");
-    return m_implementation->get_extents();
+    if (m_implementation)
+    {
+        return m_implementation->get_extents();
+    }
+    else
+    {
+        return span<const std::size_t>();
+    }
 }
 
 span<const std::ptrdiff_t> 
 array_access_layout::get_strides(std::size_t operand) const
 {
-    require_implementation("get_strides");
+    if (!m_implementation)
+    {
+        const array_access_layout_implementation implementation;
+        return implementation.get_strides(operand); // throws
+    }
+
     return m_implementation->get_strides(operand);
 }
 
 std::ptrdiff_t array_access_layout::get_offset(std::size_t operand) const
 {
-    require_implementation("get_offset");
+    if (!m_implementation)
+    {
+        const array_access_layout_implementation implementation;
+        return implementation.get_offset(operand); // throws
+    }
+
     return m_implementation->get_offset(operand);
 }
 
 numerical_type array_access_layout::get_data_type(std::size_t operand) const
 {
-    require_implementation("get_data_type");
-    return m_implementation->get_data_type(operand);
-}
-
-void array_access_layout::require_implementation(
-    const char *function_name
-) const
-{
     if (!m_implementation)
     {
-        std::ostringstream oss;
-        oss << "Cannot call " << function_name;
-        oss << " on a moved or un-initialized array_access_layout";
+        const array_access_layout_implementation implementation;
+        return implementation.get_data_type(operand); // throws
     }
+
+    return m_implementation->get_data_type(operand);
 }
 
 } // namespace multidimensional

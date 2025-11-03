@@ -39,8 +39,6 @@ public:
 private:
     std::unique_ptr<const array_access_layout_implementation> m_implementation;
 
-    void require_implementation(const char *function_name) const;
-
 };
 
 } // namespace multidimensional

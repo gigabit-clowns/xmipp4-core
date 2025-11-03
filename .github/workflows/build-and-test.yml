@@ -38,11 +38,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-    
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
@@ -54,11 +49,17 @@ jobs:
           generator: ${{ matrix.generator }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            CMAKE_EXPORT_COMPILE_COMMANDS=ON
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build_with_pip:
     name: pip

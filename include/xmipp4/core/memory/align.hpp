@@ -38,6 +38,29 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 std::size_t get_alignment(std::uintptr_t address) noexcept;
 
 /**
+ * @brief Check if a pointer is aligned to the provided boundary.
+ * 
+ * @tparam T Pointed value type
+ * @param address The address to be checked.
+ * @param alignment The alignment requirement to be checked.
+ * @return true If the pointer is aligned.
+ * @return false If the pointer is not aligned.
+ */
+template <typename T>
+XMIPP4_NODISCARD 
+bool is_aligned(T* address, std::size_t alignment) noexcept;
+
+/**
+ * @brief Check if an address is aligned to the provided boundary.
+ * 
+ * @param address The address to be checked.
+ * @param alignment The alignment requirement to be checked.
+ * @return std::size_t The alignment (a power of two)
+ */
+XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
+bool is_aligned(std::uintptr_t address, std::size_t alignment) noexcept;
+
+/**
  * @brief Align a pointer to a lower or equal address that satisfies the
  * provided alignment
  * 

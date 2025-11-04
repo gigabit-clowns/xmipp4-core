@@ -28,6 +28,30 @@ TEST_CASE( "get_alignment returns correct alignment for address and pointer", "[
 	REQUIRE( memory::get_alignment(pointer) == expected_alignment );
 }
 
+TEST_CASE( "is_aligned returns true only if the pointer is aligned to the requested boundary", "[align]" ) 
+{
+	std::uintptr_t address;
+	std::size_t alignment;
+	bool expected;
+	std::tie(address, alignment, expected) = GENERATE(
+		table<std::uintptr_t, std::size_t, bool>({
+			{0xA1010100, 0x10,   true},
+			{0xA1010100, 0x100,  true},
+			{0xA1010100, 0x1000, false},
+			{0xA1010111, 0x10,   false},
+			{0xA1010111, 0x100,  false},
+			{0xA1010111, 0x1000, false},
+			{0x000000FF, 0x10,   false},
+			{0x00001001, 0x100,  false}
+		})
+	);
+
+	void* pointer = reinterpret_cast<void*>(address);
+
+	REQUIRE( memory::is_aligned(address, alignment) == expected );
+	REQUIRE( memory::is_aligned(pointer, alignment) == expected );
+}
+
 TEST_CASE( "align_floor aligns address and pointer down to nearest boundary", "[align]" ) 
 {
 	std::uintptr_t address;

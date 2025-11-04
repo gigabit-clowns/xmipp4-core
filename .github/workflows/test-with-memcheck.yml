@@ -36,6 +36,7 @@ jobs:
           cxx-compiler: g++
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            CMAKE_EXPORT_COMPILE_COMMANDS=ON
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
@@ -44,6 +45,11 @@ jobs:
         id: run-ctest
         with:
           check-memleaks: true
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Show memory leak logs (if exist)
         if: steps.run-ctest.outputs.exist-memleaks == 'true'

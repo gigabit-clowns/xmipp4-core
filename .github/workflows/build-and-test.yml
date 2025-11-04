@@ -135,7 +135,9 @@ jobs:
           path: ${{ github.workspace }}
     
       - name: Unzip build folder
-        run: unzip build-artifact/build.zip -d ${{ github.workspace }}
+        run: |
+          unzip build.zip -d ${{ github.workspace }}
+          rm build.zip
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6

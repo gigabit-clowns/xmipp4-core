@@ -49,11 +49,19 @@ jobs:
           generator: ${{ matrix.generator }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            CMAKE_EXPORT_COMPILE_COMMANDS=ON
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
+      
+      - name: Upload compilation database (ubuntu-latest + gcc only)
+        uses: actions/upload-artifact@v5
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        with:
+          name: build-artifact
+          path: build
 
   build_with_pip:
     name: pip
@@ -108,3 +116,21 @@ jobs:
 
       - name: Build with conda
         run: conda build conda
+
+  sonar-scan:
+    name: SonarQube scan
+    needs: build_and_test_with_cmake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v6
+        with:
+          name: build-artifact
+          path: ${{ github.workspace }}/build
+    
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

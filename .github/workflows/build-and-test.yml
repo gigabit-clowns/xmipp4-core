@@ -128,7 +128,7 @@ jobs:
       - uses: actions/download-artifact@v6
         with:
           name: build-artifact
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/build
     
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6

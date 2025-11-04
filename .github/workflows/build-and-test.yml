@@ -122,7 +122,7 @@ jobs:
         run: conda build conda
 
   sonar-scan:
-    name: SonarQube Scan
+    name: SonarQube scan
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:

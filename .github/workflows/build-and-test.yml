@@ -56,18 +56,16 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
       
-      - name: Test
+      - name: Zip build folder (ubuntu-latest + gcc only)
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        run: |
-          pwd
-          cat build/compile_commands.json
+        run: zip -r build.zip build
 
       - name: Upload compilation database (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         with:
-          name: compilation-database
-          path: build/compile_commands.json
+          name: build-artifact
+          path: build.zip
 
   build_with_pip:
     name: pip
@@ -133,13 +131,11 @@ jobs:
 
       - uses: actions/download-artifact@v6
         with:
-          name: compilation-database
-          path: ${{ github.workspace }}/build
+          name: build-artifact
+          path: ${{ github.workspace }}
     
-      - name: Test
-        run: |
-          pwd
-          cat ${{ github.workspace }}/build/compile_commands.json
+      - name: Unzip build folder
+        run: unzip build-artifact/build.zip -d ${{ github.workspace }}
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6

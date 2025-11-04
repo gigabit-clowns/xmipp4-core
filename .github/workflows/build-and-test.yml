@@ -55,10 +55,16 @@ jobs:
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
+      
+      - name: Test
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        run: |
+          pwd
+          cat build/compile_commands.json
 
-      - name: Upload compilation database (macOS only)
+      - name: Upload compilation database (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         with:
           name: compilation-database
           path: build/compile_commands.json
@@ -84,9 +90,6 @@ jobs:
       - name: Upgrade pip & packaging for ubuntu 22.04
         if: matrix.os == 'ubuntu-22.04'
         run: python -m pip install --upgrade pip packaging
-
-      - name: Test
-        run: pwd
 
       - name: Install xmipp4-core with pip
         run: pip install . -v
@@ -125,9 +128,6 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        run: pwd
-
       - name: Checkout repository
         uses: actions/checkout@v5
 
@@ -135,6 +135,11 @@ jobs:
         with:
           name: compilation-database
           path: ${{ github.workspace }}/build
+    
+      - name: Test
+        run: |
+          pwd
+          cat ${{ github.workspace }}/build/compile_commands.json
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6

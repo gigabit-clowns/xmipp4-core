@@ -38,6 +38,7 @@ const char* to_string(backend_priority priority) noexcept
 {
     switch (priority)
     {
+    case backend_priority::unsupported: return "unsupported";
     case backend_priority::fallback: return "fallback";
     case backend_priority::normal: return "normal";
     default: return "";

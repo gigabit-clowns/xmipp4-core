@@ -34,7 +34,7 @@ public:
      * 
      * @return std::size_t Size of the memory heap.
      */
-    virtual std::size_t get_size() const noexcept;
+    virtual std::size_t get_size() const noexcept = 0;
     
     /**
      * @brief Allocate a buffer on this memory heap.
@@ -52,7 +52,7 @@ public:
         std::size_t offset, 
         std::size_t size,
         std::unique_ptr<memory_allocation_tracker> tracker
-    );
+    ) = 0;
 
 }; 
 

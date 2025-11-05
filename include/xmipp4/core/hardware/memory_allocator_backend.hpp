@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "../backend_priority.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -30,6 +31,16 @@ public:
     operator=(const memory_allocator_backend &other) = default;
     memory_allocator_backend& 
     operator=(memory_allocator_backend &&other) = default;
+
+    /**
+     * @brief Get the priority of this backend for the provided memory_resource.
+     * 
+     * @param resource The memory resource to be checked.
+     * @return backend_priority The priority.
+     */
+    virtual backend_priority get_priority(
+        memory_resource &resource
+    ) const noexcept = 0;
 
     /**
      * @brief Create a memory allocator to allocate buffers on the provided

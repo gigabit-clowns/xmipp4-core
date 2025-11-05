@@ -12,7 +12,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class memory_allocator;
+class memory_heap;
 class memory_transfer;
 class device;
 
@@ -55,12 +55,12 @@ public:
     memory_resource_kind get_kind() const noexcept = 0;
 
     /**
-     * @brief Create an allocator to allocate buffers on this memory resource.
+     * @brief Allocate a chunk of memory to serve smaller allocations.
      * 
-     * @return std::shared_ptr<memory_allocator> The newly created allocator.
+     * @return std::shared_ptr<memory_heap> The newly created heap.
      */
     virtual
-    std::shared_ptr<memory_allocator> create_allocator() = 0;
+    std::shared_ptr<memory_heap> create_memory_heap(std::size_t size) = 0;
 
 }; 
 

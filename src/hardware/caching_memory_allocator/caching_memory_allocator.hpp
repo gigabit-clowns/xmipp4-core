@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#pragma once
+
+#include <xmipp4/core/hardware/memory_allocator.hpp>
+
+#include <xmipp4/core/hardware/memory_resource.hpp>
+
+#include "memory_block_pool.hpp"
+#include "memory_block_deferred_release.hpp"
+
+namespace xmipp4 
+{
+namespace hardware
+{
+
+class caching_memory_allocator
+    : public memory_allocator
+{
+public:
+    caching_memory_allocator(
+        memory_resource &resource,
+        std::size_t size_step,
+        std::size_t request_size_step    
+    );
+    caching_memory_allocator(const caching_memory_allocator &other) = delete;
+    caching_memory_allocator(caching_memory_allocator &&other) = default;
+    ~caching_memory_allocator() = default;
+    
+    caching_memory_allocator& 
+    operator=(const caching_memory_allocator &other) = delete;
+    caching_memory_allocator& 
+    operator=(caching_memory_allocator &&other) = default;
+
+    memory_resource& get_memory_resource() const noexcept override;
+
+    std::shared_ptr<buffer> allocate(
+        std::size_t size, 
+        std::size_t alignment, 
+        device_queue *queue
+    ) override;
+
+private:
+    std::reference_wrapper<memory_resource> m_resource;
+    memory_block_pool m_pool;
+    memory_block_deferred_release m_deferred_release;
+    std::size_t m_size_step;
+    std::size_t m_request_size_step;
+
+};
+
+} // namespace hardware
+} // namespace xmipp4

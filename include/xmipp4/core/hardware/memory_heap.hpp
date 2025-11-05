@@ -11,7 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class memory_allocator_context;
+class memory_allocation_tracker;
 class buffer;
 
 /**
@@ -44,14 +44,14 @@ public:
      * 
      * @param offset Position where the buffer is allocated.
      * @param size Size of the allocation.
-     * @param context Context to track the usage of this buffer. The returned
+     * @param tracker Context to track the usage of this buffer. The returned
      * buffer must keep alive this object until destruction.
      * @return std::shared_ptr<buffer> The newly allocated buffer.
      */
     virtual std::shared_ptr<buffer> create_buffer(
         std::size_t offset, 
         std::size_t size,
-        std::unique_ptr<memory_allocator_context> context 
+        std::unique_ptr<memory_allocation_tracker> tracker
     );
 
 }; 

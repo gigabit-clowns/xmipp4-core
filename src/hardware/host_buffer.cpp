@@ -19,14 +19,15 @@ host_buffer::host_buffer() noexcept
 {
 }
 
-host_buffer::host_buffer(std::size_t size, std::size_t alignment)
-    : m_size(memory::align_ceil(size, alignment))
-    , m_data(memory::aligned_alloc(m_size, alignment))
+host_buffer::host_buffer(
+    void *data, 
+    std::size_t size, 
+    std::unique_ptr<memory_allocation_tracker> tracker
+) noexcept
+    : m_data(data)
+    , m_size(size)
+    , m_tracker(std::move(tracker))
 {
-    if(m_data == nullptr && m_size != 0)
-    {
-        throw std::bad_alloc();
-    }
 }
 
 host_buffer::host_buffer(host_buffer &&other) noexcept
@@ -87,9 +88,12 @@ memory_resource& host_buffer::get_memory_resource() const noexcept
     return host_memory_resource::get();
 }
 
-void host_buffer::record_queue(device_queue& queue, bool)
+void host_buffer::record_queue(device_queue& queue, bool exclusive)
 {
-    queue.wait_until_completed(); // Synchronous operation
+    if (m_tracker)
+    {
+        m_tracker->record_queue(queue, exclusive);
+    }
 }
 
 } // namespace hardware

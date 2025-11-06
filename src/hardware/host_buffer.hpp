@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 
+#include <xmipp4/core/hardware/memory_allocation_tracker.hpp>
+
 namespace xmipp4 
 {
 namespace hardware
@@ -14,7 +16,11 @@ class host_buffer
 {
 public:
     host_buffer() noexcept;
-    host_buffer(std::size_t size, std::size_t alignment);
+    host_buffer(
+        void *data, 
+        std::size_t size, 
+        std::unique_ptr<memory_allocation_tracker> tracker
+    ) noexcept;
     host_buffer(const host_buffer &other) = delete;
     host_buffer(host_buffer &&other) noexcept;
     ~host_buffer() override;
@@ -39,6 +45,7 @@ public:
 private:
     std::size_t m_size;
     void* m_data;
+    std::unique_ptr<memory_allocation_tracker> m_tracker;
 
 };
 

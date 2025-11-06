@@ -34,6 +34,22 @@ caching_memory_allocator::caching_memory_allocator(
 {
 }
 
+caching_memory_allocator::~caching_memory_allocator()
+{
+    try
+    {
+        m_deferred_release.wait_pending_free(m_pool);
+    }
+    catch(...)
+    {
+        // Can not throw on destructor. Catch exceptions and report.
+        XMIPP4_LOG_ERROR(
+            "An exception occurred waiting pending releases in "
+            "~caching_memory_allocator()"
+        );
+    }
+}
+
 memory_resource& caching_memory_allocator::get_memory_resource() const noexcept
 {
     return m_resource;

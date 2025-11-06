@@ -25,7 +25,7 @@ public:
     );
     caching_memory_allocator(const caching_memory_allocator &other) = delete;
     caching_memory_allocator(caching_memory_allocator &&other) = default;
-    ~caching_memory_allocator() = default;
+    ~caching_memory_allocator();
     
     caching_memory_allocator& 
     operator=(const caching_memory_allocator &other) = delete;

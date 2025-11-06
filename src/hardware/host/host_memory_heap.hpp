@@ -14,7 +14,7 @@ class host_memory_heap
 {
 public:
     host_memory_heap() noexcept;
-    host_memory_heap(std::size_t size);
+    host_memory_heap(std::size_t size, std::size_t alignment);
     host_memory_heap(const host_memory_heap &other) = delete;
     host_memory_heap(host_memory_heap &&other) noexcept;
     ~host_memory_heap() override;

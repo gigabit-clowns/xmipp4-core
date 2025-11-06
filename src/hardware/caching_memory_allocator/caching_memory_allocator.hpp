@@ -20,8 +20,8 @@ class caching_memory_allocator
 public:
     caching_memory_allocator(
         memory_resource &resource,
-        std::size_t size_step,
-        std::size_t request_size_step    
+        std::size_t maximum_alignment,
+        std::size_t heap_size_step    
     );
     caching_memory_allocator(const caching_memory_allocator &other) = delete;
     caching_memory_allocator(caching_memory_allocator &&other) = default;
@@ -50,8 +50,8 @@ private:
     device *m_device;
     memory_block_pool m_pool;
     memory_block_deferred_release m_deferred_release;
-    std::size_t m_size_step;
-    std::size_t m_request_size_step;
+    std::size_t m_maximum_alignment;
+    std::size_t m_heap_size_step;
 
 
     std::shared_ptr<buffer> create_buffer(memory_block_pool::iterator block);

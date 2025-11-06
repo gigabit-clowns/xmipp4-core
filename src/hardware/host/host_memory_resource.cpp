@@ -23,9 +23,12 @@ memory_resource_kind host_memory_resource::get_kind() const noexcept
 }
 
 std::shared_ptr<memory_heap> 
-host_memory_resource::create_memory_heap(std::size_t size)
+host_memory_resource::create_memory_heap(
+    std::size_t size, 
+    std::size_t alignment
+)
 {
-    return std::make_shared<host_memory_heap>(size);
+    return std::make_shared<host_memory_heap>(size, alignment);
 }
 
 host_memory_resource& host_memory_resource::get() noexcept

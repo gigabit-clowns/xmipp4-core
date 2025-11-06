@@ -57,10 +57,17 @@ public:
     /**
      * @brief Allocate a chunk of memory to serve smaller allocations.
      * 
+     * @param size Minimum size requirement for the heap.
+     * @param alignment Minimum alignment requirement for the heap's base
+     * pointer.
+     * 
      * @return std::shared_ptr<memory_heap> The newly created heap.
      */
     virtual
-    std::shared_ptr<memory_heap> create_memory_heap(std::size_t size) = 0;
+    std::shared_ptr<memory_heap> create_memory_heap(
+        std::size_t size, 
+        std::size_t alignment
+    ) = 0;
 
 }; 
 

@@ -4,10 +4,9 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/memory/align.hpp>
+#include <xmipp4/core/memory/aligned_alloc.hpp>
 
 #include "host_memory_resource.hpp"
-
-#include <cstdlib>
 
 namespace xmipp4
 {
@@ -20,9 +19,12 @@ host_memory_heap::host_memory_heap() noexcept
 {
 }
 
-host_memory_heap::host_memory_heap(std::size_t size)
-    : m_size(size)
-    , m_data(std::malloc(size))
+host_memory_heap::host_memory_heap(
+    std::size_t size,
+    std::size_t alignment
+)
+    : m_size(memory::align_ceil(size, alignment))
+    , m_data(memory::aligned_alloc(m_size, alignment))
 {
     if(m_data == nullptr && m_size != 0)
     {
@@ -56,7 +58,7 @@ void host_memory_heap::reset() noexcept
 {
     if (m_data)
     {
-        std::free(m_data);
+        memory::aligned_free(m_data);
         m_data = nullptr;
         m_size = 0;
     }

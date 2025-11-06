@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/hardware/memory_transfer_backend.hpp>
 
-#include "host_memory_transfer_backend.hpp"
+#include "host/host_memory_transfer_backend.hpp"
 #include "memory_transfer_key.hpp"
 
 #include <vector>

@@ -14,13 +14,13 @@ namespace hardware
 
 caching_memory_allocator::caching_memory_allocator(
     memory_resource &resource,
-    std::size_t size_step,
-    std::size_t request_size_step    
+    std::size_t maximum_alignment,
+    std::size_t heap_size_step    
 )
     : m_resource(resource)
     , m_device(resource.get_target_device())
-    , m_size_step(size_step)
-    , m_request_size_step(request_size_step)
+    , m_maximum_alignment(maximum_alignment)
+    , m_heap_size_step(heap_size_step)
 {
 }
 
@@ -51,7 +51,15 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     device_queue *queue
 )
 {
-    size = memory::align_ceil(size, m_size_step);
+    if (alignment > m_maximum_alignment)
+    {
+        throw std::invalid_argument(
+            "alignment parameter exceeds the maximum alignment of this "
+            "allocator"
+        );
+    }
+
+    size = memory::align_ceil(size, m_maximum_alignment);
 
     m_deferred_release.process_pending_free(m_pool);
     auto ite = m_pool.find_suitable_block(size, alignment, queue);
@@ -59,7 +67,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     if (ite == m_pool.end())
     {
         // No suitable block was found in the pool. Request more memory.
-        const auto request_size = memory::align_ceil(size, m_request_size_step);
+        const auto request_size = memory::align_ceil(size, m_heap_size_step);
         std::shared_ptr<memory_heap> heap;
         try
         {
@@ -84,7 +92,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     const auto block_size = ite->first.get_size();
     XMIPP4_ASSERT( block_size >= size );
     const auto remaining = block_size - size;
-    if (remaining >= m_size_step)
+    if (remaining >= m_maximum_alignment)
     {
         // Only partition if the block has a reminder larger than the 
         // step size.

@@ -18,18 +18,18 @@ class device_queue;
  * an allocation.
  * 
  */
-class XMIPP4_CORE_API memory_allocation_tracker
+class XMIPP4_CORE_API memory_sentinel
 {
 public:
-    memory_allocation_tracker() = default;
-    memory_allocation_tracker(const memory_allocation_tracker &other) = default;
-    memory_allocation_tracker(memory_allocation_tracker &&other) = default;
-    virtual ~memory_allocation_tracker() = default;
+    memory_sentinel() = default;
+    memory_sentinel(const memory_sentinel &other) = default;
+    memory_sentinel(memory_sentinel &&other) = default;
+    virtual ~memory_sentinel() = default;
 
-    memory_allocation_tracker& 
-    operator=(const memory_allocation_tracker &other) = default;
-    memory_allocation_tracker& 
-    operator=(memory_allocation_tracker &&other) = default;
+    memory_sentinel& 
+    operator=(const memory_sentinel &other) = default;
+    memory_sentinel& 
+    operator=(memory_sentinel &&other) = default;
 
     /**
      * @brief Signal that the allocation is being used on extra queues.
@@ -38,7 +38,7 @@ public:
      * @param exclusive Whether the new queue is explicitly synchronized
      * with the previous usage-s.
      */
-    virtual void record_queue(device_queue &queue, bool exclusive);
+    virtual void record_queue(device_queue &queue, bool exclusive) = 0;
 
 }; 
 

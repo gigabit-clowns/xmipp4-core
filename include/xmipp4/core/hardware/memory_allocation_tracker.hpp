@@ -14,7 +14,7 @@ namespace hardware
 class device_queue;
 
 /**
- * @brief Abstract class to inform a memory allocation about the status of
+ * @brief Abstract class to inform a memory allocator about the status of
  * an allocation.
  * 
  */
@@ -31,7 +31,13 @@ public:
     memory_allocation_tracker& 
     operator=(memory_allocation_tracker &&other) = default;
 
-    // TODO
+    /**
+     * @brief Signal that the allocation is being used on extra queues.
+     * 
+     * @param queue Queue where the allocation is being used.
+     * @param exclusive Whether the new queue is explicitly synchronized
+     * with the previous usage-s.
+     */
     virtual void record_queue(device_queue &queue, bool exclusive);
 
 }; 

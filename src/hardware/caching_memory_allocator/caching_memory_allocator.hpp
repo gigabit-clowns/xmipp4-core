@@ -40,8 +40,14 @@ public:
         device_queue *queue
     ) override;
 
+    void recycle_block(
+        memory_block_pool::iterator block, 
+        span<device_queue *const> queues
+    );
+
 private:
     std::reference_wrapper<memory_resource> m_resource;
+    device *m_device;
     memory_block_pool m_pool;
     memory_block_deferred_release m_deferred_release;
     std::size_t m_size_step;

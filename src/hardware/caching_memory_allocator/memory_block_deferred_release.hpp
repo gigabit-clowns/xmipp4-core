@@ -66,6 +66,8 @@ public:
      * @param block The memory block to be released.
      * @param other_queues Queues that need to be processed for actually
      * freeing the block.
+     * @param device The device associated to the queues. Must be the
+     * same across calls.
      * 
      * @note This function does not check wether ite has been provided 
      * previously. Calling it twice with the same block before it has
@@ -74,7 +76,8 @@ public:
      */
     void defer_release(
         memory_block_pool::iterator block, 
-        span<device_queue *const> other_queues 
+        span<device_queue *const> other_queues,
+        device &device
     );
 
 private:

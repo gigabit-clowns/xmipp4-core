@@ -59,7 +59,8 @@ void memory_block_deferred_release::process_pending_free(
 
 void memory_block_deferred_release::defer_release(
     memory_block_pool::iterator block, 
-    span<device_queue *const> queues
+    span<device_queue *const> queues,
+    device &device
 )
 {
     m_pending_free.emplace_back(
@@ -71,11 +72,15 @@ void memory_block_deferred_release::defer_release(
     auto& events = m_pending_free.back().second;
     for (device_queue *queue : queues)
     {
+        if (!queue)
+        {
+            throw std::invalid_argument("nullptr queue was provided");
+        }
+
         // Add a new event to the front
         if (m_event_pool.empty())
         {
-            // events.emplace_front(m_device.get().create_device_to_host_event());
-            // TODO
+            events.emplace_front(device.create_device_to_host_event());
         }
         else
         {

@@ -28,6 +28,7 @@ caching_memory_allocator::caching_memory_allocator(
     std::size_t request_size_step    
 )
     : m_resource(resource)
+    , m_device(resource.get_target_device())
     , m_size_step(size_step)
     , m_request_size_step(request_size_step)
 {
@@ -48,13 +49,11 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 
     m_deferred_release.process_pending_free(m_pool);
     auto ite = m_pool.find_suitable_block(size, alignment, queue);
-    // TODO If failure, try to steal from queue-less pool.
 
     if (ite == m_pool.end())
     {
         // No suitable block was found in the pool. Request more memory.
         const auto request_size = memory::align_ceil(size, m_request_size_step);
-
         std::shared_ptr<memory_heap> heap;
         try
         {
@@ -63,8 +62,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
         catch (const std::bad_alloc&)
         {
             XMIPP4_LOG_WARN(
-                "Memory allocation failed. Retrying after releasing "
-                "cached resources."
+                "Memory allocation failed. Retrying after releasing  resources."
             );
             m_deferred_release.wait_pending_free(m_pool);
             m_pool.release_blocks();
@@ -95,6 +93,35 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     ite->second.set_free(false);
 
     return create_buffer(ite->first);
+}
+
+void caching_memory_allocator::recycle_block(
+    memory_block_pool::iterator block, 
+    span<device_queue *const> queues
+)
+{
+    if (queues.empty())
+    {
+        m_pool.recycle_block(block);
+    }
+    else if (m_device)
+    {
+        m_deferred_release.defer_release(block, queues, *m_device);
+    }
+    else
+    {
+        for (device_queue *queue : queues)
+        {
+            if (!queue)
+            {
+                throw std::invalid_argument(
+                    "nullptr queue can not be provided to recycle block"
+                );
+            }
+
+            queue->wait_until_completed();
+        }
+    }
 }
 
 } // namespace hardware

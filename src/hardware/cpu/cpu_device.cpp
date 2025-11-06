@@ -19,13 +19,6 @@ void cpu_device::enumerate_memory_resources(
     resources = { &host_memory_resource };
 }
 
-bool cpu_device::can_access_memory_resource(
-    const memory_resource &resource
-) const
-{
-    return is_host_accessible(resource.get_kind());
-}
-
 std::shared_ptr<device_queue> cpu_device::create_device_queue()
 {
     return std::make_shared<cpu_device_queue>();

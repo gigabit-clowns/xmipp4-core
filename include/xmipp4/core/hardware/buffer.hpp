@@ -2,10 +2,13 @@
 
 #pragma once
 
+#include "memory_sentinel.hpp"
+#include "memory_resource.hpp"
 #include "../platform/dynamic_shared_object.h"
 
+#include <utility>
+#include <memory>
 #include <cstddef>
-#include <typeinfo>
 
 namespace xmipp4 
 {
@@ -13,7 +16,6 @@ namespace hardware
 {
 
 class device_queue;
-class memory_resource;
 
 
 
@@ -25,7 +27,12 @@ class memory_resource;
 class XMIPP4_CORE_API buffer
 {
 public:
-    buffer() = default;
+    buffer(
+        void *host_pointer,
+        std::size_t size,
+        std::reference_wrapper<memory_resource> resource,
+        std::unique_ptr<memory_sentinel> sentinel
+    );
     buffer(const buffer &other) = default;
     buffer(buffer &&other) = default;
     virtual ~buffer() = default;
@@ -43,7 +50,7 @@ public:
      * @return void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
-    virtual void* get_host_ptr() noexcept = 0;
+    void* get_host_ptr() noexcept;
 
     /**
      * @brief Get a host accessible pointer to the data.
@@ -55,21 +62,21 @@ public:
      * @return const void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
-    virtual const void* get_host_ptr() const noexcept = 0;
+    const void* get_host_ptr() const noexcept;
 
     /**
      * @brief Get the size in bytes for this buffer.
      * 
      * @return std::size_t Size in bytes.
      */
-    virtual std::size_t get_size() const noexcept = 0;
+    std::size_t get_size() const noexcept;
 
     /**
      * @brief Get the memory_resource where this buffer is stored. 
      * 
      * @return memory_resource& The resource where the buffer is stored.
      */
-    virtual memory_resource& get_memory_resource() const noexcept = 0;
+    memory_resource& get_memory_resource() const noexcept;
 
     /**
      * @brief Acknowledge that this buffer is being used in a device_queue.
@@ -92,7 +99,13 @@ public:
      * are guaranteed to have been concluded before they're completed at the 
      * provided queue.
      */
-    virtual void record_queue(device_queue &queue, bool exclusive=false) = 0;
+    void record_queue(device_queue &queue, bool exclusive=false);
+
+private:
+    void *m_host_pointer;
+    std::size_t m_size;
+    std::reference_wrapper<memory_resource> m_memory_resource;
+    std::unique_ptr<memory_sentinel> m_sentinel;
 
 };
 

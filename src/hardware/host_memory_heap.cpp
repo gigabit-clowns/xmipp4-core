@@ -2,7 +2,10 @@
 
 #include "host_memory_heap.hpp"
 
-#include "host_buffer.hpp"
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/memory/align.hpp>
+
+#include "host_memory_resource.hpp"
 
 #include <cstdlib>
 
@@ -73,10 +76,20 @@ std::size_t host_memory_heap::get_size() const noexcept
 std::shared_ptr<buffer> host_memory_heap::create_buffer(
     std::size_t offset, 
     std::size_t size,
-    std::unique_ptr<memory_allocation_tracker> tracker
+    std::unique_ptr<memory_sentinel> sentinel
 )
 {
-    return std::make_shared<host_buffer>(offset, size, std::move(tracker));
+    if (offset + size > m_size)
+    {
+        throw std::invalid_argument("Requested allocation exceeds heap size");
+    }
+
+    return std::make_shared<buffer>(
+        memory::offset_bytes(m_data, offset),
+        size, 
+        host_memory_resource::get(),
+        std::move(sentinel)
+    );
 }
 
 } // namespace hardware

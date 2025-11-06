@@ -30,7 +30,7 @@ public:
     std::shared_ptr<buffer> create_buffer(
         std::size_t offset, 
         std::size_t size,
-        std::unique_ptr<memory_allocation_tracker> tracker
+        std::unique_ptr<memory_sentinel> sentinel
     ) override;
 
 private:

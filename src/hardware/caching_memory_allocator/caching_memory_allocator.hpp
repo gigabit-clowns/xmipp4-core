@@ -53,6 +53,9 @@ private:
     std::size_t m_size_step;
     std::size_t m_request_size_step;
 
+
+    std::shared_ptr<buffer> create_buffer(memory_block_pool::iterator block);
+
 };
 
 } // namespace hardware

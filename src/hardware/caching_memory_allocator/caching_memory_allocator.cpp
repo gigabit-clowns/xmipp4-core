@@ -2,6 +2,8 @@
 
 #include "caching_memory_allocator.hpp"
 
+#include "caching_memory_allocation_tracker.hpp"
+
 #include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
 #include <xmipp4/core/hardware/memory_allocation_tracker.hpp>
@@ -10,17 +12,6 @@ namespace xmipp4
 {
 namespace hardware
 {
-
-static
-std::shared_ptr<buffer> create_buffer(const memory_block &block)
-{
-    auto *heap = block.get_heap();
-    const auto offset = block.get_offset();
-    const auto size = block.get_size();
-
-    XMIPP4_ASSERT(heap);
-    return heap->create_buffer(offset, size, nullptr);
-}
 
 caching_memory_allocator::caching_memory_allocator(
     memory_resource &resource,
@@ -108,7 +99,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     // Mark the block as occupied.
     ite->second.set_free(false);
 
-    return create_buffer(ite->first);
+    return create_buffer(ite);
 }
 
 void caching_memory_allocator::recycle_block(
@@ -138,6 +129,20 @@ void caching_memory_allocator::recycle_block(
             queue->wait_until_completed();
         }
     }
+}
+
+std::shared_ptr<buffer> 
+caching_memory_allocator::create_buffer(memory_block_pool::iterator block)
+{
+    auto *heap = block->first.get_heap();
+    const auto offset = block->first.get_offset();
+    const auto size = block->first.get_size();
+
+    auto tracker = 
+        std::make_unique<caching_memory_allocation_tracker>(*this, block);
+
+    XMIPP4_ASSERT(heap);
+    return heap->create_buffer(offset, size, std::move(tracker));
 }
 
 } // namespace hardware

@@ -2,8 +2,6 @@
 
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
 
-#include "../host_memory_transfer.hpp"
-
 #include <xmipp4/core/hardware/cpu/cpu_device_queue.hpp>
 #include <xmipp4/core/hardware/cpu/cpu_event.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>

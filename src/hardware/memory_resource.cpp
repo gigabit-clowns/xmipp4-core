@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
-#include "host_memory_resource.hpp"
+#include "host/host_memory_resource.hpp"
 
 namespace xmipp4
 {

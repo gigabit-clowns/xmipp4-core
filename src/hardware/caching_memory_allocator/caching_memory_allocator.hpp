@@ -14,7 +14,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class caching_memory_allocator
+class caching_memory_allocator final
     : public memory_allocator
 {
 public:

@@ -11,7 +11,7 @@ namespace hardware
 
 class memory_allocator_manager;
 
-class caching_memory_allocator_backend
+class caching_memory_allocator_backend final
     : public memory_allocator_backend
 {
 public:

@@ -19,7 +19,7 @@ static bool is_host_memory_resource(const memory_resource &resource)
     return &resource == &host_memory_resource::get();
 }
 
-backend_priority host_memory_allocator_backend::get_priority(
+backend_priority host_memory_allocator_backend::get_suitability(
     const memory_resource &resource
 ) const noexcept
 {

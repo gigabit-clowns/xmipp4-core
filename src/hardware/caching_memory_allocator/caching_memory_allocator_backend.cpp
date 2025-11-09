@@ -11,7 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
-backend_priority caching_memory_allocator_backend::get_priority(
+backend_priority caching_memory_allocator_backend::get_suitability(
     const memory_resource&
 ) const noexcept
 {

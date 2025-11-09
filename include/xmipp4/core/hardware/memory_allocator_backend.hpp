@@ -38,7 +38,7 @@ public:
      * @param resource The memory resource to be checked.
      * @return backend_priority The priority.
      */
-    virtual backend_priority get_priority(
+    virtual backend_priority get_suitability(
         const memory_resource &resource
     ) const noexcept = 0;
 
@@ -49,6 +49,9 @@ public:
      * @param resource The memory resource where the allocator creates memory
      * buffers.
      * @return std::shared_ptr<memory_allocator> The newly created allocator.
+     * 
+     * @throws std::invalid_argument if suitability returned unsupported.
+     * 
      */
     virtual std::shared_ptr<memory_allocator> create_memory_allocator(
         memory_resource &resource

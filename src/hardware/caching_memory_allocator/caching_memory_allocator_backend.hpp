@@ -15,7 +15,7 @@ class caching_memory_allocator_backend final
     : public memory_allocator_backend
 {
 public:
-    backend_priority get_priority(
+    backend_priority get_suitability(
         const memory_resource &resource
     ) const noexcept override;
 

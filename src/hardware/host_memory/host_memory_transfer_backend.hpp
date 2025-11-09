@@ -18,6 +18,11 @@ public:
     host_memory_transfer_backend() = default;
     ~host_memory_transfer_backend() override = default;
 
+    backend_priority get_suitability(
+        const memory_resource& src,
+        const memory_resource& dst
+    ) const noexcept override;
+
     std::shared_ptr<memory_transfer> create_transfer(
         const memory_resource& src,
         const memory_resource& dst

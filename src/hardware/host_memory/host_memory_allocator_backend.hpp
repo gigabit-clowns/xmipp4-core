@@ -19,7 +19,7 @@ public:
     host_memory_allocator_backend() = default;
     ~host_memory_allocator_backend() override = default;
 
-    backend_priority get_priority(
+    backend_priority get_suitability(
         const memory_resource &resource
     ) const noexcept override;
 

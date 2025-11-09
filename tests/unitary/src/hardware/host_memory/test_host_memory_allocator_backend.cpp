@@ -19,7 +19,7 @@ TEST_CASE( "host_memory_allocator_backend should have optimal priority for host_
     host_memory_allocator_backend backend;
     auto &host_memory = host_memory_resource::get();
 
-    REQUIRE( backend.get_priority(host_memory) == xmipp4::backend_priority::optimal );
+    REQUIRE( backend.get_suitability(host_memory) == xmipp4::backend_priority::optimal );
 }
 
 TEST_CASE( "host_memory_allocator_backend should not support memory resources other than host_memory_resource", "[host_memory_allocator_backend]" )
@@ -27,7 +27,7 @@ TEST_CASE( "host_memory_allocator_backend should not support memory resources ot
     host_memory_allocator_backend backend;
     mock_memory_resource resource;
 
-    REQUIRE( backend.get_priority(resource) == xmipp4::backend_priority::unsupported );
+    REQUIRE( backend.get_suitability(resource) == xmipp4::backend_priority::unsupported );
 }
 
 TEST_CASE( "host_memory_allocator_backend should return a valid allocator when provided with correct parameters", "[host_memory_allocator_backend]" )

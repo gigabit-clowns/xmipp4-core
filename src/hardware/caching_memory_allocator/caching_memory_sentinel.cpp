@@ -32,8 +32,13 @@ caching_memory_sentinel::get_queues() const noexcept
     return make_span(m_queues);
 }
 
-void caching_memory_sentinel::record_queue(device_queue &queue, bool)
+void caching_memory_sentinel::record_queue(device_queue &queue, bool exclusive)
 {
+    if (exclusive)
+    {
+        m_queues.clear();
+    }
+
     auto *const queue_pointer = &queue;
     if (queue_pointer != m_block->first.get_queue())
     {

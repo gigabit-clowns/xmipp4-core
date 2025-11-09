@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "caching_memory_sentinel.hpp"
+#include "caching_buffer_sentinel.hpp"
 
 #include "caching_memory_allocator.hpp"
 
@@ -12,7 +12,7 @@ namespace xmipp4
 namespace hardware
 {
 
-caching_memory_sentinel::caching_memory_sentinel(
+caching_buffer_sentinel::caching_buffer_sentinel(
     caching_memory_allocator &allocator,
     memory_block_pool::iterator block
 )
@@ -21,18 +21,18 @@ caching_memory_sentinel::caching_memory_sentinel(
 {
 }
 
-caching_memory_sentinel::~caching_memory_sentinel()
+caching_buffer_sentinel::~caching_buffer_sentinel()
 {
     m_allocator.get().recycle_block(m_block, get_queues());
 }
 
 span<device_queue *const> 
-caching_memory_sentinel::get_queues() const noexcept
+caching_buffer_sentinel::get_queues() const noexcept
 {
     return make_span(m_queues);
 }
 
-void caching_memory_sentinel::record_queue(device_queue &queue, bool exclusive)
+void caching_buffer_sentinel::record_queue(device_queue &queue, bool exclusive)
 {
     if (exclusive)
     {

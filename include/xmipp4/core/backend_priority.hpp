@@ -21,6 +21,7 @@ enum class backend_priority
     unsupported = std::numeric_limits<int>::min(), ///< Backend isn't supported.
     fallback = -1024, ///< Used for dummy implementations.
     normal = 0, ///< Normal priority. Use by default.
+    optimal = 1024, ///< Backend specially optimized for the use case.
 };
 
 

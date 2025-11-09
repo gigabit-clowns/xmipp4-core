@@ -78,7 +78,7 @@ std::size_t host_memory_heap::get_size() const noexcept
 std::shared_ptr<buffer> host_memory_heap::create_buffer(
     std::size_t offset, 
     std::size_t size,
-    std::unique_ptr<memory_sentinel> sentinel
+    std::unique_ptr<buffer_sentinel> sentinel
 )
 {
     if (offset + size > m_size)

@@ -11,7 +11,7 @@ buffer::buffer(
     void *host_pointer,
     std::size_t size,
     std::reference_wrapper<memory_resource> resource,
-    std::unique_ptr<memory_sentinel> sentinel
+    std::unique_ptr<buffer_sentinel> sentinel
 )
     : m_host_pointer(host_pointer)
     , m_size(size)

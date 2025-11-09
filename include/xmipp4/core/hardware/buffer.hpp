@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "memory_sentinel.hpp"
+#include "buffer_sentinel.hpp"
 #include "memory_resource.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -31,7 +31,7 @@ public:
         void *host_pointer,
         std::size_t size,
         std::reference_wrapper<memory_resource> resource,
-        std::unique_ptr<memory_sentinel> sentinel
+        std::unique_ptr<buffer_sentinel> sentinel
     );
     buffer(const buffer &other) = default;
     buffer(buffer &&other) = default;
@@ -105,7 +105,7 @@ private:
     void *m_host_pointer;
     std::size_t m_size;
     std::reference_wrapper<memory_resource> m_memory_resource;
-    std::unique_ptr<memory_sentinel> m_sentinel;
+    std::unique_ptr<buffer_sentinel> m_sentinel;
 
 };
 

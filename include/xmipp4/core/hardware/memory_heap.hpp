@@ -11,7 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class memory_sentinel;
+class buffer_sentinel;
 class buffer;
 
 /**
@@ -51,7 +51,7 @@ public:
     virtual std::shared_ptr<buffer> create_buffer(
         std::size_t offset, 
         std::size_t size,
-        std::unique_ptr<memory_sentinel> sentinel
+        std::unique_ptr<buffer_sentinel> sentinel
     ) = 0;
 
 }; 

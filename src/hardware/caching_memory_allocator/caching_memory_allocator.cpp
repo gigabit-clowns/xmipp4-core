@@ -2,7 +2,7 @@
 
 #include "caching_memory_allocator.hpp"
 
-#include "caching_memory_sentinel.hpp"
+#include "caching_buffer_sentinel.hpp"
 
 #include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
@@ -71,7 +71,10 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
         std::shared_ptr<memory_heap> heap;
         try
         {
-            heap = get_memory_resource().create_memory_heap(request_size);
+            heap = get_memory_resource().create_memory_heap(
+                request_size, 
+                m_maximum_alignment
+            );
         }
         catch (const std::bad_alloc&)
         {
@@ -80,7 +83,10 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
             );
             m_deferred_release.wait_pending_free(m_pool);
             m_pool.release_blocks();
-            heap = get_memory_resource().create_memory_heap(request_size);
+            heap = get_memory_resource().create_memory_heap(
+                request_size,
+                m_maximum_alignment
+            );
         }
 
         XMIPP4_ASSERT( heap );
@@ -145,11 +151,11 @@ caching_memory_allocator::create_buffer(memory_block_pool::iterator block)
     const auto offset = block->first.get_offset();
     const auto size = block->first.get_size();
 
-    auto tracker = 
-        std::make_unique<caching_memory_sentinel>(*this, block);
+    auto sentinel = 
+        std::make_unique<caching_buffer_sentinel>(*this, block);
 
     XMIPP4_ASSERT(heap);
-    return heap->create_buffer(offset, size, std::move(tracker));
+    return heap->create_buffer(offset, size, std::move(sentinel));
 }
 
 } // namespace hardware

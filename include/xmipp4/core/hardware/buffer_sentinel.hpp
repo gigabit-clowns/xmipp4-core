@@ -18,18 +18,18 @@ class device_queue;
  * an allocation.
  * 
  */
-class XMIPP4_CORE_API memory_sentinel
+class XMIPP4_CORE_API buffer_sentinel
 {
 public:
-    memory_sentinel() = default;
-    memory_sentinel(const memory_sentinel &other) = default;
-    memory_sentinel(memory_sentinel &&other) = default;
-    virtual ~memory_sentinel() = default;
+    buffer_sentinel() = default;
+    buffer_sentinel(const buffer_sentinel &other) = default;
+    buffer_sentinel(buffer_sentinel &&other) = default;
+    virtual ~buffer_sentinel() = default;
 
-    memory_sentinel& 
-    operator=(const memory_sentinel &other) = default;
-    memory_sentinel& 
-    operator=(memory_sentinel &&other) = default;
+    buffer_sentinel& 
+    operator=(const buffer_sentinel &other) = default;
+    buffer_sentinel& 
+    operator=(buffer_sentinel &&other) = default;
 
     /**
      * @brief Signal that the allocation is being used on extra queues.

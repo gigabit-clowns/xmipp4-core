@@ -5,6 +5,7 @@
 #include <xmipp4/core/hardware/memory_allocator_backend.hpp>
 
 #include "caching_memory_allocator/caching_memory_allocator_backend.hpp"
+#include "host_memory/host_memory_allocator_backend.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -61,6 +62,7 @@ memory_allocator_manager::operator=(
 void memory_allocator_manager::register_builtin_backends()
 {
     caching_memory_allocator_backend::register_at(*this);
+    host_memory_allocator_backend::register_at(*this);
 }
 
 bool memory_allocator_manager::register_backend(

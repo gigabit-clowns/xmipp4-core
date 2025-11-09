@@ -12,10 +12,10 @@ namespace hardware
 {
 
 backend_priority caching_memory_allocator_backend::get_priority(
-    memory_resource&
+    const memory_resource&
 ) const noexcept
 {
-    return backend_priority::fallback;
+    return backend_priority::normal;
 }
 
 std::shared_ptr<memory_allocator> 

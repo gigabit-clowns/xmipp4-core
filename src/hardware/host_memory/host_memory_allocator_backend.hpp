@@ -4,6 +4,7 @@
 
 #include <xmipp4/core/hardware/memory_allocator_backend.hpp>
 
+
 namespace xmipp4 
 {
 namespace hardware
@@ -11,10 +12,13 @@ namespace hardware
 
 class memory_allocator_manager;
 
-class caching_memory_allocator_backend
+class host_memory_allocator_backend final
     : public memory_allocator_backend
 {
 public:
+    host_memory_allocator_backend() = default;
+    ~host_memory_allocator_backend() override = default;
+
     backend_priority get_priority(
         const memory_resource &resource
     ) const noexcept override;

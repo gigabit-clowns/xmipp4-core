@@ -9,7 +9,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class host_memory_heap
+class host_memory_heap final
     : public memory_heap
 {
 public:
@@ -30,7 +30,7 @@ public:
     std::shared_ptr<buffer> create_buffer(
         std::size_t offset, 
         std::size_t size,
-        std::unique_ptr<memory_sentinel> sentinel
+        std::unique_ptr<buffer_sentinel> sentinel
     ) override;
 
 private:

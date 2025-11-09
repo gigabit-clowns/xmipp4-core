@@ -3,8 +3,9 @@
 #include <xmipp4/core/hardware/memory_transfer_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_transfer_backend.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
-#include "host/host_memory_transfer_backend.hpp"
+#include "host_memory/host_memory_transfer_backend.hpp"
 #include "memory_transfer_key.hpp"
 
 #include <vector>
@@ -42,7 +43,7 @@ public:
         const auto ite = m_cache.find(key);
         if (ite != m_cache.end())
         {
-            XMIPP4_ASSERT(  ite->second );
+            XMIPP4_ASSERT( ite->second );
             return ite->second;
         }
 
@@ -85,9 +86,7 @@ memory_transfer_manager::operator=(
 
 void memory_transfer_manager::register_builtin_backends()
 {
-    register_backend(
-        std::make_unique<host_memory_transfer_backend>()
-    );
+    host_memory_transfer_backend::register_at(*this);
 }
 
 bool memory_transfer_manager::register_backend(

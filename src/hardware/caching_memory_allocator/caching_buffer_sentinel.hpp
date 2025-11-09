@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/hardware/memory_sentinel.hpp>
+#include <xmipp4/core/hardware/buffer_sentinel.hpp>
 
 #include "memory_block_pool.hpp"
 
@@ -18,27 +18,27 @@ namespace hardware
 class device_queue;
 class caching_memory_allocator;
 
-class caching_memory_sentinel final
-    : public memory_sentinel
+class caching_buffer_sentinel final
+    : public buffer_sentinel
 {
 public: 
-    caching_memory_sentinel(
+    caching_buffer_sentinel(
         caching_memory_allocator &allocator,
         memory_block_pool::iterator block
     );
-    caching_memory_sentinel(
-        const caching_memory_sentinel &other
+    caching_buffer_sentinel(
+        const caching_buffer_sentinel &other
     ) = delete;
-    caching_memory_sentinel(
-        caching_memory_sentinel &&other
+    caching_buffer_sentinel(
+        caching_buffer_sentinel &&other
     ) = delete;
-    ~caching_memory_sentinel() override;
+    ~caching_buffer_sentinel() override;
 
-    caching_memory_sentinel& operator=(
-        const caching_memory_sentinel &other
+    caching_buffer_sentinel& operator=(
+        const caching_buffer_sentinel &other
     ) = delete;
-    caching_memory_sentinel& operator=(
-        caching_memory_sentinel &&other
+    caching_buffer_sentinel& operator=(
+        caching_buffer_sentinel &&other
     ) = delete;
 
     span<device_queue *const> get_queues() const noexcept;

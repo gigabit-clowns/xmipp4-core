@@ -39,7 +39,7 @@ public:
      * @return backend_priority The priority.
      */
     virtual backend_priority get_priority(
-        memory_resource &resource
+        const memory_resource &resource
     ) const noexcept = 0;
 
     /**

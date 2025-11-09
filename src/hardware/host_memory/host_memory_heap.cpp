@@ -83,7 +83,7 @@ std::shared_ptr<buffer> host_memory_heap::create_buffer(
 {
     if (offset + size > m_size)
     {
-        throw std::invalid_argument("Requested allocation exceeds heap size");
+        throw std::out_of_range("Requested allocation exceeds heap size");
     }
 
     return std::make_shared<buffer>(

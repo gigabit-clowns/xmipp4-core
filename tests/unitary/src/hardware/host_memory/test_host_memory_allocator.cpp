@@ -15,7 +15,7 @@
 
 using namespace xmipp4::hardware;
 
-TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[host_buffer_allocator]" )
+TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[host_memory_allocator]" )
 {
     host_memory_allocator allocator;
 
@@ -28,7 +28,7 @@ TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[hos
     REQUIRE( buffer->get_size() >= size );
 }
 
-TEST_CASE( "host_memory_allocator should throw when provided with a device queue", "[host_buffer_allocator]" )
+TEST_CASE( "host_memory_allocator should throw when provided with a device queue", "[host_memory_allocator]" )
 {
     host_memory_allocator allocator;
 
@@ -46,7 +46,7 @@ TEST_CASE( "host_memory_allocator should throw when provided with a device queue
 	);
 }
 
-TEST_CASE( "host_memory_resource should return the host memory resource in get_memory_resource", "[host_buffer_allocator]" )
+TEST_CASE( "host_memory_resource should return the host memory resource in get_memory_resource", "[host_memory_allocator]" )
 {
     host_memory_allocator allocator;
 
@@ -56,7 +56,7 @@ TEST_CASE( "host_memory_resource should return the host memory resource in get_m
     REQUIRE( &resource1 == &resource2 );
 }
 
-TEST_CASE( "host_buffer_allocator should allocate enough space", "[host_buffer_allocator]" )
+TEST_CASE( "host_buffer_allocator should allocate enough space", "[host_memory_allocator]" )
 {
     const std::size_t size = 1024;
     const std::size_t alignment = 64;
@@ -70,7 +70,7 @@ TEST_CASE( "host_buffer_allocator should allocate enough space", "[host_buffer_a
     std::memset(buffer->get_host_ptr(), 0, buffer->get_size()); // Should not segfault
 }
 
-TEST_CASE( "buffer allocated by host_buffer_allocator should throw when recording queues", "[host_buffer_allocator]" )
+TEST_CASE( "buffer allocated by host_buffer_allocator should throw when recording queues", "[host_memory_allocator]" )
 {
     host_memory_allocator allocator;
 

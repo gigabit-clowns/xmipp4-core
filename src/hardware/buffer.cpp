@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 
+#include <iostream>
+
 namespace xmipp4
 {
 namespace hardware

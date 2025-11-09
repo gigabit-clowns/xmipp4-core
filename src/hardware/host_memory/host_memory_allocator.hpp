@@ -24,7 +24,6 @@ public:
     host_memory_allocator() = default;
     ~host_memory_allocator() override = default;
 
-private:
     memory_resource& get_memory_resource() const noexcept override;
 
     std::shared_ptr<buffer> allocate(

@@ -4,12 +4,14 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/host_memory_transfer.hpp>
-#include <hardware/host_buffer.hpp>
-#include <xmipp4/core/hardware/copy_region.hpp>
+#include <hardware/host_memory/host_memory_transfer.hpp>
 
-#include "mock/mock_device_queue.hpp"
-#include "mock/mock_buffer.hpp"
+#include <hardware/host_memory/host_memory_allocator.hpp>
+#include <xmipp4/core/hardware/copy_region.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
+
+#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_memory_resource.hpp"
 
 #include <sstream>
 
@@ -24,17 +26,19 @@ TEST_CASE( "copy in host_memory_transfer should successfully copy memory ranges"
     const auto source_byte_count = source_element_count * sizeof(U);
     const auto destination_element_count = 512;
     const auto destination_byte_count = destination_element_count * sizeof(U);
-    host_buffer source(source_byte_count, alignof(U));
-    host_buffer destination(destination_byte_count, alignof(U));
 
-    auto* source_ptr = static_cast<U*>(source.get_host_ptr());
+    host_memory_allocator allocator;
+    auto source = allocator.allocate(source_byte_count, alignof(U), nullptr);
+    auto destination = allocator.allocate(destination_byte_count, alignof(U), nullptr);
+
+    auto* source_ptr = static_cast<U*>(source->get_host_ptr());
     for (std::size_t i = 0; i < source_element_count; ++i)
     {
         source_ptr[i] = static_cast<U>(i);
     }
 
     const U destination_fill_value = 0xDEADBEEF;
-    auto destination_ptr = static_cast<U*>(destination.get_host_ptr());
+    auto destination_ptr = static_cast<U*>(destination->get_host_ptr());
     for (std::size_t i = 0; i < destination_element_count; ++i)
     {
         destination_ptr[i] = destination_fill_value;
@@ -46,7 +50,7 @@ TEST_CASE( "copy in host_memory_transfer should successfully copy memory ranges"
         copy_region(192 * sizeof(U), 128 * sizeof(U), 64 * sizeof(U))
     }};
 
-    transfer.copy(source, destination, xmipp4::make_span(regions), nullptr);
+    transfer.copy(*source, *destination, xmipp4::make_span(regions), nullptr);
 
     for (std::size_t i = 0; i < 64; ++i)
     {
@@ -75,8 +79,10 @@ TEST_CASE( "copy in host_memory_transfer with a queue should synchronize", "[hos
 {
     using U = std::uint32_t;
     host_memory_transfer transfer;
-    host_buffer source(1024, 16);
-    host_buffer destination(1024, 16);
+
+    host_memory_allocator allocator;
+    auto source = allocator.allocate(1024, 16, nullptr);
+    auto destination = allocator.allocate(1024, 16, nullptr);
 
     mock_device_queue queue;
     REQUIRE_CALL(queue, wait_until_completed());
@@ -85,26 +91,26 @@ TEST_CASE( "copy in host_memory_transfer with a queue should synchronize", "[hos
         copy_region(0 * sizeof(U), 0 * sizeof(U), 64 * sizeof(U)),
     }};
 
-    transfer.copy(source, destination, xmipp4::make_span(regions), &queue);
+    transfer.copy(*source, *destination, xmipp4::make_span(regions), &queue);
 
 }
 
 TEST_CASE( "copy in host_memory_transfer should throw if the source is not host accessible", "[host_memory_transfer]" )
 {
     host_memory_transfer transfer;
-    mock_buffer source;
-    host_buffer destination(1024, 16);
 
-    const auto &const_source = source;
-    REQUIRE_CALL(const_source, get_host_ptr())
-        .RETURN(nullptr);
+    mock_memory_resource resource;
+    buffer source(nullptr, 1024, resource, nullptr);
+
+    host_memory_allocator allocator;
+    auto destination = allocator.allocate(1024, 16, nullptr);
 
     const std::array<copy_region, 1> regions = {{
         copy_region(0, 0, 64),
     }};
 
 	REQUIRE_THROWS_MATCHES(
-		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		transfer.copy(source, *destination, xmipp4::make_span(regions), nullptr),
 		std::invalid_argument,
 		Catch::Matchers::Message("Source buffer is not host accessible.")
 	);
@@ -114,18 +120,19 @@ TEST_CASE( "copy in host_memory_transfer should throw if the source is not host 
 TEST_CASE( "copy in host_memory_transfer should throw if the destination is not host accessible", "[host_memory_transfer]" )
 {
     host_memory_transfer transfer;
-    mock_buffer destination;
-    host_buffer source(1024, 16);
 
-    REQUIRE_CALL(destination, get_host_ptr())
-        .RETURN(nullptr);
+    host_memory_allocator allocator;
+    auto source = allocator.allocate(1024, 16, nullptr);
+
+    mock_memory_resource resource;
+    buffer destination(nullptr, 1024, resource, nullptr);
 
     const std::array<copy_region, 1> regions = {{
         copy_region(0, 0, 64),
     }};
 
 	REQUIRE_THROWS_MATCHES(
-		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		transfer.copy(*source, destination, xmipp4::make_span(regions), nullptr),
 		std::invalid_argument,
 		Catch::Matchers::Message("Destination buffer is not host accessible.")
 	);
@@ -135,8 +142,10 @@ TEST_CASE( "copy in host_memory_transfer should throw if the destination is not 
 TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds bounds ", "[host_memory_transfer]" )
 {
     host_memory_transfer transfer;
-    host_buffer destination(1024, 16);
-    host_buffer source(2048, 16);
+
+    host_memory_allocator allocator;
+    auto source = allocator.allocate(2048, 16, nullptr);
+    auto destination = allocator.allocate(1024, 16, nullptr);
 
     const std::array<copy_region, 2> regions = {{
         copy_region(0, 0, 64),
@@ -144,7 +153,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds
     }};
 
 	REQUIRE_THROWS_MATCHES(
-		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		transfer.copy(*source, *destination, xmipp4::make_span(regions), nullptr),
 		std::out_of_range,
 		Catch::Matchers::Message("Copy region exceeds source buffer size.")
 	);
@@ -154,8 +163,10 @@ TEST_CASE( "copy in host_memory_transfer should throw if a source region exceeds
 TEST_CASE( "copy in host_memory_transfer should throw if a destination region exceeds bounds ", "[host_memory_transfer]" )
 {
     host_memory_transfer transfer;
-    host_buffer destination(1024, 16);
-    host_buffer source(2048, 16);
+
+    host_memory_allocator allocator;
+    auto source = allocator.allocate(2048, 16, nullptr);
+    auto destination = allocator.allocate(1024, 16, nullptr);
 
     const std::array<copy_region, 2> regions = {{
         copy_region(0, 0, 64),
@@ -163,7 +174,7 @@ TEST_CASE( "copy in host_memory_transfer should throw if a destination region ex
     }};
 
 	REQUIRE_THROWS_MATCHES(
-		transfer.copy(source, destination, xmipp4::make_span(regions), nullptr),
+		transfer.copy(*source, *destination, xmipp4::make_span(regions), nullptr),
 		std::out_of_range,
 		Catch::Matchers::Message("Copy region exceeds destination buffer size.")
 	);

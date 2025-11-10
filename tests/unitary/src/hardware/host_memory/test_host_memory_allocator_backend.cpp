@@ -54,6 +54,3 @@ TEST_CASE( "host_memory_allocator_backend should throw when trying to create an 
         )
 	);
 }
-
-
-

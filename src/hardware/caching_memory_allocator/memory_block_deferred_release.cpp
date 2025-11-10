@@ -25,7 +25,7 @@ void memory_block_deferred_release::wait_pending_free(
         }
 
         auto block = item.first;
-        block->second.set_free(false);
+        block->second.set_free(true);
         pool.consider_merging_block(block);
         m_event_pool.splice_after(m_event_pool.cbefore_begin(), events);
     }
@@ -50,7 +50,7 @@ void memory_block_deferred_release::process_pending_free(
             if(remove)
             {
                 auto block = item.first;
-                block->second.set_free(false);
+                block->second.set_free(true);
                 pool.consider_merging_block(block);
             }
 
@@ -67,6 +67,13 @@ void memory_block_deferred_release::defer_release(
     device &device
 )
 {
+    if (queues.empty())
+    {
+        throw std::invalid_argument(
+            "No queues were provided to defer the release"
+        );
+    }
+
     m_pending_free.emplace_back(
         std::piecewise_construct,
         std::forward_as_tuple(block),

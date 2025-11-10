@@ -24,21 +24,21 @@ class device_queue;
  * resource.
  * 
  */
-class XMIPP4_CORE_API buffer
+class buffer
 {
 public:
-    buffer(
+    XMIPP4_CORE_API buffer(
         void *host_pointer,
         std::size_t size,
         std::reference_wrapper<memory_resource> resource,
         std::unique_ptr<buffer_sentinel> sentinel
     );
     buffer(const buffer &other) = delete;
-    buffer(buffer &&other) = default;
-    virtual ~buffer() = default;
+    XMIPP4_CORE_API buffer(buffer &&other) noexcept;
+    XMIPP4_CORE_API virtual ~buffer();
 
     buffer& operator=(const buffer &other) = delete;
-    buffer& operator=(buffer &&other) = default;
+    XMIPP4_CORE_API buffer& operator=(buffer &&other) noexcept;
 
     /**
      * @brief Get a host accessible pointer to the data.
@@ -50,6 +50,7 @@ public:
      * @return void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
+    XMIPP4_CORE_API 
     void* get_host_ptr() noexcept;
 
     /**
@@ -62,6 +63,7 @@ public:
      * @return const void* Pointer to the data. nullptr if the buffer is not
      * host accessible.
      */
+    XMIPP4_CORE_API 
     const void* get_host_ptr() const noexcept;
 
     /**
@@ -69,6 +71,7 @@ public:
      * 
      * @return std::size_t Size in bytes.
      */
+    XMIPP4_CORE_API 
     std::size_t get_size() const noexcept;
 
     /**
@@ -76,6 +79,7 @@ public:
      * 
      * @return memory_resource& The resource where the buffer is stored.
      */
+    XMIPP4_CORE_API 
     memory_resource& get_memory_resource() const noexcept;
 
     /**
@@ -103,6 +107,7 @@ public:
      * queue execution.
      * 
      */
+    XMIPP4_CORE_API 
     void record_queue(device_queue &queue, bool exclusive=false);
 
 private:

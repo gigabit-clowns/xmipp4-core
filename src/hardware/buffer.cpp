@@ -24,6 +24,12 @@ buffer::buffer(
 {
 }
 
+buffer::buffer(buffer &&other) noexcept = default;
+
+buffer::~buffer() = default;
+
+buffer& buffer::operator=(buffer &&other) noexcept = default;
+
 void* buffer::get_host_ptr() noexcept
 {
     return m_host_pointer;

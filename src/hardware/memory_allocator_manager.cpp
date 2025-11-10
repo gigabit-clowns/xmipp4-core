@@ -36,7 +36,8 @@ public:
         memory_resource &resource
     ) const
     {
-        // TODO
+        (void)(resource); // TODO
+        return nullptr;
     }
 
 private:

@@ -20,20 +20,21 @@ class memory_allocator_backend;
  * @brief Centralizes and manages multiple memory_allocator_backends-s.
  * 
  */
-class XMIPP4_CORE_API memory_allocator_manager
+class memory_allocator_manager
     : public service_manager
 {
 public:
-    memory_allocator_manager() noexcept;
+    XMIPP4_CORE_API memory_allocator_manager() noexcept;
     memory_allocator_manager(const memory_allocator_manager &other) = delete;
-    memory_allocator_manager(memory_allocator_manager &&other) noexcept;
-    ~memory_allocator_manager() override;
+    XMIPP4_CORE_API memory_allocator_manager(memory_allocator_manager &&other) noexcept;
+    XMIPP4_CORE_API ~memory_allocator_manager() override;
 
     memory_allocator_manager& 
     operator=(const memory_allocator_manager &other) = delete;
-    memory_allocator_manager& 
+    XMIPP4_CORE_API memory_allocator_manager& 
     operator=(memory_allocator_manager &&other) noexcept;
 
+    XMIPP4_CORE_API 
     void register_builtin_backends() override;
 
     /**
@@ -43,6 +44,7 @@ public:
      * @return true The backend was successfully registered.
      * @return false The backend could not be registered.
      */
+    XMIPP4_CORE_API 
     bool register_backend(std::unique_ptr<memory_allocator_backend> backend);
 
     /**
@@ -53,6 +55,7 @@ public:
      * buffers.
      * @return std::shared_ptr<memory_allocator> The newly created allocator.
      */
+    XMIPP4_CORE_API
     std::shared_ptr<memory_allocator> create_memory_allocator(
         memory_resource &resource
     ) const;

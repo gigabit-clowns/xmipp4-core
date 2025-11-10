@@ -24,17 +24,17 @@ class memory_transfer_manager final
     : public service_manager
 {
 public:
-    memory_transfer_manager() noexcept;
+    XMIPP4_CORE_API memory_transfer_manager() noexcept;
     memory_transfer_manager(const memory_transfer_manager &other) = delete;
-    memory_transfer_manager(memory_transfer_manager &&other) noexcept;
-    ~memory_transfer_manager() override;
+    XMIPP4_CORE_API memory_transfer_manager(memory_transfer_manager &&other) noexcept;
+    XMIPP4_CORE_API ~memory_transfer_manager() override;
 
     memory_transfer_manager&
     operator=(const memory_transfer_manager &other) = delete;
-    memory_transfer_manager&
+    XMIPP4_CORE_API memory_transfer_manager&
     operator=(memory_transfer_manager &&other) noexcept;
     
-    void register_builtin_backends() override;
+    XMIPP4_CORE_API void register_builtin_backends() override;
 
     /**
      * @brief Register a new memory transfer backend.
@@ -43,6 +43,7 @@ public:
      * @return true If the backend was registered successfully.
      * @return false If the backend could not be registered.
      */
+    XMIPP4_CORE_API
     bool register_backend(std::unique_ptr<memory_transfer_backend> backend);
 
     /**
@@ -55,6 +56,7 @@ public:
      * nullptr if no backend is able to create a transfer between the two
      * memory_resource-s.
      */
+    XMIPP4_CORE_API 
     std::shared_ptr<memory_transfer> create_transfer(
         const memory_resource& src,
         const memory_resource& dst

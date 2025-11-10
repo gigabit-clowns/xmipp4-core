@@ -138,6 +138,92 @@ private:
         iterator third
     );
 
+    /**
+     * @brief Update links for the next partition to ensure consistency.
+     * 
+     * If the provided element has a next partition, the previous partition
+     * is updated on the next partition. Otherwise does nothing.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * 
+     */
+    void update_forward_link(iterator ite) noexcept;
+
+    /**
+     * @brief Update links for the previous partition to ensure consistency.
+     * 
+     * If the provided element has a previous partition, the next partition
+     * is updated on the previous partition. Otherwise does nothing.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * 
+     */
+    void update_backward_link(iterator ite) noexcept;
+
+    /**
+     * @brief Update links for the previous and next partitions to ensure 
+     * consistency.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * 
+     * @see update_forward_link
+     * @see update_backward_link
+     * 
+     */
+    void update_links(iterator ite) noexcept;
+
+    /**
+     * @brief Check for consistency in the next partition.
+     * 
+     * The forward link is consistent if the previous block of next block of 
+     * the iterator is the iterator itself. If the next block is end(), it 
+     * is considered to be consistent.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * @return true Forward link is consistent.
+     * @return false Forward link is not consistent. Thus, an error occurred.
+     * 
+     */
+    bool check_forward_link(iterator ite)  noexcept;
+
+    /**
+     * @brief Check for consistency in the previous partition.
+     * 
+     * The backward link is consistent if the next block of the previous block 
+     * of the iterator is the iterator itself. If the previous block is end(), 
+     * it is considered to be consistent.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * @return true Backward link is consistent.
+     * @return false Backward link is not consistent. Thus, an error ocurred.
+     * 
+     */
+    bool check_backward_link(iterator ite) noexcept;
+
+    /**
+     * @brief Check for consistency in the previous and next partitions.
+     * 
+     * @param ite Iterator to a block. Must be dereferenceable.
+     * @return true Forward and backward links are consistent.
+     * @return false Forward and backward links are not consistent. 
+     * Thus, an error ocurred.
+     * 
+     */
+    bool check_links(iterator ite) noexcept;
+
+    /**
+     * @brief Check if a block can be merged to.
+     * 
+     * A block can be merged if it is free.
+     * 
+     * @param ite Iterator to the block to be checked. May be end().
+     * @return true Item pointed by the iterator is free.
+     * @return false Item pointed by the iterator is occupied or the 
+     * provided iterator is null.
+     * 
+     */
+    bool is_mergeable(iterator ite) noexcept;
+
 };
 
 } // namespace hardware

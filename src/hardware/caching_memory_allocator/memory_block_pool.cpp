@@ -10,94 +10,6 @@ namespace xmipp4
 namespace hardware
 {
 
-static
-bool is_mergeable(memory_block_pool::iterator ite) noexcept
-{
-    bool result;
-
-    if (ite != memory_block_pool::iterator())
-    {
-        result = ite->second.is_free();
-    }
-    else
-    {
-        result = false;
-    }
-
-    return result;
-}
-
-static
-void update_forward_link(memory_block_pool::iterator ite) noexcept
-{
-    const auto next = ite->second.get_next_block();
-    if (next != memory_block_pool::iterator())
-    {
-        next->second.set_previous_block(ite);
-    }
-}
-
-static
-void update_backward_link(memory_block_pool::iterator ite) noexcept
-{
-    const auto prev = ite->second.get_previous_block();
-    if (prev != memory_block_pool::iterator())
-    {
-        prev->second.set_next_block(ite);
-    }
-}
-
-static
-void update_links(memory_block_pool::iterator ite) noexcept
-{
-    update_backward_link(ite);
-    update_forward_link(ite);
-}
-
-static
-bool check_forward_link(memory_block_pool::iterator ite)  noexcept
-{
-    bool result;
-
-    const auto next = ite->second.get_next_block();
-    if (next != memory_block_pool::iterator())
-    {
-        result = next->second.get_previous_block() == ite;
-    }
-    else
-    {
-        result = true;
-    }
-
-    return result;
-}
-
-static
-bool check_backward_link(memory_block_pool::iterator ite) noexcept
-{
-    bool result;
-
-    const auto prev = ite->second.get_previous_block();
-    if (prev != memory_block_pool::iterator())
-    {
-        result = prev->second.get_next_block() == ite;
-    }
-    else
-    {
-        result = true;
-    }
-
-    return result;
-}
-
-static
-bool check_links(memory_block_pool::iterator ite) noexcept
-{
-    return check_backward_link(ite) && check_forward_link(ite);
-}
-
-
-
 memory_block_pool::iterator memory_block_pool::begin()
 {
     return m_blocks.begin();
@@ -215,11 +127,10 @@ memory_block_pool::iterator memory_block_pool::register_heap(
         throw std::invalid_argument("Provided null heap");
     }
 
-    const memory_block_pool::iterator null;
     std::tie(result, inserted) = m_blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(std::move(heap), 0UL, heap->get_size(), queue),
-        std::forward_as_tuple(null, null, true)
+        std::forward_as_tuple(end(), end(), true)
     );
 
     if (!inserted)
@@ -350,6 +261,85 @@ memory_block_pool::merge_blocks(
 
     XMIPP4_ASSERT( check_links(ite) );
     return ite;
+}
+
+void memory_block_pool::update_forward_link(iterator ite) noexcept
+{
+    const auto next = ite->second.get_next_block();
+    if (next != end())
+    {
+        next->second.set_previous_block(ite);
+    }
+}
+
+void memory_block_pool::update_backward_link(iterator ite) noexcept
+{
+    const auto prev = ite->second.get_previous_block();
+    if (prev != end())
+    {
+        prev->second.set_next_block(ite);
+    }
+}
+
+void memory_block_pool::update_links(iterator ite) noexcept
+{
+    update_backward_link(ite);
+    update_forward_link(ite);
+}
+
+bool memory_block_pool::check_forward_link(iterator ite) noexcept
+{
+    bool result;
+
+    const auto next = ite->second.get_next_block();
+    if (next != end())
+    {
+        result = next->second.get_previous_block() == ite;
+    }
+    else
+    {
+        result = true;
+    }
+
+    return result;
+}
+
+bool memory_block_pool::check_backward_link(iterator ite) noexcept
+{
+    bool result;
+
+    const auto prev = ite->second.get_previous_block();
+    if (prev != end())
+    {
+        result = prev->second.get_next_block() == ite;
+    }
+    else
+    {
+        result = true;
+    }
+
+    return result;
+}
+
+bool memory_block_pool::check_links(iterator ite) noexcept
+{
+    return check_backward_link(ite) && check_forward_link(ite);
+}
+
+bool memory_block_pool::is_mergeable(iterator ite) noexcept
+{
+    bool result;
+
+    if (ite != end())
+    {
+        result = ite->second.is_free();
+    }
+    else
+    {
+        result = false;
+    }
+
+    return result;
 }
 
 } // namespace hardware

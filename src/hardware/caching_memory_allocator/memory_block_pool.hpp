@@ -212,6 +212,19 @@ private:
     bool check_links(iterator ite) noexcept;
 
     /**
+     * @brief Check if a block is partitioned.
+     * 
+     * A block is considered to be partitioned if it has a previous or next
+     * partition iterator set to a non-empty value.
+     * 
+     * @param ite Iterator to the block to be checked. Must be dereferenceable.
+     * @return true Block is partitioned.
+     * @return false Block is not partitioned.
+     * 
+     */
+    bool is_partition(iterator ite) noexcept;
+
+    /**
      * @brief Check if a block can be merged to.
      * 
      * A block can be merged if it is free.

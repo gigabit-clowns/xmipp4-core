@@ -122,18 +122,7 @@ bool operator!=(
 
 
 
-/**
- * @brief Check if a block is partitioned.
- * 
- * A block is considered to be partitioned if it has a previous or next
- * partition iterator set to a non-empty value.
- * 
- * @param block Block to be checked.
- * @return true Block is partitioned.
- * @return false Block is not partitioned.
- * 
- */
-bool is_partition(const memory_block_context &block) noexcept;
+
 
 } // namespace hardware
 } // namespace xmipp4

@@ -155,7 +155,7 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
     REQUIRE( first->first.get_size() == first_size );
     REQUIRE( first->first.get_queue() == &queue );
     REQUIRE( first->second.is_free() == true );
-    REQUIRE( first->second.get_previous_block() == memory_block_pool::iterator() );
+    REQUIRE( first->second.get_previous_block() == pool.end() );
     REQUIRE( first->second.get_next_block() == second );
 
     REQUIRE( second->first.get_heap() == heap.get() );
@@ -164,7 +164,7 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
     REQUIRE( second->first.get_queue() == &queue );
     REQUIRE( second->second.is_free() == true );
     REQUIRE( second->second.get_previous_block() == first );
-    REQUIRE( second->second.get_next_block() == memory_block_pool::iterator() );
+    REQUIRE( second->second.get_next_block() == pool.end() );
 }
 
 TEST_CASE("successive calls to partition_block should create a doubly linked list of memory_blocks", "[memory_block_pool]")
@@ -182,7 +182,7 @@ TEST_CASE("successive calls to partition_block should create a doubly linked lis
     const std::size_t n_partitions = 8;
     const std::size_t partition_size = size / n_partitions;
     std::vector<memory_block_pool::iterator> partitions;
-    partitions.emplace_back();
+    partitions.emplace_back(pool.end());
     for (std::size_t i = 1; i < n_partitions; ++i)
     {
         memory_block_pool::iterator first;
@@ -196,7 +196,7 @@ TEST_CASE("successive calls to partition_block should create a doubly linked lis
         partitions.emplace_back(first);
     }
     partitions.emplace_back(ite);
-    partitions.emplace_back();
+    partitions.emplace_back(pool.end());
 
     REQUIRE( partitions.size() == n_partitions+2 );
     for (std::size_t i = 1; i <= n_partitions; ++i)
@@ -286,8 +286,8 @@ TEST_CASE("register_heap should return an unpartitioned block", "[memory_block_p
         .RETURN(1024);
 
     auto ite = pool.register_heap(heap, nullptr);
-    REQUIRE( ite->second.get_next_block() == memory_block_pool::iterator() );
-    REQUIRE( ite->second.get_previous_block() == memory_block_pool::iterator() );
+    REQUIRE( ite->second.get_next_block() == pool.end() );
+    REQUIRE( ite->second.get_previous_block() == pool.end() );
 }
 
 TEST_CASE("consider_merging_blocks should not do anything if the block is not a partition", "[memory_block_pool]")

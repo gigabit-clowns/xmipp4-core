@@ -172,7 +172,7 @@ void memory_block_pool::release_blocks()
     auto ite = m_blocks.begin();
     while (ite != m_blocks.cend())
     {
-        if(ite->second.is_free() && !is_partition(ite->second))
+        if(ite->second.is_free() && !is_partition(ite))
         {
             ite = m_blocks.erase(ite);
         }
@@ -324,6 +324,14 @@ bool memory_block_pool::check_backward_link(iterator ite) noexcept
 bool memory_block_pool::check_links(iterator ite) noexcept
 {
     return check_backward_link(ite) && check_forward_link(ite);
+}
+
+bool memory_block_pool::is_partition(iterator ite) noexcept
+{
+    const auto &context = ite->second;
+    const auto prev = context.get_previous_block();
+    const auto next = context.get_next_block();
+    return next != end() || prev != end();
 }
 
 bool memory_block_pool::is_mergeable(iterator ite) noexcept

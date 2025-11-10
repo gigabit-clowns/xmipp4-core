@@ -80,15 +80,5 @@ bool operator!=(
     return !(lhs == rhs);
 }
 
-
-
-inline
-bool is_partition(const memory_block_context &block) noexcept
-{
-    const memory_block_context::iterator null;
-    return block.get_previous_block() != null ||
-           block.get_next_block() != null ;
-}
-
 } // namespace hardware
 } // namespace xmipp4

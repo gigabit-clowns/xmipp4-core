@@ -4,6 +4,8 @@
 
 #include <hardware/caching_memory_allocator/memory_block_pool.hpp>
 
+#include <xmipp4/core/hardware/buffer_sentinel.hpp>
+
 #include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_memory_heap.hpp"
 

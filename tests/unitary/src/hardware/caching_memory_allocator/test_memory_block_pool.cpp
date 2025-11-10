@@ -295,17 +295,121 @@ TEST_CASE("consider_merging_blocks should not do anything if the block is not a 
     memory_block_pool pool;
     
     const std::size_t size = 1024;
+    mock_device_queue queue;
     auto heap = std::make_shared<mock_memory_heap>();
     REQUIRE_CALL(*heap, get_size())
         .RETURN(1024);
-    auto ite = pool.register_heap(heap, nullptr);
+    auto ite = pool.register_heap(heap, &queue);
 
     const auto old_block = *ite;
     pool.consider_merging_block(ite);
     REQUIRE( *ite == old_block );
+    REQUIRE( heap.use_count() == 3 );
 }
 
-// TODO add tests for consider_merging_blocks
+TEST_CASE("consider_merging_blocks should not do anything if the block has occupied partitions", "[memory_block_pool]")
+{
+    memory_block_pool pool;
+    
+    const std::size_t size = 1024;
+    mock_device_queue queue;
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(heap, &queue);
+
+    memory_block_pool::iterator partition;
+    std::tie(ite, partition) = pool.partition_block(ite, 768, 256);
+    partition->second.set_free(false);
+    std::tie(partition, ite) = pool.partition_block(ite, 256, 512);
+    partition->second.set_free(false);
+
+    const auto old_block = *ite;
+    pool.consider_merging_block(ite);
+    REQUIRE( *ite == old_block );
+    REQUIRE( heap.use_count() == 5 );
+}
+
+TEST_CASE("consider_merging_blocks should merge when there is a free partition to the right", "[memory_block_pool]")
+{
+    memory_block_pool pool;
+    
+    const std::size_t size = 1024;
+    mock_device_queue queue;
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(heap, &queue);
+
+    memory_block_pool::iterator partition;
+    std::tie(ite, partition) = pool.partition_block(ite, 768, 256);
+    std::tie(partition, ite) = pool.partition_block(ite, 256, 512);
+    partition->second.set_free(false);
+
+    ite = pool.consider_merging_block(ite);
+    REQUIRE( ite->first.get_heap() == heap.get() );
+    REQUIRE( ite->first.get_offset() == 256 );
+    REQUIRE( ite->first.get_size() == 768 );
+    REQUIRE( ite->first.get_queue() == &queue );
+    REQUIRE( ite->second.is_free() == true );
+    REQUIRE( ite->second.get_previous_block() == partition );
+    REQUIRE( ite->second.get_next_block() == pool.end() );
+    REQUIRE( heap.use_count() == 3 );
+}
+
+TEST_CASE("consider_merging_blocks should merge when there is a free partition to the left", "[memory_block_pool]")
+{
+    memory_block_pool pool;
+    
+    const std::size_t size = 1024;
+    mock_device_queue queue;
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(heap, &queue);
+
+    memory_block_pool::iterator next;
+    std::tie(ite, next) = pool.partition_block(ite, 768, 256);
+    next->second.set_free(false);
+
+    memory_block_pool::iterator prev;
+    std::tie(prev, ite) = pool.partition_block(ite, 256, 512);
+
+    ite = pool.consider_merging_block(ite);
+    REQUIRE( ite->first.get_heap() == heap.get() );
+    REQUIRE( ite->first.get_offset() == 0 );
+    REQUIRE( ite->first.get_size() == 768 );
+    REQUIRE( ite->first.get_queue() == &queue );
+    REQUIRE( ite->second.is_free() == true );
+    REQUIRE( ite->second.get_previous_block() == pool.end() );
+    REQUIRE( ite->second.get_next_block() == next );
+    REQUIRE( heap.use_count() == 3 );
+}
+
+TEST_CASE("consider_merging_blocks should merge twice when there is a free partition to the right and left", "[memory_block_pool]")
+{
+    memory_block_pool pool;
+    
+    const std::size_t size = 1024;
+    mock_device_queue queue;
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(heap, &queue);
+
+    std::tie(ite, std::ignore) = pool.partition_block(ite, 768, 256);
+    std::tie(std::ignore, ite) = pool.partition_block(ite, 256, 512);
+
+    ite = pool.consider_merging_block(ite);
+    REQUIRE( ite->first.get_heap() == heap.get() );
+    REQUIRE( ite->first.get_offset() == 0 );
+    REQUIRE( ite->first.get_size() == 1024 );
+    REQUIRE( ite->first.get_queue() == &queue );
+    REQUIRE( ite->second.is_free() == true );
+    REQUIRE( ite->second.get_previous_block() == pool.end() );
+    REQUIRE( ite->second.get_next_block() == pool.end() );
+    REQUIRE( heap.use_count() == 2 );
+}
 
 TEST_CASE("release_blocks should release free heaps", "[memory_block_pool]")
 {

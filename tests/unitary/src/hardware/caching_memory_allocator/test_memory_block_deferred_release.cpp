@@ -284,4 +284,4 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
     }
 }
 
-#endif
+#endif // !XMIPP4_MSVC

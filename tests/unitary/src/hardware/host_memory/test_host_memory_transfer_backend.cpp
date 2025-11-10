@@ -108,5 +108,3 @@ TEST_CASE( "create_transfer in host_memory_transfer_backend should throw when a 
         )
 	);
 }
-
-

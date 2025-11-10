@@ -64,4 +64,3 @@ TEST_CASE( "host_memory_heap should pass the buffer_sentinel to the buffer", "[h
     auto buffer = heap.create_buffer(buffer_offset, buffer_size, std::move(sentinel) );
     buffer->record_queue(queue, true);
 }
-

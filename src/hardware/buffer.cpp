@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+
 #include <iostream>
 
 namespace xmipp4
@@ -44,10 +46,14 @@ memory_resource& buffer::get_memory_resource() const noexcept
 
 void buffer::record_queue(device_queue& queue, bool exclusive)
 {
-    if (m_sentinel)
+    if (!m_sentinel)
     {
-        m_sentinel->record_queue(queue, exclusive);
+        throw invalid_operation_error(
+            "Can not call buffer::record_queue on a buffer without a sentinel"
+        );
     }
+
+    m_sentinel->record_queue(queue, exclusive);
 }
 
 } // namespace hardware

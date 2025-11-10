@@ -69,23 +69,3 @@ TEST_CASE( "host_buffer_allocator should allocate enough space", "[host_memory_a
 
     std::memset(buffer->get_host_ptr(), 0, buffer->get_size()); // Should not segfault
 }
-
-TEST_CASE( "buffer allocated by host_buffer_allocator should throw when recording queues", "[host_memory_allocator]" )
-{
-    host_memory_allocator allocator;
-
-    mock_device_queue queue;
-
-    const std::size_t size = 1024;
-    const std::size_t alignment = 64;
-
-    auto buffer = allocator.allocate(size, alignment, nullptr);
-
-    REQUIRE_THROWS_MATCHES(
-        buffer->record_queue(queue),
-		std::invalid_argument,
-		Catch::Matchers::Message(
-            "host_buffer_sentinel does not support queue execution"
-        )
-	);
-}

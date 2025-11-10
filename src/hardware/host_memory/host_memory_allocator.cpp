@@ -6,7 +6,7 @@
 #include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
-#include "host_buffer_sentinel.hpp"
+#include "host_buffer.hpp"
 
 #include <stdexcept>
 
@@ -34,15 +34,7 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
     }
 
     size = memory::align_ceil(size, alignment);
-    auto sentinel = std::make_unique<host_buffer_sentinel>(size, alignment);
-    auto *data = sentinel->get_data();
-
-    return std::make_shared<buffer>(
-        data, 
-        size, 
-        get_memory_resource(),
-        std::move(sentinel)
-    );
+    return std::make_shared<host_buffer>(size, alignment);
 }
 
 } // namespace hardware

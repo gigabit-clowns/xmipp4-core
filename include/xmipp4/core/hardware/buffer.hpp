@@ -98,6 +98,10 @@ public:
      * if the new queue is externally synchronized such that all other accesses 
      * are guaranteed to have been concluded before they're completed at the 
      * provided queue.
+     * 
+     * @throws invalid_operation_error when the buffer does not support
+     * queue execution.
+     * 
      */
     void record_queue(device_queue &queue, bool exclusive=false);
 

@@ -122,7 +122,8 @@ void caching_memory_allocator::recycle_block(
 {
     if (queues.empty())
     {
-        m_pool.recycle_block(block);
+        block->second.set_free(false);
+        m_pool.consider_merging_block(block);
     }
     else if (m_device)
     {

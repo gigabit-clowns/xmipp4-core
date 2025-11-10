@@ -286,6 +286,23 @@ TEST_CASE("register_heap should return an unpartitioned block", "[memory_block_p
     REQUIRE( ite->second.get_previous_block() == memory_block_pool::iterator() );
 }
 
+TEST_CASE("consider_merging_blocks should not do anything if the block is not a partition", "[memory_block_pool]")
+{
+    memory_block_pool pool;
+    
+    const std::size_t size = 1024;
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(heap, nullptr);
+
+    const auto old_block = *ite;
+    pool.consider_merging_block(ite);
+    REQUIRE( *ite == old_block );
+}
+
+// TODO add tests for consider_merging_blocks
+
 TEST_CASE("release_blocks should release free heaps", "[memory_block_pool]")
 {
     memory_block_pool pool;
@@ -332,5 +349,3 @@ TEST_CASE("release_blocks should not release if it has a next block", "[memory_b
     pool.release_blocks();
     REQUIRE( heap.use_count() == 3 );
 }
-
-

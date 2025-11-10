@@ -91,6 +91,11 @@ private:
 
 
 
+bool operator==(const memory_block &lhs, const memory_block &rhs) noexcept;
+bool operator!=(const memory_block &lhs, const memory_block &rhs) noexcept;
+
+
+
 /**
  * @brief Lexicographically compare two memory_block objects.
  * 

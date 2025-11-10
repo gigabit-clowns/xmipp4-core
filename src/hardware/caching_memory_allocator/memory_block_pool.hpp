@@ -83,16 +83,16 @@ public:
     );
 
     /**
-     * @brief Return a block to the pool.
+     * @brief Merge adjacent blocks if necessary.
      * 
-     * This marks the provided block as free. If possible, it merges it with the
-     * neighboring blocks.
+     * Forward and/or backward blocks are merged if they are free.
      * 
-     * @param ite Iterator to the block to be returned. 
-     * It must belong to the provided pool.
+     * @param ite Iterator to the candidate block. Must be dereferenceable.
+     * @return iterator Input iterator if not merged. Iterator to the merged 
+     * block when merged.
      * 
      */
-    void recycle_block(iterator block_iterator);
+    iterator consider_merging_block(iterator ite);
 
     /**
      * @brief Release free blocks when possible.
@@ -104,18 +104,6 @@ public:
 
 private:
     std::map<memory_block, memory_block_context, memory_block_less> m_blocks;
-
-    /**
-     * @brief Merge adjacent blocks if necessary.
-     * 
-     * Forward and/or backward blocks are merged if they are free.
-     * 
-     * @param ite Iterator to the candidate block. Must be dereferenceable.
-     * @return iterator Input iterator if not merged. Iterator to the merged 
-     * block when merged.
-     * 
-     */
-    iterator consider_merging_block(iterator ite);
 
     /**
      * @brief Merge two blocks.

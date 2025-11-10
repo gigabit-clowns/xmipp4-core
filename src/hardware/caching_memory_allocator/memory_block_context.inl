@@ -60,6 +60,29 @@ bool memory_block_context::is_free() const noexcept
 
 
 inline
+bool operator==(
+    const memory_block_context &lhs,
+    const memory_block_context &rhs
+) noexcept
+{
+    return 
+        lhs.get_previous_block() == rhs.get_previous_block() &&
+        lhs.get_next_block() == rhs.get_next_block() &&
+        lhs.is_free() == rhs.is_free();
+}
+
+inline
+bool operator!=(
+    const memory_block_context &lhs,
+    const memory_block_context &rhs
+) noexcept
+{
+    return !(lhs == rhs);
+}
+
+
+
+inline
 bool is_partition(const memory_block_context &block) noexcept
 {
     const memory_block_context::iterator null;

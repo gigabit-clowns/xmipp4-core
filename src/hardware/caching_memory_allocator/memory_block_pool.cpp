@@ -227,28 +227,6 @@ memory_block_pool::iterator memory_block_pool::register_heap(
     return result;
 }
 
-void memory_block_pool::recycle_block(iterator block_iterator)
-{
-    block_iterator->second.set_free(true);
-    consider_merging_block(block_iterator);
-}
-
-void memory_block_pool::release_blocks()
-{
-    auto ite = m_blocks.begin();
-    while (ite != m_blocks.cend())
-    {
-        if(ite->second.is_free() && !is_partition(ite->second))
-        {
-            ite = m_blocks.erase(ite);
-        }
-        else
-        {
-            ++ite;
-        }
-    }
-}
-
 memory_block_pool::iterator 
 memory_block_pool::consider_merging_block(
     memory_block_pool::iterator ite
@@ -273,6 +251,22 @@ memory_block_pool::consider_merging_block(
     }
 
     return ite;
+}
+
+void memory_block_pool::release_blocks()
+{
+    auto ite = m_blocks.begin();
+    while (ite != m_blocks.cend())
+    {
+        if(ite->second.is_free() && !is_partition(ite->second))
+        {
+            ite = m_blocks.erase(ite);
+        }
+        else
+        {
+            ++ite;
+        }
+    }
 }
 
 memory_block_pool::iterator

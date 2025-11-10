@@ -110,6 +110,18 @@ private:
 
 
 
+bool operator==(
+    const memory_block_context &lhs,
+    const memory_block_context &rhs
+) noexcept;
+
+bool operator!=(
+    const memory_block_context &lhs,
+    const memory_block_context &rhs
+) noexcept;
+
+
+
 /**
  * @brief Check if a block is partitioned.
  * 

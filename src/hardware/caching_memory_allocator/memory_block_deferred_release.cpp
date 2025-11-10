@@ -24,7 +24,9 @@ void memory_block_deferred_release::wait_pending_free(
             event->wait();
         }
 
-        pool.recycle_block(item.first);
+        auto block = item.first;
+        block->second.set_free(false);
+        pool.consider_merging_block(block);
         m_event_pool.splice_after(m_event_pool.cbefore_begin(), events);
     }
 
@@ -47,7 +49,9 @@ void memory_block_deferred_release::process_pending_free(
             const auto remove = events.empty();
             if(remove)
             {
-                pool.recycle_block(item.first);
+                auto block = item.first;
+                block->second.set_free(false);
+                pool.consider_merging_block(block);
             }
 
             return remove;

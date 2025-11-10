@@ -56,6 +56,25 @@ const device_queue* memory_block::get_queue() const noexcept
 
 
 inline
+bool operator==(const memory_block &lhs, const memory_block &rhs) noexcept
+{
+    return 
+        lhs.get_heap() == rhs.get_heap() &&
+        lhs.get_offset() == rhs.get_offset() &&
+        lhs.get_size() == rhs.get_size() &&
+        lhs.get_queue() == rhs.get_queue() ;
+
+}
+
+inline
+bool operator!=(const memory_block &lhs, const memory_block &rhs) noexcept
+{
+    return !(lhs == rhs);
+}
+
+
+
+inline
 bool memory_block_less::operator()(
     const memory_block &lhs, 
     const memory_block &rhs 

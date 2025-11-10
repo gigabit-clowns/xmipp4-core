@@ -18,7 +18,7 @@ void memory_block_deferred_release::wait_pending_free(
     for (auto &item : m_pending_free)
     {
         auto &events = item.second;
-        for (auto &event : item.second)
+        for (const auto &event : item.second)
         {
             XMIPP4_ASSERT(event);
             event->wait();

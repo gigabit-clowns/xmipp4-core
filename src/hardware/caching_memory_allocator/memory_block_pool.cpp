@@ -194,7 +194,7 @@ memory_block_pool::merge_blocks(
     XMIPP4_ASSERT( first->second.get_next_block() == second );
     XMIPP4_ASSERT( second->second.get_previous_block() == first );
 
-    const auto heap = first->first.share_heap();
+    auto heap = first->first.share_heap();
     const auto offset = first->first.get_offset();
     const auto size = first->first.get_size() +
                       second->first.get_size() ;

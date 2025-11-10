@@ -131,7 +131,7 @@ void caching_memory_allocator::recycle_block(
     }
     else
     {
-        for (device_queue *queue : queues)
+        for (const device_queue *queue : queues)
         {
             if (!queue)
             {

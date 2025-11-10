@@ -61,6 +61,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release with a null que
 	);
 }
 
+#if !XMIPP4_MSVC // FIXME: For some reason IN_SEQUENCE does not work with MSVC
 
 TEST_CASE( "deferring a release in memory_block_deferred_release should create and signal an event per queue", "[caching_memory_allocator]" )
 {
@@ -224,3 +225,63 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
     defer.wait_pending_free(pool);
     REQUIRE( ite->second.is_free() == true );
 }
+
+TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its resources", "[caching_memory_allocator]" )
+{
+    memory_block_pool pool;
+
+    auto heap = std::make_shared<mock_memory_heap>();
+    REQUIRE_CALL(*heap, get_size())
+        .RETURN(1024);
+    auto ite = pool.register_heap(std::move(heap), nullptr);
+
+    mock_device device;
+    mock_device_queue queue;
+    auto event = std::make_shared<mock_device_to_host_event>();
+
+    memory_block_deferred_release defer;
+    const std::array<device_queue*, 1> queues = { &queue };
+
+    {
+        trompeloeil::sequence seq;
+
+        REQUIRE_CALL(device, create_device_to_host_event())
+            .IN_SEQUENCE(seq)
+            .RETURN(event);
+        REQUIRE_CALL(*event, signal(ANY(device_queue&)))
+            .LR_WITH(&_1 == &queue)
+            .IN_SEQUENCE(seq);
+
+        defer.defer_release(ite, xmipp4::make_span(queues), device);
+    }
+    {
+        trompeloeil::sequence seq;
+
+        REQUIRE_CALL(*event, is_signaled())
+            .IN_SEQUENCE(seq)
+            .RETURN(true);
+
+        defer.process_pending_free(pool);
+        REQUIRE( ite->second.is_free() );
+    }
+    {
+        trompeloeil::sequence seq;
+
+        REQUIRE_CALL(*event, signal(ANY(device_queue&)))
+            .LR_WITH(&_1 == &queue)
+            .IN_SEQUENCE(seq);
+
+        defer.defer_release(ite, xmipp4::make_span(queues), device);
+    }
+    {
+        trompeloeil::sequence seq;
+
+        REQUIRE_CALL(*event, wait())
+            .IN_SEQUENCE(seq);
+
+        defer.wait_pending_free(pool);
+        REQUIRE( ite->second.is_free() );
+    }
+}
+
+#endif

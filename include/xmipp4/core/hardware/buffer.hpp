@@ -33,11 +33,11 @@ public:
         std::reference_wrapper<memory_resource> resource,
         std::unique_ptr<buffer_sentinel> sentinel
     );
-    buffer(const buffer &other) = default;
+    buffer(const buffer &other) = delete;
     buffer(buffer &&other) = default;
     virtual ~buffer() = default;
 
-    buffer& operator=(const buffer &other) = default;
+    buffer& operator=(const buffer &other) = delete;
     buffer& operator=(buffer &&other) = default;
 
     /**

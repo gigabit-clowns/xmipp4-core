@@ -8,6 +8,8 @@
 
 #include "host_memory_resource.hpp"
 
+#include <stdexcept>
+
 namespace xmipp4
 {
 namespace hardware

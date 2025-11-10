@@ -153,6 +153,7 @@ memory_block_pool::partition_block(
     const auto queue = ite->first.get_queue();
     const auto prev = ite->second.get_previous_block();
     const auto next = ite->second.get_next_block();
+    const auto is_free = ite->second.is_free();
 
     // Remove old block
     m_blocks.erase(ite);
@@ -171,7 +172,7 @@ memory_block_pool::partition_block(
         std::forward_as_tuple(
             prev,
             memory_block_pool::iterator(), // To be set
-            ite->second.is_free()
+            is_free
         )
     );
     XMIPP4_ASSERT(inserted);
@@ -186,7 +187,7 @@ memory_block_pool::partition_block(
         std::forward_as_tuple(
             first,
             next,
-            ite->second.is_free()
+            is_free
         )
     );
     XMIPP4_ASSERT(inserted);

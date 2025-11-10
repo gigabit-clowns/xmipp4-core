@@ -41,18 +41,16 @@ public:
      * @brief Find a candidate block.
      * 
      * If found, the returned block will be at least of the requested size
-     * and with the requested block id.
+     * and with the requested device_queue.
      * 
      * @param blocks Collection of blocks.
      * @param size Minimum size of the block.
-     * @param alignment Minimum alignment of the block.
      * @param queue Queue of the requested block.
      * @return iterator Iterator the candidate block. end() if none was found.
      * 
      */
     iterator find_suitable_block(
         std::size_t size,
-        std::size_t alignment, 
         const device_queue *queue 
     );
 

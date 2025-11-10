@@ -26,7 +26,7 @@ public:
         std::shared_ptr<buffer>(
             std::size_t, 
             std::size_t, 
-            std::unique_ptr<memory_sentinel>
+            std::unique_ptr<buffer_sentinel>
         ), 
         override
     );

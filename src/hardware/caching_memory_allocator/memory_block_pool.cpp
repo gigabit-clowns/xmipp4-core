@@ -96,21 +96,6 @@ bool check_links(memory_block_pool::iterator ite) noexcept
     return check_backward_link(ite) && check_forward_link(ite);
 }
 
-static
-bool is_suitable(
-    const memory_block &block, 
-    std::size_t size, 
-    std::size_t alignment
-) noexcept
-{
-    const auto block_size = block.get_size();
-    const auto block_offset = block.get_offset();
-    const auto aligned = memory::align_ceil(block_offset, alignment);
-    return (aligned + size) <= (block_offset + block_size); 
-}
-
-
-
 
 
 memory_block_pool::iterator memory_block_pool::begin()
@@ -125,7 +110,6 @@ memory_block_pool::iterator memory_block_pool::end()
 
 memory_block_pool::iterator memory_block_pool::find_suitable_block(
     std::size_t size,
-    std::size_t alignment, 
     const device_queue *queue 
 )
 {
@@ -142,9 +126,7 @@ memory_block_pool::iterator memory_block_pool::find_suitable_block(
             // Reached the end of the allowed range.
             ite = m_blocks.end();
         }
-        else if (
-            ite->second.is_free() && is_suitable(ite->first, size, alignment)
-        )
+        else if (ite->second.is_free())
         {
             // Found a suitable block
             break;

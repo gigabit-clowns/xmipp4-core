@@ -62,7 +62,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
     size = memory::align_ceil(size, m_maximum_alignment);
 
     m_deferred_release.process_pending_free(m_pool);
-    auto ite = m_pool.find_suitable_block(size, alignment, queue);
+    auto ite = m_pool.find_suitable_block(size, queue);
 
     if (ite == m_pool.end())
     {

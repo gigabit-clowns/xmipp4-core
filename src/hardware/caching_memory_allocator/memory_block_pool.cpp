@@ -148,9 +148,14 @@ memory_block_pool::partition_block(
     std::size_t remaining
 )
 {
+    auto heap = ite->first.share_heap();
+    const auto base_offset = ite->first.get_offset();
     const auto queue = ite->first.get_queue();
     const auto prev = ite->second.get_previous_block();
     const auto next = ite->second.get_next_block();
+
+    // Remove old block
+    m_blocks.erase(ite);
 
     iterator first;
     iterator second;
@@ -158,8 +163,8 @@ memory_block_pool::partition_block(
     std::tie(first, inserted) = m_blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(
-            ite->first.share_heap(),
-            ite->first.get_offset(), 
+            heap,
+            base_offset, 
             size, 
             queue
         ),
@@ -173,8 +178,8 @@ memory_block_pool::partition_block(
     std::tie(second, inserted) = m_blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(
-            ite->first.share_heap(),
-            ite->first.get_offset() + size, 
+            std::move(heap), // No longer required
+            base_offset + size, 
             remaining, 
             queue
         ),
@@ -189,9 +194,6 @@ memory_block_pool::partition_block(
     first->second.set_next_block(second);
     update_backward_link(first);
     update_forward_link(second);
-
-    // Remove old block
-    m_blocks.erase(ite);
 
     XMIPP4_ASSERT( check_links(first) );
     XMIPP4_ASSERT( check_links(second) );

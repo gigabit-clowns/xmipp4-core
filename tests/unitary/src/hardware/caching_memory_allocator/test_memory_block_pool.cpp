@@ -148,6 +148,8 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
     memory_block_pool::iterator second;
     std::tie(first, second) = pool.partition_block(ite, first_size, second_size);
 
+    REQUIRE( heap.use_count() == 3 );
+
     REQUIRE( first->first.get_heap() == heap.get() );
     REQUIRE( first->first.get_offset() == 0 );
     REQUIRE( first->first.get_size() == first_size );

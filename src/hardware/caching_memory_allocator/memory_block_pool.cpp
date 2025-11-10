@@ -155,9 +155,6 @@ memory_block_pool::partition_block(
     const auto next = ite->second.get_next_block();
     const auto is_free = ite->second.is_free();
 
-    // Remove old block
-    m_blocks.erase(ite);
-
     iterator first;
     iterator second;
     bool inserted;
@@ -179,7 +176,7 @@ memory_block_pool::partition_block(
     std::tie(second, inserted) = m_blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(
-            std::move(heap), // No longer required
+            std::move(heap), // No longer needed
             base_offset + size, 
             remaining, 
             queue
@@ -198,6 +195,9 @@ memory_block_pool::partition_block(
 
     XMIPP4_ASSERT( check_links(first) );
     XMIPP4_ASSERT( check_links(second) );
+
+    // Remove old block
+    m_blocks.erase(ite);
 
     return std::make_pair(first, second);
 }

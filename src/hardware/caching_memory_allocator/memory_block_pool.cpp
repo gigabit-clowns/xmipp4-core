@@ -283,36 +283,24 @@ void memory_block_pool::update_links(iterator ite) noexcept
 
 bool memory_block_pool::check_forward_link(iterator ite) noexcept
 {
-    bool result;
-
     const auto next = ite->second.get_next_block();
-    if (next != end())
+    if (next == end())
     {
-        result = next->second.get_previous_block() == ite;
-    }
-    else
-    {
-        result = true;
+        return true;
     }
 
-    return result;
+    return next->second.get_previous_block() == ite;
 }
 
 bool memory_block_pool::check_backward_link(iterator ite) noexcept
 {
-    bool result;
-
     const auto prev = ite->second.get_previous_block();
-    if (prev != end())
+    if (prev == end())
     {
-        result = prev->second.get_next_block() == ite;
+        return true;
     }
-    else
-    {
-        result = true;
-    }
-
-    return result;
+    
+    return prev->second.get_next_block() == ite;
 }
 
 bool memory_block_pool::check_links(iterator ite) noexcept
@@ -330,18 +318,12 @@ bool memory_block_pool::is_partition(iterator ite) noexcept
 
 bool memory_block_pool::is_mergeable(iterator ite) noexcept
 {
-    bool result;
-
-    if (ite != end())
+    if (ite == end())
     {
-        result = ite->second.is_free();
+        return false;
     }
-    else
-    {
-        result = false;
-    }
-
-    return result;
+    
+    return ite->second.is_free();
 }
 
 } // namespace hardware

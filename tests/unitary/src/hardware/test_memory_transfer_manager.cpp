@@ -8,6 +8,7 @@
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/hardware/memory_transfer.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with windows
 
 #include "mock/mock_memory_transfer_backend.hpp"
 #include "mock/mock_memory_transfer.hpp"
@@ -46,6 +47,8 @@ TEST_CASE( "creating a transfer from a default initialized memory_transfer_manag
         )
 	);
 }
+
+#if !XMIPP4_MSVC // FIXME IN_SEQUENCE does not work with windows
 
 TEST_CASE( "memory_transfer_manager should use the most suitable backend", "[memory_transfer_backend]" )
 {
@@ -116,6 +119,8 @@ TEST_CASE( "memory_transfer_manager should cache the transfers", "[memory_transf
         REQUIRE( manager.create_transfer(source, destination) == transfer );
     }
 }
+
+#endif // !XMIPP4_MSVC
 
 TEST_CASE( "memory_transfer_manager should throw when there is no supported backend", "[memory_transfer_backend]" )
 {

@@ -6,6 +6,7 @@
 #include <hardware/caching_memory_allocator/memory_block_deferred_release.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
+#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with MSVC
 
 #include "../mock/mock_device.hpp"
 #include "../mock/mock_device_queue.hpp"

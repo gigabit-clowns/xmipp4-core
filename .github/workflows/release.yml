@@ -8,17 +8,14 @@ on:
 
 jobs:
   tag_and_release:
+    environment:
+      name: release
+    
     name: Generate new tag & GitHub release
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
-    
-    - name: Check authorisation level of dispatching user
-      uses: gigabit-clowns/xmipp4-core/.github/composites/authorize-user@main
-      with:
-        allowed_roles: "admin maintain"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Retrieve tag name
       id: tag_name

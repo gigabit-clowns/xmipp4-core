@@ -3,6 +3,7 @@
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_allocator_backend.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
 #include "caching_memory_allocator/caching_memory_allocator_backend.hpp"
 #include "host_memory/host_memory_allocator_backend.hpp"
@@ -36,13 +37,40 @@ public:
         memory_resource &resource
     ) const
     {
-        (void)(resource); // TODO
+        const auto *backend = find_most_suitable_backend(resource);
+        if (backend)
+        {
+            return backend->create_memory_allocator(resource);
+        }
+
         return nullptr;
     }
 
 private:
     std::vector<std::unique_ptr<memory_allocator_backend>> m_backends;
 
+    const memory_allocator_backend* find_most_suitable_backend(
+        const memory_resource& resource
+    ) const
+    {
+        std::pair<const memory_allocator_backend*, backend_priority> best(
+            nullptr, backend_priority::unsupported
+        );
+
+        for (auto ite = m_backends.cbegin(); ite != m_backends.cend(); ++ite)
+        {
+            XMIPP4_ASSERT(*ite);
+            const auto &backend = **ite;
+            const auto priority = backend.get_suitability(resource);
+
+            if (priority > best.second)
+            {
+                best = { &backend, priority };
+            }
+        }
+
+        return best.first;
+    }
 };
 
 

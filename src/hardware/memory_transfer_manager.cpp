@@ -47,16 +47,12 @@ public:
             return ite->second;
         }
 
-        // TODO consider suitability
-
-        for (const auto& backend : m_backends)
+        auto *backend = find_most_suitable_backend(src, dst);
+        if (backend)
         {
             const auto transfer = backend->create_transfer(src, dst);
-            if (transfer)
-            {
-                m_cache.emplace(key, transfer);
-                return transfer;
-            }
+            m_cache.emplace(key, transfer);
+            return transfer;
         }
 
         return nullptr;
@@ -68,6 +64,30 @@ private:
         memory_transfer_key, 
         std::shared_ptr<memory_transfer>
     > m_cache;
+
+    const memory_transfer_backend* find_most_suitable_backend(
+        const memory_resource& src,
+        const memory_resource& dst
+    ) const
+    {
+        std::pair<const memory_transfer_backend*, backend_priority> best(
+            nullptr, backend_priority::unsupported
+        );
+
+        for (auto ite = m_backends.cbegin(); ite != m_backends.cend(); ++ite)
+        {
+            XMIPP4_ASSERT(*ite);
+            const auto &backend = **ite;
+            const auto priority = backend.get_suitability(src, dst);
+
+            if (priority > best.second)
+            {
+                best = { &backend, priority };
+            }
+        }
+
+        return best.first;
+    }
 
 };
 

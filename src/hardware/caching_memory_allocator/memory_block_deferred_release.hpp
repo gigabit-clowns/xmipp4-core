@@ -93,6 +93,12 @@ private:
      */
     void pop_completed_events(event_list &events);
 
+    /**
+     * @brief Record an event for a queue in the list.
+     * 
+     */
+    void record_event(event_list &events, device_queue &queue, device &device);
+
 }; 
 
 } // namespace hardware

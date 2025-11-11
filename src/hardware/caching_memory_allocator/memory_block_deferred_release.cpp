@@ -74,12 +74,14 @@ void memory_block_deferred_release::defer_release(
         );
     }
 
+    // Add a new entry to the pending free list.
     m_pending_free.emplace_back(
         std::piecewise_construct,
         std::forward_as_tuple(block),
         std::forward_as_tuple()
     );
 
+    // Record an event for each of the queues.
     auto& events = m_pending_free.back().second;
     for (device_queue *queue : queues)
     {
@@ -88,22 +90,7 @@ void memory_block_deferred_release::defer_release(
             throw std::invalid_argument("nullptr queue was provided");
         }
 
-        // Add a new event to the front
-        if (m_event_pool.empty())
-        {
-            events.emplace_front(device.create_device_to_host_event());
-        }
-        else
-        {
-            events.splice_after(
-                events.cbefore_begin(),
-                m_event_pool, 
-                m_event_pool.cbefore_begin()
-            );
-        }
-
-        XMIPP4_ASSERT( events.front() );
-        events.front()->signal(*queue);
+        record_event(events, *queue, device);
     }
 }
 
@@ -131,6 +118,32 @@ void memory_block_deferred_release::pop_completed_events(
             ++prev_ite;
         }
     }
+}
+
+void memory_block_deferred_release::record_event(
+    event_list &events, 
+    device_queue &queue, 
+    device &device
+)
+{
+    // Add a new event to the front
+    if (m_event_pool.empty())
+    {
+        // No events in the pool.
+        events.emplace_front(device.create_device_to_host_event());
+    }
+    else
+    {
+        // Re-use an event from the pool.
+        events.splice_after(
+            events.cbefore_begin(),
+            m_event_pool, 
+            m_event_pool.cbefore_begin()
+        );
+    }
+
+    XMIPP4_ASSERT( events.front() );
+    events.front()->signal(queue);
 }
 
 } // namespace hardware

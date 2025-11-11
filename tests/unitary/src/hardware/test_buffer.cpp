@@ -17,7 +17,7 @@ using namespace xmipp4::hardware;
 
 TEST_CASE( "Constructing a buffer should store its attributes", "[buffer]" )
 {
-    void *host_ptr = reinterpret_cast<void*>(0xDEADBEEF);
+    void *host_ptr = reinterpret_cast<void*>(std::uintptr_t(0xDEADBEEF));
     const std::size_t size = 1024;
     mock_memory_resource resource;
     auto sentinel = std::make_unique<mock_buffer_sentinel>();

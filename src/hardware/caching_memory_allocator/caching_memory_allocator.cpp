@@ -12,6 +12,24 @@ namespace xmipp4
 namespace hardware
 {
 
+static
+void wait_on_queues(span<device_queue *const> queues)
+{
+    for (const device_queue *queue : queues)
+    {
+        if (!queue)
+        {
+            throw std::invalid_argument(
+                "nullptr queue can not be provided to recycle block"
+            );
+        }
+
+        queue->wait_until_completed();
+    }
+}
+
+
+
 caching_memory_allocator::caching_memory_allocator(
     memory_resource &resource,
     std::size_t maximum_alignment,
@@ -131,17 +149,7 @@ void caching_memory_allocator::recycle_block(
     }
     else
     {
-        for (const device_queue *queue : queues)
-        {
-            if (!queue)
-            {
-                throw std::invalid_argument(
-                    "nullptr queue can not be provided to recycle block"
-                );
-            }
-
-            queue->wait_until_completed();
-        }
+        wait_on_queues(queues);
     }
 }
 

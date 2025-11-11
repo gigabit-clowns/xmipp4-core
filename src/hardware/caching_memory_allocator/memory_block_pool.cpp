@@ -51,8 +51,8 @@ memory_block_pool::iterator memory_block_pool::find_suitable_block(
 std::pair<memory_block_pool::iterator, memory_block_pool::iterator>
 memory_block_pool::partition_block(
     iterator ite,
-    std::size_t size,
-    std::size_t remaining
+    std::size_t size1,
+    std::size_t size2
 )
 {
     auto heap = ite->first.share_heap();
@@ -70,7 +70,7 @@ memory_block_pool::partition_block(
         std::forward_as_tuple(
             heap,
             base_offset, 
-            size, 
+            size1, 
             queue
         ),
         std::forward_as_tuple(
@@ -84,8 +84,8 @@ memory_block_pool::partition_block(
         std::piecewise_construct,
         std::forward_as_tuple(
             std::move(heap), // No longer needed
-            base_offset + size, 
-            remaining, 
+            base_offset + size1, 
+            size2, 
             queue
         ),
         std::forward_as_tuple(

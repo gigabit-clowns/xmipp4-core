@@ -58,16 +58,16 @@ public:
      * @brief Partition a block in two blocks.
      * 
      * @param ite Iterator to the block to be partitioned. Must be dereferenceable.
-     * @param size Size of the first partition.
-     * @param remaining Size of the second partition.
+     * @param size1 Size of the first partition.
+     * @param size2 Size of the second partition.
      * @return std::pair<iterator, iterator> Iterators to the resulting 
      * two partitions.
      * 
      */
     std::pair<iterator, iterator> partition_block(
         iterator ite,
-        std::size_t size,
-        std::size_t remaining
+        std::size_t size1,
+        std::size_t size2
     );
 
     /**

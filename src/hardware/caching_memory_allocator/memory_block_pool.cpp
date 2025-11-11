@@ -29,8 +29,7 @@ memory_block_pool::iterator memory_block_pool::find_suitable_block(
     // first and then their sizes, the best fit is achieved iterating from
     // the first suitable block.
     const memory_block key(nullptr, 0UL, size, queue);
-    iterator ite;
-    for (ite = m_blocks.lower_bound(key); ite != m_blocks.end(); ++ite)
+    for (auto ite = m_blocks.lower_bound(key); ite != m_blocks.end(); ++ite)
     {
         if(ite->first.get_queue() != queue)
         {

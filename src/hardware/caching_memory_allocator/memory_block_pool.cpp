@@ -35,12 +35,12 @@ memory_block_pool::iterator memory_block_pool::find_suitable_block(
         if(ite->first.get_queue() != queue)
         {
             // Reached the end of the allowed range.
-            return m_blocks.end(); 
+            break;
         }
         
         if (ite->second.is_free())
         {
-            // Found a suitable block
+            // Found a suitable block.
             return ite;
         }
     }

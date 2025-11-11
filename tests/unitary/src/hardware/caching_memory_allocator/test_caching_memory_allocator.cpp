@@ -8,6 +8,7 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
+#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with MSVC
 
 #include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_memory_resource.hpp"

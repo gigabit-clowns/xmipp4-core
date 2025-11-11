@@ -29,6 +29,8 @@ TEST_CASE( "caching_memory_allocator_backend should always return a valid alloca
     mock_memory_resource resource;
     REQUIRE_CALL(resource, get_target_device())
         .RETURN(nullptr);
+    REQUIRE_CALL(resource, get_max_heap_alignment())
+        .RETURN(64);
 
     auto allocator = backend.create_memory_allocator(resource);
 

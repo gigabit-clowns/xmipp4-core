@@ -6,6 +6,8 @@
 
 #include "caching_memory_allocator.hpp"
 
+#include <algorithm>
+
 namespace xmipp4
 {
 namespace hardware
@@ -23,10 +25,16 @@ caching_memory_allocator_backend::create_memory_allocator(
     memory_resource &resource
 ) const
 {
+    const auto max_alignment = std::min(
+        resource.get_max_heap_alignment(), 
+        std::size_t(256)
+    );
+    const auto request_size_step = std::size_t(64) << 20; // 64MB
+
     return std::make_shared<caching_memory_allocator>(
         resource,
-        256,
-        1<<20 //2MB
+        max_alignment,
+        request_size_step
     );
 }
 

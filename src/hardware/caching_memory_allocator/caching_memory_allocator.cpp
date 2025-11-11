@@ -77,6 +77,8 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
         );
     }
 
+    // Align the size to a multiple of the maximum alignment so that in case of
+    // partitioning the block, the next block remains maximally aligned.
     size = memory::align_ceil(size, m_maximum_alignment);
 
     m_deferred_release.process_pending_free(m_pool);

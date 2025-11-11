@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <catch2/catch_test_macros.hpp>
+
 #include <xmipp4/core/hardware/memory_transfer_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
@@ -8,8 +10,6 @@
 #include "mock/mock_memory_transfer_backend.hpp"
 #include "mock/mock_memory_transfer.hpp"
 #include "mock/mock_memory_resource.hpp"
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::hardware;

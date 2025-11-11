@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#pragma once
+
+#include <xmipp4/core/hardware/memory_allocator.hpp>
+
+#include <trompeloeil.hpp>
+
+namespace xmipp4
+{
+namespace hardware
+{
+
+class mock_memory_allocator final
+    : public memory_allocator
+{
+public:
+    MAKE_CONST_MOCK0(
+        get_memory_resource, 
+        memory_resource&(), 
+        noexcept override
+    );
+
+    MAKE_MOCK3(
+        allocate, 
+        std::shared_ptr<buffer>(std::size_t, std::size_t, device_queue*), 
+        override
+    );
+
+};
+
+} // namespace hardware
+} // namespace xmipp4

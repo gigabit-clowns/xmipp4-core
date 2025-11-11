@@ -47,6 +47,8 @@ public:
             return ite->second;
         }
 
+        // TODO consider suitability
+
         for (const auto& backend : m_backends)
         {
             const auto transfer = backend->create_transfer(src, dst);

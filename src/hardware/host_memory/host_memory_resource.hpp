@@ -19,6 +19,8 @@ public:
 
     memory_resource_kind get_kind() const noexcept override;
 
+    std::size_t get_max_heap_alignment() const noexcept override;
+
     std::shared_ptr<memory_heap> create_memory_heap(
         std::size_t size,
         std::size_t alignment
@@ -27,7 +29,9 @@ public:
     static host_memory_resource& get() noexcept;
 
 private:
-    host_memory_resource() = default; // Singleton
+    std::size_t m_max_alignment;
+
+    host_memory_resource();
     host_memory_resource(const host_memory_resource &other) = delete; // Singleton
     host_memory_resource(host_memory_resource &&other) = delete; // Singleton
 

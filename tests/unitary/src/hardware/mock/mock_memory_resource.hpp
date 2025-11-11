@@ -17,6 +17,7 @@ class mock_memory_resource final
 public:
     MAKE_CONST_MOCK0(get_target_device, device*(), noexcept override);
     MAKE_CONST_MOCK0(get_kind, memory_resource_kind(), noexcept override);
+    MAKE_CONST_MOCK0(get_max_heap_alignment, std::size_t(), noexcept override);
     MAKE_MOCK2(
         create_memory_heap, 
         std::shared_ptr<memory_heap>(std::size_t, std::size_t), 

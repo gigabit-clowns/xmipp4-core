@@ -55,6 +55,14 @@ public:
     memory_resource_kind get_kind() const noexcept = 0;
 
     /**
+     * @brief Get the maximum alignment parameter allowed for the heap.
+     * 
+     * @return std::size_t The maximum alignment.
+     */
+    virtual
+    std::size_t get_max_heap_alignment() const noexcept = 0;
+
+    /**
      * @brief Allocate a chunk of memory to serve smaller allocations.
      * 
      * @param size Minimum size requirement for the heap.

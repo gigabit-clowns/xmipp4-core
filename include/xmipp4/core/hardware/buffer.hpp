@@ -83,6 +83,22 @@ public:
     memory_resource& get_memory_resource() const noexcept;
 
     /**
+     * @brief Get the sentinel for this buffer.
+     * 
+     * @return buffer_sentinel* Pointer to the sentinel.
+     */
+    XMIPP4_CORE_API
+    buffer_sentinel* get_sentinel() noexcept;
+
+    /**
+     * @brief Get the sentinel for this buffer.
+     * 
+     * @return buffer_sentinel* Pointer to the sentinel.
+     */
+    XMIPP4_CORE_API
+    const buffer_sentinel* get_sentinel() const noexcept;
+
+    /**
      * @brief Acknowledge that this buffer is being used in a device_queue.
      * 
      * Due to the asynchronous nature of the device_queue-s, the buffer may

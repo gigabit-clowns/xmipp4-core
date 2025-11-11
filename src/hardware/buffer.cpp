@@ -50,6 +50,16 @@ memory_resource& buffer::get_memory_resource() const noexcept
     return m_memory_resource;
 }
 
+buffer_sentinel* buffer::get_sentinel() noexcept
+{
+    return m_sentinel.get();
+}
+
+const buffer_sentinel* buffer::get_sentinel() const noexcept
+{
+    return m_sentinel.get();
+}
+
 void buffer::record_queue(device_queue& queue, bool exclusive)
 {
     if (!m_sentinel)

@@ -3,6 +3,7 @@
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_allocator_backend.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "caching_memory_allocator/caching_memory_allocator_backend.hpp"
@@ -43,7 +44,10 @@ public:
             return backend->create_memory_allocator(resource);
         }
 
-        return nullptr;
+        throw invalid_operation_error(
+            "No backend supports creating allocators for the requested "
+            "memory_resource"
+        );
     }
 
 private:
@@ -109,7 +113,9 @@ memory_allocator_manager::create_memory_allocator(
 {
     if (!m_implementation)
     {
-        return nullptr;
+        throw invalid_operation_error(
+            "No backends were registered."
+        );
     }
 
     return m_implementation->create_memory_allocator(resource);

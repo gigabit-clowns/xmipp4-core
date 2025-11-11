@@ -11,7 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class mock_memory_heap final
+class mock_memory_heap
     : public memory_heap
 {
 public:

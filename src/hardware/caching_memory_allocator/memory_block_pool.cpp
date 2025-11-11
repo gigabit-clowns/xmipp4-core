@@ -29,28 +29,23 @@ memory_block_pool::iterator memory_block_pool::find_suitable_block(
     // first and then their sizes, the best fit is achieved iterating from
     // the first suitable block.
     const memory_block key(nullptr, 0UL, size, queue);
-    auto ite = m_blocks.lower_bound(key);
-
-    while (ite != m_blocks.end())
+    iterator ite;
+    for (ite = m_blocks.lower_bound(key); ite != m_blocks.end(); ++ite)
     {
         if(ite->first.get_queue() != queue)
         {
             // Reached the end of the allowed range.
-            ite = m_blocks.end();
+            return m_blocks.end(); 
         }
-        else if (ite->second.is_free())
+        
+        if (ite->second.is_free())
         {
             // Found a suitable block
-            break;
-        }
-        else
-        {
-            // Occupied. Try with the next.
-            ++ite;
+            return ite;
         }
     }
 
-    return ite;
+    return m_blocks.end();
 }
 
 std::pair<memory_block_pool::iterator, memory_block_pool::iterator>

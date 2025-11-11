@@ -41,6 +41,7 @@ const char* to_string(backend_priority priority) noexcept
     case backend_priority::unsupported: return "unsupported";
     case backend_priority::fallback: return "fallback";
     case backend_priority::normal: return "normal";
+    case backend_priority::optimal: return "optimal";
     default: return "";
     }
 }

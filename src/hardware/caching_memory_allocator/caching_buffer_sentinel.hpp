@@ -9,6 +9,7 @@
 #include <xmipp4/core/span.hpp>
 
 #include <vector>
+#include <boost/container/flat_set.hpp>
 
 namespace xmipp4 
 {
@@ -49,7 +50,7 @@ public:
 private:
     std::reference_wrapper<caching_memory_allocator> m_allocator;
     memory_block_pool::iterator m_block;
-    std::vector<device_queue*> m_queues;
+    boost::container::flat_set<device_queue*> m_queues;
 
 };
 

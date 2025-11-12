@@ -29,7 +29,8 @@ caching_buffer_sentinel::~caching_buffer_sentinel()
 span<device_queue *const> 
 caching_buffer_sentinel::get_queues() const noexcept
 {
-    return make_span(m_queues);
+    const auto &queues = m_queues.get_sequence_cref();
+    return span<device_queue *const>(queues.data(), queues.size());
 }
 
 void caching_buffer_sentinel::record_queue(device_queue &queue, bool exclusive)
@@ -42,17 +43,7 @@ void caching_buffer_sentinel::record_queue(device_queue &queue, bool exclusive)
     auto *const queue_pointer = &queue;
     if (queue_pointer != m_block->first.get_queue())
     {
-        // Find first element that compares greater or EQUAL.
-        const auto ite = std::lower_bound(
-            m_queues.cbegin(), m_queues.cend(),
-            queue_pointer
-        );
-
-        // Ensure that it is not equal.
-        if (ite == m_queues.cend() || *ite != queue_pointer)
-        {
-            m_queues.insert(ite, queue_pointer);
-        }
+        m_queues.emplace(queue_pointer);
     }
 }
 

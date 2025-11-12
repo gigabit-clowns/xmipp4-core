@@ -49,6 +49,7 @@ target_link_libraries(
 		half
 	PRIVATE
 		ghc_filesystem # Eventually replace by std::filesystem (C++17)
+		Boost::container
 		${CMAKE_DL_LIBS}
 )
 

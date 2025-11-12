@@ -46,7 +46,6 @@ public:
 
     void record_queue(device_queue &queue, bool exclusive) override;
 
-
 private:
     std::reference_wrapper<caching_memory_allocator> m_allocator;
     memory_block_pool::iterator m_block;

@@ -39,15 +39,15 @@ public:
     ) const
     {
         const auto *backend = find_most_suitable_backend(resource);
-        if (backend)
+        if (!backend)
         {
-            return backend->create_memory_allocator(resource);
+            throw invalid_operation_error(
+                "No backend supports creating allocators for the requested "
+                "memory_resource"
+            );
         }
 
-        throw invalid_operation_error(
-            "No backend supports creating allocators for the requested "
-            "memory_resource"
-        );
+        return backend->create_memory_allocator(resource);
     }
 
 private:

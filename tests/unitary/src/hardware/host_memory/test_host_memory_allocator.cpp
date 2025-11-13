@@ -28,22 +28,17 @@ TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[hos
     REQUIRE( buffer->get_size() >= size );
 }
 
-TEST_CASE( "host_memory_allocator should throw when provided with a device queue", "[host_memory_allocator]" )
+TEST_CASE( "host_memory_allocator should wait the queue to complete", "[host_memory_allocator]" )
 {
     host_memory_allocator allocator;
 
     mock_device_queue queue;
 
+    REQUIRE_CALL(queue, wait_until_completed());
+
     const std::size_t size = 1024;
     const std::size_t alignment = 64;
-
-    REQUIRE_THROWS_MATCHES(
-        allocator.allocate(size, alignment, &queue),
-		std::invalid_argument,
-		Catch::Matchers::Message(
-            "host_memory_allocator does not support queue execution"
-        )
-	);
+    allocator.allocate(size, alignment, &queue);
 }
 
 TEST_CASE( "host_memory_resource should return the host memory resource in get_memory_resource", "[host_memory_allocator]" )

@@ -30,5 +30,12 @@ std::size_t get_total_system_memory();
  */
 std::size_t get_available_system_memory();
 
+/**
+ * @brief Get the page size of the memory management subsystem
+ * 
+ * @return std::size_t The page size.
+ */
+std::size_t get_page_size();
+
 } // namespace system
 } // namespace xmipp4

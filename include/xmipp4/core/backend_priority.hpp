@@ -5,7 +5,7 @@
 #include "platform/constexpr.hpp"
 #include "platform/attributes.hpp"
 
-#include <string_view>
+#include <limits>
 #include <ostream>
 
 namespace xmipp4 
@@ -18,8 +18,10 @@ namespace xmipp4
  */
 enum class backend_priority
 {
+    unsupported = std::numeric_limits<int>::min(), ///< Backend isn't supported.
     fallback = -1024, ///< Used for dummy implementations.
     normal = 0, ///< Normal priority. Use by default.
+    optimal = 1024, ///< Backend specially optimized for the use case.
 };
 
 

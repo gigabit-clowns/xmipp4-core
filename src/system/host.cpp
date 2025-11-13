@@ -12,6 +12,7 @@
     #include <sys/sysctl.h>
     #include <mach/mach.h>
 #elif XMIPP4_WINDOWS
+    #include <windows.h>
     #include <Winsock.h>
     #include <WinBase.h>
 #endif
@@ -108,6 +109,19 @@ std::size_t get_available_system_memory()
     #else
         #pragma message ("Cannot get available memory for this platform")
         return 0;
+    #endif
+}
+
+std::size_t get_page_size()
+{
+    #if XMIPP4_POSIX
+        return sysconf(_SC_PAGESIZE);
+    #elif XMIPP4_WINDOWS
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        return si.dwPageSize;
+    #else
+        #error "Can not obtain the page size"
     #endif
 }
 

@@ -24,10 +24,12 @@ include(CMakePackageConfigHelpers)
 include(fetch_ghc_filesystem)
 include(fetch_half)
 include(fetch_spdlog)
+include(fetch_boost)
 
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_ghc_filesystem(VERSION 1.5.14)
+fetch_boost(VERSION 1.89.0)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	fetch_spdlog(VERSION 1.15.0)
@@ -46,6 +48,7 @@ else()
 			${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core/modules
 	)
 endif()
+
 
 # Set project-wide compilation options
 set(CMAKE_CXX_STANDARD 20)

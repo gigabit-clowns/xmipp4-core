@@ -3,9 +3,12 @@
 #include <xmipp4/core/hardware/memory_transfer_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_transfer_backend.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
-#include "host_memory_transfer_backend.hpp"
+#include "host_memory/host_memory_transfer_backend.hpp"
 #include "memory_transfer_key.hpp"
+#include "../find_most_suitable_backend.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -42,21 +45,29 @@ public:
         const auto ite = m_cache.find(key);
         if (ite != m_cache.end())
         {
-            XMIPP4_ASSERT(  ite->second );
+            XMIPP4_ASSERT( ite->second );
             return ite->second;
         }
 
-        for (const auto& backend : m_backends)
-        {
-            const auto transfer = backend->create_transfer(src, dst);
-            if (transfer)
+        const auto backend = find_most_suitable_backend(
+            m_backends.cbegin(), m_backends.cend(),
+            [&src, &dst] (const auto &backend_ref)
             {
-                m_cache.emplace(key, transfer);
-                return transfer;
+                XMIPP4_ASSERT(backend_ref);
+                return backend_ref->get_suitability(src, dst);
             }
+        );
+
+        if (backend == m_backends.cend())
+        {
+            throw invalid_operation_error(
+                "No backend supports the requested transfer."
+            );
         }
 
-        return nullptr;
+        const auto transfer = (*backend)->create_transfer(src, dst);
+        m_cache.emplace(key, transfer);
+        return transfer;
     }
 
 private:
@@ -85,9 +96,7 @@ memory_transfer_manager::operator=(
 
 void memory_transfer_manager::register_builtin_backends()
 {
-    register_backend(
-        std::make_unique<host_memory_transfer_backend>()
-    );
+    host_memory_transfer_backend::register_at(*this);
 }
 
 bool memory_transfer_manager::register_backend(
@@ -105,7 +114,9 @@ std::shared_ptr<memory_transfer> memory_transfer_manager::create_transfer(
 {
     if (!m_implementation)
     {
-        return nullptr;
+        throw invalid_operation_error(
+            "No backends were registered."
+        );
     }
 
     return m_implementation->create_transfer(src, dst);

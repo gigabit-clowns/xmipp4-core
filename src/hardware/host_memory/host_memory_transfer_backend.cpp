@@ -19,16 +19,14 @@ backend_priority host_memory_transfer_backend::get_suitability(
 {
 
     if (
-        is_host_accessible(source.get_kind()) && 
-        is_host_accessible(destination.get_kind())
+        !is_host_accessible(source.get_kind()) ||
+        !is_host_accessible(destination.get_kind())
     ) 
-    {
-        return backend_priority::normal;
-    }
-    else
     {
         return backend_priority::unsupported;
     }
+    
+    return backend_priority::normal;
 }
 
 std::shared_ptr<memory_transfer> host_memory_transfer_backend::create_transfer(

@@ -23,14 +23,12 @@ backend_priority host_memory_allocator_backend::get_suitability(
     const memory_resource &resource
 ) const noexcept
 {
-    if (is_host_memory_resource(resource))
-    {
-        return backend_priority::optimal;
-    }
-    else
+    if (!is_host_memory_resource(resource))
     {
         return backend_priority::unsupported;
     }
+
+    return backend_priority::optimal;
 }
 
 std::shared_ptr<memory_allocator> 

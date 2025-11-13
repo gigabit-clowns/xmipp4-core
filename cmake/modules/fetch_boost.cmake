@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.12)
 include(FetchContent)
 
 function(fetch_boost)
-    set(options)
-    set(oneValueArgs VERSION)
-    set(multiValueArgs)
-    cmake_parse_arguments(PARSE_ARGV 0 arg
-        "${options}" "${oneValueArgs}" "${multiValueArgs}"
-    )
+	set(options)
+	set(oneValueArgs VERSION)
+	set(multiValueArgs)
+	cmake_parse_arguments(PARSE_ARGV 0 arg
+		"${options}" "${oneValueArgs}" "${multiValueArgs}"
+	)
 
 	set(GIT_TAG boost-${arg_VERSION})
 	FetchContent_Declare(
@@ -49,11 +49,11 @@ function(fetch_boost)
 
 	set(BOOST_CONTAINER_HEADER_ONLY ON)
 	FetchContent_MakeAvailable(
-  		boost_assert 
+		boost_assert 
 		boost_config 
 		boost_core 
 		boost_intrusive
-  		boost_move 
+		boost_move 
 		boost_static_assert 
 		boost_container
 	)

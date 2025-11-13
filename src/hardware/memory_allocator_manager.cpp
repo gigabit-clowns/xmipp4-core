@@ -8,6 +8,7 @@
 
 #include "caching_memory_allocator/caching_memory_allocator_backend.hpp"
 #include "host_memory/host_memory_allocator_backend.hpp"
+#include "../find_most_suitable_backend.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -38,8 +39,16 @@ public:
         memory_resource &resource
     ) const
     {
-        const auto *backend = find_most_suitable_backend(resource);
-        if (!backend)
+        const auto backend = find_most_suitable_backend(
+            m_backends.cbegin(), m_backends.cend(),
+            [&resource] (const auto &backend_ref)
+            {
+                XMIPP4_ASSERT(backend_ref);
+                return backend_ref->get_suitability(resource);
+            }
+        );
+
+        if (backend == m_backends.cend())
         {
             throw invalid_operation_error(
                 "No backend supports creating allocators for the requested "
@@ -47,34 +56,12 @@ public:
             );
         }
 
-        return backend->create_memory_allocator(resource);
+        return (*backend)->create_memory_allocator(resource);
     }
 
 private:
     std::vector<std::unique_ptr<memory_allocator_backend>> m_backends;
 
-    const memory_allocator_backend* find_most_suitable_backend(
-        const memory_resource& resource
-    ) const
-    {
-        std::pair<const memory_allocator_backend*, backend_priority> best(
-            nullptr, backend_priority::unsupported
-        );
-
-        for (auto ite = m_backends.cbegin(); ite != m_backends.cend(); ++ite)
-        {
-            XMIPP4_ASSERT(*ite);
-            const auto &backend = **ite;
-            const auto priority = backend.get_suitability(resource);
-
-            if (priority > best.second)
-            {
-                best = { &backend, priority };
-            }
-        }
-
-        return best.first;
-    }
 };
 
 

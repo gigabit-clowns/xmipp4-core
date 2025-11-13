@@ -8,6 +8,7 @@
 
 #include "host_memory/host_memory_transfer_backend.hpp"
 #include "memory_transfer_key.hpp"
+#include "../find_most_suitable_backend.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -48,15 +49,23 @@ public:
             return ite->second;
         }
 
-        auto *backend = find_most_suitable_backend(src, dst);
-        if (!backend)
+        const auto backend = find_most_suitable_backend(
+            m_backends.cbegin(), m_backends.cend(),
+            [&src, &dst] (const auto &backend_ref)
+            {
+                XMIPP4_ASSERT(backend_ref);
+                return backend_ref->get_suitability(src, dst);
+            }
+        );
+
+        if (backend == m_backends.cend())
         {
             throw invalid_operation_error(
                 "No backend supports the requested transfer."
             );
         }
 
-        const auto transfer = backend->create_transfer(src, dst);
+        const auto transfer = (*backend)->create_transfer(src, dst);
         m_cache.emplace(key, transfer);
         return transfer;
     }
@@ -67,30 +76,6 @@ private:
         memory_transfer_key, 
         std::shared_ptr<memory_transfer>
     > m_cache;
-
-    const memory_transfer_backend* find_most_suitable_backend(
-        const memory_resource& src,
-        const memory_resource& dst
-    ) const
-    {
-        std::pair<const memory_transfer_backend*, backend_priority> best(
-            nullptr, backend_priority::unsupported
-        );
-
-        for (auto ite = m_backends.cbegin(); ite != m_backends.cend(); ++ite)
-        {
-            XMIPP4_ASSERT(*ite);
-            const auto &backend = **ite;
-            const auto priority = backend.get_suitability(src, dst);
-
-            if (priority > best.second)
-            {
-                best = { &backend, priority };
-            }
-        }
-
-        return best.first;
-    }
 
 };
 

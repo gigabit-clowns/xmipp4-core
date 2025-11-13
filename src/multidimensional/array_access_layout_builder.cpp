@@ -3,6 +3,7 @@
 #include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "array_access_layout_implementation.hpp"
 
@@ -30,7 +31,7 @@ array_access_layout_builder& array_access_layout_builder::set_extents(
 {
 	if (m_implementation)
 	{
-		throw std::logic_error(
+		throw invalid_operation_error(
 			"Extents can only be set once and before adding any operand"
 		);
 	}

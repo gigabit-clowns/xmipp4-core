@@ -49,16 +49,16 @@ public:
         }
 
         auto *backend = find_most_suitable_backend(src, dst);
-        if (backend)
+        if (!backend)
         {
-            const auto transfer = backend->create_transfer(src, dst);
-            m_cache.emplace(key, transfer);
-            return transfer;
+            throw invalid_operation_error(
+                "No backend supports the requested transfer."
+            );
         }
 
-        throw invalid_operation_error(
-            "No backend supports the requested transfer."
-        );
+        const auto transfer = backend->create_transfer(src, dst);
+        m_cache.emplace(key, transfer);
+        return transfer;
     }
 
 private:

@@ -3,6 +3,7 @@
 #include "host_memory_allocator.hpp"
 
 #include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
@@ -28,9 +29,8 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
 {
     if (queue)
     {
-        throw std::invalid_argument(
-            "host_memory_allocator does not support queue execution"
-        );
+        // As host allocation is synchronous, we need to wait until all previous
+        queue->wait_until_completed();
     }
 
     size = memory::align_ceil(size, alignment);

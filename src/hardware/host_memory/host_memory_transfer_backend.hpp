@@ -4,26 +4,31 @@
 
 #include <xmipp4/core/hardware/memory_transfer_backend.hpp>
 
-#include "host_memory_transfer.hpp"
-
 namespace xmipp4 
 {
 namespace hardware
 {
 
-class host_memory_transfer_backend
+class memory_transfer_manager;
+
+class host_memory_transfer_backend final
     : public memory_transfer_backend
 {
 public:
-    host_memory_transfer_backend();
+    host_memory_transfer_backend() = default;
+    ~host_memory_transfer_backend() override = default;
+
+    backend_priority get_suitability(
+        const memory_resource& src,
+        const memory_resource& dst
+    ) const noexcept override;
 
     std::shared_ptr<memory_transfer> create_transfer(
         const memory_resource& src,
         const memory_resource& dst
     ) const override;
 
-private:
-    std::shared_ptr<host_memory_transfer> m_transfer;
+    static bool register_at(memory_transfer_manager &manager);
 
 };
 

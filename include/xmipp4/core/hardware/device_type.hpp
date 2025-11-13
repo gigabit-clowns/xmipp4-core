@@ -4,8 +4,6 @@
 
 #include "../platform/constexpr.hpp"
 
-#include <string_view>
-
 namespace xmipp4
 {
 namespace hardware
@@ -25,7 +23,6 @@ enum class device_type
 };
 
 XMIPP4_CONSTEXPR const char* to_string(device_type type) noexcept;
-bool from_string(std::string_view str, device_type& type) noexcept;
 
 } // namespace hardware
 } // namespace xmipp4

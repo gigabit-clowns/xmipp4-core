@@ -49,23 +49,6 @@ public:
     ) = 0;
 
     /**
-     * @brief Evaluates whether this device can access the given memory 
-     * resource.
-     * 
-     * Certain memory_resource-s are accessible by definition. This includes
-     * any memory_resource enumerated by this device whose kind satisfies
-     * is_device_accessible. However, some other memory_resource-s can
-     * also be accessible. This method is suited to query those cases in
-     * runtime.
-     * 
-     * @param resource The resource to evaluated.
-     * @return true If the device can access the resource.
-     * @return false If the device cannot access the resource.
-     */
-    virtual 
-    bool can_access_memory_resource(const memory_resource &resource) const = 0;
-
-    /**
      * @brief Create a device queue.
      * 
      * @return std::shared_ptr<device_queue> The created device queue.

@@ -2,10 +2,12 @@
 
 #include "host_memory_allocator.hpp"
 
-#include "host_buffer.hpp"
-#include "host_memory_resource.hpp"
-
+#include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/memory/align.hpp>
+
+#include "host_memory_resource.hpp"
+#include "host_buffer.hpp"
 
 #include <stdexcept>
 
@@ -28,10 +30,10 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
     if (queue)
     {
         // As host allocation is synchronous, we need to wait until all previous
-        // operations in the provided queue are finished.
         queue->wait_until_completed();
     }
 
+    size = memory::align_ceil(size, alignment);
     return std::make_shared<host_buffer>(size, alignment);
 }
 

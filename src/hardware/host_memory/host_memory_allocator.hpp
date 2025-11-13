@@ -9,10 +9,21 @@ namespace xmipp4
 namespace hardware
 {
 
-class host_memory_allocator
+/**
+ * @brief Implementation of memory_allocator specialized for allocating memory
+ * in host.
+ * 
+ * Unlike the caching allocator, this allocator specializes for host memory 
+ * and does not cache memory blocks, as malloc is already highly optimized.
+ * 
+ */
+class host_memory_allocator final
     : public memory_allocator
 {
 public:
+    host_memory_allocator() = default;
+    ~host_memory_allocator() override = default;
+
     memory_resource& get_memory_resource() const noexcept override;
 
     std::shared_ptr<buffer> allocate(

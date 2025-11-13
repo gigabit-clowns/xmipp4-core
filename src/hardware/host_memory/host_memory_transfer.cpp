@@ -15,9 +15,6 @@ namespace xmipp4
 namespace hardware
 {
 
-host_memory_transfer host_memory_transfer::m_instance;
-
-
 static
 void copy_bytes(
     const memory::byte *src_ptr, 
@@ -84,11 +81,6 @@ void host_memory_transfer::copy(
     {
         copy_bytes(src_ptr, src_size, dst_ptr, dst_size, region);
     }
-}
-    
-const host_memory_transfer& host_memory_transfer::get() noexcept
-{
-    return m_instance;
 }
 
 } // namespace hardware

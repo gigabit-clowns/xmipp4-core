@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <xmipp4/core/hardware/memory_allocator_manager.hpp>
+
+#include <xmipp4/core/hardware/memory_allocator_backend.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include <xmipp4/core/platform/assert.hpp>
+
+#include "caching_memory_allocator/caching_memory_allocator_backend.hpp"
+#include "host_memory/host_memory_allocator_backend.hpp"
+#include "../find_most_suitable_backend.hpp"
+
+#include <vector>
+#include <unordered_map>
+
+namespace xmipp4
+{
+namespace hardware
+{
+
+class memory_allocator_manager::implementation
+{
+public:
+    bool register_backend(
+        std::unique_ptr<memory_allocator_backend> backend
+    )
+    {
+        if (!backend)
+        {
+            return false;
+        }
+
+        m_backends.push_back(std::move(backend));
+
+        return true;
+    }
+
+    std::shared_ptr<memory_allocator> create_memory_allocator(
+        memory_resource &resource
+    ) const
+    {
+        const auto backend = find_most_suitable_backend(
+            m_backends.cbegin(), m_backends.cend(),
+            [&resource] (const auto &backend_ref)
+            {
+                XMIPP4_ASSERT(backend_ref);
+                return backend_ref->get_suitability(resource);
+            }
+        );
+
+        if (backend == m_backends.cend())
+        {
+            throw invalid_operation_error(
+                "No backend supports creating allocators for the requested "
+                "memory_resource"
+            );
+        }
+
+        return (*backend)->create_memory_allocator(resource);
+    }
+
+private:
+    std::vector<std::unique_ptr<memory_allocator_backend>> m_backends;
+
+};
+
+
+
+memory_allocator_manager::memory_allocator_manager() noexcept = default;
+
+memory_allocator_manager::memory_allocator_manager(
+    memory_allocator_manager &&other
+) noexcept = default;
+
+memory_allocator_manager::~memory_allocator_manager() = default;
+
+memory_allocator_manager&
+memory_allocator_manager::operator=(
+    memory_allocator_manager &&other
+) noexcept = default;
+
+void memory_allocator_manager::register_builtin_backends()
+{
+    caching_memory_allocator_backend::register_at(*this);
+    host_memory_allocator_backend::register_at(*this);
+}
+
+bool memory_allocator_manager::register_backend(
+    std::unique_ptr<memory_allocator_backend> backend
+)
+{
+    create_implementation_if_null();
+    return m_implementation->register_backend(std::move(backend));
+}
+
+std::shared_ptr<memory_allocator> 
+memory_allocator_manager::create_memory_allocator(
+    memory_resource &resource
+) const
+{
+    if (!m_implementation)
+    {
+        throw invalid_operation_error(
+            "No backends were registered."
+        );
+    }
+
+    return m_implementation->create_memory_allocator(resource);
+}
+
+void memory_allocator_manager::create_implementation_if_null()
+{
+    if (!m_implementation)
+    {
+        m_implementation = std::make_unique<implementation>();
+    }
+}
+
+} // namespace hardware
+} // namespace xmipp4

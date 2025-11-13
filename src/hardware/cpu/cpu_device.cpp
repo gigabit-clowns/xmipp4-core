@@ -2,8 +2,6 @@
 
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
 
-#include "../host_memory_transfer.hpp"
-
 #include <xmipp4/core/hardware/cpu/cpu_device_queue.hpp>
 #include <xmipp4/core/hardware/cpu/cpu_event.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
@@ -19,13 +17,6 @@ void cpu_device::enumerate_memory_resources(
 {
     auto &host_memory_resource = get_host_memory_resource();
     resources = { &host_memory_resource };
-}
-
-bool cpu_device::can_access_memory_resource(
-    const memory_resource &resource
-) const
-{
-    return is_host_accessible(resource.get_kind());
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()

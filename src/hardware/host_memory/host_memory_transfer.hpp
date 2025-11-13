@@ -9,10 +9,13 @@ namespace xmipp4
 namespace hardware
 {
 
-class host_memory_transfer
+class host_memory_transfer final
     : public memory_transfer
 {
 public:
+    host_memory_transfer() = default;
+    ~host_memory_transfer() override = default;
+
     void copy(
         const buffer &source, 
         buffer &destination,
@@ -20,11 +23,6 @@ public:
         device_queue *queue
     ) const override;
     
-    static const host_memory_transfer& get() noexcept;
-
-private:
-    static host_memory_transfer m_instance;
-
 };
 
 } // namespace hardware

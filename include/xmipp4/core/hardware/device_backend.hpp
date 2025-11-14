@@ -39,14 +39,14 @@ public:
      * 
      * @return std::string The name
      */
-    virtual std::string get_name() const noexcept = 0;
+    virtual std::string get_name() const = 0;
 
     /**
      * @brief Get the version of the backend.
      * 
      * @return version The version.
      */
-    virtual version get_version() const noexcept = 0;
+    virtual version get_version() const = 0;
 
     /**
      * @brief Enumerate available in devices within this backend.

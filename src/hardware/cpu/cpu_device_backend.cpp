@@ -12,12 +12,12 @@ namespace xmipp4
 namespace hardware
 {
 
-std::string cpu_device_backend::get_name() const noexcept
+std::string cpu_device_backend::get_name() const
 {
     return "cpu";
 }
 
-version cpu_device_backend::get_version() const noexcept
+version cpu_device_backend::get_version() const
 {
     return get_core_version();
 }

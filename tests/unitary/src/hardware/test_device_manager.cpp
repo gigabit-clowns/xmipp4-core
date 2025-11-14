@@ -52,3 +52,5 @@ TEST_CASE( "enumerate devices in device_manager should list all items", "[device
     REQUIRE( devices[7] == device_index(name2, 8) );
     REQUIRE( devices[8] == device_index(name2, 9) );
 }
+
+// TODO add tests

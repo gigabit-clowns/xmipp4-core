@@ -3,7 +3,7 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "../backend.hpp"
+#include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -24,7 +24,6 @@ class device;
  * 
  */
 class XMIPP4_CORE_API device_backend
-    : public backend
 {
 public:
     device_backend() = default;
@@ -34,6 +33,20 @@ public:
 
     device_backend& operator=(const device_backend &other) = default;
     device_backend& operator=(device_backend &&other) = default;
+
+    /**
+     * @brief Get the name of the backend.
+     * 
+     * @return std::string The name
+     */
+    virtual std::string get_name() const noexcept = 0;
+
+    /**
+     * @brief Get the version of the backend.
+     * 
+     * @return version The version.
+     */
+    virtual version get_version() const noexcept = 0;
 
     /**
      * @brief Enumerate available in devices within this backend.
@@ -53,7 +66,10 @@ public:
      * @return false The device ID does not exist. Properties were not written.
      * 
      */
-    virtual bool get_device_properties(std::size_t id, device_properties &desc) const = 0;
+    virtual bool get_device_properties(
+        std::size_t id, 
+        device_properties &desc
+    ) const = 0;
 
     /**
      * @brief Create a device handle for the given device identifier.

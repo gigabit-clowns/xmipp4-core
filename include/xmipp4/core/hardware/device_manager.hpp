@@ -17,7 +17,6 @@ namespace hardware
 {
 
 class device;
-class device_backend;
 
 
 
@@ -26,7 +25,7 @@ class device_backend;
  * 
  */
 class device_manager final
-    : public basic_service_manager<device_backend>
+    : public service_manager
 {
 public:
     XMIPP4_CORE_API device_manager();
@@ -41,9 +40,28 @@ public:
     void register_builtin_backends() override;
 
     /**
+     * @brief Register a new backend.
+     * 
+     * @param backend The backend to be registered.
+     * @return true if the backend was successfully registered.
+     * @return false if the backend could not be registered.
+     * 
+     */
+    XMIPP4_CORE_API
+    bool register_backend(std::unique_ptr<device_backend> backend);
+
+    /**
+     * @brief Enumerate all available backend names.
+     * 
+     * @param backends Output parameter where backends are written,
+     */
+    XMIPP4_CORE_API
+    void enumerate_backends(std::vector<std::string> &backends) const;
+
+    /**
      * @brief Enumerate devices across all backends.
      * 
-     * @param indices Output list of device indices.
+     * @param indices Output parameter with the list of device indices.
      * @note The output list is cleared before populating it.
      * 
      */
@@ -51,16 +69,32 @@ public:
     void enumerate_devices(std::vector<device_index> &indices) const;
 
     /**
+     * @brief Get a device_backend by its name.
+     * 
+     * @param name The name of the requested device backend.
+     * @return device_backend* The requested name. nullptr if there is no
+     * backend with the requested name.
+     * 
+     * @throws std::invalid_argument if the requested device index is invalid, 
+     * i.e., it is not in contained in enumerate_devices.
+     * 
+     */
+    XMIPP4_CORE_API
+    device_backend* get_backend(const std::string &name) const;
+
+    /**
      * @brief Query the properties of a device.
      * 
      * @param index The index of the device.
-     * @param desc Output device properties.
+     * @param properties Output parameter with device properties.
      * @return true Device exists and properties were written.
      * @return false Device does not exist and properties were not written.
      */
     XMIPP4_CORE_API
-    bool get_device_properties(const device_index &index, 
-                               device_properties &desc ) const;
+    bool get_device_properties(
+        const device_index &index, 
+        device_properties &properties 
+    ) const;
 
     /**
      * @brief Create a device handle.
@@ -71,6 +105,12 @@ public:
      */
     XMIPP4_CORE_API 
     std::shared_ptr<device> create_device(const device_index &index) const;
+
+private:
+    class implementation;
+    std::unique_ptr<implementation> m_implementation;
+
+    void create_implementation_if_null();
 
 }; 
 

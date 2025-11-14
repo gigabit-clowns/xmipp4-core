@@ -22,16 +22,6 @@ version cpu_device_backend::get_version() const noexcept
     return get_core_version();
 }
 
-bool cpu_device_backend::is_available() const noexcept
-{
-    return true;
-}
-
-backend_priority cpu_device_backend::get_priority() const noexcept
-{
-    return backend_priority::normal;
-}
-
 void cpu_device_backend::enumerate_devices(std::vector<std::size_t> &ids) const
 {
     ids = { 0 };
@@ -57,14 +47,12 @@ bool cpu_device_backend::get_device_properties(std::size_t id,
 std::shared_ptr<device> 
 cpu_device_backend::create_device(std::size_t id)
 {
-    std::shared_ptr<device> result;
-
-    if (id == 0)
+    if (id != 0)
     {
-        result = std::make_shared<cpu_device>();
+        throw std::invalid_argument("Requested device id is invalid");
     }
 
-    return result;
+    return std::make_shared<cpu_device>();
 }
 
 bool cpu_device_backend::register_at(device_manager &manager)

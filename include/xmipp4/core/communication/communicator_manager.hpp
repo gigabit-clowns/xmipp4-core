@@ -50,32 +50,11 @@ public:
     bool register_backend(std::unique_ptr<communicator_backend> backend);
 
     /**
-     * @brief Get a communicator_backend by its name.
-     * 
-     * @param name The name of the backend.
-     * @return communicator_backend* The backend. nullptr if no backend with
-     * the requested name can be found.
-     */
-    XMIPP4_CORE_API
-    communicator_backend* get_backend(const std::string &name) const;
-
-    /**
-     * @brief Find the most suitable backend
-     *
-     * The most suitable backend is an available backend with the highest
-     * priority.
-     *  
-     * @return const communicator_backend* The backend. Nullptr if none is available.
-     */
-    XMIPP4_CORE_API
-    communicator_backend* get_preferred_backend() const;
-
-    /**
      * @brief Get the world communicator from the preferred backend.
      * 
      * The world communicator connects all known peers together.
      * 
-     * @return std::shared_ptr<communicator> Reference to the world
+     * @return std::shared_ptr<communicator> The newly created world
      * communicator.
      * 
      */

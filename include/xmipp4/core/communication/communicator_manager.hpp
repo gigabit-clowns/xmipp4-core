@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <memory>
-
 #include "communicator_backend.hpp"
 #include "../service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
+
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace xmipp4 
 {
@@ -23,7 +23,7 @@ class communicator;
  * 
  */
 class communicator_manager final
-    : public basic_service_manager<communicator_backend>
+    : public service_manager
 {
 public:
     XMIPP4_CORE_API communicator_manager();
@@ -40,38 +40,32 @@ public:
     void register_builtin_backends() override;
     
     /**
-     * @brief Find the most suitable backend
-     *
-     * The most suitable backend is an available backend with the highest
-     * priority.
-     *  
-     * @return const communicator_backend* The backend. Nullptr if none is available.
+     * @brief Register a new backend.
+     * 
+     * @param backend The backend to be registered.
+     * @return true The backend was successfully registered.
+     * @return false The backend could not be registered.
      */
     XMIPP4_CORE_API
-    communicator_backend* get_preferred_backend() const;
-
-    /**
-     * @brief Get the world communicator of a backend.
-     * 
-     * The world communicator connects all known peers together.
-     * 
-     * @param name The name of the backend.
-     * @return std::shared_ptr<communicator> Reference to the world
-     * communicator.
-     */
-    XMIPP4_CORE_API
-    std::shared_ptr<communicator> 
-    create_world_communicator(const std::string &name) const;
+    bool register_backend(std::unique_ptr<communicator_backend> backend);
 
     /**
      * @brief Get the world communicator from the preferred backend.
      * 
-     * @return std::shared_ptr<communicator> Reference to the world
+     * The world communicator connects all known peers together.
+     * 
+     * @return std::shared_ptr<communicator> The newly created world
      * communicator.
-     * @see get_preferred_backend
+     * 
      */
     XMIPP4_CORE_API
-    std::shared_ptr<communicator> create_preferred_world_communicator() const;
+    std::shared_ptr<communicator> create_world_communicator() const;
+
+private:
+    class implementation;
+    std::unique_ptr<implementation> m_implementation;
+
+    void create_implementation_if_null();
 
 }; 
 

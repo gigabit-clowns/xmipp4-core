@@ -12,22 +12,17 @@ namespace xmipp4
 namespace communication
 {
 
-std::string dummy_communicator_backend::get_name() const noexcept
+std::string dummy_communicator_backend::get_name() const
 {
     return "dummy";
 }
 
-version dummy_communicator_backend::get_version() const noexcept
+version dummy_communicator_backend::get_version() const
 {
     return get_core_version();
 }
 
-bool dummy_communicator_backend::is_available() const noexcept
-{
-    return true;
-}
-
-backend_priority dummy_communicator_backend::get_priority() const noexcept
+backend_priority dummy_communicator_backend::get_suitability() const
 {
     return backend_priority::fallback;
 }

@@ -13,25 +13,24 @@ class device_manager;
 
 /**
  * @brief Special implementation of the device_backend interface to be able 
- * to obtain the "host" as a device..
+ * to use the CPU as a device.
  * 
  */
 class cpu_device_backend final
     : public device_backend
 {
 public:
-    std::string get_name() const noexcept override;
-    version get_version() const noexcept override;
-    bool is_available() const noexcept override;
-    backend_priority get_priority() const noexcept override;
+    std::string get_name() const override;
+    version get_version() const override;
 
     void enumerate_devices(std::vector<std::size_t> &ids) const override;
-    bool get_device_properties(std::size_t id, 
-                               device_properties &desc) const override;
 
+    bool get_device_properties(
+        std::size_t id, 
+        device_properties &desc
+    ) const override;
 
-    std::shared_ptr<device>
-    create_device(std::size_t id) override;
+    std::shared_ptr<device> create_device(std::size_t id) override;
 
     static bool register_at(device_manager &manager);
 

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "../backend.hpp"
-
+#include "../backend_priority.hpp"
+#include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <string>
@@ -17,7 +17,6 @@ namespace communication
 class communicator;
 
 class XMIPP4_CORE_API communicator_backend
-    : public backend
 {
 public:
     communicator_backend() = default;
@@ -27,6 +26,27 @@ public:
 
     communicator_backend& operator=(const communicator_backend &other) = default;
     communicator_backend& operator=(communicator_backend &&other) = default;
+
+    /**
+     * @brief Get the name of the backend.
+     * 
+     * @return std::string The name
+     */
+    virtual std::string get_name() const = 0;
+
+    /**
+     * @brief Get the backend version.
+     * 
+     * @return version The version.
+     */
+    virtual version get_version() const = 0;
+
+    /**
+     * @brief Get the suitability of the backend.
+     * 
+     * @return backend_priority The suitability.
+     */
+    virtual backend_priority get_suitability() const = 0;
 
     /**
      * @brief Get the world communicator.

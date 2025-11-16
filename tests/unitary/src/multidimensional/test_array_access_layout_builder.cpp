@@ -74,7 +74,7 @@ TEST_CASE( "adding operands to an initialized array_access_layout_builder should
 
 
     std::vector<std::size_t> layout_extents = {12, 1};
-    auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
+    auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
     builder.add_operand(layout, xmipp4::numerical_type::int32);
 
     const auto *impl = builder.get_implementation();
@@ -97,7 +97,7 @@ TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_l
 
 
     std::vector<std::size_t> layout_extents = {8};
-    auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
+    auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
 
 	REQUIRE_THROWS_AS( 
         builder.add_operand(layout, xmipp4::numerical_type::int32),

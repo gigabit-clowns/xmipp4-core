@@ -72,6 +72,12 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	return *this;
 }
 
+const array_access_layout_implementation* 
+array_access_layout_builder::get_implementation() const noexcept
+{
+	return m_implementation.get();
+}
+
 array_access_layout array_access_layout_builder::build(
 	array_access_layout_build_flags flags
 )

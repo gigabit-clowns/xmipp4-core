@@ -88,5 +88,11 @@ numerical_type array_access_layout::get_data_type(std::size_t operand) const
     return m_implementation->get_data_type(operand);
 }
 
+const array_access_layout_implementation*
+array_access_layout::get_implementation() const noexcept
+{
+    return m_implementation.get();
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

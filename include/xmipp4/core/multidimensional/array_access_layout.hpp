@@ -91,6 +91,18 @@ public:
      */
     numerical_type get_data_type(std::size_t operand) const;
 
+    /**
+     * @brief Get a pointer to the implementation.
+     * 
+     * @return const array_access_layout_implementation* Pointer to the
+     * implementation.
+     * 
+     * @note This method is meant to be used for testing purposes, as the 
+     * array_access_layout_implementation is not publicly available.
+     */
+    const array_access_layout_implementation* 
+    get_implementation() const noexcept;
+
 private:
     std::unique_ptr<const array_access_layout_implementation> m_implementation;
 

@@ -105,13 +105,18 @@ TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_l
 	);
 }
 
-TEST_CASE("calling build on array_access_layout_builder should reset the implementation")
+TEST_CASE("calling build on array_access_layout_builder should move the implementation")
 {
     array_access_layout_builder builder;
 
     std::vector<std::size_t> extents = {20, 6, 12, 12};
     builder.set_extents(extents);
-    builder.build();
+    
+    const auto *impl = builder.get_implementation();
+    auto access_layout = builder.build();
 
     REQUIRE( builder.get_implementation() == nullptr );
+    REQUIRE( access_layout.get_implementation() == impl );
 }
+
+// TODO implement tests for layout optimizations

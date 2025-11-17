@@ -13,6 +13,7 @@
 #include <multidimensional/array_access_layout_implementation.hpp>
 
 #include <algorithm>
+#include <iostream>
 
 using namespace xmipp4::multidimensional;
 
@@ -119,4 +120,77 @@ TEST_CASE("calling build on array_access_layout_builder should move the implemen
     REQUIRE( access_layout.get_implementation() == impl );
 }
 
-// TODO implement tests for layout optimizations
+TEST_CASE("calling build on array_access_layout_builder should re-order axes such that the first one appears in row major ordering")
+{
+    array_access_layout_builder builder;
+
+    std::vector<std::size_t> extents = {20, 6, 12, 12};
+    builder.set_extents(extents);
+    std::vector<std::ptrdiff_t> strides1 = { 1, 20, 120, 1440 };
+    const auto layout1 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides1));
+    builder.add_operand(layout1, xmipp4::numerical_type::int32);
+    std::vector<std::ptrdiff_t> strides2 = { 864, 144, 12, 1 };
+    const auto layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
+    builder.add_operand(layout2, xmipp4::numerical_type::int32);
+
+    auto layout = builder.build(array_access_layout_build_flag_bits::enable_reordering);
+
+    const auto result_extents = layout.get_extents();
+    REQUIRE( std::equal(extents.crbegin(), extents.crend(), result_extents.begin(), result_extents.end()) );
+    const auto result_strides1 = layout.get_strides(0);
+    REQUIRE( std::equal(strides1.crbegin(), strides1.crend(), result_strides1.begin(), result_strides1.end()) );
+    const auto result_strides2 = layout.get_strides(1);
+    REQUIRE( std::equal(strides2.crbegin(), strides2.crend(), result_strides2.begin(), result_strides2.end()) );
+}
+
+TEST_CASE("calling build on array_access_layout_builder should coalesce contiguous axes")
+{
+    array_access_layout_builder builder;
+
+    std::vector<std::size_t> extents = {20, 6, 12, 12};
+    builder.set_extents(extents);
+    std::vector<std::ptrdiff_t> strides = { 864, 144, 12, 1 };
+    const auto operand_layout = 
+        strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
+    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+
+    auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
+
+    const std::vector<std::size_t> expected_extents = { 17280 };
+    const std::vector<std::ptrdiff_t> expected_strides = { 1 };
+    const auto result_extents = layout.get_extents();
+    REQUIRE( std::equal(expected_extents.cbegin(), expected_extents.cend(), result_extents.begin(), result_extents.end()) );
+    const auto result_strides1 = layout.get_strides(0);
+    REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides1.begin(), result_strides1.end()) );
+    const auto result_strides2 = layout.get_strides(1);
+    REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
+}
+
+TEST_CASE("calling build on array_access_layout_builder not should coalesce non-contiguous axes")
+{
+    array_access_layout_builder builder;
+
+    std::vector<std::size_t> extents = {20, 6, 12, 12};
+    builder.set_extents(extents);
+    std::vector<std::ptrdiff_t> strides1 = { 1728, 144, 12, 1 };
+    const auto operand_layout1 = 
+        strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides1));
+    std::vector<std::ptrdiff_t> strides2 = { 1728, 288, 24, 1 };
+    const auto operand_layout2 = 
+        strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
+    builder.add_operand(operand_layout1, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout2, xmipp4::numerical_type::int32);
+
+    auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
+
+    const std::vector<std::size_t> expected_extents = { 20, 72, 12 };
+    const std::vector<std::ptrdiff_t> expected_strides1 = { 1728, 12, 1 };
+    const std::vector<std::ptrdiff_t> expected_strides2 = { 1728, 24, 1 };
+    const auto result_extents = layout.get_extents();
+    REQUIRE( std::equal(expected_extents.cbegin(), expected_extents.cend(), result_extents.begin(), result_extents.end()) );
+    const auto result_strides1 = layout.get_strides(0);
+    REQUIRE( std::equal(expected_strides1.cbegin(), expected_strides1.cend(), result_strides1.begin(), result_strides1.end()) );
+    const auto result_strides2 = layout.get_strides(1);
+    REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
+}

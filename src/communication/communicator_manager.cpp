@@ -2,8 +2,11 @@
 
 #include <xmipp4/core/communication/communicator_manager.hpp>
 
-#include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 #include <xmipp4/core/communication/dummy/dummy_communicator_backend.hpp>
+
+#include "../find_most_suitable_backend.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -13,25 +16,67 @@ namespace xmipp4
 namespace communication
 {
 
-static 
-std::shared_ptr<communicator> 
-create_communicator(const communicator_backend* backend)
+class communicator_manager::implementation
 {
-    std::shared_ptr<communicator> result;
-    
-    if (backend)
+public:
+    bool register_backend(
+        std::unique_ptr<communicator_backend> backend
+    )
     {
-        result = backend->create_world_communicator();
+        if (!backend)
+        {
+            return false;
+        }
+
+        auto name = backend->get_name();
+        bool inserted;
+        std::tie(std::ignore, inserted) = m_backends.emplace(
+            std::move(name),
+            std::move(backend)
+        );
+
+        return inserted;
     }
 
-    return result;
-}
+    std::shared_ptr<communicator> create_world_communicator() const
+    {
+        const auto backend = find_most_suitable_backend(
+            m_backends.cbegin(), m_backends.cend(),
+            [] (const auto &item)
+            {
+                XMIPP4_ASSERT(item.second);
+                return item.second->get_suitability();
+            }
+        );
+
+        if (backend == m_backends.cend())
+        {
+            throw invalid_operation_error(
+                "There is no available device communicator backend"
+            );
+        }
+
+        return backend->second->create_world_communicator();
+    }
+
+private:
+    using backend_map = 
+        std::unordered_map<std::string, std::unique_ptr<communicator_backend>>;
+    backend_map m_backends;
+
+};
+
 
 
 
 communicator_manager::communicator_manager() = default;
-communicator_manager::communicator_manager(communicator_manager&&) noexcept = default;
+
+communicator_manager::communicator_manager(
+    communicator_manager &&other
+) noexcept = default;
+
 communicator_manager::~communicator_manager() = default;
+
 communicator_manager& 
 communicator_manager::operator=(communicator_manager&&) noexcept = default;
 
@@ -40,62 +85,33 @@ void communicator_manager::register_builtin_backends()
     dummy_communicator_backend::register_at(*this);
 }
 
-communicator_backend* 
-communicator_manager::get_preferred_backend() const
+bool communicator_manager::register_backend(
+    std::unique_ptr<communicator_backend> backend
+)
 {
-    communicator_backend* result;
+    create_implementation_if_null();
+    return m_implementation->register_backend(std::move(backend));
+}
 
-    std::vector<communicator_backend*> available_backends;
-    get_available_backends(available_backends);
-    if( available_backends.empty())
+std::shared_ptr<communicator> 
+communicator_manager::create_world_communicator() const
+{
+    if (!m_implementation)
     {
-        result = nullptr;
-    }
-    else if (available_backends.size() == 1)
-    {
-        result = available_backends[0];
-    }
-    else // available_backends.size() > 1
-    {
-        // Get the best two
-        std::partial_sort(
-            available_backends.begin(),
-            std::next(available_backends.begin(), 2),
-            available_backends.end(),
-            [] (const communicator_backend *lhs, 
-                const communicator_backend *rhs )
-            {
-                return lhs->get_priority() > rhs->get_priority();
-            }
+        throw invalid_operation_error(
+            "No backends were registered."
         );
-
-        // Ensure the second is worse
-        if (available_backends[0]->get_priority() == 
-            available_backends[1]->get_priority() )
-        {
-            throw ambiguous_backend_error(
-                "Could not disambiguate among multiple "
-                "communicator_backend-s. Ensure that only one has "
-                "been installed."
-            );
-        }
-
-        result = available_backends[0];
     }
 
-    return result;
+    return m_implementation->create_world_communicator();
 }
 
-std::shared_ptr<communicator>
-communicator_manager::create_world_communicator(const std::string &name) const
+void communicator_manager::create_implementation_if_null()
 {
-    return create_communicator(get_backend(name));
-}
-
-std::shared_ptr<communicator>
-communicator_manager::create_preferred_world_communicator() const
-{
-    return create_communicator(get_preferred_backend());
+    if (!m_implementation)
+    {
+        m_implementation = std::make_unique<implementation>();
+    }
 }
 
 } // namespace communication

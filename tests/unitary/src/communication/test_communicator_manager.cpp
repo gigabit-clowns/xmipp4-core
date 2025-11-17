@@ -1,110 +1,94 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/communication/communicator_manager.hpp>
-
-#include <xmipp4/core/exceptions/ambiguous_backend_error.hpp>
-#include <xmipp4/core/version.hpp>
-
-#include <algorithm>
-
-#include "mock/mock_communicator_backend.hpp"
-
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
+#include <xmipp4/core/communication/communicator_manager.hpp>
+
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+
+#include "mock/mock_communicator_backend.hpp"
+
 using namespace xmipp4;
 using namespace xmipp4::communication;
 
-TEST_CASE( "get_preferred_backend should return the best available backend", "[communicator_manager]" ) 
+TEST_CASE( "communicator_manager should allow registering backends", "[communicator_backend]" )
 {
-    auto mock1 = std::make_unique<mock_communicator_backend>();
-    const std::string name1 = "mock1";
-    REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1)
-        .TIMES(2);
-    REQUIRE_CALL(*mock1, get_priority())
-        .RETURN(backend_priority::normal)
-        .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(*mock1, is_available())
-        .RETURN(true);
-
-    auto mock2 = std::make_unique<mock_communicator_backend>();
-    const std::string name2 = "mock2";
-    REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2);
-    REQUIRE_CALL(*mock2, get_priority())
-        .RETURN(backend_priority::fallback)
-        .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(*mock2, is_available())
-        .RETURN(true);
-
-    auto mock3 = std::make_unique<mock_communicator_backend>();
-    const std::string name3 = "mock3";
-    REQUIRE_CALL(*mock3, get_name())
-        .RETURN(name3);
-    REQUIRE_CALL(*mock3, is_available())
-        .RETURN(false);
-
     communicator_manager manager;
-    manager.register_backend(std::move(mock1));
-    manager.register_backend(std::move(mock2));
-    manager.register_backend(std::move(mock3));
 
-    const auto* backend = manager.get_preferred_backend();
-    REQUIRE( backend != nullptr );
-    REQUIRE( backend->get_name() == name1 );
+    auto mock1 = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock1, get_name())
+        .RETURN("mock1");
+    auto mock2 = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock2, get_name())
+        .RETURN("mock2");
+
+    REQUIRE( manager.register_backend(std::move(mock1)) == true );
+    REQUIRE( manager.register_backend(std::move(mock2)) == true );
 }
 
-TEST_CASE( "get_preferred_backend should return null with no available backends", "[communicator_manager]" ) 
+TEST_CASE( "communicator_manager should not allow registering duplicate backends", "[communicator_backend]" )
 {
-    auto mock1 = std::make_unique<mock_communicator_backend>();
-    const std::string name1 = "mock1";
-    REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1);
-    REQUIRE_CALL(*mock1, is_available())
-        .RETURN(false);
-
     communicator_manager manager;
-    manager.register_backend(std::move(mock1));
 
-    const auto* backend = manager.get_preferred_backend();
-    REQUIRE( backend == nullptr );
+    auto mock = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock, get_name())
+        .RETURN("mock");
+
+    REQUIRE( manager.register_backend(std::move(mock)) == true );
+
+    mock = std::make_unique<mock_communicator_backend>();
+    REQUIRE_CALL(*mock, get_name())
+        .RETURN("mock");
+    REQUIRE( manager.register_backend(std::move(mock)) == false );
 }
 
-TEST_CASE( "get_preferred_backend should throw with multiple backends with same priority", "[communicator_manager]" ) 
+TEST_CASE( "communicator_manager should not allow registering null backend", "[communicator_backend]" )
 {
-    auto mock1 = std::make_unique<mock_communicator_backend>();
-    const std::string name1 = "mock1";
-    REQUIRE_CALL(*mock1, get_name())
-        .RETURN(name1);
-    REQUIRE_CALL(*mock1, get_priority())
-        .RETURN(backend_priority::normal)
-        .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(*mock1, is_available())
-        .RETURN(true);
-
-    auto mock2 = std::make_unique<mock_communicator_backend>();
-    const std::string name2 = "mock2";
-    REQUIRE_CALL(*mock2, get_name())
-        .RETURN(name2);
-    REQUIRE_CALL(*mock2, get_priority())
-        .RETURN(backend_priority::normal)
-        .TIMES(AT_LEAST(1));
-    REQUIRE_CALL(*mock2, is_available())
-        .RETURN(true);
-
     communicator_manager manager;
-    manager.register_backend(std::move(mock1));
-    manager.register_backend(std::move(mock2));
 
-    const std::string message = 
-        "Could not disambiguate among multiple "
-        "communicator_backend-s. Ensure that only one has "
-        "been installed.";
-	REQUIRE_THROWS_MATCHES( 
-		manager.get_preferred_backend(),
-		ambiguous_backend_error,
-		Catch::Matchers::Message(message)
+    REQUIRE( manager.register_backend( nullptr ) == false );
+}
+
+TEST_CASE( "creating a communicator from a default initialized communicator_manager should throw", "[communicator_backend]" )
+{
+    communicator_manager manager;
+
+    REQUIRE_THROWS_MATCHES(
+        manager.create_world_communicator(),
+		xmipp4::invalid_operation_error,
+		Catch::Matchers::Message(
+            "No backends were registered."
+        )
+	);
+}
+
+TEST_CASE( "communicator_manager should throw when there is no supported backend", "[communicator_backend]" )
+{
+    communicator_manager manager;
+
+
+    auto backend1 = std::make_unique<mock_communicator_backend>();
+    auto backend2 = std::make_unique<mock_communicator_backend>();
+
+    REQUIRE_CALL(*backend1, get_name())
+        .RETURN("mock1");
+    REQUIRE_CALL(*backend1, get_suitability())
+        .RETURN(xmipp4::backend_priority::unsupported);
+    REQUIRE_CALL(*backend2, get_name())
+        .RETURN("mock2");
+    REQUIRE_CALL(*backend2, get_suitability())
+        .RETURN(xmipp4::backend_priority::unsupported);
+
+    manager.register_backend(std::move(backend1));
+    manager.register_backend(std::move(backend2));
+
+    REQUIRE_THROWS_MATCHES(
+        manager.create_world_communicator(),
+		xmipp4::invalid_operation_error,
+		Catch::Matchers::Message(
+            "There is no available device communicator backend"
+        )
 	);
 }

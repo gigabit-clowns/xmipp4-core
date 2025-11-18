@@ -17,14 +17,14 @@
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE( "default constructing a array_access_layout_builder should point to a null implementation" )
+TEST_CASE( "default constructing a array_access_layout_builder should point to a null implementation", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
     const auto *impl = builder.get_implementation();
     REQUIRE( impl == nullptr );
 }
 
-TEST_CASE( "setting the iteration extents in array_access_layout_builder should initialize the implementation" )
+TEST_CASE( "setting the iteration extents in array_access_layout_builder should initialize the implementation", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -37,7 +37,7 @@ TEST_CASE( "setting the iteration extents in array_access_layout_builder should 
     REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "setting the iteration extents in array_access_layout_builder with an implementation should throw" )
+TEST_CASE( "setting the iteration extents in array_access_layout_builder with an implementation should throw", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -51,7 +51,7 @@ TEST_CASE( "setting the iteration extents in array_access_layout_builder with an
 	);
 }
 
-TEST_CASE( "adding the first operand array_access_layout_builder should initialize it" )
+TEST_CASE( "adding the first operand array_access_layout_builder should initialize it", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -66,7 +66,7 @@ TEST_CASE( "adding the first operand array_access_layout_builder should initiali
     REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "adding operands to an initialized array_access_layout_builder should broadcast it" )
+TEST_CASE( "adding operands to an initialized array_access_layout_builder should broadcast it", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -89,7 +89,7 @@ TEST_CASE( "adding operands to an initialized array_access_layout_builder should
     REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
 }
 
-TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_layout_builder should throw" )
+TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_layout_builder should throw", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -106,7 +106,7 @@ TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_l
 	);
 }
 
-TEST_CASE("calling build on array_access_layout_builder should move the implementation")
+TEST_CASE("build on array_access_layout_builder should move the implementation", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -120,7 +120,7 @@ TEST_CASE("calling build on array_access_layout_builder should move the implemen
     REQUIRE( access_layout.get_implementation() == impl );
 }
 
-TEST_CASE("calling build with enable_reordering on array_access_layout_builder should re-order axes such that the first operand appears in row major ordering")
+TEST_CASE("build with enable_reordering on array_access_layout_builder should re-order axes such that the first operand appears in row major ordering", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -146,7 +146,7 @@ TEST_CASE("calling build with enable_reordering on array_access_layout_builder s
     REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("calling build with enable_coalescing on array_access_layout_builder should coalesce contiguous axes")
+TEST_CASE("build with enable_coalescing on array_access_layout_builder should coalesce contiguous axes", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -170,7 +170,7 @@ TEST_CASE("calling build with enable_coalescing on array_access_layout_builder s
     REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("calling build with enable_coalescing on array_access_layout_builder should not coalesce non-contiguous axes")
+TEST_CASE("build with enable_coalescing on array_access_layout_builder should not coalesce non-contiguous axes", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -198,7 +198,7 @@ TEST_CASE("calling build with enable_coalescing on array_access_layout_builder s
     REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("calling build on array_access_layout_builder without flags should not modify the layout")
+TEST_CASE("build on array_access_layout_builder without flags should not modify the layout", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -220,7 +220,7 @@ TEST_CASE("calling build on array_access_layout_builder without flags should not
     REQUIRE( std::equal(strides.cbegin(), strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE( "calling build with default flags on array_access_layout should re-order and coalesce contiguous axes" )
+TEST_CASE( "build with default flags on array_access_layout should re-order and coalesce contiguous axes", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 

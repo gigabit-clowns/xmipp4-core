@@ -45,7 +45,7 @@ int array_access_layout_operand::compare_strides(
     }
     else
     {
-        return stride_i - stride_j;
+        return static_cast<int>(stride_i - stride_j);
     }
 }
 

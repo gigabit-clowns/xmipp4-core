@@ -149,7 +149,8 @@ int array_access_layout_implementation::compare_strides(
         }
     }
 
-    return m_extents[i] - m_extents[j]; // Untie with extents
+    // Untie with extents
+    return static_cast<int>(m_extents[i]) - static_cast<int>(m_extents[j]); 
 }
 
 inline

@@ -61,6 +61,8 @@ private:
 
     void permute_axes(std::vector<std::size_t> permutation);
 
+    bool try_coalesce_axes(std::size_t i, std::size_t j);
+
     bool can_coalesce_axes(std::size_t i, std::size_t j);
 
     void trim_axes(std::size_t n);

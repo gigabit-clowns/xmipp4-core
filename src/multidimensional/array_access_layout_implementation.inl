@@ -95,22 +95,10 @@ void array_access_layout_implementation::coalesce_contiguous_axes()
     std::size_t prev = 0;
     for (std::size_t curr = 1; curr < n;  ++curr)
     {
-        if (can_coalesce_axes(prev, curr))
-        {
-            if (m_extents[prev] == 1)
-            {
-                swap_axes(prev, curr);
-            }
-            else
-            {
-                m_extents[prev] *= m_extents[curr];
-            }
-
-        }
-        else
+        if (!try_coalesce_axes(prev, curr))
         {
             ++prev;
-            if (prev != curr)
+            if(prev != curr) // Avoid unnecessary swaps.
             {
                 swap_axes(prev, curr);
             }
@@ -202,6 +190,28 @@ void array_access_layout_implementation::permute_axes(
 }
 
 inline
+bool array_access_layout_implementation::try_coalesce_axes(
+    std::size_t i, 
+    std::size_t j
+)
+{
+    if (m_extents[i] == 1)
+    {
+        swap_axes(i, j);
+        return true;
+    }
+
+    if (can_coalesce_axes(i, j))
+    {
+        m_extents[i] *= m_extents[j];
+        return true;
+    }
+
+    return false;
+
+}
+
+inline
 bool array_access_layout_implementation::can_coalesce_axes(
     std::size_t i, 
     std::size_t j
@@ -209,9 +219,9 @@ bool array_access_layout_implementation::can_coalesce_axes(
 {
     const auto extent_i = m_extents[i];
     const auto extent_j = m_extents[j];
-    if (extent_i == 1 || extent_j == 1)
+    if (extent_j == 1)
     {
-        return true;
+        return true; // Trivial, as any stride_j is meaningless.
     }
 
     for (const auto &operand : m_operands)

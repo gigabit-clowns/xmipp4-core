@@ -127,20 +127,23 @@ TEST_CASE("calling build with enable_reordering on array_access_layout_builder s
     std::vector<std::size_t> extents = {20, 6, 12, 12};
     builder.set_extents(extents);
     std::vector<std::ptrdiff_t> strides1 = { 1, 20, 120, 1440 };
-    const auto layout1 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides1));
-    builder.add_operand(layout1, xmipp4::numerical_type::int32);
+    const auto operand_layout1 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides1));
+    builder.add_operand(operand_layout1, xmipp4::numerical_type::int32);
     std::vector<std::ptrdiff_t> strides2 = { 864, 144, 12, 1 };
-    const auto layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
-    builder.add_operand(layout2, xmipp4::numerical_type::int32);
+    const auto operand_layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
+    builder.add_operand(operand_layout2, xmipp4::numerical_type::int32);
 
     auto layout = builder.build(array_access_layout_build_flag_bits::enable_reordering);
 
+    const std::vector<std::size_t> expected_extents = {12, 12, 6, 20};
+    const std::vector<std::ptrdiff_t> expected_strides1 = { 1440, 120, 20, 1 };
+    const std::vector<std::ptrdiff_t> expected_strides2 = { 1, 12, 144, 864 };
     const auto result_extents = layout.get_extents();
-    REQUIRE( std::equal(extents.crbegin(), extents.crend(), result_extents.begin(), result_extents.end()) );
+    REQUIRE( std::equal(expected_extents.cbegin(), expected_extents.cend(), result_extents.begin(), result_extents.end()) );
     const auto result_strides1 = layout.get_strides(0);
-    REQUIRE( std::equal(strides1.crbegin(), strides1.crend(), result_strides1.begin(), result_strides1.end()) );
+    REQUIRE( std::equal(expected_strides1.cbegin(), expected_strides1.cend(), result_strides1.begin(), result_strides1.end()) );
     const auto result_strides2 = layout.get_strides(1);
-    REQUIRE( std::equal(strides2.crbegin(), strides2.crend(), result_strides2.begin(), result_strides2.end()) );
+    REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
 TEST_CASE("calling build with enable_coalescing on array_access_layout_builder should coalesce contiguous axes")
@@ -219,5 +222,22 @@ TEST_CASE("calling build on array_access_layout_builder without flags should not
 
 TEST_CASE( "calling build with default flags on array_access_layout should re-order and coalesce contiguous axes" )
 {
-    // TODO
+    array_access_layout_builder builder;
+
+    std::vector<std::size_t> extents = {20, 6, 12, 12};
+    builder.set_extents(extents);
+    std::vector<std::ptrdiff_t> strides = { 1, 20, 240, 2880 };
+    const auto operand_layout = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
+    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+
+    auto layout = builder.build(array_access_layout_build_flag_bits::enable_reordering);
+
+    const std::vector<std::size_t> expected_extents = { 144, 120 };
+    const std::vector<std::ptrdiff_t> expected_strides = { 240, 1 };
+    const auto result_extents = layout.get_extents();
+    REQUIRE( std::equal(expected_extents.cbegin(), expected_extents.cend(), result_extents.begin(), result_extents.end()) );
+    const auto result_strides1 = layout.get_strides(0);
+    REQUIRE( std::equal(expected_strides.crbegin(), expected_strides.crend(), result_strides1.begin(), result_strides1.end()) );
+    const auto result_strides2 = layout.get_strides(1);
+    REQUIRE( std::equal(expected_strides.crbegin(), expected_strides.crend(), result_strides2.begin(), result_strides2.end()) );
 }

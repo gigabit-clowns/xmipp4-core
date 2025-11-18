@@ -120,7 +120,7 @@ TEST_CASE("calling build on array_access_layout_builder should move the implemen
     REQUIRE( access_layout.get_implementation() == impl );
 }
 
-TEST_CASE("calling build on array_access_layout_builder should re-order axes such that the first one appears in row major ordering")
+TEST_CASE("calling build with enable_reordering on array_access_layout_builder should re-order axes such that the first operand appears in row major ordering")
 {
     array_access_layout_builder builder;
 
@@ -143,7 +143,7 @@ TEST_CASE("calling build on array_access_layout_builder should re-order axes suc
     REQUIRE( std::equal(strides2.crbegin(), strides2.crend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("calling build on array_access_layout_builder should coalesce contiguous axes")
+TEST_CASE("calling build with enable_coalescing on array_access_layout_builder should coalesce contiguous axes")
 {
     array_access_layout_builder builder;
 
@@ -167,7 +167,7 @@ TEST_CASE("calling build on array_access_layout_builder should coalesce contiguo
     REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("calling build on array_access_layout_builder not should coalesce non-contiguous axes")
+TEST_CASE("calling build with enable_coalescing on array_access_layout_builder should not coalesce non-contiguous axes")
 {
     array_access_layout_builder builder;
 
@@ -193,4 +193,31 @@ TEST_CASE("calling build on array_access_layout_builder not should coalesce non-
     REQUIRE( std::equal(expected_strides1.cbegin(), expected_strides1.cend(), result_strides1.begin(), result_strides1.end()) );
     const auto result_strides2 = layout.get_strides(1);
     REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
+}
+
+TEST_CASE("calling build on array_access_layout_builder without flags should not modify the layout")
+{
+    array_access_layout_builder builder;
+
+    std::vector<std::size_t> extents = {20, 6, 12, 12};
+    builder.set_extents(extents);
+    std::vector<std::ptrdiff_t> strides = { 1, 20, 120, 1440 };
+    const auto operand_layout = 
+        strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
+    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+
+    auto layout = builder.build({});
+
+    const auto result_extents = layout.get_extents();
+    REQUIRE( std::equal(extents.cbegin(), extents.cend(), result_extents.begin(), result_extents.end()) );
+    const auto result_strides1 = layout.get_strides(0);
+    REQUIRE( std::equal(strides.cbegin(), strides.cend(), result_strides1.begin(), result_strides1.end()) );
+    const auto result_strides2 = layout.get_strides(1);
+    REQUIRE( std::equal(strides.cbegin(), strides.cend(), result_strides2.begin(), result_strides2.end()) );
+}
+
+TEST_CASE( "calling build with default flags on array_access_layout should re-order and coalesce contiguous axes" )
+{
+    // TODO
 }

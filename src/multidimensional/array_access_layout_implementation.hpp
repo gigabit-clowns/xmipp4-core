@@ -33,8 +33,7 @@ public:
     void add_operand(
         std::vector<std::size_t> extents,
         std::vector<std::ptrdiff_t> strides,
-        std::ptrdiff_t offset, 
-        numerical_type data_type
+        std::ptrdiff_t offset
     );
 
     void sort_axes_by_locality();
@@ -48,8 +47,6 @@ public:
     span<const std::ptrdiff_t> get_strides(std::size_t operand) const;
 
     std::ptrdiff_t get_offset(std::size_t operand) const;
-
-    numerical_type get_data_type(std::size_t operand) const;
 
 private:
     std::vector<std::size_t> m_extents;

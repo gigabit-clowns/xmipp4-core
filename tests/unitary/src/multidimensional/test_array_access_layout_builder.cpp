@@ -58,7 +58,7 @@ TEST_CASE( "adding the first operand array_access_layout_builder should initiali
     std::vector<std::size_t> extents = {20, 6, 12, 12};
     auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
 
-    builder.add_operand(layout, xmipp4::numerical_type::int32);
+    builder.add_operand(layout);
 
     const auto *impl = builder.get_implementation();
     REQUIRE( impl );
@@ -76,7 +76,7 @@ TEST_CASE( "adding operands to an initialized array_access_layout_builder should
 
     std::vector<std::size_t> layout_extents = {12, 1};
     auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
-    builder.add_operand(layout, xmipp4::numerical_type::int32);
+    builder.add_operand(layout);
 
     const auto *impl = builder.get_implementation();
     REQUIRE( impl );
@@ -89,7 +89,7 @@ TEST_CASE( "adding operands to an initialized array_access_layout_builder should
     REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
 }
 
-TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_layout_builder should throw", "[array_access_layout_builder]" )
+TEST_CASE( "adding a non broadcastable operand to an initialized array_access_layout_builder should throw", "[array_access_layout_builder]" )
 {
     array_access_layout_builder builder;
 
@@ -101,7 +101,7 @@ TEST_CASE( "adding a non broadcasteable operand to an initialized array_access_l
     auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
 
 	REQUIRE_THROWS_AS( 
-        builder.add_operand(layout, xmipp4::numerical_type::int32),
+        builder.add_operand(layout),
 		broadcast_error
 	);
 }
@@ -128,10 +128,10 @@ TEST_CASE("build with enable_reordering on array_access_layout_builder should re
     builder.set_extents(extents);
     std::vector<std::ptrdiff_t> strides1 = { 864, 144, 12, 1 };
     const auto operand_layout1 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides1));
-    builder.add_operand(operand_layout1, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout1);
     std::vector<std::ptrdiff_t> strides2 = { 1, 20, 120, 1440 };
     const auto operand_layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
-    builder.add_operand(operand_layout2, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout2);
 
     auto layout = builder.build(array_access_layout_build_flag_bits::enable_reordering);
 
@@ -155,8 +155,8 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
     std::vector<std::ptrdiff_t> strides = { 1, 20, 120, 1440 };
     const auto operand_layout = 
         strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout);
+    builder.add_operand(operand_layout);
 
     auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
 
@@ -179,8 +179,8 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
     std::vector<std::ptrdiff_t> strides = { 1, 2, 4, 20 };
     const auto operand_layout = 
         strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout);
+    builder.add_operand(operand_layout);
 
     auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
 
@@ -207,8 +207,8 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should no
     std::vector<std::ptrdiff_t> strides2 = { 1, 20, 120, 2880 }; // Non-contiguous 4th axis
     const auto operand_layout2 = 
         strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
-    builder.add_operand(operand_layout1, xmipp4::numerical_type::int32);
-    builder.add_operand(operand_layout2, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout1);
+    builder.add_operand(operand_layout2);
 
     auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
 
@@ -232,8 +232,8 @@ TEST_CASE("build on array_access_layout_builder without flags should not modify 
     std::vector<std::ptrdiff_t> strides = { 1, 20, 120, 1440 };
     const auto operand_layout = 
         strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout);
+    builder.add_operand(operand_layout);
 
     auto layout = builder.build({});
 
@@ -253,8 +253,8 @@ TEST_CASE( "build with default flags on array_access_layout should re-order and 
     builder.set_extents(extents);
     std::vector<std::ptrdiff_t> strides = { 1728, 288, 12, 1 };
     const auto operand_layout = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides));
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
-    builder.add_operand(operand_layout, xmipp4::numerical_type::int32);
+    builder.add_operand(operand_layout);
+    builder.add_operand(operand_layout);
 
     auto layout = builder.build();
 

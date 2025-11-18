@@ -44,8 +44,7 @@ array_access_layout_builder& array_access_layout_builder::set_extents(
 }
 
 array_access_layout_builder& array_access_layout_builder::add_operand(
-	const strided_layout &layout,
-	numerical_type data_type
+	const strided_layout &layout
 )
 {
 	std::vector<std::size_t> extents;
@@ -65,8 +64,7 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	m_implementation->add_operand(
 		std::move(extents),
 		std::move(strides),
-		offset,
-		data_type
+		offset
 	);
 
 	return *this;

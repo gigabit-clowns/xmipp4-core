@@ -26,16 +26,14 @@ inline
 void array_access_layout_implementation::add_operand(
     std::vector<std::size_t> extents,
     std::vector<std::ptrdiff_t> strides,
-    std::ptrdiff_t offset, 
-    numerical_type data_type
+    std::ptrdiff_t offset
 )
 {
     XMIPP4_ASSERT( extents.size() == strides.size() );
     broadcast_operand(extents, strides);
     m_operands.emplace_back(
         std::move(strides),
-        offset,
-        data_type
+        offset
     );
 }
 
@@ -134,13 +132,6 @@ std::ptrdiff_t
 array_access_layout_implementation::get_offset(std::size_t operand) const
 {
     return m_operands.at(operand).get_offset();
-}
-
-inline
-numerical_type 
-array_access_layout_implementation::get_data_type(std::size_t operand) const
-{
-    return m_operands.at(operand).get_data_type();
 }
 
 inline

@@ -10,12 +10,10 @@ namespace multidimensional
 inline
 array_access_layout_operand::array_access_layout_operand(
     std::vector<std::ptrdiff_t> strides,
-    std::ptrdiff_t offset,
-    numerical_type data_type
+    std::ptrdiff_t offset
 )
     : m_strides(std::move(strides))
     , m_offset(offset)
-    , m_data_type(data_type)
 {
 }
 
@@ -30,12 +28,6 @@ inline
 std::ptrdiff_t array_access_layout_operand::get_offset() const noexcept
 {
     return m_offset;
-}
-
-inline
-numerical_type array_access_layout_operand::get_data_type() const noexcept
-{
-    return m_data_type;
 }
 
 inline

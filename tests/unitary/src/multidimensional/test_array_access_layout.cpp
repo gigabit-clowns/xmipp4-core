@@ -44,15 +44,6 @@ TEST_CASE( "getting the offset on an default constructed array_access_layout sho
 	);
 };
 
-TEST_CASE( "getting the data type on an default constructed array_access_layout should throw ", "[array_access_layout]" )
-{
-    array_access_layout layout;
-	REQUIRE_THROWS_AS( 
-        layout.get_data_type(0),
-		std::out_of_range
-	);
-};
-
 TEST_CASE( "getting extents on an initialized array_access_layout should return its extents ", "[array_access_layout]" )
 {
     const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
@@ -69,8 +60,8 @@ TEST_CASE( "getting the number of operands on an array_access_layout should retu
     const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand({}, {}, 0UL, xmipp4::numerical_type::uint32);
-    implementation->add_operand({}, {}, 0UL, xmipp4::numerical_type::uint32);
+    implementation->add_operand({}, {}, 0UL);
+    implementation->add_operand({}, {}, 0UL);
     array_access_layout layout(std::move(implementation));
 
     REQUIRE( layout.get_number_of_operands() == 2 );
@@ -82,7 +73,7 @@ TEST_CASE( "getting the strides of an operand on an array_access_layout should r
     const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 0UL, xmipp4::numerical_type::uint32);
+    implementation->add_operand(extents, strides, 0UL);
     array_access_layout layout(std::move(implementation));
 
     const auto result = layout.get_strides(0);
@@ -95,22 +86,10 @@ TEST_CASE( "getting the offset of an operand in an array_access_layout should re
     const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 1234UL, xmipp4::numerical_type::uint32);
+    implementation->add_operand(extents, strides, 1234UL);
     array_access_layout layout(std::move(implementation));
 
     REQUIRE( layout.get_offset(0) == 1234UL );
-}
-
-TEST_CASE( "getting the data type of an operand in an array_access_layout should return its data type", "[array_access_layout]" )
-{
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
-    auto implementation = 
-        std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 1234UL, xmipp4::numerical_type::uint32);
-    array_access_layout layout(std::move(implementation));
-
-    REQUIRE( layout.get_data_type(0) == xmipp4::numerical_type::uint32 );
 }
 
 TEST_CASE( "getting the strides of an invalid operand on an array_access_layout should throw", "[array_access_layout]" )
@@ -119,7 +98,7 @@ TEST_CASE( "getting the strides of an invalid operand on an array_access_layout 
     const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 0UL, xmipp4::numerical_type::uint32);
+    implementation->add_operand(extents, strides, 0UL);
     array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 
@@ -134,26 +113,11 @@ TEST_CASE( "getting the offset of an invalid operand in an array_access_layout s
     const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 1234UL, xmipp4::numerical_type::uint32);
+    implementation->add_operand(extents, strides, 1234UL);
     array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 
         layout.get_offset(1),
-		std::out_of_range
-	);
-}
-
-TEST_CASE( "getting the data type of an invalid operand in an array_access_layout should throw", "[array_access_layout]" )
-{
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
-    auto implementation = 
-        std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand(extents, strides, 1234UL, xmipp4::numerical_type::uint32);
-    array_access_layout layout(std::move(implementation));
-
-	REQUIRE_THROWS_AS( 
-        layout.get_data_type(1),
 		std::out_of_range
 	);
 }

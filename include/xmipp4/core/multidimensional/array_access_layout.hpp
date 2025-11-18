@@ -3,7 +3,6 @@
 #pragma once
 
 #include "../span.hpp"
-#include "../numerical_type.hpp"
 
 #include <memory>
 
@@ -79,17 +78,6 @@ public:
      * @throws std::out_of_range if operand index is out of range.
      */
     std::ptrdiff_t get_offset(std::size_t operand) const;
-
-    /**
-     * @brief Get the data type of an operand.
-     * 
-     * @param operand The index of the operand. Must be in 
-     * [0, number_of_operands())
-     * @return numerical_type Data type of the requested operand.
-     * 
-     * @throws std::out_of_range if operand index is out of range.
-     */
-    numerical_type get_data_type(std::size_t operand) const;
 
     /**
      * @brief Get a pointer to the implementation.

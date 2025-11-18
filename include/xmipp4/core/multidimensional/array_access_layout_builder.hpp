@@ -5,7 +5,6 @@
 #include "array_access_layout_build_flags.hpp"
 #include "array_access_layout.hpp"
 #include "../span.hpp"
-#include "../numerical_type.hpp"
 
 #include <memory>
 
@@ -51,9 +50,7 @@ public:
      * @param extents Extents of the iteration space.
      * @return array_access_layout_builder& A reference to *this.
      */
-    array_access_layout_builder& set_extents(
-        std::vector<std::size_t> extents
-    );
+    array_access_layout_builder& set_extents(std::vector<std::size_t> extents);
 
     /**
      * @brief Add an operand to the layout.
@@ -66,13 +63,9 @@ public:
      * iteration space is never broadcasted.
      *  
      * @param layout Layout of the operand.
-     * @param data_type Data type of the operand.
      * @return array_access_layout_builder& A reference to *this.
      */
-    array_access_layout_builder& add_operand(
-        const strided_layout &layout,
-        numerical_type data_type
-    );
+    array_access_layout_builder& add_operand(const strided_layout &layout);
 
     /**
      * @brief Build the array_access_layout from the operands contained in 

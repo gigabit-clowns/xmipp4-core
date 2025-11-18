@@ -77,17 +77,6 @@ std::ptrdiff_t array_access_layout::get_offset(std::size_t operand) const
     return m_implementation->get_offset(operand);
 }
 
-numerical_type array_access_layout::get_data_type(std::size_t operand) const
-{
-    if (!m_implementation)
-    {
-        const array_access_layout_implementation implementation;
-        return implementation.get_data_type(operand); // throws
-    }
-
-    return m_implementation->get_data_type(operand);
-}
-
 const array_access_layout_implementation*
 array_access_layout::get_implementation() const noexcept
 {

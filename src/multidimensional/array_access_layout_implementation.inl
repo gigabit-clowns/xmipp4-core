@@ -103,7 +103,7 @@ void array_access_layout_implementation::coalesce_contiguous_axes()
             }
             else
             {
-                m_extents[prev] *= m_extents[curr]; // TODO write on the operand
+                m_extents[prev] *= m_extents[curr];
             }
 
         }

@@ -2,13 +2,13 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
+#include <trompeloeil/sequence.hpp>
 
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with windows
 
 #include "mock/mock_memory_allocator_backend.hpp"
 #include "mock/mock_memory_allocator.hpp"
@@ -48,8 +48,6 @@ TEST_CASE( "creating a allocator from a default initialized memory_allocator_man
 	);
 }
 
-#if !XMIPP4_MSVC // FIXME IN_SEQUENCE does not work with windows
-
 TEST_CASE( "memory_allocator_manager should use the most suitable backend", "[memory_allocator_backend]" )
 {
     memory_allocator_manager manager;
@@ -81,8 +79,6 @@ TEST_CASE( "memory_allocator_manager should use the most suitable backend", "[me
 
     REQUIRE( manager.create_memory_allocator(resource) == allocator );
 }
-
-#endif // !XMIPP4_MSVC
 
 TEST_CASE( "memory_allocator_manager should throw when there is no supported backend", "[memory_allocator_backend]" )
 {

@@ -6,7 +6,6 @@
 #include <hardware/caching_memory_allocator/memory_block_deferred_release.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
-#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with MSVC
 
 #include "../mock/mock_device.hpp"
 #include "../mock/mock_device_queue.hpp"
@@ -61,8 +60,6 @@ TEST_CASE( "deferring a release in memory_block_deferred_release with a null que
 		Catch::Matchers::Message("nullptr queue was provided")
 	);
 }
-
-#if !XMIPP4_MSVC // FIXME: For some reason IN_SEQUENCE does not work with MSVC
 
 TEST_CASE( "deferring a release in memory_block_deferred_release should create and signal an event per queue", "[caching_memory_allocator]" )
 {
@@ -284,5 +281,3 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
         REQUIRE( ite->second.is_free() );
     }
 }
-
-#endif // !XMIPP4_MSVC

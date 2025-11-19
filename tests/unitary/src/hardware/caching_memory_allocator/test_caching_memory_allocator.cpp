@@ -8,7 +8,6 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
-#include <xmipp4/core/platform/compiler.h> // FIXME IN_SEQUENCE does not work with MSVC
 
 #include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_memory_resource.hpp"
@@ -126,8 +125,6 @@ TEST_CASE( "requesting an over-aligned buffer from caching_memory_allocator shou
 	);
 }
 
-#if !XMIPP4_MSVC // FIXME IN_SEQUENCE not working with MSVC
-
 TEST_CASE( "requesting a buffer from caching_allocator should retry after freeing resources when an allocation fails", "[caching_memory_allocator_backend]" )
 {
     const std::size_t max_alignment = 256;
@@ -183,8 +180,6 @@ TEST_CASE( "requesting a buffer from caching_allocator should retry after freein
         allocator.allocate(request_size_step+1, 32, nullptr);
     }
 }
-
-#endif // !XMIPP4_MSVC
 
 TEST_CASE( "requesting a buffer from caching_allocator should throw when allocation fails repeatedly", "[caching_memory_allocator_backend]" )
 {

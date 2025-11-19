@@ -24,6 +24,15 @@ target_link_libraries(
 		trompeloeil::trompeloeil
 )
 
+# HACK: Required for TROMPELOEIL_COUNT() to work with MSVC
+if(MSVC)
+	target_compile_options(
+		${TESTS_NAME}
+		PRIVATE
+			/Zc:preprocessor 
+	)
+endif()
+
 # On windows targets, copy the library to the test directory
 if(WIN32)
 	add_custom_command(TARGET ${TESTS_NAME}

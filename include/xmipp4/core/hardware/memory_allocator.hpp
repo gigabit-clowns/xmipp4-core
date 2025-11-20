@@ -45,10 +45,20 @@ public:
     memory_resource& get_memory_resource() const noexcept = 0;
 
     /**
+     * @brief Get the maximum alignment allowed for buffers.
+     * 
+     * @return std::size_t The maximum alignment in bytes.
+     * @note This value may be different from the maximum alignment allowed
+     * by the underlying memory_resource.
+     */
+    virtual std::size_t get_max_alignment() const noexcept = 0;
+
+    /**
      * @brief Allocate a buffer of given size and alignment.
      * 
      * @param size Size in bytes.
-     * @param alignment Alignment in bytes. Must be a power of two.
+     * @param alignment Alignment in bytes. Must be a power of two and smaller
+     * or equal than the value returned by get_max_alignment().
      * @param queue Optional device_queue where the allocation is dispatched.
      * If provided, the allocation may be asynchronous with respect to the
      * host. The queue must be associated to the same device as the memory

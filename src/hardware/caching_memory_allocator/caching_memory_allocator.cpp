@@ -63,6 +63,11 @@ memory_resource& caching_memory_allocator::get_memory_resource() const noexcept
     return m_resource;
 }
 
+std::size_t caching_memory_allocator::get_max_alignment() const noexcept
+{
+    return m_maximum_alignment;
+}
+
 std::shared_ptr<buffer> caching_memory_allocator::allocate(
     std::size_t size, 
     std::size_t alignment, 

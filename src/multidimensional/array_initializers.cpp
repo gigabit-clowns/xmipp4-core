@@ -6,6 +6,7 @@
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/logger.hpp>
 
 namespace xmipp4 
@@ -38,6 +39,17 @@ array* check_output_array(array *out, hardware::memory_allocator &allocator)
     }
 
     return out;
+}
+
+static std::size_t get_alignment_requirement(
+    const hardware::memory_allocator &allocator,
+    std::size_t size
+)
+{
+    size = binary::bit_ceil(size);
+    const std::size_t max_alignment = allocator.get_max_alignment();
+    const std::size_t preferred_alignment = 256; // TODO: query device for preferred alignment
+    return std::min(std::min(max_alignment, preferred_alignment), size);
 }
 
 array empty(
@@ -78,7 +90,10 @@ array empty(
     // Allocate new storage if needed.
     if (!storage)
     {
-        const std::size_t alignment = 64; // TODO determine
+        const auto alignment = get_alignment_requirement(
+            allocator, 
+            storage_requirement
+        );
         storage = allocator.allocate(
             storage_requirement,
             alignment,

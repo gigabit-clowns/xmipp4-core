@@ -243,7 +243,7 @@ inline
 strided_layout_implementation::strided_layout_implementation(
     const strided_axis_vector_type &axes,
     std::ptrdiff_t offset 
-) noexcept
+)
     : m_axes(axes)
     , m_offset(offset)
 {

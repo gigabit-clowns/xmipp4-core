@@ -44,6 +44,8 @@ public:
         std::ptrdiff_t offset
     );
 
+    const array_access_layout_operand& get_operand(std::size_t index) const ;
+
     void sort_axes_by_locality();
 
     void coalesce_contiguous_axes();

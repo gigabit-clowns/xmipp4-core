@@ -96,13 +96,12 @@ TEST_CASE( "adding a non broadcastable operand to an initialized array_access_la
     std::vector<std::size_t> extents = {20, 6, 12, 12};
     builder.set_extents(xmipp4::make_span(extents));
 
-
     std::vector<std::size_t> layout_extents = {8};
     auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
 
 	REQUIRE_THROWS_AS( 
         builder.add_operand(layout),
-		broadcast_error
+		std::invalid_argument
 	);
 }
 

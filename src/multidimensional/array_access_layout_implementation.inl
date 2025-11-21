@@ -43,6 +43,18 @@ void array_access_layout_implementation::add_operand(
 }
 
 inline
+const array_access_layout_operand& 
+array_access_layout_implementation::get_operand(std::size_t index) const
+{
+    if (index >= m_operands.size())
+    {
+        throw std::out_of_range("Operand index is out of range");
+    }
+
+    return m_operands[index];
+}
+
+inline
 void array_access_layout_implementation::insert_largest_stride(
     span<std::size_t> permutation,
     std::size_t i
@@ -142,14 +154,14 @@ inline
 span<const std::ptrdiff_t> 
 array_access_layout_implementation::get_strides(std::size_t operand) const
 {
-    return m_operands.at(operand).get_strides();
+    return get_operand(operand).get_strides();
 }
 
 inline
 std::ptrdiff_t 
 array_access_layout_implementation::get_offset(std::size_t operand) const
 {
-    return m_operands.at(operand).get_offset();
+    return get_operand(operand).get_offset();
 }
 
 inline

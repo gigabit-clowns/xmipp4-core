@@ -52,6 +52,11 @@ private:
     std::vector<std::size_t> m_extents;
     std::vector<array_access_layout_operand> m_operands;
 
+    void insert_largest_stride(
+        std::vector<std::size_t> &permutation,
+        std::size_t i
+    );
+
     int compare_strides(std::size_t i, std::size_t j) noexcept;
 
     void swap_axes(std::size_t i, std::size_t j) noexcept;

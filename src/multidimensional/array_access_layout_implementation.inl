@@ -38,6 +38,33 @@ void array_access_layout_implementation::add_operand(
 }
 
 inline
+void array_access_layout_implementation::insert_largest_stride(
+    std::vector<std::size_t> &permutation,
+    std::size_t i
+)
+{
+    const auto index1 = i;
+    for (std::size_t j = 1; j <= i; ++j)
+    {
+        const auto index0 = i - j;
+        const auto comparison = compare_strides(
+            permutation[index0], 
+            permutation[index1]
+        );
+
+        if (comparison > 0)
+        {
+            std::swap(permutation[index0], permutation[index1]);
+            j = 0;
+        } 
+        else if (comparison < 0) 
+        {
+            break;
+        }
+    }
+}
+
+inline
 void array_access_layout_implementation::sort_axes_by_locality()
 {
     const auto n = m_extents.size();
@@ -57,25 +84,7 @@ void array_access_layout_implementation::sort_axes_by_locality()
     // Insertion sort with support for ambiguous comparisons
     for (std::size_t i = 1; i < n; ++i)
     {
-        const auto index1 = i;
-        for (std::size_t j = 1; j <= i; ++j)
-        {
-            const auto index0 = i - j;
-            const auto comparison = compare_strides(
-                permutation[index0], 
-                permutation[index1]
-            );
-
-            if (comparison > 0)
-            {
-                std::swap(permutation[index0], permutation[index1]);
-                j = 0;
-            } 
-            else if (comparison < 0) 
-            {
-                break;
-            }
-        }
+        insert_largest_stride(permutation, i);
     }
 
     permute_axes(std::move(permutation));

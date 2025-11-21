@@ -3,6 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/multidimensional/dynamic_subscript.hpp>
+#include <xmipp4/core/span.hpp>
 
 #include "strided_axis.hpp"
 #include "../config.hpp"
@@ -25,7 +26,7 @@ public:
     strided_layout_implementation() = default;
 
     strided_layout_implementation(
-        strided_axis_vector_type &&axes,
+        const strided_axis_vector_type &axes,
         std::ptrdiff_t offset 
     );   
     
@@ -75,4 +76,4 @@ private:
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "strided_layout_implementation.hpp"
+#include "strided_layout_implementation.inl"

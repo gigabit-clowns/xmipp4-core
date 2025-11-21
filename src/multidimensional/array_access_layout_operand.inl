@@ -43,10 +43,8 @@ int array_access_layout_operand::compare_strides(
     {
         return 0;
     }
-    else
-    {
-        return static_cast<int>(stride_i - stride_j);
-    }
+    
+    return static_cast<int>(stride_i - stride_j);
 }
 
 inline

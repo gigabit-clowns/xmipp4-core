@@ -275,16 +275,14 @@ void array_access_layout_implementation::broadcast_operand(
     {
         if (m_extents[i] != extents[i])
         {
-            if (extents[i] == 1)
-            {
-                // Broadcast axis
-                extents[i] = m_extents[i];
-                strides[i] = 0;
-            }
-            else
+            if (extents[i] != 1)
             {
                 throw broadcast_error(m_extents, extents);
             }
+
+            // Broadcast axis
+            extents[i] = m_extents[i];
+            strides[i] = 0;
         }
 
         XMIPP4_ASSERT( m_extents[i] == extents[i] );

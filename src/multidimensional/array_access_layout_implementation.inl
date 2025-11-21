@@ -101,7 +101,6 @@ void array_access_layout_implementation::sort_axes_by_locality()
         [n = n]() mutable { return --n; }
     );
 
-
     // Insertion sort with support for ambiguous comparisons
     for (std::size_t i = 1; i < n; ++i)
     {

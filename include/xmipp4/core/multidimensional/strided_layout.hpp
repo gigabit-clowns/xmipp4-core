@@ -15,6 +15,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
+class strided_layout_implementation;
+
 class strided_layout
 {
 public:
@@ -164,6 +166,16 @@ public:
     strided_layout broadcast_to(span<const std::size_t> extents) const;
 
     /**
+     * @brief Get the implementation of this layout.
+     * 
+     * @return const strided_layout_implementation* The implementation pointer.
+     *
+     * @note The implementation class is not part of the public API. This method
+     * is provided for internal use and testing purposes.
+     */
+    const strided_layout_implementation* get_implementation() const noexcept;
+
+    /**
      * @brief Create a contiguous layout from the provided extents.
      * 
      * @param extents Extents of the layout.
@@ -182,13 +194,15 @@ public:
     );
 
 private:
-    class implementation;
-    std::shared_ptr<const implementation> m_implementation; // Copy-on-write
+    // Copy-on-write implementation
+    std::shared_ptr<const strided_layout_implementation> m_implementation; 
 
     explicit 
-    strided_layout(std::shared_ptr<const implementation> impl) noexcept;
+    strided_layout(
+        std::shared_ptr<const strided_layout_implementation> impl
+    ) noexcept;
     explicit 
-    strided_layout(implementation &&impl);
+    strided_layout(strided_layout_implementation &&impl);
 
 };
 

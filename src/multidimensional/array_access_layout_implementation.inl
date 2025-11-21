@@ -2,6 +2,11 @@
 
 #include "array_access_layout_operand.hpp"
 
+#include <xmipp4/core/platform/assert.hpp>
+
+#include <numeric>
+#include <sstream>
+
 /**
  * Some of the algorithms and data structured featured in this code are based 
  * on:
@@ -16,16 +21,16 @@ namespace multidimensional
 
 inline
 array_access_layout_implementation::array_access_layout_implementation(
-    std::vector<std::size_t> extents
+    const extent_vector_type &extents
 )
-    : m_extents(std::move(extents))
+    : m_extents(extents)
 {
 }
 
 inline
 void array_access_layout_implementation::add_operand(
-    std::vector<std::size_t> extents,
-    std::vector<std::ptrdiff_t> strides,
+    extent_vector_type &extents,
+    stride_vector_type &strides,
     std::ptrdiff_t offset
 )
 {
@@ -39,7 +44,7 @@ void array_access_layout_implementation::add_operand(
 
 inline
 void array_access_layout_implementation::insert_largest_stride(
-    std::vector<std::size_t> &permutation,
+    span<std::size_t> permutation,
     std::size_t i
 )
 {
@@ -74,20 +79,24 @@ void array_access_layout_implementation::sort_axes_by_locality()
     }
 
     // Start with reversed indices n-1, n-2 ... 1, 0
-    std::vector<std::size_t> permutation(n);
+    boost::container::small_vector<
+        std::size_t, XMIPP4_SMALL_AXIS_COUNT
+    > permutation(n);
+    const auto permutation_view = span<std::size_t>(permutation.data(), n);
     std::generate(
         permutation.begin(), 
         permutation.end(), 
         [n = n]() mutable { return --n; }
     );
 
+
     // Insertion sort with support for ambiguous comparisons
     for (std::size_t i = 1; i < n; ++i)
     {
-        insert_largest_stride(permutation, i);
+        insert_largest_stride(permutation_view, i);
     }
 
-    permute_axes(std::move(permutation));
+    permute_axes(permutation_view);
 }
 
 inline
@@ -126,7 +135,7 @@ inline
 span<const std::size_t> 
 array_access_layout_implementation::get_extents() const noexcept
 {
-    return make_span(m_extents);
+    return span<const std::size_t>(m_extents.data(), m_extents.size());
 }
 
 inline
@@ -177,7 +186,7 @@ void array_access_layout_implementation::swap_axes(
 
 inline
 void array_access_layout_implementation::permute_axes(
-    std::vector<std::size_t> permutation
+    span<std::size_t> permutation
 )
 {
     // Permute the extents using cycle decomposition
@@ -251,8 +260,8 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 
 inline
 void array_access_layout_implementation::broadcast_operand(
-    std::vector<std::size_t> &extents,
-    std::vector<std::ptrdiff_t> &strides
+    extent_vector_type &extents,
+    stride_vector_type &strides
 )
 {
     const auto n = m_extents.size();
@@ -277,7 +286,9 @@ void array_access_layout_implementation::broadcast_operand(
         {
             if (extents[i] != 1)
             {
-                throw broadcast_error(m_extents, extents);
+                throw std::invalid_argument(
+                    "Incompatible extents were provided for broadcasting"
+                );
             }
 
             // Broadcast axis

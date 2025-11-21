@@ -6,6 +6,7 @@
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "array_access_layout_implementation.hpp"
+#include "strided_layout_implementation.hpp"
 
 namespace xmipp4 
 {
@@ -26,7 +27,7 @@ array_access_layout_builder::operator=(
 ) noexcept = default;
 
 array_access_layout_builder& array_access_layout_builder::set_extents(
-	std::vector<std::size_t> extents
+	span<const std::size_t> extents
 )
 {
 	if (m_implementation)
@@ -37,7 +38,10 @@ array_access_layout_builder& array_access_layout_builder::set_extents(
 	}
 
 	m_implementation = std::make_unique<array_access_layout_implementation>(
-		std::move(extents)
+		array_access_layout_implementation::extent_vector_type(
+			extents.begin(),
+			extents.end()
+		)
 	);
 
 	return *this;
@@ -47,11 +51,17 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout
 )
 {
-	std::vector<std::size_t> extents;
-	std::vector<std::ptrdiff_t> strides;
-	const auto offset = layout.get_offset();
-	layout.get_extents(extents);
-	layout.get_strides(strides);
+	array_access_layout_implementation::extent_vector_type extents;
+	array_access_layout_implementation::stride_vector_type strides;
+	std::ptrdiff_t offset = 0;
+
+	const auto *layout_impl = layout.get_implementation();
+	if (layout_impl)
+	{
+		offset = layout_impl->get_offset();
+		layout_impl->get_extents(extents);
+		layout_impl->get_strides(strides);
+	}
 	XMIPP4_ASSERT( extents.size() == strides.size() );
 
 	if (!m_implementation)
@@ -61,11 +71,7 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	}
 
 	XMIPP4_ASSERT( m_implementation );
-	m_implementation->add_operand(
-		std::move(extents),
-		std::move(strides),
-		offset
-	);
+	m_implementation->add_operand(extents, strides, offset);
 
 	return *this;
 }

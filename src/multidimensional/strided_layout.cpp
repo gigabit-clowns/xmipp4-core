@@ -3,15 +3,20 @@
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
 #include "strided_axis.hpp"
+#include "../config.hpp"
 
 #include <algorithm>
-#include <vector>
 #include <numeric>
+
+#include <boost/container/small_vector.hpp>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
+
+using strided_axis_vector_type = 
+    boost::container::small_vector<strided_axis, XMIPP4_SMALL_AXIS_COUNT>;
 
 template <typename ForwardIt>
 static
@@ -56,14 +61,15 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
 class apply_subscripts_helper
 {
 public:
+
     template <typename BidirIt1, typename BidirIt2>
     static
-    std::vector<strided_axis> 
+    strided_axis_vector_type 
     process(BidirIt1 first_subscript, BidirIt1 last_subscript,
             BidirIt2 first_axis, BidirIt2 last_axis,
             std::ptrdiff_t &offset )
     {
-        std::vector<strided_axis> axes; 
+        strided_axis_vector_type axes; 
 
         process_forwards(
             first_subscript, last_subscript,
@@ -81,8 +87,8 @@ private:
     void process_forwards(BidirIt1 first_subscript, BidirIt1 last_subscript,
                           BidirIt2 first_axis, BidirIt2 last_axis, 
                           std::ptrdiff_t &offset,
-                          std::vector<strided_axis> &axes,
-                          std::vector<strided_axis>::iterator head_ite )
+                          strided_axis_vector_type &axes,
+                          strided_axis_vector_type::iterator head_ite )
     {
         while (first_subscript != last_subscript)
         {
@@ -142,8 +148,8 @@ private:
     void process_backwards(BidirIt1 first_subscript, BidirIt1 last_subscript,
                            BidirIt2 first_axis, BidirIt2 last_axis, 
                            std::ptrdiff_t &offset,
-                           std::vector<strided_axis> &axes,
-                           std::vector<strided_axis>::iterator head_ite )
+                           strided_axis_vector_type &axes,
+                           strided_axis_vector_type::iterator head_ite )
     {
         while (first_subscript != last_subscript)
         {
@@ -238,7 +244,7 @@ class strided_layout::implementation
 public:
     implementation() = default;
 
-    implementation(std::vector<strided_axis> &&axes,
+    implementation(strided_axis_vector_type &&axes,
                    std::ptrdiff_t offset ) noexcept
         : m_axes(std::move(axes))
         , m_offset(offset)
@@ -361,7 +367,7 @@ public:
 
     implementation transpose() const
     {
-        std::vector<strided_axis> axes;
+        strided_axis_vector_type axes;
         axes.reserve(m_axes.size());
 
         std::reverse_copy(
@@ -377,7 +383,7 @@ public:
         const auto count = m_axes.size();
         check_axis_permutation(order.begin(), order.end(), count);
 
-        std::vector<strided_axis> axes;
+        strided_axis_vector_type axes;
         axes.reserve(count);
 
         for(std::size_t i = 0; i < count; ++i)
@@ -417,7 +423,7 @@ public:
             std::swap(index1, index2); // Sort
         }
 
-        std::vector<strided_axis> axes;
+        strided_axis_vector_type axes;
         axes.reserve(n - 1);
         XMIPP4_ASSERT(index1 < index2);
         std::copy(
@@ -449,7 +455,7 @@ public:
 
     implementation squeeze() const
     {
-        std::vector<strided_axis> axes;
+        strided_axis_vector_type axes;
 
         std::copy_if(
             m_axes.cbegin(), m_axes.cend(),
@@ -490,7 +496,7 @@ public:
             throw std::invalid_argument(oss.str());
         }
 
-        std::vector<strided_axis> axes;
+        strided_axis_vector_type axes;
         axes.reserve(extents.size());
         
         const std::size_t padding = extents.size() - m_axes.size();
@@ -521,7 +527,7 @@ public:
     }
 
 private:
-    std::vector<strided_axis> m_axes;
+    strided_axis_vector_type m_axes;
     std::ptrdiff_t m_offset;
 
 };
@@ -753,7 +759,7 @@ strided_layout strided_layout::make_contiguous_layout(
         return strided_layout(); // Empty layout
     }
 
-    std::vector<strided_axis> axes;
+    strided_axis_vector_type axes;
     axes.reserve(extents.size());
     std::transform(
         extents.begin(), extents.end(),
@@ -794,7 +800,7 @@ strided_layout strided_layout::make_custom_layout(
         return strided_layout(); // Empty layout
     }
 
-    std::vector<strided_axis> axes;
+    strided_axis_vector_type axes;
     axes.reserve(count);
     for (std::size_t i = 0; i < count; ++i)
     {

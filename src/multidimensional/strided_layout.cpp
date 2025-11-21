@@ -264,7 +264,7 @@ strided_layout strided_layout::make_contiguous_layout(
         stride *= ite->get_extent();
     }
 
-    return strided_layout(strided_layout_implementation(std::move(axes), 0));
+    return strided_layout(strided_layout_implementation(axes, 0));
 }
 
 XMIPP4_NODISCARD
@@ -295,7 +295,7 @@ strided_layout strided_layout::make_custom_layout(
     }
 
     return strided_layout(
-        strided_layout_implementation(std::move(axes), offset)
+        strided_layout_implementation(axes, offset)
     );
 }
 

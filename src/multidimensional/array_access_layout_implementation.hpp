@@ -4,11 +4,9 @@
 
 #include "array_access_layout_operand.hpp"
 
-#include <xmipp4/core/multidimensional/broadcast_error.hpp>
+#include "../config.hpp"
 
-#include <vector>
-#include <numeric>
-#include <sstream>
+#include <boost/container/small_vector.hpp>
 
 /**
  * Some of the algorithms and data structured featured in this code are based 
@@ -24,17 +22,29 @@ namespace multidimensional
 
 class array_access_layout_implementation
 {
-public:
+public:    
+    using extent_vector_type = boost::container::small_vector<
+        std::size_t, 
+        XMIPP4_SMALL_AXIS_COUNT
+    >;
+    using operand_vector_type = boost::container::small_vector<
+        array_access_layout_operand, 
+        XMIPP4_SMALL_OPERAND_COUNT
+    >;
+    using stride_vector_type = array_access_layout_operand::stride_vector_type;
+
     array_access_layout_implementation() = default;
     explicit array_access_layout_implementation(
-        std::vector<std::size_t> extents
+        const extent_vector_type &extents
     );
 
     void add_operand(
-        std::vector<std::size_t> extents,
-        std::vector<std::ptrdiff_t> strides,
+        extent_vector_type &extents,
+        stride_vector_type &strides,
         std::ptrdiff_t offset
     );
+
+    const array_access_layout_operand& get_operand(std::size_t index) const ;
 
     void sort_axes_by_locality();
 
@@ -49,11 +59,11 @@ public:
     std::ptrdiff_t get_offset(std::size_t operand) const;
 
 private:
-    std::vector<std::size_t> m_extents;
-    std::vector<array_access_layout_operand> m_operands;
+    extent_vector_type m_extents;
+    operand_vector_type m_operands;
 
     void insert_largest_stride(
-        std::vector<std::size_t> &permutation,
+        span<std::size_t> permutation,
         std::size_t i
     );
 
@@ -61,7 +71,7 @@ private:
 
     void swap_axes(std::size_t i, std::size_t j) noexcept;
 
-    void permute_axes(std::vector<std::size_t> permutation);
+    void permute_axes(span<std::size_t> permutation);
 
     bool try_coalesce_axes(std::size_t i, std::size_t j);
 
@@ -70,8 +80,8 @@ private:
     void trim_axes(std::size_t n);
 
     void broadcast_operand(
-        std::vector<std::size_t> &extents,
-        std::vector<std::ptrdiff_t> &strides
+        extent_vector_type &extents,
+        stride_vector_type &strides
     );
 
 };

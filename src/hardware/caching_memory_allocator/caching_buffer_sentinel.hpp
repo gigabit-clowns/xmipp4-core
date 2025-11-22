@@ -5,11 +5,13 @@
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
 
 #include "memory_block_pool.hpp"
+#include "../../config.hpp"
 
 #include <xmipp4/core/span.hpp>
 
 #include <vector>
 #include <boost/container/flat_set.hpp>
+#include <boost/container/small_vector.hpp>
 
 namespace xmipp4 
 {
@@ -47,9 +49,14 @@ public:
     void record_queue(device_queue &queue, bool exclusive) override;
 
 private:
+    using queue_set_type = boost::container::small_flat_set<
+        device_queue*, 
+        XMIPP4_SMALL_QUEUE_COUNT
+    >;
+
     std::reference_wrapper<caching_memory_allocator> m_allocator;
     memory_block_pool::iterator m_block;
-    boost::container::flat_set<device_queue*> m_queues;
+    queue_set_type m_queues;
 
 };
 

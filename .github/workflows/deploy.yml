@@ -112,7 +112,7 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-activate-base: true
+          auto-activate: true
           activate-environment: "" # Base is required for conda-build
 
       - name: Install conda-build and conda-verify

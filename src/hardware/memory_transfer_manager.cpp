@@ -21,113 +21,110 @@ namespace hardware
 class memory_transfer_manager::implementation
 {
 public:
-    bool register_backend(
-        std::unique_ptr<memory_transfer_backend> backend
-    )
-    {
-        if (!backend)
-        {
-            return false;
-        }
+	bool register_backend(
+		std::unique_ptr<memory_transfer_backend> backend
+	)
+	{
+		if (!backend)
+		{
+			return false;
+		}
 
-        m_backends.push_back(std::move(backend));
-        m_cache.clear(); // Invalidate cache
+		m_backends.push_back(std::move(backend));
+		m_cache.clear(); // Invalidate cache
 
-        return true;
-    }
+		return true;
+	}
 
-    std::shared_ptr<memory_transfer> create_transfer(
-        const memory_resource& src,
-        const memory_resource& dst
-    )
-    {
-        const memory_transfer_key key(src, dst);
-        const auto ite = m_cache.find(key);
-        if (ite != m_cache.end())
-        {
-            XMIPP4_ASSERT( ite->second );
-            return ite->second;
-        }
+	std::shared_ptr<memory_transfer> create_transfer(
+		const memory_resource& src,
+		const memory_resource& dst
+	)
+	{
+		const memory_transfer_key key(src, dst);
+		const auto ite = m_cache.find(key);
+		if (ite != m_cache.end())
+		{
+			XMIPP4_ASSERT( ite->second );
+			return ite->second;
+		}
 
-        const auto backend = find_most_suitable_backend(
-            m_backends.cbegin(), m_backends.cend(),
-            [&src, &dst] (const auto &backend_ref)
-            {
-                XMIPP4_ASSERT(backend_ref);
-                return backend_ref->get_suitability(src, dst);
-            }
-        );
+		const auto backend = find_most_suitable_backend(
+			m_backends.cbegin(), m_backends.cend(),
+			[&src, &dst] (const auto &backend_ref)
+			{
+				XMIPP4_ASSERT(backend_ref);
+				return backend_ref->get_suitability(src, dst);
+			}
+		);
 
-        if (backend == m_backends.cend())
-        {
-            throw invalid_operation_error(
-                "No backend supports the requested transfer."
-            );
-        }
+		if (backend == m_backends.cend())
+		{
+			throw invalid_operation_error(
+				"No backend supports the requested transfer."
+			);
+		}
 
-        const auto transfer = (*backend)->create_transfer(src, dst);
-        m_cache.emplace(key, transfer);
-        return transfer;
-    }
+		const auto transfer = (*backend)->create_transfer(src, dst);
+		m_cache.emplace(key, transfer);
+		return transfer;
+	}
 
 private:
-    std::vector<std::unique_ptr<memory_transfer_backend>> m_backends;
-    std::unordered_map<
-        memory_transfer_key, 
-        std::shared_ptr<memory_transfer>
-    > m_cache;
-
+	std::vector<std::unique_ptr<memory_transfer_backend>> m_backends;
+	std::unordered_map<
+		memory_transfer_key, 
+		std::shared_ptr<memory_transfer>
+	> m_cache;
 };
-
-
 
 memory_transfer_manager::memory_transfer_manager() noexcept = default;
 
 memory_transfer_manager::memory_transfer_manager(
-    memory_transfer_manager &&other
+	memory_transfer_manager &&other
 ) noexcept = default;
 
 memory_transfer_manager::~memory_transfer_manager() = default;
 
 memory_transfer_manager&
 memory_transfer_manager::operator=(
-    memory_transfer_manager &&other
+	memory_transfer_manager &&other
 ) noexcept = default;
 
 void memory_transfer_manager::register_builtin_backends()
 {
-    host_memory_transfer_backend::register_at(*this);
+	host_memory_transfer_backend::register_at(*this);
 }
 
 bool memory_transfer_manager::register_backend(
-    std::unique_ptr<memory_transfer_backend> backend
+	std::unique_ptr<memory_transfer_backend> backend
 )
 {
-    create_implementation_if_null();
-    return m_implementation->register_backend(std::move(backend));
+	create_implementation_if_null();
+	return m_implementation->register_backend(std::move(backend));
 }
 
 std::shared_ptr<memory_transfer> memory_transfer_manager::create_transfer(
-    const memory_resource& src,
-    const memory_resource& dst
+	const memory_resource& src,
+	const memory_resource& dst
 )
 {
-    if (!m_implementation)
-    {
-        throw invalid_operation_error(
-            "No backends were registered."
-        );
-    }
+	if (!m_implementation)
+	{
+		throw invalid_operation_error(
+			"No backends were registered."
+		);
+	}
 
-    return m_implementation->create_transfer(src, dst);
+	return m_implementation->create_transfer(src, dst);
 }
 
 void memory_transfer_manager::create_implementation_if_null()
 {
-    if (!m_implementation)
-    {
-        m_implementation = std::make_unique<implementation>();
-    }
+	if (!m_implementation)
+	{
+		m_implementation = std::make_unique<implementation>();
+	}
 }
 
 } // namespace hardware

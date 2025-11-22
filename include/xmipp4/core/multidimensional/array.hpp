@@ -229,7 +229,6 @@ private:
 
 	explicit array(std::shared_ptr<implementation> impl) noexcept;
 	explicit array(implementation &&impl);
-
 };
 
 } // namespace multidimensional

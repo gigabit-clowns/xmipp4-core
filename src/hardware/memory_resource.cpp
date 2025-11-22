@@ -11,7 +11,7 @@ namespace hardware
 
 memory_resource& get_host_memory_resource() noexcept
 {
-    return host_memory_resource::get();
+	return host_memory_resource::get();
 }
 
 } // namespace hardware

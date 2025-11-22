@@ -57,7 +57,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const byte& b);
 template <>
 struct std::hash<xmipp4::memory::byte>
 {
-    XMIPP4_CONSTEXPR size_t operator()(xmipp4::memory::byte b) const noexcept;
+	XMIPP4_CONSTEXPR size_t operator()(xmipp4::memory::byte b) const noexcept;
 };
 
 #include "byte.inl"

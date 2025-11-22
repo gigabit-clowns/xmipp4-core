@@ -51,7 +51,6 @@ public:
 		span<const copy_region> regions, 
 		device_queue *queue
 	) const = 0;
-
 }; 
 
 } // namespace hardware

@@ -9,7 +9,7 @@
  * 
  */
 #if defined(__has_feature)
-    #define XMIPP4_HAS_C_FEATURE(feature) __has_feature(feature)
+	#define XMIPP4_HAS_C_FEATURE(feature) __has_feature(feature)
 #else
-    #define XMIPP4_HAS_C_FEATURE(feature) 0
+	#define XMIPP4_HAS_C_FEATURE(feature) 0
 #endif

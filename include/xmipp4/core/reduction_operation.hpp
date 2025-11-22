@@ -17,10 +17,10 @@ namespace xmipp4
  */
 enum class reduction_operation
 {
-    sum, ///< Add all the elements of the vector.
-    product, ///< Multiply all the elements of the vector.
-    min, ///< Keep the smallest element of the vector.
-    max ///< Keep the largest element of the vector.
+	sum, ///< Add all the elements of the vector.
+	product, ///< Multiply all the elements of the vector.
+	min, ///< Keep the smallest element of the vector.
+	max ///< Keep the largest element of the vector.
 };
 
 

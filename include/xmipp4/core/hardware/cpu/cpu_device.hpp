@@ -19,23 +19,22 @@ class cpu_memory_resource;
  * 
  */
 class cpu_device final
-    : public device
+	: public device
 {
 public:
-    cpu_device() = default;
-    ~cpu_device() override = default;
+	cpu_device() = default;
+	~cpu_device() override = default;
 
-    void enumerate_memory_resources(
-        std::vector<memory_resource*> &resources
-    ) override;
+	void enumerate_memory_resources(
+			std::vector<memory_resource*> &resources
+	) override;
 
-    std::shared_ptr<device_queue> create_device_queue() override;
+	std::shared_ptr<device_queue> create_device_queue() override;
 
-    std::shared_ptr<device_event> create_device_event() override;
+	std::shared_ptr<device_event> create_device_event() override;
 
-    std::shared_ptr<device_to_host_event> 
-    create_device_to_host_event() override;
-
+	std::shared_ptr<device_to_host_event> 
+	create_device_to_host_event() override;
 }; 
 
 } // namespace hardware

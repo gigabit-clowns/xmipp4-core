@@ -97,7 +97,6 @@ private:
 	std::string m_name;
 	std::string m_physical_location;
 	std::size_t m_total_memory_bytes;
-
 };
 
 } // namespace hardware

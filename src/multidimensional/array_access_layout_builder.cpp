@@ -95,7 +95,6 @@ array_access_layout array_access_layout_builder::build(
 			array_access_layout_build_flag_bits::enable_coalescing
 		);
 
-
 		if (enable_reordering)
 		{
 			m_implementation->sort_axes_by_locality();

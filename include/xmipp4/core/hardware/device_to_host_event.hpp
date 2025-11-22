@@ -57,7 +57,6 @@ public:
 	 * 
 	 */
 	virtual void wait() const = 0;
-
 }; 
 
 } // namespace hardware

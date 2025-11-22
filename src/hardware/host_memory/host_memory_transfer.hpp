@@ -10,19 +10,18 @@ namespace hardware
 {
 
 class host_memory_transfer final
-    : public memory_transfer
+	: public memory_transfer
 {
 public:
-    host_memory_transfer() = default;
-    ~host_memory_transfer() override = default;
+	host_memory_transfer() = default;
+	~host_memory_transfer() override = default;
 
-    void copy(
-        const buffer &source, 
-        buffer &destination,
-        span<const copy_region> regions, 
-        device_queue *queue
-    ) const override;
-    
+	void copy(
+		const buffer &source, 
+		buffer &destination,
+		span<const copy_region> regions, 
+		device_queue *queue
+	) const override;
 };
 
 } // namespace hardware

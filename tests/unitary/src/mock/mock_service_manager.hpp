@@ -10,11 +10,10 @@ namespace xmipp4
 {
 
 class mock_service_manager final
-    : public service_manager
+	: public service_manager
 {
 public:
-    MAKE_MOCK0(register_builtin_backends, void(), override);
-
+	MAKE_MOCK0(register_builtin_backends, void(), override);
 };
 
 } // namespace xmipp4

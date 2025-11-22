@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION PROJECT_VERSION)
 string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
 project(
-  xmipp4-core
+	xmipp4-core
 	VERSION ${PROJECT_VERSION}
 	LANGUAGES C CXX
 )

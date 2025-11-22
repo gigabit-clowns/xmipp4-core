@@ -20,53 +20,53 @@ class service_catalog;
 class plugin_manager
 {
 public:
-    XMIPP4_CORE_API plugin_manager();
-    plugin_manager(const plugin_manager& other) = delete;
-    XMIPP4_CORE_API plugin_manager(plugin_manager&& other) noexcept;
-    XMIPP4_CORE_API ~plugin_manager();
+	XMIPP4_CORE_API plugin_manager();
+	plugin_manager(const plugin_manager& other) = delete;
+	XMIPP4_CORE_API plugin_manager(plugin_manager&& other) noexcept;
+	XMIPP4_CORE_API ~plugin_manager();
 
-    plugin_manager& operator=(const plugin_manager& other) = delete;
-    XMIPP4_CORE_API plugin_manager& operator=(plugin_manager&& other) noexcept;
+	plugin_manager& operator=(const plugin_manager& other) = delete;
+	XMIPP4_CORE_API plugin_manager& operator=(plugin_manager&& other) noexcept;
 
-    /**
-     * @brief Add a already loaded plugin.
-     * 
-     * @param plugin The plugin to be added.
-     */
-    XMIPP4_CORE_API void add_plugin(const plugin& plugin);
+	/**
+	 * @brief Add a already loaded plugin.
+	 * 
+	 * @param plugin The plugin to be added.
+	 */
+	XMIPP4_CORE_API void add_plugin(const plugin& plugin);
 
-    /**
-     * @brief Load a plugin from a Shared Object and add it.
-     * 
-     * The path to the shared object can be provided without a extension,
-     * in which case it will be inferred from the platform. Relative paths
-     * will be searched in LD_LIBRARY_PATH.
-     * 
-     * @param path Path to the plugin. 
-     * @return const plugin* The loaded plugin. nullptr if it could not be 
-     * loaded.
-     */
-    XMIPP4_CORE_API const plugin* load_plugin(const std::string &path);
+	/**
+	 * @brief Load a plugin from a Shared Object and add it.
+	 * 
+	 * The path to the shared object can be provided without a extension,
+	 * in which case it will be inferred from the platform. Relative paths
+	 * will be searched in LD_LIBRARY_PATH.
+	 * 
+	 * @param path Path to the plugin. 
+	 * @return const plugin* The loaded plugin. nullptr if it could not be 
+	 * loaded.
+	 */
+	XMIPP4_CORE_API const plugin* load_plugin(const std::string &path);
 
-    /**
-     * @brief Get the number of plugins known by this manager.
-     * 
-     * @return std::size_t The number of plugins.
-     */
-    XMIPP4_CORE_API std::size_t get_plugin_count() const noexcept;
+	/**
+	 * @brief Get the number of plugins known by this manager.
+	 * 
+	 * @return std::size_t The number of plugins.
+	 */
+	XMIPP4_CORE_API std::size_t get_plugin_count() const noexcept;
 
-    /**
-     * @brief Get the i-th plugin.
-     * 
-     * @param index The index of the requested plugin. Must be less than
-     * the plugin count.
-     * @return const plugin& The requested plugin.
-     */
-    XMIPP4_CORE_API const plugin& get_plugin(std::size_t index) const;
+	/**
+	 * @brief Get the i-th plugin.
+	 * 
+	 * @param index The index of the requested plugin. Must be less than
+	 * the plugin count.
+	 * @return const plugin& The requested plugin.
+	 */
+	XMIPP4_CORE_API const plugin& get_plugin(std::size_t index) const;
 
 private:
-    class implementation;
-    std::unique_ptr<implementation> m_implementation;
+	class implementation;
+	std::unique_ptr<implementation> m_implementation;
 
 	void create_if_null();
 };
@@ -127,7 +127,9 @@ void discover_plugins(plugin_manager &manager);
  * @return std::size_t Number of plugins registered.
  */
 XMIPP4_CORE_API
-std::size_t register_all_plugins_at(const plugin_manager &manager, 
-                                    service_catalog &catalog );
+std::size_t register_all_plugins_at(
+	const plugin_manager &manager, 
+	service_catalog &catalog
+	);
 
 } // namespace xmipp4

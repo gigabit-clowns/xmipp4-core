@@ -96,7 +96,6 @@ public:
 
 private:
 	std::unique_ptr<const array_access_layout_implementation> m_implementation;
-
 };
 
 } // namespace multidimensional

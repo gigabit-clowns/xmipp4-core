@@ -13,9 +13,9 @@ namespace xmipp4
  * 
  */
 class invalid_operation_error
-    : public std::logic_error
+	: public std::logic_error
 {
-    using logic_error::logic_error;
+	using logic_error::logic_error;
 };
 
 } // namespace xmipp4

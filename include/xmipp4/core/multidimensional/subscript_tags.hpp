@@ -38,8 +38,6 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, ellipsis_tag);
 XMIPP4_CONSTEXPR
 ellipsis_tag ellipsis() noexcept;
 
-
-
 /**
  * @brief Tag to express the creation a new axis of size one.
  * 

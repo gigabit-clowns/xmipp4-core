@@ -21,10 +21,12 @@ namespace system
  * to the file. Has no effect if write access is not enabled.
  * @return void* Pointer to the mapped data.
  */
-void* memory_mapped_file_open(const char* filename, 
-                              access_flags access,
-                              std::size_t &size,
-                              bool copy_on_write );
+void* memory_mapped_file_open(
+	const char* filename, 
+	access_flags access,
+	std::size_t &size,
+	bool copy_on_write
+);
 
 /**
  * @brief Close a memory mapped file.
@@ -39,9 +41,9 @@ void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 } // namespace xmipp4
 
 #if XMIPP4_POSIX
-    #include "memory_mapped_file_handle_posix.inl"
+	#include "memory_mapped_file_handle_posix.inl"
 #elif XMIPP4_WINDOWS
-    #include "memory_mapped_file_handle_windows.inl"
+	#include "memory_mapped_file_handle_windows.inl"
 #else
-    #error "No memory_mapped_file_handle implementation available for this platform"
+	#error "No memory_mapped_file_handle implementation available for this platform"
 #endif

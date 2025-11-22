@@ -53,7 +53,6 @@ public:
 		std::size_t size,
 		std::unique_ptr<buffer_sentinel> sentinel
 	) = 0;
-
 };
 
 } // namespace hardware

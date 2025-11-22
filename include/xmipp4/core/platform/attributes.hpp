@@ -19,19 +19,17 @@
 #include "c_attributes.h"
 #include "builtin.h"
 
-
-
 /**
  * @def XMIPP4_NORETURN
  * @brief Indicates that the function does not return
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(noreturn)
-    #define XMIPP4_NORETURN XMIPP4_CPP_ATTRIBUTE(noreturn)
+	#define XMIPP4_NORETURN XMIPP4_CPP_ATTRIBUTE(noreturn)
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(noreturn)
-    #define XMIPP4_NORETURN XMIPP4_GCC_ATTRIBUTE(noreturn)
+	#define XMIPP4_NORETURN XMIPP4_GCC_ATTRIBUTE(noreturn)
 #else
-    #define XMIPP4_NORETURN
+	#define XMIPP4_NORETURN
 #endif
 
 /**
@@ -41,11 +39,11 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(fallthrough)
-    #define XMIPP4_FALLTHROUGH XMIPP4_CPP_ATTRIBUTE(fallthrough)
+	#define XMIPP4_FALLTHROUGH XMIPP4_CPP_ATTRIBUTE(fallthrough)
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(fallthrough)
-    #define XMIPP4_FALLTHROUGH XMIPP4_GCC_ATTRIBUTE(fallthrough)
+	#define XMIPP4_FALLTHROUGH XMIPP4_GCC_ATTRIBUTE(fallthrough)
 #else
-    #define XMIPP4_FALLTHROUGH
+	#define XMIPP4_FALLTHROUGH
 #endif
 
 /**
@@ -54,15 +52,15 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(deprecated)
-    #if XMIPP4_HAS_CPP14
-        #define XMIPP4_DEPRECATED(reason) XMIPP4_CPP_ATTRIBUTE(deprecated(reason))
-    #else
-        #define XMIPP4_DEPRECATED(reason) XMIPP4_CPP_ATTRIBUTE(deprecated)
-    #endif
+	#if XMIPP4_HAS_CPP14
+		#define XMIPP4_DEPRECATED(reason) XMIPP4_CPP_ATTRIBUTE(deprecated(reason))
+	#else
+		#define XMIPP4_DEPRECATED(reason) XMIPP4_CPP_ATTRIBUTE(deprecated)
+	#endif
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(deprecated)
-    #define XMIPP4_DEPRECATED XMIPP4_GCC_ATTRIBUTE(deprecated)
+	#define XMIPP4_DEPRECATED XMIPP4_GCC_ATTRIBUTE(deprecated)
 #else
-    #define XMIPP4_DEPRECATED(reason)
+	#define XMIPP4_DEPRECATED(reason)
 #endif
 
 /**
@@ -71,11 +69,11 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(nodiscard)
-    #define XMIPP4_NODISCARD XMIPP4_CPP_ATTRIBUTE(nodiscard)
+	#define XMIPP4_NODISCARD XMIPP4_CPP_ATTRIBUTE(nodiscard)
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(warn_unused_result)
-    #define XMIPP4_NODISCARD XMIPP4_GCC_ATTRIBUTE(warn_unused_result)
+	#define XMIPP4_NODISCARD XMIPP4_GCC_ATTRIBUTE(warn_unused_result)
 #else
-    #define XMIPP4_NODISCARD
+	#define XMIPP4_NODISCARD
 #endif
 
 /**
@@ -84,15 +82,15 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(nodiscard)
-    #if XMIPP4_HAS_CPP20
-        #define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_CPP_ATTRIBUTE(nodiscard(reason))
-    #else
-        #define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_CPP_ATTRIBUTE(nodiscard)
-    #endif
+	#if XMIPP4_HAS_CPP20
+		#define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_CPP_ATTRIBUTE(nodiscard(reason))
+	#else
+		#define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_CPP_ATTRIBUTE(nodiscard)
+	#endif
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(warn_unused_result)
-    #define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_GCC_ATTRIBUTE(warn_unused_result)
+	#define XMIPP4_NODISCARD_MESSAGE(reason) XMIPP4_GCC_ATTRIBUTE(warn_unused_result)
 #else
-    #define XMIPP4_NODISCARD_MESSAGE(reason)
+	#define XMIPP4_NODISCARD_MESSAGE(reason)
 #endif
 
 /**
@@ -103,11 +101,10 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(no_unique_address)
-    #define XMIPP4_NO_UNIQUE_ADDRESS XMIPP4_CPP_ATTRIBUTE(no_unique_address)
+	#define XMIPP4_NO_UNIQUE_ADDRESS XMIPP4_CPP_ATTRIBUTE(no_unique_address)
 #else
-    #define XMIPP4_NO_UNIQUE_ADDRESS
+	#define XMIPP4_NO_UNIQUE_ADDRESS
 #endif
-
 
 /**
  * @def XMIPP4_ASSUME(expr)
@@ -116,15 +113,15 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(assume)
-    #define XMIPP4_ASSUME(expr) XMIPP4_CPP_ATTRIBUTE(assume(expr))
+	#define XMIPP4_ASSUME(expr) XMIPP4_CPP_ATTRIBUTE(assume(expr))
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(assume)
-    #define XMIPP4_ASSUME(expr) XMIPP4_GCC_ATTRIBUTE(assume(expr))
+	#define XMIPP4_ASSUME(expr) XMIPP4_GCC_ATTRIBUTE(assume(expr))
 #elif XMIPP4_HAS_BUILTIN(__builtin_assume)
-    #define XMIPP4_ASSUME(expr) __builtin_assume(expr)
+	#define XMIPP4_ASSUME(expr) __builtin_assume(expr)
 #elif defined(__assume)
-    #define XMIPP4_ASSUME(expr) __assume(expr)
+	#define XMIPP4_ASSUME(expr) __assume(expr)
 #else
-    #define XMIPP4_ASSUME(expr)
+	#define XMIPP4_ASSUME(expr)
 #endif
 
 /**
@@ -133,9 +130,9 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(likely)
-    #define XMIPP4_LIKELY XMIPP4_CPP_ATTRIBUTE(likely)
+	#define XMIPP4_LIKELY XMIPP4_CPP_ATTRIBUTE(likely)
 #else
-    #define XMIPP4_LIKELY
+	#define XMIPP4_LIKELY
 #endif
 
 /**
@@ -144,7 +141,7 @@
  * 
  */
 #if XMIPP4_HAS_CPP_ATTRIBUTE(unlikely)
-    #define XMIPP4_UNLIKELY XMIPP4_CPP_ATTRIBUTE(unlikely)
+	#define XMIPP4_UNLIKELY XMIPP4_CPP_ATTRIBUTE(unlikely)
 #else
-    #define XMIPP4_UNLIKELY
+	#define XMIPP4_UNLIKELY
 #endif

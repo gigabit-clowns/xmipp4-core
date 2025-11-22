@@ -12,29 +12,29 @@ namespace hardware
 {
 
 class mock_device final
-    : public device
+	: public device
 {
 public:
-    MAKE_MOCK1(
-        enumerate_memory_resources, 
-        void(std::vector<memory_resource*>&), 
-        override
-    );
-    MAKE_MOCK0(
-        create_device_queue, 
-        std::shared_ptr<device_queue>(), 
-        override
-    );
-    MAKE_MOCK0(
-        create_device_event, 
-        std::shared_ptr<device_event>(), 
-        override
-    );
-    MAKE_MOCK0(
-        create_device_to_host_event, 
-        std::shared_ptr<device_to_host_event>(), 
-        override
-    );
+	MAKE_MOCK1(
+		enumerate_memory_resources, 
+		void(std::vector<memory_resource*>&), 
+		override
+	);
+	MAKE_MOCK0(
+		create_device_queue, 
+		std::shared_ptr<device_queue>(), 
+		override
+	);
+	MAKE_MOCK0(
+		create_device_event, 
+		std::shared_ptr<device_event>(), 
+		override
+	);
+	MAKE_MOCK0(
+		create_device_to_host_event, 
+		std::shared_ptr<device_to_host_event>(), 
+		override
+	);
 
 };
 

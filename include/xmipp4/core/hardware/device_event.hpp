@@ -11,8 +11,6 @@ namespace hardware
 
 class device_queue;
 
-
-
 /**
  * @brief Abstract class describing a device event.
  * 
@@ -50,7 +48,6 @@ public:
 	 * 
 	 */
 	virtual void wait(device_queue &queue) const = 0;
-
 }; 
 
 } // namespace hardware

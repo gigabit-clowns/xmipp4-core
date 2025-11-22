@@ -10,33 +10,32 @@ namespace hardware
 {
 
 class host_memory_resource final
-    : public memory_resource
+	: public memory_resource
 {
 public:
-    ~host_memory_resource() override = default;
+	~host_memory_resource() override = default;
 
-    device* get_target_device() const noexcept override;
+	device* get_target_device() const noexcept override;
 
-    memory_resource_kind get_kind() const noexcept override;
+	memory_resource_kind get_kind() const noexcept override;
 
-    std::size_t get_max_heap_alignment() const noexcept override;
+	std::size_t get_max_heap_alignment() const noexcept override;
 
-    std::shared_ptr<memory_heap> create_memory_heap(
-        std::size_t size,
-        std::size_t alignment
-    ) override;
+	std::shared_ptr<memory_heap> create_memory_heap(
+		std::size_t size,
+		std::size_t alignment
+	) override;
 
-    static host_memory_resource& get() noexcept;
+	static host_memory_resource& get() noexcept;
 
 private:
-    std::size_t m_max_alignment;
+	std::size_t m_max_alignment;
 
-    host_memory_resource();
-    host_memory_resource(const host_memory_resource &other) = delete; // Singleton
-    host_memory_resource(host_memory_resource &&other) = delete; // Singleton
+	host_memory_resource();
+	host_memory_resource(const host_memory_resource &other) = delete; // Singleton
+	host_memory_resource(host_memory_resource &&other) = delete; // Singleton
 
-    static host_memory_resource m_instance;
-
+	static host_memory_resource m_instance;
 };
 
 } // namespace hardware

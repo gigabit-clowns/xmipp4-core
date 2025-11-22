@@ -77,7 +77,7 @@ public:
 	 * 
 	 * @return std::shared_ptr<storage_type> The storage.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::shared_ptr<storage_type> share_storage() noexcept;
 
 	/**
@@ -85,7 +85,7 @@ public:
 	 * 
 	 * @return std::shared_ptr<const storage_type> The storage.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::shared_ptr<const storage_type> share_storage() const noexcept;
 
 	/**
@@ -113,7 +113,7 @@ public:
 	 * 
 	 * @return std::size_t The number of axes in the array.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::size_t get_rank() const noexcept;
 
 	/**
@@ -129,7 +129,7 @@ public:
 	 * 
 	 * @return array The view to this array.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array view() noexcept;
 
 	/**
@@ -140,7 +140,7 @@ public:
 	 * @throws std::invalid_argument If not all subscripts are processed.
 	 * Or subscript is out of bounds
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array apply_subscripts(span<const dynamic_subscript> subscripts);
 
 	/**
@@ -148,7 +148,7 @@ public:
 	 * 
 	 * @return array The resulting array.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array transpose();
 
 	/**
@@ -160,7 +160,7 @@ public:
 	 * @return array Permuted array.
 	 * @throws std::invalid_argument If the permutation order is invalid.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array permute(span<const std::size_t> order);
 	
 	/**
@@ -173,7 +173,7 @@ public:
 	 * @return array Permuted array.
 	 * @throws std::out_of_bounds If either axis1 or axis2 exceeds bounds.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array matrix_transpose(
 		std::ptrdiff_t axis1 = -2, 
 		std::ptrdiff_t axis2 = -1
@@ -192,7 +192,7 @@ public:
 	 * @throws std::out_of_bounds If either axis1 or axis2 exceeds bounds.
 	 * @throws std::invalid_argument if axis1 equals axis2
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array matrix_diagonal(
 		std::ptrdiff_t axis1 = -2, 
 		std::ptrdiff_t axis2 = -1
@@ -203,7 +203,7 @@ public:
 	 * 
 	 * @return array The resulting array.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array squeeze();
 
 	/**
@@ -220,7 +220,7 @@ public:
 	 * @throws std::invalid_argument If the axes cannot be broadcasted to the 
 	 * provided extents.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array broadcast_to(span<const std::size_t> extents);
 
 private:

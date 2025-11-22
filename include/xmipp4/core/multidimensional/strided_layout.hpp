@@ -41,7 +41,7 @@ public:
 	 * 
 	 * @return std::size_t 
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::size_t get_rank() const noexcept;
 
 	/**
@@ -65,7 +65,7 @@ public:
 	 * 
 	 * @return std::size_t The offset.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::ptrdiff_t get_offset() const noexcept;
 
 	/**
@@ -73,7 +73,7 @@ public:
 	 * 
 	 * @return std::size_t Minimum storage size in elements.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::size_t compute_storage_requirement() const noexcept;
 
 	/**
@@ -81,7 +81,7 @@ public:
 	 * 
 	 * @return std::size_t Number of elements.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	std::size_t compute_element_count() const noexcept;
 
 	/**
@@ -92,7 +92,7 @@ public:
 	 * @throws std::invalid_argument If not all subscripts are processed.
 	 * Or subscript is out of bounds
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout 
 	apply_subscripts(span<const dynamic_subscript> subscripts) const;
 
@@ -101,7 +101,7 @@ public:
 	 * 
 	 * @return strided_layout The resulting layout.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout transpose() const;
 
 	/**
@@ -113,7 +113,7 @@ public:
 	 * @return strided_layout Permuted layout.
 	 * @throws std::invalid_argument If the permutation order is invalid.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout permute(span<const std::size_t> order) const;
 
 	/**
@@ -124,7 +124,7 @@ public:
 	 * @return strided_layout Permuted layout.
 	 * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout matrix_transpose(
 		std::ptrdiff_t axis1 = -1, 
 		std::ptrdiff_t axis2 = -2
@@ -140,7 +140,7 @@ public:
 	 * @throws std::out_of_range If either axis1 or axis2 exceeds bounds.
 	 * @throws std::invalid_argument If axis1 and axis2 are equal.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout matrix_diagonal(
 		std::ptrdiff_t axis1 = -1, 
 		std::ptrdiff_t axis2 = -2
@@ -151,7 +151,7 @@ public:
 	 * 
 	 * @return strided_layout The resulting layout.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout squeeze() const;
 
 	/**
@@ -167,7 +167,7 @@ public:
 	 * @throws std::invalid_argument If the axes cannot be broadcasted to the 
 	 * provided extents.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	strided_layout broadcast_to(span<const std::size_t> extents) const;
 
 	/**
@@ -186,11 +186,11 @@ public:
 	 * @param extents Extents of the layout.
 	 * @return strided_layout The resulting layout.
 	 */
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	static
 	strided_layout make_contiguous_layout(span<const std::size_t> extents);
 
-	XMIPP4_CORE_API XMIPP4_NODISCARD
+	XMIPP4_NODISCARD XMIPP4_CORE_API
 	static
 	strided_layout make_custom_layout(
 		span<const std::size_t> extents, 

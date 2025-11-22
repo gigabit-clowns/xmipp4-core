@@ -46,7 +46,8 @@ TEST_CASE( "getting the offset on an default constructed array_access_layout sho
 
 TEST_CASE( "getting extents on an initialized array_access_layout should return its extents ", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
     array_access_layout layout(std::move(implementation));
@@ -57,11 +58,14 @@ TEST_CASE( "getting extents on an initialized array_access_layout should return 
 
 TEST_CASE( "getting the number of operands on an array_access_layout should return its operand count", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
+    array_access_layout_implementation::stride_vector_type strides = 
+        { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
-    implementation->add_operand({}, {}, 0UL);
-    implementation->add_operand({}, {}, 0UL);
+    implementation->add_operand(extents, strides, 0UL);
+    implementation->add_operand(extents, strides, 0UL);
     array_access_layout layout(std::move(implementation));
 
     REQUIRE( layout.get_number_of_operands() == 2 );
@@ -69,8 +73,10 @@ TEST_CASE( "getting the number of operands on an array_access_layout should retu
 
 TEST_CASE( "getting the strides of an operand on an array_access_layout should return its strides", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
+    array_access_layout_implementation::stride_vector_type strides = 
+        { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
     implementation->add_operand(extents, strides, 0UL);
@@ -82,8 +88,10 @@ TEST_CASE( "getting the strides of an operand on an array_access_layout should r
 
 TEST_CASE( "getting the offset of an operand in an array_access_layout should return its offset", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
+    array_access_layout_implementation::stride_vector_type strides = 
+        { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
     implementation->add_operand(extents, strides, 1234UL);
@@ -94,8 +102,10 @@ TEST_CASE( "getting the offset of an operand in an array_access_layout should re
 
 TEST_CASE( "getting the strides of an invalid operand on an array_access_layout should throw", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
+    array_access_layout_implementation::stride_vector_type strides = 
+        { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
     implementation->add_operand(extents, strides, 0UL);
@@ -109,8 +119,10 @@ TEST_CASE( "getting the strides of an invalid operand on an array_access_layout 
 
 TEST_CASE( "getting the offset of an invalid operand in an array_access_layout should throw", "[array_access_layout]" )
 {
-    const std::vector<std::size_t> extents = { 20, 4, 16, 2 };
-    const std::vector<std::ptrdiff_t> strides = { 1, 20, 80, 1280 };
+    array_access_layout_implementation::extent_vector_type extents = 
+        { 20, 4, 16, 2 };
+    array_access_layout_implementation::stride_vector_type strides = 
+        { 1, 20, 80, 1280 };
     auto implementation = 
         std::make_unique<array_access_layout_implementation>(extents);
     implementation->add_operand(extents, strides, 1234UL);

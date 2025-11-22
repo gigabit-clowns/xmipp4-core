@@ -9,10 +9,10 @@ namespace multidimensional
 
 inline
 array_access_layout_operand::array_access_layout_operand(
-    std::vector<std::ptrdiff_t> strides,
+    const stride_vector_type &strides,
     std::ptrdiff_t offset
 )
-    : m_strides(std::move(strides))
+    : m_strides(strides)
     , m_offset(offset)
 {
 }
@@ -21,7 +21,7 @@ inline
 span<const std::ptrdiff_t> 
 array_access_layout_operand::get_strides() const noexcept
 {
-    return make_span(m_strides);
+    return span<const std::ptrdiff_t>(m_strides.data(), m_strides.size());
 }
 
 inline
@@ -43,10 +43,8 @@ int array_access_layout_operand::compare_strides(
     {
         return 0;
     }
-    else
-    {
-        return static_cast<int>(stride_i - stride_j);
-    }
+    
+    return static_cast<int>(stride_i - stride_j);
 }
 
 inline

@@ -5,8 +5,12 @@
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
+#include "../config.hpp"
+
 #include <vector>
 #include <cstddef>
+
+#include <boost/container/small_vector.hpp>
 
 namespace xmipp4 
 {
@@ -16,8 +20,13 @@ namespace multidimensional
 class array_access_layout_operand
 {
 public:
+    using stride_vector_type = boost::container::small_vector<
+        std::ptrdiff_t, 
+        XMIPP4_SMALL_AXIS_COUNT
+    >;
+
     array_access_layout_operand(
-        std::vector<std::ptrdiff_t> strides,
+        const stride_vector_type &strides,
         std::ptrdiff_t offset
     );
 
@@ -32,7 +41,7 @@ public:
     void trim_axes(std::size_t n);
 
 private:
-    std::vector<std::ptrdiff_t> m_strides;
+    stride_vector_type m_strides;
     std::ptrdiff_t m_offset;
 
 };

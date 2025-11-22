@@ -2,6 +2,11 @@
 
 #include "array_access_layout_operand.hpp"
 
+#include <xmipp4/core/platform/assert.hpp>
+
+#include <numeric>
+#include <sstream>
+
 /**
  * Some of the algorithms and data structured featured in this code are based 
  * on:
@@ -16,16 +21,16 @@ namespace multidimensional
 
 inline
 array_access_layout_implementation::array_access_layout_implementation(
-    std::vector<std::size_t> extents
+    const extent_vector_type &extents
 )
-    : m_extents(std::move(extents))
+    : m_extents(extents)
 {
 }
 
 inline
 void array_access_layout_implementation::add_operand(
-    std::vector<std::size_t> extents,
-    std::vector<std::ptrdiff_t> strides,
+    extent_vector_type &extents,
+    stride_vector_type &strides,
     std::ptrdiff_t offset
 )
 {
@@ -38,6 +43,45 @@ void array_access_layout_implementation::add_operand(
 }
 
 inline
+const array_access_layout_operand& 
+array_access_layout_implementation::get_operand(std::size_t index) const
+{
+    if (index >= m_operands.size())
+    {
+        throw std::out_of_range("Operand index is out of range");
+    }
+
+    return m_operands[index];
+}
+
+inline
+void array_access_layout_implementation::insert_largest_stride(
+    span<std::size_t> permutation,
+    std::size_t i
+)
+{
+    const auto index1 = i;
+    for (std::size_t j = 1; j <= i; ++j)
+    {
+        const auto index0 = i - j;
+        const auto comparison = compare_strides(
+            permutation[index0], 
+            permutation[index1]
+        );
+
+        if (comparison > 0)
+        {
+            std::swap(permutation[index0], permutation[index1]);
+            j = 0;
+        } 
+        else if (comparison < 0) 
+        {
+            break;
+        }
+    }
+}
+
+inline
 void array_access_layout_implementation::sort_axes_by_locality()
 {
     const auto n = m_extents.size();
@@ -47,7 +91,10 @@ void array_access_layout_implementation::sort_axes_by_locality()
     }
 
     // Start with reversed indices n-1, n-2 ... 1, 0
-    std::vector<std::size_t> permutation(n);
+    boost::container::small_vector<
+        std::size_t, XMIPP4_SMALL_AXIS_COUNT
+    > permutation(n);
+    const auto permutation_view = span<std::size_t>(permutation.data(), n);
     std::generate(
         permutation.begin(), 
         permutation.end(), 
@@ -57,28 +104,10 @@ void array_access_layout_implementation::sort_axes_by_locality()
     // Insertion sort with support for ambiguous comparisons
     for (std::size_t i = 1; i < n; ++i)
     {
-        const auto index1 = i;
-        for (std::size_t j = 1; j <= i; ++j)
-        {
-            const auto index0 = i - j;
-            const auto comparison = compare_strides(
-                permutation[index0], 
-                permutation[index1]
-            );
-
-            if (comparison > 0)
-            {
-                std::swap(permutation[index0], permutation[index1]);
-                j = 0;
-            } 
-            else if (comparison < 0) 
-            {
-                break;
-            }
-        }
+        insert_largest_stride(permutation_view, i);
     }
 
-    permute_axes(std::move(permutation));
+    permute_axes(permutation_view);
 }
 
 inline
@@ -117,21 +146,21 @@ inline
 span<const std::size_t> 
 array_access_layout_implementation::get_extents() const noexcept
 {
-    return make_span(m_extents);
+    return span<const std::size_t>(m_extents.data(), m_extents.size());
 }
 
 inline
 span<const std::ptrdiff_t> 
 array_access_layout_implementation::get_strides(std::size_t operand) const
 {
-    return m_operands.at(operand).get_strides();
+    return get_operand(operand).get_strides();
 }
 
 inline
 std::ptrdiff_t 
 array_access_layout_implementation::get_offset(std::size_t operand) const
 {
-    return m_operands.at(operand).get_offset();
+    return get_operand(operand).get_offset();
 }
 
 inline
@@ -168,7 +197,7 @@ void array_access_layout_implementation::swap_axes(
 
 inline
 void array_access_layout_implementation::permute_axes(
-    std::vector<std::size_t> permutation
+    span<std::size_t> permutation
 )
 {
     // Permute the extents using cycle decomposition
@@ -242,8 +271,8 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 
 inline
 void array_access_layout_implementation::broadcast_operand(
-    std::vector<std::size_t> &extents,
-    std::vector<std::ptrdiff_t> &strides
+    extent_vector_type &extents,
+    stride_vector_type &strides
 )
 {
     const auto n = m_extents.size();
@@ -266,16 +295,16 @@ void array_access_layout_implementation::broadcast_operand(
     {
         if (m_extents[i] != extents[i])
         {
-            if (extents[i] == 1)
+            if (extents[i] != 1)
             {
-                // Broadcast axis
-                extents[i] = m_extents[i];
-                strides[i] = 0;
+                throw std::invalid_argument(
+                    "Incompatible extents were provided for broadcasting"
+                );
             }
-            else
-            {
-                throw broadcast_error(m_extents, extents);
-            }
+
+            // Broadcast axis
+            extents[i] = m_extents[i];
+            strides[i] = 0;
         }
 
         XMIPP4_ASSERT( m_extents[i] == extents[i] );

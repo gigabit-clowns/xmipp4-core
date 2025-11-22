@@ -32,26 +32,22 @@ array_access_layout::operator=(array_access_layout&& other) noexcept = default;
 
 std::size_t array_access_layout::get_number_of_operands() const noexcept
 {
-    if (m_implementation)
-    {
-        return m_implementation->get_number_of_operands();
-    }
-    else
+    if (!m_implementation)
     {
         return 0UL;
     }
+    
+    return m_implementation->get_number_of_operands();
 }
 
 span<const std::size_t> array_access_layout::get_extents() const
 {
-    if (m_implementation)
-    {
-        return m_implementation->get_extents();
-    }
-    else
+    if (!m_implementation)
     {
         return span<const std::size_t>();
     }
+    
+    return m_implementation->get_extents();
 }
 
 span<const std::ptrdiff_t> 

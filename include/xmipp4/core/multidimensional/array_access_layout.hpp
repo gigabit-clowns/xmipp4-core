@@ -18,7 +18,7 @@ class array_access_layout_implementation;
  * 
  * This class enables jointly iterating over multiple arrays. It stores
  * extents of the iteration space, strides for each of the operands, 
- * offset for each of the operands and the data_type of each of the operands.
+ * and offset for each of the operands.
  * 
  * Instances of this object must be obtained through 
  * array_access_layout_builder. Once built, it is inmutable.

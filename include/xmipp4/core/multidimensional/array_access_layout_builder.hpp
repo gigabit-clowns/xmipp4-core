@@ -44,13 +44,13 @@ public:
     /**
      * @brief Set the extents of the iteration space.
      * 
-     * This method can only be called once at most for each layout creation and
-     * it must be called before any call to add_operand.
-     * 
      * @param extents Extents of the iteration space.
      * @return array_access_layout_builder& A reference to *this.
+     * 
+     * @note This method can only be called once at most for each layout creation
+     * and it must be called before any call to add_operand.
      */
-    array_access_layout_builder& set_extents(std::vector<std::size_t> extents);
+    array_access_layout_builder& set_extents(span<const std::size_t> extents);
 
     /**
      * @brief Add an operand to the layout.

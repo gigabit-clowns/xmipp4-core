@@ -21,30 +21,22 @@ static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
 namespace xmipp4
 {
 
-static void load_plugin(
+static void try_load_plugin(
 	plugin_manager &manager,
-	ghc::filesystem::directory_entry entry
+	const std::string &path
 )
 {
 	try
 	{
-		manager.load_plugin(entry.path().string());
+		manager.load_plugin(path);
 	}
 	catch(const plugin_load_error& error)
 	{
-		XMIPP4_LOG_ERROR(
-			"Failed to load plugin from {}: {}", 
-			entry.path().string(), 
-			error.what()
-		);
+		XMIPP4_LOG_ERROR("Failed to load plugin from {}: {}", path, error.what());
 	}
 	catch(const std::system_error& error)
 	{
-		XMIPP4_LOG_ERROR(
-			"Failed to load shared library {}: {}", 
-			entry.path().string(), 
-			error.what()
-		);
+		XMIPP4_LOG_ERROR("Failed to load shared library {}: {}", path, error.what());
 	}
 }
 
@@ -196,7 +188,7 @@ void discover_plugins(const std::string& directory, plugin_manager &manager)
 
 	for (const auto& entry : iterator) 
 	{
-		load_plugin(manager, entry);
+		try_load_plugin(manager, entry.path().string());
 	}
 }
 

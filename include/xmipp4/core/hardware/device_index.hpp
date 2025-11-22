@@ -55,7 +55,6 @@ public:
 private:
 	std::string m_backend_name;
 	std::size_t m_device_id;
-
 };
 
 

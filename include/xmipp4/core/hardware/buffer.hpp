@@ -131,7 +131,6 @@ private:
 	std::size_t m_size;
 	std::reference_wrapper<memory_resource> m_memory_resource;
 	std::unique_ptr<buffer_sentinel> m_sentinel;
-
 };
 
 } // namespace hardware

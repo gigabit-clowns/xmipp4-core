@@ -18,9 +18,9 @@
  * 
  */
 #if defined(__has_attribute)
-    #define XMIPP4_HAS_GCC_ATTRIBUTE(attr) __has_attribute(attr)
+	#define XMIPP4_HAS_GCC_ATTRIBUTE(attr) __has_attribute(attr)
 #elif defined(XMIPP4_DOC_BUILD)
-    #define XMIPP4_HAS_GCC_ATTRIBUTE(attr) 1
+	#define XMIPP4_HAS_GCC_ATTRIBUTE(attr) 1
 #else
-    #define XMIPP4_HAS_GCC_ATTRIBUTE(attr) 0
+	#define XMIPP4_HAS_GCC_ATTRIBUTE(attr) 0
 #endif

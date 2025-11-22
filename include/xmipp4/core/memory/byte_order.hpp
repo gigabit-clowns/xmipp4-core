@@ -14,10 +14,10 @@ namespace memory
 
 enum class byte_order 
 {
-    big_endian,
-    little_endian,
-    //pdp_endian, //unsupported
-    //honeywell_endian, //unsupported
+	big_endian,
+	little_endian,
+	//pdp_endian, //unsupported
+	//honeywell_endian, //unsupported
 };
 
 XMIPP4_CONSTEXPR byte_order get_system_byte_order() noexcept;

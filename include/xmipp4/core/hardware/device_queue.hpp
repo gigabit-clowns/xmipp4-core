@@ -37,7 +37,6 @@ public:
 	 * @return false if queue is busy processing.
 	 */
 	virtual bool is_idle() const noexcept = 0;
-
 }; 
 
 } // namespace hardware

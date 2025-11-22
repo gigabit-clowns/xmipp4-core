@@ -51,8 +51,8 @@ static_assert(std::numeric_limits<float64_t>::is_iec559, "float64_t should be IE
  */
 template<typename T>
 using is_fixed_float = 
-    std::integral_constant<bool, std::is_same<T, float16_t>::value || 
-                                 std::is_same<T, float32_t>::value || 
-                                 std::is_same<T, float64_t>::value >;
+	std::integral_constant<bool, std::is_same<T, float16_t>::value || 
+	std::is_same<T, float32_t>::value || 
+	std::is_same<T, float64_t>::value >;
 
 } // namespace xmipp4

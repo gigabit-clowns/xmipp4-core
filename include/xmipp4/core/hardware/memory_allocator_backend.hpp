@@ -56,7 +56,6 @@ public:
 	virtual std::shared_ptr<memory_allocator> create_memory_allocator(
 		memory_resource &resource
 	) const = 0;
-
 }; 
 
 } // namespace hardware

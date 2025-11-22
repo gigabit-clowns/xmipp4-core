@@ -12,27 +12,27 @@ namespace hardware
 {
 
 void cpu_device::enumerate_memory_resources(
-    std::vector<memory_resource*> &resources
+	std::vector<memory_resource*> &resources
 )
 {
-    auto &host_memory_resource = get_host_memory_resource();
-    resources = { &host_memory_resource };
+	auto &host_memory_resource = get_host_memory_resource();
+	resources = { &host_memory_resource };
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()
 {
-    return std::make_shared<cpu_device_queue>();
+	return std::make_shared<cpu_device_queue>();
 }
 
 std::shared_ptr<device_event> cpu_device::create_device_event()
 {
-    return std::make_shared<cpu_event>();
+	return std::make_shared<cpu_event>();
 }
 
-std::shared_ptr<device_to_host_event> 
+std::shared_ptr<device_to_host_event>
 cpu_device::create_device_to_host_event()
 {
-    return std::make_shared<cpu_event>();
+	return std::make_shared<cpu_event>();
 }
 
 } // namespace hardware

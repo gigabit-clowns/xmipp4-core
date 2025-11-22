@@ -63,8 +63,10 @@ private:
 	service_manager *get_service_manager(std::type_index type);
 
 	XMIPP4_CORE_API
-	void create_service_manager(std::type_index type,
-								std::unique_ptr<service_manager> manager);
+	void create_service_manager(
+		std::type_index type,
+		std::unique_ptr<service_manager> manager
+	);
 };
 
 } // namespace xmipp4

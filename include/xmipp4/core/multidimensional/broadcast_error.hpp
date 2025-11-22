@@ -30,10 +30,7 @@ public:
 private:
 	std::vector<std::size_t> m_first_extents;
 	std::vector<std::size_t> m_second_extents;
-
 };
-
 
 } // namespace multidimensional
 } // namespace xmipp4
-

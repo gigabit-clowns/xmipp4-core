@@ -63,7 +63,6 @@ public:
 		const memory_resource& source,
 		const memory_resource& destination
 	) const = 0;
-
 };  
 
 } // namespace hardware

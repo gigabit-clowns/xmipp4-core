@@ -65,7 +65,6 @@ private:
 	std::unique_ptr<implementation> m_implementation;
 
 	void create_implementation_if_null();
-
 }; 
 
 } // namespace hardware

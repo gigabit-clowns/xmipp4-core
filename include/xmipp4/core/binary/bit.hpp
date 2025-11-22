@@ -107,8 +107,6 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 mask_trailing_ones(T x) noexcept;
 
-
-
 /**
  * @brief Returns the input word with a bitwise rotation towards the left
  * 
@@ -146,7 +144,6 @@ template<typename T>
 XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
 typename std::enable_if<std::is_unsigned<T>::value, T>::type
 rotate_right(T x, int s) noexcept;
-
 
 /**
  * @brief Checks if the input word has one and only one bit set to '1'
@@ -245,8 +242,6 @@ template<typename T>
 XMIPP4_NODISCARD XMIPP4_CONSTEXPR 
 typename std::enable_if<std::is_unsigned<T>::value, int>::type
 count_trailing_ones(T x) noexcept;
-
-
 
 /**
  * @brief Counts the number '1's in the input word

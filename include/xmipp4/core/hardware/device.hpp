@@ -71,7 +71,6 @@ public:
 	 */
 	virtual std::shared_ptr<device_to_host_event>
 	create_device_to_host_event() = 0;
-
 }; 
 
 } // namespace hardware

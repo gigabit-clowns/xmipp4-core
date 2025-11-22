@@ -208,7 +208,6 @@ private:
 	) noexcept;
 	explicit 
 	strided_layout(strided_layout_implementation &&impl);
-
 };
 
 } // namespace multidimensional

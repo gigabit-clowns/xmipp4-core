@@ -15,12 +15,11 @@ namespace hardware
  * 
  */
 class cpu_device_queue final
-    : public device_queue
+	: public device_queue
 {
 public:
-    void wait_until_completed() const override;
-    bool is_idle() const noexcept override;
-
+	void wait_until_completed() const override;
+	bool is_idle() const noexcept override;
 }; 
 
 } // namespace hardware

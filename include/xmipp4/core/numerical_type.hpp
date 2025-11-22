@@ -18,29 +18,29 @@ namespace xmipp4
  */
 enum class numerical_type
 {
-    unknown = -1,
+	unknown = -1,
 
-    int8,
-    uint8,
-    int16,
-    uint16,
-    int32,
-    uint32,
-    int64,
-    uint64,
+	int8,
+	uint8,
+	int16,
+	uint16,
+	int32,
+	uint32,
+	int64,
+	uint64,
 
-    float16,
-    brain_float16,
-    float32,
-    float64,
+	float16,
+	brain_float16,
+	float32,
+	float64,
 
-    complex_float16,
-    complex_float32,
-    complex_float64,
+	complex_float16,
+	complex_float32,
+	complex_float64,
 
-    // Add here
+	// Add here
 
-    count
+	count
 };
 
 /**
@@ -115,8 +115,6 @@ XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
  */
 XMIPP4_CONSTEXPR 
 numerical_type common_type(numerical_type x, numerical_type y) noexcept;
-
-
 
 XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
 bool from_string(std::string_view str, numerical_type& type) noexcept;

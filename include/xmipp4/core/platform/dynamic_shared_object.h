@@ -11,15 +11,15 @@
  * 
  */
 #if defined(XMIPP4_WINDOWS)
-    #if XMIPP4_HAS_GCC_ATTRIBUTE(dllimport)
-        #define XMIPP4_IMPORT XMIPP4_GCC_ATTRIBUTE(dllimport)
-    #else
-        #define XMIPP4_IMPORT __declspec(dllimport)
-    #endif
+	#if XMIPP4_HAS_GCC_ATTRIBUTE(dllimport)
+		#define XMIPP4_IMPORT XMIPP4_GCC_ATTRIBUTE(dllimport)
+	#else
+		#define XMIPP4_IMPORT __declspec(dllimport)
+	#endif
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(visibility)
-    #define XMIPP4_IMPORT XMIPP4_GCC_ATTRIBUTE(visibility("default"))
+	#define XMIPP4_IMPORT XMIPP4_GCC_ATTRIBUTE(visibility("default"))
 #else
-    #define XMIPP4_IMPORT
+	#define XMIPP4_IMPORT
 #endif
 
 /**
@@ -28,15 +28,15 @@
  * 
  */
 #if defined(XMIPP4_WINDOWS)
-    #if XMIPP4_HAS_GCC_ATTRIBUTE(dllexport)
-        #define XMIPP4_EXPORT XMIPP4_GCC_ATTRIBUTE(dllexport)
-    #else
-        #define XMIPP4_EXPORT __declspec(dllexport)
-    #endif
+	#if XMIPP4_HAS_GCC_ATTRIBUTE(dllexport)
+		#define XMIPP4_EXPORT XMIPP4_GCC_ATTRIBUTE(dllexport)
+	#else
+		#define XMIPP4_EXPORT __declspec(dllexport)
+	#endif
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(visibility)
-    #define XMIPP4_EXPORT XMIPP4_GCC_ATTRIBUTE(visibility("default"))
+	#define XMIPP4_EXPORT XMIPP4_GCC_ATTRIBUTE(visibility("default"))
 #else
-    #define XMIPP4_EXPORT
+	#define XMIPP4_EXPORT
 #endif
 
 /**
@@ -45,11 +45,11 @@
  * 
  */
 #if defined(XMIPP4_WINDOWS)
-    #define XMIPP4_LOCAL
+	#define XMIPP4_LOCAL
 #elif XMIPP4_HAS_GCC_ATTRIBUTE(visibility)
-    #define XMIPP4_LOCAL XMIPP4_GCC_ATTRIBUTE(visibility("hidden"))
+	#define XMIPP4_LOCAL XMIPP4_GCC_ATTRIBUTE(visibility("hidden"))
 #else
-    #define XMIPP4_LOCAL
+	#define XMIPP4_LOCAL
 #endif
 
 /**
@@ -60,11 +60,11 @@
  * 
  */
 #if defined(XMIPP4_CORE_NO_EXPORTS)
-    #define XMIPP4_CORE_API 
+	#define XMIPP4_CORE_API 
 #else
-    #if defined(XMIPP4_CORE_EXPORTING)
-        #define XMIPP4_CORE_API XMIPP4_EXPORT
-    #else
-        #define XMIPP4_CORE_API XMIPP4_IMPORT
-    #endif
+	#if defined(XMIPP4_CORE_EXPORTING)
+		#define XMIPP4_CORE_API XMIPP4_EXPORT
+	#else
+		#define XMIPP4_CORE_API XMIPP4_IMPORT
+	#endif
 #endif

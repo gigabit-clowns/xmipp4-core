@@ -13,9 +13,9 @@ namespace xmipp4
  * 
  */
 class ambiguous_backend_error
-    : public std::runtime_error
+	: public std::runtime_error
 {
-    using runtime_error::runtime_error;
+	using runtime_error::runtime_error;
 };
 
 } // namespace xmipp4

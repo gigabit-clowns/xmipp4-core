@@ -26,34 +26,33 @@
 
 //Detect with GCC 4.6's macro.
 #if defined(__BYTE_ORDER__)
-    #if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
-        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
-    #elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
-    #else
-        #error "Unknown byte order"
-    #endif
+	#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+		#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
+	#elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+		#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
+	#else
+		#error "Unknown byte order"
+	#endif
 
 // Detect with _LITTLE_ENDIAN and _BIG_ENDIAN macro.
 #elif defined(_LITTLE_ENDIAN)
-    #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
+	#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
 #elif defined(_BIG_ENDIAN)
-    #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
+	#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
 
 // Detect for Windows
 #elif defined(XMIPP4_WINDOWS)
-    #include <Windows.h>
-    #if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
-        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
-    #elif REG_DWORD == REG_DWORD_BIG_ENDIAN
-        #define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
-    #endif
+	#include <Windows.h>
+	#if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
+		#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
+	#elif REG_DWORD == REG_DWORD_BIG_ENDIAN
+		#define XMIPP4_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
+	#endif
 
 // Failed detecting 
 #else
-    #error "Could not determine byte ordering"
+	#error "Could not determine byte ordering"
 #endif
-
 
 /**
  * @def XMIPP4_FLOAT_BYTE_ORDER
@@ -62,14 +61,14 @@
  * 
  */
 #if defined(__FLOAT_WORD_ORDER__)
-    #if (__FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__)
-        #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
-    #elif (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__)
-        #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
-    #else
-        #error "Unknown float byte order"
-    #endif
+	#if (__FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+		#define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER_LITTLE_ENDIAN
+	#elif (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__)
+		#define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER_BIG_ENDIAN
+	#else
+		#error "Unknown float byte order"
+	#endif
 
 #else
-    #define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER
+	#define XMIPP4_FLOAT_BYTE_ORDER XMIPP4_BYTE_ORDER
 #endif

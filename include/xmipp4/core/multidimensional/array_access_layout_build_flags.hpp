@@ -19,8 +19,8 @@ namespace multidimensional
  */
 enum class array_access_layout_build_flag_bits
 {
-    enable_reordering = binary::bit(0), ///< Reorder axes by memory locality.
-    enable_coalescing = binary::bit(1), ///< Coalesce contiguous axes.
+	enable_reordering = binary::bit(0), ///< Reorder axes by memory locality.
+	enable_coalescing = binary::bit(1), ///< Coalesce contiguous axes.
 };
 
 /**
@@ -29,15 +29,15 @@ enum class array_access_layout_build_flag_bits
  * 
  */
 using array_access_layout_build_flags 
-    = binary::flagset<array_access_layout_build_flag_bits>;
+	= binary::flagset<array_access_layout_build_flag_bits>;
 
 XMIPP4_CONSTEXPR 
 const char* to_string(array_access_layout_build_flag_bits x) noexcept;
 
 template<typename T>
 std::basic_ostream<T>& operator<<(
-    std::basic_ostream<T>& os, 
-    array_access_layout_build_flag_bits x
+	std::basic_ostream<T>& os, 
+	array_access_layout_build_flag_bits x
 );
 
 } // namespace multidimensional

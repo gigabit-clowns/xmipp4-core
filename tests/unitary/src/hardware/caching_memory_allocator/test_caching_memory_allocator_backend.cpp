@@ -11,28 +11,27 @@
 
 #include <sstream>
 
-
 using namespace xmipp4::hardware;
 
 TEST_CASE( "caching_memory_allocator_backend should always have normal priority", "[caching_memory_allocator_backend]" )
 {
-    caching_memory_allocator_backend backend;
+	caching_memory_allocator_backend backend;
 
-    mock_memory_resource resource;
-    REQUIRE( backend.get_suitability(resource) == xmipp4::backend_priority::normal );
+	mock_memory_resource resource;
+	REQUIRE( backend.get_suitability(resource) == xmipp4::backend_priority::normal );
 }
 
 TEST_CASE( "caching_memory_allocator_backend should always return a valid allocator", "[caching_memory_allocator_backend]" )
 {
-    caching_memory_allocator_backend backend;
+	caching_memory_allocator_backend backend;
 
-    mock_memory_resource resource;
-    REQUIRE_CALL(resource, get_target_device())
-        .RETURN(nullptr);
-    REQUIRE_CALL(resource, get_max_heap_alignment())
-        .RETURN(64);
+	mock_memory_resource resource;
+	REQUIRE_CALL(resource, get_target_device())
+		.RETURN(nullptr);
+	REQUIRE_CALL(resource, get_max_heap_alignment())
+		.RETURN(64);
 
-    auto allocator = backend.create_memory_allocator(resource);
+	auto allocator = backend.create_memory_allocator(resource);
 
-    REQUIRE( allocator != nullptr );
+	REQUIRE( allocator != nullptr );
 }

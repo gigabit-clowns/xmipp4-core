@@ -31,107 +31,106 @@ namespace multidimensional
 class dynamic_subscript
 {
 public:
-    /**
-     * @brief Enumeration holding the types this object can hold. 
-     * 
-     */
-    enum class subscript_type
-    {
-        ellipsis,
-        new_axis,
-        index,
-        slice
-    };
+	/**
+	 * @brief Enumeration holding the types this object can hold. 
+	 * 
+	 */
+	enum class subscript_type
+	{
+		ellipsis,
+		new_axis,
+		index,
+		slice
+	};
 
-    /**
-     * @brief Construct a dynamic_subscript holding an ellipsis_tag.
-     * 
-     */
-    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
-    dynamic_subscript(ellipsis_tag) noexcept;
+	/**
+	 * @brief Construct a dynamic_subscript holding an ellipsis_tag.
+	 * 
+	 */
+	XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+	dynamic_subscript(ellipsis_tag) noexcept;
 
-    /**
-     * @brief Construct a dynamic_subscript holding a new_axis_tag.
-     * 
-     */
-    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
-    dynamic_subscript(new_axis_tag) noexcept;
+	/**
+	 * @brief Construct a dynamic_subscript holding a new_axis_tag.
+	 * 
+	 */
+	XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+	dynamic_subscript(new_axis_tag) noexcept;
 
-    /**
-     * @brief Construct a dynamic_subscript holding an index.
-     * 
-     * @param index The index that is assigned to this object.
+	/**
+	 * @brief Construct a dynamic_subscript holding an index.
+	 * 
+	 * @param index The index that is assigned to this object.
 
-     */
-    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
-    dynamic_subscript(std::ptrdiff_t index) noexcept;
+		*/
+	XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+	dynamic_subscript(std::ptrdiff_t index) noexcept;
 
-    /**
-     * @brief Construct a dynamic_subscript holding a slice.
-     * 
-     * @param slice the slice that is assigned to this object.
-     * 
-     */
-    XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
-    dynamic_subscript(const slice &slice) noexcept;
+	/**
+	 * @brief Construct a dynamic_subscript holding a slice.
+	 * 
+	 * @param slice the slice that is assigned to this object.
+	 * 
+	 */
+	XMIPP4_NO_EXPLICIT XMIPP4_CONSTEXPR
+	dynamic_subscript(const slice &slice) noexcept;
 
-    dynamic_subscript(const dynamic_subscript &other) = default;
-    dynamic_subscript(dynamic_subscript &&other) = default;
-    ~dynamic_subscript() = default;
+	dynamic_subscript(const dynamic_subscript &other) = default;
+	dynamic_subscript(dynamic_subscript &&other) = default;
+	~dynamic_subscript() = default;
 
-    dynamic_subscript& operator=(const dynamic_subscript &other) = default;
-    dynamic_subscript& operator=(dynamic_subscript &&other) = default;
+	dynamic_subscript& operator=(const dynamic_subscript &other) = default;
+	dynamic_subscript& operator=(dynamic_subscript &&other) = default;
 
-    /**
-     * @brief Get the subscript type held by this object.
-     * 
-     * @return subscript_type 
-     */
-    XMIPP4_CONSTEXPR
-    subscript_type get_subscript_type() const noexcept;
+	/**
+	 * @brief Get the subscript type held by this object.
+	 * 
+	 * @return subscript_type 
+	 */
+	XMIPP4_CONSTEXPR
+	subscript_type get_subscript_type() const noexcept;
 
-    /**
-     * @brief Get the index.
-     * 
-     * This method shall only be called if get_subscript_type() returns
-     * subscript_type::index. Otherwise an exception is thrown.
-     * 
-     * @return std::ptrdiff_t The index held by this object.
-     * @throws bad_dynamic_subscript_access
-     */
-    std::ptrdiff_t get_index() const;
+	/**
+	 * @brief Get the index.
+	 * 
+	 * This method shall only be called if get_subscript_type() returns
+	 * subscript_type::index. Otherwise an exception is thrown.
+	 * 
+	 * @return std::ptrdiff_t The index held by this object.
+	 * @throws bad_dynamic_subscript_access
+	 */
+	std::ptrdiff_t get_index() const;
 
-    /**
-     * @brief Get the slice.
-     * 
-     * This method shall only be called if get_subscript_type() returns
-     * subscript_type::slice. Otherwise an exception is thrown.
-     * 
-     * @return slice The slice held by this object.
-     * @throws bad_dynamic_subscript_access
-     */
-    slice get_slice() const;
+	/**
+	 * @brief Get the slice.
+	 * 
+	 * This method shall only be called if get_subscript_type() returns
+	 * subscript_type::slice. Otherwise an exception is thrown.
+	 * 
+	 * @return slice The slice held by this object.
+	 * @throws bad_dynamic_subscript_access
+	 */
+	slice get_slice() const;
 
 private:
-    using storage_type = std::array<std::ptrdiff_t, 3>;
+	using storage_type = std::array<std::ptrdiff_t, 3>;
 
-    storage_type m_data; // When holding index, first value is used.
-    subscript_type m_type;
-
+	storage_type m_data; // When holding index, first value is used.
+	subscript_type m_type;
 };
 
 class bad_dynamic_subscript_access
-    : public std::logic_error
+	: public std::logic_error
 {
 public:
-    using std::logic_error::logic_error;
-
+	using std::logic_error::logic_error;
 };
 
-
 template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, 
-                                  const dynamic_subscript &subscript );
+std::basic_ostream<T>& operator<<(
+	std::basic_ostream<T>& os, 
+	const dynamic_subscript &subscript
+);
 
 /**
  * @brief Invoke the provided function with the value held by the dynamic 

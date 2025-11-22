@@ -46,7 +46,6 @@ private:
 	std::size_t m_source_offset;
 	std::size_t m_destination_offset;
 	std::size_t m_count;
-
 };
 
 } // namespace hardware

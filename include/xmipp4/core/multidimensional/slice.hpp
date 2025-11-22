@@ -23,80 +23,75 @@ namespace multidimensional
 class slice
 {
 public:
-    using start_type = std::ptrdiff_t;
-    using count_type = std::size_t;
-    using step_type = std::ptrdiff_t;
+	using start_type = std::ptrdiff_t;
+	using count_type = std::size_t;
+	using step_type = std::ptrdiff_t;
 
-    /**
-     * @brief Constructor
-     * 
-     * @param start Index of the first element
-     * @param count Number of elements.
-     * @param step Step between consecutive elements
-     */
-    XMIPP4_CONSTEXPR 
-    slice(start_type start, count_type count, step_type step ) noexcept;
+	/**
+	 * @brief Constructor
+	 * 
+	 * @param start Index of the first element
+	 * @param count Number of elements.
+	 * @param step Step between consecutive elements
+	 */
+	XMIPP4_CONSTEXPR 
+	slice(start_type start, count_type count, step_type step ) noexcept;
 
-    slice() = default;
-    slice(const slice& other) = default;
-    slice(slice&& other) = default;
-    ~slice() = default;
-    
-    slice& operator=(const slice& other) = default;
-    slice& operator=(slice&& other) = default;
+	slice() = default;
+	slice(const slice& other) = default;
+	slice(slice&& other) = default;
+	~slice() = default;
+	
+	slice& operator=(const slice& other) = default;
+	slice& operator=(slice&& other) = default;
 
-    /**
-     * @brief Set the starting index
-     * 
-     * @param start Index of the first element
-     */
-    XMIPP4_CONSTEXPR void set_start(start_type start) noexcept;
+	/**
+	 * @brief Set the starting index
+	 * 
+	 * @param start Index of the first element
+	 */
+	XMIPP4_CONSTEXPR void set_start(start_type start) noexcept;
 
-    /**
-     * @brief Get the starting index
-     * 
-     * @return start_type const& Index of the first element
-     */
-    XMIPP4_CONSTEXPR const start_type& get_start() const noexcept;
-    
-    /**
-     * @brief Set the index element count.
-     * 
-     * @param count New number of elements referred by this slice.
-     */
-    XMIPP4_CONSTEXPR void set_count(count_type count) noexcept;
+	/**
+	 * @brief Get the starting index
+	 * 
+	 * @return start_type const& Index of the first element
+	 */
+	XMIPP4_CONSTEXPR const start_type& get_start() const noexcept;
+	
+	/**
+	 * @brief Set the index element count.
+	 * 
+	 * @param count New number of elements referred by this slice.
+	 */
+	XMIPP4_CONSTEXPR void set_count(count_type count) noexcept;
 
-    /**
-     * @brief Get the element count.
-     * 
-     * @return count_type const& Number of elements referred by this slice.
-     */
-    XMIPP4_CONSTEXPR const count_type& get_count() const noexcept;
+	/**
+	 * @brief Get the element count.
+	 * 
+	 * @return count_type const& Number of elements referred by this slice.
+	 */
+	XMIPP4_CONSTEXPR const count_type& get_count() const noexcept;
 
-    /**
-     * @brief Set the step
-     * 
-     * @param step Step between consecutive elements
-     */
-    XMIPP4_CONSTEXPR void set_step(step_type step) noexcept;
+	/**
+	 * @brief Set the step
+	 * 
+	 * @param step Step between consecutive elements
+	 */
+	XMIPP4_CONSTEXPR void set_step(step_type step) noexcept;
 
-    /**
-     * @brief Get the step
-     * 
-     * @return step_type const& Step between consecutive elements
-     */
-    XMIPP4_CONSTEXPR const step_type& get_step() const noexcept;
+	/**
+	 * @brief Get the step
+	 * 
+	 * @return step_type const& Step between consecutive elements
+	 */
+	XMIPP4_CONSTEXPR const step_type& get_step() const noexcept;
 
 private:
-    start_type m_start;
-    count_type m_count;
-    step_type m_step;
-
+	start_type m_start;
+	count_type m_count;
+	step_type m_step;
 };
-
-
-
-
 
 XMIPP4_CONSTEXPR
 bool operator==(const slice &lhs, const slice &rhs) noexcept;
@@ -106,8 +101,6 @@ bool operator!=(const slice &lhs, const slice &rhs) noexcept;
 
 template <typename T>
 std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const slice &s);
-
-
 
 /**
  * @brief Get the value representing the end of an array to be used as
@@ -176,9 +169,11 @@ slice make_slice(std::ptrdiff_t start, std::size_t count) noexcept;
  * start from step to step.
  */
 XMIPP4_CONSTEXPR 
-slice make_slice(std::ptrdiff_t start, 
-                 std::size_t count, 
-                 std::ptrdiff_t step ) noexcept;
+slice make_slice(
+	std::ptrdiff_t start, 
+	std::size_t count, 
+	std::ptrdiff_t step
+) noexcept;
 
 /**
  * @brief Sanitize a slice to ensure it is valid and within bounds for a given 

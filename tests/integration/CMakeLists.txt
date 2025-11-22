@@ -15,8 +15,8 @@ file(
 
 # Add the test executable
 add_executable(
-    ${TESTS_NAME}
-    ${TEST_SOURCES}
+		${TESTS_NAME}
+		${TEST_SOURCES}
 )
 target_link_libraries(
 	${TESTS_NAME} 

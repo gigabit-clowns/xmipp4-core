@@ -14,30 +14,30 @@ namespace communication
 
 std::string dummy_communicator_backend::get_name() const
 {
-    return "dummy";
+	return "dummy";
 }
 
 version dummy_communicator_backend::get_version() const
 {
-    return get_core_version();
+	return get_core_version();
 }
 
 backend_priority dummy_communicator_backend::get_suitability() const
 {
-    return backend_priority::fallback;
+	return backend_priority::fallback;
 }
 
 std::shared_ptr<communicator> 
 dummy_communicator_backend::create_world_communicator() const
 {
-    return std::make_shared<dummy_communicator>();
+	return std::make_shared<dummy_communicator>();
 }
 
 bool dummy_communicator_backend::register_at(communicator_manager &manager)
 {
-    return manager.register_backend(
-        std::make_unique<dummy_communicator_backend>()
-    );
+	return manager.register_backend(
+		std::make_unique<dummy_communicator_backend>()
+	);
 }
 
 } // namespace communication

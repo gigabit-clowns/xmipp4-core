@@ -10,22 +10,22 @@ namespace hardware
 
 void cpu_event::signal(device_queue&)
 {
-    // No-op
+	// No-op
 }
 
 void cpu_event::wait() const
 {
-    // No-op
+	// No-op
 }
 
 void cpu_event::wait(device_queue&) const
 {
-    // No-op
+	// No-op
 }
 
 bool cpu_event::is_signaled() const
 {
-    return true;
+	return true;
 }
 
 } // namespace hardware

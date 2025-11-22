@@ -27,7 +27,7 @@ namespace system
 
 std::string get_hostname()
 {
-	std::array<char, 512> hostname;
+	std::array<char, 512> hostname = {};
 
 	#if XMIPP4_POSIX
 		gethostname(hostname.data(), hostname.size());

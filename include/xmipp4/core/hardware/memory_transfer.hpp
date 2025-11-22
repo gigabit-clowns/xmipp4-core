@@ -25,32 +25,32 @@ class memory_resource;
 class XMIPP4_CORE_API memory_transfer
 {
 public:
-    memory_transfer() = default;
-    memory_transfer(const memory_transfer &other) = default;
-    memory_transfer(memory_transfer &&other) = default;
-    virtual ~memory_transfer() = default;
+	memory_transfer() = default;
+	memory_transfer(const memory_transfer &other) = default;
+	memory_transfer(memory_transfer &&other) = default;
+	virtual ~memory_transfer() = default;
 
-    memory_transfer& operator=(const memory_transfer &other) = default;
-    memory_transfer& operator=(memory_transfer &&other) = default;
-    
-    /**
-     * @brief Copy the contents of a buffer into another.
-     * 
-     * @param source The buffer from which data is copied. 
-     * @param destination The buffer from which data is copied.
-     * @param regions Set of regions to be copied. All of them must be valid
-     * for both source and destination buffers.
-     * @param queue The queue where the transfer is enqueued. When provided,
-     * it must belong to the same target device as the source and destination 
-     * memory_resource-s. If null, the transfer is performed synchronously.
-     */
-    virtual
-    void copy(
-        const buffer &source, 
-        buffer &destination,
-        span<const copy_region> regions, 
-        device_queue *queue
-    ) const = 0;
+	memory_transfer& operator=(const memory_transfer &other) = default;
+	memory_transfer& operator=(memory_transfer &&other) = default;
+	
+	/**
+	 * @brief Copy the contents of a buffer into another.
+	 * 
+	 * @param source The buffer from which data is copied. 
+	 * @param destination The buffer from which data is copied.
+	 * @param regions Set of regions to be copied. All of them must be valid
+	 * for both source and destination buffers.
+	 * @param queue The queue where the transfer is enqueued. When provided,
+	 * it must belong to the same target device as the source and destination 
+	 * memory_resource-s. If null, the transfer is performed synchronously.
+	 */
+	virtual
+	void copy(
+		const buffer &source, 
+		buffer &destination,
+		span<const copy_region> regions, 
+		device_queue *queue
+	) const = 0;
 
 }; 
 

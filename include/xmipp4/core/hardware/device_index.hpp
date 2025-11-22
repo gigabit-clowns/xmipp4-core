@@ -19,42 +19,42 @@ namespace hardware
 class device_index
 {
 public:
-    /**
-     * @brief Construct a new device index from its components.
-     * 
-     * @tparam Str String type.
-     * @param backend_name Name of the backend.
-     * @param device_id Unique ID of the device within the backend.
-     * 
-     */
-    template <typename Str>
-    device_index(Str &&backend_name, std::size_t device_id);
+	/**
+	 * @brief Construct a new device index from its components.
+	 * 
+	 * @tparam Str String type.
+	 * @param backend_name Name of the backend.
+	 * @param device_id Unique ID of the device within the backend.
+	 * 
+	 */
+	template <typename Str>
+	device_index(Str &&backend_name, std::size_t device_id);
 
-    device_index() = default; 
-    device_index(const device_index &other) = default; 
-    device_index(device_index &&other) = default; 
-    ~device_index() = default;
+	device_index() = default; 
+	device_index(const device_index &other) = default; 
+	device_index(device_index &&other) = default; 
+	~device_index() = default;
 
-    device_index& operator=(const device_index &other) = default; 
-    device_index& operator=(device_index &&other) = default; 
+	device_index& operator=(const device_index &other) = default; 
+	device_index& operator=(device_index &&other) = default; 
 
-    /**
-     * @brief Get the name of the device backend.
-     * 
-     * @return const std::string& The name.
-     */
-    const std::string& get_backend_name() const noexcept;
+	/**
+	 * @brief Get the name of the device backend.
+	 * 
+	 * @return const std::string& The name.
+	 */
+	const std::string& get_backend_name() const noexcept;
 
-    /**
-     * @brief Get the ID of the device within the backend.
-     * 
-     * @return std::size_t The device ID.
-     */
-    std::size_t get_device_id() const noexcept;
+	/**
+	 * @brief Get the ID of the device within the backend.
+	 * 
+	 * @return std::size_t The device ID.
+	 */
+	std::size_t get_device_id() const noexcept;
 
 private:
-    std::string m_backend_name;
-    std::size_t m_device_id;
+	std::string m_backend_name;
+	std::size_t m_device_id;
 
 };
 

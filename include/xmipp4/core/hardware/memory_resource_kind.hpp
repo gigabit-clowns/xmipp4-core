@@ -15,34 +15,31 @@ namespace hardware
  */
 enum class memory_resource_kind
 {
-    /// The device and host share the same physical memory, such that both can 
-    /// access it efficiently.
-    unified,
+	/// The device and host share the same physical memory, such that both can 
+	/// access it efficiently.
+	unified,
 
-    /// The device and host have their own physical memory, although transfers
-    /// are managed by the driver. Therefore, buffers can be treated as if they
-    /// were residing in unified memory.
-    managed,
+	/// The device and host have their own physical memory, although transfers
+	/// are managed by the driver. Therefore, buffers can be treated as if they
+	/// were residing in unified memory.
+	managed,
 
-    /// Memory resource lives locally on the device and can not be accessed 
-    /// from the host.
-    device_local,
+	/// Memory resource lives locally on the device and can not be accessed 
+	/// from the host.
+	device_local,
 
-    /// Memory resource resides in the host although it can be accessed from
-    /// the device at a certain performance penalty.
-    device_mapped,
+	/// Memory resource resides in the host although it can be accessed from
+	/// the device at a certain performance penalty.
+	device_mapped,
 
-    /// Memory resource resides in the host and can not be accessed from the
-    /// device. However, contents can be transferred from and to the device.
-    host_staging,
+	/// Memory resource resides in the host and can not be accessed from the
+	/// device. However, contents can be transferred from and to the device.
+	host_staging,
 
-    /// Memory resource resides in the host and can not be accessed nor 
-    /// transferred to a device.
-    host,
-
+	/// Memory resource resides in the host and can not be accessed nor 
+	/// transferred to a device.
+	host,
 };
-
-
 
 /**
  * @brief Check if the memory kind can be directly accessed from the host.

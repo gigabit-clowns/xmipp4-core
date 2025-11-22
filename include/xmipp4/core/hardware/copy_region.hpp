@@ -24,26 +24,28 @@ namespace hardware
 class copy_region
 {
 public:
-    XMIPP4_CONSTEXPR copy_region() noexcept;
-    XMIPP4_CONSTEXPR
-    copy_region(std::size_t source_offset, 
-                std::size_t destination_offset,
-                std::size_t count ) noexcept;
-    copy_region(const copy_region &other) = default;
-    copy_region(copy_region &&other) = default;
-    ~copy_region() = default;
+	XMIPP4_CONSTEXPR copy_region() noexcept;
+	XMIPP4_CONSTEXPR
+	copy_region(
+		std::size_t source_offset, 
+		std::size_t destination_offset,
+		std::size_t count
+	) noexcept;
+	copy_region(const copy_region &other) = default;
+	copy_region(copy_region &&other) = default;
+	~copy_region() = default;
 
-    copy_region& operator=(const copy_region &other) = default;
-    copy_region& operator=(copy_region &&other) = default;
+	copy_region& operator=(const copy_region &other) = default;
+	copy_region& operator=(copy_region &&other) = default;
 
-    XMIPP4_CONSTEXPR std::size_t get_source_offset() const noexcept;
-    XMIPP4_CONSTEXPR std::size_t get_destination_offset() const noexcept;
-    XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
+	XMIPP4_CONSTEXPR std::size_t get_source_offset() const noexcept;
+	XMIPP4_CONSTEXPR std::size_t get_destination_offset() const noexcept;
+	XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
 
 private:
-    std::size_t m_source_offset;
-    std::size_t m_destination_offset;
-    std::size_t m_count;
+	std::size_t m_source_offset;
+	std::size_t m_destination_offset;
+	std::size_t m_count;
 
 };
 

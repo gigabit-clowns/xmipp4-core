@@ -16,27 +16,27 @@ namespace hardware
 class XMIPP4_CORE_API device_queue
 {
 public:
-    device_queue() = default;
-    device_queue(const device_queue &other) = default;
-    device_queue(device_queue &&other) = default;
-    virtual ~device_queue() = default;
+	device_queue() = default;
+	device_queue(const device_queue &other) = default;
+	device_queue(device_queue &&other) = default;
+	virtual ~device_queue() = default;
 
-    device_queue& operator=(const device_queue &other) = default;
-    device_queue& operator=(device_queue &&other) = default;
+	device_queue& operator=(const device_queue &other) = default;
+	device_queue& operator=(device_queue &&other) = default;
 
-    /**
-     * @brief Wait until the device_queue is flushed.
-     * 
-     */
-    virtual void wait_until_completed() const = 0;
+	/**
+	 * @brief Wait until the device_queue is flushed.
+	 * 
+	 */
+	virtual void wait_until_completed() const = 0;
 
-    /**
-     * @brief Check if the queue has completed processing.
-     * 
-     * @return true if queue has finished processing.
-     * @return false if queue is busy processing.
-     */
-    virtual bool is_idle() const noexcept = 0;
+	/**
+	 * @brief Check if the queue has completed processing.
+	 * 
+	 * @return true if queue has finished processing.
+	 * @return false if queue is busy processing.
+	 */
+	virtual bool is_idle() const noexcept = 0;
 
 }; 
 

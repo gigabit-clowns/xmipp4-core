@@ -18,7 +18,7 @@ namespace hardware
 
 memory_resource& host_memory_allocator::get_memory_resource() const noexcept
 {
-    return host_memory_resource::get();
+	return host_memory_resource::get();
 }
 
 std::size_t host_memory_allocator::get_max_alignment() const noexcept
@@ -27,19 +27,19 @@ std::size_t host_memory_allocator::get_max_alignment() const noexcept
 }
 
 std::shared_ptr<buffer> host_memory_allocator::allocate(
-    std::size_t size, 
-    std::size_t alignment, 
-    device_queue *queue
+	std::size_t size, 
+	std::size_t alignment, 
+	device_queue *queue
 )
 {
-    if (queue)
-    {
-        // As host allocation is synchronous, we need to wait until all previous
-        queue->wait_until_completed();
-    }
+	if (queue)
+	{
+		// As host allocation is synchronous, we need to wait until all previous
+		queue->wait_until_completed();
+	}
 
-    size = memory::align_ceil(size, alignment);
-    return std::make_shared<host_buffer>(size, alignment);
+	size = memory::align_ceil(size, alignment);
+	return std::make_shared<host_buffer>(size, alignment);
 }
 
 } // namespace hardware

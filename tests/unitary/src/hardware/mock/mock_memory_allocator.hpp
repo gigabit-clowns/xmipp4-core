@@ -12,20 +12,20 @@ namespace hardware
 {
 
 class mock_memory_allocator final
-    : public memory_allocator
+	: public memory_allocator
 {
 public:
-    MAKE_CONST_MOCK0(
-        get_memory_resource, 
-        memory_resource&(), 
-        noexcept override
-    );
+	MAKE_CONST_MOCK0(
+		get_memory_resource, 
+		memory_resource&(), 
+		noexcept override
+	);
 
-    MAKE_MOCK3(
-        allocate, 
-        std::shared_ptr<buffer>(std::size_t, std::size_t, device_queue*), 
-        override
-    );
+	MAKE_MOCK3(
+		allocate, 
+		std::shared_ptr<buffer>(std::size_t, std::size_t, device_queue*), 
+		override
+	);
 
 };
 

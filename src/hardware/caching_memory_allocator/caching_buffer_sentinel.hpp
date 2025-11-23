@@ -22,42 +22,28 @@ class device_queue;
 class caching_memory_allocator;
 
 class caching_buffer_sentinel final
-    : public buffer_sentinel
+	: public buffer_sentinel
 {
 public: 
-    caching_buffer_sentinel(
-        caching_memory_allocator &allocator,
-        memory_block_pool::iterator block
-    );
-    caching_buffer_sentinel(
-        const caching_buffer_sentinel &other
-    ) = delete;
-    caching_buffer_sentinel(
-        caching_buffer_sentinel &&other
-    ) = delete;
-    ~caching_buffer_sentinel() override;
+	caching_buffer_sentinel(
+		caching_memory_allocator &allocator,
+		memory_block_pool::iterator block
+	);
+	~caching_buffer_sentinel() override;
 
-    caching_buffer_sentinel& operator=(
-        const caching_buffer_sentinel &other
-    ) = delete;
-    caching_buffer_sentinel& operator=(
-        caching_buffer_sentinel &&other
-    ) = delete;
+	span<device_queue *const> get_queues() const noexcept;
 
-    span<device_queue *const> get_queues() const noexcept;
-
-    void record_queue(device_queue &queue, bool exclusive) override;
+	void record_queue(device_queue &queue, bool exclusive) override;
 
 private:
-    using queue_set_type = boost::container::small_flat_set<
-        device_queue*, 
-        XMIPP4_SMALL_QUEUE_COUNT
-    >;
+	using queue_set_type = boost::container::small_flat_set<
+		device_queue*, 
+		XMIPP4_SMALL_QUEUE_COUNT
+	>;
 
-    std::reference_wrapper<caching_memory_allocator> m_allocator;
-    memory_block_pool::iterator m_block;
-    queue_set_type m_queues;
-
+	std::reference_wrapper<caching_memory_allocator> m_allocator;
+	memory_block_pool::iterator m_block;
+	queue_set_type m_queues;
 };
 
 } // namespace hardware

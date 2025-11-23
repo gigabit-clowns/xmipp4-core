@@ -7,11 +7,11 @@ namespace xmipp4
 
 version get_core_version() noexcept
 {
-    return version(
-        VERSION_MAJOR,
-        VERSION_MINOR,
-        VERSION_PATCH
-    );
+	return version(
+		VERSION_MAJOR,
+		VERSION_MINOR,
+		VERSION_PATCH
+	);
 }
 
 } // namespace xmipp4

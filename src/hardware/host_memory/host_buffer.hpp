@@ -14,12 +14,11 @@ namespace hardware
  * 
  */
 class host_buffer final
-    : public buffer
+	: public buffer
 {
 public:
-    host_buffer(std::size_t size, std::size_t alignment);
-    ~host_buffer() override;
-
+	host_buffer(std::size_t size, std::size_t alignment);
+	~host_buffer() override;
 };
 
 } // namespace hardware

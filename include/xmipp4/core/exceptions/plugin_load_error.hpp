@@ -13,9 +13,9 @@ namespace xmipp4
  * 
  */
 class plugin_load_error
-    : public std::runtime_error
+	: public std::runtime_error
 {
-    using runtime_error::runtime_error;
+	using runtime_error::runtime_error;
 };
 
 } // namespace xmipp4

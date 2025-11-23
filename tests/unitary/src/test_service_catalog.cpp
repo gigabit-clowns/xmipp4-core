@@ -11,9 +11,9 @@ using namespace xmipp4;
 
 TEST_CASE( "get_service_manager should always return the same instance", "[service_catalog]" ) 
 {
-    service_catalog catalog(false);
+	service_catalog catalog(false);
 
-    auto& manager1 = catalog.get_service_manager<mock_service_manager>();
-    auto& manager2 = catalog.get_service_manager<mock_service_manager>();
-    REQUIRE( &manager1 == &manager2 );
+	auto& manager1 = catalog.get_service_manager<mock_service_manager>();
+	auto& manager2 = catalog.get_service_manager<mock_service_manager>();
+	REQUIRE( &manager1 == &manager2 );
 }

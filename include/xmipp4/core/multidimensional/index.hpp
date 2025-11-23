@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
+
 #include <cstddef>
 
 namespace xmipp4 
@@ -21,6 +23,7 @@ namespace multidimensional
  * @return std::size_t Sanitize value. Guaranteed to be in [0, extent)
  * @throws std::out_of_range if the provided index is out of [-extent, extent)
  */
+XMIPP4_CORE_API
 std::size_t sanitize_index(std::ptrdiff_t index, std::size_t extent);
 
 } // namespace multidimensional

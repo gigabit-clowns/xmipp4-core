@@ -17,9 +17,9 @@
  * 
  */
 #if defined(__has_builtin) && !defined(XMIPP4_NO_BUILTIN)
-    #define XMIPP4_HAS_BUILTIN(fun) __has_builtin(__builtin_##fun)
+	#define XMIPP4_HAS_BUILTIN(fun) __has_builtin(__builtin_##fun)
 #elif defined(XMIPP4_DOC_BUILD)
-    #define XMIPP4_HAS_BUILTIN(fun) 1
+	#define XMIPP4_HAS_BUILTIN(fun) 1
 #else
-    #define XMIPP4_HAS_BUILTIN(fun) 0
+	#define XMIPP4_HAS_BUILTIN(fun) 0
 #endif

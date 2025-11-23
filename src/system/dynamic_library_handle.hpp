@@ -49,9 +49,9 @@ std::string dynamic_library_symbol_filename_lookup(const void* symbol);
 } // namespace xmipp4
 
 #if XMIPP4_POSIX
-    #include "dynamic_library_handle_posix.inl"
+	#include "dynamic_library_handle_posix.inl"
 #elif XMIPP4_WINDOWS
-    #include "dynamic_library_handle_windows.inl"
+	#include "dynamic_library_handle_windows.inl"
 #else
-    #error "No dynamic library_handle implementation available for this platform"
+	#error "No dynamic library_handle implementation available for this platform"
 #endif

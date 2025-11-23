@@ -9,459 +9,459 @@ using namespace xmipp4;
 
 TEST_CASE( "to_string with numerical_type should produce correct results", "[numerical_type]" ) 
 {
-    numerical_type type;
-    std::string expected_str;
-    std::tie(type, expected_str) = GENERATE(
-        table<numerical_type, std::string>({
-            {numerical_type::unknown, "unknown"},
-            {numerical_type::int8, "int8"},
-            {numerical_type::uint8, "uint8"},
-            {numerical_type::int16, "int16"},
-            {numerical_type::uint16, "uint16"},
-            {numerical_type::int32, "int32"},
-            {numerical_type::uint32, "uint32"},
-            {numerical_type::int64, "int64"},
-            {numerical_type::uint64, "uint64"},
-            {numerical_type::float16, "float16"},
-            {numerical_type::brain_float16, "brain_float16"},
-            {numerical_type::float32, "float32"},
-            {numerical_type::float64, "float64"},
-            {numerical_type::complex_float16, "complex_float16"},
-            {numerical_type::complex_float32, "complex_float32"},
-            {numerical_type::complex_float64, "complex_float64"}
-        })
-    );
-    REQUIRE( std::string(to_string(type)) == expected_str );
+	numerical_type type;
+	std::string expected_str;
+	std::tie(type, expected_str) = GENERATE(
+		table<numerical_type, std::string>({
+			{numerical_type::unknown, "unknown"},
+			{numerical_type::int8, "int8"},
+			{numerical_type::uint8, "uint8"},
+			{numerical_type::int16, "int16"},
+			{numerical_type::uint16, "uint16"},
+			{numerical_type::int32, "int32"},
+			{numerical_type::uint32, "uint32"},
+			{numerical_type::int64, "int64"},
+			{numerical_type::uint64, "uint64"},
+			{numerical_type::float16, "float16"},
+			{numerical_type::brain_float16, "brain_float16"},
+			{numerical_type::float32, "float32"},
+			{numerical_type::float64, "float64"},
+			{numerical_type::complex_float16, "complex_float16"},
+			{numerical_type::complex_float32, "complex_float32"},
+			{numerical_type::complex_float64, "complex_float64"}
+		})
+	);
+	REQUIRE( std::string(to_string(type)) == expected_str );
 }
 
 TEST_CASE( "from_string with numerical_type should produce correct results", "[numerical_type]" ) 
 {
-    std::string input_str;
-    bool expected_valid;
-    numerical_type expected_type;
-    std::tie(input_str, expected_valid, expected_type) = GENERATE(
-        table<std::string, bool, numerical_type>({
-            {"unknown", true, numerical_type::unknown},
-            {"int8", true, numerical_type::int8},
-            {"uint8", true, numerical_type::uint8},
-            {"int16", true, numerical_type::int16},
-            {"uint16", true, numerical_type::uint16},
-            {"int32", true, numerical_type::int32},
-            {"uint32", true, numerical_type::uint32},
-            {"int64", true, numerical_type::int64},
-            {"uint64", true, numerical_type::uint64},
-            {"float16", true, numerical_type::float16},
-            {"brain_float16", true, numerical_type::brain_float16},
-            {"float32", true, numerical_type::float32},
-            {"float64", true, numerical_type::float64},
-            {"complex_float16", true, numerical_type::complex_float16},
-            {"complex_float32", true, numerical_type::complex_float32},
-            {"complex_float64", true, numerical_type::complex_float64},
-            {"invalid", false, numerical_type::unknown}
-        })
-    );
+	std::string input_str;
+	bool expected_valid;
+	numerical_type expected_type;
+	std::tie(input_str, expected_valid, expected_type) = GENERATE(
+		table<std::string, bool, numerical_type>({
+			{"unknown", true, numerical_type::unknown},
+			{"int8", true, numerical_type::int8},
+			{"uint8", true, numerical_type::uint8},
+			{"int16", true, numerical_type::int16},
+			{"uint16", true, numerical_type::uint16},
+			{"int32", true, numerical_type::int32},
+			{"uint32", true, numerical_type::uint32},
+			{"int64", true, numerical_type::int64},
+			{"uint64", true, numerical_type::uint64},
+			{"float16", true, numerical_type::float16},
+			{"brain_float16", true, numerical_type::brain_float16},
+			{"float32", true, numerical_type::float32},
+			{"float64", true, numerical_type::float64},
+			{"complex_float16", true, numerical_type::complex_float16},
+			{"complex_float32", true, numerical_type::complex_float32},
+			{"complex_float64", true, numerical_type::complex_float64},
+			{"invalid", false, numerical_type::unknown}
+		})
+	);
 
-    numerical_type type;
-    bool valid = from_string(input_str, type);
-    REQUIRE(valid == expected_valid);
-    if (expected_valid)
-    {
-        REQUIRE(type == expected_type);
-    }
+	numerical_type type;
+	bool valid = from_string(input_str, type);
+	REQUIRE(valid == expected_valid);
+	if (expected_valid)
+	{
+		REQUIRE(type == expected_type);
+	}
 }
 
 TEST_CASE( "is_unsigned should return true with unsigned numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::uint8,
-        numerical_type::uint16,
-        numerical_type::uint32,
-        numerical_type::uint64
-    );
+	const auto type = GENERATE(
+		numerical_type::uint8,
+		numerical_type::uint16,
+		numerical_type::uint32,
+		numerical_type::uint64
+	);
 
-    REQUIRE( is_unsigned(type) == true );
+	REQUIRE( is_unsigned(type) == true );
 }
 
 TEST_CASE( "is_unsigned should return false with signed numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::int16,
-        numerical_type::int32,
-        numerical_type::int64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::int16,
+		numerical_type::int32,
+		numerical_type::int64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( is_unsigned(type) == false );
+	REQUIRE( is_unsigned(type) == false );
 }
 
 TEST_CASE( "is_integer should return true with integral numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64
+	);
 
-    REQUIRE( is_integer(type) == true );
+	REQUIRE( is_integer(type) == true );
 }
 
 TEST_CASE( "is_integer should return false with non integral numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( is_integer(type) == false );
+	REQUIRE( is_integer(type) == false );
 }
 
 TEST_CASE( "is_float should return true with floating point numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64
-    );
+	const auto type = GENERATE(
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64
+	);
 
-    REQUIRE( is_float(type) == true );
+	REQUIRE( is_float(type) == true );
 }
 
 TEST_CASE( "is_float should return false with non floating point numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( is_float(type) == false );
+	REQUIRE( is_float(type) == false );
 }
 
 TEST_CASE( "is_complex should return true with complex numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( is_complex(type) == true );
+	REQUIRE( is_complex(type) == true );
 }
 
 TEST_CASE( "is_complex should return false with non complex numerical_types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64
+	);
 
-    REQUIRE( is_complex(type) == false );
+	REQUIRE( is_complex(type) == false );
 }
 
 TEST_CASE( "make_complex should return the equivalent complex type for supported floating point types", "[numerical_type]" ) 
 {
-    numerical_type floating_type;
-    numerical_type expected_complex_type;
+	numerical_type floating_type;
+	numerical_type expected_complex_type;
 
-    std::tie(floating_type, expected_complex_type) = GENERATE(
-        table<numerical_type, numerical_type>({
-            {numerical_type::float16, numerical_type::complex_float16},
-            {numerical_type::float32, numerical_type::complex_float32},
-            {numerical_type::float64, numerical_type::complex_float64}
-        })
-    );
+	std::tie(floating_type, expected_complex_type) = GENERATE(
+		table<numerical_type, numerical_type>({
+			{numerical_type::float16, numerical_type::complex_float16},
+			{numerical_type::float32, numerical_type::complex_float32},
+			{numerical_type::float64, numerical_type::complex_float64}
+		})
+	);
 
-    REQUIRE( make_complex(floating_type) == expected_complex_type );
+	REQUIRE( make_complex(floating_type) == expected_complex_type );
 }
 
 TEST_CASE( "make_complex should return unknown for unsupported types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::brain_float16
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::brain_float16
+	);
 
-    REQUIRE( make_complex(type) == numerical_type::unknown );
+	REQUIRE( make_complex(type) == numerical_type::unknown );
 }
 
 TEST_CASE( "make_complex should return return itself with complex types", "[numerical_type]" ) 
 {
-    const auto type = GENERATE(
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( make_complex(type) == type );
+	REQUIRE( make_complex(type) == type );
 }
 
 TEST_CASE( "the common_type of two equal types should be the same as the input types", "[numerical_type]" )
 {
-    const auto type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( common_type(type, type) == type );
+	REQUIRE( common_type(type, type) == type );
 }
 
 TEST_CASE( "the common_type function should be commutative", "[numerical_type]" )
 {
-    const auto type1 = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type1 = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    const auto type2 = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto type2 = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( common_type(type1, type2) == common_type(type2, type1) );
+	REQUIRE( common_type(type1, type2) == common_type(type2, type1) );
 }
 
 TEST_CASE( "the common_type of a floating types is the highest precision type", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::float16, numerical_type::float32, numerical_type::float32 },
-            { numerical_type::float16, numerical_type::float64, numerical_type::float64 },
-            { numerical_type::float16, numerical_type::brain_float16, numerical_type::float32 },
-            { numerical_type::brain_float16, numerical_type::float32, numerical_type::float32 },
-            { numerical_type::brain_float16, numerical_type::float64, numerical_type::float64 },
-            { numerical_type::float32, numerical_type::float64, numerical_type::float64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::float16, numerical_type::float32, numerical_type::float32 },
+			{ numerical_type::float16, numerical_type::float64, numerical_type::float64 },
+			{ numerical_type::float16, numerical_type::brain_float16, numerical_type::float32 },
+			{ numerical_type::brain_float16, numerical_type::float32, numerical_type::float32 },
+			{ numerical_type::brain_float16, numerical_type::float64, numerical_type::float64 },
+			{ numerical_type::float32, numerical_type::float64, numerical_type::float64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of two signed integers is the highest precision signed integer", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::int8, numerical_type::int16, numerical_type::int16 },
-            { numerical_type::int8, numerical_type::int32, numerical_type::int32 },
-            { numerical_type::int8, numerical_type::int64, numerical_type::int64 },
-            { numerical_type::int16, numerical_type::int32, numerical_type::int32 },
-            { numerical_type::int16, numerical_type::int64, numerical_type::int64 },
-            { numerical_type::int32, numerical_type::int64, numerical_type::int64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::int8, numerical_type::int16, numerical_type::int16 },
+			{ numerical_type::int8, numerical_type::int32, numerical_type::int32 },
+			{ numerical_type::int8, numerical_type::int64, numerical_type::int64 },
+			{ numerical_type::int16, numerical_type::int32, numerical_type::int32 },
+			{ numerical_type::int16, numerical_type::int64, numerical_type::int64 },
+			{ numerical_type::int32, numerical_type::int64, numerical_type::int64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of two unsigned integers is the highest precision unsigned integer", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::uint8, numerical_type::uint16, numerical_type::uint16 },
-            { numerical_type::uint8, numerical_type::uint32, numerical_type::uint32 },
-            { numerical_type::uint8, numerical_type::uint64, numerical_type::uint64 },
-            { numerical_type::uint16, numerical_type::uint32, numerical_type::uint32 },
-            { numerical_type::uint16, numerical_type::uint64, numerical_type::uint64 },
-            { numerical_type::uint32, numerical_type::uint64, numerical_type::uint64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::uint8, numerical_type::uint16, numerical_type::uint16 },
+			{ numerical_type::uint8, numerical_type::uint32, numerical_type::uint32 },
+			{ numerical_type::uint8, numerical_type::uint64, numerical_type::uint64 },
+			{ numerical_type::uint16, numerical_type::uint32, numerical_type::uint32 },
+			{ numerical_type::uint16, numerical_type::uint64, numerical_type::uint64 },
+			{ numerical_type::uint32, numerical_type::uint64, numerical_type::uint64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of a singed and unsigned integer is the highest precision signed integer", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::uint8, numerical_type::int16, numerical_type::int16 },
-            { numerical_type::int8, numerical_type::uint16, numerical_type::int16 },
-            { numerical_type::uint8, numerical_type::int32, numerical_type::int32 },
-            { numerical_type::int8, numerical_type::uint32, numerical_type::int32 },
-            { numerical_type::uint8, numerical_type::int64, numerical_type::int64 },
-            { numerical_type::int8, numerical_type::uint64, numerical_type::int64 },
-            { numerical_type::uint16, numerical_type::int32, numerical_type::int32 },
-            { numerical_type::int16, numerical_type::uint32, numerical_type::int32 },
-            { numerical_type::uint16, numerical_type::int64, numerical_type::int64 },
-            { numerical_type::int16, numerical_type::uint64, numerical_type::int64 },
-            { numerical_type::uint32, numerical_type::int64, numerical_type::int64 },
-            { numerical_type::int32, numerical_type::uint64, numerical_type::int64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::uint8, numerical_type::int16, numerical_type::int16 },
+			{ numerical_type::int8, numerical_type::uint16, numerical_type::int16 },
+			{ numerical_type::uint8, numerical_type::int32, numerical_type::int32 },
+			{ numerical_type::int8, numerical_type::uint32, numerical_type::int32 },
+			{ numerical_type::uint8, numerical_type::int64, numerical_type::int64 },
+			{ numerical_type::int8, numerical_type::uint64, numerical_type::int64 },
+			{ numerical_type::uint16, numerical_type::int32, numerical_type::int32 },
+			{ numerical_type::int16, numerical_type::uint32, numerical_type::int32 },
+			{ numerical_type::uint16, numerical_type::int64, numerical_type::int64 },
+			{ numerical_type::int16, numerical_type::uint64, numerical_type::int64 },
+			{ numerical_type::uint32, numerical_type::int64, numerical_type::int64 },
+			{ numerical_type::int32, numerical_type::uint64, numerical_type::int64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of a complex types is the highest precision type", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::complex_float16, numerical_type::complex_float32, numerical_type::complex_float32 },
-            { numerical_type::complex_float16, numerical_type::complex_float64, numerical_type::complex_float64 },
-            { numerical_type::complex_float32, numerical_type::complex_float64, numerical_type::complex_float64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::complex_float16, numerical_type::complex_float32, numerical_type::complex_float32 },
+			{ numerical_type::complex_float16, numerical_type::complex_float64, numerical_type::complex_float64 },
+			{ numerical_type::complex_float32, numerical_type::complex_float64, numerical_type::complex_float64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of a floating point and a complex is the highest precision complex type", "[numerical_type]" )
 {
-    numerical_type first_type, second_type, expected_type;
-    std::tie(first_type, second_type, expected_type) = GENERATE(
-        table<numerical_type, numerical_type, numerical_type>({
-            { numerical_type::float16, numerical_type::complex_float16, numerical_type::complex_float16 },
-            { numerical_type::float16, numerical_type::complex_float32, numerical_type::complex_float32 },
-            { numerical_type::float16, numerical_type::complex_float64, numerical_type::complex_float64 },
-            { numerical_type::float32, numerical_type::complex_float16, numerical_type::complex_float32 },
-            { numerical_type::float32, numerical_type::complex_float32, numerical_type::complex_float32 },
-            { numerical_type::float32, numerical_type::complex_float64, numerical_type::complex_float64 },
-            { numerical_type::float64, numerical_type::complex_float16, numerical_type::complex_float64 },
-            { numerical_type::float64, numerical_type::complex_float32, numerical_type::complex_float64 },
-            { numerical_type::float64, numerical_type::complex_float64, numerical_type::complex_float64 },
-        })
-    );
+	numerical_type first_type, second_type, expected_type;
+	std::tie(first_type, second_type, expected_type) = GENERATE(
+		table<numerical_type, numerical_type, numerical_type>({
+			{ numerical_type::float16, numerical_type::complex_float16, numerical_type::complex_float16 },
+			{ numerical_type::float16, numerical_type::complex_float32, numerical_type::complex_float32 },
+			{ numerical_type::float16, numerical_type::complex_float64, numerical_type::complex_float64 },
+			{ numerical_type::float32, numerical_type::complex_float16, numerical_type::complex_float32 },
+			{ numerical_type::float32, numerical_type::complex_float32, numerical_type::complex_float32 },
+			{ numerical_type::float32, numerical_type::complex_float64, numerical_type::complex_float64 },
+			{ numerical_type::float64, numerical_type::complex_float16, numerical_type::complex_float64 },
+			{ numerical_type::float64, numerical_type::complex_float32, numerical_type::complex_float64 },
+			{ numerical_type::float64, numerical_type::complex_float64, numerical_type::complex_float64 },
+		})
+	);
 
-    REQUIRE( common_type(first_type, second_type) ==  expected_type );
+	REQUIRE( common_type(first_type, second_type) ==  expected_type );
 }
 
 TEST_CASE( "the common_type of a floating point or complex number and an integer should be the floating point or complex type", "[numerical_type]" )
 {
-    const auto integer_type = GENERATE(
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64
-    );
+	const auto integer_type = GENERATE(
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64
+	);
 
-    const auto float_or_complex_type = GENERATE(
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64
-    );
+	const auto float_or_complex_type = GENERATE(
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64
+	);
 
-    REQUIRE( common_type(integer_type, float_or_complex_type) == float_or_complex_type );
+	REQUIRE( common_type(integer_type, float_or_complex_type) == float_or_complex_type );
 }
 
 TEST_CASE( "the common_type should return numerical_type::unknown for any invalid input", "[numerical_type]" )
 {
-    const auto first_type = GENERATE(
-        numerical_type::unknown,
-        numerical_type::count
-    );
-    const auto second_type = GENERATE(
-        numerical_type::unknown,
-        numerical_type::int8,
-        numerical_type::uint8,
-        numerical_type::int16,
-        numerical_type::uint16,
-        numerical_type::int32,
-        numerical_type::uint32,
-        numerical_type::int64,
-        numerical_type::uint64,
-        numerical_type::float16,
-        numerical_type::brain_float16,
-        numerical_type::float32,
-        numerical_type::float64,
-        numerical_type::complex_float16,
-        numerical_type::complex_float32,
-        numerical_type::complex_float64,
-        numerical_type::count
-    );
+	const auto first_type = GENERATE(
+		numerical_type::unknown,
+		numerical_type::count
+	);
+	const auto second_type = GENERATE(
+		numerical_type::unknown,
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::brain_float16,
+		numerical_type::float32,
+		numerical_type::float64,
+		numerical_type::complex_float16,
+		numerical_type::complex_float32,
+		numerical_type::complex_float64,
+		numerical_type::count
+	);
 
-    REQUIRE( common_type(first_type, second_type) == numerical_type::unknown );
-    REQUIRE( common_type(second_type, first_type) == numerical_type::unknown );
+	REQUIRE( common_type(first_type, second_type) == numerical_type::unknown );
+	REQUIRE( common_type(second_type, first_type) == numerical_type::unknown );
 }

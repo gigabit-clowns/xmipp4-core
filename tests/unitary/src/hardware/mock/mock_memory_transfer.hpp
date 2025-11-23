@@ -14,20 +14,19 @@ namespace hardware
 {
 
 class mock_memory_transfer final
-    : public memory_transfer
+	: public memory_transfer
 {
 public:
-    MAKE_MOCK4(
-        copy,
-        void(
-            const buffer &source, 
-            buffer &destination,
-            span<const copy_region> regions, 
-            device_queue *queue
-        ),
-        const override
-    );
-
+	MAKE_MOCK4(
+		copy,
+		void(
+			const buffer &source, 
+			buffer &destination,
+			span<const copy_region> regions, 
+			device_queue *queue
+		),
+		const override
+	);
 };
 
 } // namespace hardware

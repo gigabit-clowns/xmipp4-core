@@ -12,12 +12,12 @@ namespace hardware
 {
 
 class mock_device_to_host_event final
-    : public device_to_host_event
+	: public device_to_host_event
 {
 public:
-    MAKE_MOCK1(signal, void(device_queue&), override);
-    MAKE_CONST_MOCK0(is_signaled, bool(), override);
-    MAKE_CONST_MOCK0(wait, void(), override);
+	MAKE_MOCK1(signal, void(device_queue&), override);
+	MAKE_CONST_MOCK0(is_signaled, bool(), override);
+	MAKE_CONST_MOCK0(wait, void(), override);
 
 };
 

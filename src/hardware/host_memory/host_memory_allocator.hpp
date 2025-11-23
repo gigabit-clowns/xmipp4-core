@@ -18,21 +18,21 @@ namespace hardware
  * 
  */
 class host_memory_allocator final
-    : public memory_allocator
+	: public memory_allocator
 {
 public:
-    host_memory_allocator() = default;
-    ~host_memory_allocator() override = default;
+	host_memory_allocator() = default;
+	~host_memory_allocator() override = default;
 
-    memory_resource& get_memory_resource() const noexcept override;
+	memory_resource& get_memory_resource() const noexcept override;
 
-    std::size_t get_max_alignment() const noexcept override;
+	std::size_t get_max_alignment() const noexcept override;
 
-    std::shared_ptr<buffer> allocate(
-        std::size_t size, 
-        std::size_t alignment, 
-        device_queue *queue
-    ) override;
+	std::shared_ptr<buffer> allocate(
+		std::size_t size, 
+		std::size_t alignment, 
+		device_queue *queue
+	) override;
 
 };
 

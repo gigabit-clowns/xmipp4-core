@@ -10,7 +10,7 @@
  * 
  */
 #if _OPENMP
-    #define XMIPP4_OMP(x) XMIPP4_PRAGMA(omp x)
+	#define XMIPP4_OMP(x) XMIPP4_PRAGMA(omp x)
 #else
-    #define XMIPP4_OMP(x)
+	#define XMIPP4_OMP(x)
 #endif

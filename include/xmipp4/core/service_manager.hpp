@@ -26,25 +26,24 @@ namespace xmipp4
 class XMIPP4_CORE_API service_manager
 {
 public:
-    service_manager() = default;
-    service_manager(const service_manager& other) = default;
-    service_manager(service_manager&& other) = default;
-    virtual ~service_manager() = default;
+	service_manager() = default;
+	service_manager(const service_manager& other) = delete;
+	service_manager(service_manager&& other) = delete;
+	virtual ~service_manager() = default;
 
-    service_manager& operator=(const service_manager& other) = default;
-    service_manager& operator=(service_manager&& other) = default;
+	service_manager& operator=(const service_manager& other) = delete;
+	service_manager& operator=(service_manager&& other) = delete;
 
-    /**
-     * @brief Register backends bundled with the core library.
-     * 
-     * This usually loads fallback implementations that are always 
-     * available although they may not be the most efficient or performant.
-     * The loaded backend(s) depend on the implementation of the specific
-     * interface.
-     * 
-     */
-    virtual void register_builtin_backends() { /*By default this is a no-op*/ };
-
+	/**
+	 * @brief Register backends bundled with the core library.
+	 * 
+	 * This usually loads fallback implementations that are always 
+	 * available although they may not be the most efficient or performant.
+	 * The loaded backend(s) depend on the implementation of the specific
+	 * interface.
+	 * 
+	 */
+	virtual void register_builtin_backends() { /*By default this is a no-op*/ };
 };
 
 } // namespace xmipp4

@@ -14,25 +14,25 @@ namespace hardware
 {
 
 host_buffer::host_buffer(
-    std::size_t size, 
-    std::size_t alignment
+	std::size_t size, 
+	std::size_t alignment
 )
-    : buffer(
-        memory::aligned_alloc(size, alignment), 
-        size, 
-        host_memory_resource::get(), 
-        nullptr
-    )
+	: buffer(
+		memory::aligned_alloc(size, alignment), 
+		size, 
+		host_memory_resource::get(), 
+		nullptr
+	)
 {
-    if (size > 0 && get_host_ptr() == nullptr)
-    {
-        throw std::bad_alloc();
-    }
+	if (size > 0 && get_host_ptr() == nullptr)
+	{
+		throw std::bad_alloc();
+	}
 }
 
 host_buffer::~host_buffer()
 {
-    memory::aligned_free(get_host_ptr());
+	memory::aligned_free(get_host_ptr());
 }
 
 } // namespace hardware

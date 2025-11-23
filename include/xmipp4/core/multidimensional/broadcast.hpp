@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../span.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <vector>
 
@@ -25,8 +26,11 @@ class strided_layout;
  * @param extents2 The second set of extents.
  * @throws std::broadcast_error when one of of the extents cannot be broadcasted.
  */
-void broadcast_extents(std::vector<std::size_t> &extents1, 
-                       std::vector<std::size_t> &extents2 );  
+XMIPP4_CORE_API
+void broadcast_extents(
+	std::vector<std::size_t> &extents1, 
+	std::vector<std::size_t> &extents2
+);  
 
 } // namespace multidimensional
 } // namespace xmipp4

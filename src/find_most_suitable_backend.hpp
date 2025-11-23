@@ -20,9 +20,9 @@ namespace xmipp4
  */
 template <typename ForwardIte, typename F>
 ForwardIte find_most_suitable_backend(
-    ForwardIte first, 
-    ForwardIte last, 
-    const F& suitability_evaluator
+	ForwardIte first, 
+	ForwardIte last, 
+	const F& suitability_evaluator
 );
 
 } // namespace xmipp4

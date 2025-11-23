@@ -21,67 +21,68 @@ namespace multidimensional
 class strided_axis 
 {
 public:
-    /**
-     * @brief Constructor
-     * 
-     * @param extent Number of elements in the axis.
-     * @param stride Step between consecutive elements. In items.
-     */
-    XMIPP4_CONSTEXPR strided_axis(std::size_t extent, 
-                                  std::ptrdiff_t stride ) noexcept;
+	/**
+	 * @brief Constructor
+	 * 
+	 * @param extent Number of elements in the axis.
+	 * @param stride Step between consecutive elements. In items.
+	 */
+	XMIPP4_CONSTEXPR strided_axis(
+		std::size_t extent, 
+		std::ptrdiff_t stride
+	) noexcept;
 
-    strided_axis() = default;
-    strided_axis(const strided_axis& other) = default;
-    strided_axis(strided_axis&& other) = default;
-    ~strided_axis() = default;
+	strided_axis() = default;
+	strided_axis(const strided_axis& other) = default;
+	strided_axis(strided_axis&& other) = default;
+	~strided_axis() = default;
 
-    strided_axis& operator=(const strided_axis& other) = default;
-    strided_axis& operator=(strided_axis&& other) = default;
-    
-    XMIPP4_CONSTEXPR bool operator==(const strided_axis& other) const noexcept;
-    XMIPP4_CONSTEXPR bool operator!=(const strided_axis& other) const noexcept;
+	strided_axis& operator=(const strided_axis& other) = default;
+	strided_axis& operator=(strided_axis&& other) = default;
+	
+	XMIPP4_CONSTEXPR bool operator==(const strided_axis& other) const noexcept;
+	XMIPP4_CONSTEXPR bool operator!=(const strided_axis& other) const noexcept;
 
-    XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &other) noexcept;
+	XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &other) noexcept;
 
-    /**
-     * @brief Set the element count
-     * 
-     * @param extent The element count
-     */
-    XMIPP4_CONSTEXPR void set_extent(std::size_t extent) noexcept;
+	/**
+	 * @brief Set the element count
+	 * 
+	 * @param extent The element count
+	 */
+	XMIPP4_CONSTEXPR void set_extent(std::size_t extent) noexcept;
 
-    /**
-     * @brief Return the element count
-     * 
-     * @return std::size_t Element count
-     */
-    XMIPP4_CONSTEXPR std::size_t get_extent() const noexcept;
+	/**
+	 * @brief Return the element count
+	 * 
+	 * @return std::size_t Element count
+	 */
+	XMIPP4_CONSTEXPR std::size_t get_extent() const noexcept;
 
-    /**
-     * @brief Set the stride between consecutive elements
-     * 
-     * @param stride Step between consecutive elements. In items
-     */
-    XMIPP4_CONSTEXPR void set_stride(std::ptrdiff_t stride) noexcept;
+	/**
+	 * @brief Set the stride between consecutive elements
+	 * 
+	 * @param stride Step between consecutive elements. In items
+	 */
+	XMIPP4_CONSTEXPR void set_stride(std::ptrdiff_t stride) noexcept;
 
-    /**
-     * @brief Get the stride between consecutive elements
-     * 
-     * @return std::ptrdiff_t Step between consecutive elements. In items
-     */
-    XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
+	/**
+	 * @brief Get the stride between consecutive elements
+	 * 
+	 * @return std::ptrdiff_t Step between consecutive elements. In items
+	 */
+	XMIPP4_CONSTEXPR std::ptrdiff_t get_stride() const noexcept;
 
-    /**
-     * @brief Get the stride magnitude.
-     * 
-     * @return std::size_t Step between consecutive elements. In items
-     */
-    XMIPP4_CONSTEXPR std::size_t get_stride_magnitude() const noexcept;
+	/**
+	 * @brief Get the stride magnitude.
+	 * 
+	 * @return std::size_t Step between consecutive elements. In items
+	 */
+	XMIPP4_CONSTEXPR std::size_t get_stride_magnitude() const noexcept;
 
 private:
-    std::size_t m_extent; ///< Number of elements
-    std::ptrdiff_t m_stride; ///< Step between adjacent elements. In items
-
+	std::size_t m_extent; ///< Number of elements
+	std::ptrdiff_t m_stride; ///< Step between adjacent elements. In items
 };
 
 XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &x, strided_axis &y) noexcept;
@@ -120,8 +121,10 @@ strided_axis make_phantom_axis(std::size_t extent=1) noexcept;
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_equal(const strided_axis &lhs, 
-                           const strided_axis &rhs ) noexcept;
+bool compare_strides_equal(
+	const strided_axis &lhs, 
+	const strided_axis &rhs
+) noexcept;
 
 /**
  * @brief Compare the absolute strides of a given pair of axes.
@@ -132,8 +135,10 @@ bool compare_strides_equal(const strided_axis &lhs,
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_less(const strided_axis &lhs, 
-                          const strided_axis &rhs ) noexcept;
+bool compare_strides_less(
+	const strided_axis &lhs, 
+	const strided_axis &rhs
+) noexcept;
 
 /**
  * @brief Compare the absolute strides of a given pair of axes.
@@ -144,8 +149,10 @@ bool compare_strides_less(const strided_axis &lhs,
  * right hand side's stride.
  */
 XMIPP4_CONSTEXPR 
-bool compare_strides_greater(const strided_axis &lhs, 
-                             const strided_axis &rhs ) noexcept;
+bool compare_strides_greater(
+	const strided_axis &lhs, 
+	const strided_axis &rhs
+) noexcept;
 
 /**
  * @brief Check if an axis is contiguous.
@@ -171,8 +178,10 @@ bool is_contiguous(const strided_axis &axis) noexcept;
  * @return false if the axes are not contiguous.
  */
 XMIPP4_CONSTEXPR
-bool is_contiguous(const strided_axis &major,
-                   const strided_axis &minor ) noexcept;
+bool is_contiguous(
+	const strided_axis &major,
+	const strided_axis &minor
+) noexcept;
 
 /**
  * @brief Check if an axis is reversed.
@@ -231,8 +240,10 @@ bool is_significant(const strided_axis &axis) noexcept;
  * @return false if the axis has an extent of zero.
  */
 XMIPP4_CONSTEXPR 
-bool get_axis_last_offset(const strided_axis &axis, 
-                          std::ptrdiff_t &result) noexcept;
+bool get_axis_last_offset(
+	const strided_axis &axis, 
+	std::ptrdiff_t &result
+) noexcept;
 
 /**
  * @brief Obtain the offset applied when reversing an axis.
@@ -297,9 +308,11 @@ bool broadcast_to(strided_axis &axis, std::size_t extent) noexcept;
  * @param index The index to be applied.
  * @throws std::out_ofr_range
  */
-void apply_index(const strided_axis &axis, 
-                 std::ptrdiff_t &offset,
-                 std::ptrdiff_t index );
+void apply_index(
+	const strided_axis &axis, 
+	std::ptrdiff_t &offset,
+	std::ptrdiff_t index
+);
 
 /**
  * @brief Apply a slice to an axis to update an offset while checking for 
@@ -314,9 +327,11 @@ void apply_index(const strided_axis &axis,
  * @param slice The slice to be applied to the axis.
  * @throws std::out_ofr_range
  */
-void apply_slice(strided_axis &axis,
-                 std::ptrdiff_t &offset,
-                 const slice &slice);
+void apply_slice(
+	strided_axis &axis,
+	std::ptrdiff_t &offset,
+	const slice &slice
+);
 
 } // namespace multidimensional
 } // namespace xmipp4

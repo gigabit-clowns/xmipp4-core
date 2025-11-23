@@ -11,17 +11,16 @@ namespace hardware
 {
 
 class cpu_event final
-    : public device_event
-    , public device_to_host_event
+	: public device_event
+	, public device_to_host_event
 {
 public:
-    void signal(device_queue &queue) override;
+	void signal(device_queue &queue) override;
 
-    void wait() const override;
-    void wait(device_queue &queue) const override;
+	void wait() const override;
+	void wait(device_queue &queue) const override;
 
-    bool is_signaled() const override;
-
+	bool is_signaled() const override;
 }; 
 
 } // namespace hardware

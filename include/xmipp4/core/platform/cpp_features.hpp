@@ -17,8 +17,8 @@
  * 
  */
 #define XMIPP4_HAS_CPP_FEATURE(feature, version) \
-    ((__cpp_##feature >= version) || \
-    (XMIPP4_HAS_C_FEATURE(cxx_##feature) && XMIPP4_CPLUSPLUS >= version))
+	((__cpp_##feature >= version) || \
+	(XMIPP4_HAS_C_FEATURE(cxx_##feature) && XMIPP4_CPLUSPLUS >= version))
 
 /**
  * @def XMIPP4_HAS_CONSTEXPR 
@@ -26,18 +26,16 @@
  * 
  */
 #if XMIPP4_HAS_CPP_FEATURE(constexpr, 200704L)
-#  define XMIPP4_HAS_CONSTEXPR 1
+#	define XMIPP4_HAS_CONSTEXPR 1
 #elif XMIPP4_HAS_CPP11 && defined(_MSC_VER)
-#  if _MSC_VER >= 1900
-#    define XMIPP4_HAS_CONSTEXPR 1
-#  else
-#    define XMIPP4_HAS_CONSTEXPR 0
-#  endif
+#	if _MSC_VER >= 1900
+#		define XMIPP4_HAS_CONSTEXPR 1
+#	else
+#		define XMIPP4_HAS_CONSTEXPR 0
+#	endif
 #else
-#    define XMIPP4_HAS_CONSTEXPR 0
+#	define XMIPP4_HAS_CONSTEXPR 0
 #endif
-
-
 
 #define XMIPP4_HAS_IF_CONSTEXPR XMIPP4_HAS_CPP_FEATURE(if_constexpr, 201606L)
 #define XMIPP4_HAS_LIB_BITOPS XMIPP4_HAS_CPP_FEATURE(lib_bitops, 201907)

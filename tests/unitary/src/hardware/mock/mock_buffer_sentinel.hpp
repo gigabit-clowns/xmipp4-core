@@ -12,14 +12,14 @@ namespace hardware
 {
 
 class mock_buffer_sentinel final
-    : public buffer_sentinel
+	: public buffer_sentinel
 {
 public:
-    MAKE_MOCK2(
-        record_queue,
-        void(device_queue&, bool),
-        override
-    );
+	MAKE_MOCK2(
+		record_queue,
+		void(device_queue&, bool),
+		override
+	);
 
 };
 

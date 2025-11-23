@@ -9,12 +9,12 @@ namespace hardware
 
 void cpu_device_queue::wait_until_completed() const
 {
-    // No-op
+	// No-op
 }
 
 bool cpu_device_queue::is_idle() const noexcept
 {
-    return true;
+	return true;
 }
 
 } // namespace hardware

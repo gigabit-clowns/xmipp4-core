@@ -25,8 +25,7 @@ void memory_block_deferred_release::wait_pending_free(
 		}
 
 		auto block = item.first;
-		block->second.set_free(true);
-		pool.consider_merging_block(block);
+		pool.release(block);
 		m_event_pool.splice_after(m_event_pool.cbefore_begin(), events);
 	}
 

@@ -20,6 +20,18 @@ memory_block_pool::iterator memory_block_pool::end()
 	return m_blocks.end();
 }
 
+
+void memory_block_pool::acquire(iterator ite)
+{
+	ite->second.set_free(false);
+}
+
+void memory_block_pool::release(iterator ite)
+{
+	ite->second.set_free(true);
+	consider_merging_block(ite);
+}
+
 memory_block_pool::iterator memory_block_pool::find_suitable_block(
 	std::size_t size,
 	const device_queue *queue 
@@ -140,6 +152,7 @@ memory_block_pool::consider_merging_block(
 	memory_block_pool::iterator ite
 )
 {
+	XMIPP4_ASSERT( ite->second.is_free() );
 	const auto prev = ite->second.get_previous_block();
 	const auto merge_prev = is_mergeable(prev);
 	const auto next = ite->second.get_next_block();

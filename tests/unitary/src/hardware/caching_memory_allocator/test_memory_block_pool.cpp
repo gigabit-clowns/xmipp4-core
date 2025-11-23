@@ -14,6 +14,39 @@
 using namespace xmipp4;
 using namespace xmipp4::hardware;
 
+TEST_CASE( "acquire in memory_block_pool should mark the block as not free" )
+{
+	memory_block_pool pool;
+	
+	const std::size_t size = 1024;
+	auto heap = std::make_shared<mock_memory_heap>();
+	REQUIRE_CALL(*heap, get_size())
+		.RETURN(1024);
+	mock_device_queue queue;
+	auto ite = pool.register_heap(heap, &queue);
+
+	REQUIRE( ite->second.is_free() == true );
+	pool.acquire(ite);
+	REQUIRE( ite->second.is_free() == false );
+}
+
+TEST_CASE( "release in memory_block_pool should mark the block as free" )
+{
+	memory_block_pool pool;
+	
+	const std::size_t size = 1024;
+	auto heap = std::make_shared<mock_memory_heap>();
+	REQUIRE_CALL(*heap, get_size())
+		.RETURN(1024);
+	mock_device_queue queue;
+	auto ite = pool.register_heap(heap, &queue);
+
+	pool.acquire(ite);
+	REQUIRE( ite->second.is_free() == false );
+	pool.release(ite);
+	REQUIRE( ite->second.is_free() == true );
+}
+
 TEST_CASE("find_suitable_block should return the best fit for the requested size and queue")
 {
 	memory_block_pool pool;

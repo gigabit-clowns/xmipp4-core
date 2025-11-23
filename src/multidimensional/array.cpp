@@ -4,6 +4,10 @@
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/binary/bit.hpp>
+#include <xmipp4/core/logger.hpp>
 
 namespace xmipp4 
 {
@@ -303,6 +307,103 @@ array array::broadcast_to(span<const std::size_t> extents)
 	{
 		return array(implementation().broadcast_to(extents));
 	}
+}
+
+static
+array* check_output_array(array *out, hardware::memory_allocator &allocator)
+{
+    if (out)
+    {
+        const auto *storage = out->get_storage();
+        if (!storage)
+        {
+            XMIPP4_LOG_WARN(
+                "An array was provided for reuse but it does not have storage."
+            );
+            return nullptr;
+        }
+
+        if (&storage->get_memory_resource() != &allocator.get_memory_resource())
+        {
+            XMIPP4_LOG_WARN(
+                "An array was provided for reuse but it uses a different "
+                "memory resource than the allocator."
+            );
+            return nullptr;
+        }
+    }
+
+    return out;
+}
+
+static 
+std::size_t get_alignment_requirement(
+    const hardware::memory_allocator &allocator,
+    std::size_t size
+)
+{
+    size = binary::bit_ceil(size);
+    const std::size_t max_alignment = allocator.get_max_alignment();
+    const std::size_t preferred_alignment = 256; // TODO: query device for preferred alignment
+    return std::min(std::min(max_alignment, preferred_alignment), size);
+}
+
+XMIPP4_NODISCARD 
+array array::empty(
+    strided_layout layout, 
+    numerical_type data_type,
+    hardware::memory_allocator &allocator,
+    hardware::device_queue *queue,
+    array *out
+)
+{
+    out = check_output_array(out, allocator);
+
+    // Check if we can reuse the output array as-is.
+    if (out && out->get_data_type() == data_type && out->get_layout() == layout)
+    {
+        return out->view();
+    }
+
+    const auto storage_requirement = 
+        layout.compute_storage_requirement() * get_size(data_type);
+    std::shared_ptr<hardware::buffer> storage;
+
+    // Check if we can reuse the output array's storage.
+    if (out)
+    {
+        storage = out->share_storage();
+        XMIPP4_ASSERT( storage ); // Checked in check_output_array
+        if (storage->get_size() < storage_requirement)
+        {
+            XMIPP4_LOG_WARN(
+                "An array was provided for reuse but it does not have enough "
+                "storage."
+            );
+            storage.reset();
+        }
+    }
+    
+    // Allocate new storage if needed.
+    if (!storage)
+    {
+        const auto alignment = get_alignment_requirement(
+            allocator, 
+            storage_requirement
+        );
+        storage = allocator.allocate(
+            storage_requirement,
+            alignment,
+            queue
+        );
+    }
+
+    XMIPP4_ASSERT( storage );
+    return array(
+        std::move(layout),
+        std::move(storage),
+        data_type
+    );
 }
 
 } // namespace multidimensional

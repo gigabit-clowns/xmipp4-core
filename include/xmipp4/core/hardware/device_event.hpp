@@ -25,12 +25,12 @@ class XMIPP4_CORE_API device_event
 {
 public:
 	device_event() = default;
-	device_event(const device_event &other) = default;
-	device_event(device_event &&other) = default;
+	device_event(const device_event &other) = delete;
+	device_event(device_event &&other) = delete;
 	virtual ~device_event() = default;
 
-	device_event& operator=(const device_event &other) = default;
-	device_event& operator=(device_event &&other) = default;
+	device_event& operator=(const device_event &other) = delete;
+	device_event& operator=(device_event &&other) = delete;
 
 	/**
 	 * @brief Signal the event when the current point in the execution 

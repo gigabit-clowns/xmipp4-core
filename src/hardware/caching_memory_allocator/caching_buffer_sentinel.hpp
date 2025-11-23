@@ -29,20 +29,7 @@ public:
 		caching_memory_allocator &allocator,
 		memory_block_pool::iterator block
 	);
-	caching_buffer_sentinel(
-		const caching_buffer_sentinel &other
-	) = delete;
-	caching_buffer_sentinel(
-		caching_buffer_sentinel &&other
-	) = delete;
 	~caching_buffer_sentinel() override;
-
-	caching_buffer_sentinel& operator=(
-		const caching_buffer_sentinel &other
-	) = delete;
-	caching_buffer_sentinel& operator=(
-		caching_buffer_sentinel &&other
-	) = delete;
 
 	span<device_queue *const> get_queues() const noexcept;
 

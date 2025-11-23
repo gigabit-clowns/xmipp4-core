@@ -27,12 +27,12 @@ class XMIPP4_CORE_API device_to_host_event
 {
 public:
 	device_to_host_event() = default;
-	device_to_host_event(const device_to_host_event &other) = default;
-	device_to_host_event(device_to_host_event &&other) = default;
+	device_to_host_event(const device_to_host_event &other) = delete;
+	device_to_host_event(device_to_host_event &&other) = delete;
 	virtual ~device_to_host_event() = default;
 
-	device_to_host_event& operator=(const device_to_host_event &other) = default;
-	device_to_host_event& operator=(device_to_host_event &&other) = default;
+	device_to_host_event& operator=(const device_to_host_event &other) = delete;
+	device_to_host_event& operator=(device_to_host_event &&other) = delete;
 
 	/**
 	 * @brief Signal the event when the current point in the execution 

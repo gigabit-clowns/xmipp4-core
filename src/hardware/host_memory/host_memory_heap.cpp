@@ -34,42 +34,12 @@ host_memory_heap::host_memory_heap(
 	}
 }
 
-host_memory_heap::host_memory_heap(host_memory_heap &&other) noexcept
-	: host_memory_heap()
-{
-	swap(other);
-}
-
 host_memory_heap::~host_memory_heap()
-{
-	reset();
-}
-
-host_memory_heap& host_memory_heap::operator=(host_memory_heap &&other) noexcept
-{
-	if (this != &other)
-	{
-		reset();
-		swap(other);
-	}
-
-	return *this;
-}
-
-void host_memory_heap::reset() noexcept
 {
 	if (m_data)
 	{
 		memory::aligned_free(m_data);
-		m_data = nullptr;
-		m_size = 0;
 	}
-}
-
-void host_memory_heap::swap(host_memory_heap &other) noexcept
-{
-	std::swap(m_size, other.m_size);
-	std::swap(m_data, other.m_data);
 }
 
 std::size_t host_memory_heap::get_size() const noexcept

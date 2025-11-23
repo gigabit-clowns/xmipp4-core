@@ -22,14 +22,14 @@ class XMIPP4_CORE_API buffer_sentinel
 {
 public:
 	buffer_sentinel() = default;
-	buffer_sentinel(const buffer_sentinel &other) = default;
-	buffer_sentinel(buffer_sentinel &&other) = default;
+	buffer_sentinel(const buffer_sentinel &other) = delete;
+	buffer_sentinel(buffer_sentinel &&other) = delete;
 	virtual ~buffer_sentinel() = default;
 
 	buffer_sentinel& 
-	operator=(const buffer_sentinel &other) = default;
+	operator=(const buffer_sentinel &other) = delete;
 	buffer_sentinel& 
-	operator=(buffer_sentinel &&other) = default;
+	operator=(buffer_sentinel &&other) = delete;
 
 	/**
 	 * @brief Signal that the allocation is being used on extra queues.

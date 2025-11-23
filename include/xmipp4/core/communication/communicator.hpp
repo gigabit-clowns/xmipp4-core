@@ -28,12 +28,14 @@ class XMIPP4_CORE_API communications_interface
 {
 public:
 	communications_interface() = default;
-	communications_interface(const communications_interface &other) = default;
-	communications_interface(communications_interface &&other) = default;
+	communications_interface(const communications_interface &other) = delete;
+	communications_interface(communications_interface &&other) = delete;
 	virtual ~communications_interface() = default;
 
-	communications_interface& operator=(const communications_interface &other) = default;
-	communications_interface& operator=(communications_interface &&other) = default;
+	communications_interface& 
+	operator=(const communications_interface &other) = delete;
+	communications_interface& 
+	operator=(communications_interface &&other) = delete;
 
 	/**
 	 * @brief Send a message.

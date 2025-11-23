@@ -65,16 +65,7 @@ private:
 
 memory_allocator_manager::memory_allocator_manager() noexcept = default;
 
-memory_allocator_manager::memory_allocator_manager(
-	memory_allocator_manager &&other
-) noexcept = default;
-
 memory_allocator_manager::~memory_allocator_manager() = default;
-
-memory_allocator_manager&
-memory_allocator_manager::operator=(
-	memory_allocator_manager &&other
-) noexcept = default;
 
 void memory_allocator_manager::register_builtin_backends()
 {

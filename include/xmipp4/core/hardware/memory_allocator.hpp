@@ -26,12 +26,12 @@ class XMIPP4_CORE_API memory_allocator
 {
 public:
 	memory_allocator() = default;
-	memory_allocator(const memory_allocator &other) = default;
-	memory_allocator(memory_allocator &&other) = default;
+	memory_allocator(const memory_allocator &other) = delete;
+	memory_allocator(memory_allocator &&other) = delete;
 	virtual ~memory_allocator() = default;
 
-	memory_allocator& operator=(const memory_allocator &other) = default;
-	memory_allocator& operator=(memory_allocator &&other) = default;
+	memory_allocator& operator=(const memory_allocator &other) = delete;
+	memory_allocator& operator=(memory_allocator &&other) = delete;
 
 	/**
 	 * @brief Get the associated memory_resource.

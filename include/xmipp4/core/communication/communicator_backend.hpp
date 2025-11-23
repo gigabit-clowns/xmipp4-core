@@ -20,12 +20,12 @@ class XMIPP4_CORE_API communicator_backend
 {
 public:
 	communicator_backend() = default;
-	communicator_backend(const communicator_backend &other) = default;
-	communicator_backend(communicator_backend &&other) = default;
+	communicator_backend(const communicator_backend &other) = delete;
+	communicator_backend(communicator_backend &&other) = delete;
 	virtual ~communicator_backend() = default;
 
-	communicator_backend& operator=(const communicator_backend &other) = default;
-	communicator_backend& operator=(communicator_backend &&other) = default;
+	communicator_backend& operator=(const communicator_backend &other) = delete;
+	communicator_backend& operator=(communicator_backend &&other) = delete;
 
 	/**
 	 * @brief Get the name of the backend.

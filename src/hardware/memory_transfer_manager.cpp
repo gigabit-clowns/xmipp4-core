@@ -80,16 +80,7 @@ private:
 
 memory_transfer_manager::memory_transfer_manager() noexcept = default;
 
-memory_transfer_manager::memory_transfer_manager(
-	memory_transfer_manager &&other
-) noexcept = default;
-
 memory_transfer_manager::~memory_transfer_manager() = default;
-
-memory_transfer_manager&
-memory_transfer_manager::operator=(
-	memory_transfer_manager &&other
-) noexcept = default;
 
 void memory_transfer_manager::register_builtin_backends()
 {

@@ -26,13 +26,13 @@ class memory_allocator_manager
 public:
 	XMIPP4_CORE_API memory_allocator_manager() noexcept;
 	memory_allocator_manager(const memory_allocator_manager &other) = delete;
-	XMIPP4_CORE_API memory_allocator_manager(memory_allocator_manager &&other) noexcept;
+	memory_allocator_manager(memory_allocator_manager &&other) = delete;
 	XMIPP4_CORE_API ~memory_allocator_manager() override;
 
 	memory_allocator_manager& 
 	operator=(const memory_allocator_manager &other) = delete;
-	XMIPP4_CORE_API memory_allocator_manager& 
-	operator=(memory_allocator_manager &&other) noexcept;
+	memory_allocator_manager& 
+	operator=(memory_allocator_manager &&other) = delete;
 
 	XMIPP4_CORE_API 
 	void register_builtin_backends() override;

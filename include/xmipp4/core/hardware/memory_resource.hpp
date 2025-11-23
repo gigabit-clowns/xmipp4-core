@@ -27,12 +27,12 @@ class XMIPP4_CORE_API memory_resource
 {
 public:
 	memory_resource() = default;
-	memory_resource(const memory_resource &other) = default;
-	memory_resource(memory_resource &&other) = default;
+	memory_resource(const memory_resource &other) = delete;
+	memory_resource(memory_resource &&other) = delete;
 	virtual ~memory_resource() = default;
 
-	memory_resource& operator=(const memory_resource &other) = default;
-	memory_resource& operator=(memory_resource &&other) = default;
+	memory_resource& operator=(const memory_resource &other) = delete;
+	memory_resource& operator=(memory_resource &&other) = delete;
 
 	/**
 	 * @brief Get a non owning pointer to the target device.

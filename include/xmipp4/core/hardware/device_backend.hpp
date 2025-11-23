@@ -27,12 +27,12 @@ class XMIPP4_CORE_API device_backend
 {
 public:
 	device_backend() = default;
-	device_backend(const device_backend &other) = default;
-	device_backend(device_backend &&other) = default;
+	device_backend(const device_backend &other) = delete;
+	device_backend(device_backend &&other) = delete;
 	virtual ~device_backend() = default;
 
-	device_backend& operator=(const device_backend &other) = default;
-	device_backend& operator=(device_backend &&other) = default;
+	device_backend& operator=(const device_backend &other) = delete;
+	device_backend& operator=(device_backend &&other) = delete;
 
 	/**
 	 * @brief Get the name of the backend.

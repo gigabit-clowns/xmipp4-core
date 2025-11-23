@@ -38,6 +38,21 @@ public:
 	iterator end();
 
 	/**
+	 * @brief Mark the block pointed by the iterator as occupied.
+	 * 
+	 * @param ite Iterator to be marked as occupied. is_free() must return
+	 * true.
+	 */
+	void acquire(iterator ite);
+
+	/**
+	 * @brief Mark the block pointed by the iterator as free.
+	 * 
+	 * @param ite Iterator to be marked as free. is_free() must return false.
+	 */
+	void release(iterator ite);
+
+	/**
 	 * @brief Find a candidate block.
 	 * 
 	 * If found, the returned block will be at least of the requested size

@@ -127,9 +127,6 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 		); 
 	}
 
-	// Mark the block as occupied.
-	ite->second.set_free(false);
-
 	return create_buffer(ite);
 }
 
@@ -140,8 +137,7 @@ void caching_memory_allocator::recycle_block(
 {
 	if (queues.empty())
 	{
-		block->second.set_free(true);
-		m_pool.consider_merging_block(block);
+		m_pool.release(block);
 	}
 	else if (m_device)
 	{
@@ -162,6 +158,7 @@ caching_memory_allocator::create_buffer(memory_block_pool::iterator block)
 
 	auto sentinel = 
 			std::make_unique<caching_buffer_sentinel>(*this, block);
+	m_pool.acquire(block);
 
 	XMIPP4_ASSERT(heap);
 	return heap->create_buffer(offset, size, std::move(sentinel));

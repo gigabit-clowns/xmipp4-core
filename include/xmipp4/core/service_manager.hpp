@@ -27,12 +27,12 @@ class XMIPP4_CORE_API service_manager
 {
 public:
 	service_manager() = default;
-	service_manager(const service_manager& other) = default;
-	service_manager(service_manager&& other) = default;
+	service_manager(const service_manager& other) = delete;
+	service_manager(service_manager&& other) = delete;
 	virtual ~service_manager() = default;
 
-	service_manager& operator=(const service_manager& other) = default;
-	service_manager& operator=(service_manager&& other) = default;
+	service_manager& operator=(const service_manager& other) = delete;
+	service_manager& operator=(service_manager&& other) = delete;
 
 	/**
 	 * @brief Register backends bundled with the core library.

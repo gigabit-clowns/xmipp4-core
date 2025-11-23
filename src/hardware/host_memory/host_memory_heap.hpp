@@ -15,15 +15,7 @@ class host_memory_heap final
 public:
 	host_memory_heap() noexcept;
 	host_memory_heap(std::size_t size, std::size_t alignment);
-	host_memory_heap(const host_memory_heap &other) = delete;
-	host_memory_heap(host_memory_heap &&other) noexcept;
 	~host_memory_heap() override;
-
-	host_memory_heap& operator=(const host_memory_heap &other) = delete;
-	host_memory_heap& operator=(host_memory_heap &&other) noexcept;
-
-	void reset() noexcept;
-	void swap(host_memory_heap &other) noexcept;
 
 	std::size_t get_size() const noexcept override;
 

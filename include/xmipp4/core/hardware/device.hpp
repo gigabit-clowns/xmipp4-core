@@ -28,12 +28,12 @@ class XMIPP4_CORE_API device
 {
 public:
 	device() = default;
-	device(const device &other) = default;
-	device(device &&other) = default;
+	device(const device &other) = delete;
+	device(device &&other) = delete;
 	virtual ~device() = default;
 
-	device& operator=(const device &other) = default;
-	device& operator=(device &&other) = default;
+	device& operator=(const device &other) = delete;
+	device& operator=(device &&other) = delete;
 
 	/**
 	 * @brief Enumerates all the memory resources known by this device.

@@ -26,13 +26,13 @@ class memory_transfer_manager final
 public:
 	XMIPP4_CORE_API memory_transfer_manager() noexcept;
 	memory_transfer_manager(const memory_transfer_manager &other) = delete;
-	XMIPP4_CORE_API memory_transfer_manager(memory_transfer_manager &&other) noexcept;
+	memory_transfer_manager(memory_transfer_manager &&other) = delete;
 	XMIPP4_CORE_API ~memory_transfer_manager() override;
 
 	memory_transfer_manager&
 	operator=(const memory_transfer_manager &other) = delete;
-	XMIPP4_CORE_API memory_transfer_manager&
-	operator=(memory_transfer_manager &&other) noexcept;
+	memory_transfer_manager& 
+	operator=(memory_transfer_manager &&other) = delete;
 	
 	XMIPP4_CORE_API void register_builtin_backends() override;
 

@@ -17,12 +17,12 @@ class XMIPP4_CORE_API device_queue
 {
 public:
 	device_queue() = default;
-	device_queue(const device_queue &other) = default;
-	device_queue(device_queue &&other) = default;
+	device_queue(const device_queue &other) = delete;
+	device_queue(device_queue &&other) = delete;
 	virtual ~device_queue() = default;
 
-	device_queue& operator=(const device_queue &other) = default;
-	device_queue& operator=(device_queue &&other) = default;
+	device_queue& operator=(const device_queue &other) = delete;
+	device_queue& operator=(device_queue &&other) = delete;
 
 	/**
 	 * @brief Wait until the device_queue is flushed.

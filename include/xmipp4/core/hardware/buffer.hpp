@@ -34,11 +34,11 @@ public:
 		std::unique_ptr<buffer_sentinel> sentinel
 	);
 	buffer(const buffer &other) = delete;
-	XMIPP4_CORE_API buffer(buffer &&other) noexcept;
+	buffer(buffer &&other) noexcept = delete;
 	XMIPP4_CORE_API virtual ~buffer();
 
 	buffer& operator=(const buffer &other) = delete;
-	XMIPP4_CORE_API buffer& operator=(buffer &&other) noexcept;
+	buffer& operator=(buffer &&other) noexcept = delete;
 
 	/**
 	 * @brief Get a host accessible pointer to the data.

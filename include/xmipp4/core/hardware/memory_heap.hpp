@@ -22,12 +22,12 @@ class XMIPP4_CORE_API memory_heap
 {
 public:
 	memory_heap() = default;
-	memory_heap(const memory_heap &other) = default;
-	memory_heap(memory_heap &&other) = default;
+	memory_heap(const memory_heap &other) = delete;
+	memory_heap(memory_heap &&other) = delete;
 	virtual ~memory_heap() = default;
 
-	memory_heap& operator=(const memory_heap &other) = default;
-	memory_heap& operator=(memory_heap &&other) = default;
+	memory_heap& operator=(const memory_heap &other) = delete;
+	memory_heap& operator=(memory_heap &&other) = delete;
 
 	/**
 	 * @brief Get the size of the allocation.

@@ -26,12 +26,12 @@ class XMIPP4_CORE_API memory_transfer
 {
 public:
 	memory_transfer() = default;
-	memory_transfer(const memory_transfer &other) = default;
-	memory_transfer(memory_transfer &&other) = default;
+	memory_transfer(const memory_transfer &other) = delete;
+	memory_transfer(memory_transfer &&other) = delete;
 	virtual ~memory_transfer() = default;
 
-	memory_transfer& operator=(const memory_transfer &other) = default;
-	memory_transfer& operator=(memory_transfer &&other) = default;
+	memory_transfer& operator=(const memory_transfer &other) = delete;
+	memory_transfer& operator=(memory_transfer &&other) = delete;
 	
 	/**
 	 * @brief Copy the contents of a buffer into another.

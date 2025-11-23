@@ -24,14 +24,14 @@ class XMIPP4_CORE_API memory_transfer_backend
 {
 public:
 	memory_transfer_backend() = default;
-	memory_transfer_backend(const memory_transfer_backend &other) = default;
-	memory_transfer_backend(memory_transfer_backend &&other) = default;
+	memory_transfer_backend(const memory_transfer_backend &other) = delete;
+	memory_transfer_backend(memory_transfer_backend &&other) = delete;
 	virtual ~memory_transfer_backend() = default;
 
 	memory_transfer_backend&
-	operator=(const memory_transfer_backend &other) = default;
+	operator=(const memory_transfer_backend &other) = delete;
 	memory_transfer_backend&
-	operator=(memory_transfer_backend &&other) = default;
+	operator=(memory_transfer_backend &&other) = delete;
 
 	/**
 	 * @brief Get the backend priority for a memory_transfer between the 

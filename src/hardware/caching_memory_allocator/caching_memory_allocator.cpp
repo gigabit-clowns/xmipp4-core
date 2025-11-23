@@ -97,7 +97,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 		catch (const std::bad_alloc&)
 		{
 			XMIPP4_LOG_WARN(
-				"Memory allocation failed. Retrying after releasing  resources."
+				"Memory allocation failed. Retrying after releasing resources."
 			);
 			m_deferred_release.wait_pending_free(m_pool);
 			m_pool.release_blocks();

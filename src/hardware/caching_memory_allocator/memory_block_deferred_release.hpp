@@ -8,7 +8,6 @@
 #include <xmipp4/core/hardware/device_queue.hpp>
 
 #include "memory_block.hpp"
-#include "memory_block_pool.hpp"
 
 #include <forward_list>
 #include <utility>
@@ -75,7 +74,7 @@ public:
 	 * 
 	 */
 	void defer_release(
-		memory_block_pool::iterator block, 
+		memory_block &block, 
 		span<device_queue *const> other_queues,
 		device &device
 	);
@@ -84,7 +83,9 @@ private:
 	using event_list = std::forward_list<std::shared_ptr<device_to_host_event>>;
 
 	event_list m_event_pool;
-	std::vector<std::pair<memory_block_pool::iterator, event_list>> m_pending_free;
+	std::vector<
+		std::pair<std::reference_wrapper<memory_block>, event_list>
+	> m_pending_free;
 
 	/**
 	 * @brief Pop all signaled events from the list.

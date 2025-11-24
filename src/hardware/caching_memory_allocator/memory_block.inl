@@ -11,10 +11,10 @@ namespace hardware
 
 inline
 memory_block::memory_block(
-	std::shared_ptr<memory_heap> heap,
-	std::size_t offset,
+	const device_queue *queue,
 	std::size_t size, 
-	const device_queue *queue
+	memory_heap *heap,
+	std::size_t offset
 ) noexcept
 	: m_queue(queue)
 	, m_size(size)
@@ -24,21 +24,15 @@ memory_block::memory_block(
 }
 
 inline
-memory_heap* memory_block::get_heap() const noexcept
+const device_queue* memory_block::get_queue() const noexcept
 {
-	return m_heap.get();
+	return m_queue;
 }
 
 inline
-std::shared_ptr<memory_heap> memory_block::share_heap() const noexcept
+void memory_block::set_size(std::size_t size) noexcept
 {
-	return m_heap;
-}
-
-inline
-std::size_t memory_block::get_offset() const noexcept
-{
-	return m_offset;
+	m_size = size;
 }
 
 inline
@@ -48,10 +42,24 @@ std::size_t memory_block::get_size() const noexcept
 }
 
 inline
-const device_queue* memory_block::get_queue() const noexcept
+memory_heap* memory_block::get_heap() const noexcept
 {
-	return m_queue;
+	return m_heap;
 }
+
+inline
+void memory_block::set_offset(std::size_t offset) noexcept
+{
+	m_offset = offset;
+}
+
+inline
+std::size_t memory_block::get_offset() const noexcept
+{
+	return m_offset;
+}
+
+
 
 inline
 bool operator==(const memory_block &lhs, const memory_block &rhs) noexcept
@@ -67,27 +75,6 @@ inline
 bool operator!=(const memory_block &lhs, const memory_block &rhs) noexcept
 {
 	return !(lhs == rhs);
-}
-
-inline
-bool memory_block_less::operator()(
-	const memory_block &lhs, 
-	const memory_block &rhs 
-) const noexcept
-{
-	return as_tuple(lhs) < as_tuple(rhs);
-}
-
-inline
-memory_block_less::tuple_type 
-memory_block_less::as_tuple(const memory_block &block) noexcept
-{
-	return tuple_type(
-		block.get_queue(),
-		block.get_size(),
-		block.get_heap(),
-		block.get_offset()
-	);
 }
 
 } // namespace hardware

@@ -80,9 +80,9 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 	size = memory::align_ceil(size, m_maximum_alignment);
 
 	m_deferred_release.process_pending_free(m_pool);
-	auto ite = m_pool.find_suitable_block(size, queue);
+	auto *block = m_pool.find_suitable_block(size, queue);
 
-	if (ite == m_pool.end())
+	if (!block)
 	{
 		// No suitable block was found in the pool. Request more memory.
 		const auto request_size = memory::align_ceil(size, m_heap_size_step);
@@ -108,30 +108,30 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 		}
 
 		XMIPP4_ASSERT( heap );
-		ite = m_pool.register_heap(std::move(heap), queue);
+		block = m_pool.register_heap(std::move(heap), queue);
 	}
 
-	XMIPP4_ASSERT( ite != m_pool.end() );
-
-	const auto block_size = ite->first.get_size();
+	XMIPP4_ASSERT( block );
+	const auto block_size = block->get_size();
 	XMIPP4_ASSERT( block_size >= size );
 	const auto remaining = block_size - size;
 	if (remaining >= m_maximum_alignment)
 	{
 		// Only partition if the block has a reminder larger than the 
 		// step size.
-		std::tie(ite, std::ignore) = m_pool.partition_block(
-			ite,
+		std::tie(block, std::ignore) = m_pool.partition_block(
+			block,
 			size,
 			remaining
 		); 
 	}
 
-	return create_buffer(ite);
+	XMIPP4_ASSERT( block );
+	return create_buffer(*block);
 }
 
 void caching_memory_allocator::recycle_block(
-	memory_block_pool::iterator block, 
+	memory_block &block, 
 	span<device_queue *const> queues
 )
 {
@@ -150,11 +150,11 @@ void caching_memory_allocator::recycle_block(
 }
 
 std::shared_ptr<buffer> 
-caching_memory_allocator::create_buffer(memory_block_pool::iterator block)
+caching_memory_allocator::create_buffer(memory_block &block)
 {
-	auto *heap = block->first.get_heap();
-	const auto offset = block->first.get_offset();
-	const auto size = block->first.get_size();
+	auto *heap = block.get_heap();
+	const auto offset = block.get_offset();
+	const auto size = block.get_size();
 
 	auto sentinel = 
 			std::make_unique<caching_buffer_sentinel>(*this, block);

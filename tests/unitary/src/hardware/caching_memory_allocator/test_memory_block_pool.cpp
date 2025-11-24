@@ -5,6 +5,7 @@
 #include <hardware/caching_memory_allocator/memory_block_pool.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
 #include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_memory_heap.hpp"
@@ -14,8 +15,7 @@
 using namespace xmipp4;
 using namespace xmipp4::hardware;
 
-/*
-TEST_CASE( "acquire in memory_block_pool should mark the block as not free" )
+TEST_CASE( "acquire in memory_block_pool should mark the block as not free", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -24,14 +24,14 @@ TEST_CASE( "acquire in memory_block_pool should mark the block as not free" )
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 	mock_device_queue queue;
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	REQUIRE( ite->second.is_free() == true );
-	pool.acquire(ite);
-	REQUIRE( ite->second.is_free() == false );
+	REQUIRE( pool.is_free(*block) == true );
+	pool.acquire(*block);
+	REQUIRE( pool.is_free(*block) == false );
 }
 
-TEST_CASE( "release in memory_block_pool should mark the block as free" )
+TEST_CASE( "release in memory_block_pool should mark the block as free", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -40,15 +40,15 @@ TEST_CASE( "release in memory_block_pool should mark the block as free" )
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 	mock_device_queue queue;
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	pool.acquire(ite);
-	REQUIRE( ite->second.is_free() == false );
-	pool.release(ite);
-	REQUIRE( ite->second.is_free() == true );
+	pool.acquire(*block);
+	REQUIRE( pool.is_free(*block) == false );
+	pool.release(*block);
+	REQUIRE( pool.is_free(*block) == true );
 }
 
-TEST_CASE("find_suitable_block should return the best fit for the requested size and queue")
+TEST_CASE("find_suitable_block should return the best fit for the requested size and queue", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 
@@ -77,45 +77,45 @@ TEST_CASE("find_suitable_block should return the best fit for the requested size
 		REQUIRE_CALL(*heap, get_size())
 			.RETURN(size);
 
-		auto ite = pool.register_heap(
+		auto *block = pool.register_heap(
 			std::move(heap),
 			queue
 		);
 
 		if (!free)
 		{
-			ite->second.set_free(false);
+			pool.acquire(*block);
 		}
 	}
 
-	memory_block_pool::iterator block;
+	memory_block *block;
 
 	block = pool.find_suitable_block(96, &queue1);
-	REQUIRE( block->first.get_size() == 100 );
-	REQUIRE( block->first.get_queue() == &queue1 );
+	REQUIRE( block->get_size() == 100 );
+	REQUIRE( block->get_queue() == &queue1 );
 
 	block = pool.find_suitable_block(96, &queue2);
-	REQUIRE( block->first.get_size() == 96 );
-	REQUIRE( block->first.get_queue() == &queue2 );
+	REQUIRE( block->get_size() == 96 );
+	REQUIRE( block->get_queue() == &queue2 );
 
 	block = pool.find_suitable_block(96, nullptr);
-	REQUIRE( block->first.get_size() == 96 );
-	REQUIRE( block->first.get_queue() == nullptr );
+	REQUIRE( block->get_size() == 96 );
+	REQUIRE( block->get_queue() == nullptr );
 
 	block = pool.find_suitable_block(1024, &queue1);
-	REQUIRE( block->first.get_size() == 1024 );
-	REQUIRE( block->first.get_queue() == &queue1 );
+	REQUIRE( block->get_size() == 1024 );
+	REQUIRE( block->get_queue() == &queue1 );
 
 	block = pool.find_suitable_block(32, &queue1);
-	REQUIRE( block->first.get_size() == 64 );
-	REQUIRE( block->first.get_queue() == &queue1 );
+	REQUIRE( block->get_size() == 64 );
+	REQUIRE( block->get_queue() == &queue1 );
 
 	block = pool.find_suitable_block(90, nullptr);
-	REQUIRE( block->first.get_size() == 96 );
-	REQUIRE( block->first.get_queue() == nullptr );
+	REQUIRE( block->get_size() == 96 );
+	REQUIRE( block->get_queue() == nullptr );
 }
 
-TEST_CASE("find_suitable_block should return end() when no block fits the requirement")
+TEST_CASE("find_suitable_block should return nullptr when no block fits the requirement", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 
@@ -144,22 +144,22 @@ TEST_CASE("find_suitable_block should return end() when no block fits the requir
 		REQUIRE_CALL(*heap, get_size())
 			.RETURN(size);
 
-		auto ite = pool.register_heap(
+		auto *block = pool.register_heap(
 			std::move(heap),
 			queue
 		);
 
 		if (!free)
 		{
-			ite->second.set_free(false);
+			pool.acquire(*block);
 		}
 	}
 
-	REQUIRE( pool.find_suitable_block(1024, &queue1) == pool.end() );
-	REQUIRE( pool.find_suitable_block(768, &queue1) == pool.end() );
-	REQUIRE( pool.find_suitable_block(2048, &queue1) == pool.end() );
-	REQUIRE( pool.find_suitable_block(1025, &queue2) == pool.end() );
-	REQUIRE( pool.find_suitable_block(1025, nullptr) == pool.end() );
+	REQUIRE( pool.find_suitable_block(1024, &queue1) == nullptr );
+	REQUIRE( pool.find_suitable_block(768, &queue1) == nullptr );
+	REQUIRE( pool.find_suitable_block(2048, &queue1) == nullptr );
+	REQUIRE( pool.find_suitable_block(1025, &queue2) == nullptr );
+	REQUIRE( pool.find_suitable_block(1025, nullptr) == nullptr );
 }
 
 TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memory_block_pool]")
@@ -172,75 +172,27 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
 		.RETURN(1024);
 
 	mock_device_queue queue;
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
 	const std::size_t first_size = 256;
 	const std::size_t second_size = 768;
 	XMIPP4_ASSERT( first_size + second_size == size );
 
-	memory_block_pool::iterator first;
-	memory_block_pool::iterator second;
-	std::tie(first, second) = pool.partition_block(ite, first_size, second_size);
+	memory_block *first;
+	memory_block *second;
+	std::tie(first, second) = pool.partition_block(block, first_size, second_size);
 
-	REQUIRE( heap.use_count() == 3 );
+	REQUIRE( first->get_heap() == heap.get() );
+	REQUIRE( first->get_offset() == 0 );
+	REQUIRE( first->get_size() == first_size );
+	REQUIRE( first->get_queue() == &queue );
+	REQUIRE( pool.is_free(*first) );
 
-	REQUIRE( first->first.get_heap() == heap.get() );
-	REQUIRE( first->first.get_offset() == 0 );
-	REQUIRE( first->first.get_size() == first_size );
-	REQUIRE( first->first.get_queue() == &queue );
-	REQUIRE( first->second.is_free() == true );
-	REQUIRE( first->second.get_previous_block() == pool.end() );
-	REQUIRE( first->second.get_next_block() == second );
-
-	REQUIRE( second->first.get_heap() == heap.get() );
-	REQUIRE( second->first.get_offset() == first_size );
-	REQUIRE( second->first.get_size() == second_size );
-	REQUIRE( second->first.get_queue() == &queue );
-	REQUIRE( second->second.is_free() == true );
-	REQUIRE( second->second.get_previous_block() == first );
-	REQUIRE( second->second.get_next_block() == pool.end() );
-}
-
-TEST_CASE("successive calls to partition_block should create a doubly linked list of memory_blocks", "[memory_block_pool]")
-{
-	memory_block_pool pool;
-	
-	const std::size_t size = 1024;
-	auto heap = std::make_shared<mock_memory_heap>();
-	REQUIRE_CALL(*heap, get_size())
-		.RETURN(1024);
-
-	mock_device_queue queue;
-	auto ite = pool.register_heap(heap, &queue);
-
-	const std::size_t n_partitions = 8;
-	const std::size_t partition_size = size / n_partitions;
-	std::vector<memory_block_pool::iterator> partitions;
-	partitions.emplace_back(pool.end());
-	for (std::size_t i = 1; i < n_partitions; ++i)
-	{
-		memory_block_pool::iterator first;
-		const auto remaining = ite->first.get_size() - partition_size;
-		std::tie(first, ite) = pool.partition_block(
-			ite, 
-			partition_size, 
-			remaining
-		);
-
-		partitions.emplace_back(first);
-	}
-	partitions.emplace_back(ite);
-	partitions.emplace_back(pool.end());
-
-	REQUIRE( partitions.size() == n_partitions+2 );
-	for (std::size_t i = 1; i <= n_partitions; ++i)
-	{
-		const auto prev = partitions[i]->second.get_previous_block();
-		const auto next = partitions[i]->second.get_next_block();
-
-		REQUIRE( prev == partitions[i-1] );
-		REQUIRE( next == partitions[i+1] );
-	}
+	REQUIRE( second->get_heap() == heap.get() );
+	REQUIRE( second->get_offset() == first_size );
+	REQUIRE( second->get_size() == second_size );
+	REQUIRE( second->get_queue() == &queue );
+	REQUIRE( pool.is_free(*second) );
 }
 
 TEST_CASE("register_heap should store the provided heap in the resulting block", "[memory_block_pool]")
@@ -252,8 +204,8 @@ TEST_CASE("register_heap should store the provided heap in the resulting block",
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	auto ite = pool.register_heap(heap, nullptr);
-	REQUIRE( ite->first.get_heap() == heap.get() );
+	auto *block = pool.register_heap(heap, nullptr);
+	REQUIRE( block->get_heap() == heap.get() );
 }
 
 TEST_CASE("register_heap should return a block with zero offset", "[memory_block_pool]")
@@ -265,8 +217,8 @@ TEST_CASE("register_heap should return a block with zero offset", "[memory_block
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	auto ite = pool.register_heap(heap, nullptr);
-	REQUIRE( ite->first.get_offset() == 0 );
+	auto *block = pool.register_heap(heap, nullptr);
+	REQUIRE( block->get_offset() == 0 );
 }
 
 TEST_CASE("register_heap should query the size of the heap and store it in the resulting block", "[memory_block_pool]")
@@ -278,8 +230,8 @@ TEST_CASE("register_heap should query the size of the heap and store it in the r
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	auto ite = pool.register_heap(std::move(heap), nullptr);
-	REQUIRE( ite->first.get_size() == size );
+	auto *block = pool.register_heap(std::move(heap), nullptr);
+	REQUIRE( block->get_size() == size );
 }
 
 TEST_CASE("register_heap should store the provided queue in the resulting block", "[memory_block_pool]")
@@ -293,8 +245,8 @@ TEST_CASE("register_heap should store the provided queue in the resulting block"
 
 	mock_device_queue queue;
 
-	auto ite = pool.register_heap(std::move(heap), &queue);
-	REQUIRE( ite->first.get_queue() == &queue );
+	auto *block = pool.register_heap(std::move(heap), &queue);
+	REQUIRE( block->get_queue() == &queue );
 }
 
 TEST_CASE("register_heap should return a free bock", "[memory_block_pool]")
@@ -306,11 +258,11 @@ TEST_CASE("register_heap should return a free bock", "[memory_block_pool]")
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	auto ite = pool.register_heap(heap, nullptr);
-	REQUIRE( ite->second.is_free() == true );
+	auto *block = pool.register_heap(heap, nullptr);
+	REQUIRE( pool.is_free(*block) );
 }
 
-TEST_CASE("register_heap should return an unpartitioned block", "[memory_block_pool]")
+TEST_CASE("register_heap should increment the reference count by one", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -320,8 +272,7 @@ TEST_CASE("register_heap should return an unpartitioned block", "[memory_block_p
 		.RETURN(1024);
 
 	auto ite = pool.register_heap(heap, nullptr);
-	REQUIRE( ite->second.get_next_block() == pool.end() );
-	REQUIRE( ite->second.get_previous_block() == pool.end() );
+	REQUIRE( heap.use_count() == 2 );
 }
 
 TEST_CASE("consider_merging_blocks should not do anything if the block is not a partition", "[memory_block_pool]")
@@ -333,12 +284,11 @@ TEST_CASE("consider_merging_blocks should not do anything if the block is not a 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	const auto old_block = *ite;
-	pool.consider_merging_block(ite);
-	REQUIRE( *ite == old_block );
-	REQUIRE( heap.use_count() == 3 );
+	const auto old_block = *block;
+	pool.consider_merging_block(*block);
+	REQUIRE( *block == old_block );
 }
 
 TEST_CASE("consider_merging_blocks should not do anything if the block has occupied partitions", "[memory_block_pool]")
@@ -350,18 +300,17 @@ TEST_CASE("consider_merging_blocks should not do anything if the block has occup
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	memory_block_pool::iterator partition;
-	std::tie(ite, partition) = pool.partition_block(ite, 768, 256);
-	partition->second.set_free(false);
-	std::tie(partition, ite) = pool.partition_block(ite, 256, 512);
-	partition->second.set_free(false);
+	memory_block* partition;
+	std::tie(block, partition) = pool.partition_block(block, 768, 256);
+	pool.acquire(*partition);
+	std::tie(partition, block) = pool.partition_block(block, 256, 512);
+	pool.acquire(*partition);
 
-	const auto old_block = *ite;
-	pool.consider_merging_block(ite);
-	REQUIRE( *ite == old_block );
-	REQUIRE( heap.use_count() == 5 );
+	const auto old_block = *block;
+	pool.consider_merging_block(*block);
+	REQUIRE( *block == old_block );
 }
 
 TEST_CASE("consider_merging_blocks should merge when there is a free partition to the right", "[memory_block_pool]")
@@ -373,22 +322,19 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	memory_block_pool::iterator partition;
-	std::tie(ite, partition) = pool.partition_block(ite, 768, 256);
-	std::tie(partition, ite) = pool.partition_block(ite, 256, 512);
-	partition->second.set_free(false);
+	memory_block *partition;
+	std::tie(block, partition) = pool.partition_block(block, 768, 256);
+	std::tie(partition, block) = pool.partition_block(block, 256, 512);
+	pool.acquire(*partition);
 
-	ite = pool.consider_merging_block(ite);
-	REQUIRE( ite->first.get_heap() == heap.get() );
-	REQUIRE( ite->first.get_offset() == 256 );
-	REQUIRE( ite->first.get_size() == 768 );
-	REQUIRE( ite->first.get_queue() == &queue );
-	REQUIRE( ite->second.is_free() == true );
-	REQUIRE( ite->second.get_previous_block() == partition );
-	REQUIRE( ite->second.get_next_block() == pool.end() );
-	REQUIRE( heap.use_count() == 3 );
+	pool.consider_merging_block(*block);
+	REQUIRE( block->get_heap() == heap.get() );
+	REQUIRE( block->get_offset() == 256 );
+	REQUIRE( block->get_size() == 768 );
+	REQUIRE( block->get_queue() == &queue );
+	REQUIRE( pool.is_free(*block) );
 }
 
 TEST_CASE("consider_merging_blocks should merge when there is a free partition to the left", "[memory_block_pool]")
@@ -400,24 +346,21 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	memory_block_pool::iterator next;
-	std::tie(ite, next) = pool.partition_block(ite, 768, 256);
-	next->second.set_free(false);
+	memory_block *next;
+	std::tie(block, next) = pool.partition_block(block, 768, 256);
+	pool.acquire(*next);
 
-	memory_block_pool::iterator prev;
-	std::tie(prev, ite) = pool.partition_block(ite, 256, 512);
+	memory_block *prev;
+	std::tie(prev, block) = pool.partition_block(block, 256, 512);
 
-	ite = pool.consider_merging_block(ite);
-	REQUIRE( ite->first.get_heap() == heap.get() );
-	REQUIRE( ite->first.get_offset() == 0 );
-	REQUIRE( ite->first.get_size() == 768 );
-	REQUIRE( ite->first.get_queue() == &queue );
-	REQUIRE( ite->second.is_free() == true );
-	REQUIRE( ite->second.get_previous_block() == pool.end() );
-	REQUIRE( ite->second.get_next_block() == next );
-	REQUIRE( heap.use_count() == 3 );
+	pool.consider_merging_block(*block);
+	REQUIRE( block->get_heap() == heap.get() );
+	REQUIRE( block->get_offset() == 0 );
+	REQUIRE( block->get_size() == 768 );
+	REQUIRE( block->get_queue() == &queue );
+	REQUIRE( pool.is_free(*block) == true );
 }
 
 TEST_CASE("consider_merging_blocks should merge twice when there is a free partition to the right and left", "[memory_block_pool]")
@@ -429,23 +372,20 @@ TEST_CASE("consider_merging_blocks should merge twice when there is a free parti
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, &queue);
+	auto *block = pool.register_heap(heap, &queue);
 
-	std::tie(ite, std::ignore) = pool.partition_block(ite, 768, 256);
-	std::tie(std::ignore, ite) = pool.partition_block(ite, 256, 512);
+	std::tie(block, std::ignore) = pool.partition_block(block, 768, 256);
+	std::tie(std::ignore, block) = pool.partition_block(block, 256, 512);
 
-	ite = pool.consider_merging_block(ite);
-	REQUIRE( ite->first.get_heap() == heap.get() );
-	REQUIRE( ite->first.get_offset() == 0 );
-	REQUIRE( ite->first.get_size() == 1024 );
-	REQUIRE( ite->first.get_queue() == &queue );
-	REQUIRE( ite->second.is_free() == true );
-	REQUIRE( ite->second.get_previous_block() == pool.end() );
-	REQUIRE( ite->second.get_next_block() == pool.end() );
-	REQUIRE( heap.use_count() == 2 );
+	pool.consider_merging_block(*block);
+	REQUIRE( block->get_heap() == heap.get() );
+	REQUIRE( block->get_offset() == 0 );
+	REQUIRE( block->get_size() == 1024 );
+	REQUIRE( block->get_queue() == &queue );
+	REQUIRE( pool.is_free(*block) == true );
 }
 
-TEST_CASE("release_blocks should release free heaps", "[memory_block_pool]")
+TEST_CASE("release_unused_heaps should release free heaps", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -456,11 +396,11 @@ TEST_CASE("release_blocks should release free heaps", "[memory_block_pool]")
 	pool.register_heap(heap, nullptr);
 	
 	REQUIRE( heap.use_count() == 2 );
-	pool.release_blocks();
+	pool.release_unused_heaps();
 	REQUIRE( heap.use_count() == 1 );
 }
 
-TEST_CASE("release_blocks should not release if it is not free", "[memory_block_pool]")
+TEST_CASE("release_unused_heaps should not release if it is not free", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -468,15 +408,15 @@ TEST_CASE("release_blocks should not release if it is not free", "[memory_block_
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, nullptr);
-	ite->second.set_free(false);
+	auto *block = pool.register_heap(heap, nullptr);
+	pool.acquire(*block);
 	
 	REQUIRE( heap.use_count() == 2 );
-	pool.release_blocks();
+	pool.release_unused_heaps();
 	REQUIRE( heap.use_count() == 2 );
 }
 
-TEST_CASE("release_blocks should not release if it has a next block", "[memory_block_pool]")
+TEST_CASE("release_unused_heaps should not release if it has a next block", "[memory_block_pool]")
 {
 	memory_block_pool pool;
 	
@@ -484,12 +424,10 @@ TEST_CASE("release_blocks should not release if it has a next block", "[memory_b
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(heap, nullptr);
-	pool.partition_block(ite, 512, 512);
+	auto *block = pool.register_heap(heap, nullptr);
+	pool.partition_block(block, 512, 512);
 
-	REQUIRE( heap.use_count() == 3 );
-	pool.release_blocks();
-	REQUIRE( heap.use_count() == 3 );
+	REQUIRE( heap.use_count() == 2 );
+	pool.release_unused_heaps();
+	REQUIRE( heap.use_count() == 2 );
 }
-
-*/

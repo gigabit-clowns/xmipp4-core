@@ -144,7 +144,7 @@ void memory_block_pool::release_unused_heaps()
 		if (!is_partition(*ite))
 		{
 			auto *block = &(*ite);
-			auto *heap = block->get_heap();
+			const auto *heap = block->get_heap();
 			XMIPP4_ASSERT(heap);
 
 			m_blocks.erase(m_blocks.iterator_to(*block));
@@ -179,7 +179,7 @@ void memory_block_pool::consider_merging_forwards(memory_block &block) noexcept
 		return;
 	}
 
-	auto *next_block = &(*next);
+	const auto *next_block = &(*next);
 	const auto new_size = block.get_size() + next_block->get_size();
 	m_free_blocks.erase(m_free_blocks.iterator_to(*next_block));
 	m_blocks.erase_and_dispose(next, std::default_delete<memory_block>());
@@ -201,10 +201,10 @@ void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
 		return;
 	}
 
-	auto *prev_block = &(*prev);
+	const auto *prev_block = &(*prev);
 	const auto new_size = block.get_size() + prev_block->get_size();
 	const auto new_offset = prev_block->get_offset();
-	m_free_blocks.erase(m_free_blocks.iterator_to(*prev));
+	m_free_blocks.erase(m_free_blocks.iterator_to(*prev_block));
 	m_blocks.erase_and_dispose(prev, std::default_delete<memory_block>());
 	
 	block.set_size(new_size);

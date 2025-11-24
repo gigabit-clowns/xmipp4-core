@@ -96,7 +96,7 @@ memory_block* memory_block_pool::register_heap(
 	const device_queue *queue
 )
 {
-	const auto block = std::make_unique<memory_block>(
+	auto block = std::make_unique<memory_block>(
 		queue, 
 		heap->get_size(), 
 		heap.get(), 
@@ -110,7 +110,7 @@ memory_block* memory_block_pool::register_heap(
 	m_blocks.push_back(*block);
 	m_free_blocks.insert(*block);
 
-	return block.get();
+	return block.release();
 }
 
 void memory_block_pool::consider_merging_block(memory_block &block) noexcept
@@ -152,7 +152,7 @@ void memory_block_pool::consider_merging_forwards(memory_block &block) noexcept
 	const auto next = std::next(ite);
 	if (next == m_blocks.end() || 
 		next->get_heap() != ite->get_heap() ||
-		is_free(*next)
+		!is_free(*next)
 	)
 	{
 		return;
@@ -176,7 +176,7 @@ void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
 	}
 
 	auto prev = std::prev(ite);
-	if (prev->get_heap() != ite->get_heap() || is_free(*prev))
+	if (prev->get_heap() != ite->get_heap() || !is_free(*prev))
 	{
 		return;
 	}

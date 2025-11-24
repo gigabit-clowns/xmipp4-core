@@ -25,6 +25,14 @@ namespace hardware
 class memory_block_pool
 {
 public:
+	memory_block_pool() = default;
+	memory_block_pool(const memory_block_pool &other) = delete;
+	memory_block_pool(memory_block_pool &&other) = delete;
+	~memory_block_pool();
+
+	memory_block_pool& operator=(const memory_block_pool &other) = delete;
+	memory_block_pool& operator=(memory_block_pool &&other) = delete;
+
 	/**
 	 * @brief Mark the block pointed by the block as occupied.
 	 * 

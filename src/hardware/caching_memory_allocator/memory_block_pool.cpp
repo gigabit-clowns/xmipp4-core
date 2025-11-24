@@ -5,6 +5,7 @@
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
 #include <xmipp4/core/platform/assert.hpp>
+#include <xmipp4/core/logger.hpp>
 
 #include <tuple>
 
@@ -23,6 +24,21 @@ bool memory_block_pool::free_memory_block_compare::operator()(
 }
 
 
+
+memory_block_pool::~memory_block_pool()
+{
+	if (m_blocks.size() != m_free_blocks.size())
+	{
+		XMIPP4_LOG_ERROR(
+			"Some blocks belonging to a memory_block_pool were not released "
+			"before its destruction."
+		);
+	}
+
+	m_free_blocks.clear();
+	m_blocks.clear_and_dispose(std::default_delete<memory_block>());
+	m_heaps.clear();
+}
 
 void memory_block_pool::acquire(memory_block &block) noexcept
 {
@@ -131,11 +147,13 @@ void memory_block_pool::release_unused_heaps()
 			auto *heap = block->get_heap();
 			XMIPP4_ASSERT(heap);
 
-			ite = m_free_blocks.erase(ite);
 			m_blocks.erase(m_blocks.iterator_to(*block));
 			release(*heap);
 
-			delete block;
+			ite = m_free_blocks.erase_and_dispose(
+				ite, 
+				std::default_delete<memory_block>()
+			);
 		}
 		else
 		{
@@ -162,12 +180,11 @@ void memory_block_pool::consider_merging_forwards(memory_block &block) noexcept
 	}
 
 	auto *next_block = &(*next);
-	m_blocks.erase(next);
+	const auto new_size = block.get_size() + next_block->get_size();
 	m_free_blocks.erase(m_free_blocks.iterator_to(*next_block));
+	m_blocks.erase_and_dispose(next, std::default_delete<memory_block>());
 	
-	block.set_size(block.get_size() + next_block->get_size());
-
-	delete next_block;	
+	block.set_size(new_size);
 }
 
 void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
@@ -185,13 +202,13 @@ void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
 	}
 
 	auto *prev_block = &(*prev);
-	m_blocks.erase(prev);
+	const auto new_size = block.get_size() + prev_block->get_size();
+	const auto new_offset = prev_block->get_offset();
 	m_free_blocks.erase(m_free_blocks.iterator_to(*prev));
+	m_blocks.erase_and_dispose(prev, std::default_delete<memory_block>());
 	
-	block.set_size(block.get_size() + prev_block->get_size());
-	block.set_offset(prev_block->get_offset());
-
-	delete prev_block;	
+	block.set_size(new_size);
+	block.set_offset(new_offset);
 }
 
 bool memory_block_pool::is_partition(const memory_block &block) const noexcept

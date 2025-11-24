@@ -96,6 +96,14 @@ public:
 	 */
 	std::size_t get_offset() const noexcept;
 
+	/**
+	 * @brief Check wether the block is free or not. 
+	 * 
+	 * @return true The block is free.
+	 * @return false The block is occupied.
+	 */
+	bool is_free() const noexcept;
+
 private:
 	const device_queue *m_queue;
 	std::size_t m_size;

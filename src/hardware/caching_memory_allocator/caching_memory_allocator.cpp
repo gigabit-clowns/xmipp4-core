@@ -158,6 +158,7 @@ caching_memory_allocator::create_buffer(memory_block &block)
 
 	auto sentinel = 
 			std::make_unique<caching_buffer_sentinel>(*this, block);
+	XMIPP4_ASSERT(block.is_free());
 	m_pool.acquire(block);
 
 	XMIPP4_ASSERT(heap);

@@ -42,6 +42,7 @@ memory_block_pool::~memory_block_pool()
 
 void memory_block_pool::acquire(memory_block &block) noexcept
 {
+	XMIPP4_ASSERT(block.is_free());
 	auto ite = m_free_blocks.iterator_to(block);
 	XMIPP4_ASSERT( ite != m_free_blocks.end() );
 	m_free_blocks.erase(ite);
@@ -49,6 +50,7 @@ void memory_block_pool::acquire(memory_block &block) noexcept
 
 void memory_block_pool::release(memory_block &block) noexcept
 {
+	XMIPP4_ASSERT(!block.is_free());
 	consider_merging_block(block);
 	m_free_blocks.insert(block);
 }
@@ -85,7 +87,7 @@ memory_block_pool::partition_block(
 )
 {
 	XMIPP4_ASSERT( block );
-	XMIPP4_ASSERT( is_free(*block) );
+	XMIPP4_ASSERT( block->is_free() );
 
 	auto *first = new memory_block(
 		block->get_queue(),
@@ -162,18 +164,13 @@ void memory_block_pool::release_unused_heaps()
 	}
 }
 
-bool memory_block_pool::is_free(const memory_block &block) noexcept
-{
-	return block.free_block_set_hook.is_linked();
-}
-
 void memory_block_pool::consider_merging_forwards(memory_block &block) noexcept
 {
 	const auto ite = m_blocks.iterator_to(block);
 	const auto next = std::next(ite);
 	if (next == m_blocks.end() || 
 		next->get_heap() != ite->get_heap() ||
-		!is_free(*next)
+		!next->is_free()
 	)
 	{
 		return;
@@ -196,7 +193,7 @@ void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
 	}
 
 	auto prev = std::prev(ite);
-	if (prev->get_heap() != ite->get_heap() || !is_free(*prev))
+	if (prev->get_heap() != ite->get_heap() || !prev->is_free())
 	{
 		return;
 	}

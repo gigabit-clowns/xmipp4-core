@@ -113,16 +113,6 @@ public:
 	 */
 	void release_unused_heaps();
 
-	/**
-	 * @brief Check if a block is free.
-	 * 
-	 * @param block Block to be checked.
-	 * @return true Is free.
-	 * @return false Is not free.
-	 */
-	static
-	bool is_free(const memory_block &block) noexcept;
-
 private:
 	class free_memory_block_compare
 	{

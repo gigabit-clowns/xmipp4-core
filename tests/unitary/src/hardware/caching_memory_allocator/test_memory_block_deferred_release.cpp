@@ -149,7 +149,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(false);
 
 		defer.process_pending_free(pool);
-		REQUIRE( pool.is_free(*block) == false );
+		REQUIRE( block->is_free() == false );
 	}
 
 	SECTION("Partial completion")
@@ -160,7 +160,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(false);
 
 		defer.process_pending_free(pool);
-		REQUIRE( pool.is_free(*block) == false );
+		REQUIRE( block->is_free() == false );
 	}
 
 	SECTION("Full completion")
@@ -171,7 +171,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(true);
 
 		defer.process_pending_free(pool);
-		REQUIRE( pool.is_free(*block) == true ); // Freed!
+		REQUIRE( block->is_free() ); // Freed!
 	}
 }
 
@@ -221,7 +221,7 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
 	REQUIRE_CALL(*event2, wait());
 
 	defer.wait_pending_free(pool);
-	REQUIRE( pool.is_free(*block) == true );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its resources", "[caching_memory_allocator]" )
@@ -261,7 +261,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.RETURN(true);
 
 		defer.process_pending_free(pool);
-		REQUIRE( pool.is_free(*block) );
+		REQUIRE( block->is_free() );
 	}
 	pool.acquire(*block);
 	{
@@ -280,6 +280,6 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.IN_SEQUENCE(seq);
 
 		defer.wait_pending_free(pool);
-		REQUIRE( pool.is_free(*block) );
+		REQUIRE( block->is_free() );
 	}
 }

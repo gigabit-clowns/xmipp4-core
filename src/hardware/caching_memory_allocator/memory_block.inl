@@ -59,6 +59,12 @@ std::size_t memory_block::get_offset() const noexcept
 	return m_offset;
 }
 
+inline
+bool memory_block::is_free() const noexcept
+{
+	return free_block_set_hook.is_linked();
+}
+
 
 
 inline

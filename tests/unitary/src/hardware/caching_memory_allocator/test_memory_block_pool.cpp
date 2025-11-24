@@ -26,9 +26,9 @@ TEST_CASE( "acquire in memory_block_pool should mark the block as not free", "[m
 	mock_device_queue queue;
 	auto *block = pool.register_heap(heap, &queue);
 
-	REQUIRE( pool.is_free(*block) == true );
+	REQUIRE( block->is_free() == true );
 	pool.acquire(*block);
-	REQUIRE( pool.is_free(*block) == false );
+	REQUIRE( block->is_free() == false );
 }
 
 TEST_CASE( "release in memory_block_pool should mark the block as free", "[memory_block_pool]")
@@ -43,9 +43,9 @@ TEST_CASE( "release in memory_block_pool should mark the block as free", "[memor
 	auto *block = pool.register_heap(heap, &queue);
 
 	pool.acquire(*block);
-	REQUIRE( pool.is_free(*block) == false );
+	REQUIRE( block->is_free() == false );
 	pool.release(*block);
-	REQUIRE( pool.is_free(*block) == true );
+	REQUIRE( block->is_free() == true );
 }
 
 TEST_CASE("find_suitable_block should return the best fit for the requested size and queue", "[memory_block_pool]")
@@ -186,13 +186,13 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
 	REQUIRE( first->get_offset() == 0 );
 	REQUIRE( first->get_size() == first_size );
 	REQUIRE( first->get_queue() == &queue );
-	REQUIRE( pool.is_free(*first) );
+	REQUIRE( first->is_free());
 
 	REQUIRE( second->get_heap() == heap.get() );
 	REQUIRE( second->get_offset() == first_size );
 	REQUIRE( second->get_size() == second_size );
 	REQUIRE( second->get_queue() == &queue );
-	REQUIRE( pool.is_free(*second) );
+	REQUIRE( second->is_free() );
 }
 
 TEST_CASE("register_heap should store the provided heap in the resulting block", "[memory_block_pool]")
@@ -259,7 +259,7 @@ TEST_CASE("register_heap should return a free bock", "[memory_block_pool]")
 		.RETURN(1024);
 
 	auto *block = pool.register_heap(heap, nullptr);
-	REQUIRE( pool.is_free(*block) );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE("register_heap should increment the reference count by one", "[memory_block_pool]")
@@ -334,7 +334,7 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	REQUIRE( block->get_offset() == 256 );
 	REQUIRE( block->get_size() == 768 );
 	REQUIRE( block->get_queue() == &queue );
-	REQUIRE( pool.is_free(*block) );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE("consider_merging_blocks should merge when there is a free partition to the left", "[memory_block_pool]")
@@ -360,7 +360,7 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	REQUIRE( block->get_offset() == 0 );
 	REQUIRE( block->get_size() == 768 );
 	REQUIRE( block->get_queue() == &queue );
-	REQUIRE( pool.is_free(*block) == true );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE("consider_merging_blocks should merge twice when there is a free partition to the right and left", "[memory_block_pool]")
@@ -382,7 +382,7 @@ TEST_CASE("consider_merging_blocks should merge twice when there is a free parti
 	REQUIRE( block->get_offset() == 0 );
 	REQUIRE( block->get_size() == 1024 );
 	REQUIRE( block->get_queue() == &queue );
-	REQUIRE( pool.is_free(*block) == true );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE("release_unused_heaps should release free heaps", "[memory_block_pool]")

@@ -10,51 +10,21 @@ function(fetch_boost)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	set(GIT_TAG boost-${arg_VERSION})
+	cmake_policy(SET CMP0135 NEW) # To avoid warnings
 	FetchContent_Declare(
-		boost_assert
-		GIT_REPOSITORY https://github.com/boostorg/assert.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_config
-		GIT_REPOSITORY https://github.com/boostorg/config.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_core
-		GIT_REPOSITORY https://github.com/boostorg/core.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_intrusive
-		GIT_REPOSITORY https://github.com/boostorg/intrusive.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_move
-		GIT_REPOSITORY https://github.com/boostorg/move.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_static_assert
-		GIT_REPOSITORY https://github.com/boostorg/static_assert.git
-		GIT_TAG ${GIT_TAG}
-	)
-	FetchContent_Declare(
-		boost_container
-		GIT_REPOSITORY https://github.com/boostorg/container.git
-		GIT_TAG ${GIT_TAG}
+		Boost
+		URL https://github.com/boostorg/boost/releases/download/boost-${arg_VERSION}/boost-${arg_VERSION}-cmake.tar.gz
 	)
 
-	set(BOOST_CONTAINER_HEADER_ONLY ON)
-	FetchContent_MakeAvailable(
-		boost_assert 
-		boost_config 
-		boost_core 
-		boost_intrusive
-		boost_move 
-		boost_static_assert 
-		boost_container
+	set(BOOST_INCLUDE_LIBRARIES
+		container
+		intrusive
+		unordered
+		filesystem
 	)
+	set(BOOST_CONTAINER_HEADER_ONLY ON)
+	set(BOOST_USE_STATIC_LIBS ON)
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	FetchContent_MakeAvailable(Boost)
+
 endfunction()

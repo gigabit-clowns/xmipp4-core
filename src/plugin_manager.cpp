@@ -13,7 +13,7 @@
 #include <system_error>
 #include <cstdlib>
 
-#include <ghc/filesystem.hpp>
+#include <boost/filesystem.hpp>
 
 static const char XMIPP4_PLUGINS_DIRECTORY_NAME[] = "xmipp4-plugins";
 static const char XMIPP4_PLUGINS_ENV_VARIABLE[] = "XMIPP4_PLUGINS_DIRECTORY";
@@ -32,11 +32,15 @@ static void try_load_plugin(
 	}
 	catch(const plugin_load_error& error)
 	{
-		XMIPP4_LOG_ERROR("Failed to load plugin from {}: {}", path, error.what());
+		XMIPP4_LOG_ERROR(
+			"Failed to load plugin from {}: {}", path, error.what()
+		);
 	}
 	catch(const std::system_error& error)
 	{
-		XMIPP4_LOG_ERROR("Failed to load shared library {}: {}", path, error.what());
+		XMIPP4_LOG_ERROR(
+			"Failed to load shared library {}: {}", path, error.what()
+		);
 	}
 }
 
@@ -137,7 +141,7 @@ std::string get_default_plugin_directory()
 	const auto* symbol = 
 		reinterpret_cast<const void*>(&get_default_plugin_directory);
 
-	auto path = ghc::filesystem::path(
+	auto path = boost::filesystem::path(
 		system::dynamic_library::query_symbol_filename(symbol)
 	);
 	if(path.empty())
@@ -170,12 +174,12 @@ std::string get_plugin_directory()
 
 void discover_plugins(const std::string& directory, plugin_manager &manager)
 {
-	ghc::filesystem::directory_iterator iterator;
+	boost::filesystem::directory_iterator iterator;
 	try
 	{
-		iterator = ghc::filesystem::directory_iterator(directory);
+		iterator = boost::filesystem::directory_iterator(directory);
 	}
-	catch(const ghc::filesystem::filesystem_error& e)
+	catch(const boost::filesystem::filesystem_error& e)
 	{
 		XMIPP4_LOG_DEBUG(
 			"Failed to open plugin directory {}: {}", 

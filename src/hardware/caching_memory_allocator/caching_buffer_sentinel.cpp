@@ -14,7 +14,7 @@ namespace hardware
 
 caching_buffer_sentinel::caching_buffer_sentinel(
 	caching_memory_allocator &allocator,
-	memory_block_pool::iterator block
+	memory_block &block
 )
 	: m_allocator(allocator)
 	, m_block(block)
@@ -41,7 +41,7 @@ void caching_buffer_sentinel::record_queue(device_queue &queue, bool exclusive)
 	}
 
 	auto *const queue_pointer = &queue;
-	if (queue_pointer != m_block->first.get_queue())
+	if (queue_pointer != m_block.get().get_queue())
 	{
 		m_queues.emplace(queue_pointer);
 	}

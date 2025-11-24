@@ -12,10 +12,10 @@ function(fetch_spdlog)
 
     set(SPDLOG_INSTALL ON)
 	set(SPDLOG_BUILD_SHARED ON)
+	cmake_policy(SET CMP0135 NEW) # To avoid warnings
 	FetchContent_Declare(
 		spdlog
-		GIT_REPOSITORY https://github.com/gabime/spdlog.git
-		GIT_TAG v${arg_VERSION}
+		URL https://github.com/gabime/spdlog/archive/refs/tags/v${arg_VERSION}.tar.gz
 	)
 
 	FetchContent_MakeAvailable(spdlog)

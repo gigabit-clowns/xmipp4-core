@@ -34,7 +34,7 @@ public:
 	) override;
 
 	void recycle_block(
-		memory_block_pool::iterator block, 
+		memory_block &block, 
 		span<device_queue *const> queues
 	);
 
@@ -47,7 +47,7 @@ private:
 	std::size_t m_heap_size_step;
 
 
-	std::shared_ptr<buffer> create_buffer(memory_block_pool::iterator block);
+	std::shared_ptr<buffer> create_buffer(memory_block &block);
 };
 
 } // namespace hardware

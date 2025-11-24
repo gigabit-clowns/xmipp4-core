@@ -13,18 +13,45 @@
 
 using namespace xmipp4::hardware;
 
-TEST_CASE( "Constructing a memory_block should store the arguments", "[caching_memory_allocator]" )
+TEST_CASE( "constructing a memory_block should store the arguments", "[caching_memory_allocator]" )
 {
-	auto heap = std::make_shared<mock_memory_heap>();
+	mock_memory_heap heap;
 	const std::size_t offset = 1234;
 	const std::size_t size = 9876;
 	mock_device_queue queue;
 
-	memory_block block(heap, offset, size, &queue);
+	memory_block block(&queue, size, &heap, offset);
 
-	REQUIRE( block.get_heap() == heap.get() );
-	REQUIRE( block.share_heap() == heap );
-	REQUIRE( block.get_offset() == offset );
-	REQUIRE( block.get_size() == size );
 	REQUIRE( block.get_queue() == &queue );
+	REQUIRE( block.get_size() == size );
+	REQUIRE( block.get_heap() == &heap );
+	REQUIRE( block.get_offset() == offset );
+}
+
+TEST_CASE( "setting the size in a memory heap should store its value", "[caching_memory_allocator]" )
+{
+	mock_memory_heap heap;
+	const std::size_t offset = 1234;
+	const std::size_t size = 9876;
+	mock_device_queue queue;
+
+	memory_block block(&queue, size, &heap, offset);
+
+	const std::size_t new_size = 6543;
+	block.set_size(new_size);
+	REQUIRE( block.get_size() == new_size );
+}
+
+TEST_CASE( "setting the offset in a memory heap should store its value", "[caching_memory_allocator]" )
+{
+	mock_memory_heap heap;
+	const std::size_t offset = 1234;
+	const std::size_t size = 9876;
+	mock_device_queue queue;
+
+	memory_block block(&queue, size, &heap, offset);
+
+	const std::size_t new_offset = 6543;
+	block.set_offset(new_offset);
+	REQUIRE( block.get_offset() == new_offset );
 }

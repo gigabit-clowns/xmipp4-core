@@ -48,8 +48,10 @@ target_link_libraries(
 		spdlog::spdlog_header_only
 		half
 	PRIVATE
-		ghc_filesystem # Eventually replace by std::filesystem (C++17)
+		Boost::filesystem # Eventually replace by std::filesystem (C++17)
 		Boost::container # Eventually replace in C++23
+		Boost::unordered # Eventually replace in C++23
+		Boost::intrusive
 		${CMAKE_DL_LIBS}
 )
 

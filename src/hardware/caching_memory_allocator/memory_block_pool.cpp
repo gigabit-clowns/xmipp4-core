@@ -23,6 +23,7 @@ bool memory_block_pool::free_memory_block_compare::operator()(
 }
 
 
+
 void memory_block_pool::acquire(memory_block &block) noexcept
 {
 	auto ite = m_free_blocks.iterator_to(block);
@@ -119,7 +120,7 @@ void memory_block_pool::consider_merging_block(memory_block &block) noexcept
 	consider_merging_backwards(block);
 }
 
-void memory_block_pool::release_blocks()
+void memory_block_pool::release_unused_heaps()
 {
 	auto ite = m_free_blocks.begin();
 	while (ite != m_free_blocks.end())
@@ -127,12 +128,14 @@ void memory_block_pool::release_blocks()
 		if (!is_partition(*ite))
 		{
 			auto *block = &(*ite);
+			auto *heap = block->get_heap();
+			XMIPP4_ASSERT(heap);
+
 			ite = m_free_blocks.erase(ite);
-
 			m_blocks.erase(m_blocks.iterator_to(*block));
-			delete block;
+			release(*heap);
 
-			// TODO remove the heap.
+			delete block;
 		}
 		else
 		{
@@ -210,6 +213,20 @@ bool memory_block_pool::is_partition(const memory_block &block) const noexcept
 	}
 
 	return false;
+}
+
+void memory_block_pool::release(const memory_heap &heap)
+{
+	const auto ite = m_heaps.find(
+		&heap,
+		std::hash<const memory_heap*>(),
+		[] (const memory_heap *lhs, const std::shared_ptr<memory_heap> &rhs)
+		{
+			return rhs.get() == lhs;
+		}
+	);
+	XMIPP4_ASSERT( ite != m_heaps.end() );
+	m_heaps.erase(ite);
 }
 
 } // namespace hardware

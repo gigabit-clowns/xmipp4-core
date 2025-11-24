@@ -100,7 +100,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 				"Memory allocation failed. Retrying after releasing resources."
 			);
 			m_deferred_release.wait_pending_free(m_pool);
-			m_pool.release_blocks();
+			m_pool.release_unused_heaps();
 			heap = get_memory_resource().create_memory_heap(
 				request_size,
 				m_maximum_alignment

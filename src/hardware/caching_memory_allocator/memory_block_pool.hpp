@@ -10,6 +10,7 @@
 
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/set.hpp>
+#include <boost/unordered/unordered_set.hpp>
 
 namespace xmipp4 
 {
@@ -102,7 +103,7 @@ public:
 	 * All free blocks that are not partitioned are returned to the allocator.
 	 * 
 	 */
-	void release_blocks();
+	void release_unused_heaps();
 
 	/**
 	 * @brief Check if a block is free.
@@ -125,6 +126,8 @@ private:
 
 	};
 
+
+
 	using memory_block_list_type = boost::intrusive::list<
 		memory_block,
     	boost::intrusive::member_hook<
@@ -142,10 +145,14 @@ private:
 		>,
 		boost::intrusive::compare<free_memory_block_compare>
 	>;
+	using heap_set_type = boost::unordered::unordered_set<
+		std::shared_ptr<memory_heap>,
+		std::hash<std::shared_ptr<memory_heap>>
+	>;
 
 	memory_block_list_type m_blocks;
 	free_memory_block_set_type m_free_blocks;
-	std::set<std::shared_ptr<memory_heap>> m_heaps;
+	heap_set_type m_heaps;
 
 	/**
 	 * @brief Consider merging the provided block with the next one.
@@ -178,6 +185,12 @@ private:
 	 */
 	bool is_partition(const memory_block &block) const noexcept;
 
+	/**
+	 * @brief Release the provided memory heap.
+	 * 
+	 * @param heap The memory heap to be released.
+	 */
+	void release(const memory_heap &heap);
 
 };
 

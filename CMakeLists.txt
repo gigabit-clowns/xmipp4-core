@@ -21,14 +21,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(fetch_ghc_filesystem)
 include(fetch_half)
 include(fetch_spdlog)
 include(fetch_boost)
 
 # Find dependencies
 find_package(Threads REQUIRED)
-fetch_ghc_filesystem(VERSION 1.5.14)
 fetch_boost(VERSION 1.89.0)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)

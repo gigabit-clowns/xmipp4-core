@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include "memory_block.hpp"
+
 #include <cstddef>
 #include <memory>
+#include <set>
 
-#include "memory_block.hpp"
-#include "memory_block_context.hpp"
+#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/set.hpp>
+#include <boost/unordered/unordered_set.hpp>
 
 namespace xmipp4 
 {
@@ -21,36 +25,29 @@ namespace hardware
 class memory_block_pool
 {
 public:
-	using iterator = memory_block_context::iterator;
+	memory_block_pool() = default;
+	memory_block_pool(const memory_block_pool &other) = delete;
+	memory_block_pool(memory_block_pool &&other) = delete;
+	~memory_block_pool();
+
+	memory_block_pool& operator=(const memory_block_pool &other) = delete;
+	memory_block_pool& operator=(memory_block_pool &&other) = delete;
 
 	/**
-	 * @brief Obtain an iterator to the begining.
+	 * @brief Mark the block pointed by the block as occupied.
 	 * 
-	 * @return iterator The iterator to the begining.
+	 * @param block Reference to the block to be marked as occupied.
+	 * The block must be free.
 	 */
-	iterator begin();
+	void acquire(memory_block &block) noexcept;
 
 	/**
-	 * @brief Obtain an iterator to the end.
+	 * @brief Mark the block pointed by the block as free.
 	 * 
-	 * @return iterator The iterator to the end.
+	 * @param block Reference to the block to be marked as free. The block
+	 * must be occupied.
 	 */
-	iterator end();
-
-	/**
-	 * @brief Mark the block pointed by the iterator as occupied.
-	 * 
-	 * @param ite Iterator to be marked as occupied. is_free() must return
-	 * true.
-	 */
-	void acquire(iterator ite);
-
-	/**
-	 * @brief Mark the block pointed by the iterator as free.
-	 * 
-	 * @param ite Iterator to be marked as free. is_free() must return false.
-	 */
-	void release(iterator ite);
+	void release(memory_block &block) noexcept;
 
 	/**
 	 * @brief Find a candidate block.
@@ -58,13 +55,13 @@ public:
 	 * If found, the returned block will be at least of the requested size
 	 * and with the requested device_queue.
 	 * 
-	 * @param blocks Collection of blocks.
 	 * @param size Minimum size of the block.
 	 * @param queue Queue of the requested block.
-	 * @return iterator Iterator the candidate block. end() if none was found.
+	 * @return memory_block* Pointer the candidate block. nullptr if none 
+	 * was found.
 	 * 
 	 */
-	iterator find_suitable_block(
+	memory_block* find_suitable_block(
 		std::size_t size,
 		const device_queue *queue 
 	);
@@ -72,15 +69,15 @@ public:
 	/**
 	 * @brief Partition a block in two blocks.
 	 * 
-	 * @param ite Iterator to the block to be partitioned. Must be dereferenceable.
+	 * @param block Pointer to the block to be partitioned. Must be dereferenceable.
 	 * @param size1 Size of the first partition.
 	 * @param size2 Size of the second partition.
-	 * @return std::pair<iterator, iterator> Iterators to the resulting 
+	 * @return std::pair<memory_block*, memory_block*> Pointers to the resulting 
 	 * two partitions.
 	 * 
 	 */
-	std::pair<iterator, iterator> partition_block(
-		iterator ite,
+	std::pair<memory_block*, memory_block*> partition_block(
+		memory_block *block,
 		std::size_t size1,
 		std::size_t size2
 	);
@@ -90,9 +87,10 @@ public:
 	 * 
 	 * @param heap The heap to be registered. Can not be nullptr.
 	 * @param queue The queue served by this heap.
-	 * @return iterator Position where it was inserted.
+	 * @return memory_block* Pointer to the inserted block. Guaranteed to not
+	 * be nullptr.
 	 */
-	iterator register_heap(
+	memory_block* register_heap(
 		std::shared_ptr<memory_heap> heap, 
 		const device_queue *queue
 	);
@@ -102,12 +100,10 @@ public:
 	 * 
 	 * Forward and/or backward blocks are merged if they are free.
 	 * 
-	 * @param ite Iterator to the candidate block. Must be dereferenceable.
-	 * @return iterator Input iterator if not merged. Iterator to the merged 
-	 * block when merged.
+	 * @param block Reference to the candidate block.
 	 * 
 	 */
-	iterator consider_merging_block(iterator ite);
+	void consider_merging_block(memory_block &block) noexcept;
 
 	/**
 	 * @brief Release free blocks when possible.
@@ -115,142 +111,85 @@ public:
 	 * All free blocks that are not partitioned are returned to the allocator.
 	 * 
 	 */
-	void release_blocks();
+	void release_unused_heaps();
 
 private:
-	std::map<memory_block, memory_block_context, memory_block_less> m_blocks;
+	class free_memory_block_compare
+	{
+	public:
+		bool operator()(
+			const memory_block &lhs, 
+			const memory_block &rhs
+		) const noexcept;
+
+	};
+
+
+
+	using memory_block_list_type = boost::intrusive::list<
+		memory_block,
+    	boost::intrusive::member_hook<
+			memory_block, 
+			memory_block::block_list_hook_type, 
+			&memory_block::block_list_hook
+		>
+	>;
+	using free_memory_block_set_type = boost::intrusive::multiset<
+		memory_block,
+    	boost::intrusive::member_hook<
+			memory_block, 
+			memory_block::free_block_set_hook_type, 
+			&memory_block::free_block_set_hook
+		>,
+		boost::intrusive::compare<free_memory_block_compare>
+	>;
+	using heap_set_type = boost::unordered::unordered_set<
+		std::shared_ptr<memory_heap>,
+		std::hash<std::shared_ptr<memory_heap>>
+	>;
+
+	memory_block_list_type m_blocks;
+	free_memory_block_set_type m_free_blocks;
+	heap_set_type m_heaps;
 
 	/**
-	 * @brief Merge two blocks.
+	 * @brief Consider merging the provided block with the next one.
 	 * 
-	 * @param first Iterator to the first block to be merged. 
-	 * Must be dereferenceable.
-	 * @param second Iterator to the second block to be merged. 
-	 * Must be dereferenceable.
-	 * @return iterator Iterator to the merged blocks.
+	 * The block is merged if it has a "next" block, this belongs to the
+	 * same allocation and it is free.
 	 * 
+	 * @param block The block to be merged forwards.
 	 */
-	iterator merge_blocks(
-		iterator first,
-		iterator second
-	);
+	void consider_merging_forwards(memory_block &block) noexcept;
 
 	/**
-	 * @brief Merge three blocks.
+	 * @brief Consider merging the provided block with the previous one.
 	 * 
-	 * @param first Iterator to the first block to be merged. 
-	 * Must be dereferenceable.
-	 * @param second Iterator to the second block to be merged. 
-	 * Must be dereferenceable.
-	 * @param third Iterator to the third block to be merged. 
-	 * Must be dereferenceable.
-	 * @return iterator Iterator to the merged blocks.
+	 * The block is merged if it has a "previous" block, this belongs to the
+	 * same allocation and it is free.
 	 * 
+	 * @param block The block to be merged backwards.
 	 */
-	iterator merge_blocks(
-		iterator first,
-		iterator second,
-		iterator third
-	);
-
-	/**
-	 * @brief Update links for the next partition to ensure consistency.
-	 * 
-	 * If the provided element has a next partition, the previous partition
-	 * is updated on the next partition. Otherwise does nothing.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * 
-	 */
-	void update_forward_link(iterator ite) noexcept;
-
-	/**
-	 * @brief Update links for the previous partition to ensure consistency.
-	 * 
-	 * If the provided element has a previous partition, the next partition
-	 * is updated on the previous partition. Otherwise does nothing.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * 
-	 */
-	void update_backward_link(iterator ite) noexcept;
-
-	/**
-	 * @brief Update links for the previous and next partitions to ensure 
-	 * consistency.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * 
-	 * @see update_forward_link
-	 * @see update_backward_link
-	 * 
-	 */
-	void update_links(iterator ite) noexcept;
-
-	/**
-	 * @brief Check for consistency in the next partition.
-	 * 
-	 * The forward link is consistent if the previous block of next block of 
-	 * the iterator is the iterator itself. If the next block is end(), it 
-	 * is considered to be consistent.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * @return true Forward link is consistent.
-	 * @return false Forward link is not consistent. Thus, an error occurred.
-	 * 
-	 */
-	bool check_forward_link(iterator ite)  noexcept;
-
-	/**
-	 * @brief Check for consistency in the previous partition.
-	 * 
-	 * The backward link is consistent if the next block of the previous block 
-	 * of the iterator is the iterator itself. If the previous block is end(), 
-	 * it is considered to be consistent.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * @return true Backward link is consistent.
-	 * @return false Backward link is not consistent. Thus, an error ocurred.
-	 * 
-	 */
-	bool check_backward_link(iterator ite) noexcept;
-
-	/**
-	 * @brief Check for consistency in the previous and next partitions.
-	 * 
-	 * @param ite Iterator to a block. Must be dereferenceable.
-	 * @return true Forward and backward links are consistent.
-	 * @return false Forward and backward links are not consistent. 
-	 * Thus, an error ocurred.
-	 * 
-	 */
-	bool check_links(iterator ite) noexcept;
+	void consider_merging_backwards(memory_block &block) noexcept;
 
 	/**
 	 * @brief Check if a block is partitioned.
 	 * 
-	 * A block is considered to be partitioned if it has a previous or next
-	 * partition iterator set to a non-empty value.
-	 * 
-	 * @param ite Iterator to the block to be checked. Must be dereferenceable.
+	 * A block is considered to be partitioned if the next or previous
+	 * blocks refer to the same heap.
 	 * @return true Block is partitioned.
 	 * @return false Block is not partitioned.
 	 * 
 	 */
-	bool is_partition(iterator ite) noexcept;
+	bool is_partition(const memory_block &block) const noexcept;
 
 	/**
-	 * @brief Check if a block can be merged to.
+	 * @brief Release the provided memory heap.
 	 * 
-	 * A block can be merged if it is free.
-	 * 
-	 * @param ite Iterator to the block to be checked. May be end().
-	 * @return true Item pointed by the iterator is free.
-	 * @return false Item pointed by the iterator is occupied or the 
-	 * provided iterator is null.
-	 * 
+	 * @param heap The memory heap to be released.
 	 */
-	bool is_mergeable(iterator ite) noexcept;
+	void release(const memory_heap &heap);
+
 };
 
 } // namespace hardware

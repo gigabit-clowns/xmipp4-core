@@ -4,184 +4,158 @@
 
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
+#include <xmipp4/core/platform/assert.hpp>
+#include <xmipp4/core/logger.hpp>
+
+#include <tuple>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-memory_block_pool::iterator memory_block_pool::begin()
+bool memory_block_pool::free_memory_block_compare::operator()(
+	const memory_block &lhs, 
+	const memory_block &rhs
+) const noexcept
 {
-	return m_blocks.begin();
+	return std::make_tuple(lhs.get_queue(), lhs.get_size()) <
+	       std::make_tuple(rhs.get_queue(), rhs.get_size()) ;
 }
 
-memory_block_pool::iterator memory_block_pool::end()
+
+
+memory_block_pool::~memory_block_pool()
 {
-	return m_blocks.end();
+	if (m_blocks.size() != m_free_blocks.size())
+	{
+		XMIPP4_LOG_ERROR(
+			"Some blocks belonging to a memory_block_pool were not released "
+			"before its destruction."
+		);
+	}
+
+	m_free_blocks.clear();
+	m_blocks.clear_and_dispose(std::default_delete<memory_block>());
+	m_heaps.clear();
 }
 
-
-void memory_block_pool::acquire(iterator ite)
+void memory_block_pool::acquire(memory_block &block) noexcept
 {
-	ite->second.set_free(false);
+	XMIPP4_ASSERT(block.is_free());
+	auto ite = m_free_blocks.iterator_to(block);
+	XMIPP4_ASSERT( ite != m_free_blocks.end() );
+	m_free_blocks.erase(ite);
 }
 
-void memory_block_pool::release(iterator ite)
+void memory_block_pool::release(memory_block &block) noexcept
 {
-	ite->second.set_free(true);
-	consider_merging_block(ite);
+	XMIPP4_ASSERT(!block.is_free());
+	consider_merging_block(block);
+	m_free_blocks.insert(block);
 }
 
-memory_block_pool::iterator memory_block_pool::find_suitable_block(
+memory_block* memory_block_pool::find_suitable_block(
 	std::size_t size,
 	const device_queue *queue 
 )
 {
 	// Assuming that the blocks are ordered according to their queue reference
-	// first and then their sizes, the best fit is achieved iterating from
-	// the first suitable block.
-	const memory_block key(nullptr, 0UL, size, queue);
-	for (auto ite = m_blocks.lower_bound(key); ite != m_blocks.end(); ++ite)
+	// first and then their sizes, the best fit is achieved for the first block
+	// that has at least the requested size and the requested queue.
+	const memory_block key(queue, size, nullptr, 0UL);
+	auto ite = m_free_blocks.lower_bound(key);
+
+	if (ite == m_free_blocks.end())
 	{
-		if(ite->first.get_queue() != queue)
-		{
-			// Reached the end of the allowed range.
-			break;
-		}
-		
-		if (ite->second.is_free())
-		{
-			// Found a suitable block.
-			return ite;
-		}
+		return nullptr;
+	}
+	if(ite->get_queue() != queue)
+	{
+		return nullptr;
 	}
 
-	return m_blocks.end();
+	XMIPP4_ASSERT(ite->get_size() >= size);
+	return &(*ite);
 }
 
-std::pair<memory_block_pool::iterator, memory_block_pool::iterator>
+std::pair<memory_block*, memory_block*>
 memory_block_pool::partition_block(
-	iterator ite,
+	memory_block* block,
 	std::size_t size1,
 	std::size_t size2
 )
 {
-	auto heap = ite->first.share_heap();
-	const auto base_offset = ite->first.get_offset();
-	const auto queue = ite->first.get_queue();
-	const auto prev = ite->second.get_previous_block();
-	const auto next = ite->second.get_next_block();
-	const auto is_free = ite->second.is_free();
+	XMIPP4_ASSERT( block );
+	XMIPP4_ASSERT( block->is_free() );
 
-	iterator first;
-	iterator second;
-	bool inserted;
-	std::tie(first, inserted) = m_blocks.emplace(
-		std::piecewise_construct,
-		std::forward_as_tuple(
-			heap,
-			base_offset, 
-			size1, 
-			queue
-		),
-		std::forward_as_tuple(
-			prev,
-			memory_block_pool::iterator(), // To be set
-			is_free
-		)
+	auto *first = new memory_block(
+		block->get_queue(),
+		size1,
+		block->get_heap(),
+		block->get_offset()
 	);
-	XMIPP4_ASSERT(inserted);
-	std::tie(second, inserted) = m_blocks.emplace(
-		std::piecewise_construct,
-		std::forward_as_tuple(
-			std::move(heap), // No longer needed
-			base_offset + size1, 
-			size2, 
-			queue
-		),
-		std::forward_as_tuple(
-			first,
-			next,
-			is_free
-		)
-	);
-	XMIPP4_ASSERT(inserted);
 	
-	first->second.set_next_block(second);
-	update_backward_link(first);
-	update_forward_link(second);
+	m_free_blocks.erase(m_free_blocks.iterator_to(*block));
+	auto *second = block;
+	second->set_size(size2);
+	second->set_offset(size1 + second->get_offset());
 
-	XMIPP4_ASSERT( check_links(first) );
-	XMIPP4_ASSERT( check_links(second) );
+	// Insert first before second (already in the list)
+	m_blocks.insert(m_blocks.iterator_to(*second), *first);
 
-	// Remove old block
-	m_blocks.erase(ite);
+	m_free_blocks.insert(*first);
+	m_free_blocks.insert(*second);
 
 	return std::make_pair(first, second);
 }
 
-memory_block_pool::iterator memory_block_pool::register_heap(
+memory_block* memory_block_pool::register_heap(
 	std::shared_ptr<memory_heap> heap, 
 	const device_queue *queue
 )
 {
-	iterator result;
-	bool inserted;
-
-	if (!heap)
-	{
-		throw std::invalid_argument("Provided null heap");
-	}
-
-	std::tie(result, inserted) = m_blocks.emplace(
-		std::piecewise_construct,
-		std::forward_as_tuple(std::move(heap), 0UL, heap->get_size(), queue),
-		std::forward_as_tuple(end(), end(), true)
+	auto block = std::make_unique<memory_block>(
+		queue, 
+		heap->get_size(), 
+		heap.get(), 
+		0
 	);
+	
+	bool inserted;
+	std::tie(std::ignore, inserted) = m_heaps.emplace(std::move(heap));
+	XMIPP4_ASSERT( inserted );
 
-	if (!inserted)
-	{
-		throw std::invalid_argument("Provided block is already in the pool");
-	}
+	m_blocks.push_back(*block);
+	m_free_blocks.insert(*block);
 
-	return result;
+	return block.release();
 }
 
-memory_block_pool::iterator 
-memory_block_pool::consider_merging_block(
-	memory_block_pool::iterator ite
-)
+void memory_block_pool::consider_merging_block(memory_block &block) noexcept
 {
-	XMIPP4_ASSERT( ite->second.is_free() );
-	const auto prev = ite->second.get_previous_block();
-	const auto merge_prev = is_mergeable(prev);
-	const auto next = ite->second.get_next_block();
-	const auto merge_next = is_mergeable(next);
-
-	if (merge_prev && merge_next)
-	{
-		ite = merge_blocks(prev, ite, next);
-	}
-	else if (merge_prev)
-	{
-		ite = merge_blocks(prev, ite);
-	}
-	else if (merge_next)
-	{   
-		ite = merge_blocks(ite, next);
-	}
-
-	return ite;
+	consider_merging_forwards(block);
+	consider_merging_backwards(block);
 }
 
-void memory_block_pool::release_blocks()
+void memory_block_pool::release_unused_heaps()
 {
-	auto ite = m_blocks.begin();
-	while (ite != m_blocks.cend())
+	auto ite = m_free_blocks.begin();
+	while (ite != m_free_blocks.end())
 	{
-		if(ite->second.is_free() && !is_partition(ite))
+		if (!is_partition(*ite))
 		{
-			ite = m_blocks.erase(ite);
+			auto *block = &(*ite);
+			const auto *heap = block->get_heap();
+			XMIPP4_ASSERT(heap);
+
+			m_blocks.erase(m_blocks.iterator_to(*block));
+			release(*heap);
+
+			ite = m_free_blocks.erase_and_dispose(
+				ite, 
+				std::default_delete<memory_block>()
+			);
 		}
 		else
 		{
@@ -190,153 +164,83 @@ void memory_block_pool::release_blocks()
 	}
 }
 
-memory_block_pool::iterator
-memory_block_pool::merge_blocks(
-	iterator first,
-	iterator second
-)
+void memory_block_pool::consider_merging_forwards(memory_block &block) noexcept
 {
-	XMIPP4_ASSERT( first->second.is_free() );
-	XMIPP4_ASSERT( second->second.is_free() );
-	XMIPP4_ASSERT( first->second.get_next_block() == second );
-	XMIPP4_ASSERT( second->second.get_previous_block() == first );
-
-	auto heap = first->first.share_heap();
-	const auto offset = first->first.get_offset();
-	const auto size = first->first.get_size() + second->first.get_size() ;
-	const auto queue = first->first.get_queue();
-	const auto prev = first->second.get_previous_block();
-	const auto next = second->second.get_next_block();
-
-	iterator ite;
-	bool inserted;
-	std::tie(ite, inserted) = m_blocks.emplace(
-		std::piecewise_construct,
-		std::forward_as_tuple(std::move(heap), offset, size, queue),
-		std::forward_as_tuple(prev, next, true)
-	);
-	XMIPP4_ASSERT(inserted);
-
-	update_links(ite);
-
-	m_blocks.erase(first);
-	m_blocks.erase(second);
-
-	XMIPP4_ASSERT( check_links(ite) );
-	return ite;
-}
-
-memory_block_pool::iterator
-memory_block_pool::merge_blocks(
-	iterator first,
-	iterator second,
-	iterator third
-)
-{
-	XMIPP4_ASSERT( first->second.is_free() );
-	XMIPP4_ASSERT( second->second.is_free() );
-	XMIPP4_ASSERT( third->second.is_free() );
-	XMIPP4_ASSERT( first->second.get_next_block() == second );
-	XMIPP4_ASSERT( second->second.get_previous_block() == first );
-	XMIPP4_ASSERT( second->second.get_next_block() == third );
-	XMIPP4_ASSERT( third->second.get_previous_block() == second );
-
-	auto heap = first->first.share_heap();
-	const auto offset = first->first.get_offset();
-	const auto size = 
-		first->first.get_size() +
-		second->first.get_size() +
-		third->first.get_size();
-	const auto queue = first->first.get_queue();
-	const auto prev = first->second.get_previous_block();
-	const auto next = third->second.get_next_block();
-
-	memory_block_pool::iterator ite;
-	bool inserted;
-	std::tie(ite, inserted) = m_blocks.emplace(
-		std::piecewise_construct,
-		std::forward_as_tuple(std::move(heap), offset, size, queue),
-		std::forward_as_tuple(prev, next, true)
-	);
-	XMIPP4_ASSERT(inserted);
-
-	update_links(ite);
-
-	m_blocks.erase(first);
-	m_blocks.erase(second);
-	m_blocks.erase(third);
-
-	XMIPP4_ASSERT( check_links(ite) );
-	return ite;
-}
-
-void memory_block_pool::update_forward_link(iterator ite) noexcept
-{
-	const auto next = ite->second.get_next_block();
-	if (next != end())
+	const auto ite = m_blocks.iterator_to(block);
+	const auto next = std::next(ite);
+	if (next == m_blocks.end() || 
+		next->get_heap() != ite->get_heap() ||
+		!next->is_free()
+	)
 	{
-		next->second.set_previous_block(ite);
+		return;
 	}
+
+	const auto *next_block = &(*next);
+	const auto new_size = block.get_size() + next_block->get_size();
+	m_free_blocks.erase(m_free_blocks.iterator_to(*next_block));
+	m_blocks.erase_and_dispose(next, std::default_delete<memory_block>());
+	
+	block.set_size(new_size);
 }
 
-void memory_block_pool::update_backward_link(iterator ite) noexcept
+void memory_block_pool::consider_merging_backwards(memory_block &block) noexcept
 {
-	const auto prev = ite->second.get_previous_block();
-	if (prev != end())
+	const auto ite = m_blocks.iterator_to(block);
+	if (ite == m_blocks.begin())
 	{
-		prev->second.set_next_block(ite);
+		return;
 	}
+
+	auto prev = std::prev(ite);
+	if (prev->get_heap() != ite->get_heap() || !prev->is_free())
+	{
+		return;
+	}
+
+	const auto *prev_block = &(*prev);
+	const auto new_size = block.get_size() + prev_block->get_size();
+	const auto new_offset = prev_block->get_offset();
+	m_free_blocks.erase(m_free_blocks.iterator_to(*prev_block));
+	m_blocks.erase_and_dispose(prev, std::default_delete<memory_block>());
+	
+	block.set_size(new_size);
+	block.set_offset(new_offset);
 }
 
-void memory_block_pool::update_links(iterator ite) noexcept
+bool memory_block_pool::is_partition(const memory_block &block) const noexcept
 {
-	update_backward_link(ite);
-	update_forward_link(ite);
-}
+	XMIPP4_ASSERT(block.block_list_hook.is_linked());
 
-bool memory_block_pool::check_forward_link(iterator ite) noexcept
-{
-	const auto next = ite->second.get_next_block();
-	if (next == end())
+	const auto *heap = block.get_heap();
+	const auto ite = m_blocks.iterator_to(block);
+
+	if (ite != m_blocks.cbegin() && std::prev(ite)->get_heap() == heap)
 	{
 		return true;
 	}
 
-	return next->second.get_previous_block() == ite;
-}
-
-bool memory_block_pool::check_backward_link(iterator ite) noexcept
-{
-	const auto prev = ite->second.get_previous_block();
-	if (prev == end())
+	const auto next = std::next(ite);
+	if (next != m_blocks.cend() && next->get_heap() == heap)
 	{
 		return true;
 	}
-	
-	return prev->second.get_next_block() == ite;
+
+	return false;
 }
 
-bool memory_block_pool::check_links(iterator ite) noexcept
+void memory_block_pool::release(const memory_heap &heap)
 {
-	return check_backward_link(ite) && check_forward_link(ite);
-}
-
-bool memory_block_pool::is_partition(iterator ite) noexcept
-{
-	const auto &context = ite->second;
-	const auto prev = context.get_previous_block();
-	const auto next = context.get_next_block();
-	return next != end() || prev != end();
-}
-
-bool memory_block_pool::is_mergeable(iterator ite) noexcept
-{
-	if (ite == end())
-	{
-		return false;
-	}
-	
-	return ite->second.is_free();
+	const auto ite = m_heaps.find(
+		&heap,
+		std::hash<const memory_heap*>(),
+		[] (const memory_heap *lhs, const std::shared_ptr<memory_heap> &rhs)
+		{
+			return rhs.get() == lhs;
+		}
+	);
+	XMIPP4_ASSERT( ite != m_heaps.end() );
+	m_heaps.erase(ite);
 }
 
 } // namespace hardware

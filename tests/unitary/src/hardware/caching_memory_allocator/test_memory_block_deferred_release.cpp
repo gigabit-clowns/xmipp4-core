@@ -6,6 +6,7 @@
 #include <hardware/caching_memory_allocator/memory_block_deferred_release.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
+#include <hardware/caching_memory_allocator/memory_block_pool.hpp>
 
 #include "../mock/mock_device.hpp"
 #include "../mock/mock_device_queue.hpp"
@@ -23,7 +24,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release without queues 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
 
@@ -31,7 +32,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release without queues 
 
 
 	REQUIRE_THROWS_MATCHES(
-		defer.defer_release(ite, {}, device),
+		defer.defer_release(*block, {}, device),
 		std::invalid_argument,
 		Catch::Matchers::Message("No queues were provided to defer the release")
 	);
@@ -44,7 +45,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release with a null que
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
 
@@ -54,7 +55,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release with a null que
 		nullptr
 	};
 	REQUIRE_THROWS_MATCHES(
-		defer.defer_release(ite, xmipp4::make_span(queues), device),
+		defer.defer_release(*block, xmipp4::make_span(queues), device),
 		std::invalid_argument,
 		Catch::Matchers::Message("nullptr queue was provided")
 	);
@@ -67,7 +68,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release should create a
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
 	mock_device_queue queue1;
@@ -95,7 +96,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release should create a
 		&queue2
 	};
 	
-	defer.defer_release(ite, xmipp4::make_span(queues), device);
+	defer.defer_release(*block, xmipp4::make_span(queues), device);
 }
 
 TEST_CASE( "processing pending frees in memory_block_deferred release should mark blocks as free only when completed in all queues", "[caching_memory_allocator]" )
@@ -105,8 +106,8 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
-	ite->second.set_free(false);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
+	pool.acquire(*block);
 
 	mock_device device;
 	mock_device_queue queue1;
@@ -137,7 +138,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			&queue2
 		};
 		
-		defer.defer_release(ite, xmipp4::make_span(queues), device);
+		defer.defer_release(*block, xmipp4::make_span(queues), device);
 	}
 
 	SECTION("No completion")
@@ -148,7 +149,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(false);
 
 		defer.process_pending_free(pool);
-		REQUIRE( ite->second.is_free() == false );
+		REQUIRE( block->is_free() == false );
 	}
 
 	SECTION("Partial completion")
@@ -159,7 +160,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(false);
 
 		defer.process_pending_free(pool);
-		REQUIRE( ite->second.is_free() == false );
+		REQUIRE( block->is_free() == false );
 	}
 
 	SECTION("Full completion")
@@ -170,7 +171,7 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 			.RETURN(true);
 
 		defer.process_pending_free(pool);
-		REQUIRE( ite->second.is_free() == true ); // Freed!
+		REQUIRE( block->is_free() ); // Freed!
 	}
 }
 
@@ -181,8 +182,8 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
-	ite->second.set_free(false);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
+	pool.acquire(*block);
 
 	mock_device device;
 	mock_device_queue queue1;
@@ -213,14 +214,14 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
 			&queue2
 		};
 		
-		defer.defer_release(ite, xmipp4::make_span(queues), device);
+		defer.defer_release(*block, xmipp4::make_span(queues), device);
 	}
 
 	REQUIRE_CALL(*event1, wait());
 	REQUIRE_CALL(*event2, wait());
 
 	defer.wait_pending_free(pool);
-	REQUIRE( ite->second.is_free() == true );
+	REQUIRE( block->is_free() );
 }
 
 TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its resources", "[caching_memory_allocator]" )
@@ -230,7 +231,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	auto ite = pool.register_heap(std::move(heap), nullptr);
+	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
 	mock_device_queue queue;
@@ -239,6 +240,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 	memory_block_deferred_release defer;
 	const std::array<device_queue*, 1> queues = { &queue };
 
+	pool.acquire(*block);
 	{
 		trompeloeil::sequence seq;
 
@@ -249,7 +251,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.LR_WITH(&_1 == &queue)
 			.IN_SEQUENCE(seq);
 
-		defer.defer_release(ite, xmipp4::make_span(queues), device);
+		defer.defer_release(*block, xmipp4::make_span(queues), device);
 	}
 	{
 		trompeloeil::sequence seq;
@@ -259,8 +261,9 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.RETURN(true);
 
 		defer.process_pending_free(pool);
-		REQUIRE( ite->second.is_free() );
+		REQUIRE( block->is_free() );
 	}
+	pool.acquire(*block);
 	{
 		trompeloeil::sequence seq;
 
@@ -268,7 +271,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.LR_WITH(&_1 == &queue)
 			.IN_SEQUENCE(seq);
 
-		defer.defer_release(ite, xmipp4::make_span(queues), device);
+		defer.defer_release(*block, xmipp4::make_span(queues), device);
 	}
 	{
 		trompeloeil::sequence seq;
@@ -277,6 +280,6 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 			.IN_SEQUENCE(seq);
 
 		defer.wait_pending_free(pool);
-		REQUIRE( ite->second.is_free() );
+		REQUIRE( block->is_free() );
 	}
 }

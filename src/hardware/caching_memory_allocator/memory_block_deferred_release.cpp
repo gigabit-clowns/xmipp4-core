@@ -48,9 +48,7 @@ void memory_block_deferred_release::process_pending_free(
 			const auto remove = events.empty();
 			if(remove)
 			{
-				auto block = item.first;
-				block->second.set_free(true);
-				pool.consider_merging_block(block);
+				pool.release(item.first);
 			}
 
 			return remove;
@@ -61,7 +59,7 @@ void memory_block_deferred_release::process_pending_free(
 }
 
 void memory_block_deferred_release::defer_release(
-	memory_block_pool::iterator block, 
+	memory_block &block, 
 	span<device_queue *const> queues,
 	device &device
 )

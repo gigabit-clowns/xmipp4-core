@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include <xmipp4/core/span.hpp>
-
 #include <cstddef>
 #include <memory>
+
+#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/set.hpp>
 
 namespace xmipp4 
 {
@@ -16,28 +17,34 @@ class device_queue;
 class memory_heap;
 
 /**
- * @brief Represents a chunk of data managed by a caching allocator.
- * 
- * It contains an unique id to a queue where this data is synchronous.
- * It also contains the size of the referenced block, an owning memory heap
- * and the offset of the data within that heap
+ * @brief Represents a chunk of data managed by a caching allocator. 
  * 
  */
 class memory_block
 {
 public:
+	using block_list_hook_type =
+		boost::intrusive::list_member_hook<>;
+	using free_block_set_hook_type =
+		boost::intrusive::set_member_hook<>;
+	
+	block_list_hook_type block_list_hook;
+	free_block_set_hook_type free_block_set_hook;
+
 	/**
 	 * @brief Construct a new cuda memory block from its components.
 	 * 
-	 * @param data_ptr Pointer to the data.
-	 * @param size Number of bytes referenced.
 	 * @param queue Queue where this belongs.
+	 * @param size Number of bytes referenced.
+	 * @param heap Non owning pointer to the heap associated to this block.
+	 * @param offset Offset of this block into the heap.
+	 * 
 	 */
 	memory_block(
-		std::shared_ptr<memory_heap> heap,
-		std::size_t offset,
-		std::size_t size, 
-		const device_queue *queue 
+		const device_queue *queue,
+		std::size_t size,
+		memory_heap *heap,
+		std::size_t offset
 	) noexcept;
 
 	memory_block(const memory_block &other) = default;
@@ -48,24 +55,18 @@ public:
 	memory_block& operator=(memory_block &&other) = default;
 
 	/**
-	 * @brief Get a pointer to the heap
+	 * @brief Get the queue where this block is synchronous.
 	 * 
-	 * @return memory_heap* Non-owning pointer to the heap.
+	 * @return const device_queue* Pointer to the queue.
 	 */
-	memory_heap* get_heap() const noexcept;
+	const device_queue* get_queue() const noexcept;
 
 	/**
-	 * @brief Obtain a shared copy of the heap resource
+	 * @brief Set the size of the block.
 	 * 
+	 * @param size The new size.
 	 */
-	std::shared_ptr<memory_heap> share_heap() const noexcept;
-
-	/**
-	 * @brief Get the offset of the memory block within the heap.
-	 * 
-	 * @return std::size_t The offset.
-	 */
-	std::size_t get_offset() const noexcept;
+	void set_size(std::size_t size) noexcept;
 
 	/**
 	 * @brief Get the number of bytes referenced by this object.
@@ -75,50 +76,44 @@ public:
 	std::size_t get_size() const noexcept;
 
 	/**
-	 * @brief Get the queue where this block is synchronous.
+	 * @brief Get a pointer to the heap
 	 * 
-	 * @return const device_queue* Pointer to the queue.
+	 * @return memory_heap* Non-owning pointer to the heap associated 
+	 * to this block.
 	 */
-	const device_queue* get_queue() const noexcept;
+	memory_heap* get_heap() const noexcept;
+
+	/**
+	 * @brief Set the offset into the heap.
+	 * 
+	 */
+	void set_offset(std::size_t offset) noexcept;
+
+	/**
+	 * @brief Get the offset of the memory block within the heap.
+	 * 
+	 * @return std::size_t The offset.
+	 */
+	std::size_t get_offset() const noexcept;
+
+	/**
+	 * @brief Check wether the block is free or not. 
+	 * 
+	 * @return true The block is free.
+	 * @return false The block is occupied.
+	 */
+	bool is_free() const noexcept;
 
 private:
 	const device_queue *m_queue;
 	std::size_t m_size;
-	std::shared_ptr<memory_heap> m_heap;
+	memory_heap *m_heap;
 	std::size_t m_offset;
+
 }; 
 
 bool operator==(const memory_block &lhs, const memory_block &rhs) noexcept;
 bool operator!=(const memory_block &lhs, const memory_block &rhs) noexcept;
-
-/**
- * @brief Lexicographically compare two memory_block objects.
- * 
- * First, queue IDs are compared.
- * If equal, then, sizes are compared.
- * If equal, then the heap pointers are compared.
- * If equal, then the offsets of memory pointers are compared.
- * 
- */
-class memory_block_less
-{
-public:
-	bool operator()(
-		const memory_block &lhs, 
-		const memory_block &rhs
-	) const noexcept;
-
-private:
-	using tuple_type = std::tuple<
-		const device_queue*,
-		std::size_t,
-		memory_heap*,
-		std::size_t
-	>;
-
-	static
-	tuple_type as_tuple(const memory_block &block) noexcept;
-};
 
 } // namespace hardware
 } // namespace xmipp4

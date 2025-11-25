@@ -70,6 +70,7 @@ public:
 	 * The world communicator connects all known peers together.
 	 *
 	 * @param devices The devices for which the communicators are created.
+	 * Neither device may be null.
 	 * @param host_communicator Host communicator that aids in the construction
 	 * of device communicators.
 	 * @param out The resulting device communicators, one for each device.

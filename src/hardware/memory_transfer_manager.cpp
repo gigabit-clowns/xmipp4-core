@@ -76,6 +76,7 @@ private:
 		memory_transfer_key, 
 		std::shared_ptr<memory_transfer>
 	> m_cache;
+
 };
 
 memory_transfer_manager::memory_transfer_manager() noexcept = default;

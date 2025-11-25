@@ -60,27 +60,33 @@ public:
 	/**
 	 * @brief Get the suitability of the backend.
 	 * 
+	 * @param devices The target devices to be used. Neither device may be null.
 	 * @return backend_priority The suitability.
 	 */
-	virtual backend_priority get_suitability() const = 0;
+	virtual backend_priority get_suitability(
+		span<hardware::device*> devices
+	) const = 0;
 
 	/**
 	 * @brief Get the world communicators for the requested devices.
 	 * 
 	 * The world communicator connects all known peers together.
 	 *
+	 * @param node_communicator Host communicator that aids in the construction
+	 * of device communicators by communicating different nodes. May be null,
+	 * in which case, no attempt to communicate devices across nodes and
+	 * processes is attempted.
 	 * @param devices The devices for which the communicators are created.
 	 * Neither device may be null.
-	 * @param host_communicator Host communicator that aids in the construction
-	 * of device communicators.
-	 * @param out The resulting device communicators, one for each device.
+	 * @param out The resulting device communicators. Must have the same size
+	 * as the device span.
 	 *  
 	 */
 	virtual 
 	void create_world_communicators(
+		host_communicator *node_communicator,
 		span<hardware::device*> devices,
-		const std::shared_ptr<host_communicator> &host_communicator,
-		std::vector<std::shared_ptr<device_communicator>> &out
+		span<std::shared_ptr<device_communicator>> out
 	) const = 0;
 
 }; 

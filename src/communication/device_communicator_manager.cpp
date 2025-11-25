@@ -38,17 +38,17 @@ public:
 	}
 
 	void create_world_communicators(
+		host_communicator *node_communicator,
 		span<hardware::device*> devices,
-		const std::shared_ptr<host_communicator> &host_communicator,
-		std::vector<std::shared_ptr<device_communicator>> &out
+		span<std::shared_ptr<device_communicator>> out
 	) const
 	{
 		const auto backend = find_most_suitable_backend(
 			m_backends.cbegin(), m_backends.cend(),
-			[] (const auto &item)
+			[devices] (const auto &item)
 			{
 				XMIPP4_ASSERT(item.second);
-				return item.second->get_suitability();
+				return item.second->get_suitability(devices);
 			}
 		);
 
@@ -59,9 +59,10 @@ public:
 			);
 		}
 
+		XMIPP4_ASSERT( devices.size() == out.size() );
 		return backend->second->create_world_communicators(
+			node_communicator,
 			devices,
-			host_communicator,
 			out
 		);
 	}
@@ -94,11 +95,18 @@ bool device_communicator_manager::register_backend(
 }
 
 void device_communicator_manager::create_world_communicators(
+	host_communicator *node_communicator,
 	span<hardware::device*> devices,
-	const std::shared_ptr<host_communicator> &host_communicator,
-	std::vector<std::shared_ptr<device_communicator>> &out
+	span<std::shared_ptr<device_communicator>> out
 ) const
 {
+	if (devices.size() != out.size())
+	{
+		throw std::invalid_argument(
+			"Device array and output array must have matching sizes"
+		);
+	}
+
 	if (!m_implementation)
 	{
 		throw invalid_operation_error(
@@ -107,8 +115,8 @@ void device_communicator_manager::create_world_communicators(
 	}
 
 	return m_implementation->create_world_communicators(
+		node_communicator,
 		devices,
-		host_communicator,
 		out
 	);
 }

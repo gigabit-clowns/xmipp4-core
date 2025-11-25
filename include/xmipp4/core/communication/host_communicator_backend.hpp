@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../named_backend.hpp"
 #include "../backend_priority.hpp"
 #include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
@@ -21,12 +22,13 @@ class host_communicator;
  * 
  */
 class XMIPP4_CORE_API host_communicator_backend
+	: public named_backend
 {
 public:
 	host_communicator_backend() = default;
 	host_communicator_backend(const host_communicator_backend &other) = delete;
 	host_communicator_backend(host_communicator_backend &&other) = delete;
-	virtual ~host_communicator_backend() = default;
+	~host_communicator_backend() override = default;
 
 	host_communicator_backend&
 	operator=(const host_communicator_backend &other) = delete;

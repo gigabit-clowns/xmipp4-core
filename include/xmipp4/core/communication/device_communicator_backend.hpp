@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../backend_priority.hpp"
+#include "../named_backend.hpp"
 #include "../version.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
@@ -31,24 +32,18 @@ class host_communicator;
  * 
  */
 class XMIPP4_CORE_API device_communicator_backend
+	: public named_backend
 {
 public:
 	device_communicator_backend() = default;
 	device_communicator_backend(const device_communicator_backend &other) = delete;
 	device_communicator_backend(device_communicator_backend &&other) = delete;
-	virtual ~device_communicator_backend() = default;
+	~device_communicator_backend() override = default;
 
 	device_communicator_backend&
 	operator=(const device_communicator_backend &other) = delete;
 	device_communicator_backend&
 	operator=(device_communicator_backend &&other) = delete;
-
-	/**
-	 * @brief Get the name of the backend.
-	 * 
-	 * @return std::string The name
-	 */
-	virtual std::string get_name() const = 0;
 
 	/**
 	 * @brief Get the backend version.

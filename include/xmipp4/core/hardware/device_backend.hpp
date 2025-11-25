@@ -4,6 +4,7 @@
 
 #include "device_properties.hpp"
 #include "../version.hpp"
+#include "../named_backend.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -24,22 +25,16 @@ class device;
  * 
  */
 class XMIPP4_CORE_API device_backend
+	: public named_backend
 {
 public:
 	device_backend() = default;
 	device_backend(const device_backend &other) = delete;
 	device_backend(device_backend &&other) = delete;
-	virtual ~device_backend() = default;
+	~device_backend() override = default;
 
 	device_backend& operator=(const device_backend &other) = delete;
 	device_backend& operator=(device_backend &&other) = delete;
-
-	/**
-	 * @brief Get the name of the backend.
-	 * 
-	 * @return std::string The name
-	 */
-	virtual std::string get_name() const = 0;
 
 	/**
 	 * @brief Get the version of the backend.
@@ -78,6 +73,7 @@ public:
 	 * @return std::shared_ptr<device> The device handle.
 	 */
 	virtual std::shared_ptr<device> create_device(std::size_t id) = 0;
+
 }; 
 
 } // namespace hardware

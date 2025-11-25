@@ -8,8 +8,7 @@
 #include "../find_most_suitable_backend.hpp"
 #include "dummy/dummy_host_communicator_backend.hpp"
 
-#include <vector>
-#include <algorithm>
+#include <unordered_map>
 
 namespace xmipp4
 {
@@ -78,6 +77,19 @@ host_communicator_manager::~host_communicator_manager() = default;
 void host_communicator_manager::register_builtin_backends()
 {
 	dummy_host_communicator_backend::register_at(*this);
+}
+
+void host_communicator_manager::enumerate_backends(
+	std::vector<std::string> &backends
+) const
+{
+	// TODO
+}
+
+host_communicator_backend* 
+host_communicator_manager::get_backend(const std::string &name) const
+{
+	// TODO
 }
 
 bool host_communicator_manager::register_backend(

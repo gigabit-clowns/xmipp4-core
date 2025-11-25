@@ -3,7 +3,7 @@
 #pragma once
 
 #include "device_communicator_backend.hpp"
-#include "../service_manager.hpp"
+#include "../named_service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <string>
@@ -23,7 +23,7 @@ class device_communicator;
  * 
  */
 class device_communicator_manager final
-	: public service_manager
+	: public named_service_manager
 {
 public:
 	XMIPP4_CORE_API device_communicator_manager();
@@ -38,6 +38,14 @@ public:
 
 	XMIPP4_CORE_API
 	void register_builtin_backends() override;
+
+	XMIPP4_CORE_API
+	void enumerate_backends(std::vector<std::string> &backends) const override;
+
+	XMIPP4_CORE_API
+	device_communicator_backend* 
+	get_backend(const std::string &name) const override;
+
 	
 	/**
 	 * @brief Register a new backend.

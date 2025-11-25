@@ -7,8 +7,7 @@
 
 #include "../find_most_suitable_backend.hpp"
 
-#include <vector>
-#include <algorithm>
+#include <unordered_map>
 
 namespace xmipp4
 {
@@ -86,6 +85,19 @@ device_communicator_manager::~device_communicator_manager() = default;
 void device_communicator_manager::register_builtin_backends()
 {
 	// Currently there are no builtin backends
+}
+
+void device_communicator_manager::enumerate_backends(
+	std::vector<std::string> &backends
+) const
+{
+	// TODO
+}
+
+device_communicator_backend* 
+device_communicator_manager::get_backend(const std::string &name) const
+{
+	// TODO
 }
 
 bool device_communicator_manager::register_backend(

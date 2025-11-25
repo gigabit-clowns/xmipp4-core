@@ -4,10 +4,6 @@
 
 #include "platform/dynamic_shared_object.h"
 
-#include <string>
-#include <memory>
-#include <vector>
-#include <unordered_map>
 
 namespace xmipp4
 {
@@ -44,6 +40,7 @@ public:
 	 * 
 	 */
 	virtual void register_builtin_backends() { /*By default this is a no-op*/ };
+
 };
 
 } // namespace xmipp4

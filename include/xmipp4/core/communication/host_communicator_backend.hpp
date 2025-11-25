@@ -36,13 +36,6 @@ public:
 	operator=(host_communicator_backend &&other) = delete;
 
 	/**
-	 * @brief Get the name of the backend.
-	 * 
-	 * @return std::string The name
-	 */
-	virtual std::string get_name() const = 0;
-
-	/**
 	 * @brief Get the backend version.
 	 * 
 	 * @return version The version.

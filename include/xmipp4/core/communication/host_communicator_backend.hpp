@@ -14,18 +14,24 @@ namespace xmipp4
 namespace communication
 {
 
-class communicator;
+class host_communicator;
 
-class XMIPP4_CORE_API communicator_backend
+/**
+ * @brief Abstract class to represent a host_communicator provider.
+ * 
+ */
+class XMIPP4_CORE_API host_communicator_backend
 {
 public:
-	communicator_backend() = default;
-	communicator_backend(const communicator_backend &other) = delete;
-	communicator_backend(communicator_backend &&other) = delete;
-	virtual ~communicator_backend() = default;
+	host_communicator_backend() = default;
+	host_communicator_backend(const host_communicator_backend &other) = delete;
+	host_communicator_backend(host_communicator_backend &&other) = delete;
+	virtual ~host_communicator_backend() = default;
 
-	communicator_backend& operator=(const communicator_backend &other) = delete;
-	communicator_backend& operator=(communicator_backend &&other) = delete;
+	host_communicator_backend&
+	operator=(const host_communicator_backend &other) = delete;
+	host_communicator_backend&
+	operator=(host_communicator_backend &&other) = delete;
 
 	/**
 	 * @brief Get the name of the backend.
@@ -53,10 +59,12 @@ public:
 	 * 
 	 * The world communicator connects all known peers together.
 	 * 
-	 * @return std::shared_ptr<communicator> Reference to the world
-	 * communicator.
+	 * @return std::shared_ptr<host_communicator> Reference to the world
+	 * host_communicator.
 	 */
-	virtual std::shared_ptr<communicator> create_world_communicator() const = 0;
+	virtual 
+	std::shared_ptr<host_communicator> create_world_communicator() const = 0;
+
 }; 
 
 } // namespace communication

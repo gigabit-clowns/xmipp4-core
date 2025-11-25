@@ -84,6 +84,7 @@ device_communicator_manager::~device_communicator_manager() = default;
 
 void device_communicator_manager::register_builtin_backends()
 {
+	// Currently there are no builtin backends
 }
 
 bool device_communicator_manager::register_backend(

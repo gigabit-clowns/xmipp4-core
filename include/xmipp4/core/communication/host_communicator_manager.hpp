@@ -40,7 +40,7 @@ public:
 	void register_builtin_backends() override;
 
 	XMIPP4_CORE_API
-	void enumerate_backends(std::vector<std::string> &backends) const override;
+	void enumerate_backends(std::vector<std::string> &names) const override;
 
 	XMIPP4_CORE_API
 	host_communicator_backend* 

@@ -6,6 +6,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "../find_most_suitable_backend.hpp"
+#include "../named_service_manager_implementation.hpp"
 
 #include <unordered_map>
 
@@ -15,35 +16,18 @@ namespace communication
 {
 
 class device_communicator_manager::implementation
+	: public named_service_manager_implementation<device_communicator_backend>
 {
 public:
-	bool register_backend(
-		std::unique_ptr<device_communicator_backend> backend
-	)
-	{
-		if (!backend)
-		{
-			return false;
-		}
-
-		auto name = backend->get_name();
-		bool inserted;
-		std::tie(std::ignore, inserted) = m_backends.emplace(
-			std::move(name),
-			std::move(backend)
-		);
-
-		return inserted;
-	}
-
 	void create_world_communicators(
 		host_communicator *node_communicator,
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out
 	) const
 	{
+		const auto &backends = get_backend_map();
 		const auto backend = find_most_suitable_backend(
-			m_backends.cbegin(), m_backends.cend(),
+			backends.cbegin(), backends.cend(),
 			[devices] (const auto &item)
 			{
 				XMIPP4_ASSERT(item.second);
@@ -51,7 +35,7 @@ public:
 			}
 		);
 
-		if (backend == m_backends.cend())
+		if (backend == backends.cend())
 		{
 			throw invalid_operation_error(
 				"There is no available device_communicator_backend"
@@ -65,14 +49,6 @@ public:
 			out
 		);
 	}
-
-private:
-	using backend_map = std::unordered_map<
-		std::string, 
-		std::unique_ptr<device_communicator_backend>
-	>;
-
-	backend_map m_backends;
 
 };
 
@@ -88,16 +64,25 @@ void device_communicator_manager::register_builtin_backends()
 }
 
 void device_communicator_manager::enumerate_backends(
-	std::vector<std::string> &backends
+	std::vector<std::string> &names
 ) const
 {
-	// TODO
+	names.clear();
+	if (m_implementation)
+	{
+		m_implementation->enumerate_backends(names);
+	}
 }
 
 device_communicator_backend* 
 device_communicator_manager::get_backend(const std::string &name) const
 {
-	// TODO
+	if (!m_implementation)
+	{
+		return nullptr;
+	}
+
+	return m_implementation->get_backend(name);
 }
 
 bool device_communicator_manager::register_backend(

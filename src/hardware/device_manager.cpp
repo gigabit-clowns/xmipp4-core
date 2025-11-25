@@ -5,6 +5,8 @@
 #include <xmipp4/core/hardware/cpu/cpu_device_backend.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
+#include "../named_service_manager_implementation.hpp"
+
 #include <unordered_map>
 
 namespace xmipp4
@@ -13,43 +15,16 @@ namespace hardware
 {
 
 class device_manager::implementation
+	: public named_service_manager_implementation<device_backend>
 {
 public:
-	bool register_backend(
-		std::unique_ptr<device_backend> backend
-	)
-	{
-		if (!backend)
-		{
-			return false;
-		}
-
-		auto name = backend->get_name();
-		bool inserted;
-		std::tie(std::ignore, inserted) = m_backends.emplace(
-			std::move(name),
-			std::move(backend)
-		);
-
-		return inserted;
-	}
-
-	void enumerate_backends(std::vector<std::string> &backends) const
-	{
-		XMIPP4_ASSERT( backends.empty() );
-		backends.reserve(m_backends.size());
-		for(const auto &item : m_backends)
-		{
-			backends.emplace_back(item.first);
-		}
-	}
-
 	void enumerate_devices(std::vector<device_index> &indices) const
 	{
 		XMIPP4_ASSERT( indices.empty() );
 
+		const auto &backends = get_backend_map();
 		std::vector<std::size_t> ids;
-		for(const auto &item : m_backends)
+		for(const auto &item : backends)
 		{
 			const auto *backend = item.second.get();
 			XMIPP4_ASSERT(backend);
@@ -61,19 +36,6 @@ public:
 		}
 	}
 
-	device_backend* get_backend(const std::string &name) const
-	{
-		const auto ite = m_backends.find(name);
-		if (ite == m_backends.end())
-		{
-			return nullptr;
-		}
-
-		return ite->second.get();
-	}
-
-private:
-	std::unordered_map<std::string, std::unique_ptr<device_backend>> m_backends;
 };
 
 device_manager::device_manager() = default;
@@ -92,22 +54,13 @@ bool device_manager::register_backend(std::unique_ptr<device_backend> backend)
 }
 
 void device_manager::enumerate_backends(
-	std::vector<std::string> &backends
+	std::vector<std::string> &names
 ) const
 {
-	backends.clear();
+	names.clear();
 	if (m_implementation)
 	{
-		m_implementation->enumerate_backends(backends);
-	}
-}
-
-void device_manager::enumerate_devices(std::vector<device_index> &indices) const
-{
-	indices.clear();
-	if (m_implementation)
-	{
-		m_implementation->enumerate_devices(indices);
+		m_implementation->enumerate_backends(names);
 	}
 }
 
@@ -119,6 +72,15 @@ device_backend* device_manager::get_backend(const std::string &name) const
 	}
 
 	return m_implementation->get_backend(name);
+}
+
+void device_manager::enumerate_devices(std::vector<device_index> &indices) const
+{
+	indices.clear();
+	if (m_implementation)
+	{
+		m_implementation->enumerate_devices(indices);
+	}
 }
 
 bool device_manager::get_device_properties(

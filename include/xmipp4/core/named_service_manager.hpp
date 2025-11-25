@@ -45,9 +45,9 @@ public:
 	/**
 	 * @brief Enumerate available backends by their names.
 	 * 
-	 * @param out Names of the contained backends.
+	 * @param names Output parameter with the names of the contained backends.
 	 */
-	virtual void enumerate_backends(std::vector<std::string> &out) const = 0;
+	virtual void enumerate_backends(std::vector<std::string> &names) const = 0;
 
 };
 

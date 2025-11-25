@@ -9,6 +9,7 @@
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "mock/mock_host_communicator_backend.hpp"
+#include "mock/mock_host_communicator.hpp"
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
@@ -147,4 +148,30 @@ TEST_CASE( "host_communicator_manager should throw when there is no supported ba
 			"There is no available host_communicator_backend"
 		)
 	);
+}
+
+TEST_CASE( "device_communicator_manager should create the world communicator with the most suitable backend", "[host_communicator_manager]" )
+{
+	host_communicator_manager manager;
+
+	auto communicator = std::make_shared<mock_host_communicator>();
+	auto backend1 = std::make_unique<mock_host_communicator_backend>();
+	auto backend2 = std::make_unique<mock_host_communicator_backend>();
+
+	REQUIRE_CALL(*backend1, get_name())
+		.RETURN("mock1");
+	REQUIRE_CALL(*backend1, get_suitability())
+		.RETURN(xmipp4::backend_priority::fallback);
+	REQUIRE_CALL(*backend2, get_name())
+		.RETURN("mock2");
+	REQUIRE_CALL(*backend2, get_suitability())
+		.RETURN(xmipp4::backend_priority::normal);
+	REQUIRE_CALL(*backend2, create_world_communicator())
+		.RETURN(communicator);
+
+	manager.register_backend(std::move(backend1));
+	manager.register_backend(std::move(backend2));
+
+	auto result = manager.create_world_communicator();
+	REQUIRE( result == communicator );
 }

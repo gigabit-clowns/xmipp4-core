@@ -16,4 +16,5 @@ function(fetch_catch2)
 		URL https://github.com/catchorg/Catch2/archive/refs/tags/v${arg_VERSION}.tar.gz
 	)
 	FetchContent_MakeAvailable(Catch2)
+	set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
 endfunction()

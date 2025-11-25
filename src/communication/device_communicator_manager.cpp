@@ -55,7 +55,7 @@ public:
 		if (backend == m_backends.cend())
 		{
 			throw invalid_operation_error(
-				"There is no available device device_communicator backend"
+				"There is no available device_communicator_backend"
 			);
 		}
 

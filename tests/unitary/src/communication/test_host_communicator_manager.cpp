@@ -88,7 +88,7 @@ TEST_CASE( "host_communicator_manager should throw when there is no supported ba
 		manager.create_world_communicator(),
 		xmipp4::invalid_operation_error,
 		Catch::Matchers::Message(
-			"There is no available device host_communicator backend"
+			"There is no available host_communicator_backend"
 		)
 	);
 }

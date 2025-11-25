@@ -27,7 +27,8 @@ public:
 	{
 		const auto &backends = get_backend_map();
 		const auto backend = find_most_suitable_backend(
-			backends.cbegin(), backends.cend(),
+			backends.cbegin(), 
+			backends.cend(),
 			[devices] (const auto &item)
 			{
 				XMIPP4_ASSERT(item.second);

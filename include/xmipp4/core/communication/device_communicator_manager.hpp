@@ -64,7 +64,7 @@ public:
 	 * @param node_communicator Host communicator that aids in the construction
 	 * of device communicators by communicating different nodes. May be null,
 	 * in which case, no attempt to communicate devices across nodes and
-	 * processes is attempted.
+	 * processes is made.
 	 * @param devices The devices for which the communicators are created.
 	 * Neither device may be null.
 	 * @param out The resulting device communicators. Must have the same size

@@ -68,12 +68,13 @@ public:
 	}
 
 private:
-	using backend_map = 
-		std::unordered_map<std::string, 
+	using backend_map = std::unordered_map<
+		std::string, 
 		std::unique_ptr<device_communicator_backend>
 	>;
 
 	backend_map m_backends;
+
 };
 
 

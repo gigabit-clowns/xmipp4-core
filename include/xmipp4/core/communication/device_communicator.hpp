@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "../reduction_operation.hpp"
-#include "../span.hpp"
-#include "../memory/byte.hpp"
+#include "communicator.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -28,6 +26,7 @@ namespace communication
  * 
  */
 class XMIPP4_CORE_API device_communicator
+	: public communicator
 {
 public:
 	device_communicator() = default;
@@ -44,25 +43,6 @@ public:
 	 * @return hardware::device& The device associated to this communicator.
 	 */
 	virtual hardware::device& get_device() const noexcept = 0;
-
-	/**
-	 * @brief Get the amount of peers in the communicator.
-	 * 
-	 * @return std::size_t The number of peers.
-	 * 
-	 */
-	virtual std::size_t get_size() const = 0;
-
-	/**
-	 * @brief Get the rank of this communicator peer.
-	 * 
-	 * The rank refers to the "id" or "index" of this project unique to
-	 * this peer.
-	 * 
-	 * @return std::size_t The rank.
-	 * 
-	 */
-	virtual std::size_t get_rank() const = 0;
 
 	/**
 	 * @brief Split the current communicator.

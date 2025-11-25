@@ -32,7 +32,7 @@ public:
 	device_communicator() = default;
 	device_communicator(const device_communicator &other) = delete;
 	device_communicator(device_communicator &&other) = delete;
-	virtual ~device_communicator() = default;
+	~device_communicator() override = default;
 
 	device_communicator& operator=(const device_communicator &other) = delete;
 	device_communicator& operator=(device_communicator &&other) = delete;

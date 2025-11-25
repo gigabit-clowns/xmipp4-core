@@ -25,7 +25,7 @@ public:
 	host_communicator() = default;
 	host_communicator(const host_communicator &other) = delete;
 	host_communicator(host_communicator &&other) = delete;
-	virtual ~host_communicator() = default;
+	~host_communicator() override = default;
 
 	host_communicator& operator=(const host_communicator &other) = delete;
 	host_communicator& operator=(host_communicator &&other) = delete;

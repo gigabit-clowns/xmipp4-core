@@ -90,9 +90,7 @@ host_communicator_manager::create_world_communicator() const
 {
 	if (!m_implementation)
 	{
-		throw invalid_operation_error(
-			"No backends were registered."
-		);
+		return implementation().create_world_communicator(); // Throws
 	}
 
 	return m_implementation->create_world_communicator();

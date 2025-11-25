@@ -108,8 +108,11 @@ void device_communicator_manager::create_world_communicators(
 
 	if (!m_implementation)
 	{
-		throw invalid_operation_error(
-			"No backends were registered."
+		// Throws
+		return implementation().create_world_communicators(
+			node_communicator,
+			devices,
+			out
 		);
 	}
 

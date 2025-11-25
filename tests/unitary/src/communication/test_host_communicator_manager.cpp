@@ -51,6 +51,62 @@ TEST_CASE( "host_communicator_manager should not allow registering null backend"
 	REQUIRE( manager.register_backend( nullptr ) == false );
 }
 
+TEST_CASE( "default initialized host_communicator_manager should have no backends", "[host_communicator_manager]" )
+{
+	host_communicator_manager manager;
+
+	auto backend1 = std::make_unique<mock_host_communicator_backend>();
+	REQUIRE_CALL(*backend1, get_name())
+		.RETURN("mock1");
+	manager.register_backend(std::move(backend1));
+
+	auto backend2 = std::make_unique<mock_host_communicator_backend>();
+	REQUIRE_CALL(*backend2, get_name())
+		.RETURN("mock2");
+	manager.register_backend(std::move(backend2));
+
+	std::vector<std::string> names;
+	manager.enumerate_backends(names);
+	std::sort(names.begin(), names.end());
+
+	REQUIRE( names.size() == 2 );
+	REQUIRE( names[0] == "mock1" );
+	REQUIRE( names[1] == "mock2" );
+}
+
+TEST_CASE( "get_backend in host_communicator_manager should find an available backend", "[host_communicator_manager]" )
+{
+	host_communicator_manager manager;
+
+	auto backend = std::make_unique<mock_host_communicator_backend>();
+	auto backend_ptr = backend.get();
+	REQUIRE_CALL(*backend, get_name())
+		.RETURN("mock");
+	manager.register_backend(std::move(backend));
+
+	REQUIRE( manager.get_backend("mock") == backend_ptr );
+}
+
+TEST_CASE( "get_backend in host_communicator_manager should return null for inexistent backends", "[host_communicator_manager]" )
+{
+	host_communicator_manager manager;
+
+	auto backend = std::make_unique<mock_host_communicator_backend>();
+	REQUIRE_CALL(*backend, get_name())
+		.RETURN("mock");
+	manager.register_backend(std::move(backend));
+
+	REQUIRE( manager.get_backend("not-a-mock") == nullptr );
+}
+
+TEST_CASE( "host_communicator_manager should enumerate its backends", "[host_communicator_manager]" )
+{
+	host_communicator_manager manager;
+	std::vector<std::string> names;
+	manager.enumerate_backends(names);
+	REQUIRE( names.empty() );
+}
+
 TEST_CASE( "creating a host_communicator from a default initialized host_communicator_manager should throw", "[host_communicator_manager]" )
 {
 	host_communicator_manager manager;
@@ -59,7 +115,7 @@ TEST_CASE( "creating a host_communicator from a default initialized host_communi
 		manager.create_world_communicator(),
 		xmipp4::invalid_operation_error,
 		Catch::Matchers::Message(
-			"No backends were registered."
+			"There is no available host_communicator_backend"
 		)
 	);
 }

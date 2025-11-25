@@ -4,7 +4,6 @@
 
 #include "../backend_priority.hpp"
 #include "../named_backend.hpp"
-#include "../version.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -46,13 +45,6 @@ public:
 	operator=(device_communicator_backend &&other) = delete;
 
 	/**
-	 * @brief Get the backend version.
-	 * 
-	 * @return version The version.
-	 */
-	virtual version get_version() const = 0;
-
-	/**
 	 * @brief Get the suitability of the backend.
 	 * 
 	 * @param devices The target devices to be used. Neither device may be null.
@@ -65,7 +57,7 @@ public:
 	/**
 	 * @brief Get the world communicators for the requested devices.
 	 * 
-	 * The world communicator connects all known peers together.
+	 * The world communicator connects all peers together.
 	 *
 	 * @param node_communicator Host communicator that aids in the construction
 	 * of device communicators by communicating different nodes. May be null,

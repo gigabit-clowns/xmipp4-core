@@ -46,7 +46,6 @@ public:
 	device_communicator_backend* 
 	get_backend(const std::string &name) const override;
 
-	
 	/**
 	 * @brief Register a new backend.
 	 * 

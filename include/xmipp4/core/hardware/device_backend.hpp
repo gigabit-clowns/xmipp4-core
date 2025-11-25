@@ -3,7 +3,6 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "../version.hpp"
 #include "../named_backend.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -35,13 +34,6 @@ public:
 
 	device_backend& operator=(const device_backend &other) = delete;
 	device_backend& operator=(device_backend &&other) = delete;
-
-	/**
-	 * @brief Get the version of the backend.
-	 * 
-	 * @return version The version.
-	 */
-	virtual version get_version() const = 0;
 
 	/**
 	 * @brief Enumerate available in devices within this backend.

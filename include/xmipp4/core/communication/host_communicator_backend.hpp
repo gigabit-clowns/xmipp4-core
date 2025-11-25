@@ -4,7 +4,6 @@
 
 #include "../named_backend.hpp"
 #include "../backend_priority.hpp"
-#include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <string>
@@ -34,13 +33,6 @@ public:
 	operator=(const host_communicator_backend &other) = delete;
 	host_communicator_backend&
 	operator=(host_communicator_backend &&other) = delete;
-
-	/**
-	 * @brief Get the backend version.
-	 * 
-	 * @return version The version.
-	 */
-	virtual version get_version() const = 0;
 
 	/**
 	 * @brief Get the suitability of the backend.

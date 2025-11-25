@@ -56,7 +56,7 @@ TEST_CASE( "creating a host_communicator from a default initialized host_communi
 	host_communicator_manager manager;
 
 	REQUIRE_THROWS_MATCHES(
-		manager.create_world_host_communicator(),
+		manager.create_world_communicator(),
 		xmipp4::invalid_operation_error,
 		Catch::Matchers::Message(
 			"No backends were registered."
@@ -85,7 +85,7 @@ TEST_CASE( "host_communicator_manager should throw when there is no supported ba
 	manager.register_backend(std::move(backend2));
 
 	REQUIRE_THROWS_MATCHES(
-		manager.create_world_host_communicator(),
+		manager.create_world_communicator(),
 		xmipp4::invalid_operation_error,
 		Catch::Matchers::Message(
 			"There is no available device host_communicator backend"

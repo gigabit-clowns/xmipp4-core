@@ -88,7 +88,7 @@ bool host_communicator_manager::register_backend(
 }
 
 std::shared_ptr<host_communicator> 
-host_communicator_manager::create_world_host_communicator() const
+host_communicator_manager::create_world_communicator() const
 {
 	if (!m_implementation)
 	{

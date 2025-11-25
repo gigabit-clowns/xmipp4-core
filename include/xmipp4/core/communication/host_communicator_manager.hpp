@@ -59,7 +59,7 @@ public:
 	 * 
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<host_communicator> create_world_host_communicator() const;
+	std::shared_ptr<host_communicator> create_world_communicator() const;
 
 private:
 	class implementation;

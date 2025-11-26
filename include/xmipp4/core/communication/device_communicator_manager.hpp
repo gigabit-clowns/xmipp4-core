@@ -16,6 +16,7 @@ namespace communication
 {
 
 class device_communicator;
+class device_transaction;
 
 /**
  * @brief Centralizes all known implementations of the 
@@ -69,10 +70,14 @@ public:
 	 * Neither device may be null.
 	 * @param out The resulting device communicators. Must have the same size
 	 * as the device span.
+	 * @return std::shared_ptr<device_transaction> An instance of 
+	 * device_transaction that needs to be used to when executing
+	 * transactions among the communicators. May be nullptr when this
+	 * behavior is not required by the backend.
 	 *  
 	 */
 	XMIPP4_CORE_API
-	void create_world_communicators(
+	std::shared_ptr<device_transaction> create_world_communicators(
 		host_communicator *node_communicator,
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out

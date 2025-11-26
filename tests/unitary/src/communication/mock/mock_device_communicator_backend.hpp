@@ -24,7 +24,7 @@ public:
 	);
 	MAKE_CONST_MOCK3(
 		create_world_communicators, 
-		void(
+		std::shared_ptr<device_transaction>(
 			host_communicator*, 
 			span<hardware::device*>, 
 			span<std::shared_ptr<device_communicator>>

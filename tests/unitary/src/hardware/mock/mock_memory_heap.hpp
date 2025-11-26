@@ -30,7 +30,6 @@ public:
 		), 
 		override
 	);
-
 };
 
 } // namespace hardware

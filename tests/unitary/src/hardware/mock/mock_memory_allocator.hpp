@@ -30,7 +30,6 @@ public:
 		std::shared_ptr<buffer>(std::size_t, std::size_t, device_queue*), 
 		override
 	);
-
 };
 
 } // namespace hardware

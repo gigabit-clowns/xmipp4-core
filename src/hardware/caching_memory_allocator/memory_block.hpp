@@ -109,7 +109,6 @@ private:
 	std::size_t m_size;
 	memory_heap *m_heap;
 	std::size_t m_offset;
-
 }; 
 
 bool operator==(const memory_block &lhs, const memory_block &rhs) noexcept;

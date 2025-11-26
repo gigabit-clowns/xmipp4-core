@@ -5,7 +5,7 @@
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "device_backend.hpp"
-#include "../service_manager.hpp"
+#include "../named_service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -23,7 +23,7 @@ class device;
  * 
  */
 class device_manager final
-	: public service_manager
+	: public named_service_manager
 {
 public:
 	XMIPP4_CORE_API device_manager();
@@ -37,6 +37,12 @@ public:
 	XMIPP4_CORE_API
 	void register_builtin_backends() override;
 
+	XMIPP4_CORE_API
+	void enumerate_backends(std::vector<std::string> &names) const override;
+
+	XMIPP4_CORE_API
+	device_backend* get_backend(const std::string &name) const override;
+
 	/**
 	 * @brief Register a new backend.
 	 * 
@@ -49,14 +55,6 @@ public:
 	bool register_backend(std::unique_ptr<device_backend> backend);
 
 	/**
-	 * @brief Enumerate all available backend names.
-	 * 
-	 * @param backends Output parameter where backends are written,
-	 */
-	XMIPP4_CORE_API
-	void enumerate_backends(std::vector<std::string> &backends) const;
-
-	/**
 	 * @brief Enumerate devices across all backends.
 	 * 
 	 * @param indices Output parameter with the list of device indices.
@@ -65,20 +63,6 @@ public:
 	 */
 	XMIPP4_CORE_API
 	void enumerate_devices(std::vector<device_index> &indices) const;
-
-	/**
-	 * @brief Get a device_backend by its name.
-	 * 
-	 * @param name The name of the requested device backend.
-	 * @return device_backend* The requested name. nullptr if there is no
-	 * backend with the requested name.
-	 * 
-	 * @throws std::invalid_argument if the requested device index is invalid, 
-	 * i.e., it is not in contained in enumerate_devices.
-	 * 
-	 */
-	XMIPP4_CORE_API
-	device_backend* get_backend(const std::string &name) const;
 
 	/**
 	 * @brief Query the properties of a device.

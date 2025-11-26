@@ -27,7 +27,6 @@ bool from_string(std::string_view str, example_enum& ex) noexcept
         { to_string(example_enum::first), example_enum::first },
         { to_string(example_enum::second), example_enum::second },
         { to_string(example_enum::third), example_enum::third },
-
     };
 
     const auto ite = str_2_example_enum.find(str);

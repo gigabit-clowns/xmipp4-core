@@ -17,7 +17,6 @@ class mock_device_queue final
 public:
 	MAKE_MOCK0(wait_until_completed, void(), const override);
 	MAKE_MOCK0(is_idle, bool(), const noexcept override);
-
 };
 
 } // namespace hardware

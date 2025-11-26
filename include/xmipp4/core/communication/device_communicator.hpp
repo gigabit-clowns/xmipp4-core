@@ -15,11 +15,14 @@ namespace hardware
 
 class device;
 class device_queue;
+class buffer;
 
 }
 
 namespace communication
 {
+
+class device_operation;
 
 /**
  * @brief Abstract class to represent inter device communications.
@@ -61,14 +64,87 @@ public:
 	) const = 0;
 
 	/**
-	 * @brief Synchronize all peers.
+	 * @brief Create a send operation.
 	 * 
-	 * Wait until all peers have reached this call.
-	 * 
-	 * @note All ranks of the communicator need to call this method.
-	 * 
+	 * @param data Buffer with the data to be sent.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param destination_rank Rank of the destination.
+	 * @return std::shared_ptr<device_operation> The send operation.
 	 */
-	virtual void barrier(hardware::device_queue *queue) = 0;
+	virtual std::shared_ptr<device_operation> create_send(
+		std::shared_ptr<const hardware::buffer> data,
+		numerical_type data_type, 
+		std::size_t data_count,
+		int destination_rank
+	) = 0;
+
+	/**
+	 * @brief Create a receive operation.
+	 * 
+	 * @param data Buffer with the data to be received.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param source_rank Rank of the source.
+	 * @return std::shared_ptr<device_operation> The receive operation.
+	 */
+	virtual std::shared_ptr<device_operation> create_receive(
+		std::shared_ptr<hardware::buffer> data,
+		numerical_type data_type, 
+		std::size_t data_count,
+		int source_rank
+	) = 0;
+
+	/**
+	 * @brief Create a broadcast operation.
+	 * 
+	 * @param data Buffer where the broadcast is performed.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<device_operation> The broadcast operation.
+	 */
+	virtual std::shared_ptr<device_operation> create_broadcast(
+		std::shared_ptr<hardware::buffer> data,
+		numerical_type data_type, 
+		std::size_t data_count,
+		int root_rank
+	) = 0;
+
+	/**
+	 * @brief Create a reduce operation.
+	 * 
+	 * @param data Buffer where the reduction is performed.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param reduction Type of the reduction operation.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<device_operation> The reduce operation.
+	 */
+	virtual std::shared_ptr<device_operation> create_reduce(
+		std::shared_ptr<hardware::buffer> data,
+		numerical_type data_type, 
+		std::size_t data_count,
+		reduction_operation reduction,
+		int root_rank
+	) = 0;
+
+	/**
+	 * @brief Create an all_reduce operation.
+	 * 
+	 * @param data Buffer where the reduction is performed.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param reduction Type of the reduction operation.
+	 * @return std::shared_ptr<device_operation> The all_reduce operation.
+	 */
+	virtual std::shared_ptr<device_operation> create_all_reduce(
+		void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		reduction_operation reduction
+	) = 0;
+
 };
 
 } // namespace communication

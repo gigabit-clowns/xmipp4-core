@@ -3,6 +3,8 @@
 #pragma once
 
 #include "communicator.hpp"
+#include "reduction_operation.hpp"
+#include "../numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -12,6 +14,8 @@ namespace xmipp4
 {
 namespace communication
 {
+
+class host_operation;
 
 /**
  * @brief Abstract class to represent interprocess and inter-node 
@@ -47,14 +51,94 @@ public:
 	) const = 0;
 
 	/**
-	 * @brief Synchronize all peers.
+	 * @brief Create a barrier operation.
 	 * 
-	 * Wait until all peers have reached this call.
-	 * 
-	 * @note All ranks of the communicator need to call this method.
-	 * 
+	 * @return std::shared_ptr<host_operation> The barrier operation.
 	 */
-	virtual void barrier() = 0;
+	virtual std::shared_ptr<host_operation> create_barrier() = 0;
+
+	/**
+	 * @brief Create a send operation.
+	 * 
+	 * @param data Pointer to the data to be sent.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param destination_rank Rank of the destination.
+	 * @return std::shared_ptr<host_operation> The send operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_send(
+		const void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		int destination_rank
+	) = 0;
+
+	/**
+	 * @brief Create a receive operation.
+	 * 
+	 * @param data Pointer to the data to be received.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param source_rank Rank of the source.
+	 * @return std::shared_ptr<host_operation> The receive operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_receive(
+		void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		int source_rank
+	) = 0;
+
+	/**
+	 * @brief Create a broadcast operation.
+	 * 
+	 * @param data Pointer to the data where the broadcast happens.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<host_operation> The broadcast operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_broadcast(
+		void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		int root_rank
+	) = 0;
+
+	/**
+	 * @brief Create a reduce operation.
+	 * 
+	 * @param data Pointer to the data to be reduced.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param reduction Type of the reduction operation.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<host_operation> The reduce operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_reduce(
+		void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		reduction_operation reduction,
+		int root_rank
+	) = 0;
+
+	/**
+	 * @brief Create an all_reduce operation.
+	 * 
+	 * @param data Pointer to the data to be reduced.
+	 * @param data_type Type of the elements.
+	 * @param data_count Number of elements.
+	 * @param reduction Type of the reduction operation.
+	 * @return std::shared_ptr<host_operation> The all_reduce operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_all_reduce(
+		void *data, 
+		numerical_type data_type, 
+		std::size_t data_count,
+		reduction_operation reduction
+	) = 0;
+
 };
 
 } // namespace communication

@@ -40,7 +40,6 @@ public:
 	 * 
 	 */
 	virtual void register_builtin_backends() { /*By default this is a no-op*/ };
-
 };
 
 } // namespace xmipp4

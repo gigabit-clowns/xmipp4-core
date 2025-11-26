@@ -69,7 +69,6 @@ public:
 	 * 
 	 */
 	virtual void barrier(hardware::device_queue *queue) = 0;
-
 };
 
 } // namespace communication

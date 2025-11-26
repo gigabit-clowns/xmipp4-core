@@ -39,7 +39,6 @@ public:
 	 * @return version The version.
 	 */
 	virtual version get_version() const = 0;
-
 };
 
 } // namespace xmipp4

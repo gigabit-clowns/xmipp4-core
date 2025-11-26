@@ -27,7 +27,6 @@ public:
 
 private:
 	backend_map m_backends;
-
 };
 
 } // namespace xmipp4

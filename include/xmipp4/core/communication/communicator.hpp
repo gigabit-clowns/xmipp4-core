@@ -48,7 +48,6 @@ public:
 	 * 
 	 */
 	virtual std::size_t get_rank() const = 0;
-
 };
 
 } // namespace communication

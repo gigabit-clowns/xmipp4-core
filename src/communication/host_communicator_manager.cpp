@@ -42,7 +42,6 @@ public:
 
 		return backend->second->create_world_communicator();
 	}
-
 };
 
 

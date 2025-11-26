@@ -48,7 +48,6 @@ public:
 	 * @param names Output parameter with the names of the contained backends.
 	 */
 	virtual void enumerate_backends(std::vector<std::string> &names) const = 0;
-
 };
 
 } // namespace xmipp4

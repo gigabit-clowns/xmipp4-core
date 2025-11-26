@@ -23,7 +23,6 @@ public:
 		override
 	);
 	MAKE_MOCK0(barrier, void(), override);
-
 };
 
 } // namespace communication

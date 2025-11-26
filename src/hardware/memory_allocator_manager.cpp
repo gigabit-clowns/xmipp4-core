@@ -61,7 +61,6 @@ public:
 
 private:
 	std::vector<std::unique_ptr<memory_allocator_backend>> m_backends;
-
 };
 
 memory_allocator_manager::memory_allocator_manager() noexcept = default;

@@ -55,7 +55,6 @@ public:
 	 * 
 	 */
 	virtual void barrier() = 0;
-
 };
 
 } // namespace communication

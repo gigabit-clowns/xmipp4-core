@@ -189,7 +189,6 @@ private:
 	 * @param heap The memory heap to be released.
 	 */
 	void release(const memory_heap &heap);
-
 };
 
 } // namespace hardware

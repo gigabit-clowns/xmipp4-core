@@ -35,7 +35,6 @@ public:
 			}
 		}
 	}
-
 };
 
 device_manager::device_manager() = default;

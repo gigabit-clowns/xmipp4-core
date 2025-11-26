@@ -51,7 +51,6 @@ public:
 	 */
 	virtual 
 	std::shared_ptr<host_communicator> create_world_communicator() const = 0;
-
 }; 
 
 } // namespace communication

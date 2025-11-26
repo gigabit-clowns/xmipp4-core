@@ -24,7 +24,6 @@ public:
 		override
 	);
 	MAKE_MOCK1(barrier, void(hardware::device_queue*), override);
-
 };
 
 } // namespace communication

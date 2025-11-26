@@ -23,7 +23,6 @@ public:
 		std::shared_ptr<host_communicator>(), 
 		override
 	);
-
 };
 
 } // namespace communication

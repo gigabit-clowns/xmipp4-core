@@ -39,7 +39,6 @@ public:
 	 * with the previous usage-s.
 	 */
 	virtual void record_queue(device_queue &queue, bool exclusive) = 0;
-
 }; 
 
 } // namespace hardware

@@ -75,7 +75,6 @@ public:
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out
 	) const = 0;
-
 }; 
 
 } // namespace communication

@@ -65,7 +65,6 @@ public:
 	 * @return std::shared_ptr<device> The device handle.
 	 */
 	virtual std::shared_ptr<device> create_device(std::size_t id) = 0;
-
 }; 
 
 } // namespace hardware

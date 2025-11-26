@@ -35,7 +35,6 @@ public:
 		std::shared_ptr<device_to_host_event>(), 
 		override
 	);
-
 };
 
 } // namespace hardware

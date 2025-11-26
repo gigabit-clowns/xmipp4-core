@@ -20,7 +20,6 @@ public:
 		void(device_queue&, bool),
 		override
 	);
-
 };
 
 } // namespace hardware

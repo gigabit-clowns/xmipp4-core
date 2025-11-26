@@ -18,7 +18,6 @@ public:
 	MAKE_MOCK1(signal, void(device_queue&), override);
 	MAKE_CONST_MOCK0(is_signaled, bool(), override);
 	MAKE_CONST_MOCK0(wait, void(), override);
-
 };
 
 } // namespace hardware

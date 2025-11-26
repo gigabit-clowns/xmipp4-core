@@ -31,7 +31,6 @@ public:
 		), 
 		override
 	);
-
 };
 
 } // namespace communication

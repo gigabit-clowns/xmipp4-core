@@ -22,7 +22,7 @@ public:
 	XMIPP4_CONSTEXPR
 	host_send_receive_regions(
 		const T *send_data, 
-		T *recv_data, 
+		T *receive_data, 
 		std::size_t count
 	) noexcept;
 

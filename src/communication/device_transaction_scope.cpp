@@ -13,6 +13,7 @@ device_transaction_scope::device_transaction_scope() noexcept
 	: m_transaction(nullptr)
 {
 }
+
 device_transaction_scope::device_transaction_scope(
 	device_transaction *transaction
 )
@@ -22,6 +23,14 @@ device_transaction_scope::device_transaction_scope(
 	{
 		m_transaction->begin();
 	}
+}
+
+device_transaction_scope::device_transaction_scope(
+	device_transaction &transaction
+)
+	: m_transaction(&transaction)
+{
+	m_transaction->begin();
 }
 
 device_transaction_scope::~device_transaction_scope()

@@ -16,6 +16,9 @@ namespace communication
 {
 
 class host_operation;
+class send_buffer;
+class receive_buffer;
+class send_receive_buffer;
 
 /**
  * @brief Abstract class to represent interprocess and inter-node 
@@ -60,65 +63,51 @@ public:
 	/**
 	 * @brief Create a send operation.
 	 * 
-	 * @param data Pointer to the data to be sent.
-	 * @param data_type Type of the elements.
-	 * @param data_count Number of elements.
+	 * @param buffer Buffer to be sent. Its contents must be valid during the 
+	 * lifetime of the operation.
 	 * @param destination_rank Rank of the destination.
 	 * @return std::shared_ptr<host_operation> The send operation.
 	 */
 	virtual std::shared_ptr<host_operation> create_send(
-		const void *data, 
-		numerical_type data_type, 
-		std::size_t data_count,
+		const send_buffer &buffer,
 		int destination_rank
 	) = 0;
 
 	/**
 	 * @brief Create a receive operation.
 	 * 
-	 * @param data Pointer to the data to be received.
-	 * @param data_type Type of the elements.
-	 * @param data_count Number of elements.
+	 * @param buffer Buffer where the received contents are written. Its 
+	 * contents must be valid during the lifetime of the operation.
 	 * @param source_rank Rank of the source.
 	 * @return std::shared_ptr<host_operation> The receive operation.
 	 */
 	virtual std::shared_ptr<host_operation> create_receive(
-		void *data, 
-		numerical_type data_type, 
-		std::size_t data_count,
+		const receive_buffer &buffer,
 		int source_rank
 	) = 0;
 
 	/**
 	 * @brief Create a broadcast operation.
 	 * 
-	 * @param data Pointer to the data where the broadcast happens.
-	 * @param data_type Type of the elements.
-	 * @param data_count Number of elements.
+	 * @param buffer Buffer where the broadcast happens.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<host_operation> The broadcast operation.
 	 */
 	virtual std::shared_ptr<host_operation> create_broadcast(
-		void *data, 
-		numerical_type data_type, 
-		std::size_t data_count,
+		const send_receive_buffer &buffer,
 		int root_rank
 	) = 0;
 
 	/**
 	 * @brief Create a reduce operation.
 	 * 
-	 * @param data Pointer to the data to be reduced.
-	 * @param data_type Type of the elements.
-	 * @param data_count Number of elements.
+	 * @param buffer Buffer where the the reduction happens.
 	 * @param reduction Type of the reduction operation.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<host_operation> The reduce operation.
 	 */
 	virtual std::shared_ptr<host_operation> create_reduce(
-		void *data, 
-		numerical_type data_type, 
-		std::size_t data_count,
+		const send_receive_buffer &buffer,
 		reduction_operation reduction,
 		int root_rank
 	) = 0;
@@ -126,17 +115,53 @@ public:
 	/**
 	 * @brief Create an all_reduce operation.
 	 * 
-	 * @param data Pointer to the data to be reduced.
-	 * @param data_type Type of the elements.
-	 * @param data_count Number of elements.
+	 * @param buffer Buffer where the the reduction happens.
 	 * @param reduction Type of the reduction operation.
 	 * @return std::shared_ptr<host_operation> The all_reduce operation.
 	 */
 	virtual std::shared_ptr<host_operation> create_all_reduce(
-		void *data, 
-		numerical_type data_type, 
-		std::size_t data_count,
+		const send_receive_buffer &buffer,
 		reduction_operation reduction
+	) = 0;
+
+	/**
+	 * @brief Create a gather operation.
+	 * 
+	 * @param send_buffer Buffer to be sent in the gather operation.
+	 * @param recv_buffer Buffer where the gathered data is written.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<host_operation> The gather operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_gather(
+		const send_buffer &send_buffer,
+		const receive_buffer &recv_buffer,
+		int root_rank
+	) = 0;
+
+	/**
+	 * @brief Create a all_gather operation.
+	 * 
+	 * @param send_buffer Buffer to be sent in the gather operation.
+	 * @param recv_buffer Buffer where the gathered data is written.
+	 * @return std::shared_ptr<host_operation> The all_gather operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_all_gather(
+		const send_buffer &send_buffer,
+		const receive_buffer &recv_buffer
+	) = 0;
+
+	/**
+	 * @brief Create a scatter operation.
+	 * 
+	 * @param send_buffer Buffer to be sent in the scatter operation.
+	 * @param recv_buffer Buffer where the scattered data is written.
+	 * @param root_rank Rank of the root.
+	 * @return std::shared_ptr<host_operation> The scatter operation.
+	 */
+	virtual std::shared_ptr<host_operation> create_scatter(
+		const send_buffer &send_buffer,
+		const receive_buffer &recv_buffer,
+		int root_rank
 	) = 0;
 
 };

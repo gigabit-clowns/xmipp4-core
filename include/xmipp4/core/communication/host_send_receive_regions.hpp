@@ -12,30 +12,46 @@ namespace xmipp4
 namespace communication
 {
 
-class send_receive_buffer
+class host_send_receive_regions
 {
 public:
 	XMIPP4_CONSTEXPR
-	send_receive_buffer() noexcept;
+	host_send_receive_regions() noexcept;
+
+	template <typename T>
 	XMIPP4_CONSTEXPR
-	send_receive_buffer(
+	host_send_receive_regions(
+		const T *send_data, 
+		T *recv_data, 
+		std::size_t count
+	) noexcept;
+
+	XMIPP4_CONSTEXPR
+	host_send_receive_regions(
 		const void *send_data, 
 		void *receive_data, 
 		numerical_type data_type, 
 		std::size_t count
 	) noexcept;
+
+	template <typename T>
 	XMIPP4_CONSTEXPR
-	send_receive_buffer(
+	host_send_receive_regions(T *send_recv_data, std::size_t count) noexcept;
+
+	XMIPP4_CONSTEXPR
+	host_send_receive_regions(
 		void *send_recv_data, 
 		numerical_type data_type, 
 		std::size_t count
 	) noexcept;
-	send_receive_buffer(const send_receive_buffer &other) = default;
-	send_receive_buffer(send_receive_buffer &&other) = default;
-	~send_receive_buffer() = default;
+	host_send_receive_regions(const host_send_receive_regions &other) = default;
+	host_send_receive_regions(host_send_receive_regions &&other) = default;
+	~host_send_receive_regions() = default;
 
-	send_receive_buffer& operator=(const send_receive_buffer &other) = default;
-	send_receive_buffer& operator=(send_receive_buffer &&other) = default;
+	host_send_receive_regions& 
+	operator=(const host_send_receive_regions &other) = default;
+	host_send_receive_regions& 
+	operator=(host_send_receive_regions &&other) = default;
 
 	XMIPP4_CONSTEXPR const void* get_send_data() const noexcept;
 
@@ -47,7 +63,7 @@ public:
 
 private:
 	const void *m_send_data;
-	const void *m_receive_data;
+	void *m_receive_data;
 	numerical_type m_data_type;
 	std::size_t m_count;
 
@@ -56,3 +72,4 @@ private:
 } // namespace communication
 } // namespace xmipp4
 
+#include "host_send_receive_regions.inl"

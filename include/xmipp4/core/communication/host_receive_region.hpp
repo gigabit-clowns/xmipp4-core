@@ -12,23 +12,29 @@ namespace xmipp4
 namespace communication
 {
 
-class receive_buffer
+class host_receive_region
 {
 public:
 	XMIPP4_CONSTEXPR
-	receive_buffer() noexcept;
+	host_receive_region() noexcept;
+
+	template <typename T>
 	XMIPP4_CONSTEXPR
-	receive_buffer(
+	host_receive_region(T* data, std::size_t count) noexcept;
+
+	XMIPP4_CONSTEXPR
+	host_receive_region(
 		void *data, 
 		numerical_type data_type, 
 		std::size_t count
 	) noexcept;
-	receive_buffer(const receive_buffer &other) = default;
-	receive_buffer(receive_buffer &&other) = default;
-	~receive_buffer() = default;
 
-	receive_buffer& operator=(const receive_buffer &other) = default;
-	receive_buffer& operator=(receive_buffer &&other) = default;
+	host_receive_region(const host_receive_region &other) = default;
+	host_receive_region(host_receive_region &&other) = default;
+	~host_receive_region() = default;
+
+	host_receive_region& operator=(const host_receive_region &other) = default;
+	host_receive_region& operator=(host_receive_region &&other) = default;
 
 	XMIPP4_CONSTEXPR void* get_data() const noexcept;
 
@@ -46,3 +52,4 @@ private:
 } // namespace communication
 } // namespace xmipp4
 
+#include "host_receive_region.inl"

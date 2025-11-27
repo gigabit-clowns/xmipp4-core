@@ -31,7 +31,7 @@ public:
 	device_operation() = default;
 	device_operation(const device_operation &other) = delete;
 	device_operation(device_operation &&other) = delete;
-	virtual ~device_operation() = default;
+	~device_operation() override = default;
 
 	device_operation& operator=(const device_operation &other) = delete;
 	device_operation& operator=(device_operation &&other) = delete;

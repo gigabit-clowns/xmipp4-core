@@ -24,7 +24,7 @@ public:
 	host_operation() = default;
 	host_operation(const host_operation &other) = delete;
 	host_operation(host_operation &&other) = delete;
-	virtual ~host_operation() = default;
+	~host_operation() override = default;
 
 	host_operation& operator=(const host_operation &other) = delete;
 	host_operation& operator=(host_operation &&other) = delete;

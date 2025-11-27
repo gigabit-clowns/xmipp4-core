@@ -66,8 +66,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_broadcast(
 	int root_rank
 ) 
 {
-	validate_root_rank(root_rank);
-	return create_operation(regions);
+	return create_operation(regions, root_rank);
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_reduce(
@@ -76,8 +75,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_reduce(
 	int root_rank
 )
 {
-	validate_root_rank(root_rank);
-	return create_operation(regions);
+	return create_operation(regions, root_rank);
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_all_reduce(
@@ -94,8 +92,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_gather(
 	int root_rank
 )
 {
-	validate_root_rank(root_rank);
-	return create_operation(send_region, recv_region);
+	return create_operation(send_region, recv_region, root_rank);
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_all_gather(
@@ -112,8 +109,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_scatter(
 	int root_rank
 )
 {
-	validate_root_rank(root_rank);
-	return create_operation(send_region, recv_region);
+	return create_operation(send_region, recv_region, root_rank);
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_barrier()
@@ -132,6 +128,15 @@ void dummy_host_communicator::validate_root_rank(int root_rank)
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
+	const host_send_receive_regions &regions,
+	int root_rank
+)
+{
+	validate_root_rank(root_rank);
+	return create_operation(regions);
+}
+
+std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 	const host_send_receive_regions &regions
 )
 {
@@ -147,6 +152,16 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 			xmipp4::get_size(regions.get_data_type()) * regions.get_count()
 		);
 	}
+}
+
+std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
+	const host_send_region &send_region,
+	const host_receive_region &recv_region,
+	int root_rank
+)
+{
+	validate_root_rank(root_rank);
+	return create_operation(send_region, recv_region);
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(

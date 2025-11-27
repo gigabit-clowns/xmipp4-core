@@ -4,6 +4,9 @@
 
 #include <xmipp4/core/communication/host_communicator.hpp>
 
+#include <xmipp4/core/platform/attributes.hpp>
+
+
 namespace xmipp4 
 {
 namespace communication
@@ -27,11 +30,13 @@ public:
 		int rank_priority
 	) const override;
 
+	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_send(
 		const host_send_region &buffer,
 		int destination_rank
 	) override;
 
+	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_receive(
 		const host_receive_region &regions,
 		int source_rank
@@ -75,7 +80,16 @@ public:
 private:
 	static void validate_root_rank(int root_rank);
 	static std::shared_ptr<host_operation> create_operation(
+		const host_send_receive_regions &regions,
+		int root_rank
+	);
+	static std::shared_ptr<host_operation> create_operation(
 		const host_send_receive_regions &regions
+	);
+	static std::shared_ptr<host_operation> create_operation(
+		const host_send_region &send_region,
+		const host_receive_region &recv_region,
+		int root_rank
 	);
 	static std::shared_ptr<host_operation> create_operation(
 		const host_send_region &send_region,

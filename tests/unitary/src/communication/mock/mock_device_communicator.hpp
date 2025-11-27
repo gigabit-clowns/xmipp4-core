@@ -4,6 +4,10 @@
 
 #include <xmipp4/core/communication/device_communicator.hpp>
 
+#include <xmipp4/core/communication/device_send_region.hpp>
+#include <xmipp4/core/communication/device_send_receive_regions.hpp>
+#include <xmipp4/core/communication/device_receive_region.hpp>
+
 #include <trompeloeil.hpp>
 
 namespace xmipp4

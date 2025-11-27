@@ -33,7 +33,8 @@ dummy_host_communicator::split(int, int) const
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_send(
 	const host_send_region&, 
-	int destination_rank
+	int destination_rank,
+	int
 )
 {
 	if (destination_rank == 0)
@@ -48,7 +49,8 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_send(
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_receive(
 	const host_receive_region&, 
-	int source_rank
+	int source_rank,
+	int
 )
 {
 	if (source_rank == 0)

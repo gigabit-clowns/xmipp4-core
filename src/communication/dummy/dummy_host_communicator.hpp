@@ -33,13 +33,15 @@ public:
 	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_send(
 		const host_send_region &buffer,
-		int destination_rank
+		int destination_rank,
+		int tag
 	) override;
 
 	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_receive(
 		const host_receive_region &regions,
-		int source_rank
+		int source_rank,
+		int tag
 	) override;
 
 	std::shared_ptr<host_operation> create_broadcast(

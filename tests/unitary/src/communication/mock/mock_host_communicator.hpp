@@ -26,19 +26,21 @@ public:
 		std::shared_ptr<host_communicator>(int, int), 
 		override
 	);
-	MAKE_MOCK2(
+	MAKE_MOCK3(
 		create_send,
 		std::shared_ptr<host_operation>(
 			const host_send_region &region, 
-			int destination_rank
+			int destination_rank,
+			int tag
 		),
 		override
 	);
-	MAKE_MOCK2(
+	MAKE_MOCK3(
 		create_receive,
 		std::shared_ptr<host_operation>(
 			const host_receive_region &region, 
-			int source_rank
+			int source_rank,
+			int tag
 		),
 		override
 	);

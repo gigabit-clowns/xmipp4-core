@@ -78,7 +78,8 @@ public:
 	 */
 	virtual std::shared_ptr<operation_type> create_send(
 		const send_region_type &buffer,
-		int destination_rank
+		int destination_rank,
+		int tag
 	) = 0;
 
 	/**
@@ -96,7 +97,8 @@ public:
 	 */
 	virtual std::shared_ptr<operation_type> create_receive(
 		const receive_region_type &regions,
-		int source_rank
+		int source_rank,
+		int tag
 	) = 0;
 
 	/**

@@ -53,6 +53,7 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
+            XMIPP4_CORE_ENABLE_COVERAGE=ON
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

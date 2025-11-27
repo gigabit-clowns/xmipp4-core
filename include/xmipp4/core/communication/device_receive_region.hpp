@@ -3,17 +3,25 @@
 #pragma once
 
 #include "../numerical_type.hpp"
-#include "../platform/constexpr.hpp"
 
+#include <memory>
 #include <cstddef>
 
 namespace xmipp4 
 {
+namespace hardware
+{
+
+class buffer;
+
+} // hardware
+
 namespace communication
 {
 
 /**
- * @brief Representation of a dynamically typed device memory region.
+ * @brief Representation of a dynamically typed device memory region in a
+ * device buffer.
  * 
  */
 class device_receive_region
@@ -23,32 +31,12 @@ public:
 	 * @brief Construct an empty region.
 	 *
 	 */
-	XMIPP4_CONSTEXPR
 	device_receive_region() noexcept;
 
-	/**
-	 * @brief Construct a memory region from a typed pointer and element count.
-	 * 
-	 * @tparam T Type of the elements.
-	 * @param data Pointer to the elements.
-	 * @param count Number of elements.
-	 */
-	template <typename T>
-	XMIPP4_CONSTEXPR
-	device_receive_region(T* data, std::size_t count) noexcept;
-
-	/**
-	 * @brief Construct a memory region from a untyped pointer, dynamic type and
-	 * element count
-	 * 
-	 * @param data Untyped pointer.
-	 * @param data_type Type of the elements pointed by the pointer.
-	 * @param count Number of elements.
-	 */
-	XMIPP4_CONSTEXPR
 	device_receive_region(
-		void *data, 
+		std::shared_ptr<hardware::buffer> buffer,
 		numerical_type data_type, 
+		std::size_t offset,
 		std::size_t count
 	) noexcept;
 
@@ -60,29 +48,37 @@ public:
 	device_receive_region& operator=(device_receive_region &&other) = default;
 
 	/**
-	 * @brief Get an untyped pointer to the data.
+	 * @brief Get the buffer
 	 * 
-	 * @return void* the pointer.
+	 * @return const std::shared_ptr<hardware::buffer>& The buffer.
 	 */
-	XMIPP4_CONSTEXPR void* get_data() const noexcept;
+	const std::shared_ptr<hardware::buffer>& get_buffer() const noexcept;
 
 	/**
 	 * @brief Get the type of the elements.
 	 * 
-	 * @return numerical_type the type.
+	 * @return numerical_type The type.
 	 */
-	XMIPP4_CONSTEXPR numerical_type get_data_type() const noexcept;
+	numerical_type get_data_type() const noexcept;
+
+	/**
+	 * @brief Get the offset into the buffer.
+	 * 
+	 * @return std::size_t The offset.
+	 */
+	std::size_t get_offset() const noexcept;
 
 	/**
 	 * @brief Get the number of elements.
 	 * 
-	 * @return std::size_t element count.
+	 * @return std::size_t The element count.
 	 */
-	XMIPP4_CONSTEXPR std::size_t get_count() const noexcept;
+	std::size_t get_count() const noexcept;
 
 private:
-	void *m_data;
+	std::shared_ptr<hardware::buffer> m_buffer;
 	numerical_type m_data_type;
+	std::size_t m_offset;
 	std::size_t m_count;
 
 };

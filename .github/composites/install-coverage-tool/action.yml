@@ -23,6 +23,7 @@ runs:
 
     - name: Install coverage tools (macOS - llvm-cov)
       if: runner.os == 'macOS'
+      shell: bash
       run: |
         brew install llvm
         ln -s "$(brew --prefix llvm)/bin/llvm-cov" /usr/local/bin/llvm-cov || true

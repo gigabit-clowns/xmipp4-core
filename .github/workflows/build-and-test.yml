@@ -39,6 +39,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Install coverage tool
+        uses: ./.github/composites/install-coverage-tool
+
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
         with:

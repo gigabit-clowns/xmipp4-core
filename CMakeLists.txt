@@ -13,6 +13,7 @@ project(
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" ON)
 option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" ON)
+option(XMIPP4_CORE_ENABLE_COVERAGE "Enable code coverage" OFF)
 
 # Add the CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -51,6 +52,16 @@ endif()
 # Set project-wide compilation options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+# Add coverage flags if requested
+if(XMIPP4_CORE_ENABLE_COVERAGE)
+	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+		add_compile_options(--coverage -O0 -g)
+		add_link_options(--coverage)
+	elseif(MSVC)
+		add_compile_options(/Z7 /Od)
+		string(REGEX REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+	endif()
+endif()
 
 # Add source directory
 add_subdirectory(src)

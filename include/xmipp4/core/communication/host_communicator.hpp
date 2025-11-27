@@ -25,14 +25,15 @@ class host_send_receive_regions;
  * 
  */
 class XMIPP4_CORE_API host_communicator
-	: public collective_communicator<host_communicator>
+	: public collective_communicator<
+		host_communicator,
+		host_operation,
+		host_send_region,
+		host_receive_region,
+		host_send_receive_regions
+	>
 {
 public:
-	using operation_type = host_operation;
-	using send_region_type = host_send_region;
-	using receive_region_type = host_receive_region;
-	using send_receive_regions_type = host_send_receive_regions;
-
 	host_communicator() = default;
 	host_communicator(const host_communicator &other) = delete;
 	host_communicator(host_communicator &&other) = delete;

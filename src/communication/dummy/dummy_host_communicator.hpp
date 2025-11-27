@@ -27,7 +27,61 @@ public:
 		int rank_priority
 	) const override;
 
-	void barrier() override;
+	std::shared_ptr<host_operation> create_send(
+		const host_send_region &buffer,
+		int destination_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_receive(
+		const host_receive_region &regions,
+		int source_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_broadcast(
+		const host_send_receive_regions &regions,
+		int root_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_reduce(
+		const host_send_receive_regions &regions,
+		reduction_operation reduction,
+		int root_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_all_reduce(
+		const host_send_receive_regions &regions,
+		reduction_operation reduction
+	) override;
+
+	std::shared_ptr<host_operation> create_gather(
+		const host_send_region &send_region,
+		const host_receive_region &recv_region,
+		int root_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_all_gather(
+		const host_send_region &send_region,
+		const host_receive_region &recv_region
+	) override;
+
+	std::shared_ptr<host_operation> create_scatter(
+		const host_send_region &send_region,
+		const host_receive_region &recv_region,
+		int root_rank
+	) override;
+
+	std::shared_ptr<host_operation> create_barrier() override;
+
+private:
+	static void validate_root_rank(int root_rank);
+	static std::shared_ptr<host_operation> create_operation(
+		const host_send_receive_regions &regions
+	);
+	static std::shared_ptr<host_operation> create_operation(
+		const host_send_region &send_region,
+		const host_receive_region &recv_region
+	);
+
 };
 
 } // namespace communication

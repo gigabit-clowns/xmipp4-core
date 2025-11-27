@@ -20,17 +20,22 @@ namespace communication
  * common interface of host_communicator and device_communicator.
  * 
  */
-template <typename Comm>
+template <
+	typename Comm,
+	typename OpType, 
+    typename SendRegion, 
+    typename RecvRegion,
+    typename SendRecvRegions
+>
 class XMIPP4_CORE_API collective_communicator
 	: public communicator
 {
 public:
 	using communicator_type = Comm;
-	using operation_type = typename communicator_type::operation_type;
-	using send_region_type = typename communicator_type::send_region_type;
-	using receive_region_type = typename communicator_type::receive_region_type;
-	using send_receive_regions_type = 
-		typename communicator_type::send_receive_regions_type;
+	using operation_type = OpType;
+	using send_region_type = SendRegion;
+	using receive_region_type = RecvRegion;
+	using send_receive_regions_type = SendRecvRegions;
 
 	collective_communicator() = default;
 	collective_communicator(const collective_communicator &other) = delete;

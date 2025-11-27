@@ -28,14 +28,15 @@ class device_send_receive_regions;
  * 
  */
 class XMIPP4_CORE_API device_communicator
-	: public collective_communicator<device_communicator>
+	: public collective_communicator<
+		device_communicator,
+		device_operation,
+		device_send_region,
+		device_receive_region,
+		device_send_receive_regions
+	>
 {
 public:
-	using operation_type = device_operation;
-	using send_region_type = device_send_region;
-	using receive_region_type = device_receive_region;
-	using send_receive_regions_type = device_send_receive_regions;
-
 	device_communicator() = default;
 	device_communicator(const device_communicator &other) = delete;
 	device_communicator(device_communicator &&other) = delete;

@@ -15,7 +15,7 @@ runs:
       run: |
         if which apt; then
           sudo apt-get update
-          sudo apt-get install -y lcov gcov
+          sudo apt-get install -y lcov
         else
           echo "Could not find a package manager for this system"
           exit 1

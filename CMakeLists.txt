@@ -52,6 +52,7 @@ endif()
 # Set project-wide compilation options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+
 # Add coverage flags if requested
 if(XMIPP4_CORE_ENABLE_COVERAGE)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

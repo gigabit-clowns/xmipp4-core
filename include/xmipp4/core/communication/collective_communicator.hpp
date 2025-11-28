@@ -69,7 +69,7 @@ public:
 	 * destination_rank must be calling execute on an operation returned by
 	 * create_receive with the source rank equal to this.
 	 * 
-	 * @param buffer Buffer to be sent. Its contents must be valid during the 
+	 * @param region Buffer to be sent. Its contents must be valid during the 
 	 * lifetime of the operation.
 	 * @param destination_rank Rank of the peer to which data is sent.
 	 * @return std::shared_ptr<operation_type> The send operation.
@@ -77,7 +77,7 @@ public:
 	 * @see create_receive
 	 */
 	virtual std::shared_ptr<operation_type> create_send(
-		const send_region_type &buffer,
+		const send_region_type &region,
 		int destination_rank,
 		int tag
 	) = 0;

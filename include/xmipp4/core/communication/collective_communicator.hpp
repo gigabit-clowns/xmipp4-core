@@ -23,9 +23,9 @@ namespace communication
 template <
 	typename Comm,
 	typename OpType, 
-    typename SendRegion, 
-    typename RecvRegion,
-    typename DuplexRegion
+	typename SendRegion, 
+	typename RecvRegion,
+	typename DuplexRegion
 >
 class XMIPP4_CORE_API collective_communicator
 	: public communicator

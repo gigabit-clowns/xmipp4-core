@@ -34,7 +34,9 @@ runs:
       if: runner.os == 'Windows'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
-      run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+      env:
+        DRMEMORY: ${{ inputs.drmemory }}
+      run: $DRMEMORY -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
     - name: Check if there are any memory leaks
       if: inputs.check-memleaks == 'true'

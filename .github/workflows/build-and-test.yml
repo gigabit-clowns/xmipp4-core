@@ -64,9 +64,17 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
-          geninfo --ignore-errors source -o coverage.raw.info .
-
+          geninfo --ignore-errors source,gcov -o coverage.raw.info .
+      
       - name: Generate coverage report step 2
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        working-directory: "${{ github.workspace }}/build"
+        run: |
+          lcov --remove coverage.raw.info \
+            '/usr/*' '*/_deps/*' '*/third_party/*' '*/external/*' \
+            --output-file coverage.cleaned.info
+
+      - name: Generate coverage report step 3
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
@@ -76,13 +84,13 @@ jobs:
             "${{ github.workspace }}/tests/*" \
             --output-file coverage.info
 
-      - name: Generate coverage report step 3
+      - name: Generate coverage report step 4
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
           lcov --list coverage.info
 
-      - name: Generate coverage report step 4
+      - name: Generate coverage report step 5
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |

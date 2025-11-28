@@ -66,7 +66,7 @@ public:
 	/**
 	 * @brief Get the type of the elements.
 	 * 
-	 * @return numerical_type the type.
+	 * @return numerical_type The type.
 	 */
 	numerical_type get_data_type() const noexcept;
 
@@ -80,7 +80,7 @@ public:
 	/**
 	 * @brief Get the number of elements.
 	 * 
-	 * @return std::size_t element count.
+	 * @return std::size_t The element count.
 	 */
 	std::size_t get_count() const noexcept;
 

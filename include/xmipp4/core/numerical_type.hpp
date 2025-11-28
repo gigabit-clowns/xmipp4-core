@@ -116,6 +116,9 @@ XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
 XMIPP4_CONSTEXPR 
 numerical_type common_type(numerical_type x, numerical_type y) noexcept;
 
+XMIPP4_CONSTEXPR 
+const char* to_string(numerical_type type) noexcept;
+
 template<typename T>
 std::basic_ostream<T>& 
 operator<<(std::basic_ostream<T>& os, numerical_type type);

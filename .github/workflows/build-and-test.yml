@@ -135,3 +135,4 @@ jobs:
         with:
           artifact-name: build-artifact
           artifact-path: ${{ github.workspace }}/build
+          sonar-token: ${{ secrets.SONAR_TOKEN }}

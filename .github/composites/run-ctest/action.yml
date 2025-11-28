@@ -12,10 +12,10 @@ inputs:
 outputs:
   exist-memleaks:
     description: "If True, the tests run show memory leaks." 
-    value: ${{ steps.check-memleaks.outputs.exist-memleaks }}
+    value: ${{ steps.run-with-memcheck.outputs.exist-memleaks }}
   memleak-test-numbers:
     description: "Numbers of the tests with memory leaks." 
-    value: ${{ steps.get-memleak-tests.outputs.test-numbers }}
+    value: ${{ steps.run-with-memcheck.outputs.test-numbers }}
 
 runs:
   using: "composite"
@@ -40,6 +40,7 @@ runs:
 
     - name: Run tests with memory check
       if: inputs.check-memleaks == 'true'
+      id: run-with-memcheck
       uses: ./.github/composites/run-ctest/memcheck
       with:
         drmemory: ${{ inputs.drmemory }}

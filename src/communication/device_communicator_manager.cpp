@@ -21,7 +21,7 @@ class device_communicator_manager::implementation
 {
 public:
 	std::shared_ptr<device_transaction> create_world_communicators(
-		host_communicator *node_communicator,
+		const std::shared_ptr<host_communicator> &node_communicator,
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out
 	) const
@@ -96,7 +96,7 @@ bool device_communicator_manager::register_backend(
 
 std::shared_ptr<device_transaction> 
 device_communicator_manager::create_world_communicators(
-	host_communicator *node_communicator,
+	const std::shared_ptr<host_communicator> &node_communicator,
 	span<hardware::device*> devices,
 	span<std::shared_ptr<device_communicator>> out
 ) const

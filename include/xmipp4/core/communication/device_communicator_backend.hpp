@@ -76,7 +76,7 @@ public:
 	 */
 	virtual 
 	std::shared_ptr<device_transaction> create_world_communicators(
-		host_communicator *node_communicator,
+		const std::shared_ptr<host_communicator> &node_communicator,
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out
 	) const = 0;

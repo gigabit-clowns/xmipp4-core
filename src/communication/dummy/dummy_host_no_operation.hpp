@@ -14,6 +14,9 @@ namespace communication
 /**
  * @brief Implementation of a host_operation that does nothing.
  * 
+ * The dummy_host_communicator's behavior is often a no-operation.
+ * This class implements this behavior.
+ * 
  */
 class dummy_host_no_operation final
 	: public host_operation

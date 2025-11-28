@@ -17,6 +17,10 @@ namespace communication
  * @brief Implementation of a host_operation that copies data between send 
  * and receive buffers.
  * 
+ * The dummy host_communicator may require dispatching an operation
+ * which copies data from the send buffer to the receive buffer.
+ * This class can be used to perform this task.
+ * 
  */
 class dummy_host_copy_operation final
 	: public host_operation

@@ -4,9 +4,6 @@
 
 #include <xmipp4/core/communication/host_communicator.hpp>
 
-#include <xmipp4/core/platform/attributes.hpp>
-
-
 namespace xmipp4 
 {
 namespace communication

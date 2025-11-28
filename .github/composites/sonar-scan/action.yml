@@ -40,5 +40,6 @@ runs:
       uses: SonarSource/sonarqube-scan-action@v6
       env:
           SONAR_TOKEN: ${{ inputs.sonar-token }}
-      args: >
-        -Dsonar.branch.name=${{ github.ref_name }}
+      with:
+        args: >
+          -Dsonar.branch.name=${{ github.ref_name }}

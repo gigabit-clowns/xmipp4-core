@@ -64,7 +64,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
-          lcov --capture --directory . --output-file coverage.info --exclude '/usr/*'
+          geninfo --ignore-errors source -o coverage.raw.info .
+          lcov --extract coverage.cleaned.info \
+            "${{ github.workspace }}/src/*" \
+            "${{ github.workspace }}/include/*" \
+            "${{ github.workspace }}/tests/*" \
+            --output-file coverage.info
           lcov --list coverage.info
           genhtml coverage.info --output-directory coverage_html
 

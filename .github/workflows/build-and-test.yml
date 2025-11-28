@@ -60,17 +60,32 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-      - name: Generate coverage report
+      - name: Generate coverage report step 1
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
           geninfo --ignore-errors source -o coverage.raw.info .
+
+      - name: Generate coverage report step 2
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        working-directory: "${{ github.workspace }}/build"
+        run: |
           lcov --extract coverage.cleaned.info \
             "${{ github.workspace }}/src/*" \
             "${{ github.workspace }}/include/*" \
             "${{ github.workspace }}/tests/*" \
             --output-file coverage.info
+
+      - name: Generate coverage report step 3
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        working-directory: "${{ github.workspace }}/build"
+        run: |
           lcov --list coverage.info
+
+      - name: Generate coverage report step 4
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
+        working-directory: "${{ github.workspace }}/build"
+        run: |
           genhtml coverage.info --output-directory coverage_html
 
       - name: Upload build folder (ubuntu-latest + gcc only)

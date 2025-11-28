@@ -126,17 +126,8 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: SonarQube Scan
+        uses: ./.github/composites/sonar-scan
         with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v6
-        with:
-          name: build-artifact
-          path: ${{ github.workspace }}/build
-    
-      - name: SonarQube scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          artifact-name: build-artifact
+          artifact-path: ${{ github.workspace }}/build

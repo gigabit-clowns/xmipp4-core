@@ -31,7 +31,7 @@ device_send_region::device_send_region(
 
 inline
 const std::shared_ptr<const hardware::buffer>& 
-device_send_region::get_buffer() const noexcept
+device_send_region::get_data() const noexcept
 {
 	return m_buffer;
 }

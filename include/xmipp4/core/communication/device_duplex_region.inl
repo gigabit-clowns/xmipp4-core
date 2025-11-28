@@ -52,14 +52,14 @@ device_duplex_region::device_duplex_region(
 
 inline
 const std::shared_ptr<const hardware::buffer>& 
-device_duplex_region::get_send_buffer() const noexcept
+device_duplex_region::get_send_data() const noexcept
 {
 	return m_send_buffer;
 }
 
 inline
 const std::shared_ptr<hardware::buffer>& 
-device_duplex_region::get_receive_buffer() const noexcept
+device_duplex_region::get_receive_data() const noexcept
 {
 	return m_receive_buffer;
 }

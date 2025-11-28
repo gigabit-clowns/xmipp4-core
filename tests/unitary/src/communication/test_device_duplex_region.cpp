@@ -13,8 +13,8 @@ using namespace xmipp4::communication;
 TEST_CASE( "default constructed device_duplex_region should be empty ", "[device_duplex_region]" ) 
 {
 	const device_duplex_region region;
-	REQUIRE( region.get_send_buffer() == nullptr );
-	REQUIRE( region.get_receive_buffer() == nullptr );
+	REQUIRE( region.get_send_data() == nullptr );
+	REQUIRE( region.get_receive_data() == nullptr );
 	REQUIRE( region.get_data_type() == numerical_type::unknown );
 	REQUIRE( region.get_send_offset() == 0UL );
 	REQUIRE( region.get_receive_offset() == 0UL );
@@ -53,8 +53,8 @@ TEST_CASE( "constructing a device_duplex_region should store its attributes", "[
 		count
 	);
 
-	REQUIRE( region.get_send_buffer() == send_buffer );
-	REQUIRE( region.get_receive_buffer() == receive_buffer );
+	REQUIRE( region.get_send_data() == send_buffer );
+	REQUIRE( region.get_receive_data() == receive_buffer );
 	REQUIRE( region.get_data_type() == data_type );
 	REQUIRE( region.get_send_offset() == send_offset);
 	REQUIRE( region.get_receive_offset() == receive_offset );
@@ -84,8 +84,8 @@ TEST_CASE( "constructing a device_duplex_region from a single buffer should crea
 		count
 	);
 
-	REQUIRE( region.get_send_buffer() == send_recv_buffer );
-	REQUIRE( region.get_receive_buffer() == send_recv_buffer );
+	REQUIRE( region.get_send_data() == send_recv_buffer );
+	REQUIRE( region.get_receive_data() == send_recv_buffer );
 	REQUIRE( region.get_data_type() == data_type );
 	REQUIRE( region.get_send_offset() == offset);
 	REQUIRE( region.get_receive_offset() == offset );

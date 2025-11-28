@@ -13,7 +13,7 @@ using namespace xmipp4::communication;
 TEST_CASE( "default constructed device_receive_region should be empty ", "[device_receive_region]" ) 
 {
 	const device_receive_region region;
-	REQUIRE( region.get_buffer() == nullptr );
+	REQUIRE( region.get_data() == nullptr );
 	REQUIRE( region.get_data_type() == numerical_type::unknown );
 	REQUIRE( region.get_offset() == 0UL );
 	REQUIRE( region.get_count() == 0UL );
@@ -42,7 +42,7 @@ TEST_CASE( "constructing a device_receive_region should store its attributes", "
 		count
 	);
 
-	REQUIRE( region.get_buffer() == buffer );
+	REQUIRE( region.get_data() == buffer );
 	REQUIRE( region.get_data_type() == data_type );
 	REQUIRE( region.get_offset() == offset );
 	REQUIRE( region.get_count() == count );

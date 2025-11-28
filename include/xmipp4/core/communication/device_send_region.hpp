@@ -61,7 +61,7 @@ public:
 	 * 
 	 * @return const std::shared_ptr<hardware::buffer>& The buffer.
 	 */
-	const std::shared_ptr<const hardware::buffer>& get_buffer() const noexcept;
+	const std::shared_ptr<const hardware::buffer>& get_data() const noexcept;
 
 	/**
 	 * @brief Get the type of the elements.

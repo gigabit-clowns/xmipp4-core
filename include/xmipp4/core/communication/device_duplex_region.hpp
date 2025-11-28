@@ -84,7 +84,7 @@ public:
 	 * @return const std::shared_ptr<hardware::buffer>& The send buffer.
 	 */
 	const std::shared_ptr<const hardware::buffer>& 
-	get_send_buffer() const noexcept;
+	get_send_data() const noexcept;
 
 	/**
 	 * @brief Get the receive buffer.
@@ -92,7 +92,7 @@ public:
 	 * @return const std::shared_ptr<hardware::buffer>& The receive buffer.
 	 */
 	const std::shared_ptr<hardware::buffer>& 
-	get_receive_buffer() const noexcept;
+	get_receive_data() const noexcept;
 
 	/**
 	 * @brief Get the data type.

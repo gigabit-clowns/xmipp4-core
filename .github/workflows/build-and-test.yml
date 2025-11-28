@@ -71,7 +71,7 @@ jobs:
         working-directory: "${{ github.workspace }}/build"
         run: |
           lcov --remove coverage.raw.info \
-            '/usr/*' '*/_deps/*' '*/third_party/*' '*/external/*' \
+            '/usr/*' '*/_deps/*' '*/external/*' \
             --output-file coverage.cleaned.info
 
       - name: Generate coverage report step 3

@@ -163,8 +163,9 @@ public:
 	 * into the receive region of the root.
 	 * 
 	 * @param send_region Buffer to be sent in the gather operation.
-	 * @param recv_region Buffer where the gathered data is written. Ignored
-	 * for all peers except the root.
+	 * @param recv_region Buffer where the gathered data is written. Its count 
+	 * must be equal to the send_region's count times the size of the 
+	 * communicator.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The gather operation.
 	 */
@@ -181,7 +182,9 @@ public:
 	 * into the receive region of all peers.
 	 * 
 	 * @param send_region Buffer to be sent in the gather operation.
-	 * @param recv_region Buffer where the gathered data is written.
+	 * @param recv_region Buffer where the gathered data is written. Its count 
+	 * must be equal to the send_region's count times the size of the 
+	 * communicator.
 	 * @return std::shared_ptr<operation_type> The all_gather operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_all_gather(
@@ -196,7 +199,8 @@ public:
 	 * distributes them across all peers.
 	 * 
 	 * @param send_region Buffer to be sent in the scatter operation. Ignored
-	 * for all peers except the root.
+	 * for all peers except the root. Its count must be equal to the 
+	 * recv_region's count times the size of the communicator.
 	 * @param recv_region Buffer where the scattered data is written.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The scatter operation.

@@ -13,14 +13,7 @@ namespace xmipp4
 {
 
 template <typename T>
-struct numerical_type_of
-{
-    XMIPP4_CONSTEXPR
-    static numerical_type value() noexcept
-    {
-        return numerical_type::unknown;
-    }
-};
+struct numerical_type_of;
 
 template <>
 struct numerical_type_of<std::int8_t>

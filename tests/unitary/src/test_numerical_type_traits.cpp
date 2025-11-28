@@ -6,10 +6,6 @@
 
 using namespace xmipp4;
 
-class invalid_numerical_type
-{
-};
-
 TEST_CASE( "numerical_type_of should contain the expected value", "[numerical_type_of]" )
 {
     REQUIRE( numerical_type_of<std::int8_t>::value() == numerical_type::int8 );
@@ -26,5 +22,4 @@ TEST_CASE( "numerical_type_of should contain the expected value", "[numerical_ty
     REQUIRE( numerical_type_of<std::complex<float16_t>>::value() == numerical_type::complex_float16 );
     REQUIRE( numerical_type_of<std::complex<float32_t>>::value() == numerical_type::complex_float32 );
     REQUIRE( numerical_type_of<std::complex<float64_t>>::value() == numerical_type::complex_float64 );
-    REQUIRE( numerical_type_of<invalid_numerical_type>::value() == numerical_type::unknown );
 }

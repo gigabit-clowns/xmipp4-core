@@ -34,6 +34,14 @@ public:
 	 */
 	device_send_region() noexcept;
 
+	/**
+	 * @brief Construct a new device send region from a const buffer.
+	 * 
+	 * @param buffer The buffer to be sent.
+	 * @param data_type The data type of the elements in the buffer.
+	 * @param offset Offset into the buffer. In elements.
+	 * @param count Number of elements to be sent.
+	 */
 	device_send_region(
 		std::shared_ptr<const hardware::buffer> buffer,
 		numerical_type data_type, 

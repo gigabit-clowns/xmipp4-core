@@ -34,6 +34,17 @@ public:
 	 */
 	device_duplex_region() noexcept;
 
+	/**
+	 * @brief Construct a new device duplex region from send and receive 
+	 * buffers.
+	 * 
+	 * @param send_buffer The buffer to be sent.
+	 * @param receive_buffer The buffer where elements are received.
+	 * @param data_type Data type of the elements.
+	 * @param send_offset Offset into the send_buffer. In elements.
+	 * @param receive_offset Offset into the receive_buffer. In elements.
+	 * @param count Number of elements to be sent and received.
+	 */
 	device_duplex_region(
 		std::shared_ptr<const hardware::buffer> send_buffer,
 		std::shared_ptr<hardware::buffer> receive_buffer,
@@ -43,6 +54,14 @@ public:
 		std::size_t count
 	) noexcept;
 
+	/**
+	 * @brief Construct a new device duplex region with aliasing buffers.
+	 * 
+	 * @param buffer The buffer to be sent and received.
+	 * @param data_type Data type of the elements.
+	 * @param offset Offset into the send_buffer. In elements.
+	 * @param count Number of elements to be sent and received.
+	 */
 	device_duplex_region(
 		std::shared_ptr<hardware::buffer> buffer,
 		numerical_type data_type, 
@@ -60,7 +79,7 @@ public:
 	operator=(device_duplex_region &&other) = default;
 
 	/**
-	 * @brief Get the send buffer
+	 * @brief Get the send buffer.
 	 * 
 	 * @return const std::shared_ptr<hardware::buffer>& The send buffer.
 	 */
@@ -68,7 +87,7 @@ public:
 	get_send_buffer() const noexcept;
 
 	/**
-	 * @brief Get the receive buffer
+	 * @brief Get the receive buffer.
 	 * 
 	 * @return const std::shared_ptr<hardware::buffer>& The receive buffer.
 	 */

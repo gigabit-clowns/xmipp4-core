@@ -33,6 +33,14 @@ public:
 	 */
 	device_receive_region() noexcept;
 
+	/**
+	 * @brief Construct a new device receive region from a buffer.
+	 * 
+	 * @param buffer The buffer where elements are received.
+	 * @param data_type The data type of the elements in the buffer.
+	 * @param offset Offset into the buffer. In elements.
+	 * @param count Number of elements to be received.
+	 */
 	device_receive_region(
 		std::shared_ptr<hardware::buffer> buffer,
 		numerical_type data_type, 

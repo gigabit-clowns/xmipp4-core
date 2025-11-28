@@ -74,7 +74,7 @@ jobs:
         working-directory: "${{ github.workspace }}/build"
         run: |
           lcov --remove coverage.raw.info \
-            '/usr/*' '*/_deps/*' '*/external/*' \
+            '/usr/*' '*/_deps/*' \
             --rc lcov_branch_coverage=0 \
             --ignore-errors source \
             --output-file coverage.cleaned.info

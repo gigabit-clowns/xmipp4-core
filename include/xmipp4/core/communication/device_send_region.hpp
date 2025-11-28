@@ -65,7 +65,7 @@ public:
 	/**
 	 * @brief Get the offset into the buffer.
 	 * 
-	 * @return std::size_t The offset.
+	 * @return std::size_t The offset in elements.
 	 */
 	std::size_t get_offset() const noexcept;
 

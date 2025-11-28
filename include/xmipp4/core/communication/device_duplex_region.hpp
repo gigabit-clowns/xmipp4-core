@@ -42,8 +42,9 @@ public:
 		std::size_t receive_offset,
 		std::size_t count
 	) noexcept;
+
 	device_duplex_region(
-		std::shared_ptr<hardware::buffer> send_receive_buffer,
+		std::shared_ptr<hardware::buffer> buffer,
 		numerical_type data_type, 
 		std::size_t offset,
 		std::size_t count
@@ -84,14 +85,14 @@ public:
 	/**
 	 * @brief Get the offset into the send buffer.
 	 * 
-	 * @return std::size_t The offset.
+	 * @return std::size_t The offset in elements.
 	 */
 	std::size_t get_send_offset() const noexcept;
 
 	/**
 	 * @brief Get the offset into the receive buffer.
 	 * 
-	 * @return std::size_t The offset.
+	 * @return std::size_t The offset in elements.
 	 */
 	std::size_t get_receive_offset() const noexcept;
 

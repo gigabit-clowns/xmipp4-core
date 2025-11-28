@@ -64,7 +64,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
-          geninfo --ignore-errors source --rc geninfo_unexecuted_blocks=1 -o coverage.raw.info .
+          geninfo --ignore-errors source --rc geninfo_unexecuted_blocks=1 --rc lcov_branch_coverage=1 --branch-coverage -o coverage.raw.info .
       
       - name: Generate coverage report step 2
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'

@@ -2,6 +2,8 @@
 
 #include "host_send_receive_regions.hpp"
 
+#include "../numerical_type_of.hpp"
+
 namespace xmipp4 
 {
 namespace communication
@@ -25,7 +27,7 @@ host_send_receive_regions::host_send_receive_regions(
 ) noexcept
 	: m_send_data(send_data)
 	, m_receive_data(receive_data)
-	, m_data_type(numerical_type::unknown) // TODO
+	, m_data_type(numerical_type_of<T>::value())
 	, m_count(count)
 {
 }
@@ -52,7 +54,7 @@ host_send_receive_regions::host_send_receive_regions(
 ) noexcept
 	: m_send_data(send_recv_data)
 	, m_receive_data(send_recv_data)
-	, m_data_type() // TODO
+	, m_data_type(numerical_type_of<T>::value())
 	, m_count(count)
 {
 }

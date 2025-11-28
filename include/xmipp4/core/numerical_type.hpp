@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "fixed_float.hpp"
 #include "platform/constexpr.hpp"
 
 #include <cstddef>
-#include <string_view>
 #include <ostream>
 
 namespace xmipp4
@@ -115,9 +115,6 @@ XMIPP4_CONSTEXPR numerical_type make_complex(numerical_type type) noexcept;
  */
 XMIPP4_CONSTEXPR 
 numerical_type common_type(numerical_type x, numerical_type y) noexcept;
-
-XMIPP4_CONSTEXPR const char* to_string(numerical_type type) noexcept;
-bool from_string(std::string_view str, numerical_type& type) noexcept;
 
 template<typename T>
 std::basic_ostream<T>& 

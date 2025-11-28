@@ -19,15 +19,15 @@ public:
 	MAKE_CONST_MOCK0(get_version, version (), override);
 	MAKE_CONST_MOCK1(
 		get_suitability, 
-		backend_priority (span<hardware::device*>), 
+		backend_priority (span<hardware::device*> devices), 
 		override
 	);
 	MAKE_CONST_MOCK3(
 		create_world_communicators, 
-		void(
-			host_communicator*, 
-			span<hardware::device*>, 
-			span<std::shared_ptr<device_communicator>>
+		std::shared_ptr<device_transaction>(
+			const std::shared_ptr<host_communicator> &node_communicator, 
+			span<hardware::device*> devices, 
+			span<std::shared_ptr<device_communicator>> out
 		), 
 		override
 	);

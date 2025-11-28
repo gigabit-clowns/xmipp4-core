@@ -16,6 +16,8 @@ runs:
         if which apt; then
           sudo apt-get update
           sudo apt-get install -y lcov
+          python -m pip install --upgrade pip
+          python -m pip install gcovr
         else
           echo "Could not find a package manager for this system"
           exit 1

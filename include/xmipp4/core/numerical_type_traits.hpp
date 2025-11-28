@@ -12,6 +12,14 @@
 namespace xmipp4
 {
 
+/**
+ * @brief Convert static types to numerical_type.
+ * 
+ * The numerical_type of the provided static type is stored as 
+ * numerical_type_of::value()
+ * 
+ * @tparam T The static type to be converted.
+ */
 template <typename T>
 struct numerical_type_of;
 

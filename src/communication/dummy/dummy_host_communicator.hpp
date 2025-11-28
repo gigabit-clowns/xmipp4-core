@@ -30,14 +30,12 @@ public:
 		int rank_priority
 	) const override;
 
-	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_send(
 		const host_send_region &buffer,
 		int destination_rank,
 		int tag
 	) override;
 
-	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_receive(
 		const host_receive_region &region,
 		int source_rank,

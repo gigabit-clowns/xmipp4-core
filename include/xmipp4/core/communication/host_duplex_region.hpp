@@ -130,7 +130,6 @@ private:
 	void *m_receive_data;
 	numerical_type m_data_type;
 	std::size_t m_count;
-
 };
 
 } // namespace communication

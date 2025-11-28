@@ -96,7 +96,6 @@ public:
 		),
 		override
 	);
-
 };
 
 } // namespace communication

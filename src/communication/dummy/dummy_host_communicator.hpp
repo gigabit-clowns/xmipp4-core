@@ -92,7 +92,6 @@ private:
 		const host_send_region &send_region,
 		const host_receive_region &recv_region
 	);
-
 };
 
 } // namespace communication

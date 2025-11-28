@@ -47,7 +47,6 @@ public:
 	 * 
 	 */
 	virtual void execute(hardware::device_queue *queue) = 0;
-
 };
 
 } // namespace communication

@@ -17,7 +17,6 @@ class mock_device_transaction final
 public:
 	MAKE_MOCK0(begin, void(), override);
 	MAKE_MOCK0(commit, void(), override);
-
 };
 
 } // namespace communication

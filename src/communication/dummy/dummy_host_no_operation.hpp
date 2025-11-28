@@ -24,7 +24,6 @@ public:
 	~dummy_host_no_operation() override = default;
 
 	void execute() override;
-
 };
 
 } // namespace communication

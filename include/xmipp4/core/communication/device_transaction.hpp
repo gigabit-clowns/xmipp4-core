@@ -40,7 +40,6 @@ public:
 	 * 
 	 */
 	virtual void commit() = 0;
-
 };
 
 } // namespace communication

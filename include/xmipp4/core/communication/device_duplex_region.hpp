@@ -130,7 +130,6 @@ private:
 	std::size_t m_send_offset;
 	std::size_t m_receive_offset;
 	std::size_t m_count;
-
 };
 
 } // namespace communication

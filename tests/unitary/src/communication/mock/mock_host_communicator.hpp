@@ -100,7 +100,6 @@ public:
 		std::shared_ptr<host_operation>(),
 		override
 	);
-
 };
 
 } // namespace communication

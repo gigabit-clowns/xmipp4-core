@@ -206,7 +206,6 @@ public:
 		const receive_region_type &recv_region,
 		int root_rank
 	) = 0;
-
 };
 
 } // namespace communication

@@ -89,7 +89,6 @@ private:
 	numerical_type m_data_type;
 	std::size_t m_offset;
 	std::size_t m_count;
-
 };
 
 } // namespace communication

@@ -38,7 +38,6 @@ private:
 	const void *m_source;
 	void *m_destination;
 	std::size_t m_byte_count;
-
 };
 
 } // namespace communication

@@ -66,7 +66,6 @@ public:
 
 private:
 	device_transaction *m_transaction;
-
 };
 
 } // namespace communication

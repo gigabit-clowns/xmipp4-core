@@ -59,7 +59,7 @@ TEST_CASE( "constructing a host_duplex_region from statically typed pointers sto
 	REQUIRE( region.get_count() == send_data.size() );
 }
 
-TEST_CASE( "constructing a host_duplex_region from a single pointers should create an aliasing region", "[host_duplex_region]" ) 
+TEST_CASE( "constructing a host_duplex_region from a single pointer should create an aliasing region", "[host_duplex_region]" ) 
 {
 	std::array<char, 1024> send_recv_data = {}; 
 
@@ -81,7 +81,7 @@ TEST_CASE( "constructing a host_duplex_region from a single pointers should crea
 	REQUIRE( region.get_count() == count );
 }
 
-TEST_CASE( "constructing a host_duplex_region from statically typed pointers store its attributes", "[host_duplex_region]" ) 
+TEST_CASE( "constructing a host_duplex_region from statically typed pointer should create an aliasing region ", "[host_duplex_region]" ) 
 {
 	std::array<float32_t, 1024> send_recv_data = {}; 
 

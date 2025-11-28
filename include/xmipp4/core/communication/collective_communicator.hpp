@@ -72,6 +72,8 @@ public:
 	 * @param region Buffer to be sent. Its contents must be valid during the 
 	 * lifetime of the operation.
 	 * @param destination_rank Rank of the peer to which data is sent.
+	 * @param tag An label to identify the messages sent by de resulting 
+	 * operation.
 	 * @return std::shared_ptr<operation_type> The send operation.
 	 *
 	 * @see create_receive
@@ -93,6 +95,7 @@ public:
 	 * @param region Buffers where the received contents are written. Its 
 	 * contents must be valid during the lifetime of the operation.
 	 * @param source_rank Rank of the peer sending the data.
+	 * @param tag Label to filter messages.
 	 * @return std::shared_ptr<operation_type> The receive operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_receive(

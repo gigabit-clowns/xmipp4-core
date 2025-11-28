@@ -10,6 +10,7 @@
 
 #include "mock/mock_device_communicator_backend.hpp"
 #include "mock/mock_device_communicator.hpp"
+#include "mock/mock_device_transaction.hpp"
 #include "mock/mock_host_communicator.hpp"
 #include "../hardware/mock/mock_device.hpp"
 
@@ -134,7 +135,6 @@ TEST_CASE( "device_communicator_manager should throw when there is no supported 
 
 	hardware::mock_device device1;
 	hardware::mock_device device2;
-	mock_host_communicator node_communicator;
 	std::array<hardware::device*, 2> devices = {
 		&device1,
 		&device2
@@ -157,7 +157,7 @@ TEST_CASE( "device_communicator_manager should throw when there is no supported 
 	std::array<std::shared_ptr<device_communicator>, 2> communicators;
 	REQUIRE_THROWS_MATCHES(
 		manager.create_world_communicators(
-			&node_communicator, 
+			nullptr, 
 			xmipp4::make_span(devices), 
 			xmipp4::make_span(communicators)
 		),
@@ -177,13 +177,14 @@ TEST_CASE( "device_communicator_manager should create the world communicator wit
 
 	hardware::mock_device device1;
 	hardware::mock_device device2;
-	mock_host_communicator node_communicator;
+	auto node_communicator = std::make_shared<mock_host_communicator>();
 	std::array<hardware::device*, 2> devices = {
 		&device1,
 		&device2
 	};
-	auto communicator1 = std::make_shared<mock_device_communicator>();
-	auto communicator2 = std::make_shared<mock_device_communicator>();
+	const auto communicator1 = std::make_shared<mock_device_communicator>();
+	const auto communicator2 = std::make_shared<mock_device_communicator>();
+	const auto transaction = std::make_shared<mock_device_transaction>();
 	std::array<std::shared_ptr<device_communicator>, 2> communicators;
 
 	REQUIRE_CALL(*backend1, get_name())
@@ -196,22 +197,24 @@ TEST_CASE( "device_communicator_manager should create the world communicator wit
 	REQUIRE_CALL(*backend2, get_suitability(ANY(xmipp4::span<hardware::device*>)))
 		.LR_WITH(_1.data() == devices.data() && _1.size() == devices.size())
 		.RETURN(xmipp4::backend_priority::optimal);
-	REQUIRE_CALL(*backend2, create_world_communicators(&node_communicator, ANY(xmipp4::span<hardware::device*>), ANY(xmipp4::span<std::shared_ptr<device_communicator>>)))
+	REQUIRE_CALL(*backend2, create_world_communicators(node_communicator, ANY(xmipp4::span<hardware::device*>), ANY(xmipp4::span<std::shared_ptr<device_communicator>>)))
 		.LR_WITH(_2.data() == devices.data() && _2.size() == devices.size())
 		.LR_WITH(_3.data() == communicators.data() && _3.size() == communicators.size())
 		.LR_SIDE_EFFECT( _3[0] = communicator1 )
-		.LR_SIDE_EFFECT( _3[1] = communicator2 );
+		.LR_SIDE_EFFECT( _3[1] = communicator2 )
+		.RETURN(transaction);
 
 	manager.register_backend(std::move(backend1));
 	manager.register_backend(std::move(backend2));
 
-	manager.create_world_communicators(
-		&node_communicator, 
+	const auto ret = manager.create_world_communicators(
+		node_communicator, 
 		xmipp4::make_span(devices),
 		xmipp4::make_span(communicators)
 	);
 	REQUIRE( communicators[0] == communicator1 );
 	REQUIRE( communicators[1] == communicator2 );
+	REQUIRE( ret == transaction );
 }
 
 TEST_CASE( "creating a world communicator in device_communicator_manager with incorrect output size should throw", "[device_communicator_manager]" )

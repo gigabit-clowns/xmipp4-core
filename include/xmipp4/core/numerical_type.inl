@@ -419,37 +419,6 @@ const char* to_string(numerical_type type) noexcept
 	}
 }
 
-inline
-bool from_string(std::string_view str, numerical_type& type) noexcept
-{
-	static const
-	std::unordered_map<std::string_view, numerical_type> str_2_numerical_type = 
-	{
-		{ to_string(numerical_type::unknown), numerical_type::unknown },
-		{ to_string(numerical_type::int8), numerical_type::int8 },
-		{ to_string(numerical_type::uint8), numerical_type::uint8 },
-		{ to_string(numerical_type::int16), numerical_type::int16 },
-		{ to_string(numerical_type::uint16), numerical_type::uint16 },
-		{ to_string(numerical_type::int32), numerical_type::int32 },
-		{ to_string(numerical_type::uint32), numerical_type::uint32 },
-		{ to_string(numerical_type::int64), numerical_type::int64 },
-		{ to_string(numerical_type::uint64), numerical_type::uint64 },
-		{ to_string(numerical_type::float16), numerical_type::float16 },
-		{ to_string(numerical_type::brain_float16), numerical_type::brain_float16 },
-		{ to_string(numerical_type::float32), numerical_type::float32 },
-		{ to_string(numerical_type::float64), numerical_type::float64 },
-		{ to_string(numerical_type::complex_float16), numerical_type::complex_float16 },
-		{ to_string(numerical_type::complex_float32), numerical_type::complex_float32 },
-		{ to_string(numerical_type::complex_float64), numerical_type::complex_float64 }
-	};
-
-	const auto ite = str_2_numerical_type.find(str);
-	const bool result = ite != str_2_numerical_type.end();
-	if(result)
-		type = ite->second;
-	return result;
-}
-
 template<typename T>
 inline
 std::basic_ostream<T>& 

@@ -2,7 +2,7 @@
 
 #include "host_send_receive_regions.hpp"
 
-#include "../numerical_type_of.hpp"
+#include "../numerical_type_traits.hpp"
 
 namespace xmipp4 
 {

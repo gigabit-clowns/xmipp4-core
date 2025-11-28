@@ -4,10 +4,13 @@ description: "Runs SonarQube scan"
 inputs:
   artifact-name:
     description: "Name of the artifact to download"
-    required: 
+    required: false
   artifact-path:
     description: "Path where the artifact will be downloaded"
     required: false
+  sonar-token:
+    description: "SonarQube token"
+    required: true
 
 runs:
   using: "composite"
@@ -18,6 +21,7 @@ runs:
         fetch-depth: 0 # Needed to get git blame information for SonarQube
 
     - uses: actions/download-artifact@v6
+      if: ${{ inputs.artifact-name && inputs.artifact-path }}
       with:
         name: ${{ inputs.artifact-name }}
         path: ${{ inputs.artifact-path }}
@@ -27,7 +31,7 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       uses: SonarSource/sonarqube-scan-action@v6
       env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ inputs.sonar-token }}
 
     # When trigger event is workflow_dispatch, SonarQube action
     # will always treat it as main branch unless we specify the branch name
@@ -35,6 +39,6 @@ runs:
       if: ${{ github.event_name != 'pull_request' }}
       uses: SonarSource/sonarqube-scan-action@v6
       env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ inputs.sonar-token }}
       args: >
         -Dsonar.branch.name=${{ github.ref_name }}

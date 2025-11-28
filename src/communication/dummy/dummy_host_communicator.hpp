@@ -39,24 +39,24 @@ public:
 
 	XMIPP4_NORETURN
 	std::shared_ptr<host_operation> create_receive(
-		const host_receive_region &regions,
+		const host_receive_region &region,
 		int source_rank,
 		int tag
 	) override;
 
 	std::shared_ptr<host_operation> create_broadcast(
-		const host_send_receive_regions &regions,
+		const host_duplex_region &region,
 		int root_rank
 	) override;
 
 	std::shared_ptr<host_operation> create_reduce(
-		const host_send_receive_regions &regions,
+		const host_duplex_region &region,
 		reduction_operation reduction,
 		int root_rank
 	) override;
 
 	std::shared_ptr<host_operation> create_all_reduce(
-		const host_send_receive_regions &regions,
+		const host_duplex_region &region,
 		reduction_operation reduction
 	) override;
 
@@ -82,11 +82,11 @@ public:
 private:
 	static void validate_root_rank(int root_rank);
 	static std::shared_ptr<host_operation> create_operation(
-		const host_send_receive_regions &regions,
+		const host_duplex_region &region,
 		int root_rank
 	);
 	static std::shared_ptr<host_operation> create_operation(
-		const host_send_receive_regions &regions
+		const host_duplex_region &region
 	);
 	static std::shared_ptr<host_operation> create_operation(
 		const host_send_region &send_region,

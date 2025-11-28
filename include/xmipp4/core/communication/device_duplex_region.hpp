@@ -25,16 +25,16 @@ namespace communication
  * memory regions in device buffers.
  * 
  */
-class device_send_receive_regions
+class device_duplex_region
 {
 public:
 	/**
 	 * @brief Construct an empty region pair.
 	 *
 	 */
-	device_send_receive_regions() noexcept;
+	device_duplex_region() noexcept;
 
-	device_send_receive_regions(
+	device_duplex_region(
 		std::shared_ptr<const hardware::buffer> send_buffer,
 		std::shared_ptr<hardware::buffer> receive_buffer,
 		numerical_type data_type, 
@@ -42,21 +42,21 @@ public:
 		std::size_t receive_offset,
 		std::size_t count
 	) noexcept;
-	device_send_receive_regions(
+	device_duplex_region(
 		std::shared_ptr<hardware::buffer> send_receive_buffer,
 		numerical_type data_type, 
 		std::size_t offset,
 		std::size_t count
 	) noexcept;
 
-	device_send_receive_regions(const device_send_receive_regions &other) = default;
-	device_send_receive_regions(device_send_receive_regions &&other) = default;
-	~device_send_receive_regions() = default;
+	device_duplex_region(const device_duplex_region &other) = default;
+	device_duplex_region(device_duplex_region &&other) = default;
+	~device_duplex_region() = default;
 
-	device_send_receive_regions& 
-	operator=(const device_send_receive_regions &other) = default;
-	device_send_receive_regions& 
-	operator=(device_send_receive_regions &&other) = default;
+	device_duplex_region& 
+	operator=(const device_duplex_region &other) = default;
+	device_duplex_region& 
+	operator=(device_duplex_region &&other) = default;
 
 	/**
 	 * @brief Get the send buffer
@@ -116,4 +116,4 @@ private:
 } // namespace communication
 } // namespace xmipp4
 
-#include "device_send_receive_regions.inl"
+#include "device_duplex_region.inl"

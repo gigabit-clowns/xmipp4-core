@@ -17,7 +17,7 @@ namespace communication
  * memory region.
  * 
  */
-class host_send_receive_regions
+class host_duplex_region
 {
 public:
 	/**
@@ -25,7 +25,7 @@ public:
 	 *
 	 */
 	XMIPP4_CONSTEXPR
-	host_send_receive_regions() noexcept;
+	host_duplex_region() noexcept;
 
 	/**
 	 * @brief Construct the regions from their respective typed pointers and 
@@ -38,7 +38,7 @@ public:
 	 */
 	template <typename T>
 	XMIPP4_CONSTEXPR
-	host_send_receive_regions(
+	host_duplex_region(
 		const T *send_data, 
 		T *receive_data, 
 		std::size_t count
@@ -54,7 +54,7 @@ public:
 	 * @param count Number of elements.
 	 */
 	XMIPP4_CONSTEXPR
-	host_send_receive_regions(
+	host_duplex_region(
 		const void *send_data, 
 		void *receive_data, 
 		numerical_type data_type, 
@@ -70,7 +70,7 @@ public:
 	 */
 	template <typename T>
 	XMIPP4_CONSTEXPR
-	host_send_receive_regions(T *send_recv_data, std::size_t count) noexcept;
+	host_duplex_region(T *send_recv_data, std::size_t count) noexcept;
 
 	/**
 	 * @brief Construct an aliasing pair of regions from a untyped pointer and
@@ -81,20 +81,20 @@ public:
 	 * @param count Number of elements.
 	 */
 	XMIPP4_CONSTEXPR
-	host_send_receive_regions(
+	host_duplex_region(
 		void *send_recv_data, 
 		numerical_type data_type, 
 		std::size_t count
 	) noexcept;
 
-	host_send_receive_regions(const host_send_receive_regions &other) = default;
-	host_send_receive_regions(host_send_receive_regions &&other) = default;
-	~host_send_receive_regions() = default;
+	host_duplex_region(const host_duplex_region &other) = default;
+	host_duplex_region(host_duplex_region &&other) = default;
+	~host_duplex_region() = default;
 
-	host_send_receive_regions& 
-	operator=(const host_send_receive_regions &other) = default;
-	host_send_receive_regions& 
-	operator=(host_send_receive_regions &&other) = default;
+	host_duplex_region& 
+	operator=(const host_duplex_region &other) = default;
+	host_duplex_region& 
+	operator=(host_duplex_region &&other) = default;
 
 	/**
 	 * @brief Get an untype pointer to the data to be sent.
@@ -136,4 +136,4 @@ private:
 } // namespace communication
 } // namespace xmipp4
 
-#include "host_send_receive_regions.inl"
+#include "host_duplex_region.inl"

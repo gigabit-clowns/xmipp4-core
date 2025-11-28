@@ -5,7 +5,7 @@
 #include <xmipp4/core/communication/device_communicator.hpp>
 
 #include <xmipp4/core/communication/device_send_region.hpp>
-#include <xmipp4/core/communication/device_send_receive_regions.hpp>
+#include <xmipp4/core/communication/device_duplex_region.hpp>
 #include <xmipp4/core/communication/device_receive_region.hpp>
 
 #include <trompeloeil.hpp>
@@ -48,7 +48,7 @@ public:
 	MAKE_MOCK2(
 		create_broadcast,
 		std::shared_ptr<device_operation>(
-			const device_send_receive_regions &regions, 
+			const device_duplex_region &regions, 
 			int root_rank
 		),
 		override
@@ -56,7 +56,7 @@ public:
 	MAKE_MOCK3(
 		create_reduce,
 		std::shared_ptr<device_operation>(
-			const device_send_receive_regions &regions, 
+			const device_duplex_region &regions, 
 			reduction_operation reduction,
 			int root_rank
 		),
@@ -65,7 +65,7 @@ public:
 	MAKE_MOCK2(
 		create_all_reduce,
 		std::shared_ptr<device_operation>(
-			const device_send_receive_regions &regions, 
+			const device_duplex_region &regions, 
 			reduction_operation reduction
 		),
 		override

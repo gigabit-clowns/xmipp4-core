@@ -25,7 +25,7 @@ template <
 	typename OpType, 
     typename SendRegion, 
     typename RecvRegion,
-    typename SendRecvRegions
+    typename DuplexRegion
 >
 class XMIPP4_CORE_API collective_communicator
 	: public communicator
@@ -35,7 +35,7 @@ public:
 	using operation_type = OpType;
 	using send_region_type = SendRegion;
 	using receive_region_type = RecvRegion;
-	using send_receive_regions_type = SendRecvRegions;
+	using duplex_region_type = DuplexRegion;
 
 	collective_communicator() = default;
 	collective_communicator(const collective_communicator &other) = delete;
@@ -90,13 +90,13 @@ public:
 	 * must be calling execute on an operation returned by create_send with the
 	 * source rank equal to this.
 	 * 
-	 * @param regions Buffers where the received contents are written. Its 
+	 * @param region Buffers where the received contents are written. Its 
 	 * contents must be valid during the lifetime of the operation.
 	 * @param source_rank Rank of the peer sending the data.
 	 * @return std::shared_ptr<operation_type> The receive operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_receive(
-		const receive_region_type &regions,
+		const receive_region_type &region,
 		int source_rank,
 		int tag
 	) = 0;
@@ -107,14 +107,14 @@ public:
 	 * The broadcast operation transmits the data contained in the root
 	 * peer to the rest of the peers. 
 	 * 
-	 * @param regions Buffers where the broadcast happens. Send region on all 
+	 * @param region Buffers where the broadcast happens. Send region on all 
 	 * peers except the root is unused. Root rank can alias the same region for 
 	 * sending and receiving data.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The broadcast operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_broadcast(
-		const send_receive_regions_type &regions,
+		const duplex_region_type &region,
 		int root_rank
 	) = 0;
 
@@ -123,16 +123,16 @@ public:
 	 * 
 	 * The reduction operation reduces the send region element-wise across peers 
 	 * according to the requested reduction operation. Root rank obtains the 
-	 * reduced version of the regions.
+	 * reduced version of the region.
 	 * 
-	 * @param regions Buffers where the the reduction happens. Ignored for all 
+	 * @param region Buffers where the the reduction happens. Ignored for all 
 	 * peers except the root. The reception region can alias the send buffer.
 	 * @param reduction Type of the reduction operation.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The reduce operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_reduce(
-		const send_receive_regions_type &regions,
+		const duplex_region_type &region,
 		reduction_operation reduction,
 		int root_rank
 	) = 0;
@@ -142,17 +142,17 @@ public:
 	 * 
 	 * The reduction operation combines the send region element-wise across 
 	 * peers according to the requested reduction operation. All ranks obtain 
-	 * the reduced version of the regions. Receive buffer can alias the send 
+	 * the reduced version of the region. Receive buffer can alias the send 
 	 * buffer.
 	 * 
-	 * @param regions Buffers where the the reduction happens. The reception
+	 * @param region Buffers where the the reduction happens. The reception
 	 * region can alias the send buffer.
 	 * @param region Buffers where the the reduction happens.
 	 * @param reduction Type of the reduction operation.
 	 * @return std::shared_ptr<operation_type> The all_reduce operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_all_reduce(
-		const send_receive_regions_type &regions,
+		const duplex_region_type &region,
 		reduction_operation reduction
 	) = 0;
 

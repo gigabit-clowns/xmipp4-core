@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "device_send_receive_regions.hpp"
+#include "device_duplex_region.hpp"
 
 namespace xmipp4 
 {

@@ -4,8 +4,6 @@
 
 #include <xmipp4/core/communication/host_operation.hpp>
 
-#include <xmipp4/core/communication/host_send_receive_regions.hpp>
-
 #include <cstddef>
 
 namespace xmipp4 

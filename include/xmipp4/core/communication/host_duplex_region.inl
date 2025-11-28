@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "host_send_receive_regions.hpp"
+#include "host_duplex_region.hpp"
 
 #include "../numerical_type_traits.hpp"
 
@@ -10,7 +10,7 @@ namespace communication
 {
 
 XMIPP4_INLINE_CONSTEXPR
-host_send_receive_regions::host_send_receive_regions() noexcept
+host_duplex_region::host_duplex_region() noexcept
 	: m_send_data(nullptr)
 	, m_receive_data(nullptr)
 	, m_data_type(numerical_type::unknown)
@@ -20,7 +20,7 @@ host_send_receive_regions::host_send_receive_regions() noexcept
 
 template <typename T>
 XMIPP4_INLINE_CONSTEXPR
-host_send_receive_regions::host_send_receive_regions(
+host_duplex_region::host_duplex_region(
 	const T *send_data, 
 	T *receive_data, 
 	std::size_t count
@@ -33,7 +33,7 @@ host_send_receive_regions::host_send_receive_regions(
 }
 
 XMIPP4_INLINE_CONSTEXPR
-host_send_receive_regions::host_send_receive_regions(
+host_duplex_region::host_duplex_region(
 	const void *send_data, 
 	void *receive_data, 
 	numerical_type data_type, 
@@ -48,7 +48,7 @@ host_send_receive_regions::host_send_receive_regions(
 
 template <typename T>
 XMIPP4_INLINE_CONSTEXPR
-host_send_receive_regions::host_send_receive_regions(
+host_duplex_region::host_duplex_region(
 	T *send_recv_data, 
 	std::size_t count
 ) noexcept
@@ -60,7 +60,7 @@ host_send_receive_regions::host_send_receive_regions(
 }
 
 XMIPP4_INLINE_CONSTEXPR
-host_send_receive_regions::host_send_receive_regions(
+host_duplex_region::host_duplex_region(
 	void *send_recv_data, 
 	numerical_type data_type, 
 	std::size_t count
@@ -73,25 +73,25 @@ host_send_receive_regions::host_send_receive_regions(
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-const void* host_send_receive_regions::get_send_data() const noexcept
+const void* host_duplex_region::get_send_data() const noexcept
 {
 	return m_send_data;
 }	
 
 XMIPP4_INLINE_CONSTEXPR
-void* host_send_receive_regions::get_receive_data() const noexcept
+void* host_duplex_region::get_receive_data() const noexcept
 {
 	return m_receive_data;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-numerical_type host_send_receive_regions::get_data_type() const noexcept
+numerical_type host_duplex_region::get_data_type() const noexcept
 {
 	return m_data_type;
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t host_send_receive_regions::get_count() const noexcept
+std::size_t host_duplex_region::get_count() const noexcept
 {
 	return m_count;
 }

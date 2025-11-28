@@ -21,7 +21,7 @@ namespace communication
 class device_operation;
 class device_send_region;
 class device_receive_region;
-class device_send_receive_regions;
+class device_duplex_region;
 
 /**
  * @brief Abstract class to represent inter device communications.
@@ -33,7 +33,7 @@ class XMIPP4_CORE_API device_communicator
 		device_operation,
 		device_send_region,
 		device_receive_region,
-		device_send_receive_regions
+		device_duplex_region
 	>
 {
 public:

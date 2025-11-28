@@ -17,7 +17,7 @@ namespace communication
 class host_operation;
 class host_send_region;
 class host_receive_region;
-class host_send_receive_regions;
+class host_duplex_region;
 
 /**
  * @brief Abstract class to represent interprocess and inter-node 
@@ -30,7 +30,7 @@ class XMIPP4_CORE_API host_communicator
 		host_operation,
 		host_send_region,
 		host_receive_region,
-		host_send_receive_regions
+		host_duplex_region
 	>
 {
 public:

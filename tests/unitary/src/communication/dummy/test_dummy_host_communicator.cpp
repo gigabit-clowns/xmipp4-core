@@ -8,7 +8,7 @@
 #include <communication/dummy/dummy_host_communicator.hpp>
 
 #include <xmipp4/core/communication/host_send_region.hpp>
-#include <xmipp4/core/communication/host_send_receive_regions.hpp>
+#include <xmipp4/core/communication/host_duplex_region.hpp>
 #include <xmipp4/core/communication/host_receive_region.hpp>
 
 using namespace xmipp4;

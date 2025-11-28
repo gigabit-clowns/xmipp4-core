@@ -3,7 +3,7 @@
 #include "dummy_host_communicator.hpp"
 
 #include <xmipp4/core/communication/host_send_region.hpp>
-#include <xmipp4/core/communication/host_send_receive_regions.hpp>
+#include <xmipp4/core/communication/host_duplex_region.hpp>
 #include <xmipp4/core/communication/host_receive_region.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
@@ -64,7 +64,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_receive(
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_broadcast(
-	const send_receive_regions_type &regions,
+	const host_duplex_region &regions,
 	int root_rank
 ) 
 {
@@ -72,7 +72,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_broadcast(
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_reduce(
-	const send_receive_regions_type &regions,
+	const host_duplex_region &regions,
 	reduction_operation,
 	int root_rank
 )
@@ -81,7 +81,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_reduce(
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_all_reduce(
-	const send_receive_regions_type &regions,
+	const host_duplex_region &regions,
 	reduction_operation
 )
 {
@@ -130,7 +130,7 @@ void dummy_host_communicator::validate_root_rank(int root_rank)
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
-	const host_send_receive_regions &regions,
+	const host_duplex_region &regions,
 	int root_rank
 )
 {
@@ -139,7 +139,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 }
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
-	const host_send_receive_regions &regions
+	const host_duplex_region &regions
 )
 {
 	if (regions.get_send_data() == regions.get_receive_data())

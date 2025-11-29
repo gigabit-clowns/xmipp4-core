@@ -105,8 +105,8 @@ jobs:
             --filter "${{ github.workspace }}/include" \
             --filter "${{ github.workspace }}/tests" \
             --exclude '.*build/_deps/.*' \
-            --exclude '.*CMakeFiles/.*'
-      #      --gcov-ignore-errors=no_working_dir_found
+            --exclude '.*CMakeFiles/.*' \
+            --gcov-ignore-errors=no_working_dir_found
       #    gcovr -r . --sonarqube -o coverage.xml --exclude '.*_deps/.*'
 
       - name: Generate coverage report step 6

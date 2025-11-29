@@ -99,7 +99,16 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         working-directory: "${{ github.workspace }}/build"
         run: |
-          gcovr -r . --sonarqube -o coverage.xml --exclude '.*_deps/.*'
+          gcovr -r . \
+            --object-directory "${{ github.workspace }}/build" \
+            --sonarqube -o coverage.xml \
+            --filter "${{ github.workspace }}/src" \
+            --filter "${{ github.workspace }}/include" \
+            --filter "${{ github.workspace }}/tests" \
+            --exclude '.*_deps/.*' \
+            --exclude '.*CMakeFiles/.*'
+      #      --gcov-ignore-errors=no_working_dir_found
+      #    gcovr -r . --sonarqube -o coverage.xml --exclude '.*_deps/.*'
 
       - name: Generate coverage report step 6
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'

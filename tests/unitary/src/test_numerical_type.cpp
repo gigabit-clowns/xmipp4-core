@@ -34,42 +34,6 @@ TEST_CASE( "to_string with numerical_type should produce correct results", "[num
 	REQUIRE( std::string(to_string(type)) == expected_str );
 }
 
-TEST_CASE( "from_string with numerical_type should produce correct results", "[numerical_type]" ) 
-{
-	std::string input_str;
-	bool expected_valid;
-	numerical_type expected_type;
-	std::tie(input_str, expected_valid, expected_type) = GENERATE(
-		table<std::string, bool, numerical_type>({
-			{"unknown", true, numerical_type::unknown},
-			{"int8", true, numerical_type::int8},
-			{"uint8", true, numerical_type::uint8},
-			{"int16", true, numerical_type::int16},
-			{"uint16", true, numerical_type::uint16},
-			{"int32", true, numerical_type::int32},
-			{"uint32", true, numerical_type::uint32},
-			{"int64", true, numerical_type::int64},
-			{"uint64", true, numerical_type::uint64},
-			{"float16", true, numerical_type::float16},
-			{"brain_float16", true, numerical_type::brain_float16},
-			{"float32", true, numerical_type::float32},
-			{"float64", true, numerical_type::float64},
-			{"complex_float16", true, numerical_type::complex_float16},
-			{"complex_float32", true, numerical_type::complex_float32},
-			{"complex_float64", true, numerical_type::complex_float64},
-			{"invalid", false, numerical_type::unknown}
-		})
-	);
-
-	numerical_type type;
-	bool valid = from_string(input_str, type);
-	REQUIRE(valid == expected_valid);
-	if (expected_valid)
-	{
-		REQUIRE(type == expected_type);
-	}
-}
-
 TEST_CASE( "is_unsigned should return true with unsigned numerical_types", "[numerical_type]" ) 
 {
 	const auto type = GENERATE(

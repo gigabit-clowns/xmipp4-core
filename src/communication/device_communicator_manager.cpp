@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/communication/device_communicator_manager.hpp>
 
+#include <xmipp4/core/communication/device_transaction.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -19,8 +20,8 @@ class device_communicator_manager::implementation
 	: public named_service_manager_implementation<device_communicator_backend>
 {
 public:
-	void create_world_communicators(
-		host_communicator *node_communicator,
+	std::shared_ptr<device_transaction> create_world_communicators(
+		const std::shared_ptr<host_communicator> &node_communicator,
 		span<hardware::device*> devices,
 		span<std::shared_ptr<device_communicator>> out
 	) const
@@ -93,8 +94,9 @@ bool device_communicator_manager::register_backend(
 	return m_implementation->register_backend(std::move(backend));
 }
 
-void device_communicator_manager::create_world_communicators(
-	host_communicator *node_communicator,
+std::shared_ptr<device_transaction> 
+device_communicator_manager::create_world_communicators(
+	const std::shared_ptr<host_communicator> &node_communicator,
 	span<hardware::device*> devices,
 	span<std::shared_ptr<device_communicator>> out
 ) const

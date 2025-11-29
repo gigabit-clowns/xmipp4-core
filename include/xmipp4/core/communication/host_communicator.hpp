@@ -2,16 +2,22 @@
 
 #pragma once
 
-#include "communicator.hpp"
+#include "collective_communicator.hpp"
+#include "reduction_operation.hpp"
+#include "../numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
-#include <cstddef>
 
 namespace xmipp4 
 {
 namespace communication
 {
+
+class host_operation;
+class host_send_region;
+class host_receive_region;
+class host_duplex_region;
 
 /**
  * @brief Abstract class to represent interprocess and inter-node 
@@ -19,7 +25,13 @@ namespace communication
  * 
  */
 class XMIPP4_CORE_API host_communicator
-	: public communicator
+	: public collective_communicator<
+		host_communicator,
+		host_operation,
+		host_send_region,
+		host_receive_region,
+		host_duplex_region
+	>
 {
 public:
 	host_communicator() = default;
@@ -31,30 +43,12 @@ public:
 	host_communicator& operator=(host_communicator &&other) = delete;
 
 	/**
-	 * @brief Split the current communicator.
+	 * @brief Create a barrier operation.
 	 * 
-	 * Split a communicator into multiple communicators containing.
-	 * 
-	 * @param colour The group where the current rank will be assigned to.
-	 * @param rank_priority Hint to assign the rank in the new communicator.
-	 * @return std::shared_ptr<host_communicator> The communicator where
-	 * the current rank has been assigned to.
-	 * 
+	 * @return std::shared_ptr<host_operation> The barrier operation.
 	 */
-	virtual std::shared_ptr<host_communicator> split(
-		int colour, 
-		int rank_priority
-	) const = 0;
+	virtual std::shared_ptr<host_operation> create_barrier() = 0;
 
-	/**
-	 * @brief Synchronize all peers.
-	 * 
-	 * Wait until all peers have reached this call.
-	 * 
-	 * @note All ranks of the communicator need to call this method.
-	 * 
-	 */
-	virtual void barrier() = 0;
 };
 
 } // namespace communication

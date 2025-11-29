@@ -25,6 +25,12 @@ runs:
       with:
         name: ${{ inputs.artifact-name }}
         path: ${{ inputs.artifact-path }}
+    
+    - name: Test
+      working-directory: "${{ github.workspace }}"
+      run: |
+        sudo apt-get update && sudo apt-get install -y tree
+        tree .
 
     # Regular scan for most events
     - name: SonarQube scan for most events

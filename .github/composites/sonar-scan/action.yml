@@ -30,8 +30,7 @@ runs:
       working-directory: "${{ github.workspace }}"
       shell: bash
       run: |
-        sudo apt-get update && sudo apt-get install -y tree
-        tree .
+        ls build
 
     # Regular scan for most events
     - name: SonarQube scan for most events

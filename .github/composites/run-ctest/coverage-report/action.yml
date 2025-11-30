@@ -28,6 +28,7 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: |
-        # For Windows with MSVC or gcc, we'll use a simpler approach
-        echo "Coverage report generation for Windows requires additional setup"
-        echo "Consider using OpenCppCoverage or gcovr for better results"
+        gcovr -r "${{ github.workspace }}" \
+          --object-directory "${{ github.workspace }}/build" \
+          --sonarqube -o "$REPORT_PATH" \
+          --exclude 'build/.*'

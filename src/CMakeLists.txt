@@ -37,7 +37,7 @@ target_compile_definitions(
 if(XMIPP4_CORE_ENABLE_COVERAGE)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 		target_compile_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE --coverage -O0 -g)
-		target_link_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE --coverage)
+		target_link_options(${XMIPP4_CORE_LIBRARY_TARGET} PUBLIC --coverage)
 	#elseif(MSVC)
 	#	target_compile_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE /Z7 /Od)
 	#	string(REGEX REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -166,8 +166,3 @@ target_compile_definitions(
 		$<TARGET_PROPERTY:${XMIPP4_CORE_LIBRARY_TARGET},INTERFACE_COMPILE_DEFINITIONS>
 		"XMIPP4_CORE_NO_EXPORTS"
 )
-if(XMIPP4_CORE_ENABLE_COVERAGE)
-	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-		target_link_options(${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} INTERFACE --coverage)
-	endif()
-endif()

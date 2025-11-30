@@ -60,18 +60,12 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-    #  - name: Test
-    #    run: |
-    #      find build/_deps -name '*.gcno' -delete || true
-    #      find build/_deps -name '*.gcda' -delete || true
-
       - name: Generate coverage report
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         run: |
           gcovr -r "${{ github.workspace }}" \
             --object-directory "${{ github.workspace }}/build" \
             --sonarqube -o "${{ github.workspace }}/build/coverage.xml" \
-            --exclude '.*build/_deps/.*' \
             --exclude '.*CMakeFiles/.*'
 
       - name: Upload build folder (ubuntu-latest + gcc only)

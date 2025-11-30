@@ -27,6 +27,8 @@ runs:
       if: runner.os == 'Windows'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
+      env:
+        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
       run: |
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \

@@ -33,7 +33,7 @@ dummy_host_communicator::split(int, int) const
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_send(
 	const host_send_region&, 
-	int destination_rank,
+	std::size_t destination_rank,
 	int
 )
 {
@@ -49,7 +49,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_send(
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_receive(
 	const host_receive_region&, 
-	int source_rank,
+	std::size_t source_rank,
 	int
 )
 {
@@ -65,7 +65,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_receive(
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_broadcast(
 	const host_duplex_region &regions,
-	int root_rank
+	std::size_t root_rank
 ) 
 {
 	return create_operation(regions, root_rank);
@@ -74,7 +74,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_broadcast(
 std::shared_ptr<host_operation> dummy_host_communicator::create_reduce(
 	const host_duplex_region &regions,
 	reduction_operation,
-	int root_rank
+	std::size_t root_rank
 )
 {
 	return create_operation(regions, root_rank);
@@ -91,7 +91,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_all_reduce(
 std::shared_ptr<host_operation> dummy_host_communicator::create_gather(
 	const host_send_region &send_region,
 	const host_receive_region &recv_region,
-	int root_rank
+	std::size_t root_rank
 )
 {
 	return create_operation(send_region, recv_region, root_rank);
@@ -108,7 +108,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_all_gather(
 std::shared_ptr<host_operation> dummy_host_communicator::create_scatter(
 	const host_send_region &send_region,
 	const host_receive_region &recv_region,
-	int root_rank
+	std::size_t root_rank
 )
 {
 	return create_operation(send_region, recv_region, root_rank);
@@ -119,7 +119,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_barrier()
 	return std::make_shared<dummy_host_no_operation>();
 }
 
-void dummy_host_communicator::validate_root_rank(int root_rank)
+void dummy_host_communicator::validate_root_rank(std::size_t root_rank)
 {
 	if (root_rank != 0)
 	{
@@ -131,7 +131,7 @@ void dummy_host_communicator::validate_root_rank(int root_rank)
 
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 	const host_duplex_region &regions,
-	int root_rank
+	std::size_t root_rank
 )
 {
 	validate_root_rank(root_rank);
@@ -159,7 +159,7 @@ std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 std::shared_ptr<host_operation> dummy_host_communicator::create_operation(
 	const host_send_region &send_region,
 	const host_receive_region &recv_region,
-	int root_rank
+	std::size_t root_rank
 )
 {
 	validate_root_rank(root_rank);

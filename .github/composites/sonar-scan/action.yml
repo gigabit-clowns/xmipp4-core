@@ -25,12 +25,6 @@ runs:
       with:
         name: ${{ inputs.artifact-name }}
         path: ${{ inputs.artifact-path }}
-    
-    - name: Test
-      working-directory: "${{ github.workspace }}"
-      shell: bash
-      run: |
-        ls build
 
     # Regular scan for most events
     - name: SonarQube scan for most events

@@ -30,7 +30,7 @@ public:
 		create_send,
 		std::shared_ptr<host_operation>(
 			const host_send_region &region, 
-			int destination_rank,
+			std::size_t destination_rank,
 			int tag
 		),
 		override
@@ -39,7 +39,7 @@ public:
 		create_receive,
 		std::shared_ptr<host_operation>(
 			const host_receive_region &region, 
-			int source_rank,
+			std::size_t source_rank,
 			int tag
 		),
 		override
@@ -48,7 +48,7 @@ public:
 		create_broadcast,
 		std::shared_ptr<host_operation>(
 			const host_duplex_region &regions, 
-			int root_rank
+			std::size_t root_rank
 		),
 		override
 	);
@@ -57,7 +57,7 @@ public:
 		std::shared_ptr<host_operation>(
 			const host_duplex_region &regions, 
 			reduction_operation reduction,
-			int root_rank
+			std::size_t root_rank
 		),
 		override
 	);
@@ -74,7 +74,7 @@ public:
 		std::shared_ptr<host_operation>(
 			const host_send_region &send_region,
 			const host_receive_region &recv_region,
-			int root_rank
+			std::size_t root_rank
 		),
 		override
 	);
@@ -91,7 +91,7 @@ public:
 		std::shared_ptr<host_operation>(
 			const host_send_region &send_region,
 			const host_receive_region &recv_region,
-			int root_rank
+			std::size_t root_rank
 		),
 		override
 	);

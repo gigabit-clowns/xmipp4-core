@@ -80,7 +80,7 @@ public:
 	 */
 	virtual std::shared_ptr<operation_type> create_send(
 		const send_region_type &region,
-		int destination_rank,
+		std::size_t destination_rank,
 		int tag
 	) = 0;
 
@@ -100,7 +100,7 @@ public:
 	 */
 	virtual std::shared_ptr<operation_type> create_receive(
 		const receive_region_type &region,
-		int source_rank,
+		std::size_t source_rank,
 		int tag
 	) = 0;
 
@@ -118,7 +118,7 @@ public:
 	 */
 	virtual std::shared_ptr<operation_type> create_broadcast(
 		const duplex_region_type &region,
-		int root_rank
+		std::size_t root_rank
 	) = 0;
 
 	/**
@@ -137,7 +137,7 @@ public:
 	virtual std::shared_ptr<operation_type> create_reduce(
 		const duplex_region_type &region,
 		reduction_operation reduction,
-		int root_rank
+		std::size_t root_rank
 	) = 0;
 
 	/**
@@ -175,7 +175,7 @@ public:
 	virtual std::shared_ptr<operation_type> create_gather(
 		const send_region_type &send_region,
 		const receive_region_type &recv_region,
-		int root_rank
+		std::size_t root_rank
 	) = 0;
 
 	/**
@@ -211,7 +211,7 @@ public:
 	virtual std::shared_ptr<operation_type> create_scatter(
 		const send_region_type &send_region,
 		const receive_region_type &recv_region,
-		int root_rank
+		std::size_t root_rank
 	) = 0;
 };
 

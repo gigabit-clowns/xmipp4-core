@@ -66,7 +66,7 @@ jobs:
           gcovr -r "${{ github.workspace }}" \
             --object-directory "${{ github.workspace }}/build" \
             --sonarqube -o "${{ github.workspace }}/build/coverage.xml" \
-            --exclude 'build/_deps/.*'
+            --exclude 'build/.*'
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

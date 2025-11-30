@@ -52,17 +52,6 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
-# Add coverage flags if requested
-if(XMIPP4_CORE_ENABLE_COVERAGE)
-	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-		add_compile_options(--coverage -O0 -g)
-		add_link_options(--coverage)
-	elseif(MSVC)
-		add_compile_options(/Z7 /Od)
-		string(REGEX REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
-	endif()
-endif()
-
 # Add source directory
 add_subdirectory(src)
 

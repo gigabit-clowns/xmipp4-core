@@ -60,10 +60,10 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-      - name: Test
-        run: |
-          find build/_deps -name '*.gcno' -delete || true
-          find build/_deps -name '*.gcda' -delete || true
+    #  - name: Test
+    #    run: |
+    #      find build/_deps -name '*.gcno' -delete || true
+    #      find build/_deps -name '*.gcda' -delete || true
 
       - name: Generate coverage report
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'

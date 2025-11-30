@@ -1,17 +1,27 @@
 name: "Generate Coverage Report"
 description: "Generates coverage reports for every OS"
 
+outputs:
+  report-path:
+    description: "Full path to the coverage report." 
+    value: ${{ steps.generate-report.outputs.report-path }}
+
 runs:
   using: "composite"
   steps:
-    - name: Generate coverage report (Linux)
+    - name: Generate coverage report (Linux & macOS)
       if: runner.os == 'Linux' || runner.os == 'macOS'
+      id: generate-report
       working-directory: "${{ github.workspace }}/build"
       shell: bash
+      env:
+        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
       run: |
-        lcov --capture --directory . --output-file coverage.info --exclude '/usr/*'
-        lcov --list coverage.info
-        genhtml coverage.info --output-directory coverage_html
+        gcovr -r "${{ github.workspace }}" \
+          --object-directory "${{ github.workspace }}/build" \
+          --sonarqube -o "$REPORT_PATH" \
+          --exclude 'build/.*'
+        echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
 
     - name: Generate coverage report (Windows)
       if: runner.os == 'Windows'

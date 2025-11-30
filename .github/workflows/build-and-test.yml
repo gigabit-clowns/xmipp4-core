@@ -61,12 +61,7 @@ jobs:
         uses: ./.github/composites/run-ctest
 
       - name: Generate coverage report
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        run: |
-          gcovr -r "${{ github.workspace }}" \
-            --object-directory "${{ github.workspace }}/build" \
-            --sonarqube -o "${{ github.workspace }}/build/coverage.xml" \
-            --exclude 'build/.*'
+        uses: ./.github/composites/run-ctest/coverage-report
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

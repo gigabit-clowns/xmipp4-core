@@ -60,6 +60,9 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
+      - name: Test
+        run: cmake -LAH -B build
+
       - name: Generate coverage report
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         run: |

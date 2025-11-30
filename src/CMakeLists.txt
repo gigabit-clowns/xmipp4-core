@@ -168,6 +168,6 @@ target_compile_definitions(
 )
 if(XMIPP4_CORE_ENABLE_COVERAGE)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-		target_link_options(${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} PRIVATE --coverage)
+		target_link_options(${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} INTERFACE --coverage)
 	endif()
 endif()

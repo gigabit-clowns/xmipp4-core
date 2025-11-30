@@ -33,6 +33,17 @@ target_compile_definitions(
 		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
 
+# Add coverage flags if requested
+if(XMIPP4_CORE_ENABLE_COVERAGE)
+	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+		target_compile_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE --coverage -O0 -g)
+		target_link_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE --coverage)
+	elseif(MSVC)
+		target_compile_options(${XMIPP4_CORE_LIBRARY_TARGET} PRIVATE /Z7 /Od)
+		string(REGEX REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+	endif()
+endif()
+
 # Link dependencies
 if(WIN32)
 	target_link_libraries(

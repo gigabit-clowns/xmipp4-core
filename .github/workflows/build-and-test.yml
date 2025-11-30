@@ -60,41 +60,6 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-      - name: Generate coverage report step 1
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          geninfo --ignore-errors source,mismatch \
-            --rc geninfo_unexecuted_blocks=1 \
-            --rc lcov_branch_coverage=0 \
-            -o coverage.raw.info .
-      
-      - name: Generate coverage report step 2
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          lcov --remove coverage.raw.info \
-            '/usr/*' '*/_deps/*' \
-            --rc lcov_branch_coverage=0 \
-            --ignore-errors source \
-            --output-file coverage.cleaned.info
-
-      - name: Generate coverage report step 3
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          lcov --extract coverage.cleaned.info \
-            "${{ github.workspace }}/src/*" \
-            "${{ github.workspace }}/include/*" \
-            "${{ github.workspace }}/tests/*" \
-            --output-file coverage.info
-
-      - name: Generate coverage report step 4
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          lcov --list coverage.info
-
       - name: Generate coverage report step 5
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         run: |

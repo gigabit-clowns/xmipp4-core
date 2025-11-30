@@ -60,24 +60,14 @@ jobs:
       - name: Run tests
         uses: ./.github/composites/run-ctest
 
-      - name: Generate coverage report step 5
+      - name: Generate coverage report
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         run: |
           gcovr -r "${{ github.workspace }}" \
             --object-directory "${{ github.workspace }}/build" \
             --sonarqube -o "${{ github.workspace }}/build/coverage.xml" \
-            --filter "${{ github.workspace }}/src" \
-            --filter "${{ github.workspace }}/include" \
-            --filter "${{ github.workspace }}/tests" \
             --exclude '.*build/_deps/.*' \
-            --exclude '.*CMakeFiles/.*' \
-            --gcov-ignore-errors=no_working_dir_found
-
-      - name: Generate coverage report step 6
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
-        working-directory: "${{ github.workspace }}/build"
-        run: |
-          genhtml coverage.info --output-directory coverage_html
+            --exclude '.*CMakeFiles/.*'
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

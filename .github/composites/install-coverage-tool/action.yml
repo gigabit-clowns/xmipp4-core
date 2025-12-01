@@ -50,7 +50,7 @@ runs:
       shell: bash
       run: |
         choco install OpenCppCoverage -y
-        echo "opencppcoverage=\"/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe\"" >> "$GITHUB_OUTPUT"
+        echo opencppcoverage="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
 
     - name: Install gcovr
       shell: bash

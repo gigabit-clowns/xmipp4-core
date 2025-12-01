@@ -145,7 +145,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: SonarQube Scan
-        uses: ./.github/composites/sonar-scan
+        uses: .gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:
           artifact-name: build-artifact
           artifact-path: ${{ github.workspace }}/build

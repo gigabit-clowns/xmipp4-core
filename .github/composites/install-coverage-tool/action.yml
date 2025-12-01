@@ -50,8 +50,7 @@ runs:
       shell: powershell
       run: |
         choco install OpenCppCoverage -y
-        echo "C:\Program Files\OpenCppCoverage" >> $GITHUB_OUTPUT
-        echo "opencppcoverage=\"/c/Program Files/OpenCppCoverage\"" >> "$GITHUB_OUTPUT"
+        echo "opencppcoverage=\"/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe\"" >> "$GITHUB_OUTPUT"
 
     - name: Install gcovr
       shell: bash

@@ -40,6 +40,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install coverage tool
+        id: install-coverage
         uses: ./.github/composites/install-coverage-tool
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
@@ -68,6 +69,7 @@ jobs:
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
+          cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage }}
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

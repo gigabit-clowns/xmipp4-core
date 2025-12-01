@@ -26,6 +26,7 @@ runs:
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
+          --print-summary \
           --exclude 'build/.*'
 
     - name: Generate coverage report (Clang)
@@ -39,6 +40,7 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --gcov-executable "llvm-cov gcov" \
           --sonarqube -o "$REPORT_PATH" \
+          --print-summary \
           --exclude 'build/.*'
 
     - name: Generate coverage report (Windows)
@@ -51,6 +53,7 @@ runs:
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
+          --print-summary \
           --exclude 'build/.*'
 
     - name: Return coverage report path

@@ -33,15 +33,6 @@ if(MSVC)
 	)
 endif()
 
-# On windows targets, copy the library to the test directory
-if(WIN32)
-	add_custom_command(TARGET ${TESTS_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> $<TARGET_FILE_DIR:${TESTS_NAME}>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:spdlog::spdlog> $<TARGET_FILE_DIR:${TESTS_NAME}>
-	)
-endif()
-
 # Discover tests
 catch_discover_tests(${TESTS_NAME})
 

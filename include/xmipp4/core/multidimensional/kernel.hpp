@@ -21,8 +21,8 @@ public:
     virtual void execute(
         const kernel_access_layout &iteration_layout,
 		span<const numerical_type> data_types,
-        span<storage *const> read_write_operands,
-        span<const storage *const> read_only_operands
+        span<storage> read_write_operands,
+        span<const storage> read_only_operands
 		/* TODO context */
     ) = 0;
 

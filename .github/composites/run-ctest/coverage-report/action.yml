@@ -27,8 +27,7 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
           --txt report.txt \
-          --exclude '.*_deps/.*' \
-          --exclude 'build/.*'
+          --exclude '.*_deps/.*'
         cat report.txt
 
     - name: Generate coverage report (Clang)
@@ -43,7 +42,7 @@ runs:
           --gcov-executable "llvm-cov gcov" \
           --sonarqube -o "$REPORT_PATH" \
           --txt report.txt \
-          --exclude 'build/.*'
+          --exclude '.*_deps/.*'
         cat report.txt
 
     - name: Generate coverage report (Windows)
@@ -57,7 +56,7 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
           --txt report.txt \
-          --exclude 'build/.*'
+          --exclude '.*_deps/.*'
         cat report.txt
 
     - name: Return coverage report path

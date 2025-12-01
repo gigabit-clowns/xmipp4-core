@@ -140,10 +140,6 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
-      # Checkout step needed to retrieve composite action
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
       - name: SonarQube Scan
         uses: .gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:

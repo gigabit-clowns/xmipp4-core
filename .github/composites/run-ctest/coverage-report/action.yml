@@ -26,8 +26,9 @@ runs:
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
-          --print-summary \
+          --txt report.txt \
           --exclude 'build/.*'
+        cat report.txt
 
     - name: Generate coverage report (Clang)
       if: inputs.compiler-cc == 'clang' && inputs.compiler-cxx == 'clang++'
@@ -40,8 +41,9 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --gcov-executable "llvm-cov gcov" \
           --sonarqube -o "$REPORT_PATH" \
-          --print-summary \
+          --txt report.txt \
           --exclude 'build/.*'
+        cat report.txt
 
     - name: Generate coverage report (Windows)
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
@@ -53,8 +55,9 @@ runs:
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
-          --print-summary \
+          --txt report.txt \
           --exclude 'build/.*'
+        cat report.txt
 
     - name: Return coverage report path
       id: generate-report

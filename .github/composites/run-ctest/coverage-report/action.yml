@@ -27,6 +27,7 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
           --txt report.txt \
+          --exclude '.*_deps/.*' \
           --exclude 'build/.*'
         cat report.txt
 

@@ -16,10 +16,10 @@ namespace hardware
 class XMIPP4_CORE_API device_queue
 {
 public:
-	device_queue() = default;
+	device_queue() noexcept;
 	device_queue(const device_queue &other) = delete;
 	device_queue(device_queue &&other) = delete;
-	virtual ~device_queue() = default;
+	virtual ~device_queue();
 
 	device_queue& operator=(const device_queue &other) = delete;
 	device_queue& operator=(device_queue &&other) = delete;

@@ -25,10 +25,10 @@ class memory_resource;
 class XMIPP4_CORE_API memory_transfer
 {
 public:
-	memory_transfer() = default;
+	memory_transfer() noexcept;
 	memory_transfer(const memory_transfer &other) = delete;
 	memory_transfer(memory_transfer &&other) = delete;
-	virtual ~memory_transfer() = default;
+	virtual ~memory_transfer();
 
 	memory_transfer& operator=(const memory_transfer &other) = delete;
 	memory_transfer& operator=(memory_transfer &&other) = delete;

@@ -26,10 +26,10 @@ class device_queue;
 class XMIPP4_CORE_API device_to_host_event
 {
 public:
-	device_to_host_event() = default;
+	device_to_host_event() noexcept;
 	device_to_host_event(const device_to_host_event &other) = delete;
 	device_to_host_event(device_to_host_event &&other) = delete;
-	virtual ~device_to_host_event() = default;
+	virtual ~device_to_host_event();
 
 	device_to_host_event& operator=(const device_to_host_event &other) = delete;
 	device_to_host_event& operator=(device_to_host_event &&other) = delete;

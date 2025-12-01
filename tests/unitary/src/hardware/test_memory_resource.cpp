@@ -48,19 +48,19 @@ TEST_CASE( "is_device_accessible should return false if heuristics are not met",
 
 	SECTION( "no target device" )
 	{
-		REQUIRE_CALL( resource, get_kind() )
-			.RETURN( memory_resource_kind::device_local );
 		REQUIRE_CALL( resource, get_target_device() )
 			.RETURN( nullptr );
+
+		REQUIRE( is_device_accessible(resource, device) == false );
 	}
 
 	SECTION( "not device accessible" )
 	{
-		REQUIRE_CALL( resource, get_kind() )
-			.RETURN( memory_resource_kind::host_staging );
 		REQUIRE_CALL( resource, get_target_device() )
 			.LR_RETURN( &device );
-	}
+		REQUIRE_CALL( resource, get_kind() )
+			.RETURN( memory_resource_kind::host_staging );
 
-	REQUIRE( is_device_accessible(resource, device) == false );
+		REQUIRE( is_device_accessible(resource, device) == false );
+	}
 }

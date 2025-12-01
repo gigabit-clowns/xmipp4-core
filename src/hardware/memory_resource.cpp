@@ -26,9 +26,10 @@ bool is_device_accessible(
 		return true;
 	}
 
-	const auto kind = resource.get_kind();
-	const auto target = resource.get_target_device();
-	if (&device == target && is_device_accessible(kind))
+	if (
+		&device == resource.get_target_device() && 
+		is_device_accessible(resource.get_kind())
+	)
 	{
 		return true;
 	}

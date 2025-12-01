@@ -57,8 +57,7 @@ runs:
         REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
       run: |
         "$COVERAGE_EXECUTABLE" \
-          --export_type=cobertura \
-          --output="$REPORT_PATH" \
+          --export_type="cobertura:$REPORT_PATH" \
           --sources="../src;../include" \
           -- ctest -C Debug \
           --output-on-failure 2>&1 | tee "${{ github.workspace }}/opencppcoverage.log"

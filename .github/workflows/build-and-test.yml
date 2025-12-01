@@ -41,6 +41,9 @@ jobs:
 
       - name: Install coverage tool
         uses: ./.github/composites/install-coverage-tool
+        with:
+          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-cxx: ${{ matrix.compiler.cxx }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2

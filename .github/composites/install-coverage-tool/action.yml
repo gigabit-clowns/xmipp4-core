@@ -1,6 +1,13 @@
 name: "Install Coverage tool"
 description: "Installs the required coverage tool for every OS"
 
+inputs:
+  compiler-cc:
+    description: "C compiler being used by the runner"
+    required: true
+  compiler-cxx:
+    description: "C++ compiler being used by the runner"
+    required: true
 outputs:
   opencppcoverage:
     description: "Full path to OpenCppCoverage"
@@ -9,26 +16,35 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Install gcov (Linux - gcov)
+    - name: Update (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
         if which apt; then
           sudo apt-get update
-          sudo apt-get install -y lcov
         else
           echo "Could not find a package manager for this system"
           exit 1
         fi
 
-    - name: Install coverage tools (macOS - llvm-cov)
+    - name: Install coverage tools (Linux - gcc -> gcov)
+      if: runner.os == 'Linux' && (inputs.compiler-cc == 'gcc' || inputs.compiler-cxx == 'g++')
+      shell: bash
+      run: sudo apt-get install -y lcov
+
+    - name: Install coverage tools (Linux - gcc -> llvm-cov)
+      if: runner.os == 'Linux' && (inputs.compiler-cc == 'clang' || inputs.compiler-cxx == 'clang++')
+      shell: bash
+      run: sudo apt-get install -y llvm
+
+    - name: Install coverage tools (macOS -> llvm-cov)
       if: runner.os == 'macOS'
       shell: bash
       run: |
         brew install llvm
         ln -s "$(brew --prefix llvm)/bin/llvm-cov" /usr/local/bin/llvm-cov || true
 
-    - name: Install coverage tools (Windows - OpenCppCoverage)
+    - name: Install coverage tools (Windows -> OpenCppCoverage)
       id: install-opencppcoverage
       if: runner.os == 'Windows'
       shell: powershell

@@ -64,4 +64,3 @@ TEST_CASE( "is_device_accessible should return false if heuristics are not met",
 
 	REQUIRE( is_device_accessible(resource, device) == false );
 }
-

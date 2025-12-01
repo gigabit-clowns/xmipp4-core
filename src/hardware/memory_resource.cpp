@@ -21,20 +21,12 @@ bool is_device_accessible(
 	device &device
 ) noexcept
 {
-	if (&device.get_device_local_memory_resource() == &resource)
-	{
-		return true;
-	}
-
-	if (
-		&device == resource.get_target_device() && 
-		is_device_accessible(resource.get_kind())
-	)
-	{
-		return true;
-	}
-
-	return false;
+	return 
+		&device.get_device_local_memory_resource() == &resource ||
+		(
+			resource.get_target_device() == &device && 
+			is_device_accessible(resource.get_kind())
+		);
 }
 
 } // namespace hardware

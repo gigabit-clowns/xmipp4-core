@@ -21,18 +21,18 @@ void cpu_device::enumerate_memory_resources(
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()
 {
-	return std::make_shared<cpu_device_queue>();
+	return nullptr;
 }
 
 std::shared_ptr<device_event> cpu_device::create_device_event()
 {
-	return std::make_shared<cpu_event>();
+	return nullptr;
 }
 
 std::shared_ptr<device_to_host_event>
 cpu_device::create_device_to_host_event()
 {
-	return std::make_shared<cpu_event>();
+	return nullptr;
 }
 
 } // namespace hardware

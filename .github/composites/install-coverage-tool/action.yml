@@ -47,10 +47,10 @@ runs:
     - name: Install coverage tools (Windows -> OpenCppCoverage)
       id: install-opencppcoverage
       if: runner.os == 'Windows'
-      shell: powershell
+      shell: bash
       run: |
         choco install OpenCppCoverage -y
-        echo "opencppcoverage=\"C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe\"" >> "$env:GITHUB_OUTPUT"
+        echo "opencppcoverage=\"/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe\"" >> "$GITHUB_OUTPUT"
 
     - name: Install gcovr
       shell: bash

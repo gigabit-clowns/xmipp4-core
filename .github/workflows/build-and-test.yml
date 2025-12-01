@@ -63,9 +63,6 @@ jobs:
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
-      
-      - name: Test
-        run: echo "OpenCpp:" ${{ steps.install-coverage.outputs.opencppcoverage }}
 
       - name: Generate coverage report
         uses: ./.github/composites/run-ctest/coverage-report

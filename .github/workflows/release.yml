@@ -1,56 +1,8 @@
-name: Generate new release
-permissions:
-  contents: write
+name: Generate release
 
 on:
   workflow_dispatch:
-  workflow_call:
 
 jobs:
   tag_and_release:
-    environment:
-      name: release
-    
-    name: Generate new tag & GitHub release
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-    
-    - name: Retrieve tag name
-      id: tag_name
-      run: |
-        export TAG_NAME=v$(cat VERSION)
-        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-        echo "Version: $TAG_NAME"
-
-    - name: Retrieve changelog
-      id: changelog
-      run: |
-        export CHANGELOG_BODY=$(awk '/# /{if (found) exit} {if (/# /) found=1; else if (found) print}' CHANGELOG.md)
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "$changelog" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        echo "Changelog: $CHANGELOG_BODY"
-    
-    - name: Generate GitHub App Token
-      id: generate_token
-      uses: actions/create-github-app-token@v2
-      with:
-        app-id: ${{ secrets.W2W_APP_ID }}
-        private-key: ${{ secrets.W2W_APP_PRIVATE_KEY }}
-
-    - name: Generate tag
-      id: tag_version
-      uses: mathieudutour/github-tag-action@v6.2
-      with:
-        github_token: ${{ steps.generate_token.outputs.token }}
-        custom_tag: ${{ steps.tag_name.outputs.tag_name }}
-        tag_prefix: ''
-        
-    - name: Create a GitHub release
-      uses: ncipollo/release-action@v1
-      with:
-        tag: ${{ steps.tag_version.outputs.new_tag }}
-        name: ${{ steps.tag_name.outputs.tag_name }}
-        body: ${{ steps.changelog.outputs.changelog }}
+    uses: gigabit-clowns/.github/.github/workflows/release.yml@main

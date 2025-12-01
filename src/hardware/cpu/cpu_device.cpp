@@ -11,12 +11,14 @@ namespace xmipp4
 namespace hardware
 {
 
-void cpu_device::enumerate_memory_resources(
-	std::vector<memory_resource*> &resources
-)
+memory_resource& cpu_device::get_device_local_memory_resource() noexcept
 {
-	auto &host_memory_resource = get_host_memory_resource();
-	resources = { &host_memory_resource };
+	return get_host_memory_resource();
+}
+
+memory_resource& cpu_device::get_host_accessible_memory_resource() noexcept
+{
+	return get_host_memory_resource();
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()

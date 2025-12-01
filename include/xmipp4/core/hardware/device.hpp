@@ -58,7 +58,8 @@ public:
 	/**
 	 * @brief Create a device queue.
 	 * 
-	 * @return std::shared_ptr<device_queue> The created device queue.
+	 * @return std::shared_ptr<device_queue> The newly created device queue. 
+	 * nullptr if asynchronous execution is not supported.
 	 */
 	virtual std::shared_ptr<device_queue>
 	create_device_queue() = 0;
@@ -66,7 +67,8 @@ public:
 	/**
 	 * @brief Create an intra-device synchronization primitive.
 	 * 
-	 * @return std::shared_ptr<device_event> The created device event.
+	 * @return std::shared_ptr<device_event> The newly created device event. 
+	 * nullptr if asynchronous execution is not supported.
 	 */
 	virtual std::shared_ptr<device_event>
 	create_device_event() = 0;
@@ -74,8 +76,8 @@ public:
 	/**
 	 * @brief Create a device to host synchronization primitive.
 	 * 
-	 * @return std::shared_ptr<device_to_host_event> The created 
-	 * device_to_host_event.
+	 * @return std::shared_ptr<device_to_host_event> The newly created 
+	 * device_to_host_event. nullptr if asynchronous execution is not supported.
 	 */
 	virtual std::shared_ptr<device_to_host_event>
 	create_device_to_host_event() = 0;

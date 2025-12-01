@@ -65,6 +65,9 @@ jobs:
 
       - name: Generate coverage report
         uses: ./.github/composites/run-ctest/coverage-report
+        with:
+          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-cxx: ${{ matrix.compiler.cxx }}
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

@@ -1,6 +1,13 @@
 name: "Generate Coverage Report"
 description: "Generates coverage reports for every OS"
 
+inputs:
+  compiler-cc:
+    description: "C compiler being used by the runner"
+    required: true
+  compiler-cxx:
+    description: "C++ compiler being used by the runner"
+    required: true
 outputs:
   report-path:
     description: "Full path to the coverage report." 
@@ -9,9 +16,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Generate coverage report (Linux & macOS)
-      if: runner.os == 'Linux' || runner.os == 'macOS'
-      id: generate-report
+    - name: Generate coverage report (GCC)
+      if: inputs.compiler-cc == 'gcc' && inputs.compiler-cxx == 'g++'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       env:
@@ -21,10 +27,22 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
           --exclude 'build/.*'
-        echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+
+    - name: Generate coverage report (Clang)
+      if: inputs.compiler-cc == 'clang' && inputs.compiler-cxx == 'clang++'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      env:
+        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
+      run: |
+        gcovr -r "${{ github.workspace }}" \
+          --object-directory "${{ github.workspace }}/build" \
+          --gcov-executable "llvm-cov gcov" \
+          --sonarqube -o "$REPORT_PATH" \
+          --exclude 'build/.*'
 
     - name: Generate coverage report (Windows)
-      if: runner.os == 'Windows'
+      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       env:
@@ -34,3 +52,10 @@ runs:
           --object-directory "${{ github.workspace }}/build" \
           --sonarqube -o "$REPORT_PATH" \
           --exclude 'build/.*'
+
+    - name: Return coverage report path
+      id: generate-report
+      shell: bash
+      env:
+        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
+      run: echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"

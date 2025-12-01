@@ -110,9 +110,10 @@ public:
 	 * The broadcast operation transmits the data contained in the root
 	 * peer to the rest of the peers. 
 	 * 
-	 * @param region Buffers where the broadcast happens. Send region on all 
-	 * peers except the root is unused. Root rank can alias the same region for 
-	 * sending and receiving data.
+	 * @param region Buffers where the broadcast happens. Send region is ignored
+	 * for all peers except the root rank. Root rank can alias the same region 
+	 * for sending and receiving data (in-place operation) by setting them to 
+	 * the same pointer.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The broadcast operation.
 	 */
@@ -128,8 +129,10 @@ public:
 	 * according to the requested reduction operation. Root rank obtains the 
 	 * reduced version of the region.
 	 * 
-	 * @param region Buffers where the the reduction happens. Ignored for all 
-	 * peers except the root. The reception region can alias the send buffer.
+	 * @param region Buffers where the the reduction happens. Receive region is
+	 * ignored for all peers except the root rank. Root rank can alias the 
+	 * send and receive regions (in-place operation) by setting them to the same
+	 * pointer.
 	 * @param reduction Type of the reduction operation.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The reduce operation.
@@ -148,8 +151,9 @@ public:
 	 * the reduced version of the region. Receive buffer can alias the send 
 	 * buffer.
 	 * 
-	 * @param region Buffers where the the reduction happens. The reception
-	 * region can alias the send buffer.
+	 * @param region Buffers where the the reduction happens. Send and receive 
+	 * regions may be aliased (in-place operation) by setting them to the same 
+	 * pointer.
 	 * @param region Buffers where the the reduction happens.
 	 * @param reduction Type of the reduction operation.
 	 * @return std::shared_ptr<operation_type> The all_reduce operation.
@@ -165,10 +169,14 @@ public:
 	 * The gather operation concatenates the contents of all peer's regions
 	 * into the receive region of the root.
 	 * 
-	 * @param send_region Buffer to be sent in the gather operation.
-	 * @param recv_region Buffer where the gathered data is written. Its count 
-	 * must be equal to the send_region's count times the size of the 
-	 * communicator.
+	 * @param send_region Buffer to be sent in the gather operation. The root
+	 * rank may want to perform the operation in-place by setting the send 
+	 * region to the region in the receive buffer where the rank's own data is 
+	 * expected to be written, i.e. recv_address + rank*sizeof(T)*count.
+	 * @param recv_region Buffer where the gathered data is written. Ignored
+	 * for all non-root ranks. Its count must be equal to the send_region's 
+	 * count times the size of the communicator. Its data type must be equal to 
+	 * the send buffers's data type.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The gather operation.
 	 */
@@ -184,10 +192,14 @@ public:
 	 * The gather operation concatenates the contents of all peer's regions
 	 * into the receive region of all peers.
 	 * 
-	 * @param send_region Buffer to be sent in the gather operation.
+	 * @param send_region Buffer to be sent in the gather operation. Any rank
+	 * may want to perform the operation in-place by setting the send region to 
+	 * the region in the receive buffer where the rank's own data is expected to 
+	 * be written, i.e. recv_address + rank*sizeof(T)*count.
 	 * @param recv_region Buffer where the gathered data is written. Its count 
 	 * must be equal to the send_region's count times the size of the 
-	 * communicator.
+	 * communicator. Its data type must be equal to the send buffers's data 
+	 * type.
 	 * @return std::shared_ptr<operation_type> The all_gather operation.
 	 */
 	virtual std::shared_ptr<operation_type> create_all_gather(
@@ -201,10 +213,14 @@ public:
 	 * The scatter operation partitions the contents of the send region and 
 	 * distributes them across all peers.
 	 * 
-	 * @param send_region Buffer to be sent in the scatter operation. Ignored
-	 * for all peers except the root. Its count must be equal to the 
-	 * recv_region's count times the size of the communicator.
-	 * @param recv_region Buffer where the scattered data is written.
+	 * @param send_region Buffer to be sent in the scatter operation.
+	 * @param recv_region Buffer where the scattered data is written. Ignored
+	 * for all non-root ranks. The root rank may want to perform the operation 
+	 * in-place by setting the send region to the region in the receive buffer 
+	 * where the rank's own data is expected to be written, i.e. 
+	 * recv_address + rank*sizeof(T)*count. Its count must be equal to the 
+	 * send_region's count times the size of the communicator. Its data type 
+	 * must be equal to the send buffers's data type.
 	 * @param root_rank Rank of the root.
 	 * @return std::shared_ptr<operation_type> The scatter operation.
 	 */

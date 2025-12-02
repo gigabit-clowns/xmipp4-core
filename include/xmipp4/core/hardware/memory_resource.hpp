@@ -26,10 +26,10 @@ class device;
 class XMIPP4_CORE_API memory_resource
 {
 public:
-	memory_resource() = default;
+	memory_resource() noexcept;
 	memory_resource(const memory_resource &other) = delete;
 	memory_resource(memory_resource &&other) = delete;
-	virtual ~memory_resource() = default;
+	virtual ~memory_resource();
 
 	memory_resource& operator=(const memory_resource &other) = delete;
 	memory_resource& operator=(memory_resource &&other) = delete;
@@ -88,6 +88,23 @@ public:
  */
 XMIPP4_CORE_API
 memory_resource& get_host_memory_resource() noexcept;
+
+/**
+ * @brief Check if a memory resource is accessible by the provided device.
+ * 
+ * This method uses various heuristics to check if the memory resource is
+ * accessible by the provided device.
+ * 
+ * @param resource The resource to be checked.
+ * @param device The device to be checked.
+ * @return true If the resource is accessible by the device.
+ * @return false If the resource is not accessible by the device.
+ */
+XMIPP4_CORE_API
+bool is_device_accessible(
+	const memory_resource &resource, 
+	device &device
+) noexcept;
 
 } // namespace hardware
 } // namespace xmipp4

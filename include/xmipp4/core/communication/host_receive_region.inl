@@ -2,8 +2,6 @@
 
 #include "host_receive_region.hpp"
 
-#include "../numerical_type_traits.hpp"
-
 namespace xmipp4 
 {
 namespace communication
@@ -21,7 +19,7 @@ template <typename T>
 XMIPP4_INLINE_CONSTEXPR
 host_receive_region::host_receive_region(T* data, std::size_t count) noexcept
 	: m_data(data)
-	, m_data_type(numerical_type_of<T>::value())
+	, m_data_type(numerical_type_of<T>::value)
 	, m_count(count)
 {
 }

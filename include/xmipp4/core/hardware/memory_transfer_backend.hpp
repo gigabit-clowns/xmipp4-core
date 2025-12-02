@@ -23,10 +23,10 @@ class memory_transfer;
 class XMIPP4_CORE_API memory_transfer_backend
 {
 public:
-	memory_transfer_backend() = default;
+	memory_transfer_backend() noexcept;
 	memory_transfer_backend(const memory_transfer_backend &other) = delete;
 	memory_transfer_backend(memory_transfer_backend &&other) = delete;
-	virtual ~memory_transfer_backend() = default;
+	virtual ~memory_transfer_backend();
 
 	memory_transfer_backend&
 	operator=(const memory_transfer_backend &other) = delete;

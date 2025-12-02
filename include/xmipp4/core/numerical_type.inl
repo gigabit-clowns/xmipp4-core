@@ -14,6 +14,12 @@ namespace xmipp4
 {
 
 template <>
+struct numerical_type_of<char>
+	: std::integral_constant<numerical_type, numerical_type::char8>
+{
+};
+
+template <>
 struct numerical_type_of<std::int8_t>
 	: std::integral_constant<numerical_type, numerical_type::int8>
 {
@@ -106,6 +112,8 @@ auto visit_single(F&& visitor, numerical_type type)
 {
     switch (type) 
 	{
+	case numerical_type::char8: 
+		return std::forward<F>(visitor)(type_tag<char>());
 	case numerical_type::int8: 
 		return std::forward<F>(visitor)(type_tag<std::int8_t>());
 	case numerical_type::uint8:
@@ -329,11 +337,16 @@ template <> struct sized_integer<8, false> { using type = std::uint64_t; };
 
 template <typename T, typename Q>
 struct common_integer_type {
-    using type = typename sized_integer<
-		std::max(sizeof(T), sizeof(Q)), 
-		std::is_signed<T>::value || std::is_signed<Q>::value
-	>::type;
-};
+    using type = 
+		std::conditional<
+			std::is_same<T, char>::value && std::is_same<T, char>::value,
+			char,
+			typename sized_integer<
+				std::max(sizeof(T), sizeof(Q)), 
+				std::is_signed<T>::value || std::is_signed<Q>::value
+			>::type
+		>::type;
+	};
 
 template <typename T>
 struct scalar_score : std::integral_constant<int, 0> {};
@@ -431,6 +444,7 @@ const char* to_string(numerical_type type) noexcept
 	switch (type)
 	{
 	case numerical_type::unknown: return "unknown";
+	case numerical_type::char8: return "char8";
 	case numerical_type::int8: return "int8";
 	case numerical_type::uint8: return "uint8";
 	case numerical_type::int16: return "int16";

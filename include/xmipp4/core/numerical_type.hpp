@@ -20,6 +20,8 @@ enum class numerical_type
 {
 	unknown = -1,
 
+	char8,
+
 	int8,
 	uint8,
 	int16,

@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install memcheck tool
-        uses: ./.github/composites/memcheck/install-memtool
+        uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
         id: install-memtool
 
       - name: Configure and build with CMake
@@ -44,7 +44,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests with memory check
-        uses: ./.github/composites/run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
         id: run-ctest
         with:
           check-memleaks: true
@@ -56,6 +56,6 @@ jobs:
 
       - name: Show memory leak logs (if exist)
         if: steps.run-ctest.outputs.exist-memleaks == 'true'
-        uses: ./.github/composites/memcheck/show-memleaks
+        uses: gigabit-clowns/.github/.github/composites/memcheck/show-memleaks@main
         with:
           test-numbers: ${{ steps.run-ctest.outputs.memleak-test-numbers }}

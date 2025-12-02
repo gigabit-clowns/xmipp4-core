@@ -62,10 +62,10 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        uses: ./.github/composites/run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
-        uses: ./.github/composites/run-ctest/coverage-report
+        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}

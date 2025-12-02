@@ -1,4 +1,6 @@
 name: Generate release
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:

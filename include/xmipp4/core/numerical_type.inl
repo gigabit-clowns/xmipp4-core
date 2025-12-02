@@ -339,7 +339,7 @@ template <typename T, typename Q>
 struct common_integer_type {
     using type = 
 		std::conditional<
-			std::is_same<T, char>::value && std::is_same<T, char>::value,
+			std::is_same<T, char>::value && std::is_same<Q, char>::value,
 			char,
 			typename sized_integer<
 				std::max(sizeof(T), sizeof(Q)), 

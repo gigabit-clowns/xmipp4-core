@@ -18,7 +18,7 @@ using namespace xmipp4;
 TEST_CASE( "load good plugin in the plugin manager", "[plugin_manager]" ) 
 {
 	plugin_manager manager;
-	const auto* plugin = manager.load_plugin(get_mock_plugin_path("dummy_plugin"));
+	const auto* plugin = manager.load_plugin(get_mock_plugin_path("dummy-plugin"));
 	REQUIRE( plugin->get_name() == "dummy-plugin" );
 	REQUIRE( plugin->get_version() == version(1, 2, 3) );
 	REQUIRE( manager.get_plugin_count() == 1 );
@@ -42,14 +42,14 @@ TEST_CASE( "load invalid plugin in the plugin manager should throw", "[plugin_ma
 	REQUIRE( manager.get_plugin_count() == 0 );
 
 	REQUIRE_THROWS_MATCHES( 
-		manager.load_plugin(get_mock_plugin_path("faulty_plugin1")),
+		manager.load_plugin(get_mock_plugin_path("faulty-plugin1")),
 		plugin_load_error,
 		Catch::Matchers::Message("xmipp4_get_plugin returned NULL.")
 	);
 	REQUIRE( manager.get_plugin_count() == 0 );
 
 	REQUIRE_THROWS_MATCHES( 
-		manager.load_plugin(get_mock_plugin_path("faulty_plugin2")),
+		manager.load_plugin(get_mock_plugin_path("faulty-plugin2")),
 		plugin_load_error,
 		Catch::Matchers::Message("xmipp4_get_plugin symbol could not be found in shared object.")
 	);
@@ -59,7 +59,7 @@ TEST_CASE( "load invalid plugin in the plugin manager should throw", "[plugin_ma
 TEST_CASE( "querying out out range plugin from plugin manager should throw", "[plugin_manager]" ) 
 {
 	plugin_manager manager;
-	manager.load_plugin(get_mock_plugin_path("dummy_plugin"));
+	manager.load_plugin(get_mock_plugin_path("dummy-plugin"));
 	REQUIRE_THROWS_AS( manager.get_plugin(1), std::out_of_range );
 	REQUIRE_THROWS_AS( manager.get_plugin(10), std::out_of_range );
 }

@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Test excecutable name
-set(TESTS_NAME "${PROJECT_NAME}_unitary_tests")
-
 # Register all source and header files
 file(
 	GLOB_RECURSE 
@@ -13,13 +10,25 @@ file(
 
 # Add the test executable
 add_executable(
-    ${TESTS_NAME}
+    xmipp4-core-unitary-tests
     ${TEST_SOURCES}
+	$<TARGET_OBJECTS:xmipp4-core>
+)
+target_compile_definitions(
+	xmipp4-core-unitary-tests
+	PRIVATE
+		XMIPP4_CORE_NO_EXPORTS
+)
+target_include_directories(
+	xmipp4-core-unitary-tests
+	PRIVATE 
+		${PROJECT_SOURCE_DIR}/src
 )
 target_link_libraries(
-	${TESTS_NAME} 
+	xmipp4-core-unitary-tests
 	PRIVATE 
-		_xmipp4-core_detail
+		xmipp4-core
+		$<TARGET_PROPERTY:xmipp4-core,LINK_LIBRARIES>
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
 )
@@ -27,17 +36,11 @@ target_link_libraries(
 # HACK: Required for TROMPELOEIL_COUNT() to work with MSVC
 if(MSVC)
 	target_compile_options(
-		${TESTS_NAME}
+		xmipp4-core-unitary-tests
 		PRIVATE
 			/Zc:preprocessor 
 	)
 endif()
 
 # Discover tests
-catch_discover_tests(${TESTS_NAME})
-
-# Install
-install(
-	TARGETS ${TESTS_NAME}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+catch_discover_tests(xmipp4-core-unitary-tests)

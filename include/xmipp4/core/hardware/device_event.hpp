@@ -24,10 +24,10 @@ class device_queue;
 class XMIPP4_CORE_API device_event
 {
 public:
-	device_event() = default;
+	device_event() noexcept;
 	device_event(const device_event &other) = delete;
 	device_event(device_event &&other) = delete;
-	virtual ~device_event() = default;
+	virtual ~device_event();
 
 	device_event& operator=(const device_event &other) = delete;
 	device_event& operator=(device_event &&other) = delete;

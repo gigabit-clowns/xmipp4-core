@@ -27,10 +27,10 @@ class XMIPP4_CORE_API device_backend
 	: public named_backend
 {
 public:
-	device_backend() = default;
+	device_backend() noexcept;
 	device_backend(const device_backend &other) = delete;
 	device_backend(device_backend &&other) = delete;
-	~device_backend() override = default;
+	~device_backend() override;
 
 	device_backend& operator=(const device_backend &other) = delete;
 	device_backend& operator=(device_backend &&other) = delete;

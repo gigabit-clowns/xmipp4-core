@@ -34,7 +34,7 @@ target_compile_definitions(
 if(MSVC)
 	target_compile_definitions(
 		xmipp4-core
-		INTERFACE 
+		PUBLIC
 			NOMINMAX
 	)
 endif()

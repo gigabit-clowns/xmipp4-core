@@ -25,10 +25,10 @@ class memory_resource;
 class XMIPP4_CORE_API memory_allocator
 {
 public:
-	memory_allocator() = default;
+	memory_allocator() noexcept;
 	memory_allocator(const memory_allocator &other) = delete;
 	memory_allocator(memory_allocator &&other) = delete;
-	virtual ~memory_allocator() = default;
+	virtual ~memory_allocator();
 
 	memory_allocator& operator=(const memory_allocator &other) = delete;
 	memory_allocator& operator=(memory_allocator &&other) = delete;

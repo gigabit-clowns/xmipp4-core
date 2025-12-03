@@ -21,10 +21,10 @@ class buffer;
 class XMIPP4_CORE_API memory_heap
 {
 public:
-	memory_heap() = default;
+	memory_heap() noexcept;
 	memory_heap(const memory_heap &other) = delete;
 	memory_heap(memory_heap &&other) = delete;
-	virtual ~memory_heap() = default;
+	virtual ~memory_heap();
 
 	memory_heap& operator=(const memory_heap &other) = delete;
 	memory_heap& operator=(memory_heap &&other) = delete;

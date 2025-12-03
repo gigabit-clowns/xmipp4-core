@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
+#include <xmipp4/core/hardware/device.hpp>
+
 #include "host_memory/host_memory_resource.hpp"
 
 namespace xmipp4
@@ -9,9 +11,25 @@ namespace xmipp4
 namespace hardware
 {
 
+memory_resource::memory_resource() noexcept = default;
+memory_resource::~memory_resource() = default;
+
 memory_resource& get_host_memory_resource() noexcept
 {
 	return host_memory_resource::get();
+}
+
+bool is_device_accessible(
+	const memory_resource &resource, 
+	device &device
+) noexcept
+{
+	return 
+		&device.get_device_local_memory_resource() == &resource ||
+		(
+			resource.get_target_device() == &device && 
+			is_device_accessible(resource.get_kind())
+		);
 }
 
 } // namespace hardware

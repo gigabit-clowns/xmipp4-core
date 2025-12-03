@@ -15,10 +15,15 @@ class mock_device final
 	: public device
 {
 public:
-	MAKE_MOCK1(
-		enumerate_memory_resources, 
-		void(std::vector<memory_resource*>&), 
-		override
+	MAKE_MOCK0(
+		get_device_local_memory_resource, 
+		memory_resource&(), 
+		noexcept override
+	);
+	MAKE_MOCK0(
+		get_host_accessible_memory_resource, 
+		memory_resource&(), 
+		noexcept override
 	);
 	MAKE_MOCK0(
 		create_device_queue, 

@@ -2,8 +2,6 @@
 
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
 
-#include <xmipp4/core/hardware/cpu/cpu_device_queue.hpp>
-#include <xmipp4/core/hardware/cpu/cpu_event.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
 namespace xmipp4
@@ -11,28 +9,30 @@ namespace xmipp4
 namespace hardware
 {
 
-void cpu_device::enumerate_memory_resources(
-	std::vector<memory_resource*> &resources
-)
+memory_resource& cpu_device::get_device_local_memory_resource() noexcept
 {
-	auto &host_memory_resource = get_host_memory_resource();
-	resources = { &host_memory_resource };
+	return get_host_memory_resource();
+}
+
+memory_resource& cpu_device::get_host_accessible_memory_resource() noexcept
+{
+	return get_host_memory_resource();
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()
 {
-	return std::make_shared<cpu_device_queue>();
+	return nullptr;
 }
 
 std::shared_ptr<device_event> cpu_device::create_device_event()
 {
-	return std::make_shared<cpu_event>();
+	return nullptr;
 }
 
 std::shared_ptr<device_to_host_event>
 cpu_device::create_device_to_host_event()
 {
-	return std::make_shared<cpu_event>();
+	return nullptr;
 }
 
 } // namespace hardware

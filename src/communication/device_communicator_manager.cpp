@@ -109,15 +109,14 @@ private:
 		for (const auto &item : backends)
 		{
 			XMIPP4_ASSERT(item.second);
-			const auto suitability = item.second->get_suitability(devices);
-			if (suitability == backend_priority::unsupported)
+			if (!is_backend_available(*(item.second), devices))
 			{
 				continue;
 			}
 
 			const auto &name = item.first;
 			name_buffer = {};
-			name.copy(name_buffer.data(), name_buffer.size());
+			name.copy(name_buffer.data(), name_buffer.size()-1);
 			name_broadcast->execute();
 
 			count = 1;
@@ -149,7 +148,7 @@ private:
 		if (selected_backend != supported_backends.cend())
 		{
 			const auto name = (*selected_backend)->get_name();
-			name.copy(name_buffer.data(), name_buffer.size());
+			name.copy(name_buffer.data(), name_buffer.size()-1);
 		}
 		name_broadcast->execute();
 
@@ -162,8 +161,6 @@ private:
 		std::size_t root_rank
 	) const
 	{
-		const auto &backends = get_backend_map();
-		
 		// Set up exchange areas
 		std::array<char, 1024> name_buffer;
 		const auto name_broadcast = node_communicator.create_broadcast(
@@ -182,43 +179,47 @@ private:
 			root_rank
 		);
 
-		name_buffer = {};
 		name_broadcast->execute();
-		while(name_buffer.front() != '\0')
+		while(name_buffer.front())
 		{
-			name_buffer.back() = '\0'; // Better safe.
 			const std::string name(name_buffer.data());
 
-			count = 0;
-			const auto ite = backends.find(name);
-			if (ite != backends.cend())
-			{
-				const auto suitability = ite->second->get_suitability(devices);
-				if (suitability != backend_priority::unsupported)
-				{
-					count = 1;
-				}
-			}
+			count = is_backend_available(name, devices) ? 1: 0;
 			count_reduce->execute();
 
 			// Receive next
-			name_buffer = {};
 			name_broadcast->execute();
 		}
 
 		// Receive the result
-		name_buffer = {};
 		name_broadcast->execute();
-		name_buffer.back() = '\0'; // Better safe.
 		const std::string name(name_buffer.data());
 
-		const auto ite = backends.find(name);
-		if (ite == backends.cend())
+		return get_backend(name);
+	}
+
+	bool is_backend_available(
+		const std::string &name,
+		span<hardware::device*> devices
+	) const
+	{
+		const auto *backend = get_backend(name);
+		if (!backend)
 		{
-			return nullptr;
+			return false;
 		}
 
-		return ite->second.get();
+		return is_backend_available(*backend, devices);
+	}
+	
+	static
+	bool is_backend_available(
+		const device_communicator_backend &backend,
+		span<hardware::device*> devices
+	)
+	{
+		const auto suitability = backend.get_suitability(devices);
+		return suitability != backend_priority::unsupported;
 	}
 };
 

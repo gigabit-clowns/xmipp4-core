@@ -20,7 +20,7 @@ target_link_libraries(
 )
 add_dependencies(
 	xmipp4-core-integration-tests
-	xmipp4-core_integration_test_assets
+	xmipp4-core-integration-test-assets
 )
 
 # On windows targets, copy the library to the test directory

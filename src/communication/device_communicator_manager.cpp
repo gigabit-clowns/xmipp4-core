@@ -31,16 +31,7 @@ public:
 		span<std::shared_ptr<device_communicator>> out
 	) const
 	{
-		device_communicator_backend *backend;
-		if (node_communicator)
-		{
-			backend = negotiate_backend(*node_communicator, devices);
-		}
-		else
-		{
-			// TODO
-		}
-
+		auto *backend = get_most_suitable_backend(node_communicator, devices);
 		if (!backend)
 		{
 			throw invalid_operation_error(
@@ -57,6 +48,37 @@ public:
 	}
 
 private:
+	device_communicator_backend* get_most_suitable_backend(
+		const std::shared_ptr<host_communicator> &node_communicator,
+		span<hardware::device*> devices
+	) const
+	{
+		if (node_communicator)
+		{
+			return negotiate_backend(*node_communicator, devices);
+		}
+		else
+		{
+			const auto &backends = get_backend_map();
+			const auto ite = find_most_suitable_backend(
+				backends.cbegin(), 
+				backends.cend(),
+				[devices] (const auto &item)
+				{
+					XMIPP4_ASSERT(item.second);
+					return item.second->get_suitability(devices);
+				}
+			);
+
+			if (ite == backends.end())
+			{
+				return nullptr;
+			}
+
+			return ite->second.get();
+		}
+	}
+
 	device_communicator_backend* negotiate_backend(
 		host_communicator &node_communicator,
 		span<hardware::device*> devices
@@ -79,7 +101,6 @@ private:
 				root_rank
 			);
 		}
-
 	}
 
 	device_communicator_backend* negotiate_backend_leader(
@@ -97,7 +118,7 @@ private:
 			root_rank
 		);
 
-		int count;
+		std::uint32_t count;
 		const auto count_reduce = node_communicator.create_reduce(
 			host_duplex_region(&count, 1),
 			reduction_operation::sum,
@@ -127,23 +148,19 @@ private:
 				supported_backends.emplace_back(item.second.get());
 			}
 		}
-		
-		// Signal end of the loop
 		name_buffer = {};
 		name_broadcast->execute();
 
-		// Select best
 		auto selected_backend = find_most_suitable_backend(
 			supported_backends.cbegin(), 
 			supported_backends.cend(),
-			[devices] (const auto &item)
+			[devices] (const device_communicator_backend *backend)
 			{
-				XMIPP4_ASSERT(item);
-				return item->get_suitability(devices);
+				XMIPP4_ASSERT(backend);
+				return backend->get_suitability(devices);
 			}
 		);
 
-		// Share the result with peers
 		name_buffer = {};
 		if (selected_backend != supported_backends.cend())
 		{
@@ -172,9 +189,9 @@ private:
 			root_rank
 		);
 
-		int count;
+		std::uint32_t count;
 		const auto count_reduce = node_communicator.create_reduce(
-			host_duplex_region(&count, static_cast<int*>(nullptr), 1),
+			host_duplex_region(&count, static_cast<std::uint32_t*>(nullptr), 1),
 			reduction_operation::sum,
 			root_rank
 		);

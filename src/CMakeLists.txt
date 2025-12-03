@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(XMIPP4_CORE_LIBRARY_TARGET "xmipp4-core")
-set(XMIPP4_CORE_DETAIL_LIBRARY_TARGET "_xmipp4-core_detail")
-
-# Find all source and header files
+# Find all source files
 file(
 	GLOB_RECURSE 
 	SOURCES 
@@ -11,38 +8,55 @@ file(
 		${CMAKE_CURRENT_SOURCE_DIR}/*.c
 )
 
-# Create the shared library
-add_library(${XMIPP4_CORE_LIBRARY_TARGET} SHARED ${SOURCES})
+# Define the target
+add_library(xmipp4-core SHARED ${SOURCES})
 set_target_properties(
-	${XMIPP4_CORE_LIBRARY_TARGET} 
+	xmipp4-core
 	PROPERTIES 
 		SOVERSION ${PROJECT_VERSION}
-		DEFINE_SYMBOL "XMIPP4_CORE_EXPORTING"
+		DEFINE_SYMBOL XMIPP4_CORE_EXPORTING
 )
 target_include_directories(
-	${XMIPP4_CORE_LIBRARY_TARGET} 
+	xmipp4-core
 	PUBLIC 
 		$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(
-	${XMIPP4_CORE_LIBRARY_TARGET} 
+	xmipp4-core
 	PRIVATE
 		VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
 		VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
 		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
 
-# Link dependencies
-if(WIN32)
-	target_link_libraries(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PRIVATE ws2_32 # Winsock
-	) 
+if(MSVC)
+	target_compile_definitions(
+		xmipp4-core
+		PUBLIC
+			NOMINMAX
+	)
+endif()
+
+if(MSVC)
+	target_compile_options(
+		xmipp4-core
+		PRIVATE 
+			/W4
+			/wd4996 # getenv warning
+	)
+else()
+	target_compile_options(
+		xmipp4-core
+		PRIVATE 
+			-Wall 
+			-Wextra 
+			-Wpedantic
+	)
 endif()
 
 target_link_libraries(
-	${XMIPP4_CORE_LIBRARY_TARGET} 
+	xmipp4-core
 	PUBLIC
 		Threads::Threads
 		spdlog::spdlog_header_only
@@ -55,46 +69,21 @@ target_link_libraries(
 		${CMAKE_DL_LIBS}
 )
 
-# Enable all warnings during compilation
-if(MSVC)
-	target_compile_options(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
+if(WIN32)
+	target_link_libraries(
+		xmipp4-core
 		PRIVATE 
-			/W4
-			/wd4996 # getenv warning
-	)
-else()
-	target_compile_options(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PRIVATE 
-			-Wall 
-			-Wextra 
-			-Wpedantic
+			ws2_32 # Winsock
 	)
 endif()
 
-# Disable min/max macros in windows
-if(MSVC)
-	target_compile_definitions(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PUBLIC 
-			NOMINMAX
-	)
-endif()
-
-# Disable builtin functions in MinGW
-if(MINGW)
-	target_compile_definitions(
-		${XMIPP4_CORE_LIBRARY_TARGET} 
-		PUBLIC 
-			XMIPP4_NO_BUILTIN
-	)
-endif()
+# Create the alias
+add_library(xmipp4::core ALIAS xmipp4-core)
 
 # Install library's binary files and headers
 install(
-	TARGETS ${XMIPP4_CORE_LIBRARY_TARGET}
-	EXPORT ${XMIPP4_CORE_LIBRARY_TARGET}-targets
+	TARGETS xmipp4-core
+	EXPORT xmipp4-core-targets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
@@ -103,55 +92,23 @@ install(
 )
 
 # Create and install CMake config files
-if(WIN32)
-	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)
-else()
-	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
-endif()
-set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
-
 configure_package_config_file(
 		${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
-		${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config.cmake
-		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
+		${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config.cmake
+		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
 )
 write_basic_package_version_file(
-	${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config-version.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config-version.cmake
 	COMPATIBILITY SameMinorVersion
 )
 install(
-		EXPORT ${XMIPP4_CORE_LIBRARY_TARGET}-targets
-		FILE ${XMIPP4_CORE_LIBRARY_TARGET}-targets.cmake
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
+	EXPORT xmipp4-core-targets
+	FILE xmipp4-core-targets.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
 )
 install(
-		FILES 
-		${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config.cmake
-		${CMAKE_CURRENT_BINARY_DIR}/${XMIPP4_CORE_LIBRARY_TARGET}-config-version.cmake
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${XMIPP4_CORE_LIBRARY_TARGET}
-)
-
-# Create the detail target
-add_library(${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} INTERFACE)
-target_sources(
-	${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} 
-	INTERFACE 
-		$<TARGET_OBJECTS:${XMIPP4_CORE_LIBRARY_TARGET}>
-)
-target_link_libraries(
-	${XMIPP4_CORE_DETAIL_LIBRARY_TARGET}  
-	INTERFACE 
-		$<TARGET_PROPERTY:${XMIPP4_CORE_LIBRARY_TARGET},LINK_LIBRARIES>
-)
-target_include_directories(
-	${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} 
-	INTERFACE
-		$<TARGET_PROPERTY:${XMIPP4_CORE_LIBRARY_TARGET},INCLUDE_DIRECTORIES>
-			${CMAKE_CURRENT_SOURCE_DIR}
-)
-target_compile_definitions(
-	${XMIPP4_CORE_DETAIL_LIBRARY_TARGET} 
-	INTERFACE
-		$<TARGET_PROPERTY:${XMIPP4_CORE_LIBRARY_TARGET},INTERFACE_COMPILE_DEFINITIONS>
-		"XMIPP4_CORE_NO_EXPORTS"
+	FILES 
+	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config-version.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
 )

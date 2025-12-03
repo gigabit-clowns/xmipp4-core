@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 add_subdirectory(assets)
 
-# Test excecutable name
-set(TESTS_NAME "${PROJECT_NAME}_integration_tests")
-
 # Register all source and header files
 file(
 	GLOB_RECURSE 
@@ -14,32 +11,25 @@ file(
 )
 
 # Add the test executable
-add_executable(
-		${TESTS_NAME}
-		${TEST_SOURCES}
-)
+add_executable(xmipp4-core-integration-tests ${TEST_SOURCES})
 target_link_libraries(
-	${TESTS_NAME} 
+	xmipp4-core-integration-tests
 	PRIVATE 
-		${PROJECT_NAME} 
+		xmipp4-core
 		Catch2::Catch2WithMain
 )
-add_dependencies(${TESTS_NAME} ${PROJECT_NAME}_integration_test_assets)
+add_dependencies(
+	xmipp4-core-integration-tests
+	xmipp4-core-integration-test-assets
+)
 
 # On windows targets, copy the library to the test directory
 if(WIN32)
-	add_custom_command(TARGET ${TESTS_NAME}
+	add_custom_command(TARGET xmipp4-core-integration-tests
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> $<TARGET_FILE_DIR:${TESTS_NAME}>
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:spdlog::spdlog> $<TARGET_FILE_DIR:${TESTS_NAME}>
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:xmipp4-core> $<TARGET_FILE_DIR:xmipp4-core-integration-tests>
 	)
 endif()
 
 # Discover tests
-catch_discover_tests(${TESTS_NAME})
-
-# Install
-install(
-	TARGETS ${TESTS_NAME}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+catch_discover_tests(xmipp4-core-integration-tests)

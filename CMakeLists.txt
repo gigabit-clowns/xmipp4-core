@@ -47,6 +47,12 @@ else()
 	)
 endif()
 
+if(WIN32)
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)
+else()
+	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/xmipp4-plugins)
+endif()
+set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
 
 # Set project-wide compilation options
 set(CMAKE_CXX_STANDARD 20)

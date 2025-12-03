@@ -3,13 +3,18 @@
 #include <xmipp4/core/communication/device_communicator_manager.hpp>
 
 #include <xmipp4/core/communication/device_transaction.hpp>
+#include <xmipp4/core/communication/host_communicator.hpp>
+#include <xmipp4/core/communication/host_operation.hpp>
+#include <xmipp4/core/communication/host_duplex_region.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "../find_most_suitable_backend.hpp"
 #include "../named_service_manager_implementation.hpp"
 
+#include <array>
 #include <unordered_map>
+#include <cstring>
 
 namespace xmipp4
 {
@@ -26,18 +31,17 @@ public:
 		span<std::shared_ptr<device_communicator>> out
 	) const
 	{
-		const auto &backends = get_backend_map();
-		const auto backend = find_most_suitable_backend(
-			backends.cbegin(), 
-			backends.cend(),
-			[devices] (const auto &item)
-			{
-				XMIPP4_ASSERT(item.second);
-				return item.second->get_suitability(devices);
-			}
-		);
+		device_communicator_backend *backend;
+		if (node_communicator)
+		{
+			backend = negotiate_backend(*node_communicator, devices);
+		}
+		else
+		{
+			// TODO
+		}
 
-		if (backend == backends.cend())
+		if (!backend)
 		{
 			throw invalid_operation_error(
 				"There is no available device_communicator_backend"
@@ -45,11 +49,176 @@ public:
 		}
 
 		XMIPP4_ASSERT( devices.size() == out.size() );
-		return backend->second->create_world_communicators(
+		return backend->create_world_communicators(
 			node_communicator,
 			devices,
 			out
 		);
+	}
+
+private:
+	device_communicator_backend* negotiate_backend(
+		host_communicator &node_communicator,
+		span<hardware::device*> devices
+	) const
+	{
+		const std::size_t root_rank = 0;
+		if (node_communicator.get_rank() == root_rank)
+		{
+			return negotiate_backend_leader(
+				node_communicator, 
+				devices, 
+				root_rank
+			);
+		}
+		else
+		{
+			return negotiate_backend_follower(
+				node_communicator, 
+				devices, 
+				root_rank
+			);
+		}
+
+	}
+
+	device_communicator_backend* negotiate_backend_leader(
+		host_communicator &node_communicator,
+		span<hardware::device*> devices,
+		std::size_t root_rank
+	) const
+	{
+		const auto &backends = get_backend_map();
+		
+		// Set up exchange areas
+		std::array<char, 1024> name_buffer;
+		const auto name_broadcast = node_communicator.create_broadcast(
+			host_duplex_region(name_buffer.data(), name_buffer.size()),
+			root_rank
+		);
+
+		int count;
+		const auto count_reduce = node_communicator.create_reduce(
+			host_duplex_region(&count, 1),
+			reduction_operation::sum,
+			root_rank
+		);
+
+		// Evaluate with peers
+		std::vector<device_communicator_backend*> supported_backends;
+		for (const auto &item : backends)
+		{
+			XMIPP4_ASSERT(item.second);
+			const auto suitability = item.second->get_suitability(devices);
+			if (suitability == backend_priority::unsupported)
+			{
+				continue;
+			}
+
+			const auto &name = item.first;
+			name_buffer = {};
+			name.copy(name_buffer.data(), name_buffer.size());
+			name_broadcast->execute();
+
+			count = 1;
+			count_reduce->execute();
+
+			if (count == node_communicator.get_size())
+			{
+				supported_backends.emplace_back(item.second.get());
+			}
+		}
+		
+		// Signal end of the loop
+		name_buffer = {};
+		name_broadcast->execute();
+
+		// Select best
+		auto selected_backend = find_most_suitable_backend(
+			supported_backends.cbegin(), 
+			supported_backends.cend(),
+			[devices] (const auto &item)
+			{
+				XMIPP4_ASSERT(item);
+				return item->get_suitability(devices);
+			}
+		);
+
+		// Share the result with peers
+		name_buffer = {};
+		if (selected_backend != supported_backends.cend())
+		{
+			const auto name = (*selected_backend)->get_name();
+			name.copy(name_buffer.data(), name_buffer.size());
+		}
+		name_broadcast->execute();
+
+		return *selected_backend;
+	}
+
+	device_communicator_backend* negotiate_backend_follower(
+		host_communicator &node_communicator,
+		span<hardware::device*> devices,
+		std::size_t root_rank
+	) const
+	{
+		const auto &backends = get_backend_map();
+		
+		// Set up exchange areas
+		std::array<char, 1024> name_buffer;
+		const auto name_broadcast = node_communicator.create_broadcast(
+			host_duplex_region(
+				static_cast<char*>(nullptr), 
+				name_buffer.data(), 
+				name_buffer.size()
+			),
+			root_rank
+		);
+
+		int count;
+		const auto count_reduce = node_communicator.create_reduce(
+			host_duplex_region(&count, static_cast<int*>(nullptr), 1),
+			reduction_operation::sum,
+			root_rank
+		);
+
+		name_buffer = {};
+		name_broadcast->execute();
+		while(name_buffer.front() != '\0')
+		{
+			name_buffer.back() = '\0'; // Better safe.
+			const std::string name(name_buffer.data());
+
+			count = 0;
+			const auto ite = backends.find(name);
+			if (ite != backends.cend())
+			{
+				const auto suitability = ite->second->get_suitability(devices);
+				if (suitability != backend_priority::unsupported)
+				{
+					count = 1;
+				}
+			}
+			count_reduce->execute();
+
+			// Receive next
+			name_buffer = {};
+			name_broadcast->execute();
+		}
+
+		// Receive the result
+		name_buffer = {};
+		name_broadcast->execute();
+		name_buffer.back() = '\0'; // Better safe.
+		const std::string name(name_buffer.data());
+
+		const auto ite = backends.find(name);
+		if (ite == backends.cend())
+		{
+			return nullptr;
+		}
+
+		return ite->second.get();
 	}
 };
 

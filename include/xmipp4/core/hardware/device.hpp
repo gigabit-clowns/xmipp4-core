@@ -27,10 +27,10 @@ class memory_resource;
 class XMIPP4_CORE_API device
 {
 public:
-	device() = default;
+	device() noexcept;
 	device(const device &other) = delete;
 	device(device &&other) = delete;
-	virtual ~device() = default;
+	virtual ~device();
 
 	device& operator=(const device &other) = delete;
 	device& operator=(device &&other) = delete;

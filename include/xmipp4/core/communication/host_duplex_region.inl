@@ -2,8 +2,6 @@
 
 #include "host_duplex_region.hpp"
 
-#include "../numerical_type_traits.hpp"
-
 namespace xmipp4 
 {
 namespace communication
@@ -27,7 +25,7 @@ host_duplex_region::host_duplex_region(
 ) noexcept
 	: m_send_data(send_data)
 	, m_receive_data(receive_data)
-	, m_data_type(numerical_type_of<T>::value())
+	, m_data_type(numerical_type_of<T>::value)
 	, m_count(count)
 {
 }
@@ -54,7 +52,7 @@ host_duplex_region::host_duplex_region(
 ) noexcept
 	: m_send_data(send_recv_data)
 	, m_receive_data(send_recv_data)
-	, m_data_type(numerical_type_of<T>::value())
+	, m_data_type(numerical_type_of<T>::value)
 	, m_count(count)
 {
 }

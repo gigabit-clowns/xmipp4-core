@@ -22,10 +22,10 @@ class memory_resource;
 class XMIPP4_CORE_API memory_allocator_backend
 {
 public:
-	memory_allocator_backend() = default;
+	memory_allocator_backend() noexcept;
 	memory_allocator_backend(const memory_allocator_backend &other) = delete;
 	memory_allocator_backend(memory_allocator_backend &&other) = delete;
-	virtual ~memory_allocator_backend() = default;
+	virtual ~memory_allocator_backend();
 
 	memory_allocator_backend& 
 	operator=(const memory_allocator_backend &other) = delete;

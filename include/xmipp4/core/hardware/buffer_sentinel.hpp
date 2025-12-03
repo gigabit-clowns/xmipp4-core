@@ -21,10 +21,10 @@ class device_queue;
 class XMIPP4_CORE_API buffer_sentinel
 {
 public:
-	buffer_sentinel() = default;
+	buffer_sentinel() noexcept;
 	buffer_sentinel(const buffer_sentinel &other) = delete;
 	buffer_sentinel(buffer_sentinel &&other) = delete;
-	virtual ~buffer_sentinel() = default;
+	virtual ~buffer_sentinel();
 
 	buffer_sentinel& 
 	operator=(const buffer_sentinel &other) = delete;

@@ -18,9 +18,12 @@ class device_queue;
 namespace multidimensional
 {
 
-class array;
-class operation_parameters;
+class storage;
 
+/**
+ * @brief Abstract representation of an executable operation.
+ * 
+ */
 class kernel
 {
 public:
@@ -32,12 +35,19 @@ public:
 	kernel& operator=(const kernel &other) = delete;
 	kernel& operator=(kernel &&other) = delete;
 
+	/**
+	 * @brief Execute the kernel.
+	 * 
+	 * @param read_write_operands Operands where data may be written.
+	 * @param read_only_operands  Read-only operands.
+	 * @param queue Optional queue where this kernel will be executed.
+	 * 
+	 */
     virtual void execute(
-        span<array> read_write_operands,
-        span<const array> read_only_operands,
+        span<storage> read_write_operands,
+        span<const storage> read_only_operands,
 		hardware::device_queue *queue
-    ) = 0;
-
+    ) const = 0;
 };
 
 } // namespace multidimensional

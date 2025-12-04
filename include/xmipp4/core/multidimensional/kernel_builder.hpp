@@ -4,15 +4,23 @@
 
 #include "../span.hpp"
 #include "../numerical_type.hpp"
+#include "../backend_priority.hpp"
 
 #include <memory>
 
 namespace xmipp4 
 {
+namespace hardware
+{
+
+class device;
+
+} // namespace hardware
+
 namespace multidimensional
 {
 
-class operation_parameters;
+class operation_id;
 class strided_layout;
 class kernel;
 
@@ -27,12 +35,20 @@ public:
 	kernel_builder& operator=(const kernel_builder &other) = default;
 	kernel_builder& operator=(kernel_builder &&other) = default;
 
+	const operation_id& get_operation_id() const noexcept;
+
+	backend_priority get_suitability(
+		span<const strided_layout> layouts,
+		span<const numerical_type> data_types,
+		hardware::device &device
+	) const;
+
     virtual 
     std::shared_ptr<kernel> build(
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
-		const operation_parameters *parameters
-		/* TODO hardware context */
+		/* TODO operation parameters */
+		hardware::device &device
 	) const = 0;
 };
 

@@ -41,7 +41,8 @@ public:
 	 * 
 	 * @param read_write_operands Operands where data may be written.
 	 * @param read_only_operands  Read-only operands.
-	 * @param queue Optional queue where this kernel will be executed.
+	 * @param queue Optional queue where this kernel will be executed. Must 
+	 * belong to the device used in construction.
 	 * 
 	 */
     virtual void execute(

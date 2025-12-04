@@ -62,16 +62,18 @@ public:
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return storage_type& The storage.
+	 * @return storage_type& The storage. nullptr if the array is not 
+	 * initialized.
 	 */
-	XMIPP4_CORE_API storage& get_storage() noexcept;
+	XMIPP4_CORE_API storage* get_storage() noexcept;
 
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return const storage_type& The storage.
+	 * @return const storage_type& The storage. nullptr if the array is not
+	 * initialized
 	 */
-	XMIPP4_CORE_API const storage& get_storage() const noexcept;
+	XMIPP4_CORE_API const storage* get_storage() const noexcept;
 
 	/**
 	 * @brief Apply a set of subscripts to this layout.

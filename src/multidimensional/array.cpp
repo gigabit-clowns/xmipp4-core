@@ -59,7 +59,7 @@ public:
 	{
 		return implementation(
 			get_layout().apply_subscripts(subscripts),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -68,7 +68,7 @@ public:
 	{
 		return implementation(
 			get_layout().transpose(),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -77,7 +77,7 @@ public:
 	{
 		return implementation(
 			get_layout().permute(order),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -86,7 +86,7 @@ public:
 	{
 		return implementation(
 			get_layout().matrix_transpose(axis1, axis2),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -95,7 +95,7 @@ public:
 	{
 		return implementation(
 			get_layout().matrix_diagonal(axis1, axis2),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -104,7 +104,7 @@ public:
 	{
 		return implementation(
 			get_layout().squeeze(),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -113,7 +113,7 @@ public:
 	{
 		return implementation(
 			get_layout().broadcast_to(extents),
-			m_storage.view(),
+			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -171,22 +171,20 @@ const strided_layout& array::get_layout() const noexcept
 		empty_layout;
 }	
 
-storage& array::get_storage() noexcept
+storage* array::get_storage() noexcept
 {
-	static storage empty_storage;
 	return
 		m_implementation ? 
-		m_implementation->get_storage() : 
-		empty_storage;
+		&(m_implementation->get_storage()) : 
+		nullptr;
 }
 
-const storage& array::get_storage() const noexcept
+const storage* array::get_storage() const noexcept
 {
-	static storage empty_storage;
 	return
 		m_implementation ? 
-		m_implementation->get_storage() : 
-		empty_storage;
+		&(m_implementation->get_storage()) : 
+		nullptr;
 }
 
 XMIPP4_NODISCARD
@@ -302,22 +300,12 @@ array array::broadcast_to(span<const std::size_t> extents)
 }
 
 static
-array* check_output_array(array *out, hardware::memory_allocator &allocator)
+std::size_t compute_storage_requirement(
+	const strided_layout &layout, 
+	numerical_type data_type
+) noexcept
 {
-    if (out)
-    {
-        const auto &storage = out->get_storage();
-        if (&storage.get_memory_resource() != &allocator.get_memory_resource())
-        {
-            XMIPP4_LOG_WARN(
-                "An array was provided for reuse but it uses a different "
-                "memory resource than the allocator."
-            );
-            return nullptr;
-        }
-    }
-
-    return out;
+	return layout.compute_storage_requirement() * get_size(data_type);
 }
 
 static 
@@ -332,6 +320,49 @@ std::size_t get_alignment_requirement(
     return std::min(std::min(max_alignment, preferred_alignment), size);
 }
 
+static
+array* check_output_array(array *out, hardware::memory_allocator &allocator)
+{
+	const storage* storage;
+    if (out && (storage = out->get_storage()))
+    {
+        if (storage->get_memory_resource() != &allocator.get_memory_resource())
+        {
+            XMIPP4_LOG_WARN(
+                "An array was provided for reuse but it uses a different "
+                "memory resource than the allocator."
+            );
+            return nullptr;
+        }
+    }
+
+    return out;
+}
+
+static 
+storage cannibalize_output_array_storage(
+	array *out, 
+	std::size_t storage_requirement
+)
+{
+    if (out)
+    {
+		auto *out_storage = out->get_storage();
+        if (out_storage && out_storage->get_size() >= storage_requirement)
+        {
+			return out_storage->share();
+        }
+
+		XMIPP4_LOG_WARN(
+			"An array was provided for reuse but it does not have enough "
+			"storage."
+		);
+    }
+
+	return storage();
+}
+
+
 XMIPP4_NODISCARD 
 array array::empty(
     strided_layout layout, 
@@ -341,55 +372,37 @@ array array::empty(
     array *out
 )
 {
-	/*
-    out = check_output_array(out, allocator);
-
     // Check if we can reuse the output array as-is.
-    if (out && out->get_data_type() == data_type && out->get_layout() == layout)
-    {
-        return out->view();
-    }
-
     const auto storage_requirement = 
-        layout.compute_storage_requirement() * get_size(data_type);
-    std::shared_ptr<hardware::buffer> storage;
+		compute_storage_requirement(layout, data_type);
 
-    // Check if we can reuse the output array's storage.
-    if (out)
-    {
-        storage = out->share_storage();
-        XMIPP4_ASSERT( storage ); // Checked in check_output_array
-        if (storage->get_size() < storage_requirement)
-        {
-            XMIPP4_LOG_WARN(
-                "An array was provided for reuse but it does not have enough "
-                "storage."
-            );
-            storage.reset();
-        }
-    }
+    out = check_output_array(out, allocator);
+	auto storage = cannibalize_output_array_storage(
+		out, 
+		storage_requirement
+	);
     
-    // Allocate new storage if needed.
-    if (!storage)
+    // Allocate new storage if cannibalization failed.
+    if (storage.get_buffer())
     {
         const auto alignment = get_alignment_requirement(
             allocator, 
             storage_requirement
         );
-        storage = allocator.allocate(
-            storage_requirement,
-            alignment,
-            queue
-        );
+        storage.rebind(
+			allocator.allocate(
+				storage_requirement,
+				alignment,
+				queue
+  			)
+		);
     }
 
-    XMIPP4_ASSERT( storage );
     return array(
         std::move(layout),
         std::move(storage),
         data_type
     );
-	*/
 }
 
 } // namespace multidimensional

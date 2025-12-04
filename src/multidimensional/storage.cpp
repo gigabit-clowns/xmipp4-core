@@ -21,9 +21,14 @@ storage::storage(std::shared_ptr<hardware::buffer> buffer) noexcept
 {
 }
 
-storage storage::view() noexcept
+storage storage::share() noexcept
 {
 	return storage(m_buffer);
+}
+
+void storage::rebind(std::shared_ptr<hardware::buffer> buffer) noexcept
+{
+	m_buffer = std::move(buffer);
 }
 
 hardware::buffer* storage::get_buffer() noexcept
@@ -46,14 +51,14 @@ std::size_t storage::get_size() const noexcept
 	return m_buffer->get_size();
 }
 
-hardware::memory_resource& storage::get_memory_resource() const noexcept
+hardware::memory_resource* storage::get_memory_resource() const noexcept
 {
 	if (!m_buffer)
 	{
-		return hardware::get_host_memory_resource(); // Placeholder
+		return nullptr;
 	}
 
-	return m_buffer->get_memory_resource();
+	return &(m_buffer->get_memory_resource());
 }
 
 void storage::record_queue(hardware::device_queue &queue, bool exclusive)

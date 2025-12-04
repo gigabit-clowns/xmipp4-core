@@ -47,7 +47,15 @@ public:
 	 * @return storage The alias.
 	 */
 	XMIPP4_CORE_API 
-	storage view() noexcept;
+	storage share() noexcept;
+
+	/**
+	 * @brief Assign a new buffer to this storage.
+	 * 
+	 * @param buffer The new buffer to be bound.
+	 */
+	XMIPP4_CORE_API 
+	void rebind(std::shared_ptr<hardware::buffer> buffer) noexcept;
 
 	/**
 	 * @brief Get the underlying buffer.
@@ -76,10 +84,11 @@ public:
 	/**
 	 * @brief Get the memory_resource where this buffer is stored. 
 	 * 
-	 * @return memory_resource& The resource where the buffer is stored.
+	 * @return memory_resource* The resource where the buffer is stored.
+	 * nullptr if no buffer is bound.
 	 */
 	XMIPP4_CORE_API 
-	hardware::memory_resource& get_memory_resource() const noexcept;
+	hardware::memory_resource* get_memory_resource() const noexcept;
 
 	/**
 	 * @brief Acknowledge that this storage is being used in a device_queue.

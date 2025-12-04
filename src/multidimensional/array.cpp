@@ -164,17 +164,29 @@ numerical_type array::get_data_type() const noexcept
 
 const strided_layout& array::get_layout() const noexcept
 {
-	// TODO
-}
+	static strided_layout empty_layout;
+	return
+		m_implementation ? 
+		m_implementation->get_layout() : 
+		empty_layout;
+}	
 
 storage& array::get_storage() noexcept
 {
-	// TODO
+	static storage empty_storage;
+	return
+		m_implementation ? 
+		m_implementation->get_storage() : 
+		empty_storage;
 }
 
 const storage& array::get_storage() const noexcept
 {
-	// TODO
+	static storage empty_storage;
+	return
+		m_implementation ? 
+		m_implementation->get_storage() : 
+		empty_storage;
 }
 
 XMIPP4_NODISCARD

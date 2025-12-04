@@ -46,6 +46,7 @@ public:
 	 * 
 	 * @return storage The alias.
 	 */
+	XMIPP4_CORE_API 
 	storage view() noexcept;
 
 	/**
@@ -53,6 +54,7 @@ public:
 	 * 
 	 * @return hardware::buffer* The buffer. nullptr if none.
 	 */
+	XMIPP4_CORE_API 
 	hardware::buffer* get_buffer() noexcept;
 
 	/**
@@ -60,6 +62,7 @@ public:
 	 * 
 	 * @return const hardware::buffer* The buffer. nullptr if none.
 	 */
+	XMIPP4_CORE_API 
 	const hardware::buffer* get_buffer() const noexcept;
 
 	/**

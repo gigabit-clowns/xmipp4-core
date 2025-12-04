@@ -21,7 +21,7 @@ public:
 	implementation() = default;
 	implementation(
 		strided_layout layout, 
-		std::shared_ptr<storage_type> storage,
+		storage storage,
 		numerical_type data_type
 	) noexcept
 		: m_layout(std::move(layout))
@@ -40,12 +40,7 @@ public:
 		return m_layout;
 	}
 
-	storage_type* get_storage() noexcept
-	{
-		return m_storage.get();
-	}
-
-	std::shared_ptr<storage_type> share_storage() noexcept
+	storage& get_storage() noexcept
 	{
 		return m_storage;
 	}
@@ -64,7 +59,7 @@ public:
 	{
 		return implementation(
 			get_layout().apply_subscripts(subscripts),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -73,7 +68,7 @@ public:
 	{
 		return implementation(
 			get_layout().transpose(),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -82,7 +77,7 @@ public:
 	{
 		return implementation(
 			get_layout().permute(order),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -91,7 +86,7 @@ public:
 	{
 		return implementation(
 			get_layout().matrix_transpose(axis1, axis2),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -100,7 +95,7 @@ public:
 	{
 		return implementation(
 			get_layout().matrix_diagonal(axis1, axis2),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -109,7 +104,7 @@ public:
 	{
 		return implementation(
 			get_layout().squeeze(),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
@@ -118,14 +113,14 @@ public:
 	{
 		return implementation(
 			get_layout().broadcast_to(extents),
-			share_storage(),
+			m_storage.view(),
 			get_data_type()
 		);
 	}
 
 private:
 	strided_layout m_layout;
-	std::shared_ptr<storage_type> m_storage;
+	storage m_storage;
 	numerical_type m_data_type;
 };
 
@@ -136,7 +131,7 @@ array& array::operator=(array&& other) noexcept = default;
 
 array::array(
 	strided_layout layout, 
-	std::shared_ptr<storage_type> storage, 
+	storage storage, 
 	numerical_type data_type
 )
 	: array(
@@ -167,34 +162,19 @@ numerical_type array::get_data_type() const noexcept
 		numerical_type::unknown;
 }
 
-strided_layout array::get_layout() const noexcept
+const strided_layout& array::get_layout() const noexcept
 {
-	return
-		m_implementation ? 
-		m_implementation->get_layout() : 
-		strided_layout();
+	// TODO
 }
 
-array::storage_type* array::get_storage() noexcept
+storage& array::get_storage() noexcept
 {
-	return m_implementation ? m_implementation->get_storage() : nullptr;
+	// TODO
 }
 
-const array::storage_type* array::get_storage() const noexcept
+const storage& array::get_storage() const noexcept
 {
-	return m_implementation ? m_implementation->get_storage() : nullptr;
-}
-
-XMIPP4_NODISCARD
-std::shared_ptr<array::storage_type> array::share_storage() noexcept
-{
-	return m_implementation ? m_implementation->share_storage() : nullptr;
-}
-
-XMIPP4_NODISCARD
-std::shared_ptr<const array::storage_type> array::share_storage() const noexcept
-{
-	return m_implementation ? m_implementation->share_storage() : nullptr;
+	// TODO
 }
 
 XMIPP4_NODISCARD
@@ -314,16 +294,8 @@ array* check_output_array(array *out, hardware::memory_allocator &allocator)
 {
     if (out)
     {
-        const auto *storage = out->get_storage();
-        if (!storage)
-        {
-            XMIPP4_LOG_WARN(
-                "An array was provided for reuse but it does not have storage."
-            );
-            return nullptr;
-        }
-
-        if (&storage->get_memory_resource() != &allocator.get_memory_resource())
+        const auto &storage = out->get_storage();
+        if (&storage.get_memory_resource() != &allocator.get_memory_resource())
         {
             XMIPP4_LOG_WARN(
                 "An array was provided for reuse but it uses a different "
@@ -357,6 +329,7 @@ array array::empty(
     array *out
 )
 {
+	/*
     out = check_output_array(out, allocator);
 
     // Check if we can reuse the output array as-is.
@@ -404,6 +377,7 @@ array array::empty(
         std::move(storage),
         data_type
     );
+	*/
 }
 
 } // namespace multidimensional

@@ -4,6 +4,7 @@
 
 #include "dynamic_subscript.hpp"
 #include "strided_layout.hpp"
+#include "storage.hpp"
 #include "../numerical_type.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
@@ -31,12 +32,10 @@ class strided_layout;
 class array
 {
 public:
-	using storage_type = hardware::buffer;
-
 	XMIPP4_CORE_API array();
 	XMIPP4_CORE_API array(
 		strided_layout layout, 
-		std::shared_ptr<storage_type> storage, 
+		storage storage, 
 		numerical_type data_type
 	);
 	array(const array& other) = delete;
@@ -58,37 +57,21 @@ public:
 	 * 
 	 * @return strided_layout The layout.
 	 */
-	XMIPP4_CORE_API strided_layout get_layout() const noexcept;
+	XMIPP4_CORE_API const strided_layout& get_layout() const noexcept;
 
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return storage_type* The storage.
+	 * @return storage_type& The storage.
 	 */
-	XMIPP4_CORE_API storage_type* get_storage() noexcept;
+	XMIPP4_CORE_API storage& get_storage() noexcept;
 
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return const storage_type* The storage.
+	 * @return const storage_type& The storage.
 	 */
-	XMIPP4_CORE_API const storage_type* get_storage() const noexcept;
-
-	/**
-	 * @brief Get a ref-counted pointer to the storage of this array.
-	 * 
-	 * @return std::shared_ptr<storage_type> The storage.
-	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
-	std::shared_ptr<storage_type> share_storage() noexcept;
-
-	/**
-	 * @brief Get a ref-counted pointer to read only storage of this array.
-	 * 
-	 * @return std::shared_ptr<const storage_type> The storage.
-	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
-	std::shared_ptr<const storage_type> share_storage() const noexcept;
+	XMIPP4_CORE_API const storage& get_storage() const noexcept;
 
 	/**
 	 * @brief Apply a set of subscripts to this layout.

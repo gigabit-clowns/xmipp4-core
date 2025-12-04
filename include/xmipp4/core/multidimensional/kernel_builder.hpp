@@ -13,7 +13,7 @@ namespace multidimensional
 {
 
 class operation_parameters;
-class array_access_layout;
+class strided_layout;
 class kernel;
 
 class kernel_builder
@@ -29,7 +29,7 @@ public:
 
     virtual 
     std::shared_ptr<kernel> build(
-		const array_access_layout &access_layout,
+		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
 		const operation_parameters *parameters
 		/* TODO hardware context */

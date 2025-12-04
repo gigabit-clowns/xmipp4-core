@@ -76,7 +76,6 @@ hardware::memory_resource& storage::get_memory_resource() const noexcept
 	return m_buffer->get_memory_resource();
 }
 
-
 void storage::record_queue(hardware::device_queue &queue, bool exclusive)
 {
 	if (!m_buffer)

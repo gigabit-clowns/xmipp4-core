@@ -7,11 +7,18 @@
 
 namespace xmipp4 
 {
+namespace hardware
+{
+
+class device_queue;
+	
+} // namespace hardware
+
+
 namespace multidimensional
 {
 
-class storage;
-class array_access_layout;
+class array;
 class operation_parameters;
 
 class kernel
@@ -26,12 +33,9 @@ public:
 	kernel& operator=(kernel &&other) = delete;
 
     virtual void execute(
-        const array_access_layout &iteration_layout,
-		span<const numerical_type> data_types,
-		const operation_parameters *parameters,
-        span<storage> read_write_operands,
-        span<const storage> read_only_operands
-		/* TODO hardware context */
+        span<array> read_write_operands,
+        span<const array> read_only_operands,
+		hardware::device_queue *queue
     ) = 0;
 
 };

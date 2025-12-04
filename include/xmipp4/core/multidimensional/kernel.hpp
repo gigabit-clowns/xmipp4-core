@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
 #include "../numerical_type.hpp"
 #include "../span.hpp"
 
@@ -24,7 +25,7 @@ class storage;
  * @brief Abstract representation of an executable operation.
  * 
  */
-class kernel
+class XMIPP4_CORE_API kernel
 {
 public:
 	kernel() = default;

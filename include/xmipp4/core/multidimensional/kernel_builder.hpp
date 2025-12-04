@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 #include "../numerical_type.hpp"
 #include "../backend_priority.hpp"
@@ -24,7 +25,7 @@ class operation_id;
 class strided_layout;
 class kernel;
 
-class kernel_builder
+class XMIPP4_CORE_API kernel_builder
 {
 public:
 	kernel_builder() = default;

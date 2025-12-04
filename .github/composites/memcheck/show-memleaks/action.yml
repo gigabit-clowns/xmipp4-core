@@ -1,0 +1,23 @@
+name: "Print memory leak logs"
+description: "Print test logs for every test that has memory leaks."
+
+inputs:
+  test-numbers:
+    description: "Test numbers with memory leaks."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Show test with memory leaks (Linux)
+      if: runner.os == 'Linux'
+      working-directory: "${{ github.workspace }}/build/Testing/Temporary"
+      shell: bash
+      run: |
+        IFS=',' read -r -a test_numbers_array <<< "${{ inputs.test-numbers }}"
+        for number in "${test_numbers_array[@]}"; do
+          echo "-------------------- Log for test number $number --------------------"
+          cat MemoryChecker.$number.log
+          echo -e "\n\n"
+        done
+        exit false

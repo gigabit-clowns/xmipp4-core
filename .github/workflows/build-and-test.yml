@@ -41,7 +41,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
-        uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
+        uses: ./.github/composites/install-cpp-coverage-tool
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -62,10 +62,10 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
+        uses: ./.github/composites/run-ctest
 
       - name: Generate coverage report
-        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
+        uses: ./.github/composites/run-ctest/coverage-report
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}

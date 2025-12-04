@@ -12,7 +12,7 @@ using namespace xmipp4;
 
 TEST_CASE( "open a dynamic library", "[dynamic_library]" ) 
 {
-	system::dynamic_library dl(get_mock_plugin_path("dummy_plugin"));
+	system::dynamic_library dl(get_mock_plugin_path("dummy-plugin"));
 
 	REQUIRE( dl.is_open() );
 	REQUIRE( dl.get_symbol("lorem_ipsum") == nullptr );
@@ -30,7 +30,7 @@ TEST_CASE( "default construct dynamic_library", "[dynamic_library]" )
 TEST_CASE( "recover shared library path from symbol", "[dynamic_library]" ) 
 {
 	// Open a dynamic library and query a symbol.
-	const auto path = get_mock_plugin_path("dummy_plugin");
+	const auto path = get_mock_plugin_path("dummy-plugin");
 	system::dynamic_library dl(path);
 	const auto *symbol = dl.get_symbol("xmipp4_get_plugin");
 

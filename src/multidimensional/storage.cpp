@@ -35,26 +35,6 @@ const hardware::buffer* storage::get_buffer() const noexcept
 {
 	return m_buffer.get();
 }
- 
-void* storage::get_host_ptr() noexcept
-{
-	if (!m_buffer)
-	{
-		return nullptr;
-	}
-
-	return m_buffer->get_host_ptr();
-}
-
-const void* storage::get_host_ptr() const noexcept
-{
-	if (!m_buffer)
-	{
-		return nullptr;
-	}
-
-	return m_buffer->get_host_ptr();
-}
 
 std::size_t storage::get_size() const noexcept
 {

@@ -66,32 +66,6 @@ public:
 	const hardware::buffer* get_buffer() const noexcept;
 
 	/**
-	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
-	 * 
-	 * @return void* Pointer to the data. nullptr if no buffer is associated or
-	 * the buffer is not host accessible.
-	 */
-	XMIPP4_CORE_API 
-	void* get_host_ptr() noexcept;
-
-	/**
-	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
-	 * 
-	 * @return const void* Pointer to the data. nullptr if no buffer is 
-	 * associated or the buffer is not host accessible.
-	 */
-	XMIPP4_CORE_API 
-	const void* get_host_ptr() const noexcept;
-
-	/**
 	 * @brief Get the size in bytes for this buffer.
 	 * 
 	 * @return std::size_t Size in bytes. 0 if not buffer is associated.

@@ -340,7 +340,7 @@ array* check_output_array(array *out, hardware::memory_allocator &allocator)
 }
 
 static 
-storage cannibalize_output_array_storage(
+storage cannibalize_output_array(
 	array *out, 
 	std::size_t storage_requirement
 )
@@ -372,18 +372,12 @@ array array::empty(
     array *out
 )
 {
-    // Check if we can reuse the output array as-is.
     const auto storage_requirement = 
 		compute_storage_requirement(layout, data_type);
 
     out = check_output_array(out, allocator);
-	auto storage = cannibalize_output_array_storage(
-		out, 
-		storage_requirement
-	);
-    
-    // Allocate new storage if cannibalization failed.
-    if (storage.get_buffer())
+	auto storage = cannibalize_output_array(out, storage_requirement);
+    if (storage.get_buffer() != nullptr)
     {
         const auto alignment = get_alignment_requirement(
             allocator, 

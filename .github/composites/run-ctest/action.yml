@@ -25,10 +25,15 @@ runs:
   using: "composite"
   steps:
     - name: Run tests without memory check
-      if: inputs.check-memleaks == 'false'
+      if: inputs.check-memleaks == 'false' && runner.os != 'Windows'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+    
+    - name: Run test Windows
+      if: inputs.check-memleaks == 'false' && runner.os == 'Windows'
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Run tests with memory check
       if: inputs.check-memleaks == 'true'

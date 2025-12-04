@@ -28,10 +28,10 @@ class storage;
 class XMIPP4_CORE_API kernel
 {
 public:
-	kernel() = default;
+	kernel();
 	kernel(const kernel &other) = delete;
 	kernel(kernel &&other) = delete;
-    virtual ~kernel() = default;
+    virtual ~kernel();
 
 	kernel& operator=(const kernel &other) = delete;
 	kernel& operator=(kernel &&other) = delete;

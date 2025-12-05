@@ -21,10 +21,10 @@ class device;
 namespace multidimensional
 {
 
+class kernel;
 class operation;
 class operation_id;
-class strided_layout;
-class kernel;
+class array_descriptor;
 
 class XMIPP4_CORE_API kernel_builder
 {
@@ -41,16 +41,14 @@ public:
 
 	virtual backend_priority get_suitability(
 		const operation &operation,
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types,
+		span<const array_descriptor> descriptors,
 		hardware::device &device
 	) const = 0;
 
     virtual 
     std::shared_ptr<kernel> build(
 		const operation &operation,
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types,
+		span<const array_descriptor> descriptors,
 		hardware::device &device
 	) const = 0;
 };

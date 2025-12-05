@@ -22,7 +22,7 @@ namespace multidimensional
 {
 
 class operation;
-class strided_layout;
+class array_descriptor;
 class kernel_builder;
 class kernel;
 
@@ -49,8 +49,7 @@ public:
 	XMIPP4_CORE_API
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types,
+		span<const array_descriptor> descriptors,
 		hardware::device &device
 	) const;
 

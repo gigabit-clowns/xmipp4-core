@@ -29,8 +29,7 @@ public:
 
 	kernel_builder* get_most_suitable_builder(
 		const operation &operation,
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types,
+		span<const array_descriptor> descriptors,
 		hardware::device &device
 	) const
 	{
@@ -49,8 +48,7 @@ public:
 			{
 				return item->get_suitability(
 					operation, 
-					layouts, 
-					data_types, 
+					descriptors,
 					device
 				);
 			}
@@ -66,15 +64,13 @@ public:
 
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types,
+		span<const array_descriptor> descriptors,
 		hardware::device &device
 	)
 	{
 		const auto *builder = get_most_suitable_builder(
 			operation, 
-			layouts, 
-			data_types, 
+			descriptors,
 			device
 		);
 
@@ -85,7 +81,7 @@ public:
 			);
 		}
 
-		return builder->build(operation, layouts, data_types, device);
+		return builder->build(operation, descriptors, device);
 	}
 
 private:
@@ -117,27 +113,16 @@ bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)
 
 std::shared_ptr<kernel> kernel_manager::build_kernel(
 	const operation &operation,
-	span<const strided_layout> layouts,
-	span<const numerical_type> data_types,
+	span<const array_descriptor> descriptors,
 	hardware::device &device
 ) const
 {
 	if (!m_implementation)
 	{
-		return implementation().build_kernel(
-			operation, 
-			layouts, 
-			data_types, 
-			device
-		);
+		return implementation().build_kernel(operation, descriptors, device);
 	}
 
-	return m_implementation->build_kernel(
-		operation, 
-		layouts, 
-		data_types, 
-		device
-	);
+	return m_implementation->build_kernel(operation, descriptors, device);
 }
 
 void kernel_manager::create_if_null()

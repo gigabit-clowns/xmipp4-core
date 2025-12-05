@@ -27,6 +27,7 @@ class buffer;
 namespace multidimensional
 {
 
+class array_descriptor;
 class strided_layout;
 
 class array
@@ -58,6 +59,13 @@ public:
 	 * @return strided_layout The layout.
 	 */
 	XMIPP4_CORE_API const strided_layout& get_layout() const noexcept;
+
+	/**
+	 * @brief Get the descriptor of this array.
+	 * 
+	 * @return array_descriptor The descriptor.
+	 */
+	XMIPP4_CORE_API const array_descriptor& get_descriptor() const noexcept;
 
 	/**
 	 * @brief Get the storage of this array.

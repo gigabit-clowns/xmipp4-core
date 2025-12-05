@@ -3,7 +3,6 @@
 #pragma once
 
 #include "../platform/dynamic_shared_object.h"
-#include "../numerical_type.hpp"
 #include "../span.hpp"
 
 namespace xmipp4 
@@ -11,7 +10,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class strided_layout;
+class array_descriptor;
 
 class operation_schema
 {
@@ -27,10 +26,8 @@ public:
 	operation_schema& operator=(operation_schema &&other) = delete;
 
 	virtual void deduce_output(
-		span<strided_layout> output_layouts,
-		span<numerical_type> output_data_types,
-		span<strided_layout> input_layouts,
-		span<numerical_type> input_data_types
+		span<array_descriptor> output_descriptors,
+		span<array_descriptor> input_descriptors
 	) const = 0;
 };
 

@@ -5,6 +5,8 @@
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/multidimensional/operation_schema.hpp>
 
 #include <boost/container/small_vector.hpp>
 
@@ -26,11 +28,44 @@ void operation_dispatcher::dispatch(
 	hardware::device_queue *queue
 )
 {
+	const auto n_outputs = output_operands.size();
+	const auto n_inputs = input_operands.size();
+	const auto n_operands = n_outputs + n_inputs;
 
-	boost::container::small_vector<strided_layout, 16> output_layouts;
-	boost::container::small_vector<numerical_type, 16> output_data_types;
-	// TODO deduce output layout and type.
-	for (std::size_t i = 0; i < output_layouts.size(); ++i)
+	boost::container::small_vector<strided_layout, 16> layouts(n_operands);
+	boost::container::small_vector<numerical_type, 16> data_types(n_operands);
+	const span<strided_layout> output_layouts(
+		layouts.data(), 
+		n_outputs
+	);
+	const span<numerical_type> output_data_types(
+		data_types.data(), 
+		n_outputs
+	);
+	const span<strided_layout> input_layouts(
+		layouts.data() + n_outputs, 
+		n_inputs
+	);
+	const span<numerical_type> input_data_types(
+		data_types.data() + n_outputs, 
+		n_inputs
+	);
+
+	for (std::size_t i = 0; i < n_inputs; ++i)
+	{
+		input_layouts[i] = input_operands[i].get_layout();
+		input_data_types[i] = input_operands[i].get_data_type();
+	}
+
+	const auto &schema = operation.get_operation_schema();
+	schema.deduce_output(
+		output_layouts,
+		output_data_types,
+		input_layouts,
+		input_data_types
+	);
+
+	for (std::size_t i = 0; i < layouts.size(); ++i)
 	{
 		array *out = &output_operands[i];
 		if (out->get_storage() == nullptr)
@@ -39,16 +74,13 @@ void operation_dispatcher::dispatch(
 		}
 
 		output_operands[i] = array::empty(
-			std::move(output_layouts[i]),
-			std::move(output_data_types[i]),
+			layouts[i],
+			data_types[i],
 			allocator,
 			queue,
 			&output_operands[i]
 		);
 	}
-
-	boost::container::small_vector<strided_layout, 16> layouts;
-	boost::container::small_vector<numerical_type, 16> data_types;
 
 	const auto kernel = manager.build_kernel(
 		operation,
@@ -67,7 +99,17 @@ void operation_dispatcher::dispatch(
 		queue
 	);
 
-	// TODO record queues.
+	if (queue)
+	{
+		for (auto &storage : output_storages)
+		{
+			storage.record_queue(*queue);
+		}
+		for (auto &storage : input_storages)
+		{
+			storage.record_queue(*queue);
+		}
+	}
 }
 
 } // namespace multidimensional

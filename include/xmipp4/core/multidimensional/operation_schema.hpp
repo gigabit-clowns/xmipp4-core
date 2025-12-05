@@ -26,16 +26,11 @@ public:
 	operation_schema& operator=(const operation_schema &other) = delete;
 	operation_schema& operator=(operation_schema &&other) = delete;
 
-	virtual void validate_input(
-		span<const strided_layout> layouts,
-		span<const numerical_type> data_types
-	) const = 0;
-
 	virtual void deduce_output(
 		span<strided_layout> output_layouts,
 		span<numerical_type> output_data_types,
-		span<const strided_layout> input_layouts,
-		span<const numerical_type> input_data_types
+		span<strided_layout> input_layouts,
+		span<numerical_type> input_data_types
 	) const = 0;
 };
 

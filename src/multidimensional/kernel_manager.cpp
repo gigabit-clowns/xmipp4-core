@@ -101,7 +101,7 @@ kernel_manager::~kernel_manager() = default;
 
 void kernel_manager::register_builtin_backends()
 {
-	// No-op
+	// TODO start adding
 }
 
 bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)

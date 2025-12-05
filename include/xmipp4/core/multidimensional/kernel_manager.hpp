@@ -52,7 +52,7 @@ public:
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
 		hardware::device &device
-	);
+	) const;
 
 private:
 	class implementation;

@@ -120,7 +120,7 @@ std::shared_ptr<kernel> kernel_manager::build_kernel(
 	span<const strided_layout> layouts,
 	span<const numerical_type> data_types,
 	hardware::device &device
-)
+) const
 {
 	if (!m_implementation)
 	{

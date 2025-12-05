@@ -55,7 +55,7 @@ runs:
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
       shell: bash
       run: |
-        "${{ inputs.cl-coverage-tool }}" --export_type="cobertura:${{ github.workspace }}/build/coverage.xml" --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" -- ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+        "${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}"--export_type="cobertura:${{ github.workspace }}/build/coverage.xml" --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" -- ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Return coverage report path
       id: generate-report

@@ -21,6 +21,7 @@ class device;
 namespace multidimensional
 {
 
+class operation;
 class operation_id;
 class strided_layout;
 class kernel;
@@ -39,6 +40,7 @@ public:
 	const operation_id& get_operation_id() const noexcept;
 
 	backend_priority get_suitability(
+		const operation &operation,
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
 		hardware::device &device
@@ -46,9 +48,9 @@ public:
 
     virtual 
     std::shared_ptr<kernel> build(
+		const operation &operation,
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
-		/* TODO operation parameters */
 		hardware::device &device
 	) const = 0;
 };

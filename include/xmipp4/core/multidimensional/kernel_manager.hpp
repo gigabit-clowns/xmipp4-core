@@ -24,7 +24,7 @@ namespace multidimensional
 {
 
 class strided_layout;
-class operation_id;
+class operation;
 class kernel;
 
 class kernel_manager
@@ -44,12 +44,14 @@ public:
 	XMIPP4_CORE_API
 	void register_builtin_backends() override;
 
-	bool register_builder(std::unique_ptr<kernel_builder> builder);
+	XMIPP4_CORE_API
+	bool register_kernel(std::unique_ptr<kernel_builder> builder);
 
+	XMIPP4_CORE_API
 	std::shared_ptr<kernel> build_kernel(
+		const operation &operation,
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
-		/* TODO operation parameters */
 		hardware::device &device
 	);
 
@@ -58,7 +60,6 @@ private:
 	std::unique_ptr<implementation> m_implementation;
 
 	void create_if_null();
-
 };
 
 } // namespace multidimensional

@@ -18,13 +18,12 @@ class device;
 
 } // namespace hardware
 
-class kernel_builder;
-
 namespace multidimensional
 {
 
-class strided_layout;
 class operation;
+class strided_layout;
+class kernel_builder;
 class kernel;
 
 class kernel_manager

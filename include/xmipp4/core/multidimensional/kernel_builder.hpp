@@ -29,7 +29,7 @@ class kernel;
 class XMIPP4_CORE_API kernel_builder
 {
 public:
-	kernel_builder();
+	kernel_builder() noexcept;
 	kernel_builder(const kernel_builder &other) = default;
 	kernel_builder(kernel_builder &&other) = default;
     virtual ~kernel_builder();
@@ -37,14 +37,14 @@ public:
 	kernel_builder& operator=(const kernel_builder &other) = default;
 	kernel_builder& operator=(kernel_builder &&other) = default;
 
-	const operation_id& get_operation_id() const noexcept;
+	virtual const operation_id& get_operation_id() const noexcept = 0;
 
-	backend_priority get_suitability(
+	virtual backend_priority get_suitability(
 		const operation &operation,
 		span<const strided_layout> layouts,
 		span<const numerical_type> data_types,
 		hardware::device &device
-	) const;
+	) const = 0;
 
     virtual 
     std::shared_ptr<kernel> build(

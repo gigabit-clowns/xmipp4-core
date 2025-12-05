@@ -28,7 +28,7 @@ class storage;
 class XMIPP4_CORE_API kernel
 {
 public:
-	kernel();
+	kernel() noexcept;
 	kernel(const kernel &other) = delete;
 	kernel(kernel &&other) = delete;
     virtual ~kernel();

@@ -55,7 +55,7 @@ runs:
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
       shell: bash
       run: |
-        ls /c/Program Files/OpenCppCoverage 
+        ls "/c/Program Files/OpenCppCoverage"
         ${{ inputs.cl-coverage-tool }} --export_type="cobertura:${{ github.workspace }}/build/coverage.xml" --sources="..\src;..\include" -- ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Return coverage report path

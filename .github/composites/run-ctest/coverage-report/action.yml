@@ -59,6 +59,7 @@ runs:
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
           --modules="${{ github.workspace }}" `
+          --excluded_modules="${{ github.workspace }}\build" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure

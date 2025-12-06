@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SonarQube Scan
-        uses: .gigabit-clowns/.github/.github/composites/sonar-scan@main
+        uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:
           artifact-name: build-artifact
           artifact-path: ${{ github.workspace }}/build

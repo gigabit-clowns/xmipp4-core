@@ -32,6 +32,7 @@ runs:
 
     - name: Run test without memory check (no wrapper) - Windows
       if: inputs.check-memleaks == 'false' && runner.os == 'Windows' && inputs.test-wrapper == ''
+      working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
@@ -43,6 +44,7 @@ runs:
 
     - name: Run tests without memory check (with wrapper) - Windows
       if: inputs.check-memleaks == 'false' && runner.os == 'Windows' && inputs.test-wrapper != ''
+      working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 

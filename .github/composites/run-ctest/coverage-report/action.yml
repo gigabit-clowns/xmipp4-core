@@ -58,7 +58,6 @@ runs:
       run: |
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
-          --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
           --modules="${{ github.workspace }}" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --cover_children `
@@ -72,19 +71,19 @@ runs:
         cat coverage.xml
         rm coverage.xml
 
-    - name: Generate coverage report (Windows)
-      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-      working-directory: "${{ github.workspace }}/build"
-      shell: pwsh
-      run: |
-        & "${{ inputs.cl-coverage-tool }}" `
-          --working_dir="${{ github.workspace }}\build" `
-          --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
-          --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
-          --cover_children `
-          --quiet `
-          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
-        Write-Host (Get-Content "${{ github.workspace }}\build\coverage.xml" -Raw)
+    #- name: Generate coverage report (Windows)
+    #  if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: pwsh
+    #  run: |
+    #    & "${{ inputs.cl-coverage-tool }}" `
+    #      --working_dir="${{ github.workspace }}\build" `
+    #      --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
+    #      --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
+    #      --cover_children `
+    #      --quiet `
+    #      -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
+    #    Write-Host (Get-Content "${{ github.workspace }}\build\coverage.xml" -Raw)
 
     - name: Return coverage report path
       id: generate-report

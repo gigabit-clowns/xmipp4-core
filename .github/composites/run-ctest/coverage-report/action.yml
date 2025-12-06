@@ -69,10 +69,10 @@ runs:
           "ctest", "-C", $env:BUILD_TYPE, "-T", "test", "--rerun-failed", "--output-on-failure"
         )
         Write-Host "Command line:"
-        Write-Host "& `"$tool`" $($args -join ' ')"
+        Write-Host "& `"$raw`" $($args -join ' ')"
         
         Write-Host "`n=== Running OpenCppCoverage (verbose) ==="
-        & "$tool" --verbose `
+        & "$raw" --verbose `
           --working_dir="${{ github.workspace }}\build" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `

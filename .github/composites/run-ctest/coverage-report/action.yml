@@ -56,10 +56,10 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: cmd
       run: |
-        "${{ inputs.cl-coverage-tool }}" \
-          --working_dir="${{ github.workspace }}" \
-          --export_type="cobertura:${{ github.workspace }}/build/coverage.xml" \
-          --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" \
+        "${{ inputs.cl-coverage-tool }}" `
+          --working_dir="${{ github.workspace }}" `
+          --export_type="cobertura:${{ github.workspace }}/build/coverage.xml" `
+          --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
           -- ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Return coverage report path

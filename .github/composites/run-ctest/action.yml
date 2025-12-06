@@ -27,7 +27,7 @@ runs:
     - name: Run tests without memory check (no wrapper) - Linux & macOS
       if: inputs.check-memleaks == 'false' && runner.os != 'Windows' && inputs.test-wrapper == ''
       working-directory: "${{ github.workspace }}/build"
-      shell: runner.os == 'Windows' ? cmd : bash
+      shell: ${{ runner.os == 'Windows' && 'cmd' || 'bash' }}
       run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Run tests without memory check (with wrapper) - Linux & macOS

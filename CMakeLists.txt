@@ -13,6 +13,7 @@ project(
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
 option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" ON)
 option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" ON)
+option(XMIPP4_CORE_ENABLE_COVERAGE "Enable code coverage" OFF)
 
 # Add the CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)

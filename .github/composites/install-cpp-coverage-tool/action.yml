@@ -60,10 +60,10 @@ runs:
       shell: bash
       run: |
         choco install OpenCppCoverage -y
-        echo opencppcoverage-bash="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
+        echo opencppcoverage="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
 
     - name: Export OpenCppCoverage path (Powershell)
       id: install-opencppcoverage-pwsh
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: pwsh
-      run: opencppcoverage-pwsh="C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" >> $env:GITHUB_OUTPUT
+      run: opencppcoverage="C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" >> $env:GITHUB_OUTPUT

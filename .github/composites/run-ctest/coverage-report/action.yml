@@ -56,32 +56,6 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: pwsh
       run: |
-        #$raw = '${{ inputs.cl-coverage-tool }}'
-        #Write-Host "Raw input path: $raw"
-        #
-        ## Show full command we will run (for copy/paste)
-        #$args = @(
-        #  "--working_dir=${{ github.workspace }}\build",
-        #  "--export_type=cobertura:${{ github.workspace }}\build\coverage.xml",
-        #  "--sources=${{ github.workspace }}\src;${{ github.workspace }}\include",
-        #  "--cover_children",
-        #  "--",
-        #  "ctest", "-C", $env:BUILD_TYPE, "-T", "test", "--rerun-failed", "--output-on-failure"
-        #)
-        #Write-Host "Command line:"
-        #Write-Host "& `"$raw`" $($args -join ' ')"
-        #
-        Write-Host "`n=== Running OpenCppCoverage (verbose) ==="
-        #& "$raw" --verbose `
-        #  --working_dir="${{ github.workspace }}\build" `
-        #  --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
-        #  --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
-        #  --cover_children `
-        #  --excluded_modules="C:\Windows\*" `
-        #  -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure 2>&1 | Tee-Object -Variable covout
-
-        #$covout | Select-Object -Last 200 | ForEach-Object { Write-Host $_ }
-
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
@@ -89,7 +63,7 @@ runs:
           --cover_children `
           --quiet `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
-        Write-Host "`n=== OpenCppCoverage exit output (last 200 lines) ==="
+        Write-Host (Get-Content "${{ github.workspace }}\build\coverage.xml" -Raw)
 
     - name: Return coverage report path
       id: generate-report

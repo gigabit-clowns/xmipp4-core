@@ -53,7 +53,7 @@ runs:
 
     - name: Install coverage tools (Windows -> OpenCppCoverage)
       id: install-opencppcoverage
-      if: runner.os == 'Windows'
+      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: bash
       run: |
         choco install OpenCppCoverage -y

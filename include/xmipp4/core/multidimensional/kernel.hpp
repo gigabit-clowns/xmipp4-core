@@ -20,6 +20,7 @@ namespace multidimensional
 {
 
 class storage;
+class inmutable_storage;
 
 /**
  * @brief Abstract representation of an executable operation.
@@ -47,7 +48,7 @@ public:
 	 */
     virtual void execute(
         span<storage> read_write_operands,
-        span<const storage> read_only_operands,
+        span<inmutable_storage> read_only_operands,
 		hardware::device_queue *queue
     ) const = 0;
 };

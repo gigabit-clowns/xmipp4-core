@@ -94,13 +94,12 @@ void operation_dispatcher::dispatch(
 	);
 	XMIPP4_ASSERT( kernel );
 
-	// TODO populate output and input storage
-	boost::container::small_vector<storage, 16> output_storages(n_outputs);
-	boost::container::small_vector<storage, 16> input_storages(n_inputs);
+	/*
+	boost::container::small_vector<inmutable_storage, 16> input_storages(n_inputs);
 
 	kernel->execute(
 		span<storage>(output_storages.data(), output_storages.size()),
-		{}, // TODO handle const storages.
+		span<inmutable_storage>(input_storages.data(), input_storages.size()),
 		queue
 	);
 
@@ -115,6 +114,7 @@ void operation_dispatcher::dispatch(
 			storage.record_queue(*queue);
 		}
 	}
+	*/
 }
 
 } // namespace multidimensional

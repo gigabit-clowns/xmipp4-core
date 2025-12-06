@@ -54,7 +54,7 @@ runs:
     - name: Generate coverage report (Windows)
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
       working-directory: "${{ github.workspace }}/build"
-      shell: cmd
+      shell: pwsh
       run: |
         "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}" `

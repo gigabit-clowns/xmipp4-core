@@ -69,7 +69,7 @@ jobs:
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
-          cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage }}
+          cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5

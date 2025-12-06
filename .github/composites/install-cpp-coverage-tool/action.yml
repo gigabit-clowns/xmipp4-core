@@ -9,9 +9,12 @@ inputs:
     description: "C++ compiler being used by the runner"
     required: true
 outputs:
-  opencppcoverage:
+  opencppcoverage-bash:
     description: "Full path to OpenCppCoverage (in bash format)"
-    value: ${{ steps.install-opencppcoverage.outputs.opencppcoverage }}
+    value: ${{ steps.install-opencppcoverage-bash.outputs.opencppcoverage }}
+  opencppcoverage-pwsh:
+    description: "Full path to OpenCppCoverage (in Powershell format)"
+    value: ${{ steps.install-opencppcoverage-pwsh.outputs.opencppcoverage }}
 
 runs:
   using: "composite"
@@ -52,9 +55,15 @@ runs:
         python -m pip install gcovr
 
     - name: Install coverage tools (Windows -> OpenCppCoverage)
-      id: install-opencppcoverage
+      id: install-opencppcoverage-bash
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: bash
       run: |
         choco install OpenCppCoverage -y
-        echo opencppcoverage="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
+        echo opencppcoverage-bash="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
+
+    - name: Export OpenCppCoverage path (Powershell)
+      id: install-opencppcoverage-pwsh
+      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
+      shell: pwsh
+      run: 'opencppcoverage-bash="C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe"' >> $env:GITHUB_OUTPUT

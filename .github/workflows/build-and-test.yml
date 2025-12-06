@@ -63,7 +63,7 @@ jobs:
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
-	
+
       - name: Test
         run: |
           echo "TEST 1: ${{ steps.install-coverage.outputs.opencppcoverage-bash }}"

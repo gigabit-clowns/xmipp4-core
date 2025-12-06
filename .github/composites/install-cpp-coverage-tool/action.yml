@@ -62,10 +62,10 @@ runs:
         choco install OpenCppCoverage -y
         echo opencppcoverage="/c/Program Files/OpenCppCoverage/OpenCppCoverage.exe" >> "$GITHUB_OUTPUT"
 
-    - name: Export OpenCppCoverage path (Powershell)
+    - name: Export OpenCppCoverage path for Windows (Powershell)
       id: install-opencppcoverage-pwsh
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: pwsh
       run: |
         $path = 'C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe'
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "opencppcoverage-windows=$path"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "opencppcoverage=$path"

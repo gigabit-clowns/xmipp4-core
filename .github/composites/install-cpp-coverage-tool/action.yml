@@ -66,4 +66,6 @@ runs:
       id: install-opencppcoverage-pwsh
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: pwsh
-      run: opencppcoverage="C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" >> $env:GITHUB_OUTPUT
+      run: |
+        $path = 'C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe'
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "opencppcoverage-windows=$path"

@@ -7,10 +7,10 @@ inputs:
     required: false
     default: false
   drmemory:
-    description: "Full path to Dr. Memory executable"
+    description: "Full path to Dr. Memory executable (for Windows only)."
     required: false
   test-wrapper:
-    description: "Wrapper command to run tests (e.g. OpenCppCoverage)"
+    description: "Wrapper command to run tests (e.g. OpenCppCoverage). Will be ignored if used with check-memleak."
     required: false
     default: ""
 outputs:
@@ -24,16 +24,27 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Run tests without memory check
-      if: inputs.check-memleaks == 'false' && runner.os != 'Windows'
+    - name: Run tests without memory check (no wrapper) - Linux & macOS
+      if: inputs.check-memleaks == 'false' && runner.os != 'Windows' && inputs.test-wrapper == ''
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+
+    - name: Run test without memory check (no wrapper) - Windows
+      if: inputs.check-memleaks == 'false' && runner.os == 'Windows' && inputs.test-wrapper == ''
+      shell: bash
+      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+
+    - name: Run tests without memory check (with wrapper) - Linux & macOS
+      if: inputs.check-memleaks == 'false' && runner.os != 'Windows' && inputs.test-wrapper != ''
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
-    
-    - name: Run test Windows
-      if: inputs.check-memleaks == 'false' && runner.os == 'Windows'
+
+    - name: Run tests without memory check (with wrapper) - Windows
+      if: inputs.check-memleaks == 'false' && runner.os == 'Windows' && inputs.test-wrapper != ''
       shell: bash
-      run: ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+      run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
 
     - name: Run tests with memory check
       if: inputs.check-memleaks == 'true'

@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/array.hpp>
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -24,20 +24,24 @@ public:
 		storage storage,
 		numerical_type data_type
 	) noexcept
-		: m_layout(std::move(layout))
-		, m_storage(std::move(storage))
-		, m_data_type(data_type)
+		: m_storage(std::move(storage))
+		, m_descriptor(std::move(layout), data_type)
 	{
+	}
+
+	const array_descriptor& get_descriptor() const noexcept
+	{
+		return m_descriptor;
 	}
 
 	numerical_type get_data_type() const noexcept
 	{
-		return m_data_type;
+		return m_descriptor.get_data_type();
 	}
 
 	const strided_layout& get_layout() const noexcept
 	{
-		return m_layout;
+		return m_descriptor.get_layout();
 	}
 
 	storage& get_storage() noexcept
@@ -47,12 +51,12 @@ public:
 
 	std::size_t get_rank() const noexcept
 	{
-		return m_layout.get_rank();
+		return get_layout().get_rank();
 	}
 
 	void get_extents(std::vector<std::size_t> &extents) const
 	{
-		m_layout.get_extents(extents);
+		get_layout().get_extents(extents);
 	}
 
 	implementation apply_subscripts(span<const dynamic_subscript> subscripts)
@@ -119,9 +123,9 @@ public:
 	}
 
 private:
-	strided_layout m_layout;
 	storage m_storage;
-	numerical_type m_data_type;
+	array_descriptor m_descriptor;
+
 };
 
 array::array() = default;
@@ -152,6 +156,15 @@ array::array(std::shared_ptr<implementation> impl) noexcept
 array::array(implementation &&impl)
 	: array(std::make_shared<implementation>(std::move(impl)))
 {
+}
+
+const array_descriptor& array::get_descriptor() const noexcept
+{
+	static array_descriptor empty_descriptor;
+	return
+		m_implementation ? 
+		m_implementation->get_descriptor() : 
+		empty_descriptor;
 }
 
 numerical_type array::get_data_type() const noexcept

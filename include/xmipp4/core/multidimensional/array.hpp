@@ -47,6 +47,13 @@ public:
 	XMIPP4_CORE_API array& operator=(array&& other) noexcept;
 
 	/**
+	 * @brief Get the descriptor of this array.
+	 * 
+	 * @return array_descriptor The descriptor.
+	 */
+	XMIPP4_CORE_API const array_descriptor& get_descriptor() const noexcept;
+
+	/**
 	 * @brief Get the data type
 	 * 
 	 * @return numerical_type 
@@ -59,13 +66,6 @@ public:
 	 * @return strided_layout The layout.
 	 */
 	XMIPP4_CORE_API const strided_layout& get_layout() const noexcept;
-
-	/**
-	 * @brief Get the descriptor of this array.
-	 * 
-	 * @return array_descriptor The descriptor.
-	 */
-	XMIPP4_CORE_API const array_descriptor& get_descriptor() const noexcept;
 
 	/**
 	 * @brief Get the storage of this array.

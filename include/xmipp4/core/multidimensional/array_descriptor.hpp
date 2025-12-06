@@ -14,17 +14,26 @@ namespace multidimensional
 class array_descriptor
 {
 public:
+	XMIPP4_CORE_API
 	array_descriptor() noexcept;
+	XMIPP4_CORE_API
 	array_descriptor(strided_layout layout, numerical_type data_type) noexcept;
-	array_descriptor(const array_descriptor &other) = default;
-	array_descriptor(array_descriptor &&other) = default;
-	~array_descriptor() = default;
+	XMIPP4_CORE_API
+	array_descriptor(const array_descriptor &other);
+	XMIPP4_CORE_API
+	array_descriptor(array_descriptor &&other) noexcept;
+	XMIPP4_CORE_API
+	~array_descriptor();
 
-	array_descriptor& operator=(const array_descriptor &other) = default;
-	array_descriptor& operator=(array_descriptor &&other) = default;
+	XMIPP4_CORE_API
+	array_descriptor& operator=(const array_descriptor &other);
+	XMIPP4_CORE_API
+	array_descriptor& operator=(array_descriptor &&other) noexcept;
 
+	XMIPP4_CORE_API
 	const strided_layout& get_layout() const noexcept;
 
+	XMIPP4_CORE_API
 	numerical_type get_data_type() const noexcept;
 
 private:
@@ -32,7 +41,17 @@ private:
 	numerical_type m_data_type;
 };
 
-// TODO operators
+XMIPP4_CORE_API
+bool operator==(
+	const array_descriptor &lhs, 
+	const array_descriptor &rhs
+) noexcept;
+
+XMIPP4_CORE_API
+bool operator!=(
+	const array_descriptor &lhs, 
+	const array_descriptor &rhs
+) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

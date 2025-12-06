@@ -16,11 +16,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
+class operation_dispatcher::implementation {};
+
 static void allocate_output(
 	span<array> operands,
 	span<const array_descriptor> descriptors,
 	hardware::memory_allocator &allocator,
-	hardware::device &device,
 	hardware::device_queue *queue
 )
 {
@@ -83,7 +84,6 @@ void operation_dispatcher::dispatch(
 		output_operands, 
 		output_descriptors, 
 		allocator, 
-		device, 
 		queue
 	);
 

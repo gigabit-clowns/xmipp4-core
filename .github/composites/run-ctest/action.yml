@@ -49,6 +49,6 @@ runs:
     - name: Run tests with memory check
       if: inputs.check-memleaks == 'true'
       id: run-with-memcheck
-      uses: gigabit-clowns/.github/.github/composites/run-ctest/memcheck@main
+      uses: ./.github/composites/run-ctest/memcheck
       with:
         drmemory: ${{ inputs.drmemory }}

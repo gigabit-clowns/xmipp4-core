@@ -27,7 +27,12 @@ public:
     operation_id& operator=(const operation_id &other) = default;
     operation_id& operator=(operation_id &&other) = default;
 
-    const std::string & get_name() const noexcept;
+	/**
+	 * @brief Get the name of the operation.
+	 * 
+	 * @return const std::string& The name.
+	 */
+    const std::string& get_name() const noexcept;
 
 private:
     std::string m_name;

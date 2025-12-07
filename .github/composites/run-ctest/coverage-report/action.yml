@@ -58,13 +58,13 @@ runs:
       run: |
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
-          --modules="${{ github.workspace }}\build\tests" `
+          --modules="${{ github.workspace }}\build" `
+          --sources="*xmipp4-core\src*;*xmipp4-core\include*" `
+          --excluded_sources="*tests*" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
-        #  --excluded_modules="C:\Windows\*" `
-        #  --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
-      
+
     - name: Test result
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
       working-directory: "${{ github.workspace }}/build"

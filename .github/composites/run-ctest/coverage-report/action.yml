@@ -58,8 +58,9 @@ runs:
       run: |
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
-          --modules="${{ github.workspace }}" `
-          --excluded_modules="${{ github.workspace }}\build" `
+          --modules="*tests*;*xmipp4*" `
+          --excluded_modules="C:\Windows\*;*vcruntime*;*ucrtbase*" `
+          --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure

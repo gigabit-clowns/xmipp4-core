@@ -169,20 +169,13 @@ const array_descriptor& array::get_descriptor() const noexcept
 
 numerical_type array::get_data_type() const noexcept
 {
-	return
-		m_implementation ? 
-		m_implementation->get_data_type() : 
-		numerical_type::unknown;
+	return get_descriptor().get_data_type();
 }
 
 const strided_layout& array::get_layout() const noexcept
 {
-	static strided_layout empty_layout;
-	return
-		m_implementation ? 
-		m_implementation->get_layout() : 
-		empty_layout;
-}	
+	return get_descriptor().get_layout();
+}		
 
 storage* array::get_storage() noexcept
 {
@@ -203,7 +196,7 @@ const storage* array::get_storage() const noexcept
 XMIPP4_NODISCARD
 std::size_t array::get_rank() const noexcept
 {
-	return m_implementation ? m_implementation->get_rank() : 0U;
+	return get_layout().get_rank();
 }
 
 void array::get_extents(std::vector<std::size_t> &extents) const

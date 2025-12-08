@@ -37,7 +37,7 @@ runs:
       if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: ./build/coverage-report-*/coverage.xml
+        reports: ./build/coverage-report-ubuntu-latest-gcc-g++/coverage.xml;./build/coverage-report-macos-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-gcc-g++/coverage.xml;./build/coverage-report-ubuntu-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-cl-cl/coverage.xml
         targetdir: build
         reporttypes: Cobertura
         sourcedirs: '${{ github.workspace }}'

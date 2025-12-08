@@ -55,4 +55,3 @@ bool operator!=(
 
 } // namespace multidimensional
 } // namespace xmipp4
-

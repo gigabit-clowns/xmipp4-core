@@ -43,32 +43,31 @@ runs:
           --exclude '.*_deps/.*'
         cat report.txt
 
-    #- name: Generate coverage report (Windows)
+    #- name: Test
     #  if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-    #  uses: ./.github/composites/run-ctest
-    #  with:
-    #    test-wrapper: '"${{ inputs.cl-coverage-tool }}" --export_type="cobertura:${{ github.workspace }}/build/coverage.xml" --sources="../src;../include" --'
+    #  working-directory: "${{ github.workspace }}/build"
+    #  shell: pwsh
+    #  run: |
+    #    # Converting report path to Windows format
+    #    $reportInput = '${{ inputs.report-path }}'
+    #    $reportPath = $reportInput -replace '/', '\'
 
-    - name: Test
+    #    Write-Host "--- Collecting coverage info ---"
+    #    & "${{ inputs.cl-coverage-tool }}" `
+    #      --working_dir="${{ github.workspace }}\build" `
+    #      --modules="xmipp4-core.dll" `
+    #      --excluded_sources="*tests*" `
+    #      --excluded_sources="*_deps*" `
+    #      --excluded_sources="*Program Files*" `
+    #      --excluded_sources="*Microsoft Visual Studio*" `
+    #      --excluded_sources="*_work*" `
+    #      --export_type="cobertura:$reportPath" `
+    #      --cover_children `
+    #      -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
+    #    Write-Host "--- Coverage info collected ---"
+
+    - name: Generate coverage report (Windows)
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-      working-directory: "${{ github.workspace }}/build"
-      shell: pwsh
-      run: |
-        # Converting report path to Windows format
-        $reportInput = '${{ inputs.report-path }}'
-        $reportPath = $reportInput -replace '/', '\'
-        Write-Host "Coverage report path: $reportPath"
-
-        Write-Host "--- Collecting coverage info ---"
-        & "${{ inputs.cl-coverage-tool }}" `
-          --working_dir="${{ github.workspace }}\build" `
-          --modules="xmipp4-core.dll" `
-          --excluded_sources="*tests*" `
-          --excluded_sources="*_deps*" `
-          --excluded_sources="*Program Files*" `
-          --excluded_sources="*Microsoft Visual Studio*" `
-          --excluded_sources="*_work*" `
-          --export_type="cobertura:$reportPath" `
-          --cover_children `
-          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
-        Write-Host "--- Coverage info collected ---"
+      uses: ./.github/composites/run-ctest
+      with:
+        test-wrapper: '"${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build" --modules="xmipp4-core.dll" --excluded_sources="*tests*" --excluded_sources="*_deps*" --excluded_sources="*Program Files*" --excluded_sources="*Microsoft Visual Studio*" --excluded_sources="*_work*" --export_type="cobertura:${{ inputs.report-path }}" --cover_children --'

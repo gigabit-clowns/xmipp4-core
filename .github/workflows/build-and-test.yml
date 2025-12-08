@@ -152,6 +152,6 @@ jobs:
         uses: ./.github/composites/sonar-scan
         with:
           build-artifact-name: "build-artifact"
-          coverage-pattern: "{coverage-report-*, build-artifact}"
+          coverage-pattern: "coverage-report-*"
           coverage-path: ${{ github.workspace }}/build
           sonar-token: ${{ secrets.SONAR_TOKEN }}

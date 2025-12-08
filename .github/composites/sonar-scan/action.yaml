@@ -1,0 +1,46 @@
+name: "SonarQube scan"
+description: "Runs SonarQube scan"
+
+inputs:
+  artifact-pattern:
+    description: "Pattern of the artifact/s to download"
+    required: false
+  artifact-path:
+    description: "Path where the artifact/s will be downloaded"
+    required: false
+  sonar-token:
+    description: "SonarQube token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # Needed to get git blame information for SonarQube
+
+    - uses: actions/download-artifact@v6
+      if: ${{ inputs.artifact-name && inputs.artifact-path }}
+      with:
+        pattern: ${{ inputs.artifact-pattern }}
+        path: ${{ inputs.artifact-path }}
+        merge-multiple: true
+
+    # Regular scan for most events
+    - name: SonarQube scan for most events
+      if: ${{ github.event_name != 'workflow_dispatch' }}
+      uses: SonarSource/sonarqube-scan-action@v6
+      env:
+          SONAR_TOKEN: ${{ inputs.sonar-token }}
+
+    # When trigger event is workflow_dispatch, SonarQube action
+    # will always treat it as main branch unless we specify the branch name
+    - name: SonarQube scan for workflow_dispatch
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      uses: SonarSource/sonarqube-scan-action@v6
+      env:
+          SONAR_TOKEN: ${{ inputs.sonar-token }}
+      with:
+        args: >
+          -Dsonar.branch.name=${{ github.ref_name }}

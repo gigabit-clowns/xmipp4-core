@@ -40,7 +40,7 @@ runs:
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --gcov-executable "${{ steps.set-gcov-executable.outputs.gcov-executable }}" \
-          --sonarqube -o "$REPORT_PATH" \
+          --cobertura -o "$REPORT_PATH" \
           --txt report.txt \
           --exclude '.*_deps/.*'
         cat report.txt
@@ -72,9 +72,7 @@ runs:
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
       working-directory: "${{ github.workspace }}/build"
       shell: bash
-      run: |
-        cat coverage.xml
-        rm coverage.xml
+      run: cat coverage.xml
 
     #- name: Generate coverage report (Windows)
     #  if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''

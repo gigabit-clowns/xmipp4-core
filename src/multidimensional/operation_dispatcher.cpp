@@ -5,6 +5,7 @@
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 
@@ -32,7 +33,7 @@ static void allocate_output(
 			out = nullptr;
 		}
 
-		operands[i] = array::empty(
+		operands[i] = empty(
 			descriptors[i].get_layout(),
 			descriptors[i].get_data_type(),
 			allocator,

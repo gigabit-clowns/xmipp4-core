@@ -9,7 +9,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-
 class array::implementation
 {
 public:

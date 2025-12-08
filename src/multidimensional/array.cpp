@@ -338,12 +338,13 @@ void array::record_queue(hardware::device_queue &queue, bool exclusive) const
 {
 	if (!m_implementation)
 	{
-		throw invalid_operation_error("Can not call record_queue on an uninitialized array");
+		throw invalid_operation_error(
+			"Can not call record_queue on an uninitialized array"
+		);
 	}
 
 	m_implementation->record_queue(queue, exclusive);
 }
-
 
 } // namespace multidimensional
 } // namespace xmipp4

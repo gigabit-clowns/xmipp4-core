@@ -58,6 +58,11 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: pwsh
       run: |
+        # Converting report path to Windows format
+        $reportInput = '${{ inputs.report-path }}'
+        $reportFixed = $reportInput -replace '/', '\\'
+        $reportPath = Join-Path -Path '${{ github.workspace }}' -ChildPath $reportFixed
+        
         Write-Host "--- Collecting coverage info ---"
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
@@ -67,7 +72,7 @@ runs:
           --excluded_sources="*Program Files*" `
           --excluded_sources="*Microsoft Visual Studio*" `
           --excluded_sources="*_work*" `
-          --export_type="cobertura:${{ github.workspace }}\coverage.xml" `
+          --export_type="cobertura:$reportPath" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
         Write-Host "--- Coverage info collected ---"

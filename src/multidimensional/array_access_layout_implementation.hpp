@@ -39,8 +39,7 @@ public:
 	);
 
 	void add_operand(
-		extent_vector_type &extents,
-		stride_vector_type &strides,
+		stride_vector_type strides,
 		std::ptrdiff_t offset
 	);
 
@@ -79,10 +78,6 @@ private:
 
 	void trim_axes(std::size_t n);
 
-	void broadcast_operand(
-		extent_vector_type &extents,
-		stride_vector_type &strides
-	);
 };
 
 } // namespace multidimensional

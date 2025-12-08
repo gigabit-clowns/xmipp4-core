@@ -64,14 +64,32 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	}
 	XMIPP4_ASSERT( extents.size() == strides.size() );
 
-	if (!m_implementation)
+	if (m_implementation)
 	{
-		m_implementation = 
-			std::make_unique<array_access_layout_implementation>(extents);
+		const auto current_extents = m_implementation->get_extents();
+		const auto equal_extents = std::equal(
+			extents.cbegin(), 
+			extents.cend(),
+			current_extents.begin(), 
+			current_extents.end()
+		);
+
+		if (!equal_extents)
+		{
+			throw std::invalid_argument(
+				"Provided layout's extents do not match the iteration extents"
+			);
+		}
+	}
+	else
+	{
+		m_implementation = std::make_unique<array_access_layout_implementation>(
+			std::move(extents)
+		);
 	}
 
 	XMIPP4_ASSERT( m_implementation );
-	m_implementation->add_operand(extents, strides, offset);
+	m_implementation->add_operand(std::move(strides), offset);
 
 	return *this;
 }

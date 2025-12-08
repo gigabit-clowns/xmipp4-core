@@ -144,6 +144,10 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
+      # TODO REMOVE WHEN COMPOSITE IS IN .GITHUB REPO
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: SonarQube Scan
         uses: ./.github/composites/sonar-scan
         with:

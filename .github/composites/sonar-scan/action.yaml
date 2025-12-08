@@ -26,6 +26,11 @@ runs:
         pattern: ${{ inputs.artifact-pattern }}
         path: ${{ inputs.artifact-path }}
         merge-multiple: true
+    
+    - name: test
+      run: |
+        find . -name "coverage*.xml"
+        false
 
     # Regular scan for most events
     - name: SonarQube scan for most events

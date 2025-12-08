@@ -82,26 +82,6 @@ public:
 	 * initialized
 	 */
 	XMIPP4_CORE_API const storage* get_storage() const noexcept;
-
-	/**
-	 * @brief Apply a set of subscripts to this layout.
-	 * 
-	 * @tparam Args Types of the arguments. Must be std::ptrdiff_t, slice,
-	 * new_axis_tag or ellipsis_tag.
-	 * @param args Subscripts to be applied to this array.
-	 * @see apply_subscripts
-	 * @return array The resulting array.
-	 * 
-	 */
-	template <typename... Args>
-	XMIPP4_NODISCARD 
-	array operator()(Args&& ...args)
-	{
-		const std::array<dynamic_subscript, sizeof...(Args)> subscripts = {
-			dynamic_subscript(std::forward<Args>(args))...
-		};
-		return apply_subscripts(make_span(subscripts));
-	}
 	
 	/**
 	 * @brief Get the rank of the array, i.e. the number of axes.
@@ -126,6 +106,26 @@ public:
 	 */
 	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array view() noexcept;
+
+	/**
+	 * @brief Apply a set of subscripts to this layout.
+	 * 
+	 * @tparam Args Types of the arguments. Must be std::ptrdiff_t, slice,
+	 * new_axis_tag or ellipsis_tag.
+	 * @param args Subscripts to be applied to this array.
+	 * @see apply_subscripts
+	 * @return array The resulting array.
+	 * 
+	 */
+	template <typename... Args>
+	XMIPP4_NODISCARD 
+	array operator()(Args&& ...args)
+	{
+		const std::array<dynamic_subscript, sizeof...(Args)> subscripts = {
+			dynamic_subscript(std::forward<Args>(args))...
+		};
+		return apply_subscripts(make_span(subscripts));
+	}
 
 	/**
 	 * @brief Apply a set of dynamic subscripts to this layout.

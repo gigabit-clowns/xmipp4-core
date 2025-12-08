@@ -1,16 +1,20 @@
 name: "Generate Coverage Report"
-description: "Generates coverage reports for every OS"
+description: "Generates coverage reports for every OS."
 
 inputs:
   compiler-cc:
-    description: "C compiler being used by the runner"
+    description: "C compiler being used by the runner."
     required: true
   compiler-cxx:
-    description: "C++ compiler being used by the runner"
+    description: "C++ compiler being used by the runner."
     required: true
   cl-coverage-tool:
-    description: "Path to the coverage tool used by Windows with MSVC"
+    description: "Path to the coverage tool used by Windows with MSVC."
     required: false
+  report-path:
+    description: "Path to save the coverage report."
+    required: false
+    default: "coverage.xml"
 outputs:
   report-path:
     description: "Full path to the coverage report." 
@@ -34,13 +38,11 @@ runs:
       if: inputs.compiler-cc != 'cl' && inputs.compiler-cxx != 'cl'
       working-directory: "${{ github.workspace }}/build"
       shell: bash
-      env:
-        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
       run: |
         gcovr -r "${{ github.workspace }}" \
           --object-directory "${{ github.workspace }}/build" \
           --gcov-executable "${{ steps.set-gcov-executable.outputs.gcov-executable }}" \
-          --cobertura -o "$REPORT_PATH" \
+          --cobertura -o "${{ inputs.report-path }}" \
           --txt report.txt \
           --exclude '.*_deps/.*'
         cat report.txt
@@ -64,8 +66,9 @@ runs:
           --excluded_sources="*Program Files*" `
           --excluded_sources="*Microsoft Visual Studio*" `
           --excluded_sources="*_work*" `
-          --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
+          --export_type="cobertura:${{ github.workspace }}\coverage.xml" `
           --cover_children `
+          --quiet `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
 
     - name: Test result
@@ -73,24 +76,3 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: cat coverage.xml
-
-    #- name: Generate coverage report (Windows)
-    #  if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-    #  working-directory: "${{ github.workspace }}/build"
-    #  shell: pwsh
-    #  run: |
-    #    & "${{ inputs.cl-coverage-tool }}" `
-    #      --working_dir="${{ github.workspace }}\build" `
-    #      --sources="${{ github.workspace }}\src;${{ github.workspace }}\include" `
-    #      --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
-    #      --cover_children `
-    #      --quiet `
-    #      -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
-    #    Write-Host (Get-Content "${{ github.workspace }}\build\coverage.xml" -Raw)
-
-    - name: Return coverage report path
-      id: generate-report
-      shell: bash
-      env:
-        REPORT_PATH: ${{ github.workspace }}/build/coverage.xml
-      run: echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"

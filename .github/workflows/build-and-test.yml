@@ -70,6 +70,7 @@ jobs:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
           cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
+          report-path: ${{ github.workspace }}/coverage.xml
 
       - name: Uploade coverage report
         uses: actions/upload-artifact@v5

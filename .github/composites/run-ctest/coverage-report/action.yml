@@ -63,6 +63,7 @@ runs:
           --excluded_sources="*_deps*" `
           --excluded_sources="*Program Files*" `
           --excluded_sources="*Microsoft Visual Studio*" `
+          --excluded_sources="*_work*" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure

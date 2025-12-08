@@ -38,10 +38,10 @@ std::size_t get_alignment_requirement(
 static
 array* check_output_array(array *out, hardware::memory_allocator &allocator)
 {
-	const storage* storage;
+	const hardware::buffer* storage;
     if (out && (storage = out->get_storage()))
     {
-        if (storage->get_memory_resource() != &allocator.get_memory_resource())
+        if (&storage->get_memory_resource() != &allocator.get_memory_resource())
         {
             XMIPP4_LOG_WARN(
                 "An array was provided for reuse but it uses a different "
@@ -55,26 +55,26 @@ array* check_output_array(array *out, hardware::memory_allocator &allocator)
 }
 
 static 
-storage cannibalize_output_array(
+std::shared_ptr<hardware::buffer> cannibalize_output_array(
 	array *out, 
 	std::size_t storage_requirement
 )
 {
     if (out)
     {
-		auto *out_storage = out->get_storage();
+		auto out_storage = out->share_storage();
         if (out_storage && out_storage->get_size() >= storage_requirement)
         {
-			return out_storage->share();
+			return out_storage;
         }
 
 		XMIPP4_LOG_WARN(
-			"An array was provided for reuse but it does not have enough "
-			"storage."
+			"An array was provided for reuse but it does not have storage or "
+			"its storage enough does not have enough capacity"
 		);
     }
 
-	return storage();
+	return nullptr;
 }
 
 XMIPP4_NODISCARD 
@@ -91,24 +91,18 @@ array empty(
 
     out = check_output_array(out, allocator);
 	auto storage = cannibalize_output_array(out, storage_requirement);
-    if (storage.get_buffer() != nullptr)
+    if (!storage)
     {
         const auto alignment = get_alignment_requirement(
             allocator, 
             storage_requirement
         );
-        storage.rebind(
-			allocator.allocate(
-				storage_requirement,
-				alignment,
-				queue
-  			)
-		);
+		storage = allocator.allocate(storage_requirement, alignment, queue);
     }
 
     return array(
-        std::move(layout),
         std::move(storage),
+        std::move(layout),
         data_type
     );
 }

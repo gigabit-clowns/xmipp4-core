@@ -4,7 +4,6 @@
 
 #include "dynamic_subscript.hpp"
 #include "strided_layout.hpp"
-#include "storage.hpp"
 #include "../numerical_type.hpp"
 #include "../span.hpp"
 #include "../platform/attributes.hpp"
@@ -15,6 +14,13 @@
 
 namespace xmipp4 
 {
+namespace hardware
+{
+
+class device_queue;
+class buffer;
+
+} // namespace hardware
 namespace multidimensional
 {
 
@@ -26,8 +32,8 @@ class array
 public:
 	XMIPP4_CORE_API array();
 	XMIPP4_CORE_API array(
+		std::shared_ptr<hardware::buffer> storage,
 		strided_layout layout, 
-		storage storage, 
 		numerical_type data_type
 	);
 	array(const array& other) = delete;
@@ -61,19 +67,37 @@ public:
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return storage_type& The storage. nullptr if the array is not 
+	 * @return hardware::buffer* The storage. nullptr if the array is not 
 	 * initialized.
 	 */
-	XMIPP4_CORE_API storage* get_storage() noexcept;
+	XMIPP4_CORE_API hardware::buffer* get_storage() noexcept;
 
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return const storage_type& The storage. nullptr if the array is not
+	 * @return const hardware::buffer* The storage. nullptr if the array is not
 	 * initialized
 	 */
-	XMIPP4_CORE_API const storage* get_storage() const noexcept;
+	XMIPP4_CORE_API const hardware::buffer* get_storage() const noexcept;
 	
+	/**
+	 * @brief Get the storage of this array.
+	 * 
+	 * @return std::shared_ptr<const hardware::buffer> The storage. nullptr if 
+	 * the array is not initialized
+	 */
+	XMIPP4_CORE_API 
+	std::shared_ptr<const hardware::buffer> share_storage() const noexcept;
+	
+	/**
+	 * @brief Get a shared pointer to the storage of this array.
+	 * 
+	 * @return std::shared_ptr<hardware::buffer> The storage. nullptr if the 
+	 * array is not initialized.
+	 */
+	XMIPP4_CORE_API 
+	std::shared_ptr<hardware::buffer> share_storage() noexcept;
+
 	/**
 	 * @brief Get the rank of the array, i.e. the number of axes.
 	 * 
@@ -209,6 +233,36 @@ public:
 	XMIPP4_NODISCARD XMIPP4_CORE_API
 	array broadcast_to(span<const std::size_t> extents);
 
+	/**
+	 * @brief Acknowledge that this array is being used in a device_queue.
+	 * 
+	 * Due to the asynchronous nature of the device_queue-s, the buffer may
+	 * be needed after its destruction on the application code. By default,
+	 * protections against this race condition only exist with the queue used
+	 * to allocate this buffer (if any). When using this buffer in additional 
+	 * queues, this method should be called to synchronize its destruction.
+	 * 
+	 * This method should only be used if the memory resource associated to 
+	 * this buffer has a device associated to it.
+	 * 
+	 * @param queue The queue where this buffer in being used. It must have
+	 * been created from the same device as the device targeted by the 
+	 * memory_resource.
+	 * @param exclusive If true, it disregards all previous queues where it was 
+	 * being used and it synchronizes only with the new one. This is useful
+	 * if the new queue is externally synchronized such that all other accesses 
+	 * are guaranteed to have been concluded before they're completed at the 
+	 * provided queue.
+	 * 
+	 * @throws invalid_operation_error when the array is not initialzed or
+	 * the underlying buffer does not support queue execution.
+	 * 
+	 */
+	XMIPP4_CORE_API 
+	void record_queue(
+		hardware::device_queue &queue, 
+		bool exclusive=false
+	) const;
 
 private:
 	class implementation;

@@ -11,6 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
+class buffer;
 class device_queue;
 	
 } // namespace hardware
@@ -18,8 +19,6 @@ class device_queue;
 
 namespace multidimensional
 {
-
-class storage;
 
 /**
  * @brief Abstract representation of an executable operation.
@@ -46,8 +45,8 @@ public:
 	 * 
 	 */
     virtual void execute(
-        span<storage> read_write_operands,
-        span<const storage> read_only_operands,
+        span<hardware::buffer*> read_write_operands,
+        span<const hardware::buffer*> read_only_operands,
 		hardware::device_queue *queue
     ) const = 0;
 };

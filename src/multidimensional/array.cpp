@@ -3,6 +3,8 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 namespace xmipp4 
 {
@@ -14,8 +16,8 @@ class array::implementation
 public:
 	implementation() = default;
 	implementation(
+		std::shared_ptr<hardware::buffer> storage,
 		strided_layout layout, 
-		storage storage,
 		numerical_type data_type
 	) noexcept
 		: m_storage(std::move(storage))
@@ -38,7 +40,12 @@ public:
 		return m_descriptor.get_layout();
 	}
 
-	storage& get_storage() noexcept
+	hardware::buffer* get_storage() noexcept
+	{
+		return m_storage.get();
+	}
+
+	const std::shared_ptr<hardware::buffer>& share_storage() noexcept
 	{
 		return m_storage;
 	}
@@ -56,8 +63,8 @@ public:
 	implementation apply_subscripts(span<const dynamic_subscript> subscripts)
 	{
 		return implementation(
+			share_storage(),
 			get_layout().apply_subscripts(subscripts),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -65,8 +72,8 @@ public:
 	implementation transpose()
 	{
 		return implementation(
+			share_storage(),
 			get_layout().transpose(),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -74,8 +81,8 @@ public:
 	implementation permute(span<const std::size_t> order)
 	{
 		return implementation(
+			share_storage(),
 			get_layout().permute(order),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -83,8 +90,8 @@ public:
 	implementation matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
 	{
 		return implementation(
+			share_storage(),
 			get_layout().matrix_transpose(axis1, axis2),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -92,8 +99,8 @@ public:
 	implementation matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
 	{
 		return implementation(
+			share_storage(),
 			get_layout().matrix_diagonal(axis1, axis2),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -101,8 +108,8 @@ public:
 	implementation squeeze()
 	{
 		return implementation(
+			share_storage(),
 			get_layout().squeeze(),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
@@ -110,14 +117,26 @@ public:
 	implementation broadcast_to(span<const std::size_t> extents)
 	{
 		return implementation(
+			share_storage(),
 			get_layout().broadcast_to(extents),
-			get_storage().share(),
 			get_data_type()
 		);
 	}
 
+	void record_queue(hardware::device_queue &queue, bool exclusive) const
+	{
+		if (!m_storage)
+		{
+			throw invalid_operation_error(
+				"Can not call record_queue on an storage-less array"
+			);
+		}
+
+		m_storage->record_queue(queue, exclusive);
+	}
+
 private:
-	storage m_storage;
+	std::shared_ptr<hardware::buffer> m_storage;
 	array_descriptor m_descriptor;
 
 };
@@ -128,14 +147,14 @@ array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
 array::array(
+	std::shared_ptr<hardware::buffer> storage,
 	strided_layout layout, 
-	storage storage, 
 	numerical_type data_type
 )
 	: array(
 		std::make_shared<implementation>(
-			std::move(layout), 
 			std::move(storage), 
+			std::move(layout), 
 			data_type
 		)
 	)
@@ -171,19 +190,35 @@ const strided_layout& array::get_layout() const noexcept
 	return get_descriptor().get_layout();
 }		
 
-storage* array::get_storage() noexcept
+hardware::buffer* array::get_storage() noexcept
 {
 	return
 		m_implementation ? 
-		&(m_implementation->get_storage()) : 
+		m_implementation->get_storage() : 
 		nullptr;
 }
 
-const storage* array::get_storage() const noexcept
+const hardware::buffer* array::get_storage() const noexcept
 {
 	return
 		m_implementation ? 
-		&(m_implementation->get_storage()) : 
+		m_implementation->get_storage() : 
+		nullptr;
+}
+
+std::shared_ptr<const hardware::buffer> array::share_storage() const noexcept
+{
+	return
+		m_implementation ? 
+		m_implementation->share_storage() : 
+		nullptr;
+}
+
+std::shared_ptr<hardware::buffer> array::share_storage() noexcept
+{
+	return
+		m_implementation ? 
+		m_implementation->share_storage() : 
 		nullptr;
 }
 
@@ -298,6 +333,17 @@ array array::broadcast_to(span<const std::size_t> extents)
 		return array(implementation().broadcast_to(extents));
 	}
 }
+
+void array::record_queue(hardware::device_queue &queue, bool exclusive) const
+{
+	if (!m_implementation)
+	{
+		throw invalid_operation_error("Can not call record_queue on an uninitialized array");
+	}
+
+	m_implementation->record_queue(queue, exclusive);
+}
+
 
 } // namespace multidimensional
 } // namespace xmipp4

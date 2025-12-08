@@ -102,35 +102,48 @@ void operation_dispatcher::dispatch(
 	);
 	XMIPP4_ASSERT( kernel );
 
-	/*
-	boost::container::small_vector<storage, 16> output_storages(n_outputs);
-	boost::container::small_vector<storage, 16> input_storages(n_inputs);
+	boost::container::small_vector<hardware::buffer*, 16> output_storages(n_outputs);
+	boost::container::small_vector<const hardware::buffer*, 16> input_storages(n_inputs);
 
 	std::transform(
 		output_operands.begin(), 
 		output_operands.end(),
 		output_storages.begin(),
-		[] (const auto )
+		[] (auto &arr) -> hardware::buffer*
+		{
+			return arr.get_storage();
+		}
 	);
 
+	std::transform(
+		input_operands.begin(), 
+		input_operands.end(),
+		input_storages.begin(),
+		[] (const auto &arr) -> const hardware::buffer*
+		{
+			return arr.get_storage();
+		}
+	);
+	
+	/*
 	kernel->execute(
-		span<storage>(output_storages.data(), output_storages.size()),
-		span<const storage>(input_storages.data(), input_storages.size()),
+		span<hardware::buffer* const>(output_storages.data(), output_storages.size()),
+		span<const hardware::buffer* const>(input_storages.data(), input_storages.size()),
 		queue
 	);
+	*/
 
 	if (queue)
 	{
-		for (auto &storage : output_storages)
+		for (const auto &operand : output_operands)
 		{
-			storage.record_queue(*queue);
+			operand.record_queue(*queue);
 		}
-		for (auto &storage : input_storages)
+		for (const auto &operand : input_operands)
 		{
-			storage.record_queue(*queue);
+			operand.record_queue(*queue);
 		}
 	}
-	*/
 }
 
 } // namespace multidimensional

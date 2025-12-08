@@ -21,7 +21,7 @@ runs:
         fetch-depth: 0 # Needed to get git blame information for SonarQube
 
     - uses: actions/download-artifact@v6
-      if: ${{ inputs.artifact-name && inputs.artifact-path }}
+      if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
       with:
         pattern: ${{ inputs.artifact-pattern }}
         path: ${{ inputs.artifact-path }}
@@ -32,7 +32,7 @@ runs:
       run: |
         find . -name "coverage*.xml"
         pip install coverage
-        python -m combine ./build
+        python -m coverage combine ./build
         pythom -m coverage xml
         false
 

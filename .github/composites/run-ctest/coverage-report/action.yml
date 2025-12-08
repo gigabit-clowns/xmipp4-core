@@ -15,10 +15,6 @@ inputs:
     description: "Path to save the coverage report."
     required: false
     default: "coverage.xml"
-outputs:
-  report-path:
-    description: "Full path to the coverage report." 
-    value: ${{ steps.generate-report.outputs.report-path }}
 
 runs:
   using: "composite"

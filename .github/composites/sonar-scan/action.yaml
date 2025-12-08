@@ -47,6 +47,8 @@ runs:
       shell: bash
       run: |
         mv ./build/coverage-report-windows-latest-cl-cl/coverage.xml ./build/coverage.xml
+        ls build
+        find . -name "compile_commands.json"
         # mv ./build/Cobertura.xml ./build/coverage.xml
 
     # Regular scan for most events

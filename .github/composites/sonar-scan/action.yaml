@@ -31,6 +31,9 @@ runs:
       shell: bash
       run: |
         find . -name "coverage*.xml"
+        pip install coverage
+        python -m combine ./build
+        pythom -m coverage xml
         false
 
     # Regular scan for most events

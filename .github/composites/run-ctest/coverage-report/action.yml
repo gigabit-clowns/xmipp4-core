@@ -58,6 +58,7 @@ runs:
       working-directory: "${{ github.workspace }}/build"
       shell: pwsh
       run: |
+        Write-Host "--- Collecting coverage info ---"
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
           --modules="xmipp4-core.dll" `
@@ -69,8 +70,4 @@ runs:
           --export_type="cobertura:${{ github.workspace }}\coverage.xml" `
           --cover_children `
           -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
-
-    - name: Test result
-      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-      shell: bash
-      run: cat coverage.xml
+        Write-Host "--- Coverage info collected ---"

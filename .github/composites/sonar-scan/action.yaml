@@ -2,15 +2,18 @@ name: "SonarQube scan"
 description: "Runs SonarQube scan."
 
 inputs:
-  artifact-pattern:
-    description: "Pattern of the artifact/s to download."
-    required: false
-  artifact-path:
-    description: "Path where the artifact/s will be downloaded."
-    required: false
   sonar-token:
     description: "SonarQube token"
     required: true
+  build-artifact-name:
+    description: "Name of the build artifact to download."
+    required: true
+  coverage-pattern:
+    description: "Pattern of the artifact/s to download."
+    required: false
+  coverage-path:
+    description: "Path where the artifact/s will be downloaded."
+    required: false
 
 runs:
   using: "composite"
@@ -21,29 +24,34 @@ runs:
         fetch-depth: 0 # Needed to get git blame information for SonarQube
 
     - uses: actions/download-artifact@v6
-      if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
       with:
-        pattern: ${{ inputs.artifact-pattern }}
-        path: ${{ inputs.artifact-path }}
+        name: ${{ inputs.build-artifact-name }}
+        path: ${{ github.workspace }}/build
+
+    - uses: actions/download-artifact@v6
+      if: ${{ inputs.coverage-pattern && inputs.coverage-path }}
+      with:
+        pattern: ${{ inputs.coverage-pattern }}
+        path: ${{ inputs.coverage-path }}
 
     - name: Setup .NET Core # Required to execute ReportGenerator
-      if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
+      if: ${{ inputs.coverage-pattern && inputs.coverage-path }}
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.x
         dotnet-quality: 'ga'
 
     - name: Merge coverage reports (ReportGenerator)
-      if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
+      if: ${{ inputs.coverage-pattern && inputs.coverage-path }}
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
         reports: ./build/coverage-report-ubuntu-latest-gcc-g++/coverage.xml;./build/coverage-report-macos-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-gcc-g++/coverage.xml;./build/coverage-report-ubuntu-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-cl-cl/coverage.xml
         targetdir: build
         reporttypes: Cobertura
-        sourcedirs: '${{ github.workspace }}'
+        sourcedirs: ${{ github.workspace }}
     
     - name: Rename merged coverage report
-      if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
+      if: ${{ inputs.coverage-pattern && inputs.coverage-path }}
       shell: bash
       run: |
         mv ./build/coverage-report-windows-latest-cl-cl/coverage.xml ./build/coverage.xml
@@ -56,7 +64,7 @@ runs:
       if: ${{ github.event_name != 'workflow_dispatch' }}
       uses: SonarSource/sonarqube-scan-action@v6
       env:
-          SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
 
     # When trigger event is workflow_dispatch, SonarQube action
     # will always treat it as main branch unless we specify the branch name

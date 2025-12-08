@@ -35,16 +35,16 @@ runs:
     - name: Merge coverage reports (ReportGenerator)
       uses: danielpalme/ReportGenerator-GitHub-Action@5.5.1
       with:
-        reports: ./build/coverage-report-ubuntu-latest-gcc-g++/coverage.xml;./build/coverage-report-macos-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-gcc-g++/coverage.xml;./build/coverage-report-ubuntu-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-cl-cl/coverage.xml
+        reports: ./build/coverage-report-*/coverage.xml
         targetdir: build
-        reporttypes: XML
+        reporttypes: Cobertura
         sourcedirs: '${{ github.workspace }}'
     
-    #- name: test
-    #  shell: bash
-    #  run: |
-    #    find . -name "coverage*.xml"
-    #    false
+    - name: test
+      shell: bash
+      run: |
+        find . -name "coverage*.xml"
+        false
 
     # Regular scan for most events
     - name: SonarQube scan for most events

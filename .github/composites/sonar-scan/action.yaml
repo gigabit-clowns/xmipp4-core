@@ -28,6 +28,7 @@ runs:
         merge-multiple: true
     
     - name: test
+      shell: bash
       run: |
         find . -name "coverage*.xml"
         false

@@ -27,13 +27,13 @@ runs:
         path: ${{ inputs.artifact-path }}
 
     - name: Setup .NET Core # Required to execute ReportGenerator
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.x
         dotnet-quality: 'ga'
 
     - name: Merge coverage reports (ReportGenerator)
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.5.1
+      uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
         reports: ./build/coverage-report-*/coverage.xml
         targetdir: build

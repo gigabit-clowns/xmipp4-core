@@ -25,7 +25,6 @@ runs:
       with:
         pattern: ${{ inputs.artifact-pattern }}
         path: ${{ inputs.artifact-path }}
-        merge-multiple: true
     
     - name: test
       shell: bash

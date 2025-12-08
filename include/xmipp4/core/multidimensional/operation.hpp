@@ -10,8 +10,11 @@ namespace multidimensional
 {
 
 class operation_id;
-class operation_schema;
 
+/**
+ * @brief Abstract class that describes an operation.
+ * 
+ */
 class operation
 {
 public:
@@ -25,9 +28,39 @@ public:
 	operation& operator=(const operation &other) = delete;
 	operation& operator=(operation &&other) = delete;
 
+	/**
+	 * @brief Get an identifier that uniquely represents this operation.
+	 * 
+	 * @return const operation_id& The operation id.
+	 */
 	virtual const operation_id& get_operation_id() const noexcept = 0;
 
-	virtual const operation_schema& get_operation_schema() const noexcept = 0;
+	/**
+	 * @brief Perform pre-flight checks on the input operands.
+	 * 
+	 * This may include checks on:
+	 * - Arity (number of operands).
+	 * - Minimum numer of dimensions for each operand.
+	 * - Possible invariants between operands (e.g. middle dimension in matrix
+	 * multiplication).
+	 * 
+	 * @param input_descriptors The input descriptors to be checked.
+	 */
+	virtual void validate_input(
+		span<const array_descriptor> input_descriptors
+	) const = 0;
+	
+	/**
+	 * @brief Broadcast input operands and infer the ouput operands if 
+	 * necessary.
+	 * 
+	 * @param output_descriptors The output descriptors to be inferred.
+	 * @param input_descriptors The input operands that may be broadcasted.
+	 */
+	virtual void deduce_operands(
+		span<array_descriptor> output_descriptors,
+		span<array_descriptor> input_descriptors
+	) const = 0;
 };
 
 } // namespace multidimensional

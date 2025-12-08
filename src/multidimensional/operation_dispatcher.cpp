@@ -7,7 +7,6 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/operation_schema.hpp>
 
 #include <boost/container/small_vector.hpp>
 
@@ -72,14 +71,22 @@ void operation_dispatcher::dispatch(
 	);
 
 	std::transform(
+		output_operands.begin(), 
+		output_operands.end(),
+		output_descriptors.begin(),
+		std::mem_fn(&array::get_descriptor)
+	);
+
+	std::transform(
 		input_operands.begin(), 
 		input_operands.end(),
 		input_descriptors.begin(),
 		std::mem_fn(&array::get_descriptor)
 	);
 
-	const auto &schema = operation.get_operation_schema();
-	schema.deduce_output(output_descriptors, input_descriptors);
+	operation.validate_input(input_descriptors);
+	operation.deduce_operands(output_descriptors, input_descriptors);
+
 	allocate_output(
 		output_operands, 
 		output_descriptors, 

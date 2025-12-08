@@ -45,10 +45,7 @@ runs:
     - name: Rename merged coverage report
       if: ${{ inputs.artifact-pattern && inputs.artifact-path }}
       shell: bash
-      run: |
-        mv ./build/Cobertura.xml ./build/coverage.xml
-        rm -rf ./build/coverage-*
-        find . -name "coverage*.xml"
+      run: mv ./build/Cobertura.xml ./build/coverage.xml
 
     # Regular scan for most events
     - name: SonarQube scan for most events

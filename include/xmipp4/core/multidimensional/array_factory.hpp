@@ -31,7 +31,7 @@ namespace multidimensional
  * @return array The resulting empty array.
  */
 XMIPP4_NODISCARD XMIPP4_CORE_API
-static array empty(
+array empty(
 	strided_layout layout, 
 	numerical_type data_type,
 	hardware::memory_allocator &allocator,

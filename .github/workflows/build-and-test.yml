@@ -151,7 +151,7 @@ jobs:
       - name: SonarQube Scan
         uses: ./.github/composites/sonar-scan
         with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-artifact-name: "build-artifact"
           coverage-pattern: "coverage-report-*"
           coverage-path: ${{ github.workspace }}/build
-          sonar-token: ${{ secrets.SONAR_TOKEN }}

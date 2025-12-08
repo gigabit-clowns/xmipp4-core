@@ -68,11 +68,9 @@ runs:
           --excluded_sources="*_work*" `
           --export_type="cobertura:${{ github.workspace }}\coverage.xml" `
           --cover_children `
-          --quiet `
-          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
+          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
 
     - name: Test result
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
-      working-directory: "${{ github.workspace }}/build"
       shell: bash
       run: cat coverage.xml

@@ -48,12 +48,22 @@ runs:
       uses: ./.github/composites/run-ctest
       with:
         test-wrapper: >-
-          '"${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build"'
-          '--modules="xmipp4-core.dll"'
-          '--excluded_sources="*tests*"'
-          '--excluded_sources="*_deps*"'
-          '--excluded_sources="*Program Files*"'
-          '--excluded_sources="*Microsoft Visual Studio*"'
-          '--excluded_sources="*_work*"'
-          '--export_type="cobertura:${{ inputs.report-path }}"'
-          '--cover_children --'
+          powershell -NoProfile -Command "& {
+            $rp='${{ inputs.report-path }}';
+            $rp = $rp -replace '/','\\';
+            if (-not [System.IO.Path]::IsPathRooted($rp)) {
+              $ws='${{ github.workspace }}' -replace '/','\\';
+              $rp = Join-Path $ws $rp;
+            }
+            $rp = $rp -replace '\\\\+','\\';
+            & '${{ inputs.cl-coverage-tool }}' \
+              --working_dir='${{ github.workspace }}\build' \
+              --modules='xmipp4-core.dll' \
+              --excluded_sources='*tests*' \
+              --excluded_sources='*_deps*' \
+              --excluded_sources='*Program Files*' \
+              --excluded_sources='*Microsoft Visual Studio*' \
+              --excluded_sources='*_work*' \
+              --export_type=\"cobertura:$rp\" \
+              --cover_children -- @args
+          }"

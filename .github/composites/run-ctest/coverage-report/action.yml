@@ -58,7 +58,7 @@ runs:
       run: |
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `
-          --modules="${{ github.workspace }}\build" `
+          --modules="xmipp4-core.dll" `
           --excluded_sources="*tests*" `
           --excluded_sources="*_deps*" `
           --export_type="cobertura:${{ github.workspace }}\build\coverage.xml" `

@@ -57,7 +57,8 @@ runs:
         # Converting report path to Windows format
         $reportInput = '${{ inputs.report-path }}'
         $reportPath = $reportInput -replace '/', '\\'
-        
+        Write-Host "Coverage report path: $reportPath"
+
         Write-Host "--- Collecting coverage info ---"
         & "${{ inputs.cl-coverage-tool }}" `
           --working_dir="${{ github.workspace }}\build" `

@@ -69,7 +69,7 @@ runs:
           --export_type="cobertura:${{ github.workspace }}\coverage.xml" `
           --cover_children `
           --quiet `
-          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure *> $null
+          -- ctest -C $env:BUILD_TYPE -T test --rerun-failed --output-on-failure
 
     - name: Test result
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''

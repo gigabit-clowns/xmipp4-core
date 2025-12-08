@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../platform/dynamic_shared_object.h"
+#include "../span.hpp"
 
 namespace xmipp4 
 {
@@ -10,6 +11,7 @@ namespace multidimensional
 {
 
 class operation_id;
+class array_descriptor;
 
 /**
  * @brief Abstract class that describes an operation.

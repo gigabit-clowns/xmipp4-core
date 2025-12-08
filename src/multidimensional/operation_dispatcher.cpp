@@ -102,11 +102,19 @@ void operation_dispatcher::dispatch(
 	XMIPP4_ASSERT( kernel );
 
 	/*
-	boost::container::small_vector<inmutable_storage, 16> input_storages(n_inputs);
+	boost::container::small_vector<storage, 16> output_storages(n_outputs);
+	boost::container::small_vector<storage, 16> input_storages(n_inputs);
+
+	std::transform(
+		output_operands.begin(), 
+		output_operands.end(),
+		output_storages.begin(),
+		[] (const auto )
+	);
 
 	kernel->execute(
 		span<storage>(output_storages.data(), output_storages.size()),
-		span<inmutable_storage>(input_storages.data(), input_storages.size()),
+		span<const storage>(input_storages.data(), input_storages.size()),
 		queue
 	);
 

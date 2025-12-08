@@ -58,6 +58,7 @@ runs:
         $reportInput = '${{ inputs.report-path }}'
         $reportFixed = $reportInput -replace '/', '\\'
         $reportPath = Join-Path -Path '${{ github.workspace }}' -ChildPath $reportFixed
+        Write-Host "Coverage report will be saved to: $reportPath"
         
         Write-Host "--- Collecting coverage info ---"
         & "${{ inputs.cl-coverage-tool }}" `

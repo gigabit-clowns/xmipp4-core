@@ -1,5 +1,5 @@
 name: "Run CMake tests"
-description: "Runs CMake tests for every OS"
+description: "Runs CMake tests for every OS."
 
 inputs:
   check-memleaks:

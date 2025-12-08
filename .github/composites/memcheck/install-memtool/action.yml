@@ -1,9 +1,9 @@
 name: "Install Memcheck tool"
-description: "Installs the required memcheck tool for every OS"
+description: "Installs the required memcheck tool for every OS."
 
 outputs:
   drmemory:
-    description: "Full path to Dr. Memory executable"
+    description: "Full path to Dr. Memory executable."
     value: ${{ steps.install-drmemory.outputs.drmemory }}
 
 runs:

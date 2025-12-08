@@ -1,12 +1,12 @@
 name: "SonarQube scan"
-description: "Runs SonarQube scan"
+description: "Runs SonarQube scan."
 
 inputs:
   artifact-pattern:
-    description: "Pattern of the artifact/s to download"
+    description: "Pattern of the artifact/s to download."
     required: false
   artifact-path:
-    description: "Path where the artifact/s will be downloaded"
+    description: "Path where the artifact/s will be downloaded."
     required: false
   sonar-token:
     description: "SonarQube token"
@@ -25,15 +25,26 @@ runs:
       with:
         pattern: ${{ inputs.artifact-pattern }}
         path: ${{ inputs.artifact-path }}
+
+    - name: Setup .NET Core # Required to execute ReportGenerator
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.x
+        dotnet-quality: 'ga'
+
+    - name: Merge coverage reports (ReportGenerator)
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.5.1
+      with:
+        reports: ./build/coverage-report-ubuntu-latest-gcc-g++/coverage.xml;./build/coverage-report-macos-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-gcc-g++/coverage.xml;./build/coverage-report-ubuntu-latest-clang-clang++/coverage.xml;./build/coverage-report-windows-latest-cl-cl/coverage.xml
+        targetdir: build
+        reporttypes: XML
+        sourcedirs: '${{ github.workspace }}'
     
-    - name: test
-      shell: bash
-      run: |
-        find . -name "coverage*.xml"
-        pip install coverage
-        python -m coverage combine ./build
-        pythom -m coverage xml
-        false
+    #- name: test
+    #  shell: bash
+    #  run: |
+    #    find . -name "coverage*.xml"
+    #    false
 
     # Regular scan for most events
     - name: SonarQube scan for most events

@@ -1,19 +1,19 @@
 name: "Install Coverage tool"
-description: "Installs the required coverage tool for every OS"
+description: "Installs the required coverage tool for every OS."
 
 inputs:
   compiler-cc:
-    description: "C compiler being used by the runner"
+    description: "C compiler being used by the runner."
     required: true
   compiler-cxx:
-    description: "C++ compiler being used by the runner"
+    description: "C++ compiler being used by the runner."
     required: true
 outputs:
   opencppcoverage-bash:
-    description: "Full path to OpenCppCoverage (in bash format)"
+    description: "Full path to OpenCppCoverage (in bash format)."
     value: ${{ steps.install-opencppcoverage-bash.outputs.opencppcoverage }}
   opencppcoverage-pwsh:
-    description: "Full path to OpenCppCoverage (in Powershell format)"
+    description: "Full path to OpenCppCoverage (in Powershell format)."
     value: ${{ steps.install-opencppcoverage-pwsh.outputs.opencppcoverage }}
 
 runs:

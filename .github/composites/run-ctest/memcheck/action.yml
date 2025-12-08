@@ -1,9 +1,9 @@
 name: "Run CMake tests with memcheck"
-description: "Runs CMake tests for every OS with memcheck"
+description: "Runs CMake tests for every OS with memcheck."
 
 inputs:
   drmemory:
-    description: "Full path to Dr. Memory executable"
+    description: "Full path to Dr. Memory executable."
     required: false
 outputs:
   exist-memleaks:

@@ -23,15 +23,17 @@ namespace multidimensional
 {
 
 /**
- * @brief Abstract representation of an executable operation.
+ * @brief Abstract representation of an executable operation core.
  * 
  */
-class XMIPP4_CORE_API kernel
+class kernel
 {
 public:
+	XMIPP4_CORE_API
 	kernel() noexcept;
 	kernel(const kernel &other) = delete;
 	kernel(kernel &&other) = delete;
+	XMIPP4_CORE_API
     virtual ~kernel();
 
 	kernel& operator=(const kernel &other) = delete;

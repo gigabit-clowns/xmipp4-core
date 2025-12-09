@@ -41,7 +41,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
-        uses: ./.github/composites/install-cpp-coverage-tool
+        uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -62,10 +62,10 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        uses: ./.github/composites/run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
-        uses: ./.github/composites/run-ctest/coverage-report
+        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -149,7 +149,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: SonarQube Scan
-        uses: ./.github/composites/sonar-scan
+        uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-artifact-name: "build-artifact"

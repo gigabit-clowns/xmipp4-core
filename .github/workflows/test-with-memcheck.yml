@@ -49,11 +49,6 @@ jobs:
         with:
           check-memleaks: true
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       - name: Show memory leak logs (if exist)
         if: steps.run-ctest.outputs.exist-memleaks == 'true'
         uses: gigabit-clowns/.github/.github/composites/memcheck/show-memleaks@main

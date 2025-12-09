@@ -55,6 +55,18 @@ else()
 	)
 endif()
 
+# Add coverage flags if requested
+if(XMIPP4_CORE_ENABLE_COVERAGE)
+	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+		target_compile_options(xmipp4-core PRIVATE --coverage -O0 -g)
+		target_link_options(xmipp4-core PUBLIC --coverage)
+	elseif(MSVC)
+		target_compile_options(xmipp4-core PRIVATE /Z7 /Od)
+		target_link_options(xmipp4-core PUBLIC /DEBUG)
+	endif()
+endif()
+
+# Link dependencies
 target_link_libraries(
 	xmipp4-core
 	PUBLIC

@@ -1,0 +1,59 @@
+name: "Generate Coverage Report"
+description: "Generates coverage reports for every OS."
+
+inputs:
+  compiler-cc:
+    description: "C compiler being used by the runner."
+    required: true
+  compiler-cxx:
+    description: "C++ compiler being used by the runner."
+    required: true
+  cl-coverage-tool:
+    description: "Path to the coverage tool used by Windows with MSVC."
+    required: false
+  report-path:
+    description: "Path to save the coverage report."
+    required: false
+    default: "coverage.xml"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set gcov executable
+      id: set-gcov-executable
+      if: inputs.compiler-cc != 'cl' && inputs.compiler-cxx != 'cl'
+      shell: bash
+      run: |
+        if [[ "${{ inputs.compiler-cc }}" == "clang" && "${{ inputs.compiler-cxx }}" == "clang++" ]]; then
+          echo "gcov-executable=llvm-cov gcov" >> "$GITHUB_OUTPUT"
+        else
+          echo "gcov-executable=gcov" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Generate coverage report (Linux)
+      if: inputs.compiler-cc != 'cl' && inputs.compiler-cxx != 'cl'
+      working-directory: "${{ github.workspace }}/build"
+      shell: bash
+      run: |
+        gcovr -r "${{ github.workspace }}" \
+          --object-directory "${{ github.workspace }}/build" \
+          --gcov-executable "${{ steps.set-gcov-executable.outputs.gcov-executable }}" \
+          --cobertura -o "${{ inputs.report-path }}" \
+          --txt report.txt \
+          --exclude '.*_deps/.*'
+        cat report.txt
+
+    - name: Generate coverage report (Windows)
+      if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl' && inputs.cl-coverage-tool != ''
+      uses: ./.github/composites/run-ctest
+      with:
+        test-wrapper: >-
+          "${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build"
+          --modules="xmipp4-core.dll"
+          --excluded_sources="*tests*"
+          --excluded_sources="*_deps*"
+          --excluded_sources="*Program Files*"
+          --excluded_sources="*Microsoft Visual Studio*"
+          --excluded_sources="*_work*"
+          --export_type="cobertura:${{ inputs.report-path }}"
+          --cover_children --

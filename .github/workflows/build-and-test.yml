@@ -39,6 +39,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Install coverage tool
+        id: install-coverage
+        uses: ./.github/composites/install-cpp-coverage-tool
+        with:
+          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-cxx: ${{ matrix.compiler.cxx }}
+
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
         with:
@@ -50,13 +57,28 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
+            XMIPP4_CORE_ENABLE_COVERAGE=ON
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
         uses: ./.github/composites/run-ctest
-      
-      - name: Upload compilation database (ubuntu-latest + gcc only)
+
+      - name: Generate coverage report
+        uses: ./.github/composites/run-ctest/coverage-report
+        with:
+          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-cxx: ${{ matrix.compiler.cxx }}
+          cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
+          report-path: ${{ github.workspace }}/coverage.xml
+
+      - name: Uploade coverage report
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.cc }}-${{ matrix.compiler.cxx }}
+          path: coverage.xml
+
+      - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@v5
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.cc == 'gcc'
         with:
@@ -122,15 +144,14 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
+      # TODO REMOVE WHEN COMPOSITE IS IN .GITHUB REPO
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v6
+      - name: SonarQube Scan
+        uses: ./.github/composites/sonar-scan
         with:
-          name: build-artifact
-          path: ${{ github.workspace }}/build
-    
-      - name: SonarQube scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          build-artifact-name: "build-artifact"
+          coverage-pattern: "coverage-report-*"
+          coverage-path: ${{ github.workspace }}/build

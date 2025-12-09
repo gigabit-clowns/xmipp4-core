@@ -16,6 +16,9 @@ class array_descriptor;
 /**
  * @brief Abstract class that describes an operation.
  * 
+ * Subclasses of it may implement the specific behavior for each of the
+ * operations.
+ * 
  */
 class operation
 {

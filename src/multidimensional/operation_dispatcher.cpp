@@ -9,6 +9,8 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 
+#include "../config.hpp"
+
 #include <boost/container/small_vector.hpp>
 
 namespace xmipp4 
@@ -61,7 +63,10 @@ void operation_dispatcher::dispatch(
 	const auto n_inputs = input_operands.size();
 	const auto n_operands = n_outputs + n_inputs;
 
-	boost::container::small_vector<array_descriptor, 16> descriptors(n_operands);
+	boost::container::small_vector<
+		array_descriptor, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT + XMIPP4_SMALL_INPUT_OPERAND_COUNT
+	> descriptors(n_operands);
 	const span<array_descriptor> output_descriptors(
 		descriptors.data(), 
 		n_outputs
@@ -77,7 +82,6 @@ void operation_dispatcher::dispatch(
 		output_descriptors.begin(),
 		std::mem_fn(&array::get_descriptor)
 	);
-
 	std::transform(
 		input_operands.begin(), 
 		input_operands.end(),
@@ -102,36 +106,45 @@ void operation_dispatcher::dispatch(
 	);
 	XMIPP4_ASSERT( kernel );
 
-	boost::container::small_vector<hardware::buffer*, 16> output_storages(n_outputs);
-	boost::container::small_vector<const hardware::buffer*, 16> input_storages(n_inputs);
+	boost::container::small_vector<
+		std::shared_ptr<hardware::buffer>, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
+	> output_storages(n_outputs);
+	boost::container::small_vector<
+		std::shared_ptr<const hardware::buffer>, 
+		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
+	> input_storages(n_inputs);
 
 	std::transform(
 		output_operands.begin(), 
 		output_operands.end(),
 		output_storages.begin(),
-		[] (auto &arr) -> hardware::buffer*
+		[] (auto &arr)
 		{
-			return arr.get_storage();
+			return arr.share_storage();
 		}
 	);
-
 	std::transform(
 		input_operands.begin(), 
 		input_operands.end(),
 		input_storages.begin(),
-		[] (const auto &arr) -> const hardware::buffer*
+		[] (const auto &arr)
 		{
-			return arr.get_storage();
+			return arr.share_storage();
 		}
 	);
-	
-	/*
+
 	kernel->execute(
-		span<hardware::buffer* const>(output_storages.data(), output_storages.size()),
-		span<const hardware::buffer* const>(input_storages.data(), input_storages.size()),
+		span<const std::shared_ptr<hardware::buffer>>(
+			output_storages.data(), 
+			output_storages.size()
+		),
+		span<const std::shared_ptr<const hardware::buffer>>(
+			input_storages.data(), 
+			input_storages.size()
+		),
 		queue
 	);
-	*/
 
 	if (queue)
 	{

@@ -6,6 +6,8 @@
 #include "../numerical_type.hpp"
 #include "../span.hpp"
 
+#include <memory>
+
 namespace xmipp4 
 {
 namespace hardware
@@ -38,15 +40,17 @@ public:
 	/**
 	 * @brief Execute the kernel.
 	 * 
-	 * @param read_write_operands Operands where data may be written.
-	 * @param read_only_operands  Read-only operands.
+	 * @param read_write_operands Operands where data may be written. Neither
+	 * of them may be null.
+	 * @param read_only_operands  Read-only operands. Neither of them may be
+	 * null.
 	 * @param queue Optional queue where this kernel will be executed. Must 
 	 * belong to the device used in construction.
 	 * 
 	 */
     virtual void execute(
-        span<hardware::buffer*> read_write_operands,
-        span<const hardware::buffer*> read_only_operands,
+        span<const std::shared_ptr<hardware::buffer>> read_write_operands,
+        span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 		hardware::device_queue *queue
     ) const = 0;
 };

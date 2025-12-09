@@ -23,7 +23,7 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        if which apt; then
+        if which apt-get; then
           sudo apt-get update
         else
           echo "This system is not supported as it does not use apt"
@@ -35,7 +35,7 @@ runs:
       shell: bash
       run: sudo apt-get install -y lcov
 
-    - name: Install coverage tools (Linux - gcc -> llvm-cov)
+    - name: Install coverage tools (Linux - clang -> llvm-cov)
       if: runner.os == 'Linux' && inputs.compiler-cc == 'clang' && inputs.compiler-cxx == 'clang++'
       shell: bash
       run: sudo apt-get install -y llvm
@@ -47,14 +47,14 @@ runs:
         brew install llvm
         ln -s "$(brew --prefix llvm)/bin/llvm-cov" /usr/local/bin/llvm-cov || true
 
-    - name: Install gcovr (GCC & clang)
+    - name: Install gcovr (gcc & clang)
       if: inputs.compiler-cc != 'cl' && inputs.compiler-cxx != 'cl'
       shell: bash
       run: |
         python -m pip install --upgrade pip
         python -m pip install gcovr
 
-    - name: Install coverage tools (Windows -> OpenCppCoverage)
+    - name: Install coverage tools (Windows - MSVC -> OpenCppCoverage)
       id: install-opencppcoverage-bash
       if: inputs.compiler-cc == 'cl' && inputs.compiler-cxx == 'cl'
       shell: bash

@@ -42,7 +42,6 @@ array* validate_output_array(
 	hardware::memory_allocator &allocator
 )
 {
-
 	if (!out)
 	{
 		return nullptr;

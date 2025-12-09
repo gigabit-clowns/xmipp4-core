@@ -27,7 +27,9 @@ namespace multidimensional
  * dispatched.
  * @param out Optional array to reuse. If provided, its components may be 
  * cannibalized to create the resulting array. After the call, the out array
- * will be in a valid but unspecified state.
+ * will be in a valid but unspecified state. In addition, the resulting array
+ * may alias contents of this buffer. Thus, modifications to the output buffer 
+ * after this call may have side-effects on the resulting array.
  * @return array The resulting empty array.
  */
 XMIPP4_NODISCARD XMIPP4_CORE_API

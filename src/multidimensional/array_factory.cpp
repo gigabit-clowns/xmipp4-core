@@ -36,20 +36,32 @@ std::size_t get_alignment_requirement(
 }
 
 static
-array* check_output_array(array *out, hardware::memory_allocator &allocator)
+array* validate_output_array(array *out, hardware::memory_allocator &allocator)
 {
-	const hardware::buffer* storage;
-    if (out && (storage = out->get_storage()))
-    {
-        if (&storage->get_memory_resource() != &allocator.get_memory_resource())
-        {
-            XMIPP4_LOG_WARN(
-                "An array was provided for reuse but it uses a different "
-                "memory resource than the allocator."
-            );
-            return nullptr;
-        }
-    }
+
+	if (!out)
+	{
+		return nullptr;
+	}
+
+	const auto* storage = out->get_storage();
+	if (!storage)
+	{
+		XMIPP4_LOG_WARN(
+			"An array was provided for reuse but it does not have any "
+			"associated storage."
+		);
+		return nullptr;
+	}
+
+	if (&storage->get_memory_resource() != &allocator.get_memory_resource())
+	{
+		XMIPP4_LOG_WARN(
+			"An array was provided for reuse but it uses a different "
+			"memory resource than the allocator."
+		);
+		return nullptr;
+	}
 
     return out;
 }
@@ -86,11 +98,20 @@ array empty(
     array *out
 )
 {
+    out = validate_output_array(out, allocator);
+
+	// Try to re-use the output array as it is
+	if (out && out->get_layout() == layout && out->get_data_type() == data_type)
+	{
+		return out->view();
+	}
+
+	// Try to re-use the output array's storage
     const auto storage_requirement = 
 		compute_storage_requirement(layout, data_type);
-
-    out = check_output_array(out, allocator);
 	auto storage = cannibalize_output_array(out, storage_requirement);
+
+	// Allocate if necessary
     if (!storage)
     {
         const auto alignment = get_alignment_requirement(

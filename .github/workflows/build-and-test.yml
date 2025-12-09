@@ -41,7 +41,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
-        uses: ./.github/composites/install-cpp-coverage-tool
+        uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -62,17 +62,17 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests
-        uses: ./.github/composites/run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
-        uses: ./.github/composites/run-ctest/coverage-report
+        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
         with:
           compiler-cc: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
           cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
           report-path: ${{ github.workspace }}/coverage.xml
 
-      - name: Uploade coverage report
+      - name: Upload coverage report
         uses: actions/upload-artifact@v5
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.cc }}-${{ matrix.compiler.cxx }}
@@ -144,12 +144,8 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
-      # TODO REMOVE WHEN COMPOSITE IS IN .GITHUB REPO
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
       - name: SonarQube Scan
-        uses: ./.github/composites/sonar-scan
+        uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-artifact-name: "build-artifact"

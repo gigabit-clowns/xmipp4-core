@@ -36,7 +36,11 @@ std::size_t get_alignment_requirement(
 }
 
 static
-array* validate_output_array(array *out, hardware::memory_allocator &allocator)
+array* validate_output_array(
+	array *out, 
+	std::size_t storage_requirement,
+	hardware::memory_allocator &allocator
+)
 {
 
 	if (!out)
@@ -54,39 +58,25 @@ array* validate_output_array(array *out, hardware::memory_allocator &allocator)
 		return nullptr;
 	}
 
+	if (storage->get_size() < storage_requirement)
+	{
+		XMIPP4_LOG_WARN(
+			"An array was provided for reuse but its storage does not have "
+			"enough capacity."
+		);
+		return nullptr;
+	}
+
 	if (&storage->get_memory_resource() != &allocator.get_memory_resource())
 	{
 		XMIPP4_LOG_WARN(
 			"An array was provided for reuse but it uses a different "
-			"memory resource than the allocator."
+			"memory resource than the provided allocator."
 		);
 		return nullptr;
 	}
 
     return out;
-}
-
-static 
-std::shared_ptr<hardware::buffer> cannibalize_output_array(
-	array *out, 
-	std::size_t storage_requirement
-)
-{
-    if (out)
-    {
-		auto out_storage = out->share_storage();
-        if (out_storage && out_storage->get_size() >= storage_requirement)
-        {
-			return out_storage;
-        }
-
-		XMIPP4_LOG_WARN(
-			"An array was provided for reuse but it does not have storage or "
-			"its storage enough does not have enough capacity"
-		);
-    }
-
-	return nullptr;
 }
 
 XMIPP4_NODISCARD 
@@ -98,20 +88,21 @@ array empty(
     array *out
 )
 {
-    out = validate_output_array(out, allocator);
-
-	// Try to re-use the output array as it is
-	if (out && out->get_layout() == layout && out->get_data_type() == data_type)
-	{
-		return out->view();
-	}
-
-	// Try to re-use the output array's storage
     const auto storage_requirement = 
 		compute_storage_requirement(layout, data_type);
-	auto storage = cannibalize_output_array(out, storage_requirement);
+    out = validate_output_array(out, storage_requirement, allocator);
 
-	// Allocate if necessary
+	std::shared_ptr<hardware::buffer> storage;
+	if (out)
+	{
+		if (out->get_layout() == layout && out->get_data_type() == data_type)
+		{
+			return out->view(); // Re-use as it is.
+		}
+
+		storage = out->share_storage(); // Cannibalize its storage.
+	}
+
     if (!storage)
     {
         const auto alignment = get_alignment_requirement(

@@ -67,5 +67,3 @@ array empty(
 
 } // namespace multidimensional
 } // namespace xmipp4
-
-

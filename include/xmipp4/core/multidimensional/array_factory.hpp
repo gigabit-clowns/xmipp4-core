@@ -41,6 +41,30 @@ array empty(
 	array *out = nullptr
 );
 
+/**
+ * @brief Create an empty array with given layout and data type.
+ * 
+ * @param extents The extents of the resulting array.
+ * @param data_type The data type of the resulting array.
+ * @param allocator Allocator from which to allocate the storage.
+ * @param queue Optional device_queue where the allocation is asynchronously
+ * dispatched.
+ * @param out Optional array to reuse. If provided, its components may be 
+ * cannibalized to create the resulting array. After the call, the out array
+ * will be in a valid but unspecified state. In addition, the resulting array
+ * may alias contents of this buffer. Thus, modifications to the output buffer 
+ * after this call may have side-effects on the resulting array.
+ * @return array The resulting empty array.
+ */
+XMIPP4_NODISCARD XMIPP4_CORE_API
+array empty(
+	span<const std::size_t> extents, 
+	numerical_type data_type,
+	hardware::memory_allocator &allocator,
+	hardware::device_queue *queue,
+	array *out = nullptr
+);
+
 } // namespace multidimensional
 } // namespace xmipp4
 

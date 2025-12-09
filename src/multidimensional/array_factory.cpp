@@ -118,5 +118,23 @@ array empty(
     );
 }
 
+XMIPP4_NODISCARD
+array empty(
+	span<const std::size_t> extents, 
+	numerical_type data_type,
+	hardware::memory_allocator &allocator,
+	hardware::device_queue *queue,
+	array *out
+)
+{
+	return empty(
+		strided_layout::make_contiguous_layout(extents),
+		data_type,
+		allocator,
+		queue,
+		out
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

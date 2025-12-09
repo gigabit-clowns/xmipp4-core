@@ -77,7 +77,8 @@ public:
 		if (!builder)
 		{
 			throw invalid_operation_error(
-				"Could not find a suitable kernel for the requested operation"
+				"Could not find a suitable kernel builder for the requested "
+				"operation"
 			);
 		}
 
@@ -97,7 +98,7 @@ kernel_manager::~kernel_manager() = default;
 
 void kernel_manager::register_builtin_backends()
 {
-	// TODO start adding
+	// Add operations here.
 }
 
 bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)

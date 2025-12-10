@@ -39,11 +39,62 @@ static void allocate_output(
 	}
 }
 
+static void populate_descriptors(
+	span<array> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array::get_descriptor)
+	);
+}
 
-operation_dispatcher::operation_dispatcher() noexcept = default;
-operation_dispatcher::~operation_dispatcher() = default;
+static void populate_storages(
+	span<array> operands,
+	span<std::shared_ptr<hardware::buffer>> storages
+)
+{
+	std::transform(
+		operands.begin(), 
+		operands.end(),
+		storages.begin(),
+		[] (auto &arr)
+		{
+			return arr.share_storage();
+		}
+	);
+}
 
-void operation_dispatcher::dispatch(
+static void populate_storages(
+	span<const array> operands,
+	span<std::shared_ptr<const hardware::buffer>> storages
+)
+{
+	std::transform(
+		operands.begin(), 
+		operands.end(),
+		storages.begin(),
+		[] (const auto &arr)
+		{
+			return arr.share_storage();
+		}
+	);
+}
+
+static void record_queues(
+	span<const array> operands,
+	hardware::device_queue &queue
+)
+{		
+	for (const auto &operand : operands)
+	{
+		operand.record_queue(queue);
+	}
+}
+
+std::shared_ptr<kernel> build_kernel(
 	const kernel_manager &manager,
 	const operation &operation,
 	span<array> output_operands,
@@ -65,23 +116,12 @@ void operation_dispatcher::dispatch(
 		descriptors.data(), 
 		n_outputs
 	);
+	populate_descriptors(output_operands, output_descriptors);
 	const span<array_descriptor> input_descriptors(
 		descriptors.data() + n_outputs, 
 		n_inputs
 	);
-
-	std::transform(
-		output_operands.begin(), 
-		output_operands.end(),
-		output_descriptors.begin(),
-		std::mem_fn(&array::get_descriptor)
-	);
-	std::transform(
-		input_operands.begin(), 
-		input_operands.end(),
-		input_descriptors.begin(),
-		std::mem_fn(&array::get_descriptor)
-	);
+	populate_descriptors(input_operands, input_descriptors);
 
 	operation.validate_input(input_descriptors);
 	operation.deduce_operands(output_descriptors, input_descriptors);
@@ -93,42 +133,32 @@ void operation_dispatcher::dispatch(
 		queue
 	);
 
-	const auto kernel = manager.build_kernel(
+	return manager.build_kernel(
 		operation, 
 		span<const array_descriptor>(descriptors.data(), descriptors.size()),
 		device
 	);
-	XMIPP4_ASSERT( kernel );
+}
 
+static void execute_kernel(
+	kernel &kernel,
+	span<array> output_operands,
+	span<const array> input_operands,
+	hardware::device_queue *queue
+)
+{
 	boost::container::small_vector<
 		std::shared_ptr<hardware::buffer>, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
-	> output_storages(n_outputs);
+	> output_storages(output_operands.size());
+	populate_storages(output_operands, output_storages);
 	boost::container::small_vector<
 		std::shared_ptr<const hardware::buffer>, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
-	> input_storages(n_inputs);
+	> input_storages(input_operands.size());
+	populate_storages(input_operands, input_storages);
 
-	std::transform(
-		output_operands.begin(), 
-		output_operands.end(),
-		output_storages.begin(),
-		[] (auto &arr)
-		{
-			return arr.share_storage();
-		}
-	);
-	std::transform(
-		input_operands.begin(), 
-		input_operands.end(),
-		input_storages.begin(),
-		[] (const auto &arr)
-		{
-			return arr.share_storage();
-		}
-	);
-
-	kernel->execute(
+	kernel.execute(
 		span<const std::shared_ptr<hardware::buffer>>(
 			output_storages.data(), 
 			output_storages.size()
@@ -142,15 +172,38 @@ void operation_dispatcher::dispatch(
 
 	if (queue)
 	{
-		for (const auto &operand : output_operands)
-		{
-			operand.record_queue(*queue);
-		}
-		for (const auto &operand : input_operands)
-		{
-			operand.record_queue(*queue);
-		}
+		record_queues(output_operands, *queue);
+		record_queues(input_operands, *queue);
 	}
+}
+
+
+
+operation_dispatcher::operation_dispatcher() noexcept = default;
+operation_dispatcher::~operation_dispatcher() = default;
+
+void operation_dispatcher::dispatch(
+	const kernel_manager &manager,
+	const operation &operation,
+	span<array> output_operands,
+	span<const array> input_operands,
+	hardware::memory_allocator &allocator,
+	hardware::device &device,
+	hardware::device_queue *queue
+)
+{
+	const auto kernel = build_kernel(
+		manager,
+		operation,
+		output_operands,
+		input_operands,
+		allocator,
+		device,
+		queue
+	);
+
+	XMIPP4_ASSERT( kernel );
+	execute_kernel(*kernel, output_operands, input_operands, queue);
 }
 
 } // namespace multidimensional

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
+#include <xmipp4/core/multidimensional/eager_operation_dispatcher.hpp>
 
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
@@ -18,7 +18,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class operation_dispatcher::implementation {};
+class eager_operation_dispatcher::implementation {};
 
 static void allocate_output(
 	span<array> operands,
@@ -177,10 +177,10 @@ static void execute_kernel(
 
 
 
-operation_dispatcher::operation_dispatcher() noexcept = default;
-operation_dispatcher::~operation_dispatcher() = default;
+eager_operation_dispatcher::eager_operation_dispatcher() noexcept = default;
+eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
-void operation_dispatcher::dispatch(
+void eager_operation_dispatcher::dispatch(
 	const kernel_manager &manager,
 	const operation &operation,
 	span<array> output_operands,

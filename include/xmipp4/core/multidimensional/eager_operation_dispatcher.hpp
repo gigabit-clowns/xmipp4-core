@@ -25,18 +25,20 @@ class operation;
 class array;
 class kernel_manager;
 
-class operation_dispatcher
+class eager_operation_dispatcher
 {
 public:
 	XMIPP4_CORE_API
-	operation_dispatcher() noexcept;
-	operation_dispatcher(const operation_dispatcher &other) = delete;
-	operation_dispatcher(operation_dispatcher &&other) = delete;
+	eager_operation_dispatcher() noexcept;
+	eager_operation_dispatcher(const eager_operation_dispatcher &other) = delete;
+	eager_operation_dispatcher(eager_operation_dispatcher &&other) = delete;
 	XMIPP4_CORE_API
-	~operation_dispatcher();
+	~eager_operation_dispatcher();
 
-	operation_dispatcher& operator=(const operation_dispatcher &other) = delete;
-	operation_dispatcher& operator=(operation_dispatcher &&other) = delete;
+	eager_operation_dispatcher& 
+	operator=(const eager_operation_dispatcher &other) = delete;
+	eager_operation_dispatcher& 
+	operator=(eager_operation_dispatcher &&other) = delete;
 
 	XMIPP4_CORE_API
 	void dispatch(

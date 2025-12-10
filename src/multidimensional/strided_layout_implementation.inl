@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include <boost/container_hash/hash.hpp>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -161,34 +163,34 @@ private:
 
 			switch (subscript.get_subscript_type())
 			{
-				case dynamic_subscript::subscript_type::ellipsis:
-					throw std::invalid_argument(
-						"Two ellipsis tags were encountered when processing "
-						"subscripts"
-					);
+			case dynamic_subscript::subscript_type::ellipsis:
+				throw std::invalid_argument(
+					"Two ellipsis tags were encountered when processing "
+					"subscripts"
+				);
 
-				case dynamic_subscript::subscript_type::new_axis:
-					head_ite = axes.insert(head_ite, make_phantom_axis());
-					--last_subscript;
-					break;
+			case dynamic_subscript::subscript_type::new_axis:
+				head_ite = axes.insert(head_ite, make_phantom_axis());
+				--last_subscript;
+				break;
 
-				case dynamic_subscript::subscript_type::index:
-					check_non_empty_axes_for_index(first_axis, last_axis);
-					apply_index(*std::prev(last_axis), offset, subscript.get_index());
-					--last_subscript;
-					--last_axis;
-					break;
-				
-				case dynamic_subscript::subscript_type::slice:
-					check_non_empty_axes_for_slice(first_axis, last_axis);
-					head_ite = axes.insert(head_ite, *std::prev(last_axis));
-					apply_slice(*head_ite, offset, subscript.get_slice());
-					--last_subscript;
-					--last_axis;
-					break;
+			case dynamic_subscript::subscript_type::index:
+				check_non_empty_axes_for_index(first_axis, last_axis);
+				apply_index(*std::prev(last_axis), offset, subscript.get_index());
+				--last_subscript;
+				--last_axis;
+				break;
+			
+			case dynamic_subscript::subscript_type::slice:
+				check_non_empty_axes_for_slice(first_axis, last_axis);
+				head_ite = axes.insert(head_ite, *std::prev(last_axis));
+				apply_slice(*head_ite, offset, subscript.get_slice());
+				--last_subscript;
+				--last_axis;
+				break;
 
-				default:
-					throw std::invalid_argument("Unknown subscript type encountered");
+			default:
+				throw std::invalid_argument("Unknown subscript type encountered");
 			}
 		}
 
@@ -240,11 +242,11 @@ private:
 
 inline
 strided_layout_implementation::strided_layout_implementation(
-		const strided_axis_vector_type &axes,
-		std::ptrdiff_t offset 
+	const strided_axis_vector_type &axes,
+	std::ptrdiff_t offset 
 )
-		: m_axes(axes)
-		, m_offset(offset)
+	: m_axes(axes)
+	, m_offset(offset)
 {
 }
 
@@ -253,44 +255,44 @@ bool strided_layout_implementation::operator==(
 		const strided_layout_implementation &other
 ) const noexcept
 {
-		if (m_offset != other.m_offset)
+	if (m_offset != other.m_offset)
+	{
+		return false;
+	}
+
+	if (m_axes.size() != other.m_axes.size())
+	{
+		return false;
+	}
+
+	const auto n = m_axes.size();
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		const auto &axis1 = m_axes[i];
+		const auto &axis2 = other.m_axes[i];
+
+		const auto extent1 = axis1.get_extent();
+		const auto extent2 = axis2.get_extent();
+		if (extent1 != extent2)
 		{
-				return false;
+			return false;
 		}
 
-		if (m_axes.size() != other.m_axes.size())
+		const auto stride1 = axis1.get_stride();
+		const auto stride2 = axis2.get_stride();
+		if (extent1 != 1 && stride1 != stride2)
 		{
-				return false;
+			return false;
 		}
+	}
 
-		const auto n = m_axes.size();
-		for (std::size_t i = 0; i < n; ++i)
-		{
-				const auto &axis1 = m_axes[i];
-				const auto &axis2 = other.m_axes[i];
-
-				const auto extent1 = axis1.get_extent();
-				const auto extent2 = axis2.get_extent();
-				if (extent1 != extent2)
-				{
-						return false;
-				}
-
-				const auto stride1 = axis1.get_stride();
-				const auto stride2 = axis2.get_stride();
-				if (extent1 != 1 && stride1 != stride2)
-				{
-						return false;
-				}
-		}
-
-		return true;
+	return true;
 }
 
 inline
 std::size_t strided_layout_implementation::get_rank() const noexcept
 {
-		return m_axes.size();
+	return m_axes.size();
 }
 
 template <typename Vec>
@@ -299,12 +301,12 @@ void strided_layout_implementation::get_extents(
 		Vec &extents
 ) const
 {
-		XMIPP4_ASSERT(extents.empty());
-		extents.reserve(m_axes.size());
-		for (const auto &axis : m_axes)
-		{
-				extents.push_back(axis.get_extent());
-		}
+	XMIPP4_ASSERT(extents.empty());
+	extents.reserve(m_axes.size());
+	for (const auto &axis : m_axes)
+	{
+		extents.push_back(axis.get_extent());
+	}
 }
 
 template <typename Vec>
@@ -313,58 +315,58 @@ void strided_layout_implementation::get_strides(
 		Vec &strides
 ) const
 {
-		XMIPP4_ASSERT(strides.empty());
-		strides.reserve(m_axes.size());
-		for (const auto &axis : m_axes)
-		{
-				strides.push_back(axis.get_stride());
-		}
+	XMIPP4_ASSERT(strides.empty());
+	strides.reserve(m_axes.size());
+	for (const auto &axis : m_axes)
+	{
+		strides.push_back(axis.get_stride());
+	}
 }
 
 inline
 std::ptrdiff_t strided_layout_implementation::get_offset() const noexcept
 {
-		return m_offset;
+	return m_offset;
 }
 
 inline
 std::size_t 
 strided_layout_implementation::compute_storage_requirement() const noexcept
 {
-		std::size_t result = 0;
+	std::size_t result = 0;
 
-		for (const auto &axis : m_axes)
+	for (const auto &axis : m_axes)
+	{
+		const auto extent = axis.get_extent();
+		if (extent == 0)
 		{
-				const auto extent = axis.get_extent();
-				if (extent == 0)
-				{
-						return 0;
-				}
-
-				const auto stride = axis.get_stride();
-				if(stride > 0)
-				{
-						const std::size_t last_index = extent - 1;
-						result += last_index*stride;
-				}
+			return 0;
 		}
 
-		return m_offset + result + 1;
+		const auto stride = axis.get_stride();
+		if(stride > 0)
+		{
+			const std::size_t last_index = extent - 1;
+			result += last_index*stride;
+		}
+	}
+
+	return m_offset + result + 1;
 }
 
 inline
 std::size_t 
 strided_layout_implementation::compute_element_count() const noexcept
 {
-		return std::accumulate(
-				m_axes.cbegin(), 
-				m_axes.cend(),
-				std::size_t(1),
-				[] (std::size_t current, const strided_axis &axis)
-				{
-						return current * axis.get_extent();
-				}
-		);
+	return std::accumulate(
+		m_axes.cbegin(), 
+		m_axes.cend(),
+		std::size_t(1),
+		[] (std::size_t current, const strided_axis &axis)
+		{
+			return current * axis.get_extent();
+		}
+	);
 }
 
 inline
@@ -373,16 +375,16 @@ strided_layout_implementation::apply_subscripts(
 		span<const dynamic_subscript> subscripts
 ) const
 {
-		std::ptrdiff_t offset = m_offset;
-		auto axes = apply_subscripts_helper::process(
-				subscripts.begin(), 
-				subscripts.end(),
-				m_axes.data(), 
-				m_axes.data() + m_axes.size(),
-				offset
-		);
+	std::ptrdiff_t offset = m_offset;
+	auto axes = apply_subscripts_helper::process(
+		subscripts.begin(), 
+		subscripts.end(),
+		m_axes.data(), 
+		m_axes.data() + m_axes.size(),
+		offset
+	);
 
-		return strided_layout_implementation(std::move(axes), offset);
+	return strided_layout_implementation(std::move(axes), offset);
 }
 
 inline
@@ -392,9 +394,9 @@ strided_layout_implementation strided_layout_implementation::transpose() const
 		axes.reserve(m_axes.size());
 
 		std::reverse_copy(
-				m_axes.cbegin(), 
-				m_axes.cend(),
-				std::back_inserter(axes)
+			m_axes.cbegin(), 
+			m_axes.cend(),
+			std::back_inserter(axes)
 		);
 
 		return strided_layout_implementation(std::move(axes), m_offset);
@@ -404,18 +406,18 @@ inline
 strided_layout_implementation 
 strided_layout_implementation::permute(span<const std::size_t> order) const
 {
-		const auto count = m_axes.size();
-		check_axis_permutation(order.begin(), order.end(), count);
+	const auto count = m_axes.size();
+	check_axis_permutation(order.begin(), order.end(), count);
 
-		strided_axis_vector_type axes;
-		axes.reserve(count);
+	strided_axis_vector_type axes;
+	axes.reserve(count);
 
-		for(std::size_t i = 0; i < count; ++i)
-		{
-				axes.push_back(m_axes[order[i]]);
-		}
+	for(std::size_t i = 0; i < count; ++i)
+	{
+		axes.push_back(m_axes[order[i]]);
+	}
 
-		return strided_layout_implementation(std::move(axes), m_offset);
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 inline
@@ -424,145 +426,145 @@ strided_layout_implementation strided_layout_implementation::matrix_transpose(
 		std::ptrdiff_t axis2
 ) const
 {
-		const auto n = m_axes.size();
-		const auto index1 = sanitize_index(axis1, n);
-		const auto index2 = sanitize_index(axis2, n);
+	const auto n = m_axes.size();
+	const auto index1 = sanitize_index(axis1, n);
+	const auto index2 = sanitize_index(axis2, n);
 
-		auto axes = m_axes;
-		std::swap(axes[index1], axes[index2]);
+	auto axes = m_axes;
+	std::swap(axes[index1], axes[index2]);
 
-		return strided_layout_implementation(std::move(axes), m_offset);
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 inline
 strided_layout_implementation strided_layout_implementation::matrix_diagonal(
-		std::ptrdiff_t axis1, 
-		std::ptrdiff_t axis2
+	std::ptrdiff_t axis1, 
+	std::ptrdiff_t axis2
 ) const
 {
-		const auto n = m_axes.size();
-		auto index1 = sanitize_index(axis1, n);
-		auto index2 = sanitize_index(axis2, n);
-		if (axis1 == axis2)
-		{
-				throw std::invalid_argument(
-						"axis1 and axis2 must represent different axes"
-				);
-		}
-
-		if (index1 > index2)
-		{
-				std::swap(index1, index2); // Sort
-		}
-
-		strided_axis_vector_type axes;
-		axes.reserve(n - 1);
-		XMIPP4_ASSERT(index1 < index2);
-		std::copy(
-				m_axes.cbegin(),
-				std::next(m_axes.cbegin(), index1),
-				std::back_inserter(axes)
+	const auto n = m_axes.size();
+	auto index1 = sanitize_index(axis1, n);
+	auto index2 = sanitize_index(axis2, n);
+	if (axis1 == axis2)
+	{
+		throw std::invalid_argument(
+				"axis1 and axis2 must represent different axes"
 		);
-		std::copy(
-				std::next(m_axes.cbegin(), index1+1),
-				std::next(m_axes.cbegin(), index2),
-				std::back_inserter(axes)
-		);
-		std::copy(
-				std::next(m_axes.cbegin(), index2+1),
-				m_axes.cend(),
-				std::back_inserter(axes)
-		);
-		XMIPP4_ASSERT(axes.size() == (n - 2));
+	}
 
-		const auto &axis_a = m_axes[index1];
-		const auto &axis_b = m_axes[index2];
-		const auto extent = std::min(axis_a.get_extent(), axis_b.get_extent());
-		const auto stride = axis_a.get_stride() + axis_b.get_stride();
-		axes.emplace_back(extent, stride);
-		
-		XMIPP4_ASSERT(axes.size() == (n - 1));
-		return strided_layout_implementation(std::move(axes), m_offset);
+	if (index1 > index2)
+	{
+		std::swap(index1, index2); // Sort
+	}
+
+	strided_axis_vector_type axes;
+	axes.reserve(n - 1);
+	XMIPP4_ASSERT(index1 < index2);
+	std::copy(
+		m_axes.cbegin(),
+		std::next(m_axes.cbegin(), index1),
+		std::back_inserter(axes)
+	);
+	std::copy(
+		std::next(m_axes.cbegin(), index1+1),
+		std::next(m_axes.cbegin(), index2),
+		std::back_inserter(axes)
+	);
+	std::copy(
+		std::next(m_axes.cbegin(), index2+1),
+		m_axes.cend(),
+		std::back_inserter(axes)
+	);
+	XMIPP4_ASSERT(axes.size() == (n - 2));
+
+	const auto &axis_a = m_axes[index1];
+	const auto &axis_b = m_axes[index2];
+	const auto extent = std::min(axis_a.get_extent(), axis_b.get_extent());
+	const auto stride = axis_a.get_stride() + axis_b.get_stride();
+	axes.emplace_back(extent, stride);
+	
+	XMIPP4_ASSERT(axes.size() == (n - 1));
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 inline
 strided_layout_implementation strided_layout_implementation::squeeze() const
 {
-		strided_axis_vector_type axes;
+	strided_axis_vector_type axes;
 
-		std::copy_if(
-				m_axes.cbegin(), m_axes.cend(),
-				std::back_inserter(axes),
-				is_significant
-		);
+	std::copy_if(
+		m_axes.cbegin(), m_axes.cend(),
+		std::back_inserter(axes),
+		is_significant
+	);
 
-		return strided_layout_implementation(std::move(axes), m_offset);
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 inline
 bool strided_layout_implementation::extents_equal(
-		span<const std::size_t> extents
+	span<const std::size_t> extents
 ) const noexcept
 {
-		if (m_axes.size() != extents.size())
-		{
-				return false;
-		}
+	if (m_axes.size() != extents.size())
+	{
+		return false;
+	}
 
-		const auto n = m_axes.size();
-		for (std::size_t i = 0; i < n; ++i)
+	const auto n = m_axes.size();
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		if (m_axes[i].get_extent() != extents[i])
 		{
-				if (m_axes[i].get_extent() != extents[i])
-				{
-						return false;
-				}
+			return false;
 		}
+	}
 
-		return true;
+	return true;
 }
 
 inline
 strided_layout_implementation strided_layout_implementation::broadcast_to(
-		span<const std::size_t> extents
+	span<const std::size_t> extents
 ) const
 {
-		if (m_axes.size() > extents.size())
+	if (m_axes.size() > extents.size())
+	{
+		std::ostringstream oss;
+		oss << "Cannot broadcast layout with " << m_axes.size()
+				<< " axes into a shape of " << extents.size()
+				<< " dimensions.";
+		throw std::invalid_argument(oss.str());
+	}
+
+	strided_axis_vector_type axes;
+	axes.reserve(extents.size());
+	
+	const std::size_t padding = extents.size() - m_axes.size();
+	std::fill_n(
+			std::back_inserter(axes), padding,
+			make_phantom_axis()
+	);
+	std::copy(
+			m_axes.cbegin(), m_axes.cend(),
+			std::back_inserter(axes)
+	);
+
+	const auto count = extents.size();
+	for(std::size_t i = 0; i < count; ++i)
+	{
+		auto &axis = axes[i];
+		const auto extent = extents[i];
+		if (!multidimensional::broadcast_to(axis, extent))
 		{
-				std::ostringstream oss;
-				oss << "Cannot broadcast layout with " << m_axes.size()
-						<< " axes into a shape of " << extents.size()
-						<< " dimensions.";
-				throw std::invalid_argument(oss.str());
+			std::ostringstream oss;
+			oss << "Cannot broadcast axis of extent " << axis.get_extent()
+					<< " into an extent of " << extent << ".";
+			throw std::invalid_argument(oss.str());
 		}
+	}
 
-		strided_axis_vector_type axes;
-		axes.reserve(extents.size());
-		
-		const std::size_t padding = extents.size() - m_axes.size();
-		std::fill_n(
-				std::back_inserter(axes), padding,
-				make_phantom_axis()
-		);
-		std::copy(
-				m_axes.cbegin(), m_axes.cend(),
-				std::back_inserter(axes)
-		);
-
-		const auto count = extents.size();
-		for(std::size_t i = 0; i < count; ++i)
-		{
-				auto &axis = axes[i];
-				const auto extent = extents[i];
-				if (!multidimensional::broadcast_to(axis, extent))
-				{
-						std::ostringstream oss;
-						oss << "Cannot broadcast axis of extent " << axis.get_extent()
-								<< " into an extent of " << extent << ".";
-						throw std::invalid_argument(oss.str());
-				}
-		}
-
-		return strided_layout_implementation(std::move(axes), m_offset);
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 } // namespace multidimensional

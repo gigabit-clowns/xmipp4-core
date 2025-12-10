@@ -219,7 +219,7 @@ jobs:
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'action@github.com'
-          git add *.whl
+          git add ./*.whl
           git commit -m "Add pre-built binaries"
           git tag -fa $TAG_NAME -m 'Update development tag with main branch'
           git push origin $TAG_NAME --force

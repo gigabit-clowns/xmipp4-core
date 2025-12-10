@@ -3,6 +3,10 @@ permissions:
   contents: read
 
 on:
+  push:
+    branches:
+      - main
+
   pull_request:
     branches:
       - main
@@ -87,6 +91,7 @@ jobs:
 
   build_with_pip:
     name: pip
+    if: github.event_name != 'push'
     strategy:
       matrix:
         os:
@@ -112,6 +117,7 @@ jobs:
 
   build_with_conda:
     name: conda
+    if: github.event_name != 'push'
     strategy:
       matrix:
         os:

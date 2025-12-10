@@ -91,7 +91,7 @@ jobs:
 
   build_with_pip:
     name: pip
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'push'
     strategy:
       matrix:
         os:
@@ -117,7 +117,7 @@ jobs:
 
   build_with_conda:
     name: conda
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'push'
     strategy:
       matrix:
         os:

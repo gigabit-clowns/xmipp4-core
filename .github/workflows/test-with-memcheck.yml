@@ -29,6 +29,8 @@ jobs:
         include:
         - os: macos-latest
           compiler: {c: clang, cxx: clang++}
+        - os: windows-latest
+          compiler: {c: cl, cxx: cl}
 
     env:
       BUILD_TYPE: Debug

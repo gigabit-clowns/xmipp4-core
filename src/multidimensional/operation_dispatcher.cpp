@@ -35,13 +35,7 @@ static void allocate_output(
 			out = nullptr;
 		}
 
-		operands[i] = empty(
-			descriptors[i].get_layout(),
-			descriptors[i].get_data_type(),
-			allocator,
-			queue,
-			out
-		);
+		operands[i] = empty(descriptors[i], allocator, queue, out);
 	}
 }
 

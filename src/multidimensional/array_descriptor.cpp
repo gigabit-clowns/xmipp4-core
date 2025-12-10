@@ -58,5 +58,12 @@ bool operator!=(
 	return !(lhs == rhs);
 }
 
+std::size_t compute_storage_requirement(const array_descriptor &descriptor)
+{
+	const auto &layout = descriptor.get_layout();
+	const auto data_type = descriptor.get_data_type();
+	return layout.compute_storage_requirement() * get_size(data_type);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

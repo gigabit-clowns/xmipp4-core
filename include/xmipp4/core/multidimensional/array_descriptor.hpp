@@ -85,5 +85,15 @@ bool operator!=(
 	const array_descriptor &rhs
 ) noexcept;
 
+/**
+ * @brief Compute the number of bytes required to store the given descriptor.
+ * 
+ * @param descriptor The descriptor from which the storage requirement is 
+ * computed.
+ * @return std::size_t Minimum number of bytes required to store the descriptor.
+ */
+XMIPP4_CORE_API
+std::size_t compute_storage_requirement(const array_descriptor &descriptor);
+
 } // namespace multidimensional
 } // namespace xmipp4

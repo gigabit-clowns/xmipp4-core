@@ -17,12 +17,16 @@ public:
 	implementation() = default;
 	implementation(
 		std::shared_ptr<hardware::buffer> storage,
-		strided_layout layout, 
-		numerical_type data_type
+		array_descriptor descriptor
 	) noexcept
 		: m_storage(std::move(storage))
-		, m_descriptor(std::move(layout), data_type)
+		, m_descriptor(std::move(descriptor))
 	{
+	}
+
+	void set_descriptor(array_descriptor descriptor) noexcept
+	{
+		m_descriptor = std::move(descriptor);
 	}
 
 	const array_descriptor& get_descriptor() const noexcept
@@ -38,6 +42,11 @@ public:
 	const strided_layout& get_layout() const noexcept
 	{
 		return m_descriptor.get_layout();
+	}
+
+	void set_storage(std::shared_ptr<hardware::buffer> storage) noexcept
+	{
+		m_storage = std::move(storage);
 	}
 
 	hardware::buffer* get_storage() noexcept
@@ -64,8 +73,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().apply_subscripts(subscripts),
-			get_data_type()
+			array_descriptor(
+				get_layout().apply_subscripts(subscripts),
+				get_data_type()
+			)
 		);
 	}
 
@@ -73,8 +84,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().transpose(),
-			get_data_type()
+			array_descriptor(
+				get_layout().transpose(),
+				get_data_type()
+			)
 		);
 	}
 
@@ -82,8 +95,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().permute(order),
-			get_data_type()
+			array_descriptor(
+				get_layout().permute(order),
+				get_data_type()
+			)
 		);
 	}
 
@@ -91,8 +106,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().matrix_transpose(axis1, axis2),
-			get_data_type()
+			array_descriptor(
+				get_layout().matrix_transpose(axis1, axis2),
+				get_data_type()
+			)
 		);
 	}
 
@@ -100,8 +117,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().matrix_diagonal(axis1, axis2),
-			get_data_type()
+			array_descriptor(
+				get_layout().matrix_diagonal(axis1, axis2),
+				get_data_type()
+			)
 		);
 	}
 
@@ -109,8 +128,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().squeeze(),
-			get_data_type()
+			array_descriptor(
+				get_layout().squeeze(),
+				get_data_type()
+			)
 		);
 	}
 
@@ -118,8 +139,10 @@ public:
 	{
 		return implementation(
 			share_storage(),
-			get_layout().broadcast_to(extents),
-			get_data_type()
+			array_descriptor(
+				get_layout().broadcast_to(extents),
+				get_data_type()
+			)
 		);
 	}
 
@@ -148,14 +171,12 @@ array& array::operator=(array&& other) noexcept = default;
 
 array::array(
 	std::shared_ptr<hardware::buffer> storage,
-	strided_layout layout, 
-	numerical_type data_type
+	array_descriptor descriptor
 )
 	: array(
 		std::make_shared<implementation>(
 			std::move(storage), 
-			std::move(layout), 
-			data_type
+			std::move(descriptor)
 		)
 	)
 {
@@ -169,6 +190,21 @@ array::array(std::shared_ptr<implementation> impl) noexcept
 array::array(implementation &&impl)
 	: array(std::make_shared<implementation>(std::move(impl)))
 {
+}
+
+void array::set_descriptor(array_descriptor descriptor)
+{
+	if (!m_implementation)
+	{
+		m_implementation = std::make_shared<implementation>(
+			nullptr, 
+			std::move(descriptor)
+		);
+	}
+	else
+	{
+		m_implementation->set_descriptor(std::move(descriptor));
+	}
 }
 
 const array_descriptor& array::get_descriptor() const noexcept
@@ -189,6 +225,21 @@ const strided_layout& array::get_layout() const noexcept
 {
 	return get_descriptor().get_layout();
 }		
+
+void array::set_storage(std::shared_ptr<hardware::buffer> storage)
+{
+	if (!m_implementation)
+	{
+		m_implementation = std::make_shared<implementation>(
+			std::move(storage),
+			array_descriptor()
+		);
+	}
+	else
+	{
+		m_implementation->set_storage(std::move(storage));
+	}
+} 
 
 hardware::buffer* array::get_storage() noexcept
 {

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "array_descriptor.hpp"
 #include "dynamic_subscript.hpp"
 #include "strided_layout.hpp"
 #include "../numerical_type.hpp"
@@ -33,8 +34,7 @@ public:
 	XMIPP4_CORE_API array();
 	XMIPP4_CORE_API array(
 		std::shared_ptr<hardware::buffer> storage,
-		strided_layout layout, 
-		numerical_type data_type
+		array_descriptor descriptor
 	);
 	array(const array& other) = delete;
 	XMIPP4_CORE_API array(array&& other) noexcept;
@@ -42,6 +42,18 @@ public:
 
 	array& operator=(const array& other) = delete;
 	XMIPP4_CORE_API array& operator=(array&& other) noexcept;
+
+
+	/**
+	 * @brief Set the descriptor for this array.
+	 *
+	 * @param descriptor The descriptor to be set.
+	 * 
+	 * @warning This function does not check if the current storage is suitable
+	 * for this descriptor.
+	 *  
+	 */
+	XMIPP4_CORE_API void set_descriptor(array_descriptor descriptor);
 
 	/**
 	 * @brief Get the descriptor of this array.
@@ -63,6 +75,17 @@ public:
 	 * @return strided_layout The layout.
 	 */
 	XMIPP4_CORE_API const strided_layout& get_layout() const noexcept;
+
+	/**
+	 * @brief Set the storage of this array.
+	 * 
+	 * @param storage A share pointer to the storage to be adopted.
+	 * 
+	 * @warning This function does not check if the storage is suitable for the
+	 * current descriptor.
+	 * 
+	 */
+	XMIPP4_CORE_API void set_storage(std::shared_ptr<hardware::buffer> storage);
 
 	/**
 	 * @brief Get the storage of this array.

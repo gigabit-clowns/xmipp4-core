@@ -14,15 +14,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-static
-std::size_t compute_storage_requirement(
-	const strided_layout &layout, 
-	numerical_type data_type
-) noexcept
-{
-	return layout.compute_storage_requirement() * get_size(data_type);
-}
-
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
@@ -80,6 +71,34 @@ array* validate_output_array(
 
 XMIPP4_NODISCARD 
 array empty(
+	array_descriptor descriptor,
+    hardware::memory_allocator &allocator,
+    hardware::device_queue *queue,
+    array *out
+)
+{
+    const auto storage_requirement = compute_storage_requirement(descriptor);
+    out = validate_output_array(out, storage_requirement, allocator);
+
+	if (out)
+	{
+		out->set_descriptor(std::move(descriptor));
+		return out->view();
+	}
+
+	const auto alignment = get_alignment_requirement(
+		allocator, 
+		storage_requirement
+	);
+	auto storage = allocator.allocate(storage_requirement, alignment, queue);
+    return array(
+		std::move(storage),
+        std::move(descriptor)
+    );
+}
+
+XMIPP4_NODISCARD 
+array empty(
     strided_layout layout, 
     numerical_type data_type,
     hardware::memory_allocator &allocator,
@@ -87,35 +106,12 @@ array empty(
     array *out
 )
 {
-    const auto storage_requirement = 
-		compute_storage_requirement(layout, data_type);
-    out = validate_output_array(out, storage_requirement, allocator);
-
-	std::shared_ptr<hardware::buffer> storage;
-	if (out)
-	{
-		if (out->get_layout() == layout && out->get_data_type() == data_type)
-		{
-			return out->view(); // Re-use as it is.
-		}
-
-		storage = out->share_storage(); // Cannibalize its storage.
-	}
-
-    if (!storage)
-    {
-        const auto alignment = get_alignment_requirement(
-            allocator, 
-            storage_requirement
-        );
-		storage = allocator.allocate(storage_requirement, alignment, queue);
-    }
-
-    return array(
-        std::move(storage),
-        std::move(layout),
-        data_type
-    );
+	return empty(
+		array_descriptor(std::move(layout), data_type),
+		allocator,
+		queue,
+		out
+	);
 }
 
 XMIPP4_NODISCARD

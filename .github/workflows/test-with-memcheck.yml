@@ -68,7 +68,7 @@ jobs:
         id: run-ctest
         with:
           check-memleaks: true
-          drmemory: ${{ steps.install-memtool.outputs.drmemory }}
+          drmemory: ${{ steps.install-memtool.outputs.drmemory-pwsh }}
 
       - name: Show memory leak logs (if exist)
         if: steps.run-ctest.outputs.exist-memleaks == 'true'

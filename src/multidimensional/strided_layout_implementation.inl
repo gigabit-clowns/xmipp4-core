@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include <boost/container_hash/hash.hpp>
-
 namespace xmipp4 
 {
 namespace multidimensional

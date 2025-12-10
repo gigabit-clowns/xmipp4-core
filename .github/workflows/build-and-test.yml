@@ -47,7 +47,7 @@ jobs:
         id: install-coverage
         uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
         with:
-          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-c: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
 
       - name: Configure and build with CMake
@@ -71,7 +71,7 @@ jobs:
       - name: Generate coverage report
         uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
         with:
-          compiler-cc: ${{ matrix.compiler.cc }}
+          compiler-c: ${{ matrix.compiler.cc }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
           cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
           report-path: ${{ github.workspace }}/coverage.xml

@@ -64,7 +64,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests with memory check
-        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@ms_memcheck_windows
         id: run-ctest
         with:
           check-memleaks: true

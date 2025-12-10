@@ -33,7 +33,7 @@ runs:
     - name: Run tests with memory check (Windows)
       if: runner.os == 'Windows'
       shell: cmd
-      run: ${{ inputs.drmemory }} -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
+      run: "${{ inputs.drmemory }}" -show_reachable -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
     #- name: Run tests with memory check (Windows)
     #  if: runner.os == 'Windows'

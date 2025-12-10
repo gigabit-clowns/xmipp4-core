@@ -40,7 +40,7 @@ static void allocate_output(
 }
 
 static void populate_descriptors(
-	span<array> operands,
+	span<const array> operands,
 	span<array_descriptor> descriptors
 )
 {	std::transform(
@@ -94,7 +94,7 @@ static void record_queues(
 	}
 }
 
-std::shared_ptr<kernel> build_kernel(
+static std::shared_ptr<kernel> build_kernel(
 	const kernel_manager &manager,
 	const operation &operation,
 	span<array> output_operands,
@@ -151,24 +151,22 @@ static void execute_kernel(
 		std::shared_ptr<hardware::buffer>, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
 	> output_storages(output_operands.size());
-	populate_storages(output_operands, output_storages);
+	span<std::shared_ptr<hardware::buffer>> read_write_storages(
+		output_storages.data(), 
+		output_storages.size()
+	);
+	populate_storages(output_operands, read_write_storages);
 	boost::container::small_vector<
 		std::shared_ptr<const hardware::buffer>, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
 	> input_storages(input_operands.size());
-	populate_storages(input_operands, input_storages);
-
-	kernel.execute(
-		span<const std::shared_ptr<hardware::buffer>>(
-			output_storages.data(), 
-			output_storages.size()
-		),
-		span<const std::shared_ptr<const hardware::buffer>>(
-			input_storages.data(), 
-			input_storages.size()
-		),
-		queue
+	span<std::shared_ptr<const hardware::buffer>> read_only_storages(
+		input_storages.data(), 
+		input_storages.size()
 	);
+	populate_storages(input_operands, read_only_storages);
+
+	kernel.execute(read_write_storages, read_only_storages, queue);
 
 	if (queue)
 	{

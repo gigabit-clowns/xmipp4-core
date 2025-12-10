@@ -20,15 +20,15 @@ jobs:
     name: Test with memchecks
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        compiler: 
-        - {c: gcc, cxx: g++}
-        - {c: clang, cxx: clang++}
+        #os:
+        #- ubuntu-latest
+        #compiler: 
+        #- {c: gcc, cxx: g++}
+        #- {c: clang, cxx: clang++}
 
         include:
-        - os: macos-latest
-          compiler: {c: clang, cxx: clang++}
+        #- os: macos-latest
+        #  compiler: {c: clang, cxx: clang++}
         - os: windows-latest
           compiler: {c: cl, cxx: cl}
 

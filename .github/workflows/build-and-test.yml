@@ -32,7 +32,7 @@ jobs:
         - os: windows-latest
           compiler: {cc: gcc, cxx: g++}
           generator: "Ninja"
-  
+
     env:
       BUILD_TYPE: Debug
     runs-on: ${{ matrix.os }}

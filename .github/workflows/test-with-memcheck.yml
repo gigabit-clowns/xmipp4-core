@@ -60,7 +60,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
-            ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_CXX_FLAGS:STRING=/Zi\\ /MT\\ /EHsc\\ /Oy-\\ /Ob0' }}
+            ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/.github/scripts/cmake/msvc-memcheck.cmake' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

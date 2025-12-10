@@ -82,7 +82,7 @@ array empty(
 
 	if (out)
 	{
-		out->set_descriptor(std::move(descriptor));
+		out->set_descriptor(std::move(descriptor)); // Suitable for storage.
 		return out->view();
 	}
 

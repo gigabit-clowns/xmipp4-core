@@ -9,6 +9,8 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
+#include <xmipp4/core/hardware/memory_resource.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
 
 #include "../config.hpp"
 
@@ -56,34 +58,66 @@ static void populate_descriptors(
 	);
 }
 
-static void populate_storages(
+static bool check_storage_placement(
+	const hardware::buffer& buffer, 
+	hardware::device &device
+)
+{
+	auto &memory_resource = buffer.get_memory_resource();
+	return hardware::is_device_accessible(memory_resource, device);
+}
+
+static void populate_output_storages(
 	span<array> operands,
-	span<std::shared_ptr<hardware::buffer>> storages
+	span<std::shared_ptr<hardware::buffer>> storages,
+	hardware::device &device
 )
 {
 	std::transform(
 		operands.begin(), 
 		operands.end(),
 		storages.begin(),
-		[] (auto &arr)
+		[&] (auto &arr)
 		{
-			return arr.share_storage();
+			auto buffer = arr.share_storage();
+
+			XMIPP4_ASSERT( buffer );
+			XMIPP4_ASSERT( check_storage_placement(*buffer, device) );
+
+			return buffer;
 		}
 	);
 }
 
-static void populate_storages(
+static void populate_input_storages(
 	span<const array> operands,
-	span<std::shared_ptr<const hardware::buffer>> storages
+	span<std::shared_ptr<const hardware::buffer>> storages,
+	hardware::device &device
 )
 {
 	std::transform(
 		operands.begin(), 
 		operands.end(),
 		storages.begin(),
-		[] (const auto &arr)
+		[&] (const auto &arr)
 		{
-			return arr.share_storage();
+			auto buffer = arr.share_storage();
+
+			if (!buffer)
+			{
+				throw std::invalid_argument(
+					"One of the input operands does not an associated storage"
+				);
+			}
+			if (!check_storage_placement(*buffer, device))
+			{
+				throw std::invalid_argument(
+					"One of the input operands is not accessible by the device "
+					"used to execute the operation"
+				);
+			}
+
+			return buffer;
 		}
 	);
 }
@@ -146,9 +180,12 @@ static void execute_kernel(
 	kernel &kernel,
 	span<array> output_operands,
 	span<const array> input_operands,
-	hardware::device_queue *queue
+	const hardware::device_context &device_context
 )
 {
+	auto &device = device_context.get_device();
+	auto *queue = device_context.get_active_queue().get();
+
 	boost::container::small_vector<
 		std::shared_ptr<hardware::buffer>, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
@@ -157,7 +194,7 @@ static void execute_kernel(
 		output_storages.data(), 
 		output_storages.size()
 	);
-	populate_storages(output_operands, read_write_storages);
+	populate_output_storages(output_operands, read_write_storages, device);
 	boost::container::small_vector<
 		std::shared_ptr<const hardware::buffer>, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
@@ -166,7 +203,7 @@ static void execute_kernel(
 		input_storages.data(), 
 		input_storages.size()
 	);
-	populate_storages(input_operands, read_only_storages);
+	populate_input_storages(input_operands, read_only_storages, device);
 
 	kernel.execute(read_write_storages, read_only_storages, queue);
 
@@ -199,11 +236,12 @@ void eager_operation_dispatcher::dispatch(
 	);
 
 	XMIPP4_ASSERT( kernel );
+
 	execute_kernel(
 		*kernel, 
 		output_operands, 
 		input_operands, 
-		device_context.get_active_queue().get()
+		device_context
 	);
 }
 

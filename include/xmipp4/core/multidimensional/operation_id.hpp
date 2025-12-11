@@ -48,9 +48,6 @@ bool operator!=(const operation_id &lhs, const operation_id &rhs) noexcept;
 namespace std
 {
 
-template<typename Key>
-struct hash;
-
 template<>
 struct hash<xmipp4::multidimensional::operation_id>
 {

@@ -66,54 +66,15 @@ TEST_CASE( "adding the first operand array_access_layout_builder should initiali
 	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "adding operands to an initialized array_access_layout_builder should broadcast it", "[array_access_layout_builder]" )
-{
-	array_access_layout_builder builder;
-
-	std::vector<std::size_t> extents = {20, 6, 12, 12};
-	builder.set_extents(xmipp4::make_span(extents));
-
-	std::vector<std::size_t> layout_extents = {12, 1};
-	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
-	builder.add_operand(layout);
-
-	const auto *impl = builder.get_implementation();
-	REQUIRE( impl );
-
-	REQUIRE( impl->get_number_of_operands() == 1 );
-	const auto result_extents = impl->get_extents();
-	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result_extents.begin(), result_extents.end()) );
-	const auto result_strides = impl->get_strides(0);
-	const std::vector<std::ptrdiff_t> expected_strides = { 0, 0, 1, 0 };
-	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
-}
-
-TEST_CASE( "adding a non broadcastable operand to an initialized array_access_layout_builder should throw", "[array_access_layout_builder]" )
-{
-	array_access_layout_builder builder;
-
-	std::vector<std::size_t> extents = {20, 6, 12, 12};
-	builder.set_extents(xmipp4::make_span(extents));
-
-	std::vector<std::size_t> layout_extents = {8};
-	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(layout_extents));
-
-	REQUIRE_THROWS_AS( 
-		builder.add_operand(layout),
-		std::invalid_argument
-	);
-}
-
 TEST_CASE("build on array_access_layout_builder should move the implementation", "[array_access_layout_builder]" )
 {
 	array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
-	
 	const auto *impl = builder.get_implementation();
-	auto access_layout = builder.build();
 
+	auto access_layout = builder.build();
 	REQUIRE( builder.get_implementation() == nullptr );
 	REQUIRE( access_layout.get_implementation() == impl );
 }

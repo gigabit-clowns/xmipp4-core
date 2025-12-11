@@ -17,6 +17,16 @@ class device_index;
 class device_queue;
 class memory_allocator;
 
+/**
+ * @brief Enumeration describing where the data should be placed.
+ * 
+ */
+enum class target_placement
+{
+	host, ///< Data is placed in host accessible memory.
+	device ///< Data is placed in device local memory.
+};
+
 class device_context
 {
 public:
@@ -52,23 +62,13 @@ public:
 	device& get_device() const;
 
 	/**
-	 * @brief Get the memory allocator responsible to allocate memory within
-	 * the device.
+	 * @brief Get the memory allocator responsible to allocate memory in the
+	 * requested placement.
 	 * 
-	 * @return memory_allocator& The device local memory allocator.
+	 * @param placement Region where memory should be placed.
+	 * @return memory_allocator& The memory allocator.
 	 */
-	memory_allocator& get_device_local_memory_allocator() const;
-
-	/**
-	 * @brief Get the memory allocator responsible to allocate memory that is
-	 * accessible from the host.
-	 * 
-	 * @return memory_allocator& The host accessible memory allocator.
-	 * 
-	 * @note In unified memory architectures, this allocator may be an alias
-	 * of the device memory allocator.
-	 */
-	memory_allocator& get_host_accessible_memory_allocator() const;
+	memory_allocator& get_memory_allocator(target_placement placement) const;
 
 	/**
 	 * @brief Set the active queue.

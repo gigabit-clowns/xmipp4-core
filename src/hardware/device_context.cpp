@@ -57,6 +57,19 @@ public:
 		return *m_device;
 	}
 
+	memory_allocator& get_memory_allocator(target_placement placement) const
+	{
+		switch (placement)
+		{
+		case target_placement::device:
+			return get_device_local_memory_allocator();
+		case target_placement::host:
+			return get_host_accessible_memory_allocator();
+		default:
+			throw std::invalid_argument("Invalid placement was provided");
+		}
+	}
+
 	memory_allocator& get_device_local_memory_allocator() const noexcept
 	{
 		XMIPP4_ASSERT( m_device_local_memory_allocator );
@@ -112,14 +125,10 @@ device& device_context::get_device() const
 	return get_implementation().get_device();
 }
 
-memory_allocator& device_context::get_device_local_memory_allocator() const
+memory_allocator& 
+device_context::get_memory_allocator(target_placement placement) const
 {
-	return get_implementation().get_device_local_memory_allocator();
-}
-
-memory_allocator& device_context::get_host_accessible_memory_allocator() const
-{
-	return get_implementation().get_host_accessible_memory_allocator();
+	return get_implementation().get_memory_allocator(placement);
 }
 
 std::shared_ptr<device_queue> 

@@ -6,7 +6,6 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/logger.hpp>
 
@@ -14,23 +13,6 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
-static
-hardware::memory_allocator& get_allocator(
-	target_placement placement,
-	const hardware::device_context &context
-)
-{
-	switch (placement)
-	{
-	case target_placement::host: 
-		return context.get_host_accessible_memory_allocator();
-	case target_placement::device: 
-		return context.get_device_local_memory_allocator();
-	default:
-		throw std::invalid_argument("Invalid placement was provided");
-	}
-}
 
 static 
 std::size_t get_alignment_requirement(
@@ -90,12 +72,12 @@ array* validate_output_array(
 XMIPP4_NODISCARD 
 array empty(
 	array_descriptor descriptor,
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
     array *out
 )
 {
-	auto &allocator = get_allocator(placement, context);
+	auto &allocator = context.get_memory_allocator(placement);
     const auto storage_requirement = compute_storage_requirement(descriptor);
     out = validate_output_array(out, storage_requirement, allocator);
 
@@ -121,7 +103,7 @@ XMIPP4_NODISCARD
 array empty(
     strided_layout layout, 
     numerical_type data_type,
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
     array *out
 )
@@ -138,7 +120,7 @@ XMIPP4_NODISCARD
 array empty(
 	span<const std::size_t> extents, 
 	numerical_type data_type,
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
 	array *out
 )

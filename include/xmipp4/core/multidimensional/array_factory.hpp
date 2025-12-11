@@ -4,26 +4,13 @@
 
 #include "array.hpp"
 
+#include "../hardware/device_context.hpp"
+
 namespace xmipp4 
 {
-namespace hardware
-{
-
-class device_context;
-
-} // namespace hardware
 namespace multidimensional
 {
 
-/**
- * @brief Enumeration describing where the data should be placed.
- * 
- */
-enum class target_placement
-{
-	host, ///< Data is placed in host accessible memory.
-	device ///< Data is placed in device local memory.
-};
 
 /**
  * @brief Create an empty array for a given descriptor.
@@ -41,7 +28,7 @@ enum class target_placement
 XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
 	array *out = nullptr
 );
@@ -63,7 +50,7 @@ XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	strided_layout layout, 
 	numerical_type data_type,
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
 	array *out = nullptr
 );
@@ -86,7 +73,7 @@ XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	span<const std::size_t> extents, 
 	numerical_type data_type,
-	target_placement placement,
+	hardware::target_placement placement,
 	const hardware::device_context &context,
 	array *out = nullptr
 );

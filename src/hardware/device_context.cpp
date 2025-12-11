@@ -22,7 +22,7 @@ public:
 		const device_index &index
 	)
 	{
-		auto &dev_manager = catalog.get_service_manager<device_manager>();
+		const auto &dev_manager = catalog.get_service_manager<device_manager>();
 		m_device = dev_manager.create_device(index);
 
 		XMIPP4_ASSERT( m_device );
@@ -32,7 +32,7 @@ public:
 			m_device->get_host_accessible_memory_resource();
 
 		
-		auto &alloc_manager = 
+		const auto &alloc_manager = 
 			catalog.get_service_manager<memory_allocator_manager>();
 		m_device_optimal_memory_allocator = 
 			alloc_manager.create_memory_allocator(

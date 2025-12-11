@@ -44,7 +44,7 @@ public:
 		const auto ite2 = find_most_suitable_backend(
 			available_backends.begin(),
 			available_backends.end(),
-			[&] (const auto &item)
+			[&operation, &descriptors, &device] (const auto &item)
 			{
 				return item->get_suitability(
 					operation, 

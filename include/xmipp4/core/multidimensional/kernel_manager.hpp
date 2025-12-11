@@ -34,7 +34,7 @@ class kernel;
  * 
  */
 class kernel_manager
-	: service_manager
+	: public service_manager
 {
 public:
 	XMIPP4_CORE_API

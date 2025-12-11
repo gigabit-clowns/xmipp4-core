@@ -46,6 +46,15 @@ static void allocate_output(
 	}
 }
 
+static bool check_storage_placement(
+	const hardware::buffer& buffer, 
+	hardware::device &device
+)
+{
+	auto &memory_resource = buffer.get_memory_resource();
+	return hardware::is_device_accessible(memory_resource, device);
+}
+
 static void populate_descriptors(
 	span<const array> operands,
 	span<array_descriptor> descriptors
@@ -56,15 +65,6 @@ static void populate_descriptors(
 		descriptors.begin(),
 		std::mem_fn(&array::get_descriptor)
 	);
-}
-
-static bool check_storage_placement(
-	const hardware::buffer& buffer, 
-	hardware::device &device
-)
-{
-	auto &memory_resource = buffer.get_memory_resource();
-	return hardware::is_device_accessible(memory_resource, device);
 }
 
 static void populate_output_storages(

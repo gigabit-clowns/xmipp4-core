@@ -18,9 +18,21 @@ on:
 jobs:
   test_with_memchecks:
     name: Test with memchecks
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        compiler: 
+        - {c: gcc, cxx: g++}
+        - {c: clang, cxx: clang++}
+
+        include:
+        - os: macos-latest
+          compiler: {c: clang, cxx: clang++}
+
     env:
       BUILD_TYPE: Debug
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash -el {0}
@@ -40,8 +52,8 @@ jobs:
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"
-          c-compiler: gcc
-          cxx-compiler: g++
+          c-compiler: ${{ matrix.compiler.c }}
+          cxx-compiler: ${{ matrix.compiler.cxx }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON

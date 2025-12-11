@@ -41,6 +41,19 @@ public:
 	virtual const operation_id& get_operation_id() const noexcept = 0;
 
 	/**
+	 * @brief Serialize the parameters of the operation.
+	 * 
+	 * Obtain a string representation of the parameters of this operation. The
+	 * actual representation is implementation dependant. The only requirement
+	 * is that unequal operations should have unequal serializations. The 
+	 * serialization does not need to encode the operation_id.
+	 * 
+	 * @return std::string String representation of the operation parameters.
+	 */
+	XMIPP4_CORE_API
+	virtual std::string serialize_parameters() const;
+
+	/**
 	 * @brief Perform pre-flight checks on the input operands.
 	 * 
 	 * This may include checks on:

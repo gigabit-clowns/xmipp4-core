@@ -10,5 +10,10 @@ namespace multidimensional
 operation::operation() noexcept = default;
 operation::~operation() = default;
 
+std::string operation::serialize_parameters() const
+{
+	return "";
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

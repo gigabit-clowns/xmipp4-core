@@ -32,6 +32,10 @@ enum class target_placement
 	device_optimal
 };
 
+/**
+ * @brief Centralization and management of device related resources.
+ * 
+ */
 class device_context
 {
 public:

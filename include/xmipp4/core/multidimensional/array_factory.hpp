@@ -9,21 +9,28 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
-class memory_allocator;
-class buffer;
+class device_context;
 
 } // namespace hardware
 namespace multidimensional
 {
 
 /**
+ * @brief Enumeration describing where the data should be placed.
+ * 
+ */
+enum class target_placement
+{
+	host, ///< Data is placed in host accessible memory.
+	device ///< Data is placed in device local memory.
+};
+
+/**
  * @brief Create an empty array for a given descriptor.
  * 
  * @param descriptor The descriptor for the new array.
- * @param allocator Allocator from which to allocate the storage.
- * @param queue Optional device_queue where the allocation is asynchronously
- * dispatched.
+ * @param placement The placement of the allocated array data.
+ * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its components may be 
  * cannibalized to create the resulting array. After the call, the out array
  * will be in a valid but unspecified state. In addition, the resulting array
@@ -34,8 +41,8 @@ namespace multidimensional
 XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
-	hardware::memory_allocator &allocator,
-	hardware::device_queue *queue,
+	target_placement placement,
+	const hardware::device_context &context,
 	array *out = nullptr
 );
 
@@ -43,10 +50,8 @@ array empty(
  * @brief Create an empty array with given layout and data type.
  * 
  * @param layout The layout of the resulting array.
- * @param data_type The data type of the resulting array.
- * @param allocator Allocator from which to allocate the storage.
- * @param queue Optional device_queue where the allocation is asynchronously
- * dispatched.
+ * @param placement The placement of the allocated array data.
+ * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its components may be 
  * cannibalized to create the resulting array. After the call, the out array
  * will be in a valid but unspecified state. In addition, the resulting array
@@ -58,8 +63,8 @@ XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	strided_layout layout, 
 	numerical_type data_type,
-	hardware::memory_allocator &allocator,
-	hardware::device_queue *queue,
+	target_placement placement,
+	const hardware::device_context &context,
 	array *out = nullptr
 );
 
@@ -68,9 +73,8 @@ array empty(
  * 
  * @param extents The extents of the resulting array.
  * @param data_type The data type of the resulting array.
- * @param allocator Allocator from which to allocate the storage.
- * @param queue Optional device_queue where the allocation is asynchronously
- * dispatched.
+ * @param placement The placement of the allocated array data.
+ * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its components may be 
  * cannibalized to create the resulting array. After the call, the out array
  * will be in a valid but unspecified state. In addition, the resulting array
@@ -82,8 +86,8 @@ XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	span<const std::size_t> extents, 
 	numerical_type data_type,
-	hardware::memory_allocator &allocator,
-	hardware::device_queue *queue,
+	target_placement placement,
+	const hardware::device_context &context,
 	array *out = nullptr
 );
 

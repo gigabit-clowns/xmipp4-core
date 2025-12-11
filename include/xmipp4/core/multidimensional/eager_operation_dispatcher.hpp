@@ -12,9 +12,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device;
-class device_queue;
-class memory_allocator;
+class device_context;
 
 } // namespace hardware
 
@@ -46,9 +44,7 @@ public:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array> input_operands,
-		hardware::memory_allocator &allocator,
-		hardware::device &device,
-		hardware::device_queue *queue
+		const hardware::device_context &device_context
 	);
 
 private:

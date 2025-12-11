@@ -8,6 +8,7 @@
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/hardware/device_context.hpp>
 
 #include "../config.hpp"
 
@@ -23,8 +24,7 @@ class eager_operation_dispatcher::implementation {};
 static void allocate_output(
 	span<array> operands,
 	span<const array_descriptor> descriptors,
-	hardware::memory_allocator &allocator,
-	hardware::device_queue *queue
+	const hardware::device_context &device_context
 )
 {
 	for (std::size_t i = 0; i < operands.size(); ++i)
@@ -35,7 +35,12 @@ static void allocate_output(
 			out = nullptr;
 		}
 
-		operands[i] = empty(descriptors[i], allocator, queue, out);
+		operands[i] = empty(
+			descriptors[i], 
+			target_placement::device, 
+			device_context, 
+			out
+		);
 	}
 }
 
@@ -99,9 +104,7 @@ static std::shared_ptr<kernel> build_kernel(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
-	hardware::memory_allocator &allocator,
-	hardware::device &device,
-	hardware::device_queue *queue
+	const hardware::device_context &device_context
 )
 {
 	const auto n_outputs = output_operands.size();
@@ -129,14 +132,13 @@ static std::shared_ptr<kernel> build_kernel(
 	allocate_output(
 		output_operands, 
 		output_descriptors, 
-		allocator, 
-		queue
+		device_context
 	);
 
 	return manager.build_kernel(
 		operation, 
 		span<const array_descriptor>(descriptors.data(), descriptors.size()),
-		device
+		device_context.get_device()
 	);
 }
 
@@ -185,9 +187,7 @@ void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
-	hardware::memory_allocator &allocator,
-	hardware::device &device,
-	hardware::device_queue *queue
+	const hardware::device_context &device_context
 )
 {
 	const auto kernel = build_kernel(
@@ -195,13 +195,16 @@ void eager_operation_dispatcher::dispatch(
 		operation,
 		output_operands,
 		input_operands,
-		allocator,
-		device,
-		queue
+		device_context
 	);
 
 	XMIPP4_ASSERT( kernel );
-	execute_kernel(*kernel, output_operands, input_operands, queue);
+	execute_kernel(
+		*kernel, 
+		output_operands, 
+		input_operands, 
+		device_context.get_active_queue().get()
+	);
 }
 
 } // namespace multidimensional

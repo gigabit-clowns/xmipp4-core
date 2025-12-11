@@ -26,7 +26,7 @@ public:
 		m_device = dev_manager.create_device(index);
 
 		XMIPP4_ASSERT( m_device );
-		auto &device_local_memory_resource = 
+		auto &device_optimal_memory_resource = 
 			m_device->get_device_local_memory_resource();
 		auto &host_accessible_memory_resource = 
 			m_device->get_host_accessible_memory_resource();
@@ -34,13 +34,15 @@ public:
 		
 		auto &alloc_manager = 
 			catalog.get_service_manager<memory_allocator_manager>();
-		m_device_local_memory_allocator = 
-			alloc_manager.create_memory_allocator(device_local_memory_resource);
+		m_device_optimal_memory_allocator = 
+			alloc_manager.create_memory_allocator(
+				device_optimal_memory_resource
+			);
 
-		if (&device_local_memory_resource == &host_accessible_memory_resource)
+		if (&device_optimal_memory_resource == &host_accessible_memory_resource)
 		{
 			m_host_accessible_memory_allocator = 
-				m_device_local_memory_allocator;
+				m_device_optimal_memory_allocator;
 		}
 		else
 		{
@@ -61,19 +63,19 @@ public:
 	{
 		switch (placement)
 		{
-		case target_placement::device:
-			return get_device_local_memory_allocator();
-		case target_placement::host:
+		case target_placement::device_optimal:
+			return get_device_optimal_memory_allocator();
+		case target_placement::host_accessible:
 			return get_host_accessible_memory_allocator();
 		default:
 			throw std::invalid_argument("Invalid placement was provided");
 		}
 	}
 
-	memory_allocator& get_device_local_memory_allocator() const noexcept
+	memory_allocator& get_device_optimal_memory_allocator() const noexcept
 	{
-		XMIPP4_ASSERT( m_device_local_memory_allocator );
-		return *m_device_local_memory_allocator;
+		XMIPP4_ASSERT( m_device_optimal_memory_allocator );
+		return *m_device_optimal_memory_allocator;
 	}
 
 	memory_allocator& get_host_accessible_memory_allocator() const noexcept
@@ -97,7 +99,7 @@ public:
 private:
 	std::shared_ptr<device> m_device;
 	std::shared_ptr<device_queue> m_active_queue;
-	std::shared_ptr<memory_allocator> m_device_local_memory_allocator;
+	std::shared_ptr<memory_allocator> m_device_optimal_memory_allocator;
 	std::shared_ptr<memory_allocator> m_host_accessible_memory_allocator;
 };
 

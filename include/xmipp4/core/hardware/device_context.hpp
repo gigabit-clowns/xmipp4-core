@@ -23,8 +23,11 @@ class memory_allocator;
  */
 enum class target_placement
 {
-	host, ///< Data is placed in host accessible memory.
-	device ///< Data is placed in device local memory.
+	/// The data should be placed in a host accessible memory resource.
+	host_accessible, 
+	/// The data is should be placed such that it can be optimally accessed by 
+	/// the device.
+	device_optimal
 };
 
 class device_context
@@ -67,6 +70,9 @@ public:
 	 * 
 	 * @param placement Region where memory should be placed.
 	 * @return memory_allocator& The memory allocator.
+	 * 
+	 * @note Depending on the memory architecture, some allocators may alias
+	 * each other.
 	 */
 	memory_allocator& get_memory_allocator(target_placement placement) const;
 

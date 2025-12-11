@@ -46,48 +46,8 @@ jobs:
           fetch-depth: 0
 
       - name: Install memcheck tool
-        uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
+        uses: ./.github/composites/memcheck/install-memtool
         id: install-memtool
-    
-      - name: Diagnose Dr. Memory + ctest
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $dr = 'C:\Program Files (x86)\Dr. Memory\bin\drmemory.exe'
-          $ctest = "${env:ProgramFiles}\CMake\bin\ctest.exe"
-          Write-Host "DrMemory exists: $(Test-Path $dr)"
-          & $dr --version 2>&1 | Write-Host
-          & $ctest --version 2>&1 | Write-Host
-
-          # Small PE bitness helper: prints Machine field (0x014c = x86, 0x8664 = x64)
-          function Get-PeMachine($path) {
-            $fs = [System.IO.File]::OpenRead($path)
-            $br = New-Object System.IO.BinaryReader($fs)
-            $fs.Position = 0x3C
-            $peOffset = $br.ReadInt32()
-            $fs.Position = $peOffset + 4
-            $machine = $br.ReadUInt16()
-            $br.Close(); $fs.Close()
-            switch ($machine) {
-              0x014c { 'x86' }
-              0x8664 { 'x64' }
-              default { "machine=0x{0:X}" -f $machine }
-            }
-          }
-          Write-Host "DrMemory bitness: $(Get-PeMachine $dr)"
-          Write-Host "ctest bitness: $(Get-PeMachine $ctest)"
-
-          # Try a very small run to see if any process can be launched under Dr. Memory
-          $tmp = Join-Path $env:TEMP 'dr_test.exe'
-          # compile a tiny program if cl is available
-          if (Get-Command cl -ErrorAction SilentlyContinue) {
-            'int main(){return 0;}' | Out-File -FilePath test.c -Encoding ascii
-            cl /nologo /Zi /EHsc test.c /Fe:$tmp 2>&1 | Write-Host
-            & $dr -light -- $tmp 2>&1 | Out-File dr_test_out.txt -Encoding utf8
-            Get-Content dr_test_out.txt | Write-Host
-          } else {
-            Write-Host "cl not found; skipping tiny compile test"
-          }
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2

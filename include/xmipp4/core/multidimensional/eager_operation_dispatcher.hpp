@@ -27,7 +27,7 @@ class eager_operation_dispatcher
 {
 public:
 	XMIPP4_CORE_API
-	eager_operation_dispatcher() noexcept;
+	eager_operation_dispatcher(kernel_manager &manager) noexcept;
 	eager_operation_dispatcher(const eager_operation_dispatcher &other) = delete;
 	eager_operation_dispatcher(eager_operation_dispatcher &&other) = delete;
 	XMIPP4_CORE_API
@@ -40,7 +40,6 @@ public:
 
 	XMIPP4_CORE_API
 	void dispatch(
-		const kernel_manager &manager,
 		const operation &operation,
 		span<array> output_operands,
 		span<const array> input_operands,

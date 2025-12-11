@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "../platform/dynamic_shared_object.h"
+
 #include <memory>
 
 namespace xmipp4 
@@ -40,6 +42,7 @@ public:
 	 * on it. Only useful as a placeholder.
 	 * 
 	 */
+	XMIPP4_CORE_API
 	device_context() noexcept;
 
 	/**
@@ -48,13 +51,17 @@ public:
 	 * @param catalog The service catalog used to locate required services.
 	 * @param index The device index for which the a device will be created.
 	 */
+	XMIPP4_CORE_API
 	device_context(service_catalog &catalog, const device_index &index);
 
 	device_context(const device_context &other) = delete;
+	XMIPP4_CORE_API
 	device_context(device_context &&other) noexcept;
+	XMIPP4_CORE_API
 	~device_context();
 
 	device_context& operator=(const device_context &other) = delete;
+	XMIPP4_CORE_API
 	device_context& operator=(device_context &&other) noexcept;
 
 	/**
@@ -62,6 +69,7 @@ public:
 	 * 
 	 * @return device& The device handle.
 	 */
+	XMIPP4_CORE_API
 	device& get_device() const;
 
 	/**
@@ -74,6 +82,7 @@ public:
 	 * @note Depending on the memory architecture, some allocators may alias
 	 * each other.
 	 */
+	XMIPP4_CORE_API
 	memory_allocator& get_memory_allocator(target_placement placement) const;
 
 	/**
@@ -82,6 +91,7 @@ public:
 	 * @param queue The queue to be set as active.
 	 * @return std::shared_ptr<device_queue> The previous active queue.
 	 */
+	XMIPP4_CORE_API
 	std::shared_ptr<device_queue> 
 	set_active_queue(std::shared_ptr<device_queue> queue);
 
@@ -90,6 +100,7 @@ public:
 	 * 
 	 * @return const std::shared_ptr<device_queue>& The active queue.
 	 */
+	XMIPP4_CORE_API
 	const std::shared_ptr<device_queue>& get_active_queue() const;
 
 private:
@@ -98,7 +109,6 @@ private:
 
 	implementation& get_implementation();
 	const implementation& get_implementation() const;
-
 };
 
 } // namespace hardware

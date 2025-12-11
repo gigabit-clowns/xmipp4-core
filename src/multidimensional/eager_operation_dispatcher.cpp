@@ -133,8 +133,7 @@ static void record_queues(
 	}
 }
 
-static std::shared_ptr<kernel> build_kernel(
-	const kernel_manager &manager,
+static std::shared_ptr<kernel> prepare_kernel(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
@@ -169,11 +168,12 @@ static std::shared_ptr<kernel> build_kernel(
 		device_context
 	);
 
-	return manager.build_kernel(
-		operation, 
-		span<const array_descriptor>(descriptors.data(), descriptors.size()),
-		device_context.get_device()
-	);
+	return nullptr; // TODO
+	//return manager.build_kernel(
+	//	operation, 
+	//	span<const array_descriptor>(descriptors.data(), descriptors.size()),
+	//	device_context.get_device()
+	//);
 }
 
 static void execute_kernel(
@@ -216,19 +216,17 @@ static void execute_kernel(
 
 
 
-eager_operation_dispatcher::eager_operation_dispatcher() noexcept = default;
+//eager_operation_dispatcher::eager_operation_dispatcher() noexcept = default;
 eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
-	const kernel_manager &manager,
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
 	const hardware::device_context &device_context
 )
 {
-	const auto kernel = build_kernel(
-		manager,
+	const auto kernel = prepare_kernel(
 		operation,
 		output_operands,
 		input_operands,

@@ -24,19 +24,9 @@ public:
 	{
 	}
 
-	void set_descriptor(array_descriptor descriptor) noexcept
-	{
-		m_descriptor = std::move(descriptor);
-	}
-
 	const array_descriptor& get_descriptor() const noexcept
 	{
 		return m_descriptor;
-	}
-
-	void set_storage(std::shared_ptr<hardware::buffer> storage) noexcept
-	{
-		m_storage = std::move(storage);
 	}
 
 	hardware::buffer* get_storage() noexcept
@@ -83,21 +73,6 @@ array::array(implementation &&impl)
 {
 }
 
-void array::set_descriptor(array_descriptor descriptor)
-{
-	if (!m_implementation)
-	{
-		m_implementation = std::make_shared<implementation>(
-			nullptr, 
-			std::move(descriptor)
-		);
-	}
-	else
-	{
-		m_implementation->set_descriptor(std::move(descriptor));
-	}
-}
-
 const array_descriptor& array::get_descriptor() const noexcept
 {
 	static array_descriptor empty_descriptor;
@@ -106,21 +81,6 @@ const array_descriptor& array::get_descriptor() const noexcept
 		m_implementation->get_descriptor() : 
 		empty_descriptor;
 }
-
-void array::set_storage(std::shared_ptr<hardware::buffer> storage)
-{
-	if (!m_implementation)
-	{
-		m_implementation = std::make_shared<implementation>(
-			std::move(storage),
-			array_descriptor()
-		);
-	}
-	else
-	{
-		m_implementation->set_storage(std::move(storage));
-	}
-} 
 
 hardware::buffer* array::get_storage() noexcept
 {

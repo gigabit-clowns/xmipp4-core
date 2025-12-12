@@ -44,16 +44,6 @@ public:
 	XMIPP4_CORE_API array& operator=(array&& other) noexcept;
 
 
-	/**
-	 * @brief Set the descriptor for this array.
-	 *
-	 * @param descriptor The descriptor to be set.
-	 * 
-	 * @warning This function does not check if the current storage is suitable
-	 * for this descriptor.
-	 *  
-	 */
-	XMIPP4_CORE_API void set_descriptor(array_descriptor descriptor);
 
 	/**
 	 * @brief Get the descriptor of this array.
@@ -61,17 +51,6 @@ public:
 	 * @return array_descriptor The descriptor.
 	 */
 	XMIPP4_CORE_API const array_descriptor& get_descriptor() const noexcept;
-
-	/**
-	 * @brief Set the storage of this array.
-	 * 
-	 * @param storage A share pointer to the storage to be adopted.
-	 * 
-	 * @warning This function does not check if the storage is suitable for the
-	 * current descriptor.
-	 * 
-	 */
-	XMIPP4_CORE_API void set_storage(std::shared_ptr<hardware::buffer> storage);
 
 	/**
 	 * @brief Get the storage of this array.

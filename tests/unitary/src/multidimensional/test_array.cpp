@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+
+#include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
+
+#include <vector>
+
+using namespace xmipp4;
+using namespace xmipp4::multidimensional;
+
+TEST_CASE("Default constructed array should have no storage", "[array]")
+{
+	array arr;
+	CHECK( arr.get_storage() == nullptr );
+	CHECK( arr.share_storage() == nullptr );
+}
+
+TEST_CASE("Default constructed array should have an empty descriptor", "[array]")
+{
+	array arr;
+	CHECK( arr.get_descriptor() == array_descriptor() );
+}
+
+TEST_CASE("Constructing an array should store its attributes", "[array]")
+{
+	const auto data_type = GENERATE(
+		numerical_type::int32,
+		numerical_type::float64
+	);
+
+	const auto extents = GENERATE(
+		std::vector<std::size_t>{1},
+		std::vector<std::size_t>{20, 50}
+	);
+
+	const auto storage = GENERATE(
+		std::make_shared<hardware::buffer>(
+			nullptr, 
+			1024, 
+			hardware::get_host_memory_resource(), 
+			nullptr
+		),
+		std::make_shared<hardware::buffer>(
+			nullptr, 
+			20, 
+			hardware::get_host_memory_resource(), 
+			nullptr
+		)
+	);
+
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const array_descriptor descriptor(layout, data_type);
+	array arr(storage, descriptor);
+
+	CHECK( arr.get_storage() == storage.get() );
+	CHECK( arr.share_storage() == storage );
+	CHECK( arr.get_descriptor() == descriptor );
+}	

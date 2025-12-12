@@ -60,3 +60,39 @@ TEST_CASE("Constructing an array should store its attributes", "[array]")
 	CHECK( arr.share_storage() == storage );
 	CHECK( arr.get_descriptor() == descriptor );
 }	
+
+TEST_CASE("Calling share on an array should return an array with the same content", "[array]")
+{
+	const auto data_type = GENERATE(
+		numerical_type::int32,
+		numerical_type::float64
+	);
+
+	const auto extents = GENERATE(
+		std::vector<std::size_t>{1},
+		std::vector<std::size_t>{20, 50}
+	);
+
+	const auto storage = GENERATE(
+		std::make_shared<hardware::buffer>(
+			nullptr, 
+			1024, 
+			hardware::get_host_memory_resource(), 
+			nullptr
+		),
+		std::make_shared<hardware::buffer>(
+			nullptr, 
+			20, 
+			hardware::get_host_memory_resource(), 
+			nullptr
+		)
+	);
+
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const array_descriptor descriptor(layout, data_type);
+	array arr1(storage, descriptor);
+	auto arr2 = arr1.share();
+
+	CHECK( &arr1.get_descriptor() == &arr2.get_descriptor() );
+	CHECK( arr1.get_storage() == arr2.get_storage() );
+}	

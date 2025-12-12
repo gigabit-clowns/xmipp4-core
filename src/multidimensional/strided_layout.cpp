@@ -145,28 +145,12 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::broadcast_to(span<const std::size_t> extents) const
 {
-	if (m_implementation)
+	if (extents_equal(extents))
 	{
-		const auto &impl = *m_implementation;
-		if (impl.extents_equal(extents))
-		{
-			return *this; // Re-use
-		}
-		else
-		{
-			return strided_layout(impl.broadcast_to(extents));
-		}
+		return *this; // Re-use
 	}
-	else if(extents.empty())
-	{
-		return strided_layout();
-	}
-	else
-	{
-		return strided_layout(
-			strided_layout_implementation().broadcast_to(extents)
-		);
-	}
+
+	return strided_layout(get_implementation().broadcast_to(extents));
 }
 
 const strided_layout_implementation&

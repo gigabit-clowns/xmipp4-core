@@ -42,3 +42,29 @@ TEST_CASE("Computing the storage size for an array_descriptor should return the 
 	array_descriptor descriptor(layout, data_type);
 	CHECK( compute_storage_requirement(descriptor) == 20*30*2*16*4 );
 }
+
+TEST_CASE("Array descriptors should be equal if the data_type and layout are equal", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents = {20, 30, 2, 16};
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const auto data_type = numerical_type::float32;
+
+	const array_descriptor descriptor1(layout, data_type);
+	const array_descriptor descriptor2(layout, data_type);
+	CHECK( descriptor1 == descriptor2 );
+	CHECK( (descriptor1 != descriptor2) == false );
+}
+
+TEST_CASE("Array descriptors should be unequal if either data_type or layout are mismatch", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents1 = {20, 30, 2, 16};
+	const std::vector<std::size_t> extents2 = {20, 30, 3, 16};
+	const auto layout1 = strided_layout::make_contiguous_layout(make_span(extents1));
+	const auto layout2 = strided_layout::make_contiguous_layout(make_span(extents2));
+	const auto data_type1 = numerical_type::float32;
+	const auto data_type2 = numerical_type::int16;
+
+	CHECK( array_descriptor(layout1, data_type1) != array_descriptor(layout2, data_type1) );
+	CHECK( array_descriptor(layout1, data_type1) != array_descriptor(layout1, data_type2) );
+	CHECK( array_descriptor(layout1, data_type1) != array_descriptor(layout2, data_type2) );
+}

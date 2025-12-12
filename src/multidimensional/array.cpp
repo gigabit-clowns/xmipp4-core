@@ -34,16 +34,6 @@ public:
 		return m_descriptor;
 	}
 
-	numerical_type get_data_type() const noexcept
-	{
-		return m_descriptor.get_data_type();
-	}
-
-	const strided_layout& get_layout() const noexcept
-	{
-		return m_descriptor.get_layout();
-	}
-
 	void set_storage(std::shared_ptr<hardware::buffer> storage) noexcept
 	{
 		m_storage = std::move(storage);
@@ -57,105 +47,6 @@ public:
 	const std::shared_ptr<hardware::buffer>& share_storage() noexcept
 	{
 		return m_storage;
-	}
-
-	std::size_t get_rank() const noexcept
-	{
-		return get_layout().get_rank();
-	}
-
-	void get_extents(std::vector<std::size_t> &extents) const
-	{
-		get_layout().get_extents(extents);
-	}
-
-	implementation apply_subscripts(span<const dynamic_subscript> subscripts)
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().apply_subscripts(subscripts),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation transpose()
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().transpose(),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation permute(span<const std::size_t> order)
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().permute(order),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation matrix_transpose(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().matrix_transpose(axis1, axis2),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation matrix_diagonal(std::ptrdiff_t axis1, std::ptrdiff_t axis2)
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().matrix_diagonal(axis1, axis2),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation squeeze()
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().squeeze(),
-				get_data_type()
-			)
-		);
-	}
-
-	implementation broadcast_to(span<const std::size_t> extents)
-	{
-		return implementation(
-			share_storage(),
-			array_descriptor(
-				get_layout().broadcast_to(extents),
-				get_data_type()
-			)
-		);
-	}
-
-	void record_queue(hardware::device_queue &queue, bool exclusive) const
-	{
-		if (!m_storage)
-		{
-			throw invalid_operation_error(
-				"Can not call record_queue on an storage-less array"
-			);
-		}
-
-		m_storage->record_queue(queue, exclusive);
 	}
 
 private:

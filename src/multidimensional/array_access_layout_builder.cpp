@@ -51,30 +51,12 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout
 )
 {
-	array_access_layout_implementation::extent_vector_type extents;
-	array_access_layout_implementation::stride_vector_type strides;
-	std::ptrdiff_t offset = 0;
-
 	const auto *layout_impl = layout.get_implementation();
-	if (layout_impl)
-	{
-		offset = layout_impl->get_offset();
-		layout_impl->get_extents(extents);
-		layout_impl->get_strides(strides);
-	}
-	XMIPP4_ASSERT( extents.size() == strides.size() );
 
 	if (m_implementation)
 	{
-		const auto current_extents = m_implementation->get_extents();
-		const auto equal_extents = std::equal(
-			extents.cbegin(), 
-			extents.cend(),
-			current_extents.begin(), 
-			current_extents.end()
-		);
-
-		if (!equal_extents)
+		const auto extents = m_implementation->get_extents();
+		if (!layout.extents_equal(extents))
 		{
 			throw std::invalid_argument(
 				"Provided layout's extents do not match the iteration extents"
@@ -83,9 +65,24 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	}
 	else
 	{
+		array_access_layout_implementation::extent_vector_type extents;
+		
+		if (layout_impl)
+		{
+			layout_impl->get_extents(extents);
+		}
+
 		m_implementation = std::make_unique<array_access_layout_implementation>(
 			std::move(extents)
 		);
+	}
+
+	array_access_layout_implementation::stride_vector_type strides;
+	std::ptrdiff_t offset = 0;
+	if (layout_impl)
+	{
+		offset = layout_impl->get_offset();
+		layout_impl->get_strides(strides);
 	}
 
 	XMIPP4_ASSERT( m_implementation );

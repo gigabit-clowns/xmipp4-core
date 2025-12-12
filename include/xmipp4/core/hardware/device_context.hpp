@@ -21,20 +21,18 @@ class memory_allocator;
 
 /**
  * @brief Enumeration describing where the data should be placed.
- * 
  */
 enum class target_placement
 {
 	/// The data should be placed in a host accessible memory resource.
 	host_accessible, 
-	/// The data is should be placed such that it can be optimally accessed by 
+	/// The data should be placed such that it can be optimally accessed by 
 	/// the device.
 	device_optimal
 };
 
 /**
  * @brief Centralization and management of device related resources.
- * 
  */
 class device_context
 {
@@ -44,7 +42,6 @@ public:
 	 * 
 	 * The resulting object is in a valid state but no methods may be called
 	 * on it. Only useful as a placeholder.
-	 * 
 	 */
 	XMIPP4_CORE_API
 	device_context() noexcept;

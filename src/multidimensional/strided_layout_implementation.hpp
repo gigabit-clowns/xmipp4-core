@@ -23,7 +23,7 @@ public:
 		XMIPP4_SMALL_AXIS_COUNT
 	>;
 
-	strided_layout_implementation() = default;
+	strided_layout_implementation() noexcept;
 
 	strided_layout_implementation(
 		const strided_axis_vector_type &axes,

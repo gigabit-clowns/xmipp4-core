@@ -237,6 +237,12 @@ private:
 
 
 
+inline
+strided_layout_implementation::strided_layout_implementation() noexcept
+	: m_axes()
+	, m_offset(0UL)
+{
+}
 
 inline
 strided_layout_implementation::strided_layout_implementation(

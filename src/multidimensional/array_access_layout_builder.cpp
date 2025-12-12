@@ -53,15 +53,11 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 {
 	array_access_layout_implementation::extent_vector_type extents;
 	array_access_layout_implementation::stride_vector_type strides;
-	std::ptrdiff_t offset = 0;
 
-	const auto *layout_impl = layout.get_implementation();
-	if (layout_impl)
-	{
-		offset = layout_impl->get_offset();
-		layout_impl->get_extents(extents);
-		layout_impl->get_strides(strides);
-	}
+	const auto &layout_impl = layout.get_implementation();
+	layout_impl.get_extents(extents);
+	layout_impl.get_strides(strides);
+	const auto offset = layout_impl.get_offset();
 	XMIPP4_ASSERT( extents.size() == strides.size() );
 
 	if (!m_implementation)

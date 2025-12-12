@@ -640,12 +640,12 @@ TEST_CASE("matrix_transpose in default constructed strided_layout should always 
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Index 0 is out of bounds for extent 0")
 	);
 	REQUIRE_THROWS_MATCHES(
-		layout.matrix_transpose(0, 1),
+		layout.matrix_transpose(1, 1),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Index 1 is out of bounds for extent 0")
 	);
 }
 
@@ -704,12 +704,12 @@ TEST_CASE("matrix_diagonal in default constructed strided_layout should always f
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Index 0 is out of bounds for extent 0")
 	);
 	REQUIRE_THROWS_MATCHES(
-		layout.matrix_diagonal(0, 1),
+		layout.matrix_diagonal(1, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Index 1 is out of bounds for extent 0")
 	);
 }
 

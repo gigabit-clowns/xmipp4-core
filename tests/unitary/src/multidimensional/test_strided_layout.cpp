@@ -178,6 +178,46 @@ TEST_CASE("compute_storage_requirement in strided_layout should return 0 if ther
 	REQUIRE( layout.compute_storage_requirement() == 0 );
 }
 
+TEST_CASE("Calling extents_equal on a default constructed strided_layout should only return true if the provided extents are empty", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents = {20, 4};
+
+	strided_layout layout;
+
+	CHECK( layout.extents_equal({}) == true );
+	CHECK( layout.extents_equal(xmipp4::make_span(extents)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return false if different rank", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents1 = {20, 4};
+	const std::array<std::size_t, 1> extents2 = {4};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return false if the extent of an axis mismatches", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents1 = {20, 4};
+	const std::array<std::size_t, 2> extents2 = {20, 1};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return true if extents match", "[strided_layout]")
+{
+	const std::array<std::size_t, 4> extents1 = {20, 4, 60, 2};
+	const std::array<std::size_t, 4> extents2 = {20, 4, 60, 2};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == true );
+}
+
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
 	const auto layout = make_test_layout();

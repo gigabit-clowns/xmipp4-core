@@ -61,9 +61,8 @@ public:
 	 * If set_extents has not been called, the first call to this method will
 	 * set the extents of the operand as the extents of the iteration space.
 	 * 
-	 * When the iteration space extents are defined, operands that do not
-	 * match these extents are broadcasted to be consistent. Note that
-	 * iteration space is never broadcasted.
+	 * When the iteration space extents are defined, the provided layout must
+	 * have the same extents.
 	 *  
 	 * @param layout Layout of the operand.
 	 * @return array_access_layout_builder& A reference to *this.

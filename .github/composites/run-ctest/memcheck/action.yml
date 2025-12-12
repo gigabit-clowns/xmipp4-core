@@ -35,7 +35,7 @@ runs:
       uses: ./.github/composites/run-ctest
       with:
         test-wrapper: >-
-          "${{ inputs.drmemory }}" -light --
+          "${{ inputs.drmemory }}" -show_reachable --
 
     - name: Check if there are any memory leaks
       if: inputs.check-memleaks == 'true'

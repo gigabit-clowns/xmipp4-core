@@ -165,8 +165,8 @@ private:
 			{
 			case dynamic_subscript::subscript_type::ellipsis:
 				throw std::invalid_argument(
-				"Two ellipsis tags were encountered when processing "
-				"subscripts"
+					"Two ellipsis tags were encountered when processing "
+					"subscripts"
 				);
 
 			case dynamic_subscript::subscript_type::new_axis:
@@ -243,6 +243,13 @@ private:
 
 
 inline
+strided_layout_implementation::strided_layout_implementation() noexcept
+    : m_axes()
+    , m_offset(0UL)
+{
+}
+
+inline
 strided_layout_implementation::strided_layout_implementation(
 	const strided_axis_vector_type &axes,
 	std::ptrdiff_t offset 
@@ -303,7 +310,7 @@ void strided_layout_implementation::get_extents(
 	Vec &extents
 ) const
 {
-	XMIPP4_ASSERT(extents.empty());
+	extents.clear();
 	extents.reserve(m_axes.size());
 	for (const auto &axis : m_axes)
 	{
@@ -317,7 +324,7 @@ void strided_layout_implementation::get_strides(
 	Vec &strides
 ) const
 {
-	XMIPP4_ASSERT(strides.empty());
+	strides.clear();
 	strides.reserve(m_axes.size());
 	for (const auto &axis : m_axes)
 	{

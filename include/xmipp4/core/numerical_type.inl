@@ -338,7 +338,7 @@ template <> struct sized_integer<8, false> { using type = std::uint64_t; };
 template <typename T, typename Q>
 struct common_integer_type {
     using type = 
-		std::conditional<
+		typename std::conditional<
 			std::is_same<T, char>::value && std::is_same<Q, char>::value,
 			char,
 			typename sized_integer<
@@ -430,7 +430,8 @@ numerical_type common_type(numerical_type type1, numerical_type type2) noexcept
 		{
 			using type1 = typename decltype(tag1)::type;
 			using type2 = typename decltype(tag2)::type;
-			using common_type = detail::common_type<type1, type2>::type;
+			using common_type = 
+				typename detail::common_type<type1, type2>::type;
 			return detail::permissive_numerical_type_of<common_type>::value;
 		},
 		type1,

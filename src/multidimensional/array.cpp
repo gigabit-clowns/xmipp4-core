@@ -68,11 +68,6 @@ array::array(std::shared_ptr<implementation> impl) noexcept
 {
 }
 
-array::array(implementation &&impl)
-	: array(std::make_shared<implementation>(std::move(impl)))
-{
-}
-
 const array_descriptor& array::get_descriptor() const noexcept
 {
 	static array_descriptor empty_descriptor;
@@ -112,6 +107,11 @@ std::shared_ptr<hardware::buffer> array::share_storage() noexcept
 		m_implementation ? 
 		m_implementation->share_storage() : 
 		nullptr;
+}
+
+array array::share() noexcept
+{
+	return array(m_implementation);
 }
 
 } // namespace multidimensional

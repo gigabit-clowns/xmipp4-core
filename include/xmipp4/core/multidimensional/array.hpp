@@ -86,12 +86,19 @@ public:
 	XMIPP4_CORE_API 
 	std::shared_ptr<hardware::buffer> share_storage() noexcept;
 
+	/**
+	 * @brief Obtain an alias for this array.
+	 * 
+	 * @return array Another array referencing the contents of this array.
+	 */
+	XMIPP4_CORE_API 
+	array share() noexcept;
+
 private:
 	class implementation;
 	std::shared_ptr<implementation> m_implementation;
 
 	explicit array(std::shared_ptr<implementation> impl) noexcept;
-	explicit array(implementation &&impl);
 };
 
 } // namespace multidimensional

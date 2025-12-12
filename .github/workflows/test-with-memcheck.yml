@@ -61,6 +61,7 @@ jobs:
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
             CMAKE_TOOLCHAIN_FILE=.github/scripts/cmake/msvc-memcheck.cmake
+            CMAKE_GENERATOR_PLATFORM=Win32
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

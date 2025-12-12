@@ -63,7 +63,49 @@ TEST_CASE( "adding the first operand array_access_layout_builder should initiali
 	const auto *impl = builder.get_implementation();
 	REQUIRE( impl );
 	const auto result = impl->get_extents();
-	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
+	CHECK( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
+}
+
+TEST_CASE( "Adding a valid operand array_access_layout_builder should add it", "[array_access_layout_builder]" )
+{
+	array_access_layout_builder builder;
+
+	std::vector<std::size_t> extents = {20, 6, 12, 12};
+	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
+	std::vector<std::ptrdiff_t> strides;
+	layout.get_strides(strides);
+	const auto offset = layout.get_offset();
+
+	builder.set_extents(xmipp4::make_span(extents));
+	builder.add_operand(layout);
+
+	const auto *impl = builder.get_implementation();
+	REQUIRE( impl );
+	const auto operand_extents = impl->get_extents();
+	CHECK( std::equal(extents.cbegin(), extents.cend(), operand_extents.begin(), operand_extents.end()) );
+	REQUIRE( impl->get_number_of_operands() == 1 );
+	const auto operand_strides = impl->get_strides(0);
+	CHECK( std::equal(strides.cbegin(), strides.cend(), operand_strides.begin(), operand_strides.end()) );
+	CHECK( impl->get_offset(0) == offset );
+}
+
+TEST_CASE( "Adding a operand with different extents in array_access_layout_builder should throw", "[array_access_layout_builder]" )
+{
+	array_access_layout_builder builder;
+
+	std::vector<std::size_t> extents1 = {20, 6, 12, 12};
+	std::vector<std::size_t> extents2 = {20, 4, 12, 12};
+	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	builder.set_extents(xmipp4::make_span(extents2));
+
+	REQUIRE_THROWS_MATCHES(
+		builder.add_operand(layout),
+		std::invalid_argument,
+		Catch::Matchers::Message(
+			"Provided layout's extents do not match the iteration extents"
+		)
+	);
 }
 
 TEST_CASE("build on array_access_layout_builder should move the implementation", "[array_access_layout_builder]" )
@@ -152,7 +194,6 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
 	const auto result_strides2 = layout.get_strides(1);
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
-
 
 TEST_CASE("build with enable_coalescing on array_access_layout_builder should not coalesce non-contiguous axes", "[array_access_layout_builder]" )
 {

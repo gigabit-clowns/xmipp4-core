@@ -83,17 +83,20 @@ array empty(
 
 	if (out)
 	{
-		if (out->get_descriptor() == descriptor)
+		if (out->get_descriptor() != descriptor)
 		{
-			return out->alias();
-		}
-		else
-		{
-			return array(
+			XMIPP4_LOG_DEBUG(
+				"The provided output array's descriptor does not match the "
+				"requested descriptor and it will be overriden."
+			);
+
+			*out = array(
 				out->share_storage(),
 				std::move(descriptor)
 			);
 		}
+
+		return out->share();
 	}
 
 	const auto alignment = get_alignment_requirement(

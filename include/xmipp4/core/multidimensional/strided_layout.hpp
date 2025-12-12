@@ -85,6 +85,16 @@ public:
 	std::size_t compute_element_count() const noexcept;
 
 	/**
+	 * @brief Check if this layout has a specific shape.
+	 * 
+	 * @param extents The extents to be compared.
+	 * @return true If the provided extents match layout's extents.
+	 * @return false If the provided extents do not match layout's extents.
+	 */
+	XMIPP4_CORE_API
+	bool extents_equal(span<const std::size_t> extents) const noexcept;
+
+	/**
 	 * @brief Apply a set of dynamic subscripts to this layout.
 	 * 
 	 * @param subscripts The subscripts.

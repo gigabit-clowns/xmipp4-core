@@ -16,29 +16,29 @@ template <typename ForwardIt>
 inline
 void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
 {
-	// Based on:
-	// https://en.cppreference.com/w/cpp/algorithm/is_permutation
-	// The former function could be re-used, provided that something
-	// like boost::counting_iterator is available.
+    // Based on:
+    // https://en.cppreference.com/w/cpp/algorithm/is_permutation
+    // The former function could be re-used, provided that something
+    // like boost::counting_iterator is available.
 
-	if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
-	{
+    if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
+    {
 		throw std::invalid_argument(
 			"Axis permutation's length does not match the required count"
 		);
-	}
+    }
 
-	// Skip common prefix
-	std::size_t i = 0;
-	while (first != last && *first == i)
-	{
+    // Skip common prefix
+    std::size_t i = 0;
+    while (first != last && *first == i)
+    {
 		++first;
 		++i;
-	}
+    }
 
-	// For the rest, check that it is a permutation
-	while (i < count)
-	{
+    // For the rest, check that it is a permutation
+    while (i < count)
+    {
 		// Ensure the current value appears in the range.
 		auto ite = std::find(first, last, i);
 		if (ite == last)
@@ -49,22 +49,22 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
 		}
 
 		++i;
-	}
+    }
 }
 
 class apply_subscripts_helper
 {
 public:
-	static
-	strided_layout_implementation::strided_axis_vector_type
-	process(
+    static
+    strided_layout_implementation::strided_axis_vector_type
+    process(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis,
 		std::ptrdiff_t &offset 
-	)
-	{
+    )
+    {
 		strided_layout_implementation::strided_axis_vector_type axes;
 
 		process_forwards(
@@ -78,11 +78,11 @@ public:
 		);
 
 		return axes;
-	}
+    }
 
 private:
-	static
-	void process_forwards(
+    static
+    void process_forwards(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
@@ -90,8 +90,8 @@ private:
 		std::ptrdiff_t &offset,
 		strided_layout_implementation::strided_axis_vector_type &axes,
 		strided_layout_implementation::strided_axis_vector_type::iterator head_ite 
-	)
-	{
+    )
+    {
 		while (first_subscript != last_subscript)
 		{
 			const auto &subscript = *first_subscript;
@@ -133,19 +133,21 @@ private:
 				break;
 
 			default:
-				throw std::invalid_argument("Unknown subscript type encountered");
+				throw std::invalid_argument(
+					"Unknown subscript type encountered"
+				);
 			}
 		}
 		
 		// Copy reminder
 		if (first_axis != last_axis)
 		{
-				axes.insert(head_ite, first_axis, last_axis);
+			axes.insert(head_ite, first_axis, last_axis);
 		}
-	}
+    }
 
-	static
-	void process_backwards(
+    static
+    void process_backwards(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
@@ -153,8 +155,8 @@ private:
 		std::ptrdiff_t &offset,
 		strided_layout_implementation::strided_axis_vector_type &axes,
 		strided_layout_implementation::strided_axis_vector_type::iterator head_ite 
-	)
-	{
+    )
+    {
 		while (first_subscript != last_subscript)
 		{
 			const auto &subscript = *std::prev(last_subscript);
@@ -188,7 +190,9 @@ private:
 				break;
 
 			default:
-				throw std::invalid_argument("Unknown subscript type encountered");
+				throw std::invalid_argument(
+					"Unknown subscript type encountered"
+				);
 			}
 		}
 
@@ -197,41 +201,41 @@ private:
 		{
 			axes.insert(head_ite, first_axis, last_axis);
 		}
-	}
+    }
 
-	static
-	void check_non_empty_axes(
+    static
+    void check_non_empty_axes(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis,
 		const char *subscript_type
-	)
-	{
+    )
+    {
 		if (first_axis == last_axis)
 		{
 			std::ostringstream oss;
 			oss << subscript_type 
-				<< " subscript was encountered, but there are no more axes to process";
+			<< " subscript was encountered, but there are no more axes to process";
 			throw std::invalid_argument(oss.str());
 		}
-	}
+    }
 
-	static
-	void check_non_empty_axes_for_slice(
+    static
+    void check_non_empty_axes_for_slice(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis
-	)
-	{
+    )
+    {
 		check_non_empty_axes(first_axis, last_axis, "A slice");
-	}
+    }
 
-	static
-	void check_non_empty_axes_for_index(
+    static
+    void check_non_empty_axes_for_index(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis
-	)
-	{
+    )
+    {
 		check_non_empty_axes(first_axis, last_axis, "An index");
-	}
+    }
 };
 
 
@@ -250,7 +254,7 @@ strided_layout_implementation::strided_layout_implementation(
 
 inline
 bool strided_layout_implementation::operator==(
-		const strided_layout_implementation &other
+	const strided_layout_implementation &other
 ) const noexcept
 {
 	if (m_offset != other.m_offset)
@@ -296,7 +300,7 @@ std::size_t strided_layout_implementation::get_rank() const noexcept
 template <typename Vec>
 inline
 void strided_layout_implementation::get_extents(
-		Vec &extents
+	Vec &extents
 ) const
 {
 	XMIPP4_ASSERT(extents.empty());
@@ -310,7 +314,7 @@ void strided_layout_implementation::get_extents(
 template <typename Vec>
 inline
 void strided_layout_implementation::get_strides(
-		Vec &strides
+	Vec &strides
 ) const
 {
 	XMIPP4_ASSERT(strides.empty());
@@ -368,9 +372,31 @@ strided_layout_implementation::compute_element_count() const noexcept
 }
 
 inline
+bool strided_layout_implementation::extents_equal(
+	span<const std::size_t> extents
+) const noexcept
+{
+	if (m_axes.size() != extents.size())
+	{
+		return false;
+	}
+
+	const auto n = m_axes.size();
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		if (m_axes[i].get_extent() != extents[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+inline
 strided_layout_implementation
 strided_layout_implementation::apply_subscripts(
-		span<const dynamic_subscript> subscripts
+	span<const dynamic_subscript> subscripts
 ) const
 {
 	std::ptrdiff_t offset = m_offset;
@@ -388,16 +414,16 @@ strided_layout_implementation::apply_subscripts(
 inline
 strided_layout_implementation strided_layout_implementation::transpose() const
 {
-		strided_axis_vector_type axes;
-		axes.reserve(m_axes.size());
+	strided_axis_vector_type axes;
+	axes.reserve(m_axes.size());
 
-		std::reverse_copy(
-			m_axes.cbegin(), 
-			m_axes.cend(),
-			std::back_inserter(axes)
-		);
+	std::reverse_copy(
+		m_axes.cbegin(), 
+		m_axes.cend(),
+		std::back_inserter(axes)
+	);
 
-		return strided_layout_implementation(std::move(axes), m_offset);
+	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
 inline
@@ -420,8 +446,8 @@ strided_layout_implementation::permute(span<const std::size_t> order) const
 
 inline
 strided_layout_implementation strided_layout_implementation::matrix_transpose(
-		std::ptrdiff_t axis1, 
-		std::ptrdiff_t axis2
+	std::ptrdiff_t axis1, 
+	std::ptrdiff_t axis2
 ) const
 {
 	const auto n = m_axes.size();
@@ -446,7 +472,7 @@ strided_layout_implementation strided_layout_implementation::matrix_diagonal(
 	if (axis1 == axis2)
 	{
 		throw std::invalid_argument(
-				"axis1 and axis2 must represent different axes"
+			"axis1 and axis2 must represent different axes"
 		);
 	}
 
@@ -500,28 +526,6 @@ strided_layout_implementation strided_layout_implementation::squeeze() const
 }
 
 inline
-bool strided_layout_implementation::extents_equal(
-	span<const std::size_t> extents
-) const noexcept
-{
-	if (m_axes.size() != extents.size())
-	{
-		return false;
-	}
-
-	const auto n = m_axes.size();
-	for (std::size_t i = 0; i < n; ++i)
-	{
-		if (m_axes[i].get_extent() != extents[i])
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-inline
 strided_layout_implementation strided_layout_implementation::broadcast_to(
 	span<const std::size_t> extents
 ) const
@@ -530,8 +534,8 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 	{
 		std::ostringstream oss;
 		oss << "Cannot broadcast layout with " << m_axes.size()
-				<< " axes into a shape of " << extents.size()
-				<< " dimensions.";
+			<< " axes into a shape of " << extents.size()
+			<< " dimensions.";
 		throw std::invalid_argument(oss.str());
 	}
 
@@ -540,12 +544,12 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 	
 	const std::size_t padding = extents.size() - m_axes.size();
 	std::fill_n(
-			std::back_inserter(axes), padding,
-			make_phantom_axis()
+		std::back_inserter(axes), padding,
+		make_phantom_axis()
 	);
 	std::copy(
-			m_axes.cbegin(), m_axes.cend(),
-			std::back_inserter(axes)
+		m_axes.cbegin(), m_axes.cend(),
+		std::back_inserter(axes)
 	);
 
 	const auto count = extents.size();
@@ -557,7 +561,7 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 		{
 			std::ostringstream oss;
 			oss << "Cannot broadcast axis of extent " << axis.get_extent()
-					<< " into an extent of " << extent << ".";
+				<< " into an extent of " << extent << ".";
 			throw std::invalid_argument(oss.str());
 		}
 	}

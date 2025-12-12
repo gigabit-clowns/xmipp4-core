@@ -58,7 +58,7 @@ device_context make_test_device_context()
 }
 
 
-TEST_CASE( "Constructing a device_context from an index should create and store the appropiate device resources", "[buffer]" )
+TEST_CASE( "Constructing a device_context from an index should create and store the appropiate device resources", "[device_context]" )
 {
 	const device_index index("mock", 1234);
 
@@ -105,7 +105,7 @@ TEST_CASE( "Constructing a device_context from an index should create and store 
 	CHECK( context.get_active_queue() == nullptr );
 }
 
-TEST_CASE( "Constructing a device_context for a device with unified memory should share a single allocator", "[buffer]" )
+TEST_CASE( "Constructing a device_context for a device with unified memory should share a single allocator", "[device_context]" )
 {
 	const device_index index("mock", 1234);
 
@@ -144,7 +144,7 @@ TEST_CASE( "Constructing a device_context for a device with unified memory shoul
 	CHECK( context.get_active_queue() == nullptr );
 }
 
-TEST_CASE( "Calling set_active queue on a device_context should update the active queue and return the previous one", "[buffer]" )
+TEST_CASE( "Calling set_active queue on a device_context should update the active queue and return the previous one", "[device_context]" )
 {
 	auto queue1 = std::make_shared<mock_device_queue>();
 	auto queue2 = std::make_shared<mock_device_queue>();
@@ -164,7 +164,7 @@ TEST_CASE( "Calling set_active queue on a device_context should update the activ
 	CHECK( context.get_active_queue() == queue2 );
 }
 
-TEST_CASE( "Calling get_device on a default initialized device_context should throw", "[buffer]" )
+TEST_CASE( "Calling get_device on a default initialized device_context should throw", "[device_context]" )
 {
 	device_context context;
 
@@ -177,7 +177,7 @@ TEST_CASE( "Calling get_device on a default initialized device_context should th
 	);
 }
 
-TEST_CASE( "Calling get_memory_allocator on a default initialized device_context should throw", "[buffer]" )
+TEST_CASE( "Calling get_memory_allocator on a default initialized device_context should throw", "[device_context]" )
 {
 	device_context context;
 	const auto target = GENERATE(
@@ -194,7 +194,7 @@ TEST_CASE( "Calling get_memory_allocator on a default initialized device_context
 	);
 }
 
-TEST_CASE( "Calling get_active_queue on a default initialized device_context should throw", "[buffer]" )
+TEST_CASE( "Calling get_active_queue on a default initialized device_context should throw", "[device_context]" )
 {
 	device_context context;
 	REQUIRE_THROWS_MATCHES(
@@ -206,7 +206,7 @@ TEST_CASE( "Calling get_active_queue on a default initialized device_context sho
 	);
 }
 
-TEST_CASE( "Calling set_active_queue on a default initialized device_context should throw", "[buffer]" )
+TEST_CASE( "Calling set_active_queue on a default initialized device_context should throw", "[device_context]" )
 {
 	device_context context;
 	REQUIRE_THROWS_MATCHES(

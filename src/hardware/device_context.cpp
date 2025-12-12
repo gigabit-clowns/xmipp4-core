@@ -30,7 +30,6 @@ public:
 			m_device->get_device_local_memory_resource();
 		auto &host_accessible_memory_resource = 
 			m_device->get_host_accessible_memory_resource();
-
 		
 		const auto &alloc_manager = 
 			catalog.get_service_manager<memory_allocator_manager>();

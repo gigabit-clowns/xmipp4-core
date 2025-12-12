@@ -64,8 +64,8 @@ TEST_CASE( "getting the number of operands on an array_access_layout should retu
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
 		std::make_unique<array_access_layout_implementation>(extents);
-	implementation->add_operand(extents, strides, 0UL);
-	implementation->add_operand(extents, strides, 0UL);
+	implementation->add_operand(strides, 0UL);
+	implementation->add_operand(strides, 0UL);
 	array_access_layout layout(std::move(implementation));
 
 	REQUIRE( layout.get_number_of_operands() == 2 );
@@ -79,7 +79,7 @@ TEST_CASE( "getting the strides of an operand on an array_access_layout should r
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
 		std::make_unique<array_access_layout_implementation>(extents);
-	implementation->add_operand(extents, strides, 0UL);
+	implementation->add_operand(strides, 0UL);
 	array_access_layout layout(std::move(implementation));
 
 	const auto result = layout.get_strides(0);
@@ -94,7 +94,7 @@ TEST_CASE( "getting the offset of an operand in an array_access_layout should re
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
 		std::make_unique<array_access_layout_implementation>(extents);
-	implementation->add_operand(extents, strides, 1234UL);
+	implementation->add_operand(strides, 1234UL);
 	array_access_layout layout(std::move(implementation));
 
 	REQUIRE( layout.get_offset(0) == 1234UL );
@@ -108,7 +108,7 @@ TEST_CASE( "getting the strides of an invalid operand on an array_access_layout 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
 		std::make_unique<array_access_layout_implementation>(extents);
-	implementation->add_operand(extents, strides, 0UL);
+	implementation->add_operand(strides, 0UL);
 	array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 
@@ -125,7 +125,7 @@ TEST_CASE( "getting the offset of an invalid operand in an array_access_layout s
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
 		std::make_unique<array_access_layout_implementation>(extents);
-	implementation->add_operand(extents, strides, 1234UL);
+	implementation->add_operand(strides, 1234UL);
 	array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 

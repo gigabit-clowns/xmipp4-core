@@ -51,23 +51,33 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 	const strided_layout &layout
 )
 {
-	array_access_layout_implementation::extent_vector_type extents;
-	array_access_layout_implementation::stride_vector_type strides;
-
 	const auto &layout_impl = layout.get_implementation();
-	layout_impl.get_extents(extents);
-	layout_impl.get_strides(strides);
-	const auto offset = layout_impl.get_offset();
-	XMIPP4_ASSERT( extents.size() == strides.size() );
 
-	if (!m_implementation)
+	if (m_implementation)
 	{
-		m_implementation = 
-			std::make_unique<array_access_layout_implementation>(extents);
+		if (!layout.extents_equal(m_implementation->get_extents()))
+		{
+			throw std::invalid_argument(
+				"Provided layout's extents do not match the iteration extents"
+			);
+		}
+	}
+	else
+	{
+		array_access_layout_implementation::extent_vector_type extents;
+		layout_impl.get_extents(extents);
+
+		m_implementation = std::make_unique<array_access_layout_implementation>(
+			std::move(extents)
+		);
 	}
 
+	array_access_layout_implementation::stride_vector_type strides;
+	layout_impl.get_strides(strides);
+	const auto offset = layout_impl.get_offset();
+
 	XMIPP4_ASSERT( m_implementation );
-	m_implementation->add_operand(extents, strides, offset);
+	m_implementation->add_operand(std::move(strides), offset);
 
 	return *this;
 }

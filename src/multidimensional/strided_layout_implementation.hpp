@@ -41,6 +41,7 @@ public:
 	std::ptrdiff_t get_offset() const noexcept;
 	std::size_t compute_storage_requirement() const noexcept;
 	std::size_t compute_element_count() const noexcept;
+	bool extents_equal(span<const std::size_t> extents) const noexcept;
 
 	strided_layout_implementation
 	apply_subscripts(span<const dynamic_subscript> subscripts) const;
@@ -61,7 +62,6 @@ public:
 
 	strided_layout_implementation squeeze() const;
 
-	bool extents_equal(span<const std::size_t> extents) const noexcept;
 
 	strided_layout_implementation broadcast_to(
 		span<const std::size_t> extents

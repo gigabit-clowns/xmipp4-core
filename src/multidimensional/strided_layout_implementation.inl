@@ -16,29 +16,29 @@ template <typename ForwardIt>
 inline
 void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
 {
-	// Based on:
-	// https://en.cppreference.com/w/cpp/algorithm/is_permutation
-	// The former function could be re-used, provided that something
-	// like boost::counting_iterator is available.
+    // Based on:
+    // https://en.cppreference.com/w/cpp/algorithm/is_permutation
+    // The former function could be re-used, provided that something
+    // like boost::counting_iterator is available.
 
-	if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
-	{
+    if (std::distance(first, last) != static_cast<std::ptrdiff_t>(count))
+    {
 		throw std::invalid_argument(
 			"Axis permutation's length does not match the required count"
 		);
-	}
+    }
 
-	// Skip common prefix
-	std::size_t i = 0;
-	while (first != last && *first == i)
-	{
+    // Skip common prefix
+    std::size_t i = 0;
+    while (first != last && *first == i)
+    {
 		++first;
 		++i;
-	}
+    }
 
-	// For the rest, check that it is a permutation
-	while (i < count)
-	{
+    // For the rest, check that it is a permutation
+    while (i < count)
+    {
 		// Ensure the current value appears in the range.
 		auto ite = std::find(first, last, i);
 		if (ite == last)
@@ -49,22 +49,22 @@ void check_axis_permutation(ForwardIt first, ForwardIt last, std::size_t count)
 		}
 
 		++i;
-	}
+    }
 }
 
 class apply_subscripts_helper
 {
 public:
-	static
-	strided_layout_implementation::strided_axis_vector_type
-	process(
+    static
+    strided_layout_implementation::strided_axis_vector_type
+    process(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis,
 		std::ptrdiff_t &offset 
-	)
-	{
+    )
+    {
 		strided_layout_implementation::strided_axis_vector_type axes;
 
 		process_forwards(
@@ -78,11 +78,11 @@ public:
 		);
 
 		return axes;
-	}
+    }
 
 private:
-	static
-	void process_forwards(
+    static
+    void process_forwards(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
@@ -90,8 +90,8 @@ private:
 		std::ptrdiff_t &offset,
 		strided_layout_implementation::strided_axis_vector_type &axes,
 		strided_layout_implementation::strided_axis_vector_type::iterator head_ite 
-	)
-	{
+    )
+    {
 		while (first_subscript != last_subscript)
 		{
 			const auto &subscript = *first_subscript;
@@ -142,12 +142,12 @@ private:
 		// Copy reminder
 		if (first_axis != last_axis)
 		{
-				axes.insert(head_ite, first_axis, last_axis);
+			axes.insert(head_ite, first_axis, last_axis);
 		}
-	}
+    }
 
-	static
-	void process_backwards(
+    static
+    void process_backwards(
 		const dynamic_subscript *first_subscript, 
 		const dynamic_subscript *last_subscript,
 		const strided_axis *first_axis, 
@@ -155,8 +155,8 @@ private:
 		std::ptrdiff_t &offset,
 		strided_layout_implementation::strided_axis_vector_type &axes,
 		strided_layout_implementation::strided_axis_vector_type::iterator head_ite 
-	)
-	{
+    )
+    {
 		while (first_subscript != last_subscript)
 		{
 			const auto &subscript = *std::prev(last_subscript);
@@ -201,41 +201,41 @@ private:
 		{
 			axes.insert(head_ite, first_axis, last_axis);
 		}
-	}
+    }
 
-	static
-	void check_non_empty_axes(
+    static
+    void check_non_empty_axes(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis,
 		const char *subscript_type
-	)
-	{
+    )
+    {
 		if (first_axis == last_axis)
 		{
 			std::ostringstream oss;
 			oss << subscript_type 
-				<< " subscript was encountered, but there are no more axes to process";
+			<< " subscript was encountered, but there are no more axes to process";
 			throw std::invalid_argument(oss.str());
 		}
-	}
+    }
 
-	static
-	void check_non_empty_axes_for_slice(
+    static
+    void check_non_empty_axes_for_slice(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis
-	)
-	{
+    )
+    {
 		check_non_empty_axes(first_axis, last_axis, "A slice");
-	}
+    }
 
-	static
-	void check_non_empty_axes_for_index(
+    static
+    void check_non_empty_axes_for_index(
 		const strided_axis *first_axis, 
 		const strided_axis *last_axis
-	)
-	{
+    )
+    {
 		check_non_empty_axes(first_axis, last_axis, "An index");
-	}
+    }
 };
 
 
@@ -379,6 +379,28 @@ strided_layout_implementation::compute_element_count() const noexcept
 }
 
 inline
+bool strided_layout_implementation::extents_equal(
+	span<const std::size_t> extents
+) const noexcept
+{
+	if (m_axes.size() != extents.size())
+	{
+		return false;
+	}
+
+	const auto n = m_axes.size();
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		if (m_axes[i].get_extent() != extents[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+inline
 strided_layout_implementation
 strided_layout_implementation::apply_subscripts(
 	span<const dynamic_subscript> subscripts
@@ -508,28 +530,6 @@ strided_layout_implementation strided_layout_implementation::squeeze() const
 	);
 
 	return strided_layout_implementation(std::move(axes), m_offset);
-}
-
-inline
-bool strided_layout_implementation::extents_equal(
-	span<const std::size_t> extents
-) const noexcept
-{
-	if (m_axes.size() != extents.size())
-	{
-		return false;
-	}
-
-	const auto n = m_axes.size();
-	for (std::size_t i = 0; i < n; ++i)
-	{
-		if (m_axes[i].get_extent() != extents[i])
-		{
-			return false;
-		}
-	}
-
-	return true;
 }
 
 inline

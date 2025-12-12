@@ -70,6 +70,14 @@ std::size_t strided_layout::compute_element_count() const noexcept
 }
 
 XMIPP4_NODISCARD
+bool strided_layout::extents_equal(
+	span<const std::size_t> extents
+) const noexcept
+{
+	return get_implementation().extents_equal(extents);
+}
+
+XMIPP4_NODISCARD
 strided_layout 
 strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 {

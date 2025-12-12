@@ -29,13 +29,11 @@ array_access_layout_implementation::array_access_layout_implementation(
 
 inline
 void array_access_layout_implementation::add_operand(
-	extent_vector_type &extents,
-	stride_vector_type &strides,
+	stride_vector_type strides,
 	std::ptrdiff_t offset
 )
 {
-	XMIPP4_ASSERT( extents.size() == strides.size() );
-	broadcast_operand(extents, strides);
+	XMIPP4_ASSERT( m_extents.size() == strides.size() );
 	m_operands.emplace_back(
 		std::move(strides),
 		offset
@@ -265,48 +263,6 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 	for (auto &operand : m_operands)
 	{
 		operand.trim_axes(n);
-	}
-}
-
-inline
-void array_access_layout_implementation::broadcast_operand(
-	extent_vector_type &extents,
-	stride_vector_type &strides
-)
-{
-	const auto n = m_extents.size();
-
-	if (n < extents.size())
-	{
-		std::ostringstream oss;
-		oss << "Operand with " << extents.size() 
-			<< " dimensions exceeds the dimensionality " << n
-			<< " required in the array_access_layout";
-
-		throw std::invalid_argument(oss.str());
-	}
-
-	const auto padding = n - extents.size();
-	extents.insert(extents.cbegin(), padding, 1);
-	strides.insert(strides.cbegin(), padding, 0);
-
-	for (std::size_t i = 0; i < n; ++i)
-	{
-		if (m_extents[i] != extents[i])
-		{
-			if (extents[i] != 1)
-			{
-				throw std::invalid_argument(
-					"Incompatible extents were provided for broadcasting"
-				);
-			}
-
-			// Broadcast axis
-			extents[i] = m_extents[i];
-			strides[i] = 0;
-		}
-
-		XMIPP4_ASSERT( m_extents[i] == extents[i] );
 	}
 }
 

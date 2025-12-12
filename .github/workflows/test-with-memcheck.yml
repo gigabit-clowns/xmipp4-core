@@ -64,6 +64,17 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
+      - name: Test
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # in a pwsh step on the Windows job
+          # set up VS x64 environment and compile a tiny exe, then run drmemory in light mode
+          & 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe' -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          # run vcvarsall x64 and compile test64.exe, then:
+          & 'C:\Program Files (x86)\Dr. Memory\bin64\drmemory.exe' -light -- .\test64.exe | Tee-Object dr_test_out.txt
+          Get-Content dr_test_out.txt
+
       - name: Run tests with memory check
         uses: ./.github/composites/run-ctest
         id: run-ctest

@@ -368,6 +368,28 @@ strided_layout_implementation::compute_element_count() const noexcept
 }
 
 inline
+bool strided_layout_implementation::extents_equal(
+		span<const std::size_t> extents
+) const noexcept
+{
+		if (m_axes.size() != extents.size())
+		{
+				return false;
+		}
+
+		const auto n = m_axes.size();
+		for (std::size_t i = 0; i < n; ++i)
+		{
+				if (m_axes[i].get_extent() != extents[i])
+				{
+						return false;
+				}
+		}
+
+		return true;
+}
+
+inline
 strided_layout_implementation
 strided_layout_implementation::apply_subscripts(
 		span<const dynamic_subscript> subscripts
@@ -497,28 +519,6 @@ strided_layout_implementation strided_layout_implementation::squeeze() const
 		);
 
 		return strided_layout_implementation(std::move(axes), m_offset);
-}
-
-inline
-bool strided_layout_implementation::extents_equal(
-		span<const std::size_t> extents
-) const noexcept
-{
-		if (m_axes.size() != extents.size())
-		{
-				return false;
-		}
-
-		const auto n = m_axes.size();
-		for (std::size_t i = 0; i < n; ++i)
-		{
-				if (m_axes[i].get_extent() != extents[i])
-				{
-						return false;
-				}
-		}
-
-		return true;
 }
 
 inline

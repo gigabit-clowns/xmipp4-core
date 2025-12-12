@@ -30,12 +30,12 @@ runs:
       shell: bash
       run: |
         choco install drmemory
-        echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin/drmemory.exe\"" >> "$GITHUB_OUTPUT"
+        echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin64/drmemory.exe\"" >> "$GITHUB_OUTPUT"
 
     - name: Export Dr. Memory path for Windows (Powershell)
       id: install-drmemory-pwsh
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        $path = 'C:\Program Files (x86)\Dr. Memory\bin\drmemory.exe'
+        $path = 'C:\Program Files (x86)\Dr. Memory\bin64\drmemory.exe'
         Add-Content -Path $env:GITHUB_OUTPUT -Value "drmemory=$path"

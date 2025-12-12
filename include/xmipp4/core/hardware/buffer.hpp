@@ -124,7 +124,7 @@ public:
 	 * 
 	 */
 	XMIPP4_CORE_API 
-	void record_queue(device_queue &queue, bool exclusive=false);
+	void record_queue(device_queue &queue, bool exclusive=false) const;
 
 private:
 	void *m_host_pointer;

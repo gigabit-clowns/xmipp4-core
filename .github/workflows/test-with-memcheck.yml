@@ -64,53 +64,15 @@ jobs:
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
-      - name: Test DrMemory with tiny 64-bit exe
+      - name: Test
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # locate Visual Studio installation with VC tools
-          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          if (-not (Test-Path $vswhere)) { Write-Error "vswhere not found"; exit 1 }
-          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-          if (-not $vsPath) { Write-Error "No Visual Studio with VC tools found"; exit 1 }
-          Write-Host "Found VS at: $vsPath"
-
-          # path to vcvarsall
-          $vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvarsall.bat'
-          if (-not (Test-Path $vcvars)) { Write-Error "vcvarsall.bat not found at $vcvars"; exit 1 }
-
-          # prepare temp folder and tiny C source
-          $tmp = Join-Path $env:RUNNER_TEMP 'dr_test'
-          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
-          Set-Location $tmp
-          'int main(){return 0;}' | Out-File -FilePath test.c -Encoding ascii
-
-          # compile 64-bit exe using vcvarsall x64
-          $compileCmd = "`"$vcvars`" x64 && cl /nologo /Zi /EHsc test.c /Fe:test64.exe"
-          Write-Host "Compiling test64.exe..."
-          $compileResult = cmd /c $compileCmd 2>&1
-          Write-Host $compileResult
-
-          if (-not (Test-Path (Join-Path $tmp 'test64.exe'))) {
-            Write-Error "Compilation failed or test64.exe not found"
-            exit 1
-          }
-
-          # run Dr. Memory in light mode on the compiled exe
           $dr = 'C:\Program Files (x86)\Dr. Memory\bin64\drmemory.exe'
-          if (-not (Test-Path $dr)) { Write-Error "Dr. Memory not found at $dr"; exit 1 }
-          Write-Host "Running Dr. Memory on test64.exe..."
-          & $dr -light -- (Join-Path $tmp 'test64.exe') 2>&1 | Tee-Object dr_test_out.txt
-
-          Write-Host "Dr. Memory output:"
-          Get-Content dr_test_out.txt | ForEach-Object { Write-Host $_ }
-
-      - name: Test 2
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          & 'C:\Program Files (x86)\Dr. Memory\bin64\drmemory.exe' -debug -dr_debug -logdir C:\temp\drlogs -- "${env:ProgramFiles}\CMake\bin\ctest.exe" --version
-          # inspect files under C:\temp\drlogs for ucrtbase or loader errors
+          New-Item -ItemType Directory -Force -Path C:\temp\drlogs | Out-Null
+          & $dr -debug -dr_debug -logdir C:\temp\drlogs -- "${env:ProgramFiles}\CMake\bin\ctest.exe" -C $env:BUILD_TYPE --version 2>&1 | Tee-Object dr_debug_out.txt
+          Get-Content dr_debug_out.txt | Select-Object -First 200 | ForEach-Object { Write-Host $_ }
+          Get-ChildItem C:\temp\drlogs -Recurse | ForEach-Object { Write-Host "Log:" $_.FullName; Get-Content $_.FullName | Select-Object -First 200 | ForEach-Object { Write-Host $_ } }
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-ctest

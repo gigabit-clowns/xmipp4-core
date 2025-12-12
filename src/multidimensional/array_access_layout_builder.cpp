@@ -53,17 +53,17 @@ array_access_layout_builder& array_access_layout_builder::add_operand(
 {
 	const auto *layout_impl = layout.get_implementation();
 
-	if (m_implementation)
+	if (
+		m_implementation && 
+		!layout.extents_equal(m_implementation->get_extents())
+	)
 	{
-		const auto extents = m_implementation->get_extents();
-		if (!layout.extents_equal(extents))
-		{
-			throw std::invalid_argument(
-				"Provided layout's extents do not match the iteration extents"
-			);
-		}
+		throw std::invalid_argument(
+			"Provided layout's extents do not match the iteration extents"
+		);
 	}
-	else
+	
+	if (!m_implementation)
 	{
 		array_access_layout_implementation::extent_vector_type extents;
 		

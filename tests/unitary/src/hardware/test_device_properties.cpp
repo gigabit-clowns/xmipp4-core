@@ -21,5 +21,5 @@ TEST_CASE( "setting and getting attributes in device_properties should preserve 
 	CHECK( prop.get_type() == device_type::gpu );
 	CHECK( prop.get_physical_location() == "My computer" );
 	CHECK( prop.get_total_memory_bytes() == 0xDEADBEEF );
-	CHECK( prop.set_optimal_data_alignment() == 2048 );
+	CHECK( prop.get_optimal_data_alignment() == 2048 );
 }

@@ -20,16 +20,16 @@ jobs:
     name: Test with memchecks
     strategy:
       matrix:
-        #os:
-        #- ubuntu-latest
-        #compiler: 
-        #- {c: gcc, cxx: g++}
-        #- {c: clang, cxx: clang++}
+        os:
+        - ubuntu-latest
+        compiler: 
+        - {c: gcc, cxx: g++}
+        - {c: clang, cxx: clang++}
 
         include:
-        #- os: macos-latest
-        #  compiler: {c: clang, cxx: clang++}
-        - os: windows-2022
+        - os: macos-latest
+          compiler: {c: clang, cxx: clang++}
+        - os: windows-latest
           compiler: {c: cl, cxx: cl}
 
     env:
@@ -47,7 +47,6 @@ jobs:
 
       - name: Install memcheck tool
         uses: ./.github/composites/memcheck/install-memtool
-        id: install-memtool
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
@@ -65,11 +64,10 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests with memory check
-        uses: ./.github/composites/run-ctest
         id: run-ctest
+        uses: ./.github/composites/run-ctest
         with:
           check-memleaks: true
-          drmemory: ${{ steps.install-memtool.outputs.drmemory-pwsh }}
 
       - name: Show memory leak logs (if exist)
         if: steps.run-ctest.outputs.exist-memleaks == 'true'

@@ -1,10 +1,6 @@
 name: "Run CMake tests with memcheck"
 description: "Runs CMake tests for every OS with memcheck."
 
-inputs:
-  drmemory:
-    description: "Full path to Dr. Memory executable."
-    required: false
 outputs:
   exist-memleaks:
     description: "If True, the tests run show memory leaks." 
@@ -30,16 +26,23 @@ runs:
         export MallocStackLogging=1
         leaks --fullContent --atExit -- ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure
 
+    - name: Get Dr. Memory's path (Windows)
+      id: export-memtool
+      if: runner.os == 'Windows'
+      uses: ./.github/composites/memcheck/install-memtool
+      with:
+        only-export-path: true
+
     - name: Run tests with memory check (Windows)
       if: runner.os == 'Windows'
       uses: ./.github/composites/run-ctest
       with:
         test-wrapper: >-
-          "${{ inputs.drmemory }}" -show_reachable --
+          "${{ steps.export-memtool.outputs.drmemory-pwsh }}" -show_reachable --
 
     - name: Check if there are any memory leaks
-      if: inputs.check-memleaks == 'true'
       id: check-memleaks
+      if: inputs.check-memleaks == 'true'
       shell: bash
       run: |
         # Check if there are any memory leaks

@@ -6,11 +6,12 @@ inputs:
     description: "If set to true, test will be run checking for memory leaks."
     required: false
     default: false
-  drmemory:
-    description: "Full path to Dr. Memory executable (for Windows only)."
-    required: false
   test-wrapper:
     description: "Wrapper command to run tests (e.g. OpenCppCoverage). Will be ignored if used with check-memleak."
+    required: false
+    default: ""
+  test-extra-params:
+    description: "Extra params and/or commands that can be added at the right of the ctest call. Will be ignored if used with check-memleak."
     required: false
     default: ""
 outputs:
@@ -28,11 +29,9 @@ runs:
       if: inputs.check-memleaks == 'false'
       working-directory: "${{ github.workspace }}/build"
       shell: ${{ runner.os == 'Windows' && 'cmd' || 'bash' }}
-      run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} -T test --rerun-failed --output-on-failure
+      run: ${{ inputs.test-wrapper }} ctest -C ${{ env.BUILD_TYPE }} --rerun-failed --output-on-failure ${{ inputs.test-extra-params }}
 
     - name: Run tests with memory check
-      if: inputs.check-memleaks == 'true'
       id: run-with-memcheck
+      if: inputs.check-memleaks == 'true'
       uses: ./.github/composites/run-ctest/memcheck
-      with:
-        drmemory: ${{ inputs.drmemory }}

@@ -1,19 +1,24 @@
 name: "Install Memcheck tool"
 description: "Installs the required memcheck tool for every OS."
 
+inputs:
+  only-export-path:
+    description: "If set, no tool will be installed, only relevant paths will be exported without modification."
+    required: false
+    default: false
 outputs:
   drmemory-bash:
     description: "Full path to Dr. Memory (in bash format)."
-    value: ${{ steps.install-drmemory-bash.outputs.drmemory }}
+    value: ${{ steps.export-drmemory-bash.outputs.drmemory }}
   drmemory-pwsh:
     description: "Full path to Dr. Memory (in Powershell format)."
-    value: ${{ steps.install-drmemory-pwsh.outputs.drmemory }}
+    value: ${{ steps.export-drmemory-pwsh.outputs.drmemory }}
 
 runs:
   using: "composite"
   steps:
     - name: Install Valgrind (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && inputs.only-export-path == 'false'
       shell: bash
       run: |
         if which apt-get; then
@@ -25,15 +30,18 @@ runs:
         fi
 
     - name: Install Dr. Memory (Windows)
-      id: install-drmemory-bash
+      if: runner.os == 'Windows' && inputs.only-export-path == 'false'
+      shell: bash
+      run: choco install drmemory
+
+    - name: Export Dr. Memory path for Windows (Bash)
+      id: export-drmemory-bash
       if: runner.os == 'Windows'
       shell: bash
-      run: |
-        choco install drmemory
-        echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin64/drmemory.exe\"" >> "$GITHUB_OUTPUT"
+      run: echo "drmemory=\"/c/Program Files (x86)/Dr. Memory/bin64/drmemory.exe\"" >> "$GITHUB_OUTPUT"
 
     - name: Export Dr. Memory path for Windows (Powershell)
-      id: install-drmemory-pwsh
+      id: export-drmemory-pwsh
       if: runner.os == 'Windows'
       shell: pwsh
       run: |

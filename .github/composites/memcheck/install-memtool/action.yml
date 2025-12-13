@@ -43,7 +43,7 @@ runs:
       shell: bash
       run: |
         target="$GITHUB_WORKSPACE/msvc-memcheck.cmake"
-        url="https://raw.githubusercontent.com/gigabit-clowns/.github/ms_memcheck_windows/.github/scripts/msvc-memcheck.cmake" # TODO update branch name
+        url="https://raw.githubusercontent.com/gigabit-clowns/.github/ms_memcheck_windows/.github/scripts/cmake/msvc-memcheck.cmake" # TODO update branch name
 
         # Exit non-zero on HTTP errors
         curl -sSLo "$target" --fail "$url" || {

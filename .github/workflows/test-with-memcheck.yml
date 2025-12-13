@@ -62,7 +62,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
-            ${{ matrix.compiler.cxx == 'cl' && format('CMAKE_TOOLCHAIN_FILE=%s', env.TOOLCHAIN_FILE) || '' }}
+            ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_TOOLCHAIN_FILE=$ENV{TOOLCHAIN_FILE}' || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

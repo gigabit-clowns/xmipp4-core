@@ -45,25 +45,12 @@ runs:
         target="$GITHUB_WORKSPACE/msvc-memcheck.cmake"
         url="https://raw.githubusercontent.com/gigabit-clowns/.github/main/.github/scripts/msvc-memcheck.cmake"
 
-        # Always overwrite, --fail makes curl exit non-zero on HTTP errors.
+        # Exit non-zero on HTTP errors
         curl -sSLo "$target" --fail "$url" || {
           echo "Failed to download $url"
-          # print a short diagnostic
-          curl -sS -I "$url" || true
+          curl -sS -I "$url"
           exit 1
         }
-
-        # Non-empty and not an HTML error page
-        if [ ! -s "$target" ]; then
-          echo "Downloaded file is empty"
-          exit 1
-        fi
-        # Fail if file looks like HTML (404 page)
-        if head -n1 "$target" | grep -qiE '<!doctype|<html|404:'; then
-          echo "Downloaded file looks like an HTML error page; aborting"
-          head -n20 "$target"
-          exit 1
-        fi
 
         echo "Downloaded toolchain file to $target"
         echo "toolchain-file=$target" >> "$GITHUB_OUTPUT"

@@ -34,6 +34,14 @@ runs:
       shell: bash
       run: choco install drmemory
 
+    - name: Export path to Toolchain file (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        curl -sSL https://raw.githubusercontent.com/gigabit-clowns/.github/main/scripts/msvc-memcheck.cmake \
+          -o "$GITHUB_WORKSPACE/msvc-memcheck.cmake"
+        echo "TOOLCHAIN_FILE=$GITHUB_WORKSPACE/msvc-memcheck.cmake" >> $GITHUB_ENV
+
     - name: Export Dr. Memory path for Windows (Bash)
       id: export-drmemory-bash
       if: runner.os == 'Windows'

@@ -18,9 +18,8 @@ namespace multidimensional
  * @param descriptor The descriptor for the new array.
  * @param placement The placement for the array's data.
  * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its components may be 
- * cannibalized to create the resulting array. After the call, the out array
- * will be an alias of the array returned by this function.
+ * @param out Optional array to reuse. If provided, its storage may be aliased
+ * in the new array, avoiding memory allocations.
  * @return array The resulting empty array.
  */
 XMIPP4_NODISCARD XMIPP4_CORE_API

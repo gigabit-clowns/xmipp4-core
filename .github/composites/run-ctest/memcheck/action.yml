@@ -14,9 +14,10 @@ runs:
   steps:
     - name: Run tests with memory check (Linux)
       if: runner.os == 'Linux'
-      working-directory: "${{ github.workspace }}/build"
-      shell: bash
-      run: ctest -C ${{ env.BUILD_TYPE }} -T memcheck --rerun-failed --output-on-failure | tee ${{ github.workspace }}/memcheck_output.txt
+      uses: ./.github/composites/run-ctest
+      with:
+        test-extra-params: >-
+          -T memcheck | tee ${{ github.workspace }}/memcheck_output.txt
 
     - name: Run tests with memory check (MacOS)
       if: runner.os == 'macOS'

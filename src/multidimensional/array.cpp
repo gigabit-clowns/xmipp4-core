@@ -29,12 +29,12 @@ public:
 		return m_descriptor;
 	}
 
-	hardware::buffer* get_storage() noexcept
+	hardware::buffer* get_storage() const noexcept
 	{
 		return m_storage.get();
 	}
 
-	const std::shared_ptr<hardware::buffer>& share_storage() noexcept
+	const std::shared_ptr<hardware::buffer>& share_storage() const noexcept
 	{
 		return m_storage;
 	}
@@ -63,7 +63,7 @@ array::array(
 {
 }
 
-array::array(std::shared_ptr<implementation> impl) noexcept
+array::array(std::shared_ptr<const implementation> impl) noexcept
 	: m_implementation(std::move(impl))
 {
 }

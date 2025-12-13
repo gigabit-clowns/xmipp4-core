@@ -112,40 +112,5 @@ array empty(
     );
 }
 
-XMIPP4_NODISCARD 
-array empty(
-    strided_layout layout, 
-    numerical_type data_type,
-	hardware::target_placement placement,
-	const hardware::device_context &context,
-    array *out
-)
-{
-	return empty(
-		array_descriptor(std::move(layout), data_type),
-		placement,
-		context,
-		out
-	);
-}
-
-XMIPP4_NODISCARD 
-array empty(
-	span<const std::size_t> extents, 
-	numerical_type data_type,
-	hardware::target_placement placement,
-	const hardware::device_context &context,
-	array *out
-)
-{
-	return empty(
-		strided_layout::make_contiguous_layout(extents),
-		data_type,
-		placement,
-		context,
-		out
-	);
-}
-
 } // namespace multidimensional
 } // namespace xmipp4

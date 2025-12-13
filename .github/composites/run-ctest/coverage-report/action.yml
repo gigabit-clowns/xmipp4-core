@@ -52,7 +52,6 @@ runs:
           "${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build"
           --modules="xmipp4-core.dll"
           --sources="${{ github.workspace }}"
-          --excluded_sources="*tests*"
           --excluded_sources="*_deps*"
           --excluded_sources="*_work*"
           --export_type="cobertura:${{ inputs.report-path }}"

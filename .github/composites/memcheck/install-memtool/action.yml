@@ -15,7 +15,7 @@ outputs:
     value: ${{ steps.export-drmemory-pwsh.outputs.drmemory }}
   toolchain-file-msvc:
     description: "Full path to the toolchain file needed to compile the project with."
-    value: ${{ steps.export-toolchain-file.outputs.toolchain-file }}
+    value: ${{ steps.toolchain-file.outputs.toolchain-file }}
 
 runs:
   using: "composite"
@@ -37,14 +37,36 @@ runs:
       shell: bash
       run: choco install drmemory
 
-    - name: Export path to Toolchain file (Windows)
-      id: export-toolchain-file
+    - name: Download oolchain file (Windows)
+      id: toolchain-file
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        curl -sSL https://raw.githubusercontent.com/gigabit-clowns/.github/main/scripts/msvc-memcheck.cmake \
-          -o "$GITHUB_WORKSPACE/msvc-memcheck.cmake"
-        echo "toolchain-file=$GITHUB_WORKSPACE/msvc-memcheck.cmake" >> $GITHUB_OUTPUT
+        target="$GITHUB_WORKSPACE/msvc-memcheck.cmake"
+        url="https://raw.githubusercontent.com/gigabit-clowns/.github/main/.github/scripts/msvc-memcheck.cmake"
+
+        # Always overwrite, --fail makes curl exit non-zero on HTTP errors.
+        curl -sSLo "$target" --fail "$url" || {
+          echo "Failed to download $url"
+          # print a short diagnostic
+          curl -sS -I "$url" || true
+          exit 1
+        }
+
+        # Non-empty and not an HTML error page
+        if [ ! -s "$target" ]; then
+          echo "Downloaded file is empty"
+          exit 1
+        fi
+        # Fail if file looks like HTML (404 page)
+        if head -n1 "$target" | grep -qiE '<!doctype|<html|404:'; then
+          echo "Downloaded file looks like an HTML error page; aborting"
+          head -n20 "$target"
+          exit 1
+        fi
+
+        echo "Downloaded toolchain file to $target"
+        echo "toolchain-file=$target" >> "$GITHUB_OUTPUT"
 
     - name: Export Dr. Memory path for Windows (Bash)
       id: export-drmemory-bash

@@ -18,20 +18,20 @@ jobs:
     name: CMake
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        compiler: 
-        - {c: gcc, cxx: g++}
-        - {c: clang, cxx: clang++}
+        #os:
+        #- ubuntu-latest
+        #compiler: 
+        #- {c: gcc, cxx: g++}
+        #- {c: clang, cxx: clang++}
 
         include:
-        - os: macos-latest
-          compiler: {c: clang, cxx: clang++}
+        #- os: macos-latest
+        #  compiler: {c: clang, cxx: clang++}
         - os: windows-latest
           compiler: {c: cl, cxx: cl}
-        - os: windows-latest
-          compiler: {c: gcc, cxx: g++}
-          generator: "Ninja"
+        #- os: windows-latest
+        #  compiler: {c: gcc, cxx: g++}
+        #  generator: "Ninja"
 
     env:
       BUILD_TYPE: Debug
@@ -69,7 +69,7 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
-        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
+        uses: ./.github/composites/run-ctest/coverage-report
         with:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}

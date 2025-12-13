@@ -56,7 +56,7 @@ const buffer_sentinel* buffer::get_sentinel() const noexcept
 	return m_sentinel.get();
 }
 
-void buffer::record_queue(device_queue& queue, bool exclusive)
+void buffer::record_queue(device_queue& queue, bool exclusive) const
 {
 	if (!m_sentinel)
 	{

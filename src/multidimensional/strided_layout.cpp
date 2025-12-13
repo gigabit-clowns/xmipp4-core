@@ -34,74 +34,47 @@ strided_layout::strided_layout(strided_layout_implementation &&impl)
 }
 
 
-bool strided_layout::operator==(const strided_layout &other) const noexcept
-{
-	if (m_implementation == other.m_implementation)
-	{
-		return true; // Same or both null
-	}
-	else if (m_implementation && other.m_implementation)
-	{
-		return *m_implementation == *other.m_implementation;
-	}
-	else if (m_implementation)
-	{
-		return *m_implementation == strided_layout_implementation();
-	}
-	else // if (other.m_implementation)
-	{
-		XMIPP4_ASSERT(other.m_implementation);
-		return strided_layout_implementation() == *other.m_implementation;
-	}
-}
-
-bool strided_layout::operator!=(const strided_layout &other) const noexcept
-{
-	return !(*this == other);
-}
 
 XMIPP4_NODISCARD
 std::size_t strided_layout::get_rank() const noexcept
 {
-	return m_implementation ? m_implementation->get_rank() : 0U;
+	return get_implementation().get_rank();
 }
 
 void strided_layout::get_extents(std::vector<std::size_t> &extents) const
 {
-	extents.clear();
-	if (m_implementation)
-	{
-		m_implementation->get_extents(extents);
-	}
+	return get_implementation().get_extents(extents);
 }
 
 void strided_layout::get_strides(std::vector<std::ptrdiff_t> &strides) const
 {
-	strides.clear();
-	if (m_implementation)
-	{
-		m_implementation->get_strides(strides);
-	}
+	return get_implementation().get_strides(strides);
 }
 
 XMIPP4_NODISCARD
 std::ptrdiff_t strided_layout::get_offset() const noexcept
 {
-	return m_implementation ? m_implementation->get_offset() : 0U;
+	return get_implementation().get_offset();
 }
 
 XMIPP4_NODISCARD
 std::size_t strided_layout::compute_storage_requirement() const noexcept
 {
-	return m_implementation ? 
-		m_implementation->compute_storage_requirement() : 
-		0U ;
+	return get_implementation().compute_storage_requirement();
 }
 
 XMIPP4_NODISCARD
 std::size_t strided_layout::compute_element_count() const noexcept
 {
-	return m_implementation ? m_implementation->compute_element_count() : 0U;
+	return get_implementation().compute_element_count();
+}
+
+XMIPP4_NODISCARD
+bool strided_layout::extents_equal(
+	span<const std::size_t> extents
+) const noexcept
+{
+	return get_implementation().extents_equal(extents);
 }
 
 XMIPP4_NODISCARD
@@ -113,17 +86,7 @@ strided_layout::apply_subscripts(span<const dynamic_subscript> subscripts) const
 		return *this; // No change
 	}
 
-	if (m_implementation)
-	{
-		const auto &impl = *m_implementation;
-		return strided_layout(impl.apply_subscripts(subscripts));
-	}
-	else
-	{
-		return strided_layout(
-			strided_layout_implementation().apply_subscripts(subscripts)
-		);
-	}
+	return strided_layout(get_implementation().apply_subscripts(subscripts));
 }
 
 XMIPP4_NODISCARD
@@ -142,16 +105,7 @@ strided_layout strided_layout::transpose() const
 XMIPP4_NODISCARD
 strided_layout strided_layout::permute(span<const std::size_t> order) const
 {
-	if (m_implementation)
-	{
-		const auto &impl = *m_implementation;
-		return strided_layout(impl.permute(order));
-	}
-	else
-	{
-		strided_layout_implementation().permute(order); // Arg validation
-		return strided_layout();
-	}
+	return strided_layout(get_implementation().permute(order));
 }
 
 XMIPP4_NODISCARD
@@ -160,13 +114,7 @@ strided_layout::matrix_transpose(
 	std::ptrdiff_t axis1, 
 	std::ptrdiff_t axis2) const
 {
-	if (!m_implementation)
-	{
-		throw std::out_of_range("Cannot swap axes on an empty layout");
-	}
-
-	const auto &impl = *m_implementation;
-	return strided_layout(impl.matrix_transpose(axis1, axis2));
+	return strided_layout(get_implementation().matrix_transpose(axis1, axis2));
 }
 
 XMIPP4_NODISCARD
@@ -176,15 +124,7 @@ strided_layout::matrix_diagonal(
 	std::ptrdiff_t axis2
 ) const
 {
-	if (!m_implementation)
-	{
-		throw std::out_of_range(
-			"Cannot call matrix_diagonal on an empty layout"
-		);
-	}
-
-	const auto &impl = *m_implementation;
-	return strided_layout(impl.matrix_diagonal(axis1, axis2));
+	return strided_layout(get_implementation().matrix_diagonal(axis1, axis2));
 }
 
 XMIPP4_NODISCARD
@@ -205,34 +145,19 @@ XMIPP4_NODISCARD
 strided_layout 
 strided_layout::broadcast_to(span<const std::size_t> extents) const
 {
-	if (m_implementation)
+	if (extents_equal(extents))
 	{
-		const auto &impl = *m_implementation;
-		if (impl.extents_equal(extents))
-		{
-			return *this; // Re-use
-		}
-		else
-		{
-			return strided_layout(impl.broadcast_to(extents));
-		}
+		return *this; // Re-use
 	}
-	else if(extents.empty())
-	{
-		return strided_layout();
-	}
-	else
-	{
-		return strided_layout(
-			strided_layout_implementation().broadcast_to(extents)
-		);
-	}
+
+	return strided_layout(get_implementation().broadcast_to(extents));
 }
 
-const strided_layout_implementation* 
+const strided_layout_implementation&
 strided_layout::get_implementation() const noexcept
 {
-	return m_implementation.get();
+	static const strided_layout_implementation empty_implementation;
+	return m_implementation ? *m_implementation : empty_implementation;
 }
 
 XMIPP4_NODISCARD
@@ -296,6 +221,16 @@ strided_layout strided_layout::make_custom_layout(
 	return strided_layout(
 		strided_layout_implementation(axes, offset)
 	);
+}
+
+bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept
+{
+	return lhs.get_implementation() == rhs.get_implementation();
+}
+
+bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept
+{
+	return !(lhs == rhs);
 }
 
 } // namespace multidimensional

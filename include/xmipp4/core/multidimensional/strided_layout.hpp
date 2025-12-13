@@ -31,17 +31,13 @@ public:
 	XMIPP4_CORE_API
 	strided_layout& operator=(strided_layout &&other) noexcept;
 
-	XMIPP4_CORE_API
-	bool operator==(const strided_layout &other) const noexcept;
-	XMIPP4_CORE_API
-	bool operator!=(const strided_layout &other) const noexcept;
 
 	/**
 	 * @brief Get the number of axis in the layout
 	 * 
 	 * @return std::size_t 
 	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	std::size_t get_rank() const noexcept;
 
 	/**
@@ -61,11 +57,11 @@ public:
 	void get_strides(std::vector<std::ptrdiff_t> &strides) const;
 
 	/**
-	 * @brief Get the offset of the layout.
+	 * @brief Get the offset of the data.
 	 * 
-	 * @return std::size_t The offset.
+	 * @return std::size_t The offset in elements.
 	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	std::ptrdiff_t get_offset() const noexcept;
 
 	/**
@@ -73,16 +69,26 @@ public:
 	 * 
 	 * @return std::size_t Minimum storage size in elements.
 	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	std::size_t compute_storage_requirement() const noexcept;
 
 	/**
-	 * @brief Computes the number of elements referenced by te layout.
+	 * @brief Computes the number of elements referenced by the layout.
 	 * 
 	 * @return std::size_t Number of elements.
 	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	std::size_t compute_element_count() const noexcept;
+
+	/**
+	 * @brief Check if this layout has a specific shape.
+	 * 
+	 * @param extents The extents to be compared.
+	 * @return true If the provided extents match layout's extents.
+	 * @return false If the provided extents do not match layout's extents.
+	 */
+	XMIPP4_CORE_API
+	bool extents_equal(span<const std::size_t> extents) const noexcept;
 
 	/**
 	 * @brief Apply a set of dynamic subscripts to this layout.
@@ -173,12 +179,13 @@ public:
 	/**
 	 * @brief Get the implementation of this layout.
 	 * 
-	 * @return const strided_layout_implementation* The implementation pointer.
+	 * @return const strided_layout_implementation& The implementation 
+	 * reference.
 	 *
 	 * @note The implementation class is not part of the public API. This method
 	 * is provided for internal use and testing purposes.
 	 */
-	const strided_layout_implementation* get_implementation() const noexcept;
+	const strided_layout_implementation& get_implementation() const noexcept;
 
 	/**
 	 * @brief Create a contiguous layout from the provided extents.
@@ -186,11 +193,11 @@ public:
 	 * @param extents Extents of the layout.
 	 * @return strided_layout The resulting layout.
 	 */
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	static
 	strided_layout make_contiguous_layout(span<const std::size_t> extents);
 
-	XMIPP4_NODISCARD XMIPP4_CORE_API
+	XMIPP4_CORE_API
 	static
 	strided_layout make_custom_layout(
 		span<const std::size_t> extents, 
@@ -209,6 +216,12 @@ private:
 	explicit 
 	strided_layout(strided_layout_implementation &&impl);
 };
+
+XMIPP4_CORE_API
+bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept;
+
+XMIPP4_CORE_API
+bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4

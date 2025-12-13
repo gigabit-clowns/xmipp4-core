@@ -178,6 +178,64 @@ TEST_CASE("compute_storage_requirement in strided_layout should return 0 if ther
 	REQUIRE( layout.compute_storage_requirement() == 0 );
 }
 
+TEST_CASE("compute_element_count in strided_layout should return the hyper volume of the layout", "[strided_layout]")
+{
+	std::array<std::size_t, 6> extents = 
+	{
+		120, 
+		56, 
+		40, 
+		1, 
+		10, 
+		8
+	};
+	const auto layout = strided_layout::make_contiguous_layout(
+		xmipp4::make_span(extents)
+	);
+
+	REQUIRE( layout.compute_element_count() == 120*56*40*1*10*8 );
+}
+
+TEST_CASE("Calling extents_equal on a default constructed strided_layout should only return true if the provided extents are empty", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents = {20, 4};
+
+	strided_layout layout;
+
+	CHECK( layout.extents_equal({}) == true );
+	CHECK( layout.extents_equal(xmipp4::make_span(extents)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return false if different rank", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents1 = {20, 4};
+	const std::array<std::size_t, 1> extents2 = {4};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return false if the extent of an axis mismatches", "[strided_layout]")
+{
+	const std::array<std::size_t, 2> extents1 = {20, 4};
+	const std::array<std::size_t, 2> extents2 = {20, 1};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == false );
+}
+
+TEST_CASE("Calling extents_equal on a strided_layout should return true if extents match", "[strided_layout]")
+{
+	const std::array<std::size_t, 4> extents1 = {20, 4, 60, 2};
+	const std::array<std::size_t, 4> extents2 = {20, 4, 60, 2};
+
+	const auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents1));
+
+	CHECK( layout.extents_equal(xmipp4::make_span(extents2)) == true );
+}
+
 TEST_CASE( "apply_subscripts in strided_layout should implicitly fill the reminding axes", "[strided_layout]" )
 {
 	const auto layout = make_test_layout();
@@ -640,12 +698,12 @@ TEST_CASE("matrix_transpose in default constructed strided_layout should always 
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_transpose(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Index 0 is out of bounds for extent 0")
 	);
 	REQUIRE_THROWS_MATCHES(
-		layout.matrix_transpose(0, 1),
+		layout.matrix_transpose(1, 1),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot swap axes on an empty layout")
+		Catch::Matchers::Message("Index 1 is out of bounds for extent 0")
 	);
 }
 
@@ -704,12 +762,12 @@ TEST_CASE("matrix_diagonal in default constructed strided_layout should always f
 	REQUIRE_THROWS_MATCHES(
 		layout.matrix_diagonal(0, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Index 0 is out of bounds for extent 0")
 	);
 	REQUIRE_THROWS_MATCHES(
-		layout.matrix_diagonal(0, 1),
+		layout.matrix_diagonal(1, 0),
 		std::out_of_range,
-		Catch::Matchers::Message("Cannot call matrix_diagonal on an empty layout")
+		Catch::Matchers::Message("Index 1 is out of bounds for extent 0")
 	);
 }
 
@@ -791,6 +849,52 @@ TEST_CASE("broadcast_to in strided_layout should fill in the left and promote ax
 	REQUIRE( obtained_strides == expected_strides );
 
 	REQUIRE( broadcasted.get_offset() == 20 );
+}
+
+TEST_CASE("broadcast_to in strided_layout should alias when extents are unchanged", "[strided_layout]")
+{
+	const auto layout = make_test_layout();
+	const std::vector<std::size_t> target_extents = 
+	{
+		120, 
+		56, 
+		24, 
+		1, 
+		10, 
+		8
+	};
+
+	const auto broadcasted = layout.broadcast_to(xmipp4::make_span(target_extents));
+
+
+	CHECK( &broadcasted.get_implementation() == &layout.get_implementation() );
+}
+
+TEST_CASE("broadcast_to in a default constructed strided_layout should succeed", "[strided_layout]")
+{
+	strided_layout layout;
+	const std::vector<std::size_t> target_extents = 
+	{
+		120, 
+		56, 
+		24, 
+		1, 
+		10, 
+		8
+	};
+
+	const auto broadcasted = layout.broadcast_to(xmipp4::make_span(target_extents));
+
+	std::vector<std::size_t> obtained_extents;
+	broadcasted.get_extents(obtained_extents);
+	CHECK( obtained_extents == target_extents );
+
+	std::vector<std::ptrdiff_t> obtained_strides;
+	broadcasted.get_strides(obtained_strides);
+	const std::vector<std::ptrdiff_t> expected_strides(target_extents.size(), 0);
+	CHECK( obtained_strides == expected_strides );
+
+	CHECK( broadcasted.get_offset() == 0 );
 }
 
 TEST_CASE("broadcast_to in strided_layout should throw when the provided extents have less axes than the layout", "[strided_layout]")

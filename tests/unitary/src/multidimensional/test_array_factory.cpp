@@ -27,10 +27,7 @@ using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
 
-hardware::device_context make_test_device_context(
-	std::shared_ptr<hardware::memory_allocator> device_optimal_allocator,
-	std::shared_ptr<hardware::memory_allocator> host_accessible_allocator
-)
+hardware::device_context make_test_device_context()
 {
 	const hardware::device_index index("mock", 1234);
 
@@ -38,6 +35,10 @@ hardware::device_context make_test_device_context(
 	auto device = std::make_shared<hardware::mock_device>();
 	hardware::mock_memory_resource device_local_memory_resource;
 	hardware::mock_memory_resource host_accessible_memory_resource;
+	const auto device_optimal_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	const auto host_accessible_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
 	auto allocator_backend = 
 		std::make_unique<hardware::mock_memory_allocator_backend>();
 
@@ -75,14 +76,7 @@ hardware::device_context make_test_device_context(
 
 TEST_CASE("Calling empty without an output array should allocate with the appropiate allocator.", "[array_factory]")
 {
-	const auto device_optimal_allocator = 
-		std::make_shared<hardware::mock_memory_allocator>();
-	const auto host_accessible_allocator = 
-		std::make_shared<hardware::mock_memory_allocator>();
-	const auto context = make_test_device_context(
-		device_optimal_allocator, 
-		host_accessible_allocator
-	);
+	const auto context = make_test_device_context();
 
 	const std::array<std::size_t, 3> extents = {10, 256, 129};
 	const std::array<std::ptrdiff_t, 3> strides = {198144, 774, 2};
@@ -103,39 +97,236 @@ TEST_CASE("Calling empty without an output array should allocate with the approp
 	);
 
 	const auto alloc_bytes = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+	const auto buffer = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	array result;
-	SECTION ("device optimal placement")
-	{
-		REQUIRE_CALL(*device_optimal_allocator, get_max_alignment())
-			.RETURN(256);
-		REQUIRE_CALL(*device_optimal_allocator, allocate(alloc_bytes, 256, nullptr))
-			.RETURN(buffer);
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
 
-		result = empty(
-			descriptor,
-			hardware::target_placement::device_optimal,
-			context,
-			nullptr
-		);
-	}
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
 
-	SECTION ("host accessible placement")
-	{
-		REQUIRE_CALL(*host_accessible_allocator, get_max_alignment())
-			.RETURN(256);
-		REQUIRE_CALL(*host_accessible_allocator, allocate(alloc_bytes, 256, nullptr))
-			.RETURN(buffer);
+	REQUIRE_CALL(allocator, get_max_alignment())
+		.RETURN(256);
+	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
+		.RETURN(buffer);
 
-		result = empty(
-			descriptor,
-			hardware::target_placement::host_accessible,
-			context,
-			nullptr
-		);
-	}
-	
+	const auto result = empty(descriptor, placement, context, nullptr);
+
 	CHECK( result.get_descriptor() == descriptor );
 	CHECK( result.get_storage() == buffer.get() );
+}
+
+TEST_CASE("Calling empty with an output array with the same descriptor should return an alias", "[array_factory]")
+{
+	const auto context = make_test_device_context();
+
+	const std::array<std::size_t, 3> extents = {80, 16, 256};
+
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32
+	);
+
+	const auto alloc_bytes = compute_storage_requirement(descriptor);
+	const auto storage = std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
+
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
+	REQUIRE_CALL(allocator, get_memory_resource())
+		.LR_RETURN(hardware::get_host_memory_resource());
+
+	array array1(storage, descriptor);
+	const auto array2 = empty(descriptor, placement, context, &array1);
+
+	CHECK( array1.get_descriptor() == descriptor );
+	CHECK( array2.get_descriptor() == descriptor );
+	CHECK( array1.get_storage() == storage.get() );
+	CHECK( array2.get_storage() == storage.get() );
+}
+
+TEST_CASE("Calling empty with an output array with a different descriptor should alias storage", "[array_factory]")
+{
+	const auto context = make_test_device_context();
+
+	const std::array<std::size_t, 3> extents1 = {80, 16, 256};
+	const array_descriptor descriptor1(
+		strided_layout::make_contiguous_layout(make_span(extents1)),
+		numerical_type::float32
+	);
+	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
+	const array_descriptor descriptor2(
+		strided_layout::make_contiguous_layout(make_span(extents2)),
+		numerical_type::float32
+	);
+
+	const auto alloc_bytes = compute_storage_requirement(descriptor1);
+	const auto storage = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
+	REQUIRE_CALL(allocator, get_memory_resource())
+		.LR_RETURN(hardware::get_host_memory_resource());
+
+	array array1(storage, descriptor1);
+	const auto array2 = empty(descriptor2, placement, context, &array1);
+
+	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array2.get_descriptor() == descriptor2 );
+	CHECK( array1.get_storage() == storage.get() );
+	CHECK( array2.get_storage() == storage.get() );
+}
+
+TEST_CASE("Calling empty with an output array with no storage should allocate it", "[array_factory]")
+{
+	const auto context = make_test_device_context();
+
+	const std::array<std::size_t, 3> extents1 = {80, 16, 256};
+	const array_descriptor descriptor1(
+		strided_layout::make_contiguous_layout(make_span(extents1)),
+		numerical_type::float32
+	);
+	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
+	const array_descriptor descriptor2(
+		strided_layout::make_contiguous_layout(make_span(extents2)),
+		numerical_type::float32
+	);
+
+	const auto alloc_bytes = compute_storage_requirement(descriptor2);
+	const auto buffer = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
+
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
+
+	REQUIRE_CALL(allocator, get_max_alignment())
+		.RETURN(256);
+	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
+		.RETURN(buffer);
+
+	array array1(nullptr, descriptor1);
+	const auto array2 = empty(descriptor2, placement, context, &array1);
+
+	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array2.get_descriptor() == descriptor2 );
+	CHECK( array1.get_storage() == nullptr );
+	CHECK( array2.get_storage() == buffer.get() );
+}
+
+TEST_CASE("Calling empty with a output array with insufficient storage should allocate it", "[array_factory]")
+{
+	const auto context = make_test_device_context();
+
+	const std::array<std::size_t, 3> extents1 = {8, 16, 256};
+	const array_descriptor descriptor1(
+		strided_layout::make_contiguous_layout(make_span(extents1)),
+		numerical_type::float32
+	);
+	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
+	const array_descriptor descriptor2(
+		strided_layout::make_contiguous_layout(make_span(extents2)),
+		numerical_type::float32
+	);
+
+	const auto alloc_bytes = compute_storage_requirement(descriptor2);
+	const auto buffer1 = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes-1, 256);
+	const auto buffer2 = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
+
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
+
+	REQUIRE_CALL(allocator, get_max_alignment())
+		.RETURN(256);
+	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
+		.RETURN(buffer2);
+
+	array array1(buffer1, descriptor1);
+	const auto array2 = empty(descriptor2, placement, context, &array1);
+
+	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array2.get_descriptor() == descriptor2 );
+	CHECK( array1.get_storage() == buffer1.get() );
+	CHECK( array2.get_storage() == buffer2.get() );
+}
+
+TEST_CASE("Calling empty with an output array with a storage in a different memory resource should allocate", "[array_factory]")
+{
+	const auto context = make_test_device_context();
+
+	const std::array<std::size_t, 3> extents1 = {80, 16, 256};
+	const array_descriptor descriptor1(
+		strided_layout::make_contiguous_layout(make_span(extents1)),
+		numerical_type::float32
+	);
+	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
+	const array_descriptor descriptor2(
+		strided_layout::make_contiguous_layout(make_span(extents2)),
+		numerical_type::float32
+	);
+
+	const auto alloc_bytes = compute_storage_requirement(descriptor1);
+
+	hardware::mock_memory_resource resource1;
+	hardware::mock_memory_resource resource2;
+	const auto buffer1 = std::make_shared<hardware::buffer>(
+		nullptr, 
+		alloc_bytes, 
+		resource1, 
+		nullptr
+	);
+	const auto buffer2 = 
+		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
+
+	const auto placement = GENERATE(
+		hardware::target_placement::device_optimal,
+		hardware::target_placement::host_accessible
+	);
+
+	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
+		context.get_memory_allocator(placement)
+	);
+
+	REQUIRE_CALL(allocator, get_memory_resource())
+		.LR_RETURN(resource2);
+	REQUIRE_CALL(allocator, get_max_alignment())
+		.RETURN(256);
+	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
+		.RETURN(buffer2);
+
+	array array1(buffer1, descriptor1);
+	const auto array2 = empty(descriptor2, placement, context, &array1);
+
+	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array2.get_descriptor() == descriptor2 );
+	CHECK( array1.get_storage() == buffer1.get() );
+	CHECK( array2.get_storage() == buffer2.get() );
 }

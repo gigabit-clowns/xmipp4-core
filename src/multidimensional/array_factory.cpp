@@ -27,10 +27,10 @@ std::size_t get_alignment_requirement(
 }
 
 static
-array* validate_output_array(
+std::shared_ptr<hardware::buffer> reuse_array_storage(
 	array *out, 
 	std::size_t storage_requirement,
-	hardware::memory_allocator &allocator
+	const hardware::memory_allocator &allocator
 )
 {
 	if (!out)
@@ -38,7 +38,7 @@ array* validate_output_array(
 		return nullptr;
 	}
 
-	const auto* storage = out->get_storage();
+	const auto storage = out->share_storage();
 	if (!storage)
 	{
 		XMIPP4_LOG_WARN(
@@ -66,7 +66,7 @@ array* validate_output_array(
 		return nullptr;
 	}
 
-    return out;
+    return storage;
 }
 
 XMIPP4_NODISCARD 
@@ -79,37 +79,24 @@ array empty(
 {
 	auto &allocator = context.get_memory_allocator(placement);
     const auto storage_requirement = compute_storage_requirement(descriptor);
-    out = validate_output_array(out, storage_requirement, allocator);
 
-	if (out)
+	auto storage = reuse_array_storage(out, storage_requirement, allocator);
+	if (storage && out->get_descriptor() == descriptor)
 	{
-		if (out->get_descriptor() != descriptor)
-		{
-			XMIPP4_LOG_DEBUG(
-				"The provided output array's descriptor does not match the "
-				"requested descriptor and it will be overriden."
-			);
-
-			*out = array(
-				out->share_storage(),
-				std::move(descriptor)
-			);
-		}
-
-		return out->share();
+		return out->share(); // Trivial
 	}
 
-	const auto alignment = get_alignment_requirement(
-		allocator, 
-		storage_requirement
-	);
-	auto *queue = context.get_active_queue().get();
-	auto storage = allocator.allocate(storage_requirement, alignment, queue);
+	if (!storage)
+	{
+		const auto alignment = get_alignment_requirement(
+			allocator, 
+			storage_requirement
+		);
+		auto *queue = context.get_active_queue().get();
+		storage = allocator.allocate(storage_requirement, alignment, queue);
+	}
 
-    return array(
-		std::move(storage),
-        std::move(descriptor)
-    );
+	return array(std::move(storage), std::move(descriptor));
 }
 
 } // namespace multidimensional

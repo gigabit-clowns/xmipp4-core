@@ -42,8 +42,6 @@ runs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        mkdir "$GITHUB_WORKSPACE/test\ folder"
-        ls $GITHUB_WORKSPACE
         target="$GITHUB_WORKSPACE/msvc-memcheck.cmake"
         url="https://raw.githubusercontent.com/gigabit-clowns/.github/ms_memcheck_windows/.github/scripts/cmake/msvc-memcheck.cmake" # TODO update branch name
 

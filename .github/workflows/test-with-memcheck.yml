@@ -51,8 +51,6 @@ jobs:
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
-        env:
-            TOOLCHAIN_FILE: ${{ steps.install-memtool.outputs.toolchain-file-msvc }}
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"
@@ -62,7 +60,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
-            ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_TOOLCHAIN_FILE=$ENV{TOOLCHAIN_FILE}' || '' }}
+            ${{ matrix.compiler.cxx == 'cl' && format('CMAKE_TOOLCHAIN_FILE=%s', steps.install-memtool.outputs.toolchain-file-msvc) || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

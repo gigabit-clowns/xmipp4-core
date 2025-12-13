@@ -43,7 +43,10 @@ hardware::device_context make_test_device_context()
 		std::make_unique<hardware::mock_memory_allocator_backend>();
 
 	REQUIRE_CALL(*device_backend, get_name())
-		.RETURN("mock");
+		.RETURN(index.get_backend_name());
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(hardware::device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(64))
+		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	

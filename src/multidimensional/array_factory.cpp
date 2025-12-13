@@ -17,12 +17,13 @@ namespace multidimensional
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
+    const hardware::device_context &context,
     std::size_t size
 )
 {
     size = binary::bit_ceil(size);
-    const std::size_t max_alignment = allocator.get_max_alignment();
-    const std::size_t preferred_alignment = 256; // TODO: query device for preferred alignment
+    const auto max_alignment = allocator.get_max_alignment();
+    const auto preferred_alignment = context.get_optimal_data_alignment();
     return std::min(std::min(max_alignment, preferred_alignment), size);
 }
 
@@ -90,6 +91,7 @@ array empty(
 	{
 		const auto alignment = get_alignment_requirement(
 			allocator, 
+			context,
 			storage_requirement
 		);
 		auto *queue = context.get_active_queue().get();

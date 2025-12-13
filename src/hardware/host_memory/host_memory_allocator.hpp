@@ -26,11 +26,14 @@ public:
 
 	memory_resource& get_memory_resource() const noexcept override;
 
+	std::size_t get_max_alignment() const noexcept override;
+
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
 		device_queue *queue
 	) override;
+
 };
 
 } // namespace hardware

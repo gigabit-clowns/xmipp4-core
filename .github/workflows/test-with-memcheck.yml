@@ -46,6 +46,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install memcheck tool
+        id: install-memtool
         uses: ./.github/composites/memcheck/install-memtool
 
       - name: Configure and build with CMake

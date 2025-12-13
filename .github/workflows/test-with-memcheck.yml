@@ -29,7 +29,7 @@ jobs:
         include:
         #- os: macos-latest
         #  compiler: {c: clang, cxx: clang++}
-        - os: windows-latest
+        - os: windows-2022
           compiler: {c: cl, cxx: cl}
 
     env:
@@ -63,16 +63,6 @@ jobs:
             CMAKE_TOOLCHAIN_FILE=.github/scripts/cmake/msvc-memcheck.cmake
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
-
-      - name: Test
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $dr = 'C:\Program Files (x86)\Dr. Memory\bin64\drmemory.exe'
-          New-Item -ItemType Directory -Force -Path C:\temp\drlogs | Out-Null
-          & $dr -debug -dr_debug -logdir C:\temp\drlogs -- "${env:ProgramFiles}\CMake\bin\ctest.exe" -C $env:BUILD_TYPE --version 2>&1 | Tee-Object dr_debug_out.txt
-          Get-Content dr_debug_out.txt | Select-Object -First 200 | ForEach-Object { Write-Host $_ }
-          Get-ChildItem C:\temp\drlogs -Recurse | ForEach-Object { Write-Host "Log:" $_.FullName; Get-Content $_.FullName | Select-Object -First 200 | ForEach-Object { Write-Host $_ } }
 
       - name: Run tests with memory check
         uses: ./.github/composites/run-ctest

@@ -92,11 +92,26 @@ public:
 	 */
 	std::size_t get_total_memory_bytes() const noexcept;
 
+	/**
+	 * @brief Set the optimal data alignment.
+	 * 
+	 * @param bytes The optimal data alignment in bytes.
+	 */
+	void set_optimal_data_alignment(std::size_t alignment) noexcept;
+
+	/**
+	 * @brief Get the optimal data alignment.
+	 * 
+	 * @return std::size_t The optimal data alignment in bytes.
+	 */
+	std::size_t get_optimal_data_alignment() const noexcept;
+
 private:
 	device_type m_type;
 	std::string m_name;
 	std::string m_physical_location;
 	std::size_t m_total_memory_bytes;
+	std::size_t m_optimal_data_alignment;
 };
 
 } // namespace hardware

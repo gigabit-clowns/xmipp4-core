@@ -15,9 +15,11 @@ TEST_CASE( "setting and getting attributes in device_properties should preserve 
 	prop.set_type(device_type::gpu);
 	prop.set_physical_location("My computer");
 	prop.set_total_memory_bytes(0xDEADBEEF);
+	prop.set_optimal_data_alignment(2048);
 
-	REQUIRE( prop.get_name() == "XMIPP A1234 SuperFast" );
-	REQUIRE( prop.get_type() == device_type::gpu );
-	REQUIRE( prop.get_physical_location() == "My computer" );
-	REQUIRE( prop.get_total_memory_bytes() == 0xDEADBEEF );
+	CHECK( prop.get_name() == "XMIPP A1234 SuperFast" );
+	CHECK( prop.get_type() == device_type::gpu );
+	CHECK( prop.get_physical_location() == "My computer" );
+	CHECK( prop.get_total_memory_bytes() == 0xDEADBEEF );
+	CHECK( prop.set_optimal_data_alignment() == 2048 );
 }

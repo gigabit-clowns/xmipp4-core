@@ -13,10 +13,11 @@ namespace hardware
 
 inline 
 device_properties::device_properties()
-	: m_type(device_type::unknown),
-	m_name(),
-	m_physical_location(),
-	m_total_memory_bytes(0)
+	: m_type(device_type::unknown)
+	, m_name()
+	, m_physical_location()
+	, m_total_memory_bytes(0)
+	, m_optimal_data_alignment(1)
 {
 }
 
@@ -68,6 +69,20 @@ inline
 std::size_t device_properties::get_total_memory_bytes() const noexcept
 {
 	return m_total_memory_bytes;
+}
+
+inline
+void device_properties::set_optimal_data_alignment(
+	std::size_t alignment
+) noexcept
+{
+	m_optimal_data_alignment = alignment;
+}
+
+inline
+std::size_t device_properties::get_optimal_data_alignment() const noexcept
+{
+	return m_optimal_data_alignment;
 }
 
 } // namespace hardware

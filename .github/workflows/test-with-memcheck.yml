@@ -50,6 +50,8 @@ jobs:
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
+        env:
+            TOOLCHAIN_FILE: ${{ steps.install-memtool.outputs.toolchain-file-msvc }}
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"

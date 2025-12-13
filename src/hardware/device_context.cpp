@@ -23,6 +23,15 @@ public:
 	)
 	{
 		const auto &dev_manager = catalog.get_service_manager<device_manager>();
+
+		device_properties properties;
+		if(!dev_manager.get_device_properties(index, properties))
+		{
+			throw std::invalid_argument(
+				"Requested device index does not exist"
+			);
+		}
+
 		m_device = dev_manager.create_device(index);
 
 		XMIPP4_ASSERT( m_device );
@@ -50,6 +59,8 @@ public:
 					host_accessible_memory_resource
 				);
 		}
+
+		m_optimal_data_alignment = properties.get_optimal_data_alignment();
 	}
 
 	device& get_device() const noexcept
@@ -83,6 +94,11 @@ public:
 		return *m_host_accessible_memory_allocator;
 	}
 
+	std::size_t get_optimal_data_alignment() const noexcept
+	{
+		return m_optimal_data_alignment;
+	}
+
 	std::shared_ptr<device_queue> 
 	set_active_queue(std::shared_ptr<device_queue> queue) noexcept
 	{
@@ -100,6 +116,7 @@ private:
 	std::shared_ptr<device_queue> m_active_queue;
 	std::shared_ptr<memory_allocator> m_device_optimal_memory_allocator;
 	std::shared_ptr<memory_allocator> m_host_accessible_memory_allocator;
+	std::size_t m_optimal_data_alignment;
 };
 
 
@@ -130,6 +147,11 @@ memory_allocator&
 device_context::get_memory_allocator(target_placement placement) const
 {
 	return get_implementation().get_memory_allocator(placement);
+}
+
+std::size_t device_context::get_optimal_data_alignment() const
+{
+	return get_implementation().get_optimal_data_alignment();
 }
 
 std::shared_ptr<device_queue> 

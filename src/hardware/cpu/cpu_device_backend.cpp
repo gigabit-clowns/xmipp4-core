@@ -40,6 +40,7 @@ bool cpu_device_backend::get_device_properties(
 		desc.set_type(device_type::cpu);
 		desc.set_physical_location("");
 		desc.set_total_memory_bytes(system::get_total_system_memory());
+		desc.set_optimal_data_alignment(64); //AVX-512
 		result = true;
 	}
 

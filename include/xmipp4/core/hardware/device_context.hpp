@@ -85,6 +85,13 @@ public:
 	 */
 	XMIPP4_CORE_API
 	memory_allocator& get_memory_allocator(target_placement placement) const;
+	/**
+	 * @brief Get the optimal data alignment for the device.
+	 * 
+	 * @return std::size_t The optimal data alignment in bytes.
+	 */
+	XMIPP4_CORE_API
+	std::size_t get_optimal_data_alignment() const;
 
 	/**
 	 * @brief Set the active queue.

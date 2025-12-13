@@ -55,7 +55,6 @@ runs:
           --excluded_sources="*tests*"
           --excluded_sources="*_deps*"
           --excluded_sources="*Program Files*"
-          --excluded_sources="*Microsoft Visual Studio*"
           --excluded_sources="*_work*"
           --export_type="cobertura:${{ inputs.report-path }}"
           --cover_children --

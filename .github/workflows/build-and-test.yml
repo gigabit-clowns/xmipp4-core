@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SonarQube Scan
-        uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
+        uses: ./.github/composites/sonar-scan
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-artifact-name: "build-artifact"

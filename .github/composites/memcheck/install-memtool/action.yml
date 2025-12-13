@@ -13,7 +13,7 @@ outputs:
   drmemory-pwsh:
     description: "Full path to Dr. Memory (in Powershell format)."
     value: ${{ steps.export-drmemory-pwsh.outputs.drmemory }}
-  toolchain-file-mvsc:
+  toolchain-file-msvc:
     description: "Full path to the toolchain file needed to compile the project with."
     value: ${{ steps.export-toolchain-file.outputs.toolchain-file }}
 

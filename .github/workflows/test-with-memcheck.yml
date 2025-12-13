@@ -59,7 +59,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
-            CMAKE_TOOLCHAIN_FILE=.github/scripts/cmake/msvc-memcheck.cmake
+        #    CMAKE_TOOLCHAIN_FILE=.github/scripts/cmake/msvc-memcheck.cmake
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

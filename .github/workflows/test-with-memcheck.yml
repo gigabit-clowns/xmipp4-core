@@ -47,7 +47,7 @@ jobs:
 
       - name: Install memcheck tool
         id: install-memtool
-        uses: ./.github/composites/memcheck/install-memtool
+        uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
@@ -66,7 +66,7 @@ jobs:
 
       - name: Run tests with memory check
         id: run-ctest
-        uses: ./.github/composites/run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
         with:
           check-memleaks: true
 

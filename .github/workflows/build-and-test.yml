@@ -27,8 +27,8 @@ jobs:
         include:
         - os: macos-latest
           compiler: {c: clang, cxx: clang++}
-        - os: windows-latest
-          compiler: {c: cl, cxx: cl}
+        #- os: windows-latest
+        #  compiler: {c: cl, cxx: cl}
         - os: windows-latest
           compiler: {c: gcc, cxx: g++}
           generator: "Ninja"

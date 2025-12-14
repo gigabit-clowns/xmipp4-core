@@ -85,7 +85,7 @@ jobs:
       - name: SonarQube scan for workflow_dispatch
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-            SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
         with:
           args: >
             -Dsonar.branch.name=${{ github.ref_name }}

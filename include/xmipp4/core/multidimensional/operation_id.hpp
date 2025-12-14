@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <string>
+#include <typeindex>
 #include <functional>
 #include <cstddef>
 
@@ -18,29 +18,22 @@ namespace multidimensional
 class operation_id
 {
 public:
-    explicit operation_id(const std::string &name);
-    explicit operation_id(std::string &&name);
+    explicit operation_id(std::type_index id) noexcept;
     operation_id(const operation_id &other) = default;
     operation_id(operation_id &&other) = default;
     ~operation_id() = default;
 
     operation_id& operator=(const operation_id &other) = default;
     operation_id& operator=(operation_id &&other) = default;
+	
+	bool operator==(const operation_id &other) const noexcept;
+	bool operator!=(const operation_id &other) const noexcept;
 
-	/**
-	 * @brief Get the name of the operation.
-	 * 
-	 * @return const std::string& The name.
-	 */
-    const std::string& get_name() const noexcept;
+	std::size_t hash() const noexcept;
 
 private:
-    std::string m_name;
-
+	std::type_index m_id;
 };
-
-bool operator==(const operation_id &lhs, const operation_id &rhs) noexcept;
-bool operator!=(const operation_id &lhs, const operation_id &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4
@@ -53,7 +46,6 @@ struct hash<xmipp4::multidimensional::operation_id>
 {
     using key_type = xmipp4::multidimensional::operation_id;
     std::size_t operator()(const key_type &k) const noexcept;
-
 };
 
 } // namespace std

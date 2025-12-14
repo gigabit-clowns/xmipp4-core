@@ -82,18 +82,20 @@ jobs:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
           path: coverage.xml
 
-      - name: REMOVE
-        uses: actions/upload-artifact@v5
+      - name: SonarQube scan for workflow_dispatch
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+            SONAR_TOKEN: ${{ secrets.sonar-token }}
         with:
-          name: windows-build
-          path: build
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
 
-      - name: Upload build folder (ubuntu-latest + gcc only)
-        uses: actions/upload-artifact@v5
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler.c == 'gcc'
-        with:
-          name: build-artifact
-          path: build
+      #- name: Upload build folder (ubuntu-latest + gcc only)
+      #  uses: actions/upload-artifact@v5
+      #  if: matrix.os == 'ubuntu-latest' && matrix.compiler.c == 'gcc'
+      #  with:
+      #    name: build-artifact
+      #    path: build
 
 #  build_with_pip:
 #    name: pip
@@ -151,40 +153,15 @@ jobs:
 #      - name: Build with conda
 #        run: conda build conda
 
-  sonar-scan:
-    name: SonarQube scan
-    needs: build_and_test_with_cmake
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v6
-        with:
-          name: windows-build
-          path: ${{ github.workspace }}/build
-      
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v6
-        with:
-          pattern: coverage-report-windows-latest-cl-cl
-          path: ${{ github.workspace }}/build
-      
-      - name: SonarQube scan for workflow_dispatch
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-            SONAR_TOKEN: ${{ secrets.sonar-token }}
-        with:
-          args: >
-            -Dsonar.branch.name=${{ github.ref_name }}
-
-      #- name: SonarQube Scan
-      #  uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
-      #  with:
-      #    sonar-token: ${{ secrets.SONAR_TOKEN }}
-      #    build-artifact-name: "build-artifact"
-      #    coverage-pattern: "coverage-report-*"
-      #    coverage-path: ${{ github.workspace }}/build
+  #sonar-scan:
+  #  name: SonarQube scan
+  #  needs: build_and_test_with_cmake
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: SonarQube Scan
+  #      uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
+  #      with:
+  #        sonar-token: ${{ secrets.SONAR_TOKEN }}
+  #        build-artifact-name: "build-artifact"
+  #        coverage-pattern: "coverage-report-*"
+  #        coverage-path: ${{ github.workspace }}/build

@@ -71,7 +71,6 @@ public:
 		std::size_t alignment, 
 		device_queue *queue
 	) = 0;
-
 }; 
 
 } // namespace hardware

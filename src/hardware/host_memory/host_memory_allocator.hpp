@@ -33,7 +33,6 @@ public:
 		std::size_t alignment, 
 		device_queue *queue
 	) override;
-
 };
 
 } // namespace hardware

@@ -34,7 +34,7 @@ public:
 	kernel(const kernel &other) = delete;
 	kernel(kernel &&other) = delete;
 	XMIPP4_CORE_API
-    virtual ~kernel();
+	virtual ~kernel();
 
 	kernel& operator=(const kernel &other) = delete;
 	kernel& operator=(kernel &&other) = delete;
@@ -50,11 +50,11 @@ public:
 	 * belong to the device used in construction.
 	 * 
 	 */
-    virtual void execute(
-        span<const std::shared_ptr<hardware::buffer>> read_write_operands,
-        span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
+	virtual void execute(
+		span<const std::shared_ptr<hardware::buffer>> read_write_operands,
+		span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 		hardware::device_queue *queue
-    ) const = 0;
+	) const = 0;
 };
 
 } // namespace multidimensional

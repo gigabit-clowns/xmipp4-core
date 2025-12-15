@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "operation_id.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 #include "../numerical_type.hpp"
@@ -23,7 +24,6 @@ namespace multidimensional
 
 class kernel;
 class operation;
-class operation_id;
 class array_descriptor;
 
 /**
@@ -38,7 +38,7 @@ public:
 	kernel_builder(const kernel_builder &other) = default;
 	kernel_builder(kernel_builder &&other) = default;
 	XMIPP4_CORE_API
-    virtual ~kernel_builder();
+	virtual ~kernel_builder();
 
 	kernel_builder& operator=(const kernel_builder &other) = default;
 	kernel_builder& operator=(kernel_builder &&other) = default;
@@ -47,9 +47,9 @@ public:
 	 * @brief Get the operation identifier for which this builder is 
 	 * specialized.
 	 * 
-	 * @return const operation_id& The operation ID.
+	 * @return operation_id The operation ID.
 	 */
-	virtual const operation_id& get_operation_id() const noexcept = 0;
+	virtual operation_id get_operation_id() const noexcept = 0;
 
 	/**
 	 * @brief Get the suitability of this builder for a given launch 
@@ -81,8 +81,8 @@ public:
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
 	 */
-    virtual 
-    std::shared_ptr<kernel> build(
+	virtual 
+	std::shared_ptr<kernel> build(
 		const operation &operation,
 		span<const array_descriptor> descriptors,
 		hardware::device &device

@@ -51,7 +51,7 @@ public:
 	 * 
 	 * @return std::string The human readable representation.
 	 */
-	virtual std::string get_name() const noexcept = 0;
+	virtual std::string get_name() const = 0;
 
 	/**
 	 * @brief Serialize the parameters of the operation.

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "operation_id.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 #include "../numerical_type.hpp"
@@ -23,7 +24,6 @@ namespace multidimensional
 
 class kernel;
 class operation;
-class operation_id;
 class array_descriptor;
 
 /**
@@ -47,9 +47,9 @@ public:
 	 * @brief Get the operation identifier for which this builder is 
 	 * specialized.
 	 * 
-	 * @return const operation_id& The operation ID.
+	 * @return operation_id The operation ID.
 	 */
-	virtual const operation_id& get_operation_id() const noexcept = 0;
+	virtual operation_id get_operation_id() const noexcept = 0;
 
 	/**
 	 * @brief Get the suitability of this builder for a given launch 

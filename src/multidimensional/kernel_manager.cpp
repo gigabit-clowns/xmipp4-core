@@ -66,7 +66,7 @@ public:
 		const operation &operation,
 		span<const array_descriptor> descriptors,
 		hardware::device &device
-	)
+	) const
 	{
 		const auto *builder = get_most_suitable_builder(
 			operation, 
@@ -108,8 +108,7 @@ bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)
 		return false;
 	}
 
-	create_if_null();
-	return m_implementation->register_kernel(std::move(builder));
+	return create_if_null().register_kernel(std::move(builder));
 }
 
 std::shared_ptr<kernel> kernel_manager::build_kernel(
@@ -118,20 +117,24 @@ std::shared_ptr<kernel> kernel_manager::build_kernel(
 	hardware::device &device
 ) const
 {
-	if (!m_implementation)
-	{
-		return implementation().build_kernel(operation, descriptors, device);
-	}
-
-	return m_implementation->build_kernel(operation, descriptors, device);
+	return get_implementation().build_kernel(operation, descriptors, device);
 }
 
-void kernel_manager::create_if_null()
+kernel_manager::implementation& kernel_manager::create_if_null()
 {
 	if (!m_implementation)
 	{
 		m_implementation = std::make_unique<implementation>();
 	}
+
+	return *m_implementation;
+}
+
+const kernel_manager::implementation& 
+kernel_manager::get_implementation() const noexcept
+{
+	static const implementation empty_implementation;
+	return m_implementation ? *m_implementation : empty_implementation;
 }
 
 } // namespace multidimensional

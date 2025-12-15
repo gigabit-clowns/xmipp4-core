@@ -80,7 +80,8 @@ private:
 	class implementation;
 	std::unique_ptr<implementation> m_implementation;
 
-	void create_if_null();
+	implementation& create_if_null();
+	const implementation& get_implementation() const noexcept;
 };
 
 } // namespace multidimensional

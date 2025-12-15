@@ -129,7 +129,9 @@ static void record_queues(
 {		
 	for (const auto &operand : operands)
 	{
-		operand.record_queue(queue);
+		const auto *storage = operand.get_storage();
+		XMIPP4_ASSERT( storage );
+		storage->record_queue(queue);
 	}
 }
 
@@ -159,14 +161,8 @@ static std::shared_ptr<kernel> prepare_kernel(
 	);
 	populate_descriptors(input_operands, input_descriptors);
 
-	operation.validate_input(input_descriptors);
-	operation.deduce_operands(output_descriptors, input_descriptors);
-
-	allocate_output(
-		output_operands, 
-		output_descriptors, 
-		device_context
-	);
+	operation.sanitize_operands(output_descriptors, input_descriptors);
+	allocate_output(output_operands, output_descriptors, device_context);
 
 	return nullptr; // TODO
 	//return manager.build_kernel(

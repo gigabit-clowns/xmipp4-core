@@ -33,7 +33,7 @@ public:
 		hardware::device &device
 	) const
 	{
-		const auto &op_id = operation.get_operation_id();
+		const auto op_id = operation.get_id();
 		const auto ite1 = m_builders.find(op_id);
 		if (ite1 == m_builders.end())
 		{

@@ -25,9 +25,18 @@ bool operation_id::operator!=(const operation_id &other) const noexcept
 	return !(operator==(other));
 }
 
+inline
 std::size_t operation_id::hash() const noexcept
 {
 	return std::hash<std::type_index>()(m_id);
+}
+
+template<typename T>
+inline
+operation_id operation_id::of() noexcept
+{
+	using operation_type = typename std::decay<T>::type;
+	return operation_id(typeid(operation_type));
 }
 
 } // namespace multidimensional

@@ -12,7 +12,7 @@ namespace multidimensional
 {
 
 /**
- * @brief Unique identification for an operation.
+ * @brief Unique identification for an operation type.
  * 
  */
 class operation_id
@@ -29,7 +29,15 @@ public:
 	bool operator==(const operation_id &other) const noexcept;
 	bool operator!=(const operation_id &other) const noexcept;
 
+	/**
+	 * @brief Compute the hash for this operation identifier.
+	 * 
+	 * @return std::size_t The hash.
+	 */
 	std::size_t hash() const noexcept;
+
+	template<typename T>
+	static operation_id of() noexcept;
 
 private:
 	std::type_index m_id;

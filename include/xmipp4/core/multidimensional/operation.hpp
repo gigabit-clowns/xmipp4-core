@@ -69,8 +69,18 @@ public:
 	/**
 	 * @brief Process and validate the input output operands
 	 * 
-	 * @param output_descriptors The output descriptors to be inferred.
-	 * @param input_descriptors The input operands that may be broadcasted.
+	 * This method validate and adapt operands to perform the represented 
+	 * operations. Depending on the operation type and descriptors, calling
+	 * this function may:
+	 * 
+	 * - Validate invariance in the input (e.g. inner matrix dimensions in a
+	 * matrix multiplication).
+	 * - Deduce and populate output operand's descriptors when default 
+	 * constructed ones are provided.
+	 * - Perform broadcasting in input operands.
+	 * 
+	 * @param output_descriptors The output descriptors.
+	 * @param input_descriptors The input operands.
 	 */
 	virtual void sanitize_operands(
 		span<array_descriptor> output_descriptors,

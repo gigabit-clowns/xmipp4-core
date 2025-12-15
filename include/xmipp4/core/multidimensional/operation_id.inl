@@ -9,7 +9,7 @@ namespace multidimensional
 
 inline
 operation_id::operation_id(std::type_index id) noexcept
-    : m_id(id)
+	: m_id(id)
 {
 }
 
@@ -50,7 +50,7 @@ std::size_t
 hash<xmipp4::multidimensional::operation_id>::operator()
 (const xmipp4::multidimensional::operation_id &key) const noexcept
 {
-    return key.hash();
+	return key.hash();
 }
 
 } // namespace std

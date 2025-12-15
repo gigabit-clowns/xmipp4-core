@@ -21,7 +21,6 @@ class array_descriptor;
  * 
  * Subclasses of it may implement the specific behavior for each of the
  * operations.
- * 
  */
 class operation
 {

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <string>
+#include <typeindex>
 #include <functional>
 #include <cstddef>
 
@@ -12,35 +12,35 @@ namespace multidimensional
 {
 
 /**
- * @brief Unique identification for an operation.
- * 
+ * @brief Unique identification for an operation type.
  */
 class operation_id
 {
 public:
-    explicit operation_id(const std::string &name);
-    explicit operation_id(std::string &&name);
-    operation_id(const operation_id &other) = default;
-    operation_id(operation_id &&other) = default;
-    ~operation_id() = default;
+	explicit operation_id(std::type_index id) noexcept;
+	operation_id(const operation_id &other) = default;
+	operation_id(operation_id &&other) = default;
+	~operation_id() = default;
 
-    operation_id& operator=(const operation_id &other) = default;
-    operation_id& operator=(operation_id &&other) = default;
+	operation_id& operator=(const operation_id &other) = default;
+	operation_id& operator=(operation_id &&other) = default;
+	
+	bool operator==(const operation_id &other) const noexcept;
+	bool operator!=(const operation_id &other) const noexcept;
 
 	/**
-	 * @brief Get the name of the operation.
+	 * @brief Compute the hash for this operation identifier.
 	 * 
-	 * @return const std::string& The name.
+	 * @return std::size_t The hash.
 	 */
-    const std::string& get_name() const noexcept;
+	std::size_t hash() const noexcept;
+
+	template<typename T>
+	static operation_id of() noexcept;
 
 private:
-    std::string m_name;
-
+	std::type_index m_id;
 };
-
-bool operator==(const operation_id &lhs, const operation_id &rhs) noexcept;
-bool operator!=(const operation_id &lhs, const operation_id &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4
@@ -51,9 +51,8 @@ namespace std
 template<>
 struct hash<xmipp4::multidimensional::operation_id>
 {
-    using key_type = xmipp4::multidimensional::operation_id;
-    std::size_t operator()(const key_type &k) const noexcept;
-
+	using key_type = xmipp4::multidimensional::operation_id;
+	std::size_t operator()(const key_type &k) const noexcept;
 };
 
 } // namespace std

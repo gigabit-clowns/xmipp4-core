@@ -8,35 +8,35 @@ namespace multidimensional
 {
 
 inline
-operation_id::operation_id(const std::string &name)
-    : m_name(name)
+operation_id::operation_id(std::type_index id) noexcept
+	: m_id(id)
 {
 }
 
 inline
-operation_id::operation_id(std::string &&name)
-    : m_name(std::move(name))
+bool operation_id::operator==(const operation_id &other) const noexcept
 {
+	return m_id == other.m_id;
 }
 
 inline
-const std::string & operation_id::get_name() const noexcept
+bool operation_id::operator!=(const operation_id &other) const noexcept
 {
-    return m_name;
-}
-
-
-
-inline
-bool operator==(const operation_id &lhs, const operation_id &rhs) noexcept
-{
-    return lhs.get_name() == rhs.get_name();
+	return !(operator==(other));
 }
 
 inline
-bool operator!=(const operation_id &lhs, const operation_id &rhs) noexcept
+std::size_t operation_id::hash() const noexcept
 {
-    return !(lhs == rhs);
+	return std::hash<std::type_index>()(m_id);
+}
+
+template<typename T>
+inline
+operation_id operation_id::of() noexcept
+{
+	using operation_type = typename std::decay<T>::type;
+	return operation_id(typeid(operation_type));
 }
 
 } // namespace multidimensional
@@ -50,7 +50,7 @@ std::size_t
 hash<xmipp4::multidimensional::operation_id>::operator()
 (const xmipp4::multidimensional::operation_id &key) const noexcept
 {
-    return hash<string>()(key.get_name());
+	return key.hash();
 }
 
 } // namespace std

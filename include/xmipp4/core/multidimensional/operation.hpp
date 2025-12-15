@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "operation_id.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
+
+#include <string>
 
 namespace xmipp4 
 {
@@ -18,7 +21,6 @@ class array_descriptor;
  * 
  * Subclasses of it may implement the specific behavior for each of the
  * operations.
- * 
  */
 class operation
 {
@@ -38,15 +40,25 @@ public:
 	 * 
 	 * @return const operation_id& The operation id.
 	 */
-	virtual const operation_id& get_operation_id() const noexcept = 0;
+	operation_id get_id() const noexcept;
+
+	/**
+	 * @brief Get a human readable identifier of the operation.
+	 * 
+	 * This representation should not encode the parameters of the operation,
+	 * i.e., it should be the same for all instances of a given operation class.
+	 * 
+	 * @return std::string The human readable representation.
+	 */
+	virtual std::string get_name() const = 0;
 
 	/**
 	 * @brief Serialize the parameters of the operation.
 	 * 
 	 * Obtain a string representation of the parameters of this operation. The
 	 * actual representation is implementation dependant. The only requirement
-	 * is that unequal operations should have unequal serializations. The 
-	 * serialization does not need to encode the operation_id.
+	 * is that unequal parameters should have unequal serializations. The 
+	 * serialization does not need to encode the operation_id nor the name.
 	 * 
 	 * @return std::string String representation of the operation parameters.
 	 */
@@ -54,28 +66,22 @@ public:
 	virtual std::string serialize_parameters() const;
 
 	/**
-	 * @brief Perform pre-flight checks on the input operands.
+	 * @brief Process and validate the input output operands
 	 * 
-	 * This may include checks on:
-	 * - Arity (number of operands).
-	 * - Minimum numer of dimensions for each operand.
-	 * - Possible invariants between operands (e.g. middle dimension in matrix
-	 * multiplication).
+	 * This method validate and adapt operands to perform the represented 
+	 * operations. Depending on the operation type and descriptors, calling
+	 * this function may:
 	 * 
-	 * @param input_descriptors The input descriptors to be checked.
+	 * - Validate invariance in the input (e.g. inner matrix dimensions in a
+	 * matrix multiplication).
+	 * - Deduce and populate output operand's descriptors when default 
+	 * constructed ones are provided.
+	 * - Perform broadcasting in input operands.
+	 * 
+	 * @param output_descriptors The output descriptors.
+	 * @param input_descriptors The input operands.
 	 */
-	virtual void validate_input(
-		span<const array_descriptor> input_descriptors
-	) const = 0;
-	
-	/**
-	 * @brief Broadcast input operands and infer the ouput operands if 
-	 * necessary.
-	 * 
-	 * @param output_descriptors The output descriptors to be inferred.
-	 * @param input_descriptors The input operands that may be broadcasted.
-	 */
-	virtual void deduce_operands(
+	virtual void sanitize_operands(
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors
 	) const = 0;

@@ -13,7 +13,6 @@ namespace multidimensional
 
 /**
  * @brief Unique identification for an operation type.
- * 
  */
 class operation_id
 {

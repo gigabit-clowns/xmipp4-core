@@ -38,7 +38,7 @@ public:
 	kernel_builder(const kernel_builder &other) = default;
 	kernel_builder(kernel_builder &&other) = default;
 	XMIPP4_CORE_API
-    virtual ~kernel_builder();
+	virtual ~kernel_builder();
 
 	kernel_builder& operator=(const kernel_builder &other) = default;
 	kernel_builder& operator=(kernel_builder &&other) = default;
@@ -81,8 +81,8 @@ public:
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
 	 */
-    virtual 
-    std::shared_ptr<kernel> build(
+	virtual 
+	std::shared_ptr<kernel> build(
 		const operation &operation,
 		span<const array_descriptor> descriptors,
 		hardware::device &device

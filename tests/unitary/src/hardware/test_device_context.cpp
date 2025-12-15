@@ -18,6 +18,8 @@
 #include "mock/mock_memory_allocator.hpp"
 #include "mock/mock_memory_allocator_backend.hpp"
 
+#include <stdexcept>
+
 
 using namespace xmipp4;
 using namespace xmipp4::hardware;
@@ -33,8 +35,12 @@ device_context make_test_device_context()
 	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
 	auto allocator = std::make_shared<mock_memory_allocator>();
 
+
 	REQUIRE_CALL(*device_backend, get_name())
 		.RETURN("mock");
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(64))
+		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
@@ -51,8 +57,10 @@ device_context make_test_device_context()
 		.RETURN(allocator);
 
 	service_catalog catalog(false);
-	catalog.get_service_manager<device_manager>().register_backend(std::move(device_backend));
-	catalog.get_service_manager<memory_allocator_manager>().register_backend(std::move(allocator_backend));
+	catalog.get_service_manager<device_manager>()
+		.register_backend(std::move(device_backend));
+	catalog.get_service_manager<memory_allocator_manager>()
+		.register_backend(std::move(allocator_backend));
 
 	return device_context(catalog, index);
 }
@@ -72,6 +80,9 @@ TEST_CASE( "Constructing a device_context from an index should create and store 
 
 	REQUIRE_CALL(*device_backend, get_name())
 		.RETURN("mock");
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(64))
+		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
@@ -94,15 +105,40 @@ TEST_CASE( "Constructing a device_context from an index should create and store 
 		.RETURN(host_accessible_memory_allocator);
 
 	service_catalog catalog(false);
-	catalog.get_service_manager<device_manager>().register_backend(std::move(device_backend));
-	catalog.get_service_manager<memory_allocator_manager>().register_backend(std::move(allocator_backend));
+	catalog.get_service_manager<device_manager>()
+		.register_backend(std::move(device_backend));
+	catalog.get_service_manager<memory_allocator_manager>()
+		.register_backend(std::move(allocator_backend));
 
 	device_context context(catalog, index);
 
 	CHECK( &context.get_device() == device.get() );
 	CHECK( &context.get_memory_allocator(target_placement::device_optimal) == device_local_memory_allocator.get() );
 	CHECK( &context.get_memory_allocator(target_placement::host_accessible) == host_accessible_memory_allocator.get() );
+	CHECK( context.get_optimal_data_alignment() == 64 );
 	CHECK( context.get_active_queue() == nullptr );
+}
+
+TEST_CASE( "Constructing a device_context from an invalid index should throw", "[device_context]" )
+{
+	const device_index index("mock", 1234);
+
+	auto device_backend = std::make_unique<mock_device_backend>();
+
+	REQUIRE_CALL(*device_backend, get_name())
+		.RETURN("mock");
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+		.RETURN(false);
+	
+	service_catalog catalog(false);
+	catalog.get_service_manager<device_manager>()
+		.register_backend(std::move(device_backend));
+
+	REQUIRE_THROWS_MATCHES(
+		device_context(catalog, index),
+		std::invalid_argument,
+		Catch::Matchers::Message("Requested device index does not exist")
+	);
 }
 
 TEST_CASE( "Constructing a device_context for a device with unified memory should share a single allocator", "[device_context]" )
@@ -117,6 +153,9 @@ TEST_CASE( "Constructing a device_context for a device with unified memory shoul
 
 	REQUIRE_CALL(*device_backend, get_name())
 		.RETURN("mock");
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
+		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
@@ -141,6 +180,7 @@ TEST_CASE( "Constructing a device_context for a device with unified memory shoul
 	CHECK( &context.get_device() == device.get() );
 	CHECK( &context.get_memory_allocator(target_placement::device_optimal) == allocator.get() );
 	CHECK( &context.get_memory_allocator(target_placement::host_accessible) == allocator.get() );
+	CHECK( context.get_optimal_data_alignment() == 256 );
 	CHECK( context.get_active_queue() == nullptr );
 }
 

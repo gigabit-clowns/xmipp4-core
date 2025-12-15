@@ -29,6 +29,8 @@ jobs:
         include:
         - os: macos-latest
           compiler: {c: clang, cxx: clang++}
+        #- os: windows-latest
+        #  compiler: {c: cl, cxx: cl}
 
     env:
       BUILD_TYPE: Debug
@@ -44,8 +46,8 @@ jobs:
           fetch-depth: 0
 
       - name: Install memcheck tool
-        uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
         id: install-memtool
+        uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
@@ -58,12 +60,13 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
+            ${{ matrix.compiler.cxx == 'cl' && format('CMAKE_TOOLCHAIN_FILE={0}', steps.install-memtool.outputs.toolchain-file-msvc) || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Run tests with memory check
-        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
         id: run-ctest
+        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
         with:
           check-memleaks: true
 

@@ -17,20 +17,21 @@ namespace multidimensional
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
+    const hardware::device_context &context,
     std::size_t size
 )
 {
     size = binary::bit_ceil(size);
-    const std::size_t max_alignment = allocator.get_max_alignment();
-    const std::size_t preferred_alignment = 256; // TODO: query device for preferred alignment
+    const auto max_alignment = allocator.get_max_alignment();
+    const auto preferred_alignment = context.get_optimal_data_alignment();
     return std::min(std::min(max_alignment, preferred_alignment), size);
 }
 
 static
-array* validate_output_array(
+std::shared_ptr<hardware::buffer> reuse_array_storage(
 	array *out, 
 	std::size_t storage_requirement,
-	hardware::memory_allocator &allocator
+	const hardware::memory_allocator &allocator
 )
 {
 	if (!out)
@@ -38,7 +39,7 @@ array* validate_output_array(
 		return nullptr;
 	}
 
-	const auto* storage = out->get_storage();
+	const auto storage = out->share_storage();
 	if (!storage)
 	{
 		XMIPP4_LOG_WARN(
@@ -66,7 +67,7 @@ array* validate_output_array(
 		return nullptr;
 	}
 
-    return out;
+	return storage;
 }
 
 XMIPP4_NODISCARD 
@@ -74,64 +75,30 @@ array empty(
 	array_descriptor descriptor,
 	hardware::target_placement placement,
 	const hardware::device_context &context,
-    array *out
-)
-{
-	auto &allocator = context.get_memory_allocator(placement);
-    const auto storage_requirement = compute_storage_requirement(descriptor);
-    out = validate_output_array(out, storage_requirement, allocator);
-
-	if (out)
-	{
-		out->set_descriptor(std::move(descriptor)); // Suitable for storage.
-		return out->view();
-	}
-
-	const auto alignment = get_alignment_requirement(
-		allocator, 
-		storage_requirement
-	);
-	auto *queue = context.get_active_queue().get();
-	auto storage = allocator.allocate(storage_requirement, alignment, queue);
-    return array(
-		std::move(storage),
-        std::move(descriptor)
-    );
-}
-
-XMIPP4_NODISCARD 
-array empty(
-    strided_layout layout, 
-    numerical_type data_type,
-	hardware::target_placement placement,
-	const hardware::device_context &context,
-    array *out
-)
-{
-	return empty(
-		array_descriptor(std::move(layout), data_type),
-		placement,
-		context,
-		out
-	);
-}
-
-XMIPP4_NODISCARD
-array empty(
-	span<const std::size_t> extents, 
-	numerical_type data_type,
-	hardware::target_placement placement,
-	const hardware::device_context &context,
 	array *out
 )
 {
-	return empty(
-		strided_layout::make_contiguous_layout(extents),
-		data_type,
-		placement,
-		context,
-		out
-	);
+	auto &allocator = context.get_memory_allocator(placement);
+	const auto storage_requirement = compute_storage_requirement(descriptor);
+
+	auto storage = reuse_array_storage(out, storage_requirement, allocator);
+	if (storage && out->get_descriptor() == descriptor)
+	{
+		return out->share(); // Trivial
+	}
+
+	if (!storage)
+	{
+		const auto alignment = get_alignment_requirement(
+			allocator, 
+			context,
+			storage_requirement
+		);
+		auto *queue = context.get_active_queue().get();
+		storage = allocator.allocate(storage_requirement, alignment, queue);
+	}
+
+	return array(std::move(storage), std::move(descriptor));
 }
 
 } // namespace multidimensional

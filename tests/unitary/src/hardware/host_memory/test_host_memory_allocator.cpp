@@ -7,12 +7,26 @@
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/system/host.hpp>
 
 #include "../mock/mock_device_queue.hpp"
 
 #include <sstream>
 
+using namespace xmipp4;
 using namespace xmipp4::hardware;
+
+TEST_CASE( "get_max_alignment in host_memory_allocator should return the page size", "[host_memory_allocator]" )
+{
+	host_memory_allocator allocator;
+	CHECK( allocator.get_max_alignment() == system::get_page_size() );
+}
+
+TEST_CASE( "get_memory_resource in host_memory_allocator should return the host memory resource", "[host_memory_allocator]" )
+{
+	host_memory_allocator allocator;
+	CHECK( &allocator.get_memory_resource() == &get_host_memory_resource() );
+}
 
 TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[host_memory_allocator]" )
 {

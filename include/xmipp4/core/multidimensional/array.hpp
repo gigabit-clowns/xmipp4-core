@@ -96,9 +96,9 @@ public:
 
 private:
 	class implementation;
-	std::shared_ptr<implementation> m_implementation;
+	std::shared_ptr<const implementation> m_implementation;
 
-	explicit array(std::shared_ptr<implementation> impl) noexcept;
+	explicit array(std::shared_ptr<const implementation> impl) noexcept;
 };
 
 } // namespace multidimensional

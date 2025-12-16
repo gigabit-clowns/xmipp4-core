@@ -3,11 +3,13 @@
 #pragma once
 
 #include "array.hpp"
-
-#include "../hardware/device_context.hpp"
+#include "../hardware/device.hpp"
 
 namespace xmipp4 
 {
+
+class execution_context;
+
 namespace multidimensional
 {
 
@@ -26,7 +28,7 @@ XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
 	hardware::target_placement placement,
-	const hardware::device_context &context,
+	const execution_context &context,
 	array *out = nullptr
 );
 

@@ -8,9 +8,9 @@
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/execution_context.hpp>
 
 #include "../config.hpp"
 
@@ -24,7 +24,7 @@ namespace multidimensional
 static void allocate_output(
 	span<array> operands,
 	span<const array_descriptor> descriptors,
-	const hardware::device_context &device_context
+	const execution_context &context
 )
 {
 	for (std::size_t i = 0; i < operands.size(); ++i)
@@ -38,7 +38,7 @@ static void allocate_output(
 		operands[i] = empty(
 			descriptors[i], 
 			hardware::target_placement::device_optimal, 
-			device_context, 
+			context, 
 			out
 		);
 	}
@@ -149,7 +149,7 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
-	const hardware::device_context &device_context
+	const execution_context &context
 )
 {
 	const auto n_outputs = output_operands.size();
@@ -172,12 +172,12 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	populate_descriptors(input_operands, input_descriptors);
 
 	operation.sanitize_operands(output_descriptors, input_descriptors);
-	allocate_output(output_operands, output_descriptors, device_context);
+	allocate_output(output_operands, output_descriptors, context);
 
 	return m_kernel_manager.get().build_kernel(
 		operation, 
 		span<const array_descriptor>(descriptors.data(), descriptors.size()),
-		device_context.get_device()
+		context.get_device()
 	);
 }
 
@@ -185,11 +185,11 @@ void eager_operation_dispatcher::execute_kernel(
 	kernel &kernel,
 	span<array> output_operands,
 	span<const array> input_operands,
-	const hardware::device_context &device_context
+	const execution_context &context
 )
 {
-	auto &device = device_context.get_device();
-	auto *queue = device_context.get_active_queue().get();
+	auto &device = context.get_device();
+	auto *queue = context.get_active_queue().get();
 
 	boost::container::small_vector<
 		std::shared_ptr<hardware::buffer>, 
@@ -222,14 +222,14 @@ void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
-	const hardware::device_context &device_context
+	const execution_context &context
 )
 {
 	const auto kernel = prepare_kernel(
 		operation,
 		output_operands,
 		input_operands,
-		device_context
+		context
 	);
 
 	XMIPP4_ASSERT( kernel );
@@ -238,7 +238,7 @@ void eager_operation_dispatcher::dispatch(
 		*kernel, 
 		output_operands, 
 		input_operands, 
-		device_context
+		context
 	);
 }
 

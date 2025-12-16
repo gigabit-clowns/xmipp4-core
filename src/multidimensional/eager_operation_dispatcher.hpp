@@ -8,13 +8,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
-
-class device_context;
-
-} // namespace hardware
-
 namespace multidimensional
 {
 
@@ -41,7 +34,7 @@ public:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array> input_operands,
-		const hardware::device_context &device_context
+		const execution_context &context
 	) override;
 
 private:
@@ -51,14 +44,14 @@ private:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array> input_operands,
-		const hardware::device_context &device_context
+		const execution_context &context
 	);
 
 	void execute_kernel(
 		kernel &kernel,
 		span<array> output_operands,
 		span<const array> input_operands,
-		const hardware::device_context &device_context
+		const execution_context &context
 	);
 
 };

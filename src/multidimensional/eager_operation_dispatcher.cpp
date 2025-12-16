@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/eager_operation_dispatcher.hpp>
+#include "eager_operation_dispatcher.hpp"
 
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
@@ -20,8 +20,6 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
-class eager_operation_dispatcher::implementation {};
 
 static void allocate_output(
 	span<array> operands,
@@ -83,6 +81,7 @@ static void populate_output_storages(
 
 			XMIPP4_ASSERT( buffer );
 			XMIPP4_ASSERT( check_storage_placement(*buffer, device) );
+			std::ignore = device; // To avoid warning in Release builds.
 
 			return buffer;
 		}
@@ -123,19 +122,30 @@ static void populate_input_storages(
 }
 
 static void record_queues(
-	span<const array> operands,
+	span<const hardware::buffer> storages,
 	hardware::device_queue &queue
 )
 {		
-	for (const auto &operand : operands)
+	for (const auto &storage : storages)
 	{
-		const auto *storage = operand.get_storage();
-		XMIPP4_ASSERT( storage );
-		storage->record_queue(queue);
+		storage.record_queue(queue);
 	}
 }
 
-static std::shared_ptr<kernel> prepare_kernel(
+
+
+eager_operation_dispatcher::eager_operation_dispatcher(
+	kernel_manager &manager
+) noexcept
+	: m_kernel_manager(manager)
+{
+}
+
+eager_operation_dispatcher::~eager_operation_dispatcher() = default;
+
+
+
+std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array> input_operands,
@@ -164,15 +174,14 @@ static std::shared_ptr<kernel> prepare_kernel(
 	operation.sanitize_operands(output_descriptors, input_descriptors);
 	allocate_output(output_operands, output_descriptors, device_context);
 
-	return nullptr; // TODO
-	//return manager.build_kernel(
-	//	operation, 
-	//	span<const array_descriptor>(descriptors.data(), descriptors.size()),
-	//	device_context.get_device()
-	//);
+	return m_kernel_manager.get().build_kernel(
+		operation, 
+		span<const array_descriptor>(descriptors.data(), descriptors.size()),
+		device_context.get_device()
+	);
 }
 
-static void execute_kernel(
+void eager_operation_dispatcher::execute_kernel(
 	kernel &kernel,
 	span<array> output_operands,
 	span<const array> input_operands,
@@ -205,15 +214,9 @@ static void execute_kernel(
 
 	if (queue)
 	{
-		record_queues(output_operands, *queue);
-		record_queues(input_operands, *queue);
+		// TODO
 	}
 }
-
-
-
-//eager_operation_dispatcher::eager_operation_dispatcher() noexcept = default;
-eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
 	const operation &operation,

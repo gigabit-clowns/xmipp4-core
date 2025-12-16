@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "../platform/dynamic_shared_object.h"
-#include "../span.hpp"
+#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 
 #include <memory>
 
@@ -21,34 +20,46 @@ namespace multidimensional
 
 class operation;
 class array;
+class kernel;
 class kernel_manager;
 
 class eager_operation_dispatcher
+	: operation_dispatcher
 {
 public:
-	XMIPP4_CORE_API
 	eager_operation_dispatcher(kernel_manager &manager) noexcept;
 	eager_operation_dispatcher(const eager_operation_dispatcher &other) = delete;
 	eager_operation_dispatcher(eager_operation_dispatcher &&other) = delete;
-	XMIPP4_CORE_API
-	~eager_operation_dispatcher();
+	~eager_operation_dispatcher() override;
 
 	eager_operation_dispatcher& 
 	operator=(const eager_operation_dispatcher &other) = delete;
 	eager_operation_dispatcher& 
 	operator=(eager_operation_dispatcher &&other) = delete;
 
-	XMIPP4_CORE_API
 	void dispatch(
+		const operation &operation,
+		span<array> output_operands,
+		span<const array> input_operands,
+		const hardware::device_context &device_context
+	) override;
+
+private:
+	std::reference_wrapper<kernel_manager> m_kernel_manager;
+
+	std::shared_ptr<kernel> prepare_kernel(
 		const operation &operation,
 		span<array> output_operands,
 		span<const array> input_operands,
 		const hardware::device_context &device_context
 	);
 
-private:
-	class implementation;
-	std::unique_ptr<implementation> m_implementation;
+	void execute_kernel(
+		kernel &kernel,
+		span<array> output_operands,
+		span<const array> input_operands,
+		const hardware::device_context &device_context
+	);
 
 };
 

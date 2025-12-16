@@ -39,7 +39,11 @@ public:
 
 	/**
 	 * @brief Execute the kernel.
-	 * 
+	 *
+	 * The read_write operands refer to the first descriptors passed during
+	 * construction of the kernel. The read_only operands refer to the last
+	 * descriptors passed during the construction of the kernel.
+	 *  
 	 * @param read_write_operands Operands where data may be written. Neither
 	 * of them may be null.
 	 * @param read_only_operands  Read-only operands. Neither of them may be

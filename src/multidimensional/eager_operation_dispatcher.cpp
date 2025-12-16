@@ -49,7 +49,7 @@ static bool check_storage_placement(
 	hardware::device &device
 )
 {
-	auto &memory_resource = buffer.get_memory_resource();
+	const auto &memory_resource = buffer.get_memory_resource();
 	return hardware::is_device_accessible(memory_resource, device);
 }
 
@@ -164,7 +164,7 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	span<array> output_operands,
 	span<const array> input_operands,
 	const execution_context &context
-)
+) const
 {
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
@@ -196,11 +196,11 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 }
 
 void eager_operation_dispatcher::execute_kernel(
-	kernel &kernel,
+	const kernel &kernel,
 	span<array> output_operands,
 	span<const array> input_operands,
 	const execution_context &context
-)
+) const
 {
 	auto &device = context.get_device();
 	auto *queue = context.get_active_queue().get();

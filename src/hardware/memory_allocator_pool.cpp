@@ -15,8 +15,6 @@ memory_allocator_pool::memory_allocator_pool(
 	const memory_allocator_manager &allocator_manager
 )
 {
-	m_allocators_by_placement = {};
-
 	for (std::size_t i = 0; i < m_allocators_by_placement.size(); ++i)
 	{
 		const auto affinity = static_cast<memory_resource_affinity>(i);

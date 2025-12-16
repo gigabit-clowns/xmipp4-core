@@ -20,7 +20,7 @@ class eager_operation_dispatcher
 	: public operation_dispatcher
 {
 public:
-	eager_operation_dispatcher(const kernel_manager &manager) noexcept;
+	explicit eager_operation_dispatcher(const kernel_manager &manager) noexcept;
 	eager_operation_dispatcher(const eager_operation_dispatcher &other) = delete;
 	eager_operation_dispatcher(eager_operation_dispatcher &&other) = delete;
 	~eager_operation_dispatcher() override;
@@ -45,14 +45,14 @@ private:
 		span<array> output_operands,
 		span<const array> input_operands,
 		const execution_context &context
-	);
+	) const;
 
 	void execute_kernel(
-		kernel &kernel,
+		const kernel &kernel,
 		span<array> output_operands,
 		span<const array> input_operands,
 		const execution_context &context
-	);
+	) const;
 
 };
 

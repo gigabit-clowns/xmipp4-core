@@ -18,13 +18,11 @@ class device_queue;
 	
 } // namespace hardware
 
-
 namespace multidimensional
 {
 
 /**
  * @brief Abstract representation of an executable operation core.
- * 
  */
 class kernel
 {
@@ -48,7 +46,6 @@ public:
 	 * null.
 	 * @param queue Optional queue where this kernel will be executed. Must 
 	 * belong to the device used in construction.
-	 * 
 	 */
 	virtual void execute(
 		span<const std::shared_ptr<hardware::buffer>> read_write_operands,

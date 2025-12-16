@@ -135,7 +135,7 @@ static void record_queues(
 
 
 eager_operation_dispatcher::eager_operation_dispatcher(
-	kernel_manager &manager
+	const kernel_manager &manager
 ) noexcept
 	: m_kernel_manager(manager)
 {

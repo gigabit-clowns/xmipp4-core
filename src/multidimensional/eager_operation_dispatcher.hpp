@@ -17,10 +17,10 @@ class kernel;
 class kernel_manager;
 
 class eager_operation_dispatcher
-	: operation_dispatcher
+	: public operation_dispatcher
 {
 public:
-	eager_operation_dispatcher(kernel_manager &manager) noexcept;
+	eager_operation_dispatcher(const kernel_manager &manager) noexcept;
 	eager_operation_dispatcher(const eager_operation_dispatcher &other) = delete;
 	eager_operation_dispatcher(eager_operation_dispatcher &&other) = delete;
 	~eager_operation_dispatcher() override;
@@ -38,7 +38,7 @@ public:
 	) override;
 
 private:
-	std::reference_wrapper<kernel_manager> m_kernel_manager;
+	std::reference_wrapper<const kernel_manager> m_kernel_manager;
 
 	std::shared_ptr<kernel> prepare_kernel(
 		const operation &operation,

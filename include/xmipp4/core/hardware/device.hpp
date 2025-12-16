@@ -18,6 +18,18 @@ class device_to_host_event;
 class memory_resource;
 
 /**
+ * @brief Enumeration describing where the data should be placed.
+ */
+enum class target_placement
+{
+	/// The data should be placed in a host accessible memory resource.
+	host_accessible, 
+	/// The data should be placed such that it can be optimally accessed by 
+	/// the device.
+	device_optimal
+};
+
+/**
  * @brief Abstract representation of a device handle.
  * 
  * This class enables basic interaction functionalities with
@@ -36,24 +48,13 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get a memory resource object that is local to the device.
+	 * @brief Get the most suitable memory resource for the intended placement.
 	 * 
-	 * The device-local memory resource is optimal for operating in the device.
-	 * 
-	 * @return memory_resource& The device-local memory resource.
+	 * @param placement The target placement of the memory resource.
+	 * @return memory_resource& The memory resource.
 	 */
-	virtual memory_resource& get_device_local_memory_resource() noexcept = 0;
-
-	/**
-	 * @brief Get a memory resource object that is host accessible.
-	 * 
-	 * The host accessible memory resource is optimal to transfer data from
-	 * the host to the device. In unified architectures this may alias the
-	 * device local memory resource.
-	 * 
-	 * @return memory_resource& The host accessible memory resource.
-	 */
-	virtual memory_resource& get_host_accessible_memory_resource() noexcept = 0;
+	virtual memory_resource& 
+	get_memory_resource(target_placement placement) = 0;
 
 	/**
 	 * @brief Create a device queue.

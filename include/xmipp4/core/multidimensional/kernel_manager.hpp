@@ -31,7 +31,6 @@ class kernel;
  * 
  * The kernel builders are cataloged by their intended operation such that
  * it allows fast retrieval.
- * 
  */
 class kernel_manager
 	: public service_manager

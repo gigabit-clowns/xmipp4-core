@@ -28,7 +28,6 @@ class array_descriptor;
 
 /**
  * @brief Abstract representation of a factory class for kernels
- * 
  */
 class kernel_builder
 {

@@ -15,14 +15,9 @@ class mock_device final
 	: public device
 {
 public:
-	MAKE_MOCK0(
-		get_device_local_memory_resource, 
-		memory_resource&(), 
-		noexcept override
-	);
-	MAKE_MOCK0(
-		get_host_accessible_memory_resource, 
-		memory_resource&(), 
+	MAKE_MOCK1(
+		get_memory_resource, 
+		memory_resource&(target_placement placement), 
 		noexcept override
 	);
 	MAKE_MOCK0(

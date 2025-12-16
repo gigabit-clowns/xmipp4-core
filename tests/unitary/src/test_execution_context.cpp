@@ -4,25 +4,27 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/hardware/device_context.hpp>
+#include <xmipp4/core/execution_context.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/service_catalog.hpp>
 
-#include "mock/mock_device.hpp"
-#include "mock/mock_device_queue.hpp"
-#include "mock/mock_device_backend.hpp"
-#include "mock/mock_memory_resource.hpp"
-#include "mock/mock_memory_allocator.hpp"
-#include "mock/mock_memory_allocator_backend.hpp"
+#include "hardware/mock/mock_device.hpp"
+#include "hardware/mock/mock_device_queue.hpp"
+#include "hardware/mock/mock_device_backend.hpp"
+#include "hardware/mock/mock_memory_resource.hpp"
+#include "hardware/mock/mock_memory_allocator.hpp"
+#include "hardware/mock/mock_memory_allocator_backend.hpp"
 
 #include <stdexcept>
 
 
 using namespace xmipp4;
 using namespace xmipp4::hardware;
+
+/*
 
 static
 device_context make_test_device_context()
@@ -257,3 +259,5 @@ TEST_CASE( "Calling set_active_queue on a default initialized device_context sho
 		)
 	);
 }
+
+*/

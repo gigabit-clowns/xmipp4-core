@@ -4,11 +4,13 @@
 
 #include <xmipp4/core/service_catalog.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
-#include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+
+#include "hardware/memory_allocator_pool.hpp"
 
 #include <stdexcept>
 
@@ -22,48 +24,19 @@ public:
 		service_catalog &catalog, 
 		const hardware::device_index &index
 	)
+		: m_device_properties()
+		, m_device(create_device(catalog, index, m_device_properties))
+		, m_allocator_pool(
+			*m_device, 
+			catalog.get_service_manager<hardware::memory_allocator_manager>()
+		)
 	{
-		const auto &dev_manager = 
-			catalog.get_service_manager<hardware::device_manager>();
+		// TODO dispatcher
+	}
 
-		hardware::device_properties properties;
-		if(!dev_manager.get_device_properties(index, properties))
-		{
-			throw std::invalid_argument(
-				"Requested device index does not exist"
-			);
-		}
-
-		m_device = dev_manager.create_device(index);
-
-		XMIPP4_ASSERT( m_device );
-		auto &device_optimal_memory_resource = 
-			m_device->get_device_local_memory_resource();
-		auto &host_accessible_memory_resource = 
-			m_device->get_host_accessible_memory_resource();
-		
-		const auto &alloc_manager = 
-			catalog.get_service_manager<hardware::memory_allocator_manager>();
-		m_device_optimal_memory_allocator = 
-			alloc_manager.create_memory_allocator(
-				device_optimal_memory_resource
-			);
-
-		if (&device_optimal_memory_resource == &host_accessible_memory_resource)
-		{
-			m_host_accessible_memory_allocator = 
-				m_device_optimal_memory_allocator;
-		}
-		else
-		{
-			m_host_accessible_memory_allocator = 
-				alloc_manager.create_memory_allocator(
-					host_accessible_memory_resource
-				);
-		}
-
-		m_optimal_data_alignment = properties.get_optimal_data_alignment();
-		// TODO operation dispatcher
+	const hardware::device_properties& get_device_properties() const noexcept
+	{
+		return m_device_properties;
 	}
 
 	hardware::device& get_device() const noexcept
@@ -72,34 +45,11 @@ public:
 		return *m_device;
 	}
 
-	hardware::memory_allocator& get_memory_allocator(target_placement placement) const
+	hardware::memory_allocator& get_memory_allocator(
+		hardware::target_placement placement
+	) const
 	{
-		switch (placement)
-		{
-		case target_placement::device_optimal:
-			return get_device_optimal_memory_allocator();
-		case target_placement::host_accessible:
-			return get_host_accessible_memory_allocator();
-		default:
-			throw std::invalid_argument("Invalid placement was provided");
-		}
-	}
-
-	hardware::memory_allocator& get_device_optimal_memory_allocator() const noexcept
-	{
-		XMIPP4_ASSERT( m_device_optimal_memory_allocator );
-		return *m_device_optimal_memory_allocator;
-	}
-
-	hardware::memory_allocator& get_host_accessible_memory_allocator() const noexcept
-	{
-		XMIPP4_ASSERT( m_host_accessible_memory_allocator );
-		return *m_host_accessible_memory_allocator;
-	}
-
-	std::size_t get_optimal_data_alignment() const noexcept
-	{
-		return m_optimal_data_alignment;
+		return m_allocator_pool.get_memory_allocator(placement);
 	}
 
 	std::shared_ptr<hardware::device_queue> 
@@ -123,12 +73,33 @@ public:
 	}
 
 private:
+	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
+	hardware::memory_allocator_pool m_allocator_pool;
 	std::shared_ptr<hardware::device_queue> m_active_queue;
-	std::shared_ptr<hardware::memory_allocator> m_device_optimal_memory_allocator;
-	std::shared_ptr<hardware::memory_allocator> m_host_accessible_memory_allocator;
 	std::shared_ptr<multidimensional::operation_dispatcher> m_dispatcher;
-	std::size_t m_optimal_data_alignment;
+
+	static std::shared_ptr<hardware::device> create_device(
+		service_catalog &catalog, 
+		const hardware::device_index &index,
+		hardware::device_properties &properties
+	)
+	{
+		const auto &dev_manager = 
+			catalog.get_service_manager<hardware::device_manager>();
+
+		if(!dev_manager.get_device_properties(index, properties))
+		{
+			throw std::invalid_argument(
+				"Requested device index does not exist"
+			);
+		}
+
+		auto device = dev_manager.create_device(index);
+		XMIPP4_ASSERT( device );
+		return device;
+	}
+
 };
 
 
@@ -143,12 +114,22 @@ execution_context::execution_context(
 {
 }
 
-execution_context::execution_context(execution_context &&other) noexcept = default;
+execution_context::execution_context(
+	execution_context &&other
+) noexcept = default;
 
 execution_context::~execution_context() = default;
 
 execution_context& 
 execution_context::operator=(execution_context &&other) noexcept = default;
+
+
+
+const hardware::device_properties& 
+execution_context::get_device_properties() const
+{
+	return get_implementation().get_device_properties();
+}
 
 hardware::device& execution_context::get_device() const
 {
@@ -156,14 +137,11 @@ hardware::device& execution_context::get_device() const
 }
 
 hardware::memory_allocator& 
-execution_context::get_memory_allocator(target_placement placement) const
+execution_context::get_memory_allocator(
+	hardware::target_placement placement
+) const
 {
 	return get_implementation().get_memory_allocator(placement);
-}
-
-std::size_t execution_context::get_optimal_data_alignment() const
-{
-	return get_implementation().get_optimal_data_alignment();
 }
 
 std::shared_ptr<hardware::device_queue> 

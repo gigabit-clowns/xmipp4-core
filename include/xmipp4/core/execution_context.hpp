@@ -3,6 +3,7 @@
 #pragma once
 
 #include "platform/dynamic_shared_object.h"
+#include "hardware/device.hpp"
 
 #include <memory>
 
@@ -14,8 +15,8 @@ class service_catalog;
 namespace hardware
 {
 
-class device;
 class device_index;
+class device_properties;
 class device_queue;
 class memory_allocator;
 
@@ -68,6 +69,14 @@ public:
 	execution_context& operator=(execution_context &&other) noexcept;
 
 	/**
+	 * @brief Get the properties of the device from this context.
+	 * 
+	 * @return const hardware::device_properties& The device properties.
+	 */
+	XMIPP4_CORE_API
+	const hardware::device_properties& get_device_properties() const;
+
+	/**
 	 * @brief Get the device handle for this context.
 	 * 
 	 * @return hardware::device& The device handle.
@@ -88,14 +97,6 @@ public:
 	XMIPP4_CORE_API
 	hardware::memory_allocator& 
 	get_memory_allocator(hardware::target_placement placement) const;
-
-	/**
-	 * @brief Get the optimal data alignment for the device.
-	 * 
-	 * @return std::size_t The optimal data alignment in bytes.
-	 */
-	XMIPP4_CORE_API
-	std::size_t get_optimal_data_alignment() const;
 
 	/**
 	 * @brief Set the active queue.

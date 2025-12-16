@@ -20,6 +20,7 @@ class memory_allocator_manager;
 
 class memory_allocator_pool
 {
+public:
 	memory_allocator_pool(
 		device& dev, 
 		const memory_allocator_manager &allocator_manager

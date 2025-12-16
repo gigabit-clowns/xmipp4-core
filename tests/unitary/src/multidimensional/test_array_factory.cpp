@@ -8,10 +8,10 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/device_index.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
+#include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/service_catalog.hpp>
 
 #include <hardware/host_memory/host_buffer.hpp>
@@ -27,13 +27,13 @@ using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
 
-hardware::device_context make_test_device_context()
+execution_context make_test_device_context()
 {
 	const hardware::device_index index("mock", 1234);
 
 	auto device_backend = std::make_unique<hardware::mock_device_backend>();
 	auto device = std::make_shared<hardware::mock_device>();
-	hardware::mock_memory_resource device_local_memory_resource;
+	hardware::mock_memory_resource device_optimal_memory_resource;
 	hardware::mock_memory_resource host_accessible_memory_resource;
 	const auto device_optimal_allocator = 
 		std::make_shared<hardware::mock_memory_allocator>();
@@ -50,19 +50,19 @@ hardware::device_context make_test_device_context()
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_device_local_memory_resource())
-		.LR_RETURN(device_local_memory_resource);
-	REQUIRE_CALL(*device, get_host_accessible_memory_resource())
+	REQUIRE_CALL(*device, get_memory_resource(hardware::target_placement::device_optimal))
+		.LR_RETURN(device_optimal_memory_resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::target_placement::host_accessible))
 		.LR_RETURN(host_accessible_memory_resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
-		.LR_WITH(&_1 == &device_local_memory_resource)
+		.LR_WITH(&_1 == &device_optimal_memory_resource)
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
 		.LR_WITH(&_1 == &host_accessible_memory_resource)
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
-		.LR_WITH(&_1 == &device_local_memory_resource)
+		.LR_WITH(&_1 == &device_optimal_memory_resource)
 		.RETURN(device_optimal_allocator);
 	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
 		.LR_WITH(&_1 == &host_accessible_memory_resource)
@@ -74,7 +74,7 @@ hardware::device_context make_test_device_context()
 	catalog.get_service_manager<hardware::memory_allocator_manager>()
 		.register_backend(std::move(allocator_backend));
 
-	return hardware::device_context(catalog, index);
+	return execution_context(catalog, index);
 }
 
 TEST_CASE("Calling empty without an output array should allocate with the appropiate allocator.", "[array_factory]")

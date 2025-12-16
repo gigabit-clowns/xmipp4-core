@@ -26,7 +26,11 @@ enum class target_placement
 	host_accessible, 
 	/// The data should be placed such that it can be optimally accessed by 
 	/// the device.
-	device_optimal
+	device_optimal,
+
+	// Add here.
+
+	count
 };
 
 /**

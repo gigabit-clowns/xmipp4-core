@@ -9,7 +9,7 @@ namespace xmipp4
 namespace hardware
 {
 
-memory_resource& cpu_device::get_memory_resource(target_placement)
+memory_resource& cpu_device::get_memory_resource(memory_resource_affinity)
 {
 	return get_host_memory_resource(); // Always host.
 }

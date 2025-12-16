@@ -50,9 +50,9 @@ execution_context make_test_device_context()
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_memory_resource(hardware::target_placement::device_optimal))
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::device))
 		.LR_RETURN(device_optimal_memory_resource);
-	REQUIRE_CALL(*device, get_memory_resource(hardware::target_placement::host_accessible))
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::host))
 		.LR_RETURN(host_accessible_memory_resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
@@ -103,13 +103,13 @@ TEST_CASE("Calling empty without an output array should allocate with the approp
 	const auto buffer = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 
 	REQUIRE_CALL(allocator, get_max_alignment())
@@ -117,7 +117,7 @@ TEST_CASE("Calling empty without an output array should allocate with the approp
 	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
 		.RETURN(buffer);
 
-	const auto result = empty(descriptor, placement, context, nullptr);
+	const auto result = empty(descriptor, affinity, context, nullptr);
 
 	CHECK( result.get_descriptor() == descriptor );
 	CHECK( result.get_storage() == buffer.get() );
@@ -137,19 +137,19 @@ TEST_CASE("Calling empty with an output array with the same descriptor should re
 	const auto alloc_bytes = compute_storage_requirement(descriptor);
 	const auto storage = std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 	REQUIRE_CALL(allocator, get_memory_resource())
 		.LR_RETURN(hardware::get_host_memory_resource());
 
 	array array1(storage, descriptor);
-	const auto array2 = empty(descriptor, placement, context, &array1);
+	const auto array2 = empty(descriptor, affinity, context, &array1);
 
 	CHECK( array1.get_descriptor() == descriptor );
 	CHECK( array2.get_descriptor() == descriptor );
@@ -176,18 +176,18 @@ TEST_CASE("Calling empty with an output array with a different descriptor should
 	const auto storage = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 	REQUIRE_CALL(allocator, get_memory_resource())
 		.LR_RETURN(hardware::get_host_memory_resource());
 
 	array array1(storage, descriptor1);
-	const auto array2 = empty(descriptor2, placement, context, &array1);
+	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
 	CHECK( array1.get_descriptor() == descriptor1 );
 	CHECK( array2.get_descriptor() == descriptor2 );
@@ -214,13 +214,13 @@ TEST_CASE("Calling empty with an output array with no storage should allocate it
 	const auto buffer = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 
 	REQUIRE_CALL(allocator, get_max_alignment())
@@ -229,7 +229,7 @@ TEST_CASE("Calling empty with an output array with no storage should allocate it
 		.RETURN(buffer);
 
 	array array1(nullptr, descriptor1);
-	const auto array2 = empty(descriptor2, placement, context, &array1);
+	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
 	CHECK( array1.get_descriptor() == descriptor1 );
 	CHECK( array2.get_descriptor() == descriptor2 );
@@ -258,13 +258,13 @@ TEST_CASE("Calling empty with a output array with insufficient storage should al
 	const auto buffer2 = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 
 	REQUIRE_CALL(allocator, get_max_alignment())
@@ -273,7 +273,7 @@ TEST_CASE("Calling empty with a output array with insufficient storage should al
 		.RETURN(buffer2);
 
 	array array1(buffer1, descriptor1);
-	const auto array2 = empty(descriptor2, placement, context, &array1);
+	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
 	CHECK( array1.get_descriptor() == descriptor1 );
 	CHECK( array2.get_descriptor() == descriptor2 );
@@ -309,13 +309,13 @@ TEST_CASE("Calling empty with an output array with a storage in a different memo
 	const auto buffer2 = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
-	const auto placement = GENERATE(
-		hardware::target_placement::device_optimal,
-		hardware::target_placement::host_accessible
+	const auto affinity = GENERATE(
+		hardware::memory_resource_affinity::device,
+		hardware::memory_resource_affinity::host
 	);
 
 	auto &allocator = dynamic_cast<hardware::mock_memory_allocator&>(
-		context.get_memory_allocator(placement)
+		context.get_memory_allocator(affinity)
 	);
 
 	REQUIRE_CALL(allocator, get_memory_resource())
@@ -326,7 +326,7 @@ TEST_CASE("Calling empty with an output array with a storage in a different memo
 		.RETURN(buffer2);
 
 	array array1(buffer1, descriptor1);
-	const auto array2 = empty(descriptor2, placement, context, &array1);
+	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
 	CHECK( array1.get_descriptor() == descriptor1 );
 	CHECK( array2.get_descriptor() == descriptor2 );

@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "memory_resource_affinity.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -16,22 +17,6 @@ class device_queue;
 class device_event;
 class device_to_host_event;
 class memory_resource;
-
-/**
- * @brief Enumeration describing where the data should be placed.
- */
-enum class target_placement
-{
-	/// The data should be placed in a host accessible memory resource.
-	host_accessible, 
-	/// The data should be placed such that it can be optimally accessed by 
-	/// the device.
-	device_optimal,
-
-	// Add here.
-
-	count
-};
 
 /**
  * @brief Abstract representation of a device handle.
@@ -52,13 +37,13 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get the most suitable memory resource for the intended placement.
+	 * @brief Get the most suitable memory resource for the intended usage.
 	 * 
-	 * @param placement The target placement of the memory resource.
+	 * @param affinity The affinity of the memory resource.
 	 * @return memory_resource& The memory resource.
 	 */
 	virtual memory_resource& 
-	get_memory_resource(target_placement placement) = 0;
+	get_memory_resource(memory_resource_affinity affinity) = 0;
 
 	/**
 	 * @brief Create a device queue.

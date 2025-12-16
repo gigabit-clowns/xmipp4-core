@@ -25,10 +25,11 @@ bool is_device_accessible(
 	device &device
 ) noexcept
 {
-	XMIPP4_CONST_CONSTEXPR auto placement = target_placement::device_optimal;
+	XMIPP4_CONST_CONSTEXPR 
+	auto affinity = memory_resource_affinity::device;
 
 	return 
-		&device.get_memory_resource(placement) == &resource ||
+		&device.get_memory_resource(affinity) == &resource ||
 		(
 			resource.get_target_device() == &device && 
 			is_device_accessible(resource.get_kind())

@@ -37,7 +37,7 @@ static void allocate_output(
 
 		operands[i] = empty(
 			descriptors[i], 
-			hardware::target_placement::device_optimal, 
+			hardware::memory_resource_affinity::device, 
 			context, 
 			out
 		);

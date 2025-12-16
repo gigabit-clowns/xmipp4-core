@@ -18,7 +18,7 @@ namespace multidimensional
  * @brief Create an empty array for a given descriptor.
  * 
  * @param descriptor The descriptor for the new array.
- * @param placement The placement for the array's data.
+ * @param affinity The affinity for the array's data.
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its storage may be aliased
  * in the new array, avoiding memory allocations.
@@ -27,7 +27,7 @@ namespace multidimensional
 XMIPP4_NODISCARD XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
-	hardware::target_placement placement,
+	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out = nullptr
 );

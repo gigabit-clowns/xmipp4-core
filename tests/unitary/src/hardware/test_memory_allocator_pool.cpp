@@ -26,9 +26,9 @@ TEST_CASE( "Constructing a memory_allocator_pool with a distributed memory devic
 	auto device_optimal_memory_allocator = std::make_shared<mock_memory_allocator>();
 	auto host_accessible_memory_allocator = std::make_shared<mock_memory_allocator>();
 
-	REQUIRE_CALL(device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(device_optimal_memory_resource);
-	REQUIRE_CALL(device, get_memory_resource(target_placement::host_accessible))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::host))
 		.LR_RETURN(host_accessible_memory_resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
@@ -49,11 +49,11 @@ TEST_CASE( "Constructing a memory_allocator_pool with a distributed memory devic
 
 	memory_allocator_pool pool(device, allocator_manager);
 	CHECK( 
-		&pool.get_memory_allocator(target_placement::device_optimal) == 
+		&pool.get_memory_allocator(memory_resource_affinity::device) == 
 		device_optimal_memory_allocator.get() 
 	);
 	CHECK( 
-		&pool.get_memory_allocator(target_placement::host_accessible) == 
+		&pool.get_memory_allocator(memory_resource_affinity::host) == 
 		host_accessible_memory_allocator.get() 
 	);
 }
@@ -67,9 +67,9 @@ TEST_CASE( "Constructing a memory_allocator_pool with an unified device should c
 	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
 	auto allocator = std::make_shared<mock_memory_allocator>();
 
-	REQUIRE_CALL(device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(resource);
-	REQUIRE_CALL(device, get_memory_resource(target_placement::host_accessible))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::host))
 		.LR_RETURN(resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
@@ -84,11 +84,11 @@ TEST_CASE( "Constructing a memory_allocator_pool with an unified device should c
 
 	memory_allocator_pool pool(device, allocator_manager);
 	CHECK( 
-		&pool.get_memory_allocator(target_placement::device_optimal) == 
+		&pool.get_memory_allocator(memory_resource_affinity::device) == 
 		allocator.get() 
 	);
 	CHECK( 
-		&pool.get_memory_allocator(target_placement::host_accessible) == 
+		&pool.get_memory_allocator(memory_resource_affinity::host) == 
 		allocator.get() 
 	);
 }

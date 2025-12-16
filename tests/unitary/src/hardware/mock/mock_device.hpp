@@ -17,7 +17,7 @@ class mock_device final
 public:
 	MAKE_MOCK1(
 		get_memory_resource, 
-		memory_resource&(target_placement placement), 
+		memory_resource&(memory_resource_affinity affinity), 
 		noexcept override
 	);
 	MAKE_MOCK0(

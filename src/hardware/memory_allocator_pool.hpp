@@ -18,6 +18,13 @@ class device;
 class memory_resource;
 class memory_allocator_manager;
 
+/**
+ * @brief Collection of memory allocators related to a particular device.
+ * 
+ * This class organizes memory allocators efficiently by overlapping them when 
+ * memory_resources alias one another (like in unified architectures).
+ * 
+ */
 class memory_allocator_pool
 {
 public:
@@ -34,7 +41,15 @@ public:
 	memory_allocator_pool&
 	operator=(memory_allocator_pool&& other) = delete;
 
-	memory_allocator& get_memory_allocator(target_placement placement) const;
+	/**
+	 * @brief Get the memory allocator for the requested affinity.
+	 * 
+	 * @param affinity Intended usage for the buffers created with the returned 
+	 * allocator.
+	 * @return memory_allocator& The memory allocator.
+	 */
+	memory_allocator& 
+	get_memory_allocator(memory_resource_affinity affinity) const;
 
 private:
 	std::unordered_map<
@@ -43,7 +58,7 @@ private:
 	> m_allocators;
 	std::array<
 		memory_allocator*, 
-		static_cast<std::size_t>(target_placement::count)
+		static_cast<std::size_t>(memory_resource_affinity::count)
 	> m_allocators_by_placement;
 };
 

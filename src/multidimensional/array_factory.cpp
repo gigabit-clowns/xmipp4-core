@@ -75,12 +75,12 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 XMIPP4_NODISCARD 
 array empty(
 	array_descriptor descriptor,
-	hardware::target_placement placement,
+	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out
 )
 {
-	auto &allocator = context.get_memory_allocator(placement);
+	auto &allocator = context.get_memory_allocator(affinity);
 	const auto storage_requirement = compute_storage_requirement(descriptor);
 
 	auto storage = reuse_array_storage(out, storage_requirement, allocator);

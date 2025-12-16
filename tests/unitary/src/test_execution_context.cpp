@@ -44,9 +44,9 @@ execution_context make_test_execution_context()
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(resource);
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::host_accessible))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
 		.LR_RETURN(resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
@@ -89,9 +89,9 @@ TEST_CASE( "Constructing a execution_context from an index should create and sto
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(device_optimal_memory_resource);
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::host_accessible))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
 		.LR_RETURN(host_accessible_memory_resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
@@ -116,8 +116,8 @@ TEST_CASE( "Constructing a execution_context from an index should create and sto
 	execution_context context(catalog, index);
 
 	CHECK( &context.get_device() == device.get() );
-	CHECK( &context.get_memory_allocator(target_placement::device_optimal) == device_optimal_memory_allocator.get() );
-	CHECK( &context.get_memory_allocator(target_placement::host_accessible) == host_accessible_memory_allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::device) == device_optimal_memory_allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == host_accessible_memory_allocator.get() );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_device_properties().get_name() == properties.get_name() );
 	CHECK( dynamic_cast<eager_operation_dispatcher*>(&context.get_operation_dispatcher()) );
@@ -143,9 +143,9 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(resource);
-	REQUIRE_CALL(*device, get_memory_resource(target_placement::host_accessible))
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
 		.LR_RETURN(resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
@@ -162,8 +162,8 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 	execution_context context(catalog, index);
 
 	CHECK( &context.get_device() == device.get() );
-	CHECK( &context.get_memory_allocator(hardware::target_placement::device_optimal) == allocator.get() );
-	CHECK( &context.get_memory_allocator(hardware::target_placement::host_accessible) == allocator.get() );
+	CHECK( &context.get_memory_allocator(hardware::memory_resource_affinity::device) == allocator.get() );
+	CHECK( &context.get_memory_allocator(hardware::memory_resource_affinity::host) == allocator.get() );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_device_properties().get_name() == properties.get_name() );
 	CHECK( dynamic_cast<eager_operation_dispatcher*>(&context.get_operation_dispatcher()) );
@@ -228,8 +228,8 @@ TEST_CASE( "Calling get_memory_allocator on a default initialized execution_cont
 {
 	execution_context context;
 	const auto target = GENERATE(
-		target_placement::device_optimal, 
-		target_placement::host_accessible
+		memory_resource_affinity::device, 
+		memory_resource_affinity::host
 	);
 
 	REQUIRE_THROWS_MATCHES(

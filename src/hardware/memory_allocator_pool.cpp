@@ -19,8 +19,8 @@ memory_allocator_pool::memory_allocator_pool(
 
 	for (std::size_t i = 0; i < m_allocators_by_placement.size(); ++i)
 	{
-		const auto placement = static_cast<target_placement>(i);
-		auto &resource = dev.get_memory_resource(placement);
+		const auto affinity = static_cast<memory_resource_affinity>(i);
+		auto &resource = dev.get_memory_resource(affinity);
 
 		auto ite = m_allocators.find(&resource);
 		if (ite == m_allocators.end())
@@ -36,10 +36,10 @@ memory_allocator_pool::memory_allocator_pool(
 }
 
 memory_allocator& memory_allocator_pool::get_memory_allocator(
-	target_placement placement
+	memory_resource_affinity affinity
 ) const
 {
-	const auto index = static_cast<std::size_t>(placement);
+	const auto index = static_cast<std::size_t>(affinity);
 	auto *allocator = m_allocators_by_placement.at(index);
 	XMIPP4_ASSERT(allocator);
 	return *allocator;

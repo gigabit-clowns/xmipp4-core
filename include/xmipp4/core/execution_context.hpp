@@ -3,7 +3,7 @@
 #pragma once
 
 #include "platform/dynamic_shared_object.h"
-#include "hardware/device.hpp"
+#include "hardware/memory_resource_affinity.hpp"
 
 #include <memory>
 
@@ -15,6 +15,7 @@ class service_catalog;
 namespace hardware
 {
 
+class device;
 class device_index;
 class device_properties;
 class device_queue;
@@ -85,10 +86,10 @@ public:
 	hardware::device& get_device() const;
 
 	/**
-	 * @brief Get the memory allocator responsible to allocate memory in the
-	 * requested placement.
+	 * @brief Get the memory allocator responsible to allocate memory with 
+	 * the requested affinity.
 	 * 
-	 * @param placement Region where memory should be placed.
+	 * @param affinity Intended usage for the allocated buffers.
 	 * @return memory_allocator& The memory allocator.
 	 * 
 	 * @note Depending on the memory architecture, some allocators may alias
@@ -96,7 +97,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	hardware::memory_allocator& 
-	get_memory_allocator(hardware::target_placement placement) const;
+	get_memory_allocator(hardware::memory_resource_affinity affinity) const;
 
 	/**
 	 * @brief Set the active queue.

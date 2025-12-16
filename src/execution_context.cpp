@@ -3,6 +3,7 @@
 #include <xmipp4/core/execution_context.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
+#include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
@@ -48,10 +49,10 @@ public:
 	}
 
 	hardware::memory_allocator& get_memory_allocator(
-		hardware::target_placement placement
+		hardware::memory_resource_affinity affinity
 	) const
 	{
-		return m_allocator_pool.get_memory_allocator(placement);
+		return m_allocator_pool.get_memory_allocator(affinity);
 	}
 
 	std::shared_ptr<hardware::device_queue> 
@@ -149,10 +150,10 @@ hardware::device& execution_context::get_device() const
 
 hardware::memory_allocator& 
 execution_context::get_memory_allocator(
-	hardware::target_placement placement
+	hardware::memory_resource_affinity affinity
 ) const
 {
-	return get_implementation().get_memory_allocator(placement);
+	return get_implementation().get_memory_allocator(affinity);
 }
 
 std::shared_ptr<hardware::device_queue> 

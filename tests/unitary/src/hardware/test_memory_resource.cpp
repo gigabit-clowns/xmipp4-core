@@ -15,7 +15,7 @@ TEST_CASE( "is_device_accessible should return true if the device's local memory
 	mock_device device;
 	mock_memory_resource resource;
 
-	REQUIRE_CALL(device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(resource);
 
 	REQUIRE( is_device_accessible(resource, device) == true );
@@ -27,7 +27,7 @@ TEST_CASE( "is_device_accessible should return true if the resource is device ac
 	mock_memory_resource resource;
 	mock_memory_resource another_resource;
 
-	REQUIRE_CALL(device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(another_resource);
 	REQUIRE_CALL( resource, get_kind() )
 		.RETURN( memory_resource_kind::device_local );
@@ -43,7 +43,7 @@ TEST_CASE( "is_device_accessible should return false if heuristics are not met",
 	mock_memory_resource resource;
 	mock_memory_resource another_resource;
 
-	REQUIRE_CALL(device, get_memory_resource(target_placement::device_optimal))
+	REQUIRE_CALL(device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(another_resource);
 
 	SECTION( "no target device" )

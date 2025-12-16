@@ -16,6 +16,10 @@ class array;
 class kernel;
 class kernel_manager;
 
+/**
+ * @brief De facto implementation of the dispatcher interface.
+ * 
+ */
 class eager_operation_dispatcher
 	: public operation_dispatcher
 {

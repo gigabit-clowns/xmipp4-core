@@ -237,6 +237,7 @@ void eager_operation_dispatcher::execute_kernel(
 		output_storages.size()
 	);
 	populate_output_storages(output_operands, read_write_storages, device);
+
 	boost::container::small_vector<
 		std::shared_ptr<const hardware::buffer>, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 

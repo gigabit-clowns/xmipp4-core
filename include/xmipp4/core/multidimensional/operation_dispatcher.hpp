@@ -16,6 +16,10 @@ namespace multidimensional
 class array;
 class operation;
 
+/**
+ * @brief Abstract class responsible of dispatching operations.
+ * 
+ */
 class operation_dispatcher
 {
 public:
@@ -29,6 +33,20 @@ public:
 	operation_dispatcher& operator=(const operation_dispatcher &other) = delete;
 	operation_dispatcher& operator=(operation_dispatcher &&other) = delete;
 
+	/**
+	 * @brief Dispatch the provided operation.
+	 * 
+	 * @param operation The operation to be dispatched.
+	 * @param output_operands The output operands of the operation. If provided
+	 * in a default constructed or invalid, their descriptors are inferred and t
+	 * heir storage is allocated. 
+	 * @param input_operands The input operands of the operation. Their 
+	 * descriptors must be consistent with the invariance defined by the 
+	 * operation and their storages must be accessible by the device used to 
+	 * execute the operation.
+	 * @param context The execution context containing all the ancillary 
+	 * objects required for dispatch.
+	 */
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,

@@ -147,7 +147,6 @@ static void record_queues(
 
 
 
-
 eager_operation_dispatcher::eager_operation_dispatcher(
 	const kernel_manager &manager
 ) noexcept
@@ -158,6 +157,30 @@ eager_operation_dispatcher::eager_operation_dispatcher(
 eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 
+
+void eager_operation_dispatcher::dispatch(
+	const operation &operation,
+	span<array> output_operands,
+	span<const array> input_operands,
+	const execution_context &context
+)
+{
+	const auto kernel = prepare_kernel(
+		operation,
+		output_operands,
+		input_operands,
+		context
+	);
+
+	XMIPP4_ASSERT( kernel );
+
+	execute_kernel(
+		*kernel, 
+		output_operands, 
+		input_operands, 
+		context
+	);
+}
 
 std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	const operation &operation,
@@ -231,30 +254,6 @@ void eager_operation_dispatcher::execute_kernel(
 		record_queues(read_write_storages, *queue);
 		record_queues(read_only_storages, *queue);
 	}
-}
-
-void eager_operation_dispatcher::dispatch(
-	const operation &operation,
-	span<array> output_operands,
-	span<const array> input_operands,
-	const execution_context &context
-)
-{
-	const auto kernel = prepare_kernel(
-		operation,
-		output_operands,
-		input_operands,
-		context
-	);
-
-	XMIPP4_ASSERT( kernel );
-
-	execute_kernel(
-		*kernel, 
-		output_operands, 
-		input_operands, 
-		context
-	);
 }
 
 } // namespace multidimensional

@@ -122,15 +122,29 @@ static void populate_input_storages(
 }
 
 static void record_queues(
-	span<const hardware::buffer> storages,
+	span<const std::shared_ptr<hardware::buffer>> storages,
 	hardware::device_queue &queue
 )
 {		
 	for (const auto &storage : storages)
 	{
-		storage.record_queue(queue);
+		XMIPP4_ASSERT(storage);
+		storage->record_queue(queue);
 	}
 }
+
+static void record_queues(
+	span<const std::shared_ptr<const hardware::buffer>> storages,
+	hardware::device_queue &queue
+)
+{		
+	for (const auto &storage : storages)
+	{
+		XMIPP4_ASSERT(storage);
+		storage->record_queue(queue);
+	}
+}
+
 
 
 
@@ -214,7 +228,8 @@ void eager_operation_dispatcher::execute_kernel(
 
 	if (queue)
 	{
-		// TODO
+		record_queues(read_write_storages, *queue);
+		record_queues(read_only_storages, *queue);
 	}
 }
 

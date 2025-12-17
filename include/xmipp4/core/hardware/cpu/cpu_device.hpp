@@ -25,9 +25,9 @@ public:
 	cpu_device() = default;
 	~cpu_device() override = default;
 
-	memory_resource& get_device_local_memory_resource() noexcept override;
-
-	memory_resource& get_host_accessible_memory_resource() noexcept override;
+	memory_resource& get_memory_resource(
+		memory_resource_affinity affinity
+	) override;
 
 	std::shared_ptr<device_queue> create_device_queue() override;
 

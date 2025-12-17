@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#pragma once
-
 #include "array_implementation.hpp"
 
 namespace xmipp4 
@@ -9,6 +7,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
+inline
 array_implementation::array_implementation(
 	std::shared_ptr<hardware::buffer> storage,
 	array_descriptor descriptor
@@ -18,16 +17,19 @@ array_implementation::array_implementation(
 {
 }
 
+inline
 const array_descriptor& array_implementation::get_descriptor() const noexcept
 {
 	return m_descriptor;
 }
 
+inline
 hardware::buffer* array_implementation::get_storage() const noexcept
 {
 	return m_storage.get();
 }
 
+inline
 const std::shared_ptr<hardware::buffer>& 
 array_implementation::share_storage() const noexcept
 {

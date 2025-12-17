@@ -2,48 +2,12 @@
 
 #include <xmipp4/core/multidimensional/array.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include "array_implementation.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
-
-class array::implementation
-{
-public:
-	implementation() = default;
-	implementation(
-		std::shared_ptr<hardware::buffer> storage,
-		array_descriptor descriptor
-	) noexcept
-		: m_storage(std::move(storage))
-		, m_descriptor(std::move(descriptor))
-	{
-	}
-
-	const array_descriptor& get_descriptor() const noexcept
-	{
-		return m_descriptor;
-	}
-
-	hardware::buffer* get_storage() const noexcept
-	{
-		return m_storage.get();
-	}
-
-	const std::shared_ptr<hardware::buffer>& share_storage() const noexcept
-	{
-		return m_storage;
-	}
-
-private:
-	std::shared_ptr<hardware::buffer> m_storage;
-	array_descriptor m_descriptor;
-
-};
 
 array::array() = default;
 array::array(array&& other) noexcept = default;
@@ -55,7 +19,7 @@ array::array(
 	array_descriptor descriptor
 )
 	: array(
-		std::make_shared<implementation>(
+		std::make_shared<array_implementation>(
 			std::move(storage), 
 			std::move(descriptor)
 		)
@@ -63,8 +27,10 @@ array::array(
 {
 }
 
-array::array(std::shared_ptr<const implementation> impl) noexcept
-	: m_implementation(std::move(impl))
+array::array(
+	std::shared_ptr<const array_implementation> implementation
+) noexcept
+	: m_implementation(std::move(implementation))
 {
 }
 
@@ -93,7 +59,7 @@ const hardware::buffer* array::get_storage() const noexcept
 		nullptr;
 }
 
-std::shared_ptr<const hardware::buffer> array::share_storage() const noexcept
+std::shared_ptr<hardware::buffer> array::share_storage() noexcept
 {
 	return
 		m_implementation ? 
@@ -101,7 +67,7 @@ std::shared_ptr<const hardware::buffer> array::share_storage() const noexcept
 		nullptr;
 }
 
-std::shared_ptr<hardware::buffer> array::share_storage() noexcept
+std::shared_ptr<const hardware::buffer> array::share_storage() const noexcept
 {
 	return
 		m_implementation ? 
@@ -112,6 +78,11 @@ std::shared_ptr<hardware::buffer> array::share_storage() noexcept
 array array::share() noexcept
 {
 	return array(m_implementation);
+}
+
+array_view array::share() const noexcept
+{
+	return array_view(m_implementation);
 }
 
 } // namespace multidimensional

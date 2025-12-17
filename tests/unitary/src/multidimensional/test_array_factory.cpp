@@ -33,11 +33,11 @@ execution_context make_test_device_context()
 
 	auto device_backend = std::make_unique<hardware::mock_device_backend>();
 	auto device = std::make_shared<hardware::mock_device>();
-	hardware::mock_memory_resource device_optimal_memory_resource;
-	hardware::mock_memory_resource host_accessible_memory_resource;
-	const auto device_optimal_allocator = 
+	hardware::mock_memory_resource device_memory_resource;
+	hardware::mock_memory_resource host_memory_resource;
+	const auto device_allocator = 
 		std::make_shared<hardware::mock_memory_allocator>();
-	const auto host_accessible_allocator = 
+	const auto host_allocator = 
 		std::make_shared<hardware::mock_memory_allocator>();
 	auto allocator_backend = 
 		std::make_unique<hardware::mock_memory_allocator_backend>();
@@ -51,22 +51,22 @@ execution_context make_test_device_context()
 		.RETURN(device);
 	
 	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::device))
-		.LR_RETURN(device_optimal_memory_resource);
+		.LR_RETURN(device_memory_resource);
 	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::host))
-		.LR_RETURN(host_accessible_memory_resource);
+		.LR_RETURN(host_memory_resource);
 
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
-		.LR_WITH(&_1 == &device_optimal_memory_resource)
+		.LR_WITH(&_1 == &device_memory_resource)
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
-		.LR_WITH(&_1 == &host_accessible_memory_resource)
+		.LR_WITH(&_1 == &host_memory_resource)
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
-		.LR_WITH(&_1 == &device_optimal_memory_resource)
-		.RETURN(device_optimal_allocator);
+		.LR_WITH(&_1 == &device_memory_resource)
+		.RETURN(device_allocator);
 	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
-		.LR_WITH(&_1 == &host_accessible_memory_resource)
-		.RETURN(host_accessible_allocator);
+		.LR_WITH(&_1 == &host_memory_resource)
+		.RETURN(host_allocator);
 
 	service_catalog catalog(false);
 	catalog.get_service_manager<hardware::device_manager>()

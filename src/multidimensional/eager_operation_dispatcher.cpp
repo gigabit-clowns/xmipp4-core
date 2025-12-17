@@ -5,6 +5,7 @@
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
@@ -53,7 +54,7 @@ static bool check_storage_placement(
 	return hardware::is_device_accessible(memory_resource, device);
 }
 
-static void populate_descriptors(
+static void populate_output_descriptors(
 	span<const array> operands,
 	span<array_descriptor> descriptors
 )
@@ -62,6 +63,18 @@ static void populate_descriptors(
 		operands.end(),
 		descriptors.begin(),
 		std::mem_fn(&array::get_descriptor)
+	);
+}
+
+static void populate_input_descriptors(
+	span<const array_view> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array_view::get_descriptor)
 	);
 }
 
@@ -89,7 +102,7 @@ static void populate_output_storages(
 }
 
 static void populate_input_storages(
-	span<const array> operands,
+	span<const array_view> operands,
 	span<std::shared_ptr<const hardware::buffer>> storages,
 	hardware::device &device
 )
@@ -161,7 +174,7 @@ eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
-	span<const array> input_operands,
+	span<const array_view> input_operands,
 	const execution_context &context
 )
 {
@@ -185,7 +198,7 @@ void eager_operation_dispatcher::dispatch(
 std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 	const operation &operation,
 	span<array> output_operands,
-	span<const array> input_operands,
+	span<const array_view> input_operands,
 	const execution_context &context
 ) const
 {
@@ -201,12 +214,12 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 		descriptors.data(), 
 		n_outputs
 	);
-	populate_descriptors(output_operands, output_descriptors);
+	populate_output_descriptors(output_operands, output_descriptors);
 	const span<array_descriptor> input_descriptors(
 		descriptors.data() + n_outputs, 
 		n_inputs
 	);
-	populate_descriptors(input_operands, input_descriptors);
+	populate_input_descriptors(input_operands, input_descriptors);
 
 	operation.sanitize_operands(output_descriptors, input_descriptors);
 	allocate_output(output_operands, output_descriptors, context);
@@ -221,7 +234,7 @@ std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
 void eager_operation_dispatcher::execute_kernel(
 	const kernel &kernel,
 	span<array> output_operands,
-	span<const array> input_operands,
+	span<const array_view> input_operands,
 	const execution_context &context
 ) const
 {

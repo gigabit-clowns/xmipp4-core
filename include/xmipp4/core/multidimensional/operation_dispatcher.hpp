@@ -14,6 +14,7 @@ namespace multidimensional
 {
 
 class array;
+class array_view;
 class operation;
 
 /**
@@ -50,7 +51,7 @@ public:
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array> input_operands,
+		span<const array_view> input_operands,
 		const execution_context &context
 	) = 0;
 };

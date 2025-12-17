@@ -37,7 +37,7 @@ public:
 	void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array> input_operands,
+		span<const array_view> input_operands,
 		const execution_context &context
 	) override;
 
@@ -47,14 +47,14 @@ private:
 	std::shared_ptr<kernel> prepare_kernel(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array> input_operands,
+		span<const array_view> input_operands,
 		const execution_context &context
 	) const;
 
 	void execute_kernel(
 		const kernel &kernel,
 		span<array> output_operands,
-		span<const array> input_operands,
+		span<const array_view> input_operands,
 		const execution_context &context
 	) const;
 

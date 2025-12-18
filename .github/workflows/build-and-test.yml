@@ -55,9 +55,9 @@ jobs:
         id: cl-path
         shell: bash
         run: |
-          find /c/ -name "vcvars64.bat"
-          which $cl
+          which cl
           false
+      #    find /c/ -name "vcvars64.bat"
       #    find /c/ -name "cl.exe"
 
       - name: Configure and build with CMake

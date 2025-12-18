@@ -45,7 +45,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
-        uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
+        uses: ./.github/composites/install-cpp-coverage-tool
         with:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -69,7 +69,7 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
-        uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
+        uses: ./.github/composites/run-ctest/coverage-report
         with:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
@@ -81,13 +81,6 @@ jobs:
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
           path: coverage.xml
-      
-      - name: Pycobertura (TODO remove)
-        shell: bash
-        run: |
-          pip install --upgrade pip
-          pip install pycobertura
-          pycobertura show --format=text coverage.xml
 
       #- name: Upload build folder (ubuntu-latest + gcc only)
       #  uses: actions/upload-artifact@v5

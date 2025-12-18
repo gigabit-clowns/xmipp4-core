@@ -45,7 +45,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
-        uses: ./.github/composites/install-cpp-coverage-tool
+        uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
         with:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}

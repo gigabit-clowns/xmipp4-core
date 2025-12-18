@@ -100,7 +100,13 @@ array empty(
 		storage = allocator.allocate(storage_requirement, alignment, queue);
 	}
 
-	return array(std::move(storage), std::move(descriptor));
+	array result(std::move(storage), std::move(descriptor));
+	if (out)
+	{
+		//*out = result.share(); // TODO update tests and uncomment this
+	}
+
+	return result;
 }
 
 } // namespace multidimensional

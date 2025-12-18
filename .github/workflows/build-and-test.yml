@@ -76,18 +76,15 @@ jobs:
           cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
           report-path: ${{ github.workspace }}/coverage.xml
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v5
-        with:
-          name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
-          path: coverage.xml
+      #- name: Upload coverage report
+      #  uses: actions/upload-artifact@v5
+      #  with:
+      #    name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
+      #    path: coverage.xml
 
-      - name: Upload build folder (TODO REMOVE)
-        uses: actions/upload-artifact@v5
-        if: matrix.os == 'windows-latest' && matrix.compiler.c == 'cl'
-        with:
-          name: build-artifact
-          path: build
+      - name: Search compilation commands
+        shell: bash
+        run: find . -name "compile_commands.json"
 
       - name: SonarQube scan for workflow_dispatch
         uses: SonarSource/sonarqube-scan-action@v6

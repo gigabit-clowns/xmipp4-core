@@ -29,6 +29,7 @@ jobs:
         #  compiler: {c: clang, cxx: clang++}
         - os: windows-latest
           compiler: {c: cl, cxx: cl}
+          generator: "Ninja" # TODO: Remove
         #- os: windows-latest
         #  compiler: {c: gcc, cxx: g++}
         #  generator: "Ninja"

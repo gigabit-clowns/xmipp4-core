@@ -27,82 +27,94 @@ using namespace xmipp4::hardware;
 static
 device_context make_test_device_context()
 {
-	const device_index index("mock", 1234);
+	const hardware::device_index index("mock", 1234);
 
-	auto device_backend = std::make_unique<mock_device_backend>();
-	auto device = std::make_shared<mock_device>();
-	mock_memory_resource resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
-	auto allocator = std::make_shared<mock_memory_allocator>();
-
+	auto device_backend = std::make_unique<hardware::mock_device_backend>();
+	auto device = std::make_shared<hardware::mock_device>();
+	hardware::mock_memory_resource device_memory_resource;
+	hardware::mock_memory_resource host_memory_resource;
+	const auto device_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	const auto host_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	auto allocator_backend = 
+		std::make_unique<hardware::mock_memory_allocator_backend>();
 
 	REQUIRE_CALL(*device_backend, get_name())
-		.RETURN("mock");
-	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
-		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(64))
+		.RETURN(index.get_backend_name());
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(hardware::device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
 		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_device_local_memory_resource())
-		.LR_RETURN(resource);
-	REQUIRE_CALL(*device, get_host_accessible_memory_resource())
-		.LR_RETURN(resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::device))
+		.LR_RETURN(device_memory_resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::host))
+		.LR_RETURN(host_memory_resource);
 
-	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-		.LR_WITH(&_1 == &resource)
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_memory_resource)
 		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-		.LR_WITH(&_1 == &resource)
-		.RETURN(allocator);
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_memory_resource)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_memory_resource)
+		.RETURN(device_allocator);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_memory_resource)
+		.RETURN(host_allocator);
 
 	service_catalog catalog(false);
-	catalog.get_service_manager<device_manager>()
+	catalog.get_service_manager<hardware::device_manager>()
 		.register_backend(std::move(device_backend));
-	catalog.get_service_manager<memory_allocator_manager>()
+	catalog.get_service_manager<hardware::memory_allocator_manager>()
 		.register_backend(std::move(allocator_backend));
 
-	return device_context(catalog, index);
+	return hardware::device_context(catalog, index);
 }
-
 
 TEST_CASE( "Constructing a device_context from an index should create and store the appropiate device resources", "[device_context]" )
 {
 	const device_index index("mock", 1234);
 
-	auto device_backend = std::make_unique<mock_device_backend>();
-	auto device = std::make_shared<mock_device>();
-	mock_memory_resource device_local_memory_resource;
-	mock_memory_resource host_accessible_memory_resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
-	auto device_local_memory_allocator = std::make_shared<mock_memory_allocator>();
-	auto host_accessible_memory_allocator = std::make_shared<mock_memory_allocator>();
+	auto device_backend = std::make_unique<hardware::mock_device_backend>();
+	auto device = std::make_shared<hardware::mock_device>();
+	hardware::mock_memory_resource device_memory_resource;
+	hardware::mock_memory_resource host_memory_resource;
+	const auto device_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	const auto host_allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	auto allocator_backend = 
+		std::make_unique<hardware::mock_memory_allocator_backend>();
 
 	REQUIRE_CALL(*device_backend, get_name())
-		.RETURN("mock");
-	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+		.RETURN(index.get_backend_name());
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(hardware::device_properties&)))
 		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(64))
 		.RETURN(true);
 	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
 		.RETURN(device);
 	
-	REQUIRE_CALL(*device, get_device_local_memory_resource())
-		.LR_RETURN(device_local_memory_resource);
-	REQUIRE_CALL(*device, get_host_accessible_memory_resource())
-		.LR_RETURN(host_accessible_memory_resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::device))
+		.LR_RETURN(device_memory_resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::host))
+		.LR_RETURN(host_memory_resource);
 
-	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-		.LR_WITH(&_1 == &device_local_memory_resource)
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_memory_resource)
 		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-		.LR_WITH(&_1 == &host_accessible_memory_resource)
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_memory_resource)
 		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-		.LR_WITH(&_1 == &device_local_memory_resource)
-		.RETURN(device_local_memory_allocator);
-	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-		.LR_WITH(&_1 == &host_accessible_memory_resource)
-		.RETURN(host_accessible_memory_allocator);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_memory_resource)
+		.RETURN(device_allocator);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_memory_resource)
+		.RETURN(host_allocator);
 
 	service_catalog catalog(false);
 	catalog.get_service_manager<device_manager>()
@@ -113,9 +125,56 @@ TEST_CASE( "Constructing a device_context from an index should create and store 
 	device_context context(catalog, index);
 
 	CHECK( &context.get_device() == device.get() );
-	CHECK( &context.get_memory_allocator(target_placement::device_optimal) == device_local_memory_allocator.get() );
-	CHECK( &context.get_memory_allocator(target_placement::host_accessible) == host_accessible_memory_allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::device) == device_allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == host_allocator.get() );
 	CHECK( context.get_optimal_data_alignment() == 64 );
+	CHECK( context.get_active_queue() == nullptr );
+}
+
+TEST_CASE( "Constructing a device_context for a device with unified memory should share a single allocator", "[device_context]" )
+{
+	const device_index index("mock", 1234);
+
+	auto device_backend = std::make_unique<hardware::mock_device_backend>();
+	auto device = std::make_shared<hardware::mock_device>();
+	hardware::mock_memory_resource resource;
+	const auto allocator = 
+		std::make_shared<hardware::mock_memory_allocator>();
+	auto allocator_backend = 
+		std::make_unique<hardware::mock_memory_allocator_backend>();
+
+	REQUIRE_CALL(*device_backend, get_name())
+		.RETURN(index.get_backend_name());
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(hardware::device_properties&)))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
+		.RETURN(true);
+	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
+		.RETURN(device);
+	
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::device))
+		.LR_RETURN(resource);
+	REQUIRE_CALL(*device, get_memory_resource(hardware::memory_resource_affinity::host))
+		.LR_RETURN(resource);
+
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &resource)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &resource)
+		.RETURN(allocator);
+
+	service_catalog catalog(false);
+	catalog.get_service_manager<device_manager>()
+		.register_backend(std::move(device_backend));
+	catalog.get_service_manager<memory_allocator_manager>()
+		.register_backend(std::move(allocator_backend));
+
+	device_context context(catalog, index);
+
+	CHECK( &context.get_device() == device.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::device) == allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == allocator.get() );
+	CHECK( context.get_optimal_data_alignment() == 256 );
 	CHECK( context.get_active_queue() == nullptr );
 }
 
@@ -139,49 +198,6 @@ TEST_CASE( "Constructing a device_context from an invalid index should throw", "
 		std::invalid_argument,
 		Catch::Matchers::Message("Requested device index does not exist")
 	);
-}
-
-TEST_CASE( "Constructing a device_context for a device with unified memory should share a single allocator", "[device_context]" )
-{
-	const device_index index("mock", 1234);
-
-	auto device_backend = std::make_unique<mock_device_backend>();
-	auto device = std::make_shared<mock_device>();
-	mock_memory_resource resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
-	auto allocator = std::make_shared<mock_memory_allocator>();
-
-	REQUIRE_CALL(*device_backend, get_name())
-		.RETURN("mock");
-	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
-		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
-		.RETURN(true);
-	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
-		.RETURN(device);
-	
-	REQUIRE_CALL(*device, get_device_local_memory_resource())
-		.LR_RETURN(resource);
-	REQUIRE_CALL(*device, get_host_accessible_memory_resource())
-		.LR_RETURN(resource);
-
-	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-		.LR_WITH(&_1 == &resource)
-		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-		.LR_WITH(&_1 == &resource)
-		.RETURN(allocator);
-
-	service_catalog catalog(false);
-	catalog.get_service_manager<device_manager>().register_backend(std::move(device_backend));
-	catalog.get_service_manager<memory_allocator_manager>().register_backend(std::move(allocator_backend));
-
-	device_context context(catalog, index);
-
-	CHECK( &context.get_device() == device.get() );
-	CHECK( &context.get_memory_allocator(target_placement::device_optimal) == allocator.get() );
-	CHECK( &context.get_memory_allocator(target_placement::host_accessible) == allocator.get() );
-	CHECK( context.get_optimal_data_alignment() == 256 );
-	CHECK( context.get_active_queue() == nullptr );
 }
 
 TEST_CASE( "Calling set_active queue on a device_context should update the active queue and return the previous one", "[device_context]" )
@@ -221,8 +237,8 @@ TEST_CASE( "Calling get_memory_allocator on a default initialized device_context
 {
 	device_context context;
 	const auto target = GENERATE(
-		target_placement::device_optimal, 
-		target_placement::host_accessible
+		memory_resource_affinity::device, 
+		memory_resource_affinity::host
 	);
 
 	REQUIRE_THROWS_MATCHES(

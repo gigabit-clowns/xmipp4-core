@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "memory_resource_affinity.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -18,18 +19,6 @@ class device;
 class device_index;
 class device_queue;
 class memory_allocator;
-
-/**
- * @brief Enumeration describing where the data should be placed.
- */
-enum class target_placement
-{
-	/// The data should be placed in a host accessible memory resource.
-	host_accessible, 
-	/// The data should be placed such that it can be optimally accessed by 
-	/// the device.
-	device_optimal
-};
 
 /**
  * @brief Centralization and management of device related resources.
@@ -77,14 +66,17 @@ public:
 	 * @brief Get the memory allocator responsible to allocate memory in the
 	 * requested placement.
 	 * 
-	 * @param placement Region where memory should be placed.
+	 * @param affinity Region where memory should be placed.
 	 * @return memory_allocator& The memory allocator.
 	 * 
 	 * @note Depending on the memory architecture, some allocators may alias
 	 * each other.
 	 */
 	XMIPP4_CORE_API
-	memory_allocator& get_memory_allocator(target_placement placement) const;
+	memory_allocator& get_memory_allocator(
+		memory_resource_affinity affinity
+	) const;
+
 	/**
 	 * @brief Get the optimal data alignment for the device.
 	 * 

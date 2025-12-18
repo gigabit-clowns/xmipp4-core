@@ -9,6 +9,8 @@
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
+#include "memory_allocator_pool.hpp"
+
 namespace xmipp4
 {
 namespace hardware
@@ -33,32 +35,12 @@ public:
 		}
 
 		m_device = dev_manager.create_device(index);
-
 		XMIPP4_ASSERT( m_device );
-		auto &device_optimal_memory_resource = 
-			m_device->get_device_local_memory_resource();
-		auto &host_accessible_memory_resource = 
-			m_device->get_host_accessible_memory_resource();
-		
-		const auto &alloc_manager = 
-			catalog.get_service_manager<memory_allocator_manager>();
-		m_device_optimal_memory_allocator = 
-			alloc_manager.create_memory_allocator(
-				device_optimal_memory_resource
-			);
 
-		if (&device_optimal_memory_resource == &host_accessible_memory_resource)
-		{
-			m_host_accessible_memory_allocator = 
-				m_device_optimal_memory_allocator;
-		}
-		else
-		{
-			m_host_accessible_memory_allocator = 
-				alloc_manager.create_memory_allocator(
-					host_accessible_memory_resource
-				);
-		}
+		m_allocator_pool = std::make_unique<memory_allocator_pool>(
+			*m_device,
+			catalog.get_service_manager<memory_allocator_manager>()
+		);
 
 		m_optimal_data_alignment = properties.get_optimal_data_alignment();
 	}
@@ -69,29 +51,12 @@ public:
 		return *m_device;
 	}
 
-	memory_allocator& get_memory_allocator(target_placement placement) const
+	memory_allocator& get_memory_allocator(
+		memory_resource_affinity affinity
+	) const
 	{
-		switch (placement)
-		{
-		case target_placement::device_optimal:
-			return get_device_optimal_memory_allocator();
-		case target_placement::host_accessible:
-			return get_host_accessible_memory_allocator();
-		default:
-			throw std::invalid_argument("Invalid placement was provided");
-		}
-	}
-
-	memory_allocator& get_device_optimal_memory_allocator() const noexcept
-	{
-		XMIPP4_ASSERT( m_device_optimal_memory_allocator );
-		return *m_device_optimal_memory_allocator;
-	}
-
-	memory_allocator& get_host_accessible_memory_allocator() const noexcept
-	{
-		XMIPP4_ASSERT( m_host_accessible_memory_allocator );
-		return *m_host_accessible_memory_allocator;
+		XMIPP4_ASSERT(m_allocator_pool);
+		return m_allocator_pool->get_memory_allocator(affinity);
 	}
 
 	std::size_t get_optimal_data_alignment() const noexcept
@@ -113,9 +78,8 @@ public:
 
 private:
 	std::shared_ptr<device> m_device;
+	std::unique_ptr<memory_allocator_pool> m_allocator_pool;
 	std::shared_ptr<device_queue> m_active_queue;
-	std::shared_ptr<memory_allocator> m_device_optimal_memory_allocator;
-	std::shared_ptr<memory_allocator> m_host_accessible_memory_allocator;
 	std::size_t m_optimal_data_alignment;
 };
 
@@ -144,9 +108,9 @@ device& device_context::get_device() const
 }
 
 memory_allocator& 
-device_context::get_memory_allocator(target_placement placement) const
+device_context::get_memory_allocator(memory_resource_affinity affinity) const
 {
-	return get_implementation().get_memory_allocator(placement);
+	return get_implementation().get_memory_allocator(affinity);
 }
 
 std::size_t device_context::get_optimal_data_alignment() const

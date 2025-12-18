@@ -23,7 +23,6 @@ class memory_allocator_manager;
  * 
  * This class organizes memory allocators efficiently by overlapping them when 
  * memory_resources alias one another (like in unified architectures).
- * 
  */
 class memory_allocator_pool
 {

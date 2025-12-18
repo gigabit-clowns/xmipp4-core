@@ -32,6 +32,47 @@ using namespace xmipp4;
 using namespace xmipp4::hardware;
 using namespace xmipp4::multidimensional;
 
+namespace {
+
+template<typename ArrayT>
+void allocate_device_arrays(
+	std::size_t count,
+	const array_descriptor &descriptor,
+	memory_resource &device_resource,
+	const std::shared_ptr<mock_memory_allocator> &device_allocator,
+	execution_context &context,
+	std::vector<std::shared_ptr<buffer>> &buffers,
+	std::vector<ArrayT> &arrays
+)
+{
+	buffers.resize(count);
+	arrays.resize(count);
+
+	const auto size = compute_storage_requirement(descriptor);
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		buffers[i] = std::make_shared<buffer>(
+			nullptr, 
+			size, 
+			device_resource, 
+			nullptr
+		);
+
+		REQUIRE_CALL(*device_allocator, get_max_alignment())
+			.RETURN(256);
+		REQUIRE_CALL(*device_allocator, allocate(size, 256, nullptr))
+			.RETURN(buffers[i]);
+
+		arrays[i] = empty(
+			descriptor,
+			memory_resource_affinity::device,
+			context
+		);
+	}
+}
+} // anonymous namespace
+
 TEST_CASE("eager_operation_dispatcher should execute a properly configured kernel", "[eager_operation_dispatcher]")
 {
 	const hardware::device_index index("mock", 1234);
@@ -83,63 +124,35 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		context = execution_context(catalog, index);
 	}
 
-	const std::array<std::size_t, 4> extents1 = {8, 64, 3, 4};
-	const array_descriptor descriptor1(
-		strided_layout::make_contiguous_layout(make_span(extents1)),
+	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
 		numerical_type::float32
 	);
-	const std::array<std::size_t, 2> extents2 = {8, 64};
-	const array_descriptor descriptor2(
-		strided_layout::make_contiguous_layout(make_span(extents1)),
-		numerical_type::int64
+
+	std::vector<std::shared_ptr<buffer>> input_buffers;
+	std::vector<array_view> input_arrays;
+	allocate_device_arrays<array_view>(
+		3, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		input_buffers, 
+		input_arrays
 	);
 
-	std::array<std::shared_ptr<buffer>, 3> input_buffers;
-	std::array<array_view, 3> input_arrays;
-	for (std::size_t i = 0; i < input_arrays.size(); ++i)
-	{
-
-		input_buffers[i] = std::make_shared<buffer>(
-			nullptr, 
-			24576, 
-			device_resource, 
-			nullptr
-		);
-
-		REQUIRE_CALL(*device_allocator, get_max_alignment())
-			.RETURN(256);
-		REQUIRE_CALL(*device_allocator, allocate(24576, 256, nullptr))
-			.RETURN(input_buffers[i]);
-
-		input_arrays[i] = empty(
-			descriptor1, 
-			memory_resource_affinity::device,
-			context
-		);
-	}
-
-	std::array<std::shared_ptr<buffer>, 2> output_buffers;
-	std::array<array, 2> output_arrays;
-	for (std::size_t i = 0; i < output_arrays.size(); ++i)
-	{
-		output_buffers[i] = std::make_shared<buffer>(
-			nullptr, 
-			24576, 
-			device_resource, 
-			nullptr
-		);
-
-		REQUIRE_CALL(*device_allocator, get_max_alignment())
-			.RETURN(256);
-		REQUIRE_CALL(*device_allocator, allocate(24576, 256, nullptr))
-			.RETURN(output_buffers[i]);
-
-		output_arrays[i] = empty(
-			descriptor1, 
-			memory_resource_affinity::device,
-			context
-		);
-	}
+	std::vector<std::shared_ptr<buffer>> output_buffers;
+	std::vector<array> output_arrays;
+	allocate_device_arrays<array>(
+		2, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		output_buffers, 
+		output_arrays
+	);
 
 	ALLOW_CALL(*device_allocator, get_memory_resource())
 		.LR_RETURN(device_resource);
@@ -149,21 +162,21 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 	REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
 		.LR_WITH(&_1 == &operation)
 		.WITH(_2.size() == 5)
-		.WITH(_2[0] == descriptor1)
-		.WITH(_2[1] == descriptor1)
-		.WITH(_2[2] == descriptor1)
-		.WITH(_2[3] == descriptor1)
-		.WITH(_2[4] == descriptor1)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
 		.LR_WITH(&_3 == &context.get_device())
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(*kernel_builder, build(trompeloeil::_, trompeloeil::_, trompeloeil::_))
 		.LR_WITH(&_1 == &operation)
 		.WITH(_2.size() == 5)
-		.WITH(_2[0] == descriptor1)
-		.WITH(_2[1] == descriptor1)
-		.WITH(_2[2] == descriptor1)
-		.WITH(_2[3] == descriptor1)
-		.WITH(_2[4] == descriptor1)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
 		.LR_WITH(&_3 == &context.get_device())
 		.RETURN(kernel);
 
@@ -177,12 +190,12 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 
 	REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
 		.WITH(_1.size() == 2)
-		.WITH(_1[0] == descriptor1)
-		.WITH(_1[1] == descriptor1)
+		.WITH(_1[0] == descriptor)
+		.WITH(_1[1] == descriptor)
 		.WITH(_2.size() == 3)
-		.WITH(_2[0] == descriptor1)
-		.WITH(_2[1] == descriptor1)
-		.WITH(_2[2] == descriptor1);
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor);
 
 	REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, nullptr))
 		.WITH(_1.size() == 2)

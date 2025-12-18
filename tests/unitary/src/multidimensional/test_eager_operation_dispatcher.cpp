@@ -252,3 +252,316 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		context
 	);
 }
+
+TEST_CASE("eager_operation_dispatcher should throw if an storage-less input array is provided", "[eager_operation_dispatcher]")
+{
+	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
+	const hardware::device_index index("mock", 1234);
+	auto device_backend = std::make_unique<mock_device_backend>();
+	auto device = std::make_shared<mock_device>();
+	mock_memory_resource device_resource;
+	mock_memory_resource host_resource;
+	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
+	auto device_allocator = std::make_shared<mock_memory_allocator>();
+	auto host_allocator = std::make_shared<mock_memory_allocator>();
+	service_catalog catalog(false);
+	mock_operation operation;
+	auto kernel_builder = std::make_unique<mock_kernel_builder>();
+	auto kernel = std::make_shared<mock_kernel>();
+	auto queue = GENERATE(
+		std::shared_ptr<mock_device_queue>(),
+		std::make_shared<mock_device_queue>()
+	);
+
+	execution_context context;
+	{
+		REQUIRE_CALL(*device_backend, get_name())
+			.RETURN(index.get_backend_name());
+		REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+			.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
+			.RETURN(true);
+		REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
+			.RETURN(device);
+		
+		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
+			.LR_RETURN(device_resource);
+		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
+			.LR_RETURN(host_resource);
+
+		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
+			.LR_WITH(&_1 == &device_resource)
+			.RETURN(backend_priority::normal);
+		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
+			.LR_WITH(&_1 == &device_resource)
+			.RETURN(device_allocator);
+		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
+			.LR_WITH(&_1 == &host_resource)
+			.RETURN(backend_priority::normal);
+		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
+			.LR_WITH(&_1 == &host_resource)
+			.RETURN(host_allocator);
+
+		catalog.get_service_manager<device_manager>()
+			.register_backend(std::move(device_backend));
+		catalog.get_service_manager<memory_allocator_manager>()
+			.register_backend(std::move(allocator_backend));
+
+		context = execution_context(catalog, index);
+		context.set_active_queue(queue);
+	}
+
+	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32
+	);
+
+	std::vector<std::shared_ptr<buffer>> input_buffers;
+	std::vector<array_view> input_arrays;
+	allocate_device_arrays<array_view>(
+		2, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		input_buffers, 
+		input_arrays
+	);
+	array empty(nullptr, descriptor);
+	input_arrays.emplace_back(empty);
+
+	std::vector<std::shared_ptr<buffer>> output_buffers;
+	std::vector<array> output_arrays;
+	allocate_device_arrays<array>(
+		2, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		output_buffers, 
+		output_arrays
+	);
+
+	ALLOW_CALL(*device_allocator, get_memory_resource())
+		.LR_RETURN(device_resource);
+	ALLOW_CALL(*device, get_memory_resource(memory_resource_affinity::device))
+		.LR_RETURN(device_resource);
+
+	REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+		.LR_WITH(&_1 == &operation)
+		.WITH(_2.size() == 5)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
+		.LR_WITH(&_3 == &context.get_device())
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*kernel_builder, build(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+		.LR_WITH(&_1 == &operation)
+		.WITH(_2.size() == 5)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
+		.LR_WITH(&_3 == &context.get_device())
+		.RETURN(kernel);
+
+	{
+		REQUIRE_CALL(*kernel_builder, get_operation_id())
+			.LR_RETURN(operation.get_id());
+
+		catalog.get_service_manager<kernel_manager>()
+			.register_kernel(std::move(kernel_builder));
+	}
+
+	REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
+		.WITH(_1.size() == 2)
+		.WITH(_1[0] == descriptor)
+		.WITH(_1[1] == descriptor)
+		.WITH(_2.size() == 3)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor);
+
+	eager_operation_dispatcher dispatcher(
+		catalog.get_service_manager<kernel_manager>()
+	);
+
+	REQUIRE_THROWS_MATCHES(
+		dispatcher.dispatch(
+			operation,
+			make_span(output_arrays),
+			make_span(input_arrays),
+			context
+		),
+		std::invalid_argument,
+		Catch::Matchers::Message(
+			"One of the input operands does not an associated storage"
+		)
+	);
+}
+
+TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropriate memory resource is provided", "[eager_operation_dispatcher]")
+{
+	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
+	const hardware::device_index index("mock", 1234);
+	auto device_backend = std::make_unique<mock_device_backend>();
+	auto device = std::make_shared<mock_device>();
+	mock_memory_resource device_resource;
+	mock_memory_resource host_resource;
+	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
+	auto device_allocator = std::make_shared<mock_memory_allocator>();
+	auto host_allocator = std::make_shared<mock_memory_allocator>();
+	service_catalog catalog(false);
+	mock_operation operation;
+	auto kernel_builder = std::make_unique<mock_kernel_builder>();
+	auto kernel = std::make_shared<mock_kernel>();
+	auto queue = GENERATE(
+		std::shared_ptr<mock_device_queue>(),
+		std::make_shared<mock_device_queue>()
+	);
+
+	execution_context context;
+	{
+		REQUIRE_CALL(*device_backend, get_name())
+			.RETURN(index.get_backend_name());
+		REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
+			.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
+			.RETURN(true);
+		REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
+			.RETURN(device);
+		
+		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
+			.LR_RETURN(device_resource);
+		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
+			.LR_RETURN(host_resource);
+
+		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
+			.LR_WITH(&_1 == &device_resource)
+			.RETURN(backend_priority::normal);
+		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
+			.LR_WITH(&_1 == &device_resource)
+			.RETURN(device_allocator);
+		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
+			.LR_WITH(&_1 == &host_resource)
+			.RETURN(backend_priority::normal);
+		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
+			.LR_WITH(&_1 == &host_resource)
+			.RETURN(host_allocator);
+
+		catalog.get_service_manager<device_manager>()
+			.register_backend(std::move(device_backend));
+		catalog.get_service_manager<memory_allocator_manager>()
+			.register_backend(std::move(allocator_backend));
+
+		context = execution_context(catalog, index);
+		context.set_active_queue(queue);
+	}
+
+	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32
+	);
+
+	std::vector<std::shared_ptr<buffer>> input_buffers;
+	std::vector<array_view> input_arrays;
+	allocate_device_arrays<array_view>(
+		2, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		input_buffers, 
+		input_arrays
+	);
+	mock_memory_resource inappropriate_resource;
+	auto inappropriate_buffer = std::make_shared<buffer>(
+		nullptr, 
+		1024, 
+		inappropriate_resource, 
+		nullptr
+	);
+	array inappropiate_array(inappropriate_buffer, descriptor);
+	input_arrays.emplace_back(inappropiate_array);
+
+	std::vector<std::shared_ptr<buffer>> output_buffers;
+	std::vector<array> output_arrays;
+	allocate_device_arrays<array>(
+		2, 
+		descriptor, 
+		device_resource, 
+		device_allocator, 
+		context,
+		output_buffers, 
+		output_arrays
+	);
+
+	ALLOW_CALL(*device_allocator, get_memory_resource())
+		.LR_RETURN(device_resource);
+	ALLOW_CALL(*device, get_memory_resource(memory_resource_affinity::device))
+		.LR_RETURN(device_resource);
+
+	REQUIRE_CALL(inappropriate_resource, get_target_device())
+		.RETURN(nullptr);
+
+	REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+		.LR_WITH(&_1 == &operation)
+		.WITH(_2.size() == 5)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
+		.LR_WITH(&_3 == &context.get_device())
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*kernel_builder, build(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+		.LR_WITH(&_1 == &operation)
+		.WITH(_2.size() == 5)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor)
+		.WITH(_2[3] == descriptor)
+		.WITH(_2[4] == descriptor)
+		.LR_WITH(&_3 == &context.get_device())
+		.RETURN(kernel);
+
+	{
+		REQUIRE_CALL(*kernel_builder, get_operation_id())
+			.LR_RETURN(operation.get_id());
+
+		catalog.get_service_manager<kernel_manager>()
+			.register_kernel(std::move(kernel_builder));
+	}
+
+
+	REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
+		.WITH(_1.size() == 2)
+		.WITH(_1[0] == descriptor)
+		.WITH(_1[1] == descriptor)
+		.WITH(_2.size() == 3)
+		.WITH(_2[0] == descriptor)
+		.WITH(_2[1] == descriptor)
+		.WITH(_2[2] == descriptor);
+
+	eager_operation_dispatcher dispatcher(
+		catalog.get_service_manager<kernel_manager>()
+	);
+
+	REQUIRE_THROWS_MATCHES(
+		dispatcher.dispatch(
+			operation,
+			make_span(output_arrays),
+			make_span(input_arrays),
+			context
+		),
+		std::invalid_argument,
+		Catch::Matchers::Message(
+			"One of the input operands is not accessible by the device "
+			"used to execute the operation"
+		)
+	);
+}
+

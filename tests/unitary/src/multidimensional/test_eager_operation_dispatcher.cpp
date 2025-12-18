@@ -19,12 +19,14 @@
 #include "mock/mock_kernel.hpp"
 #include "mock/mock_kernel_builder.hpp"
 #include "mock/mock_operation.hpp"
+#include "../hardware/mock/mock_buffer_sentinel.hpp"
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_device_queue.hpp"
 #include "../hardware/mock/mock_device_backend.hpp"
 #include "../hardware/mock/mock_memory_resource.hpp"
 #include "../hardware/mock/mock_memory_allocator.hpp"
 #include "../hardware/mock/mock_memory_allocator_backend.hpp"
+
 
 #include <stdexcept>
 
@@ -49,19 +51,23 @@ void allocate_device_arrays(
 	arrays.resize(count);
 
 	const auto size = compute_storage_requirement(descriptor);
+	const auto &queue = context.get_active_queue();
 
 	for (std::size_t i = 0; i < count; ++i)
 	{
+		auto sentinel = 
+
+
 		buffers[i] = std::make_shared<buffer>(
 			nullptr, 
 			size, 
 			device_resource, 
-			nullptr
+			std::make_unique<mock_buffer_sentinel>()
 		);
 
 		REQUIRE_CALL(*device_allocator, get_max_alignment())
 			.RETURN(256);
-		REQUIRE_CALL(*device_allocator, allocate(size, 256, nullptr))
+		REQUIRE_CALL(*device_allocator, allocate(size, 256, queue.get()))
 			.RETURN(buffers[i]);
 
 		arrays[i] = empty(
@@ -71,10 +77,28 @@ void allocate_device_arrays(
 		);
 	}
 }
+
+void require_call_record_buffer(
+	const std::vector<std::shared_ptr<buffer>> &buffers,
+	device_queue &queue,
+	std::vector<std::unique_ptr<trompeloeil::expectation>> &expectations
+)
+{
+	for (const auto &buffer : buffers)
+	{
+		auto *sentinel = 
+			static_cast<mock_buffer_sentinel*>(buffer->get_sentinel());
+		auto expectation = 
+			NAMED_REQUIRE_CALL(*sentinel, record_queue(trompeloeil::_, false))
+				.LR_WITH(&_1 == &queue);
+		expectations.push_back(std::move(expectation));
+	}
+}
 } // anonymous namespace
 
 TEST_CASE("eager_operation_dispatcher should execute a properly configured kernel", "[eager_operation_dispatcher]")
 {
+	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
 	const hardware::device_index index("mock", 1234);
 	auto device_backend = std::make_unique<mock_device_backend>();
 	auto device = std::make_shared<mock_device>();
@@ -87,6 +111,10 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 	mock_operation operation;
 	auto kernel_builder = std::make_unique<mock_kernel_builder>();
 	auto kernel = std::make_shared<mock_kernel>();
+	auto queue = GENERATE(
+		std::shared_ptr<mock_device_queue>(),
+		std::make_shared<mock_device_queue>()
+	);
 
 	execution_context context;
 	{
@@ -122,6 +150,7 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 			.register_backend(std::move(allocator_backend));
 
 		context = execution_context(catalog, index);
+		context.set_active_queue(queue);
 	}
 
 	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
@@ -197,7 +226,7 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		.WITH(_2[1] == descriptor)
 		.WITH(_2[2] == descriptor);
 
-	REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, nullptr))
+	REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, queue.get()))
 		.WITH(_1.size() == 2)
 		.WITH(_1[0] == output_buffers[0])
 		.WITH(_1[1] == output_buffers[1])
@@ -206,9 +235,16 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		.WITH(_2[1] == input_buffers[1])
 		.WITH(_2[2] == input_buffers[2]);
 
+	if(queue)
+	{
+		require_call_record_buffer(input_buffers, *queue, expectations);
+		require_call_record_buffer(output_buffers, *queue, expectations);
+	}
+
 	eager_operation_dispatcher dispatcher(
 		catalog.get_service_manager<kernel_manager>()
 	);
+
 	dispatcher.dispatch(
 		operation,
 		make_span(output_arrays),
@@ -216,25 +252,3 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		context
 	);
 }
-
-/*
-TEST_CASE("eager_operation_dispatcher should not allocate the output when output arrays are provided", "[eager_operation_dispatcher]")
-{
-	// TODO
-}
-
-TEST_CASE("eager_operation_dispatcher should throw when an storageless input is provided", "[eager_operation_dispatcher]")
-{
-	// TODO
-}
-
-TEST_CASE("eager_operation_dispatcher should throw when an inaccessible input is provided", "[eager_operation_dispatcher]")
-{
-	// TODO
-}
-
-TEST_CASE("eager_operation_dispatcher should record queues for all operands when a queue is provided", "[eager_operation_dispatcher]")
-{
-	// TODO
-}
-*/

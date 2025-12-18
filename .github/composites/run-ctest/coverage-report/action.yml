@@ -47,7 +47,6 @@ runs:
       with:
         test-wrapper: >-
           "${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build"
-          --modules="xmipp4-core.dll"
           --modules="xmipp4-core-unitary-tests.exe"
           --sources="${{ github.workspace }}"
           --excluded_sources="*_deps*"

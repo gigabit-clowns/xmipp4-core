@@ -77,6 +77,7 @@ jobs:
           report-path: ${{ github.workspace }}/coverage.xml
 
       - name: Upload coverage report
+        if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}

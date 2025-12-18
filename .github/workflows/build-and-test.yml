@@ -87,7 +87,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pycobertura
-          pyccobertura show --format=text coverage.xml
+          pycobertura show --format=text coverage.xml
 
       #- name: Upload build folder (ubuntu-latest + gcc only)
       #  uses: actions/upload-artifact@v5

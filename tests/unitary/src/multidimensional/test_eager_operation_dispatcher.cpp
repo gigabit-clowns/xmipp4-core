@@ -564,4 +564,3 @@ TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropr
 		)
 	);
 }
-

@@ -51,22 +51,18 @@ jobs:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
       
-      - name: Get path to cl (TODO REMOVE)
-        id: cl-path
+      - name: Path to cl (TODO REMOVE)
+        id: msvc-env
         shell: bash
-        run: |
-          which cl
-          false
-      #    find /c/ -name "vcvars64.bat"
-      #    find /c/ -name "cl.exe"
+        run: echo cl="/c/Program Files/Microsoft Visual Studio/2022/Enterprise/SDK/ScopeCppSDK/vc15/VC/bin/cl.exe" >> "$GITHUB_OUTPUT"
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"
-          c-compiler: ${{ matrix.compiler.c }} # TODO FIX
-          cxx-compiler: ${{ matrix.compiler.cxx }} # TODO FIX
+          c-compiler: ${{ steps.msvc-env.outputs.cl }} # TODO FIX
+          cxx-compiler: ${{ steps.msvc-env.outputs.cl }} # TODO FIX
           generator: ${{ matrix.generator }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}

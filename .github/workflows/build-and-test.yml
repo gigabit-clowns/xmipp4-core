@@ -29,7 +29,7 @@ jobs:
         #  compiler: {c: clang, cxx: clang++}
         - os: windows-latest
           compiler: {c: cl, cxx: cl}
-        #  generator: "Ninja" # TODO: Remove
+          generator: "Ninja" # TODO: Remove
         #- os: windows-latest
         #  compiler: {c: gcc, cxx: g++}
         #  generator: "Ninja"
@@ -50,14 +50,20 @@ jobs:
         with:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
+      
+      - name: Get path to cl (TODO REMOVE)
+        id: cl-path
+        shell: bash
+        run: |
+          find /c/ -name "cl.exe"
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@v2
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"
-          c-compiler: ${{ matrix.compiler.c }}
-          cxx-compiler: ${{ matrix.compiler.cxx }}
+          c-compiler: ${{ matrix.compiler.c }} # TODO FIX
+          cxx-compiler: ${{ matrix.compiler.cxx }} # TODO FIX
           generator: ${{ matrix.generator }}
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}

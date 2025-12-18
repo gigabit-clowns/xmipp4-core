@@ -189,7 +189,7 @@ TEST_CASE("Calling empty with an output array with a different descriptor should
 	array array1(storage, descriptor1);
 	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
-	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array1.get_descriptor() == descriptor2 );
 	CHECK( array2.get_descriptor() == descriptor2 );
 	CHECK( array1.get_storage() == storage.get() );
 	CHECK( array2.get_storage() == storage.get() );
@@ -199,18 +199,13 @@ TEST_CASE("Calling empty with an output array with no storage should allocate it
 {
 	const auto context = make_test_device_context();
 
-	const std::array<std::size_t, 3> extents1 = {80, 16, 256};
-	const array_descriptor descriptor1(
-		strided_layout::make_contiguous_layout(make_span(extents1)),
-		numerical_type::float32
-	);
-	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
-	const array_descriptor descriptor2(
-		strided_layout::make_contiguous_layout(make_span(extents2)),
+	const std::array<std::size_t, 3> extents = {80, 16, 256};
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
 		numerical_type::float32
 	);
 
-	const auto alloc_bytes = compute_storage_requirement(descriptor2);
+	const auto alloc_bytes = compute_storage_requirement(descriptor);
 	const auto buffer = 
 		std::make_shared<hardware::host_buffer>(alloc_bytes, 256);
 
@@ -228,12 +223,12 @@ TEST_CASE("Calling empty with an output array with no storage should allocate it
 	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
 		.RETURN(buffer);
 
-	array array1(nullptr, descriptor1);
-	const auto array2 = empty(descriptor2, affinity, context, &array1);
+	array array1(nullptr, descriptor);
+	const auto array2 = empty(descriptor, affinity, context, &array1);
 
-	CHECK( array1.get_descriptor() == descriptor1 );
-	CHECK( array2.get_descriptor() == descriptor2 );
-	CHECK( array1.get_storage() == nullptr );
+	CHECK( array1.get_descriptor() == descriptor );
+	CHECK( array2.get_descriptor() == descriptor );
+	CHECK( array1.get_storage() == buffer.get() );
 	CHECK( array2.get_storage() == buffer.get() );
 }
 
@@ -275,9 +270,9 @@ TEST_CASE("Calling empty with a output array with insufficient storage should al
 	array array1(buffer1, descriptor1);
 	const auto array2 = empty(descriptor2, affinity, context, &array1);
 
-	CHECK( array1.get_descriptor() == descriptor1 );
+	CHECK( array1.get_descriptor() == descriptor2 );
 	CHECK( array2.get_descriptor() == descriptor2 );
-	CHECK( array1.get_storage() == buffer1.get() );
+	CHECK( array1.get_storage() == buffer2.get() );
 	CHECK( array2.get_storage() == buffer2.get() );
 }
 
@@ -285,18 +280,13 @@ TEST_CASE("Calling empty with an output array with a storage in a different memo
 {
 	const auto context = make_test_device_context();
 
-	const std::array<std::size_t, 3> extents1 = {80, 16, 256};
-	const array_descriptor descriptor1(
-		strided_layout::make_contiguous_layout(make_span(extents1)),
-		numerical_type::float32
-	);
-	const std::array<std::size_t, 3> extents2 = {40, 32, 256};
-	const array_descriptor descriptor2(
-		strided_layout::make_contiguous_layout(make_span(extents2)),
+	const std::array<std::size_t, 3> extents = {80, 16, 256};
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
 		numerical_type::float32
 	);
 
-	const auto alloc_bytes = compute_storage_requirement(descriptor1);
+	const auto alloc_bytes = compute_storage_requirement(descriptor);
 
 	hardware::mock_memory_resource resource1;
 	hardware::mock_memory_resource resource2;
@@ -325,11 +315,11 @@ TEST_CASE("Calling empty with an output array with a storage in a different memo
 	REQUIRE_CALL(allocator, allocate(alloc_bytes, 256, nullptr))
 		.RETURN(buffer2);
 
-	array array1(buffer1, descriptor1);
-	const auto array2 = empty(descriptor2, affinity, context, &array1);
+	array array1(buffer1, descriptor);
+	const auto array2 = empty(descriptor, affinity, context, &array1);
 
-	CHECK( array1.get_descriptor() == descriptor1 );
-	CHECK( array2.get_descriptor() == descriptor2 );
-	CHECK( array1.get_storage() == buffer1.get() );
+	CHECK( array1.get_descriptor() == descriptor );
+	CHECK( array2.get_descriptor() == descriptor );
+	CHECK( array1.get_storage() == buffer2.get() );
 	CHECK( array2.get_storage() == buffer2.get() );
 }

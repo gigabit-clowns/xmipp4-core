@@ -72,7 +72,6 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 	return storage;
 }
 
-XMIPP4_NODISCARD 
 array empty(
 	array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
@@ -103,7 +102,7 @@ array empty(
 	array result(std::move(storage), std::move(descriptor));
 	if (out)
 	{
-		//*out = result.share(); // TODO update tests and uncomment this
+		*out = result.share();
 	}
 
 	return result;

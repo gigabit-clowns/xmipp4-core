@@ -30,8 +30,6 @@ class operation_dispatcher;
 
 } // namespace multidimensional
 
-
-
 /**
  * @brief Centralization and management of execution related resources.
  */

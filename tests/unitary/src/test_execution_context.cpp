@@ -141,9 +141,11 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 
 	auto device_backend = std::make_unique<mock_device_backend>();
 	auto device = std::make_shared<mock_device>();
-	mock_memory_resource resource;
+	mock_memory_resource device_resource;
+	mock_memory_resource host_resource;
 	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
-	auto allocator = std::make_shared<mock_memory_allocator>();
+	auto device_allocator = std::make_shared<mock_memory_allocator>();
+	auto host_allocator = std::make_shared<mock_memory_allocator>();
 	device_properties properties;
 	properties.set_name("Z80");
 
@@ -156,16 +158,22 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 		.RETURN(device);
 	
 	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-		.LR_RETURN(resource);
+		.LR_RETURN(device_resource);
 	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
-		.LR_RETURN(resource);
+		.LR_RETURN(host_resource);
 
-	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-		.LR_WITH(&_1 == &resource)
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_resource)
 		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-		.LR_WITH(&_1 == &resource)
-		.RETURN(allocator);
+	REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_resource)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &device_resource)
+		.RETURN(device_allocator);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(hardware::memory_resource&)))
+		.LR_WITH(&_1 == &host_resource)
+		.RETURN(host_allocator);
 
 	service_catalog catalog(false);
 	catalog.get_service_manager<device_manager>().register_backend(std::move(device_backend));
@@ -174,8 +182,8 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 	execution_context context(catalog, index);
 
 	CHECK( &context.get_device() == device.get() );
-	CHECK( &context.get_memory_allocator(memory_resource_affinity::device) == allocator.get() );
-	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::device) == device_allocator.get() );
+	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == host_allocator.get() );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_device_properties().get_name() == properties.get_name() );
 	CHECK( dynamic_cast<eager_operation_dispatcher*>(&context.get_operation_dispatcher()) );

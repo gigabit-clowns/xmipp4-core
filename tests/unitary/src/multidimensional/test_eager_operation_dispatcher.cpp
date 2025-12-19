@@ -36,6 +36,67 @@ using namespace xmipp4::multidimensional;
 
 namespace {
 
+execution_context create_execution_context(
+	service_catalog &catalog,
+	const std::shared_ptr<mock_device> &device,
+	memory_resource &device_resource,
+	const std::shared_ptr<mock_memory_allocator> &device_allocator,
+	memory_resource &host_resource,
+	const std::shared_ptr<mock_memory_allocator> &host_allocator,
+	const std::shared_ptr<mock_device_queue> &queue
+)
+{
+	const hardware::device_index index("mock", 1234);
+
+	auto device_backend = std::make_unique<mock_device_backend>();
+	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
+
+	REQUIRE_CALL(*device_backend, get_name())
+		.RETURN(index.get_backend_name());
+	REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), trompeloeil::_))
+		.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
+		.RETURN(true);
+	REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
+		.RETURN(device);
+	
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
+		.LR_RETURN(device_resource);
+	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
+		.LR_RETURN(host_resource);
+
+	REQUIRE_CALL(*allocator_backend, get_suitability(trompeloeil::_))
+		.LR_WITH(&_1 == &device_resource)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(trompeloeil::_))
+		.LR_WITH(&_1 == &device_resource)
+		.RETURN(device_allocator);
+	REQUIRE_CALL(*allocator_backend, get_suitability(trompeloeil::_))
+		.LR_WITH(&_1 == &host_resource)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(*allocator_backend, create_memory_allocator(trompeloeil::_))
+		.LR_WITH(&_1 == &host_resource)
+		.RETURN(host_allocator);
+
+	catalog.get_service_manager<device_manager>()
+		.register_backend(std::move(device_backend));
+	catalog.get_service_manager<memory_allocator_manager>()
+		.register_backend(std::move(allocator_backend));
+
+	execution_context result(catalog, index);
+	result.set_active_queue(queue);
+
+	return result;
+}
+
+array_descriptor create_array_descriptor()
+{
+	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
+	return array_descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32
+	);
+}
+
 std::vector<std::shared_ptr<buffer>> create_buffers(
 	std::size_t count,
 	const array_descriptor &descriptor,
@@ -115,20 +176,19 @@ void require_call_to_record_buffer(
 		expectations.push_back(std::move(expectation));
 	}
 }
+
 } // anonymous namespace
 
 TEST_CASE("eager_operation_dispatcher should execute a properly configured kernel", "[eager_operation_dispatcher]")
 {
 	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
-	const hardware::device_index index("mock", 1234);
-	auto device_backend = std::make_unique<mock_device_backend>();
+
+	service_catalog catalog(false);
 	auto device = std::make_shared<mock_device>();
 	mock_memory_resource device_resource;
 	mock_memory_resource host_resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
 	auto device_allocator = std::make_shared<mock_memory_allocator>();
 	auto host_allocator = std::make_shared<mock_memory_allocator>();
-	service_catalog catalog(false);
 	mock_operation operation;
 	auto kernel_builder = std::make_unique<mock_kernel_builder>();
 	auto kernel = std::make_shared<mock_kernel>();
@@ -137,48 +197,17 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		std::make_shared<mock_device_queue>()
 	);
 
-	execution_context context;
-	{
-		REQUIRE_CALL(*device_backend, get_name())
-			.RETURN(index.get_backend_name());
-		REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
-			.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
-			.RETURN(true);
-		REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
-			.RETURN(device);
-		
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-			.LR_RETURN(device_resource);
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
-			.LR_RETURN(host_resource);
-
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(device_allocator);
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(host_allocator);
-
-		catalog.get_service_manager<device_manager>()
-			.register_backend(std::move(device_backend));
-		catalog.get_service_manager<memory_allocator_manager>()
-			.register_backend(std::move(allocator_backend));
-
-		context = execution_context(catalog, index);
-		context.set_active_queue(queue);
-	}
-
-	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
-	const array_descriptor descriptor(
-		strided_layout::make_contiguous_layout(make_span(extents)),
-		numerical_type::float32
+	auto context = create_execution_context(
+		catalog,
+		device,
+		device_resource,
+		device_allocator,
+		host_resource,
+		host_allocator,
+		queue
 	);
+
+	const auto descriptor = create_array_descriptor();
 
 	const auto input_buffers = create_buffers(
 		3,
@@ -296,15 +325,12 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 
 TEST_CASE("eager_operation_dispatcher should throw if an storage-less input array is provided", "[eager_operation_dispatcher]")
 {
-	const hardware::device_index index("mock", 1234);
-	auto device_backend = std::make_unique<mock_device_backend>();
+	service_catalog catalog(false);
 	auto device = std::make_shared<mock_device>();
 	mock_memory_resource device_resource;
 	mock_memory_resource host_resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
 	auto device_allocator = std::make_shared<mock_memory_allocator>();
 	auto host_allocator = std::make_shared<mock_memory_allocator>();
-	service_catalog catalog(false);
 	mock_operation operation;
 	auto kernel_builder = std::make_unique<mock_kernel_builder>();
 	auto kernel = std::make_shared<mock_kernel>();
@@ -313,48 +339,17 @@ TEST_CASE("eager_operation_dispatcher should throw if an storage-less input arra
 		std::make_shared<mock_device_queue>()
 	);
 
-	execution_context context;
-	{
-		REQUIRE_CALL(*device_backend, get_name())
-			.RETURN(index.get_backend_name());
-		REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
-			.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
-			.RETURN(true);
-		REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
-			.RETURN(device);
-		
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-			.LR_RETURN(device_resource);
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
-			.LR_RETURN(host_resource);
-
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(device_allocator);
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(host_allocator);
-
-		catalog.get_service_manager<device_manager>()
-			.register_backend(std::move(device_backend));
-		catalog.get_service_manager<memory_allocator_manager>()
-			.register_backend(std::move(allocator_backend));
-
-		context = execution_context(catalog, index);
-		context.set_active_queue(queue);
-	}
-
-	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
-	const array_descriptor descriptor(
-		strided_layout::make_contiguous_layout(make_span(extents)),
-		numerical_type::float32
+	auto context = create_execution_context(
+		catalog,
+		device,
+		device_resource,
+		device_allocator,
+		host_resource,
+		host_allocator,
+		queue
 	);
+
+	const auto descriptor = create_array_descriptor();
 
 	const auto input_buffers = create_buffers(
 		2,
@@ -445,15 +440,12 @@ TEST_CASE("eager_operation_dispatcher should throw if an storage-less input arra
 
 TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropriate memory resource is provided", "[eager_operation_dispatcher]")
 {
-	const hardware::device_index index("mock", 1234);
-	auto device_backend = std::make_unique<mock_device_backend>();
+	service_catalog catalog(false);
 	auto device = std::make_shared<mock_device>();
 	mock_memory_resource device_resource;
 	mock_memory_resource host_resource;
-	auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
 	auto device_allocator = std::make_shared<mock_memory_allocator>();
 	auto host_allocator = std::make_shared<mock_memory_allocator>();
-	service_catalog catalog(false);
 	mock_operation operation;
 	auto kernel_builder = std::make_unique<mock_kernel_builder>();
 	auto kernel = std::make_shared<mock_kernel>();
@@ -462,48 +454,17 @@ TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropr
 		std::make_shared<mock_device_queue>()
 	);
 
-	execution_context context;
-	{
-		REQUIRE_CALL(*device_backend, get_name())
-			.RETURN(index.get_backend_name());
-		REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), ANY(device_properties&)))
-			.LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
-			.RETURN(true);
-		REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
-			.RETURN(device);
-		
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-			.LR_RETURN(device_resource);
-		REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
-			.LR_RETURN(host_resource);
-
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &device_resource)
-			.RETURN(device_allocator);
-		REQUIRE_CALL(*allocator_backend, get_suitability(ANY(const memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(backend_priority::normal);
-		REQUIRE_CALL(*allocator_backend, create_memory_allocator(ANY(memory_resource&)))
-			.LR_WITH(&_1 == &host_resource)
-			.RETURN(host_allocator);
-
-		catalog.get_service_manager<device_manager>()
-			.register_backend(std::move(device_backend));
-		catalog.get_service_manager<memory_allocator_manager>()
-			.register_backend(std::move(allocator_backend));
-
-		context = execution_context(catalog, index);
-		context.set_active_queue(queue);
-	}
-
-	const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
-	const array_descriptor descriptor(
-		strided_layout::make_contiguous_layout(make_span(extents)),
-		numerical_type::float32
+	auto context = create_execution_context(
+		catalog,
+		device,
+		device_resource,
+		device_allocator,
+		host_resource,
+		host_allocator,
+		queue
 	);
+
+	const auto descriptor = create_array_descriptor();
 
 	const auto input_buffers = create_buffers(
 		2,

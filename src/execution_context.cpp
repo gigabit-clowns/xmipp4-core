@@ -135,8 +135,6 @@ execution_context::~execution_context() = default;
 execution_context& 
 execution_context::operator=(execution_context &&other) noexcept = default;
 
-
-
 const hardware::device_properties& 
 execution_context::get_device_properties() const
 {

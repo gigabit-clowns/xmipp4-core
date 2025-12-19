@@ -18,7 +18,6 @@ class kernel_manager;
 
 /**
  * @brief De facto implementation of the dispatcher interface.
- * 
  */
 class eager_operation_dispatcher
 	: public operation_dispatcher
@@ -57,7 +56,6 @@ private:
 		span<const array_view> input_operands,
 		const execution_context &context
 	) const;
-
 };
 
 } // namespace multidimensional

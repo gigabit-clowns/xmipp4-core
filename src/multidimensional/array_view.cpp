@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/multidimensional/array_view.hpp>
 
+#include <xmipp4/core/multidimensional/array.hpp>
+
 #include "array_implementation.hpp"
 
 namespace xmipp4 
@@ -13,6 +15,13 @@ array_view::array_view() = default;
 array_view::array_view(array_view&& other) noexcept = default;
 array_view::~array_view() = default;
 array_view& array_view::operator=(array_view&& other) noexcept = default;
+
+array_view::array_view(
+	const array &other
+) noexcept
+	: array_view(other.share())
+{
+}
 
 array_view::array_view(
 	std::shared_ptr<const array_implementation> implementation

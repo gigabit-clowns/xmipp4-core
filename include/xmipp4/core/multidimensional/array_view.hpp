@@ -18,6 +18,7 @@ class buffer;
 namespace multidimensional
 {
 
+class array;
 class array_descriptor;
 class array_implementation;
 
@@ -38,11 +39,21 @@ public:
 	XMIPP4_CORE_API array_view();
 
 	/**
+	 * @brief Construct an array view from another array.
+	 * 
+	 * @param other The array to be aliased.
+	 */
+	XMIPP4_CORE_API
+	array_view(const array &other) noexcept;
+
+	/**
 	 * @brief Construct an array view from an implementation.
 	 * 
 	 * @param implementation The implementation to be owned by this view.
+	 * 
+	 * @note This function is not part of the public API and shall only be
+	 * used internally or for testing purposes.
 	 */
-	XMIPP4_CORE_API
 	explicit array_view(
 		std::shared_ptr<const array_implementation> implementation
 	) noexcept;

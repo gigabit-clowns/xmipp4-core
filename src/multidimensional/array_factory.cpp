@@ -5,8 +5,10 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/binary/bit.hpp>
+#include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/logger.hpp>
 
 namespace xmipp4 
@@ -17,13 +19,13 @@ namespace multidimensional
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
-    const hardware::device_context &context,
+    const hardware::device_properties &properties,
     std::size_t size
 )
 {
     size = binary::bit_ceil(size);
     const auto max_alignment = allocator.get_max_alignment();
-    const auto preferred_alignment = context.get_optimal_data_alignment();
+    const auto preferred_alignment = properties.get_optimal_data_alignment();
     return std::min(std::min(max_alignment, preferred_alignment), size);
 }
 
@@ -70,11 +72,10 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 	return storage;
 }
 
-XMIPP4_NODISCARD 
 array empty(
 	array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const hardware::device_context &context,
+	const execution_context &context,
 	array *out
 )
 {
@@ -91,14 +92,20 @@ array empty(
 	{
 		const auto alignment = get_alignment_requirement(
 			allocator, 
-			context,
+			context.get_device_properties(),
 			storage_requirement
 		);
 		auto *queue = context.get_active_queue().get();
 		storage = allocator.allocate(storage_requirement, alignment, queue);
 	}
 
-	return array(std::move(storage), std::move(descriptor));
+	array result(std::move(storage), std::move(descriptor));
+	if (out)
+	{
+		*out = result.share();
+	}
+
+	return result;
 }
 
 } // namespace multidimensional

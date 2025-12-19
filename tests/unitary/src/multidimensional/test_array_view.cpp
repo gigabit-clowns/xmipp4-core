@@ -4,6 +4,8 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/array_view.hpp>
+
+#include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <multidimensional/array_implementation.hpp>
@@ -55,9 +57,18 @@ TEST_CASE("Constructing an array_view should store its attributes", "[array_view
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);
-	const array_view view(
-		std::make_shared<array_implementation>(storage, descriptor)
-	);
+
+	array_view view;
+	SECTION("from implementation")
+	{
+		view = array_view(
+			std::make_shared<array_implementation>(storage, descriptor)
+		);
+	}
+	SECTION("implicitly from another array")
+	{
+		view = array(storage, descriptor);
+	}
 
 	CHECK( view.get_storage() == storage.get() );
 	CHECK( view.share_storage() == storage );

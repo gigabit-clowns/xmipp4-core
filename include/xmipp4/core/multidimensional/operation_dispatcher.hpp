@@ -19,7 +19,6 @@ class operation;
 
 /**
  * @brief Abstract class responsible of dispatching operations.
- * 
  */
 class operation_dispatcher
 {
@@ -58,4 +57,3 @@ public:
 
 } // namespace multidimensional
 } // namespace xmipp4
-

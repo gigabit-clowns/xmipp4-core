@@ -36,49 +36,70 @@ using namespace xmipp4::multidimensional;
 
 namespace {
 
-template<typename ArrayT>
-void allocate_device_arrays(
+std::vector<std::shared_ptr<buffer>> create_buffers(
 	std::size_t count,
 	const array_descriptor &descriptor,
-	memory_resource &device_resource,
-	const std::shared_ptr<mock_memory_allocator> &device_allocator,
-	execution_context &context,
-	std::vector<std::shared_ptr<buffer>> &buffers,
-	std::vector<ArrayT> &arrays
+	memory_resource &device_resource
 )
 {
-	buffers.resize(count);
-	arrays.resize(count);
-
 	const auto size = compute_storage_requirement(descriptor);
-	const auto &queue = context.get_active_queue();
+
+	std::vector<std::shared_ptr<buffer>> result;
+	result.reserve(count);
 
 	for (std::size_t i = 0; i < count; ++i)
 	{
-		auto sentinel = 
-
-
-		buffers[i] = std::make_shared<buffer>(
+		auto item = std::make_shared<buffer>(
 			nullptr, 
 			size, 
 			device_resource, 
 			std::make_unique<mock_buffer_sentinel>()
 		);
 
-		REQUIRE_CALL(*device_allocator, get_max_alignment())
-			.RETURN(256);
-		REQUIRE_CALL(*device_allocator, allocate(size, 256, queue.get()))
-			.RETURN(buffers[i]);
+		result.push_back(std::move(item));
+	}
 
-		arrays[i] = empty(
+	return result;
+}
+
+template<typename ArrayT>
+std::vector<ArrayT> create_device_arrays(
+	const std::vector<std::shared_ptr<buffer>> &buffers,
+	const array_descriptor &descriptor,
+	execution_context &context
+)
+{
+	const auto affinity = memory_resource_affinity::device;
+	const auto &queue = context.get_active_queue();
+	auto &allocator = static_cast<mock_memory_allocator&>(
+		context.get_memory_allocator(affinity)
+	);
+
+	std::vector<ArrayT> result;
+	result.reserve(buffers.size());
+
+
+	for (const auto &buf : buffers)
+	{
+		const auto size = buf->get_size();
+		REQUIRE_CALL(allocator, get_max_alignment())
+			.RETURN(256);
+		REQUIRE_CALL(allocator, allocate(size, 256, queue.get()))
+			.RETURN(buf);
+
+		auto item = empty(
 			descriptor,
 			memory_resource_affinity::device,
 			context
 		);
+		
+		result.push_back(std::move(item));
 	}
+
+	return result;
 }
 
-void require_call_record_buffer(
+void require_call_to_record_buffer(
 	const std::vector<std::shared_ptr<buffer>> &buffers,
 	device_queue &queue,
 	std::vector<std::unique_ptr<trompeloeil::expectation>> &expectations
@@ -159,29 +180,49 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 		numerical_type::float32
 	);
 
-	std::vector<std::shared_ptr<buffer>> input_buffers;
-	std::vector<array_view> input_arrays;
-	allocate_device_arrays<array_view>(
-		3, 
+	const auto input_buffers = create_buffers(
+		3,
+		descriptor,
+		device_resource
+	);
+	const auto input_arrays = create_device_arrays<array_view>(
+		input_buffers,
 		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
-		input_buffers, 
-		input_arrays
+		context
 	);
 
-	std::vector<std::shared_ptr<buffer>> output_buffers;
-	std::vector<array> output_arrays;
-	allocate_device_arrays<array>(
-		2, 
-		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
-		output_buffers, 
-		output_arrays
+	const auto output_buffers = create_buffers(
+		2,
+		descriptor,
+		device_resource
 	);
+
+	std::vector<array> output_arrays;
+	SECTION("provided a pre-allocated output should re-use")
+	{
+		output_arrays = create_device_arrays<array>(
+			output_buffers, 
+			descriptor, 
+			context
+		);
+	}
+	SECTION("if empty output is provided it should allocate")
+	{
+		auto &allocator = *device_allocator;
+
+		output_arrays.resize(2);
+		for (const auto &buffer : output_buffers)
+		{
+			const auto size = buffer->get_size();
+			auto expectation1 = NAMED_REQUIRE_CALL(allocator, get_max_alignment())
+				.RETURN(256);
+			auto expectation2 = NAMED_REQUIRE_CALL(allocator, allocate(size, 256, queue.get()))
+				.RETURN(buffer);
+
+			expectations.push_back(std::move(expectation1));
+			expectations.push_back(std::move(expectation2));
+		}
+	}
 
 	ALLOW_CALL(*device_allocator, get_memory_resource())
 		.LR_RETURN(device_resource);
@@ -219,17 +260,17 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 
 	REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
 		.WITH(_1.size() == 2)
-		.WITH(_1[0] == descriptor)
-		.WITH(_1[1] == descriptor)
+		.LR_WITH(_1[0] == output_arrays[0].get_descriptor())
+		.LR_WITH(_1[1] == output_arrays[1].get_descriptor())
 		.WITH(_2.size() == 3)
 		.WITH(_2[0] == descriptor)
 		.WITH(_2[1] == descriptor)
-		.WITH(_2[2] == descriptor);
+		.WITH(_2[2] == descriptor)
+		.SIDE_EFFECT(_1[0] = descriptor)
+		.SIDE_EFFECT(_1[1] = descriptor);
 
 	REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, queue.get()))
 		.WITH(_1.size() == 2)
-		.WITH(_1[0] == output_buffers[0])
-		.WITH(_1[1] == output_buffers[1])
 		.WITH(_2.size() == 3)
 		.WITH(_2[0] == input_buffers[0])
 		.WITH(_2[1] == input_buffers[1])
@@ -237,8 +278,8 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 
 	if(queue)
 	{
-		require_call_record_buffer(input_buffers, *queue, expectations);
-		require_call_record_buffer(output_buffers, *queue, expectations);
+		require_call_to_record_buffer(input_buffers, *queue, expectations);
+		require_call_to_record_buffer(output_buffers, *queue, expectations);
 	}
 
 	eager_operation_dispatcher dispatcher(
@@ -255,7 +296,6 @@ TEST_CASE("eager_operation_dispatcher should execute a properly configured kerne
 
 TEST_CASE("eager_operation_dispatcher should throw if an storage-less input array is provided", "[eager_operation_dispatcher]")
 {
-	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
 	const hardware::device_index index("mock", 1234);
 	auto device_backend = std::make_unique<mock_device_backend>();
 	auto device = std::make_shared<mock_device>();
@@ -316,30 +356,30 @@ TEST_CASE("eager_operation_dispatcher should throw if an storage-less input arra
 		numerical_type::float32
 	);
 
-	std::vector<std::shared_ptr<buffer>> input_buffers;
-	std::vector<array_view> input_arrays;
-	allocate_device_arrays<array_view>(
-		2, 
+	const auto input_buffers = create_buffers(
+		2,
+		descriptor,
+		device_resource
+	);
+	auto input_arrays = create_device_arrays<array_view>(
+		input_buffers,
 		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
-		input_buffers, 
-		input_arrays
+		context
 	);
 	array empty(nullptr, descriptor);
 	input_arrays.emplace_back(empty);
 
-	std::vector<std::shared_ptr<buffer>> output_buffers;
-	std::vector<array> output_arrays;
-	allocate_device_arrays<array>(
-		2, 
-		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
+
+	const auto output_buffers = create_buffers(
+		2,
+		descriptor,
+		device_resource
+	);
+
+	auto output_arrays = create_device_arrays<array>(
 		output_buffers, 
-		output_arrays
+		descriptor, 
+		context
 	);
 
 	ALLOW_CALL(*device_allocator, get_memory_resource())
@@ -405,7 +445,6 @@ TEST_CASE("eager_operation_dispatcher should throw if an storage-less input arra
 
 TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropriate memory resource is provided", "[eager_operation_dispatcher]")
 {
-	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
 	const hardware::device_index index("mock", 1234);
 	auto device_backend = std::make_unique<mock_device_backend>();
 	auto device = std::make_shared<mock_device>();
@@ -466,16 +505,15 @@ TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropr
 		numerical_type::float32
 	);
 
-	std::vector<std::shared_ptr<buffer>> input_buffers;
-	std::vector<array_view> input_arrays;
-	allocate_device_arrays<array_view>(
-		2, 
+	const auto input_buffers = create_buffers(
+		2,
+		descriptor,
+		device_resource
+	);
+	auto input_arrays = create_device_arrays<array_view>(
+		input_buffers,
 		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
-		input_buffers, 
-		input_arrays
+		context
 	);
 	mock_memory_resource inappropriate_resource;
 	auto inappropriate_buffer = std::make_shared<buffer>(
@@ -487,16 +525,17 @@ TEST_CASE("eager_operation_dispatcher should throw if an input with an inappropr
 	array inappropiate_array(inappropriate_buffer, descriptor);
 	input_arrays.emplace_back(inappropiate_array);
 
-	std::vector<std::shared_ptr<buffer>> output_buffers;
-	std::vector<array> output_arrays;
-	allocate_device_arrays<array>(
-		2, 
-		descriptor, 
-		device_resource, 
-		device_allocator, 
-		context,
+
+	const auto output_buffers = create_buffers(
+		2,
+		descriptor,
+		device_resource
+	);
+
+	auto output_arrays = create_device_arrays<array>(
 		output_buffers, 
-		output_arrays
+		descriptor, 
+		context
 	);
 
 	ALLOW_CALL(*device_allocator, get_memory_resource())

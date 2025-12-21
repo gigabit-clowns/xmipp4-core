@@ -54,10 +54,6 @@ runs:
           --export_type="cobertura:${{ inputs.report-path }}"
           --cover_children --
 
-    - name: Show coverage summary
-      shell: bash
-      run: pycobertura show --format=text "${{ inputs.report-path }}"
-
     - name: Normalize report paths (all but MSVC)
       if: inputs.compiler-c != 'cl' && inputs.compiler-cxx != 'cl'
       shell: bash
@@ -83,3 +79,7 @@ runs:
 
         echo "Downloaded script to $target"
         python ./msvc_path_normalization.py "${{ inputs.report-path }}" --placeholder="GITHUB_WORKSPACE"
+
+    - name: Show coverage summary
+      shell: bash
+      run: pycobertura show --format=text "${{ inputs.report-path }}"

@@ -157,3 +157,4 @@ jobs:
           build-artifact-name: "build-artifact"
           coverage-pattern: "coverage-report-*"
           coverage-path: ${{ github.workspace }}/build
+          show-coverage: true

@@ -30,6 +30,11 @@ public:
 		std::ptrdiff_t offset 
 	);
 
+	strided_layout_implementation(
+		strided_axis_vector_type &&axes,
+		std::ptrdiff_t offset 
+	) noexcept;
+
 	bool operator==(const strided_layout_implementation &other) const noexcept;
 
 	std::size_t get_rank() const noexcept;

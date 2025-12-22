@@ -212,7 +212,7 @@ void sanitize_slice_count(slice &slice, std::size_t extent)
 }
 
 inline
-void sanitize_slice_step(slice &slice)
+void sanitize_slice_step(const slice &slice)
 {
 	if (slice.get_step() == 0)
 	{

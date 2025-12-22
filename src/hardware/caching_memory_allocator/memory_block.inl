@@ -18,7 +18,7 @@ memory_block::memory_block(
 ) noexcept
 	: m_queue(queue)
 	, m_size(size)
-	, m_heap(std::move(heap))
+	, m_heap(heap)
 	, m_offset(offset)
 {
 }

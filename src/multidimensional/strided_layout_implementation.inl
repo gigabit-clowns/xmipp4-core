@@ -260,6 +260,16 @@ strided_layout_implementation::strided_layout_implementation(
 }
 
 inline
+strided_layout_implementation::strided_layout_implementation(
+	strided_axis_vector_type &&axes,
+	std::ptrdiff_t offset 
+) noexcept
+	: m_axes(std::move(axes))
+	, m_offset(offset)
+{
+}
+
+inline
 bool strided_layout_implementation::operator==(
 	const strided_layout_implementation &other
 ) const noexcept

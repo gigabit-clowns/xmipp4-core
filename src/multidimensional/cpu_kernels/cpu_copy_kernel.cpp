@@ -10,32 +10,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-namespace
-{
-
-template <typename Dst, typename Src>
-void copy_data(
-	Dst *dst_data,
-	const Src *src_data,
-	const array_access_layout &layout
-)
-{
-	const auto extents = layout.get_extents();
-	const auto dst_strides = layout.get_strides(0);
-	const auto src_strides = layout.get_strides(1);
-	const auto dst_offset = layout.get_offset(0);
-	const auto src_offset = layout.get_offset(1);
-
-	const std::size_t ndim = extents.size();
-	XMIPP4_ASSERT(dst_strides.size() == ndim);
-	XMIPP4_ASSERT(src_strides.size() == ndim);
-
-	// TODO
-
-}
-
-} // anonymous namespace
-
 cpu_copy_kernel::cpu_copy_kernel(
 	array_access_layout access_layout,
 	numerical_type output_data_type,
@@ -103,21 +77,7 @@ void cpu_copy_kernel::execute(
 		queue->wait_until_completed();
 	}
 
-	const auto &access_layout = m_access_layout;
-	visit(
-		[&access_layout, destination_data, source_data] 
-		(auto dst_type, auto src_type) {
-			using Dst = decltype(dst_type);
-			using Src = decltype(src_type);
-			//copy_data<Dst, Src>(
-			//	static_cast<Dst*>(destination_data),
-			//	static_cast<const Src*>(source_data),
-			//	access_layout
-			//);
-		},
-		m_output_data_type,
-		m_input_data_type
-	);
+	// TODO
 }
 
 } // namespace multidimensional

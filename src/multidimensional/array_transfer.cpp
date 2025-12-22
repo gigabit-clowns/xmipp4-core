@@ -8,7 +8,6 @@
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/memory_resource.hpp>
 
 #include <stdexcept>
 

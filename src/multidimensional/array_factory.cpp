@@ -108,5 +108,65 @@ array empty(
 	return result;
 }
 
+array zeros(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
+)
+{
+	auto result = empty(descriptor, affinity, context, out);
+
+	// TODO dispatch a zeroing operation
+
+	return result;
+}
+
+array ones(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
+)
+{
+	auto result = empty(descriptor, affinity, context, out);
+
+	// TODO dispatch a one-filling operation
+
+	return result;
+}
+
+array full(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
+)
+{
+	auto result = empty(descriptor, affinity, context, out);
+
+	// TODO dispatch a filling operation
+
+	return result;
+}
+
+array copy(
+	array_view source,
+	const execution_context &context,
+	array *out = nullptr
+)
+{
+	auto destination = empty(
+		source.get_descriptor(), 
+		hardware::memory_resource_affinity::device, 
+		context, 
+		out
+	);
+
+	// TODO dispatch a copy operation
+
+	return destination;
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

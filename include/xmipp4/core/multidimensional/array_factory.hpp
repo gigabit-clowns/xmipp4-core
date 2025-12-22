@@ -3,7 +3,7 @@
 #pragma once
 
 #include "array.hpp"
-#include "../hardware/device.hpp"
+#include "../hardware/memory_resource_affinity.hpp"
 
 namespace xmipp4 
 {

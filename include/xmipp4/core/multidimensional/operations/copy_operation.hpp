@@ -13,16 +13,18 @@ namespace multidimensional
 {
 
 /**
- * @brief Abstract representation for operations where each output element only 
- * depends on the inputs at the same position.
+ * @brief Copy elements from an input array to an output array.
  */
-class elementwise_operation
+class copy_operation
 	: public operation
 {
 public:
-	XMIPP4_CORE_API elementwise_operation() noexcept;
-	XMIPP4_CORE_API ~elementwise_operation() override;
+	XMIPP4_CORE_API copy_operation() noexcept;
+	XMIPP4_CORE_API ~copy_operation() override;
+	
+	XMIPP4_CORE_API std::string get_name() const override;
 
+	XMIPP4_CORE_API
 	void sanitize_operands(
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors

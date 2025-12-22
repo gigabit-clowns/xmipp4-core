@@ -153,7 +153,7 @@ array full(
 array copy(
 	array_view source,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	auto destination = empty(

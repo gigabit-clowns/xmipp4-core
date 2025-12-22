@@ -38,8 +38,22 @@ void copy_operation::sanitize_operands(
 	array_descriptor &input_desc = input_descriptors[0];
 	array_descriptor &output_desc = output_descriptors[0];
 
+	if (input_desc.get_data_type() == numerical_type::unknown)
+	{
+		throw std::invalid_argument(
+			"Input array data type must have a valid numerical type."
+		);
+	}
+
 	if (is_initialized(output_desc))
 	{
+		if (output_desc.get_data_type() == numerical_type::unknown)
+		{
+			throw std::invalid_argument(
+				"Output array data type must have a valid numerical type."
+			);
+		}
+
 		// Output is initialized, broadcast input to output shape
 		std::vector<std::size_t> output_extents;
 		output_desc.get_layout().get_extents(output_extents);

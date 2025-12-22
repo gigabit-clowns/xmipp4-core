@@ -61,7 +61,7 @@ bool operator!=(
 bool is_initialized(const array_descriptor &descriptor) noexcept
 {
 	return 
-		descriptor.get_data_type() != numerical_type::unknown &&
+		descriptor.get_data_type() != numerical_type::unknown ||
 		descriptor.get_layout() == strided_layout();
 
 }

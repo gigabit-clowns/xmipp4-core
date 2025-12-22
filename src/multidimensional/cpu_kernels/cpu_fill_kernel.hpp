@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#pragma once
+
+#include <xmipp4/core/multidimensional/kernel.hpp>
+
+#include <xmipp4/core/multidimensional/array_access_layout.hpp>
+
+namespace xmipp4 
+{
+namespace multidimensional
+{
+
+class cpu_fill_kernel final
+	: public kernel
+{
+public:
+	cpu_fill_kernel(
+		array_access_layout access_layout
+		/* TODO fill value */
+	) noexcept;
+	~cpu_fill_kernel() override = default;
+
+	void execute(
+		span<const std::shared_ptr<hardware::buffer>> read_write_operands,
+		span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
+		hardware::device_queue *queue
+	) const override;
+
+private:
+	array_access_layout m_access_layout;
+	// TODO fill value
+};
+
+} // namespace multidimensional
+} // namespace xmipp4

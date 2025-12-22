@@ -80,20 +80,20 @@ void cpu_copy_kernel::execute(
 		);
 	}
 
-	const auto *source_data = read_only_operands[0]->get_host_ptr();
-	if (source_data == nullptr)
-	{
-		throw std::runtime_error(
-			"cpu_copy_kernel::execute: Input operand is not "
-			"host accessible."
-		);
-	}
-
 	auto *destination_data = read_write_operands[0]->get_host_ptr();
 	if (destination_data == nullptr)
 	{
 		throw std::runtime_error(
 			"cpu_copy_kernel::execute: Output operand is not "
+			"host accessible."
+		);
+	}
+
+	const auto *source_data = read_only_operands[0]->get_host_ptr();
+	if (source_data == nullptr)
+	{
+		throw std::runtime_error(
+			"cpu_copy_kernel::execute: Input operand is not "
 			"host accessible."
 		);
 	}

@@ -36,11 +36,19 @@ backend_priority cpu_fill_kernel_builder::get_suitability(
 }
 
 std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
-	const operation&,
+	const operation& operation,
 	span<const array_descriptor> descriptors,
 	hardware::device&
 ) const
 {
+	if (descriptors.size() != 1)
+	{
+		throw std::invalid_argument(
+			"cpu_fill_kernel_builder::build: Expected exactly 1 "
+			"array descriptor."
+		);
+	}
+
 	array_access_layout_builder layout_builder;
 	for (const auto &descriptor : descriptors)
 	{

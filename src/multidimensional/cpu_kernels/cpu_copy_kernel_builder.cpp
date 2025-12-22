@@ -41,6 +41,14 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 	hardware::device&
 ) const
 {
+	if (descriptors.size() != 2)
+	{
+		throw std::invalid_argument(
+			"cpu_copy_kernel_builder::build: Expected exactly 2 "
+			"array descriptors."
+		);
+	}
+
 	array_access_layout_builder layout_builder;
 	for (const auto &descriptor : descriptors)
 	{

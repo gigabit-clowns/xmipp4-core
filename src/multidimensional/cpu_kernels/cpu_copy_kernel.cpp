@@ -29,27 +29,27 @@ void cpu_copy_kernel::execute(
 {
 	if (read_write_operands.size() != 1)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Expected exactly one "
 			"read-write operand."
 		);
 	}
 	if (read_write_operands[0] == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Output operand is null."
 		);
 	}
 	if (read_only_operands.size() != 1)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Expected exactly one "
 			"read-only operand."
 		);
 	}
 	if (read_only_operands[0] == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Input operand is null."
 		);
 	}
@@ -57,7 +57,7 @@ void cpu_copy_kernel::execute(
 	auto *destination_data = read_write_operands[0]->get_host_ptr();
 	if (destination_data == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Output operand is not "
 			"host accessible."
 		);
@@ -66,7 +66,7 @@ void cpu_copy_kernel::execute(
 	const auto *source_data = read_only_operands[0]->get_host_ptr();
 	if (source_data == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Input operand is not "
 			"host accessible."
 		);

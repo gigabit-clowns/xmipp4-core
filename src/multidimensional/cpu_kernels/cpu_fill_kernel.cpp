@@ -25,20 +25,20 @@ void cpu_fill_kernel::execute(
 {
 	if (read_write_operands.size() != 1)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_fill_kernel::execute: Expected exactly one "
 			"read-write operand."
 		);
 	}
 	if (read_write_operands[0] == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_fill_kernel::execute: Output operand is null."
 		);
 	}
 	if (read_only_operands.size() != 0)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_fill_kernel::execute: Expected no read-only operand."
 		);
 	}
@@ -46,7 +46,7 @@ void cpu_fill_kernel::execute(
 	auto *destination_data = read_write_operands[0]->get_host_ptr();
 	if (destination_data == nullptr)
 	{
-		throw std::runtime_error(
+		throw std::invalid_argument(
 			"cpu_fill_kernel::execute: Output operand is not "
 			"host accessible."
 		);

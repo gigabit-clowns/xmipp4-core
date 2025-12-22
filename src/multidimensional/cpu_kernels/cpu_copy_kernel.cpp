@@ -14,43 +14,6 @@ namespace
 {
 
 template <typename Dst, typename Src>
-void copy_data_loop(
-	Dst *dst_data,
-	const Src *src_data,
-	const std::size_t *extents,
-	const std::ptrdiff_t *dst_strides,
-	const std::ptrdiff_t *src_strides,
-	std::size_t ndim
-)
-{
-	if (ndim == 0)
-	{
-		*dst_data = *src_data;
-	}
-	else if (ndim == 1)
-	{
-		for (std::size_t i = 0; i < extents[0]; ++i)
-		{
-			dst_data[i * dst_strides[0]] = src_data[i * src_strides[0]];
-		}
-	}
-	else
-	{
-		for (std::size_t i = 0; i < extents[0]; ++i)
-		{
-			copy_data_loop(
-				dst_data + i * dst_strides[0],
-				src_data + i * src_strides[0],
-				extents + 1,
-				dst_strides + 1,
-				src_strides + 1,
-				ndim - 1
-			);
-		}
-	}
-}
-
-template <typename Dst, typename Src>
 void copy_data(
 	Dst *dst_data,
 	const Src *src_data,
@@ -67,14 +30,8 @@ void copy_data(
 	XMIPP4_ASSERT(dst_strides.size() == ndim);
 	XMIPP4_ASSERT(src_strides.size() == ndim);
 
-	copy_data_loop(
-		dst_data + dst_offset,
-		src_data + src_offset,
-		extents.data(),
-		dst_strides.data(),
-		src_strides.data(),
-		ndim
-	);
+	// TODO
+
 }
 
 } // anonymous namespace

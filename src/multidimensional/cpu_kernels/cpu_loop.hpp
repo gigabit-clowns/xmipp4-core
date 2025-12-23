@@ -3,6 +3,7 @@
 #pragma once
 
 #include <array>
+#include <stdexcept>
 
 namespace xmipp4 
 {
@@ -112,6 +113,85 @@ struct cpu_loop<0>
 	}
 };
 
+template <typename Func, typename... Pointers>
+void loop(
+	const std::size_t *extents,
+	const std::ptrdiff_t **strides,
+	std::size_t ndim,
+	const Func &func,
+	Pointers... ptrs
+)
+{
+	switch (ndim)
+	{
+	case 0:
+		cpu_loop<0>()(
+			extents,
+			strides,
+			0
+			func,
+			ptrs...
+		);
+		break;
+	case 1:
+		cpu_loop<1>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	case 2:
+		cpu_loop<2>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	case 3:
+		cpu_loop<3>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	case 4:
+		cpu_loop<4>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	case 5:
+		cpu_loop<5>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	case 6:
+		cpu_loop<6>()(
+			extents,
+			strides,
+			0,
+			func,
+			ptrs...
+		);
+		break;
+	
+	default:
+		throw std::invalid_argument("cpu_loop: ndim > 6 not supported");
+	}
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

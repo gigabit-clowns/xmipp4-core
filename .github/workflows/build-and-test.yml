@@ -100,7 +100,7 @@ jobs:
         - ubuntu-22.04
         - macos-latest
         - windows-latest
-  
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -125,7 +125,7 @@ jobs:
         - ubuntu-latest
         - macos-latest
         - windows-latest
-  
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -158,3 +158,4 @@ jobs:
           build-artifact-name: "build-artifact"
           coverage-pattern: "coverage-report-*"
           coverage-path: ${{ github.workspace }}/build
+          show-coverage: true

@@ -47,7 +47,7 @@ runs:
       with:
         test-wrapper: >-
           "${{ inputs.cl-coverage-tool }}" --working_dir="${{ github.workspace }}\build"
-          --modules="xmipp4-core"
+          --modules="${{ github.event.repository.name }}"
           --sources="${{ github.workspace }}"
           --excluded_sources="*_deps*"
           --excluded_sources="*_work*"

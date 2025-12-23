@@ -42,12 +42,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      
-      - name: TEST
-        run: |
-          echo "REPO: ${{ github.event.repository }}"
-          echo "NAME: ${{ github.event.repository.name }}"
-          false
 
       - name: Install coverage tool
         id: install-coverage

@@ -33,9 +33,9 @@ dynamic_subscript::dynamic_subscript(std::ptrdiff_t index) noexcept
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(const slice &slice) noexcept
 	: m_data{
-		static_cast<std::ptrdiff_t>(slice.get_start()), 
+		slice.get_start(), 
 		static_cast<std::ptrdiff_t>(slice.get_count()), 
-		static_cast<std::ptrdiff_t>(slice.get_step())
+		slice.get_step()
 	}
 	, m_type(subscript_type::slice)
 {
@@ -83,7 +83,7 @@ std::basic_ostream<T>& operator<<(
 {
 	os << "dynamic_subscript(";
 	visit(
-		[&os] (auto x) -> void
+		[&os] (auto x)
 		{
 			os << x;
 		},

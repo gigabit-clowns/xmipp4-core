@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "memory_resource_affinity.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 
@@ -36,24 +37,13 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get a memory resource object that is local to the device.
+	 * @brief Get the most suitable memory resource for the intended usage.
 	 * 
-	 * The device-local memory resource is optimal for operating in the device.
-	 * 
-	 * @return memory_resource& The device-local memory resource.
+	 * @param affinity The affinity of the memory resource.
+	 * @return memory_resource& The memory resource.
 	 */
-	virtual memory_resource& get_device_local_memory_resource() noexcept = 0;
-
-	/**
-	 * @brief Get a memory resource object that is host accessible.
-	 * 
-	 * The host accessible memory resource is optimal to transfer data from
-	 * the host to the device. In unified architectures this may alias the
-	 * device local memory resource.
-	 * 
-	 * @return memory_resource& The host accessible memory resource.
-	 */
-	virtual memory_resource& get_host_accessible_memory_resource() noexcept = 0;
+	virtual memory_resource& 
+	get_memory_resource(memory_resource_affinity affinity) = 0;
 
 	/**
 	 * @brief Create a device queue.

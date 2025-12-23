@@ -1,0 +1,274 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "eager_operation_dispatcher.hpp"
+
+#include <xmipp4/core/multidimensional/kernel_manager.hpp>
+#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/multidimensional/array_factory.hpp>
+#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/hardware/memory_resource.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/execution_context.hpp>
+
+#include "../config.hpp"
+
+#include <boost/container/small_vector.hpp>
+
+namespace xmipp4 
+{
+namespace multidimensional
+{
+
+static void allocate_output(
+	span<array> operands,
+	span<const array_descriptor> descriptors,
+	const execution_context &context
+)
+{
+	for (std::size_t i = 0; i < operands.size(); ++i)
+	{
+		array *out = &operands[i];
+		if (out->get_storage() == nullptr)
+		{
+			out = nullptr;
+		}
+
+		operands[i] = empty(
+			descriptors[i], 
+			hardware::memory_resource_affinity::device, 
+			context, 
+			out
+		);
+	}
+}
+
+static bool check_storage_placement(
+	const hardware::buffer& buffer, 
+	hardware::device &device
+)
+{
+	const auto &memory_resource = buffer.get_memory_resource();
+	return hardware::is_device_accessible(memory_resource, device);
+}
+
+static void populate_output_descriptors(
+	span<const array> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array::get_descriptor)
+	);
+}
+
+static void populate_input_descriptors(
+	span<const array_view> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array_view::get_descriptor)
+	);
+}
+
+static void populate_output_storages(
+	span<array> operands,
+	span<std::shared_ptr<hardware::buffer>> storages,
+	hardware::device &device
+)
+{
+	std::transform(
+		operands.begin(), 
+		operands.end(),
+		storages.begin(),
+		[&] (auto &arr)
+		{
+			auto buffer = arr.share_storage();
+
+			XMIPP4_ASSERT( buffer );
+			XMIPP4_ASSERT( check_storage_placement(*buffer, device) );
+			std::ignore = device; // To avoid warning in Release builds.
+
+			return buffer;
+		}
+	);
+}
+
+static void populate_input_storages(
+	span<const array_view> operands,
+	span<std::shared_ptr<const hardware::buffer>> storages,
+	hardware::device &device
+)
+{
+	std::transform(
+		operands.begin(), 
+		operands.end(),
+		storages.begin(),
+		[&] (const auto &arr)
+		{
+			auto buffer = arr.share_storage();
+
+			if (!buffer)
+			{
+				throw std::invalid_argument(
+					"One of the input operands does not an associated storage"
+				);
+			}
+			if (!check_storage_placement(*buffer, device))
+			{
+				throw std::invalid_argument(
+					"One of the input operands is not accessible by the device "
+					"used to execute the operation"
+				);
+			}
+
+			return buffer;
+		}
+	);
+}
+
+static void record_queues(
+	span<const std::shared_ptr<hardware::buffer>> storages,
+	hardware::device_queue &queue
+)
+{		
+	for (const auto &storage : storages)
+	{
+		XMIPP4_ASSERT(storage);
+		storage->record_queue(queue);
+	}
+}
+
+static void record_queues(
+	span<const std::shared_ptr<const hardware::buffer>> storages,
+	hardware::device_queue &queue
+)
+{		
+	for (const auto &storage : storages)
+	{
+		XMIPP4_ASSERT(storage);
+		storage->record_queue(queue);
+	}
+}
+
+
+
+eager_operation_dispatcher::eager_operation_dispatcher(
+	const kernel_manager &manager
+) noexcept
+	: m_kernel_manager(manager)
+{
+}
+
+eager_operation_dispatcher::~eager_operation_dispatcher() = default;
+
+
+
+void eager_operation_dispatcher::dispatch(
+	const operation &operation,
+	span<array> output_operands,
+	span<const array_view> input_operands,
+	const execution_context &context
+)
+{
+	const auto kernel = prepare_kernel(
+		operation,
+		output_operands,
+		input_operands,
+		context
+	);
+
+	XMIPP4_ASSERT( kernel );
+
+	execute_kernel(
+		*kernel, 
+		output_operands, 
+		input_operands, 
+		context
+	);
+}
+
+std::shared_ptr<kernel> eager_operation_dispatcher::prepare_kernel(
+	const operation &operation,
+	span<array> output_operands,
+	span<const array_view> input_operands,
+	const execution_context &context
+) const
+{
+	const auto n_outputs = output_operands.size();
+	const auto n_inputs = input_operands.size();
+	const auto n_operands = n_outputs + n_inputs;
+
+	boost::container::small_vector<
+		array_descriptor, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT + XMIPP4_SMALL_INPUT_OPERAND_COUNT
+	> descriptors(n_operands);
+	const span<array_descriptor> output_descriptors(
+		descriptors.data(), 
+		n_outputs
+	);
+	populate_output_descriptors(output_operands, output_descriptors);
+	const span<array_descriptor> input_descriptors(
+		descriptors.data() + n_outputs, 
+		n_inputs
+	);
+	populate_input_descriptors(input_operands, input_descriptors);
+
+	operation.sanitize_operands(output_descriptors, input_descriptors);
+	allocate_output(output_operands, output_descriptors, context);
+
+	return m_kernel_manager.get().build_kernel(
+		operation, 
+		span<const array_descriptor>(descriptors.data(), descriptors.size()),
+		context.get_device()
+	);
+}
+
+void eager_operation_dispatcher::execute_kernel(
+	const kernel &kernel,
+	span<array> output_operands,
+	span<const array_view> input_operands,
+	const execution_context &context
+) const
+{
+	auto &device = context.get_device();
+	auto *queue = context.get_active_queue().get();
+
+	boost::container::small_vector<
+		std::shared_ptr<hardware::buffer>, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
+	> output_storages(output_operands.size());
+	span<std::shared_ptr<hardware::buffer>> read_write_storages(
+		output_storages.data(), 
+		output_storages.size()
+	);
+	populate_output_storages(output_operands, read_write_storages, device);
+
+	boost::container::small_vector<
+		std::shared_ptr<const hardware::buffer>, 
+		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
+	> input_storages(input_operands.size());
+	span<std::shared_ptr<const hardware::buffer>> read_only_storages(
+		input_storages.data(), 
+		input_storages.size()
+	);
+	populate_input_storages(input_operands, read_only_storages, device);
+
+	kernel.execute(read_write_storages, read_only_storages, queue);
+
+	if (queue)
+	{
+		record_queues(read_write_storages, *queue);
+		record_queues(read_only_storages, *queue);
+	}
+}
+
+} // namespace multidimensional
+} // namespace xmipp4

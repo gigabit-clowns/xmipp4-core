@@ -3,6 +3,7 @@
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
 #include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 
 #include "host_memory/host_memory_resource.hpp"
 
@@ -24,8 +25,11 @@ bool is_device_accessible(
 	device &device
 ) noexcept
 {
+	XMIPP4_CONST_CONSTEXPR 
+	auto affinity = memory_resource_affinity::device;
+
 	return 
-		&device.get_device_local_memory_resource() == &resource ||
+		&device.get_memory_resource(affinity) == &resource ||
 		(
 			resource.get_target_device() == &device && 
 			is_device_accessible(resource.get_kind())

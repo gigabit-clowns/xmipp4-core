@@ -92,7 +92,10 @@ TEST_CASE("Calling share on an array should return an array with the same conten
 	const array_descriptor descriptor(layout, data_type);
 	array arr1(storage, descriptor);
 	auto arr2 = arr1.share();
+	auto arr3 = static_cast<const array&>(arr2).share();
 
 	CHECK( &arr1.get_descriptor() == &arr2.get_descriptor() );
 	CHECK( arr1.get_storage() == arr2.get_storage() );
+	CHECK( &arr1.get_descriptor() == &arr3.get_descriptor() );
+	CHECK( arr1.get_storage() == arr3.get_storage() );
 }	

@@ -21,6 +21,11 @@ memory_resource& host_memory_allocator::get_memory_resource() const noexcept
 	return host_memory_resource::get();
 }
 
+std::size_t host_memory_allocator::get_max_alignment() const noexcept
+{
+    return host_memory_resource::get().get_max_heap_alignment();
+}
+
 std::shared_ptr<buffer> host_memory_allocator::allocate(
 	std::size_t size, 
 	std::size_t alignment, 

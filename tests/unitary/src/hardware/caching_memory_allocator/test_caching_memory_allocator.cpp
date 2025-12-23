@@ -17,6 +17,40 @@
 
 using namespace xmipp4::hardware;
 
+TEST_CASE( "get_maximum_alignment in caching_memory_allocator should return the parameter provided to the constructor", "[caching_memory_allocator_backend]" )
+{
+	const std::size_t max_alignment = 32;
+	const std::size_t request_size_step = 1<<20;
+	mock_memory_resource resource;
+
+	REQUIRE_CALL(resource, get_target_device())
+		.RETURN(nullptr);
+	caching_memory_allocator allocator(
+		resource, 
+		max_alignment, 
+		request_size_step
+	);
+ 
+	CHECK( allocator.get_max_alignment() );
+}
+
+TEST_CASE( "get_memory_resource in caching_memory_allocator should return the resource provided to the constructor", "[caching_memory_allocator_backend]" )
+{
+	const std::size_t max_alignment = 256;
+	const std::size_t request_size_step = 1<<20;
+	mock_memory_resource resource;
+
+	REQUIRE_CALL(resource, get_target_device())
+		.RETURN(nullptr);
+	caching_memory_allocator allocator(
+		resource, 
+		max_alignment, 
+		request_size_step
+	);
+ 
+	CHECK( &allocator.get_memory_resource() == &resource );
+}
+
 TEST_CASE( "requesting a buffer from caching_memory_allocator should allocate a heap the first time with more than enough space", "[caching_memory_allocator_backend]" )
 {
 	const std::size_t max_alignment = 256;

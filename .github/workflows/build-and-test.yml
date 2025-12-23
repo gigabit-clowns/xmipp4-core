@@ -77,13 +77,14 @@ jobs:
           report-path: ${{ github.workspace }}/coverage.xml
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v5
+        if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
           path: coverage.xml
 
       - name: Upload build folder (ubuntu-latest + gcc only)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.c == 'gcc'
         with:
           name: build-artifact

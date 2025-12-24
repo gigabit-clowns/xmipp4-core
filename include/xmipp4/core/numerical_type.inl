@@ -143,7 +143,8 @@ auto visit_single(F&& visitor, numerical_type type)
 	case numerical_type::complex_float64:
 		return std::forward<F>(visitor)(type_tag<std::complex<float64_t>>());
 	default: 
-		return std::forward<F>(visitor)(type_tag<void>());
+		throw std::invalid_argument("Invalid numerical type");
+		//return std::forward<F>(visitor)(type_tag<void>());
     }
 }
 

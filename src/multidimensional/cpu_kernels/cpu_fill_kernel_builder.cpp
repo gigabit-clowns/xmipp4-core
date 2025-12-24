@@ -48,20 +48,34 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 		);
 	}
 
-	array_access_layout_builder layout_builder;
-	for (const auto &descriptor : descriptors)
-	{
-		layout_builder.add_operand(descriptor.get_layout());
-	}
+	const auto &output_descriptor = descriptors[0];
 
+	array_access_layout_builder layout_builder;
+	layout_builder.add_operand(output_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
-	/*return std::make_shared<cpu_fill_kernel>(
-		layout_builder.build(),
-		descriptors[0].get_data_type(),
-		descriptors[1].get_data_type()
-	);*/
-	return nullptr; // TODO
+	const auto fill_value = 
+		dynamic_cast<const fill_operation&>(operation).get_fill_value();
+
+	return visit(
+		[&access_layout, &fill_value] 
+		(auto output_tag, auto fill_tag) -> std::shared_ptr<cpu_kernel>
+		{
+			using output_value_type = typename decltype(output_tag)::type;
+			using fill_value_type = typename decltype(fill_tag)::type;
+			using kernel_type = 
+				cpu_fill_kernel<output_value_type, fill_value_type>;
+
+			const auto value = fill_value.get<fill_value_type>();
+
+			return std::make_shared<kernel_type>(
+				std::move(access_layout), 
+				value
+			);
+		},
+		output_descriptor.get_data_type(),
+		fill_value.get_data_type()
+	);
 }
 
 } // namespace multidimensional

@@ -9,7 +9,11 @@ namespace xmipp4
 namespace multidimensional
 {
 
-fill_operation::fill_operation() noexcept = default;
+fill_operation::fill_operation(scalar_ref fill_value) noexcept
+	: m_fill_value(fill_value)
+{
+}
+
 fill_operation::~fill_operation()  = default;
 
 std::string fill_operation::get_name() const
@@ -42,10 +46,10 @@ void fill_operation::sanitize_operands(
 	}
 
 	array_descriptor &output_desc = output_descriptors[0];
-	if (output_desc.get_data_type() == numerical_type::unknown) // TODO: Ensure equal to fill value type
+	if (is_initialized(output_desc))
 	{
 		throw std::invalid_argument(
-			"Output array data type must be the same as the fill value type."
+			"Output array must be initialized."
 		);
 	}
 }

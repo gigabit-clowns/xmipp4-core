@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/kernel.hpp>
+#include "cpu_kernel.hpp"
 
 #include <xmipp4/core/multidimensional/array_access_layout.hpp>
 
@@ -13,7 +13,7 @@ namespace multidimensional
 
 template <typename T, typename Q>
 class cpu_copy_kernel final
-	: public kernel
+	: public cpu_kernel
 {
 public:
 	using output_value_type = T;

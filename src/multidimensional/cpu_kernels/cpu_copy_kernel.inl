@@ -13,13 +13,9 @@ namespace multidimensional
 template <typename T, typename Q>
 inline
 cpu_copy_kernel<T, Q>::cpu_copy_kernel(
-	array_access_layout access_layout,
-	numerical_type output_data_type,
-	numerical_type input_data_type
+	array_access_layout access_layout
 ) noexcept
 	: m_access_layout(std::move(access_layout))
-	, m_output_data_type(output_data_type)
-	, m_input_data_type(input_data_type)
 {
 }
 

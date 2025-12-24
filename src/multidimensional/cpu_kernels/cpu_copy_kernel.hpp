@@ -19,11 +19,7 @@ public:
 	using output_value_type = T;
 	using input_value_type = Q;
 
-	cpu_copy_kernel(
-		array_access_layout access_layout,
-		numerical_type output_data_type,
-		numerical_type input_data_type
-	) noexcept;
+	explicit cpu_copy_kernel(array_access_layout access_layout) noexcept;
 	~cpu_copy_kernel() override = default;
 
 	void execute(
@@ -34,8 +30,6 @@ public:
 
 private:
 	array_access_layout m_access_layout;
-	numerical_type m_output_data_type;
-	numerical_type m_input_data_type;
 };
 
 } // namespace multidimensional

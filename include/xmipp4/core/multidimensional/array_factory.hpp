@@ -3,6 +3,7 @@
 #pragma once
 
 #include "array.hpp"
+#include "../scalar_ref.hpp"
 #include "../hardware/memory_resource_affinity.hpp"
 
 namespace xmipp4 
@@ -82,7 +83,7 @@ XMIPP4_CORE_API
 array full(
 	array_descriptor descriptor, 
 	hardware::memory_resource_affinity affinity,
-	/*TODO: fill value*/
+	const scalar_ref &fill_value,
 	const execution_context &context,
 	array *out = nullptr
 );

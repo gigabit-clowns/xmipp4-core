@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 
+#include <sstream>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -23,8 +25,22 @@ std::string fill_operation::get_name() const
 
 std::string fill_operation::serialize_parameters() const
 {
-	// TODO serialize fill value
-	return "";
+	std::ostringstream oss;
+	oss << to_string(m_fill_value.get_data_type()) << "(";
+
+	const auto &fill_value = m_fill_value;
+	visit(
+		[&oss, &fill_value] (auto tag)
+		{
+			using type = typename decltype(tag)::type;
+			oss << fill_value.get<type>();
+		},
+		fill_value.get_data_type()
+	);
+
+	oss << ")";
+
+	return oss.str();
 }
 
 void fill_operation::sanitize_operands(

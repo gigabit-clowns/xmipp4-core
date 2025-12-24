@@ -3,6 +3,8 @@
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -115,11 +117,13 @@ array zeros(
 	array *out
 )
 {
-	auto result = empty(descriptor, affinity, context, out);
-
-	// TODO dispatch a zeroing operation
-
-	return result;
+	return full(
+		descriptor,
+		affinity,
+		0,
+		context,
+		out=out
+	);
 }
 
 array ones(
@@ -129,23 +133,28 @@ array ones(
 	array *out
 )
 {
-	auto result = empty(descriptor, affinity, context, out);
-
-	// TODO dispatch a one-filling operation
-
-	return result;
+	return full(
+		descriptor,
+		affinity,
+		1,
+		context,
+		out=out
+	);
 }
 
 array full(
 	array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
+	const scalar_ref &fill_value,
 	const execution_context &context,
 	array *out
 )
 {
 	auto result = empty(descriptor, affinity, context, out);
 
-	// TODO dispatch a filling operation
+	fill_operation op(fill_value);
+
+	// TODO dispatch
 
 	return result;
 }
@@ -162,6 +171,8 @@ array copy(
 		context, 
 		out
 	);
+
+	copy_operation op;
 
 	// TODO dispatch a copy operation
 

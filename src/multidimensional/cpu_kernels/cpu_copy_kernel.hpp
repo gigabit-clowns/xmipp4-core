@@ -11,10 +11,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
+template <typename T, typename Q>
 class cpu_copy_kernel final
 	: public kernel
 {
 public:
+	using output_value_type = T;
+	using input_value_type = Q;
+
 	cpu_copy_kernel(
 		array_access_layout access_layout,
 		numerical_type output_data_type,
@@ -36,3 +40,5 @@ private:
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+#include "cpu_copy_kernel.inl"

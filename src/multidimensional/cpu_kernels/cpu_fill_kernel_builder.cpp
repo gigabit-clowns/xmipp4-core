@@ -14,7 +14,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-
 operation_id 
 cpu_fill_kernel_builder::get_operation_id() const noexcept
 {
@@ -55,11 +54,14 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 		layout_builder.add_operand(descriptor.get_layout());
 	}
 
-	return std::make_shared<cpu_fill_kernel>(
+	auto access_layout = layout_builder.build();
+
+	/*return std::make_shared<cpu_fill_kernel>(
 		layout_builder.build(),
 		descriptors[0].get_data_type(),
 		descriptors[1].get_data_type()
-	);
+	);*/
+	return nullptr; // TODO
 }
 
 } // namespace multidimensional

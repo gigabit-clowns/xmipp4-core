@@ -55,11 +55,9 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		layout_builder.add_operand(descriptor.get_layout());
 	}
 
-	return std::make_shared<cpu_copy_kernel>(
-		layout_builder.build(),
-		descriptors[0].get_data_type(),
-		descriptors[1].get_data_type()
-	);
+	auto access_layout = layout_builder.build();
+
+	return nullptr; // TODO
 }
 
 } // namespace multidimensional

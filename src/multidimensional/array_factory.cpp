@@ -5,6 +5,7 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
+#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -122,7 +123,7 @@ array zeros(
 		affinity,
 		0,
 		context,
-		out=out
+		out
 	);
 }
 
@@ -138,7 +139,7 @@ array ones(
 		affinity,
 		1,
 		context,
-		out=out
+		out
 	);
 }
 
@@ -150,13 +151,19 @@ array full(
 	array *out
 )
 {
-	auto result = empty(descriptor, affinity, context, out);
+	std::array<array, 1> outputs = { 
+		empty(descriptor, affinity, context, out) 
+	};
 
-	fill_operation op(fill_value);
+	auto &dispatcher = context.get_operation_dispatcher();
+	dispatcher.dispatch(
+		fill_operation(fill_value),
+		make_span(outputs),
+		{},
+		context
+	);
 
-	// TODO dispatch
-
-	return result;
+	return std::move(outputs[0]);
 }
 
 array copy(
@@ -165,18 +172,23 @@ array copy(
 	array *out
 )
 {
-	auto destination = empty(
-		source.get_descriptor(), 
-		hardware::memory_resource_affinity::device, 
-		context, 
-		out
+	std::array<array, 1> outputs;
+	const std::array<array_view, 1> inputs = { std::move(source) };
+
+	if (out)
+	{
+		outputs = { out->share() };
+	}
+
+	auto &dispatcher = context.get_operation_dispatcher();
+	dispatcher.dispatch(
+		copy_operation(),
+		make_span(outputs),
+		make_span(inputs),
+		context
 	);
 
-	copy_operation op;
-
-	// TODO dispatch a copy operation
-
-	return destination;
+	return std::move(outputs[0]);
 }
 
 } // namespace multidimensional

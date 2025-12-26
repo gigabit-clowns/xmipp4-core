@@ -81,7 +81,17 @@ void cpu_copy_kernel<T, Q>::execute(
 		queue->wait_until_completed();
 	}
 
-	// TODO
+	copy(destination_data, source_data);
+}
+
+template <typename T, typename Q>
+inline
+void cpu_copy_kernel<T, Q>::copy(
+	output_value_type *destination,
+	const input_value_type *source
+) const
+{
+	// TODO implement
 }
 
 } // namespace multidimensional

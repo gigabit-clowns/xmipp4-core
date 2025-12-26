@@ -45,7 +45,7 @@ void cpu_fill_kernel<T, Q>::execute(
 	if (read_only_operands.size() != 0)
 	{
 		throw std::invalid_argument(
-			"cpu_fill_kernel::execute: Expected no read-only operand."
+			"cpu_fill_kernel::execute: Expected no read-only operands."
 		);
 	}
 
@@ -55,7 +55,7 @@ void cpu_fill_kernel<T, Q>::execute(
 	if (destination_data == nullptr)
 	{
 		throw std::invalid_argument(
-			"cpu_copy_kernel::execute: Output operand is not "
+			"cpu_fill_kernel::execute: Output operand is not "
 			"host accessible."
 		);
 	}
@@ -65,7 +65,14 @@ void cpu_fill_kernel<T, Q>::execute(
 		queue->wait_until_completed();
 	}
 
-	// TODO dispatch
+	fill(destination_data);
+}
+
+template <typename T, typename Q>
+inline
+void cpu_fill_kernel<T, Q>::fill(output_value_type *destination) const
+{
+	// TODO
 }
 
 } // namespace multidimensional

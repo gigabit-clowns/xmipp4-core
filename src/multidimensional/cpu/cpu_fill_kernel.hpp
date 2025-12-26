@@ -34,6 +34,8 @@ public:
 private:
 	array_access_layout m_access_layout;
 	fill_value_type m_fill_value;
+
+	void fill(output_value_type *destination) const;
 };
 
 } // namespace multidimensional

@@ -30,6 +30,11 @@ public:
 
 private:
 	array_access_layout m_access_layout;
+
+	void copy(
+		output_value_type *destination,
+		const input_value_type *source
+	) const;
 };
 
 } // namespace multidimensional

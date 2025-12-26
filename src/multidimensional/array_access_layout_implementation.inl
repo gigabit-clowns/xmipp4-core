@@ -162,6 +162,70 @@ array_access_layout_implementation::get_offset(std::size_t operand) const
 }
 
 inline
+bool array_access_layout_implementation::iter(array_iterator &ite) const
+{
+	std::vector<std::size_t> offsets;
+	offsets.reserve(m_operands.size());
+	std::transform(
+		m_operands.cbegin(),
+		m_operands.cend(),
+		std::back_inserter(offsets),
+		std::mem_fn(&array_access_layout_operand::get_offset)
+	);
+
+	ite =  array_iterator(
+		m_extents.size(),
+		std::move(offsets)
+	);
+
+	return true;
+}
+
+inline
+bool array_access_layout_implementation::next(
+	array_iterator &ite
+) const noexcept
+{
+	const auto indices = ite.get_indices();
+	const auto offsets = ite.get_offsets();
+	const auto extents = get_extents();
+	const auto n_dim = static_cast<int>(indices.size());
+	const auto n_operands = get_number_of_operands();
+
+	// TODO handle first ite
+
+	for (int i = n_dim - 1; i >= 0; --i) 
+	{
+		const auto next_index = indices[i] + 1;
+		const auto extent = extents[i];
+
+		if (next_index < extent)
+		{
+			for (std::size_t j = 0; j < n_operands; ++j) 
+			{
+				const auto strides = m_operands[j].get_strides();
+				offsets[j] += strides[i];
+			}
+
+			indices[i] = next_index;
+			return true;
+		}
+		else
+		{
+			for (std::size_t j = 0; j < n_operands; ++j)
+			{
+				const auto strides = m_operands[j].get_strides();
+				offsets[j] -= (indices[i] * strides[i]);
+			}
+
+			indices[i] = 0;
+		}
+	}
+	
+	return false; 
+}
+
+inline
 int array_access_layout_implementation::compare_strides(
 	std::size_t i, 
 	std::size_t j

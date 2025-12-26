@@ -91,8 +91,6 @@ void cpu_copy_kernel<T, Q>::execute(
 		queue->wait_until_completed();
 	}
 
-	destination_data += m_access_layout.get_offset(0);
-	source_data += m_access_layout.get_offset(1);
 	copy(destination_data, source_data);
 }
 
@@ -103,7 +101,18 @@ void cpu_copy_kernel<T, Q>::copy(
 	const input_value_type *source
 ) const
 {
-	// TODO implement
+	for (
+		array_iterator ite, auto next = m_access_layout.iter(ite); 
+		next; 
+		next = m_access_layout.next(ite)
+	)
+	{
+		// TODO vectorize inner-most loop.
+		const auto offsets = ite.get_offsets();
+		auto *y = destination + offsets[0];
+		const auto *x = source + offsets[1];
+		*y = *x;
+	}
 }
 
 } // namespace multidimensional

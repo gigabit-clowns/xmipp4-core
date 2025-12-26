@@ -72,7 +72,17 @@ template <typename T, typename Q>
 inline
 void cpu_fill_kernel<T, Q>::fill(output_value_type *destination) const
 {
-	// TODO
+	for (
+		array_iterator ite, auto next = m_access_layout.iter(ite); 
+		next; 
+		next = m_access_layout.next(ite)
+	)
+	{
+		// TODO vectorize inner-most loop.
+		const auto offsets = ite.get_offsets();
+		auto *y = destination + offsets[0];
+		*y = m_fill_value;
+	}
 }
 
 } // namespace multidimensional

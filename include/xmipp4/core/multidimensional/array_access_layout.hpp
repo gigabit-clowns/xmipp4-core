@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "array_iterator.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -81,6 +82,28 @@ public:
 	 */
 	XMIPP4_CORE_API
 	std::ptrdiff_t get_offset(std::size_t operand) const;
+
+	/**
+	 * @brief Populate an array iterator for traversing this layout.
+	 * 
+	 * @param ite The iterator to be populated.
+	 * @return true The layout can be iterated.
+	 * @return false The layout is empty.
+	 */
+	XMIPP4_CORE_API
+	bool iter(array_iterator &ite) const;
+
+	/**
+	 * @brief Advance an array iterator.
+	 * 
+	 * @param ite The iterator to be advanced. Must have been populated by 
+	 * `iter()`. The previous call to `iter()` or `next()` must have returned
+	 * true.
+	 * @return true Iteration continues.
+	 * @return false Iteration finished.
+	 */
+	XMIPP4_CORE_API
+	bool next(array_iterator &ite) const noexcept;
 
 	/**
 	 * @brief Get a pointer to the implementation.

@@ -22,11 +22,19 @@ cpu_copy_kernel_builder::get_operation_id() const noexcept
 }
 
 backend_priority cpu_copy_kernel_builder::get_suitability(
-	const operation&,
+	const operation& operation,
 	span<const array_descriptor>,
 	hardware::device &device
 ) const
 {
+	if (dynamic_cast<const copy_operation*>(&operation) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_copy_kernel_builder::build: Expected operation to be an "
+			"instance of copy_operation"
+		);
+	}
+
 	if (dynamic_cast<const hardware::cpu_device*>(&device) != nullptr)
 	{
 		return backend_priority::normal;
@@ -36,11 +44,27 @@ backend_priority cpu_copy_kernel_builder::get_suitability(
 }
 
 std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
-	const operation&,
+	const operation& operation,
 	span<const array_descriptor> descriptors,
-	hardware::device&
+	hardware::device& device
 ) const
 {
+	if (dynamic_cast<const copy_operation*>(&operation) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_copy_kernel_builder::build: Expected operation to be an "
+			"instance of copy_operation"
+		);
+	}
+
+	if (dynamic_cast<const hardware::cpu_device*>(&device) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_copy_kernel_builder::build: Expected device to be an instance "
+			"of cpu_device"
+		);
+	}
+
 	if (descriptors.size() != 2)
 	{
 		throw std::invalid_argument(

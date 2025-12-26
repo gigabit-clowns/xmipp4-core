@@ -21,11 +21,19 @@ cpu_fill_kernel_builder::get_operation_id() const noexcept
 }
 
 backend_priority cpu_fill_kernel_builder::get_suitability(
-	const operation&,
+	const operation& operation,
 	span<const array_descriptor>,
 	hardware::device &device
 ) const
 {
+	if (dynamic_cast<const fill_operation*>(&operation) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_fill_kernel_builder::build: Expected operation to be an "
+			"instance of fill_operation"
+		);
+	}
+
 	if (dynamic_cast<const hardware::cpu_device*>(&device) != nullptr)
 	{
 		return backend_priority::normal;
@@ -37,9 +45,25 @@ backend_priority cpu_fill_kernel_builder::get_suitability(
 std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 	const operation& operation,
 	span<const array_descriptor> descriptors,
-	hardware::device&
+	hardware::device& device
 ) const
 {
+	if (dynamic_cast<const fill_operation*>(&operation) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_fill_kernel_builder::build: Expected operation to be an "
+			"instance of fill_operation"
+		);
+	}
+
+	if (dynamic_cast<const hardware::cpu_device*>(&device) == nullptr)
+	{
+		throw std::invalid_argument(
+			"cpu_fill_kernel_builder::build: Expected device to be an instance "
+			"of cpu_device"
+		);
+	}
+
 	if (descriptors.size() != 1)
 	{
 		throw std::invalid_argument(

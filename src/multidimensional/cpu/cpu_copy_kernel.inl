@@ -99,18 +99,21 @@ void cpu_copy_kernel<T, Q>::copy(
 	const input_value_type *source
 ) const
 {
-	for (
-		array_iterator ite, auto next = m_access_layout.iter(ite); 
-		next; 
-		next = m_access_layout.next(ite)
-	)
+	array_iterator ite;
+	if (!m_access_layout.iter(ite))
+	{
+		return;
+	}
+
+	do
 	{
 		// TODO vectorize inner-most loop.
 		const auto offsets = ite.get_offsets();
 		auto *y = destination + offsets[0];
 		const auto *x = source + offsets[1];
-		// *y = static_cast<output_value_type>(*x);
+		*y = static_cast<output_value_type>(*x); // TODO
 	}
+	while(m_access_layout.next(ite));
 }
 
 } // namespace multidimensional

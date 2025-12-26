@@ -10,20 +10,20 @@ namespace xmipp4
 namespace multidimensional
 {
 
-template <typename T, typename Q>
+template <typename T>
 inline
-cpu_fill_kernel<T, Q>::cpu_fill_kernel(
+cpu_fill_kernel<T>::cpu_fill_kernel(
 	array_access_layout access_layout,
-	fill_value_type fill_value
+	output_value_type fill_value
 ) noexcept
 	: m_access_layout(std::move(access_layout))
 	, m_fill_value(fill_value)
 {
 }
 
-template <typename T, typename Q>
+template <typename T>
 inline
-void cpu_fill_kernel<T, Q>::execute(
+void cpu_fill_kernel<T>::execute(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue
@@ -66,21 +66,24 @@ void cpu_fill_kernel<T, Q>::execute(
 	fill(static_cast<output_value_type*>(destination_data));
 }
 
-template <typename T, typename Q>
+template <typename T>
 inline
-void cpu_fill_kernel<T, Q>::fill(output_value_type *destination) const
+void cpu_fill_kernel<T>::fill(output_value_type *destination) const
 {
-	/*for (
-		array_iterator ite, auto cont = m_access_layout.iter(ite); 
-		cont; 
-		cont = m_access_layout.next(ite)
-	)
+	array_iterator ite;
+	if (!m_access_layout.iter(ite))
+	{
+		return;
+	}
+
+	do
 	{
 		// TODO vectorize inner-most loop.
 		const auto offsets = ite.get_offsets();
 		auto *y = destination + offsets[0];
 		*y = m_fill_value;
-	}*/
+	}
+	while(m_access_layout.next(ite));
 }
 
 } // namespace multidimensional

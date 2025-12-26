@@ -88,13 +88,13 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 			using output_value_type = typename decltype(output_tag)::type;
 			using fill_value_type = typename decltype(fill_tag)::type;
 			using kernel_type = 
-				cpu_fill_kernel<output_value_type, fill_value_type>;
+				cpu_fill_kernel<output_value_type>;
 
 			const auto value = fill_value.get<fill_value_type>();
 
 			return std::make_shared<kernel_type>(
 				std::move(access_layout), 
-				value
+				static_cast<output_value_type>(value) // TODO
 			);
 		},
 		output_descriptor.get_data_type(),

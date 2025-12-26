@@ -11,17 +11,16 @@ namespace xmipp4
 namespace multidimensional
 {
 
-template <typename T, typename Q>
+template <typename T>
 class cpu_fill_kernel final
 	: public cpu_kernel
 {
 public:
 	using output_value_type = T;
-	using fill_value_type = Q;
 
 	cpu_fill_kernel(
 		array_access_layout access_layout,
-		fill_value_type fill_value
+		output_value_type fill_value
 	) noexcept;
 	~cpu_fill_kernel() override = default;
 
@@ -33,7 +32,7 @@ public:
 
 private:
 	array_access_layout m_access_layout;
-	fill_value_type m_fill_value;
+	output_value_type m_fill_value;
 
 	void fill(output_value_type *destination) const;
 };

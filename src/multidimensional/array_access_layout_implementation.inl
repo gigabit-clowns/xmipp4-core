@@ -205,10 +205,10 @@ bool array_access_layout_implementation::next(
 	const auto indices = ite.get_indices();
 	const auto offsets = ite.get_offsets();
 	const auto extents = get_extents();
-	const auto n_dim = static_cast<int>(indices.size());
+	const auto n_dim = indices.size();
 	const auto n_operands = get_number_of_operands();
 
-	for (int i = n_dim - 1; i >= 0; --i) 
+	for (auto i = static_cast<int>(n_dim) - 1; i >= 0; --i) 
 	{
 		const auto next_index = indices[i] + 1;
 		const auto extent = extents[i];
@@ -224,16 +224,14 @@ bool array_access_layout_implementation::next(
 			indices[i] = next_index;
 			return true;
 		}
-		else
-		{
-			for (std::size_t j = 0; j < n_operands; ++j)
-			{
-				const auto strides = m_operands[j].get_strides();
-				offsets[j] -= (indices[i] * strides[i]);
-			}
 
-			indices[i] = 0;
+		for (std::size_t j = 0; j < n_operands; ++j)
+		{
+			const auto strides = m_operands[j].get_strides();
+			offsets[j] -= (indices[i] * strides[i]);
 		}
+
+		indices[i] = 0;
 	}
 	
 	return false; 

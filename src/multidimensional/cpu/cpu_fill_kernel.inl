@@ -49,9 +49,7 @@ void cpu_fill_kernel<T, Q>::execute(
 		);
 	}
 
-	auto *destination_data = static_cast<output_value_type*>(
-		read_write_operands[0]->get_host_ptr()
-	);
+	auto *destination_data = read_write_operands[0]->get_host_ptr();
 	if (destination_data == nullptr)
 	{
 		throw std::invalid_argument(
@@ -65,24 +63,24 @@ void cpu_fill_kernel<T, Q>::execute(
 		queue->wait_until_completed();
 	}
 
-	fill(destination_data);
+	fill(static_cast<output_value_type*>(destination_data));
 }
 
 template <typename T, typename Q>
 inline
 void cpu_fill_kernel<T, Q>::fill(output_value_type *destination) const
 {
-	for (
-		array_iterator ite, auto next = m_access_layout.iter(ite); 
-		next; 
-		next = m_access_layout.next(ite)
+	/*for (
+		array_iterator ite, auto cont = m_access_layout.iter(ite); 
+		cont; 
+		cont = m_access_layout.next(ite)
 	)
 	{
 		// TODO vectorize inner-most loop.
 		const auto offsets = ite.get_offsets();
 		auto *y = destination + offsets[0];
 		*y = m_fill_value;
-	}
+	}*/
 }
 
 } // namespace multidimensional

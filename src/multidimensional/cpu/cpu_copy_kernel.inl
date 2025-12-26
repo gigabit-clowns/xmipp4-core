@@ -54,9 +54,7 @@ void cpu_copy_kernel<T, Q>::execute(
 		);
 	}
 
-	auto *destination_data = static_cast<output_value_type*>(
-		read_write_operands[0]->get_host_ptr()
-	);
+	auto *destination_data = read_write_operands[0]->get_host_ptr();
 	if (destination_data == nullptr)
 	{
 		throw std::invalid_argument(
@@ -65,9 +63,7 @@ void cpu_copy_kernel<T, Q>::execute(
 		);
 	}
 
-	const auto *source_data = static_cast<const input_value_type*>(
-		read_only_operands[0]->get_host_ptr()
-	);
+	const auto *source_data = read_only_operands[0]->get_host_ptr();
 	if (source_data == nullptr)
 	{
 		throw std::invalid_argument(
@@ -78,8 +74,7 @@ void cpu_copy_kernel<T, Q>::execute(
 
 	if (source_data == destination_data)
 	{
-		// TODO in the future we may want a more sophisticated better aliasing 
-		// check
+		// TODO in the future we may want a more sophisticated aliasing check.
 		throw std::invalid_argument(
 			"cpu_copy_kernel::execute: Input operand and output operand may "
 			"alias one another"
@@ -91,7 +86,10 @@ void cpu_copy_kernel<T, Q>::execute(
 		queue->wait_until_completed();
 	}
 
-	copy(destination_data, source_data);
+	copy(
+		static_cast<output_value_type*>(destination_data), 
+		static_cast<const input_value_type*>(source_data)
+	);
 }
 
 template <typename T, typename Q>
@@ -111,7 +109,7 @@ void cpu_copy_kernel<T, Q>::copy(
 		const auto offsets = ite.get_offsets();
 		auto *y = destination + offsets[0];
 		const auto *x = source + offsets[1];
-		*y = *x;
+		// *y = static_cast<output_value_type>(*x);
 	}
 }
 

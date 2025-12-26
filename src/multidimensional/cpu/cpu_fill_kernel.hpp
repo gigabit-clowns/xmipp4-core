@@ -41,4 +41,4 @@ private:
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "cpu_fill_kernel.hpp"
+#include "cpu_fill_kernel.inl"

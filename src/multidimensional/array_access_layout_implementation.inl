@@ -5,6 +5,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <numeric>
+#include <algorithm>
 #include <sstream>
 
 /**
@@ -164,6 +165,21 @@ array_access_layout_implementation::get_offset(std::size_t operand) const
 inline
 bool array_access_layout_implementation::iter(array_iterator &ite) const
 {
+	const auto valid = std::all_of(
+		m_extents.cbegin(), 
+		m_extents.cend(),
+		[] (auto extent)
+		{
+			return extent > 0;
+		}
+	);
+
+	if (!valid)
+	{
+		// There is at least 1 empty axis
+		return false;
+	}
+
 	std::vector<std::size_t> offsets;
 	offsets.reserve(m_operands.size());
 	std::transform(
@@ -191,8 +207,6 @@ bool array_access_layout_implementation::next(
 	const auto extents = get_extents();
 	const auto n_dim = static_cast<int>(indices.size());
 	const auto n_operands = get_number_of_operands();
-
-	// TODO handle first ite
 
 	for (int i = n_dim - 1; i >= 0; --i) 
 	{

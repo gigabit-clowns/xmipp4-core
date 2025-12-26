@@ -76,11 +76,23 @@ void cpu_copy_kernel<T, Q>::execute(
 		);
 	}
 
+	if (source_data == destination_data)
+	{
+		// TODO in the future we may want a more sophisticated better aliasing 
+		// check
+		throw std::invalid_argument(
+			"cpu_copy_kernel::execute: Input operand and output operand may "
+			"alias one another"
+		);
+	}
+
 	if (queue)
 	{
 		queue->wait_until_completed();
 	}
 
+	destination_data += m_access_layout.get_offset(0);
+	source_data += m_access_layout.get_offset(1);
 	copy(destination_data, source_data);
 }
 

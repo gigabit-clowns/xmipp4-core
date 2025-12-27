@@ -14,6 +14,33 @@ namespace xmipp4
 namespace multidimensional
 {
 
+namespace
+{
+
+template <typename T, typename Q>
+std::shared_ptr<cpu_kernel> make_fill_kernel(
+	array_access_layout access_layout,
+	std::true_type
+)
+{
+	return std::make_shared<cpu_copy_kernel<T, Q>>(
+		std::move(access_layout)
+	);
+}
+
+template <typename T, typename Q>
+std::shared_ptr<cpu_kernel> make_fill_kernel(
+	array_access_layout,
+	std::false_type
+)
+{
+	throw std::invalid_argument(
+		"cpu_copy_kernel_builder::build: Input value can not be converted into "
+		"the output value"
+	);
+}
+
+} // anonymous namespace
 
 operation_id 
 cpu_copy_kernel_builder::get_operation_id() const noexcept
@@ -87,10 +114,14 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		{
 			using output_value_type = typename decltype(output_tag)::type;
 			using input_value_type = typename decltype(input_tag)::type;
-			using kernel_type = 
-				cpu_copy_kernel<output_value_type, input_value_type>;
 
-			return std::make_shared<kernel_type>(std::move(access_layout));
+			return make_fill_kernel<output_value_type, input_value_type>(
+				std::move(access_layout),
+				typename std::is_convertible<
+					input_value_type, 
+					output_value_type
+				>::type()
+			);
 		},
 		output_descriptor.get_data_type(),
 		input_descriptor.get_data_type()

@@ -14,6 +14,39 @@ namespace xmipp4
 namespace multidimensional
 {
 
+namespace
+{
+
+template <typename T, typename Q>
+std::shared_ptr<cpu_kernel> make_fill_kernel(
+	array_access_layout access_layout,
+	const scalar_ref &fill_value,
+	std::true_type
+)
+{
+	const auto value = fill_value.get<Q>();
+
+	return std::make_shared<cpu_fill_kernel<T>>(
+		std::move(access_layout), 
+		static_cast<T>(value)
+	);
+}
+
+template <typename T, typename Q>
+std::shared_ptr<cpu_kernel> make_fill_kernel(
+	array_access_layout,
+	const scalar_ref&,
+	std::false_type
+)
+{
+	throw std::invalid_argument(
+		"cpu_fill_kernel_builder::build: Fill value can not be converted into "
+		"the output value"
+	);
+}
+
+} // anonymous namespace
+
 operation_id 
 cpu_fill_kernel_builder::get_operation_id() const noexcept
 {
@@ -87,14 +120,14 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 		{
 			using output_value_type = typename decltype(output_tag)::type;
 			using fill_value_type = typename decltype(fill_tag)::type;
-			using kernel_type = 
-				cpu_fill_kernel<output_value_type>;
-
-			const auto value = fill_value.get<fill_value_type>();
-
-			return std::make_shared<kernel_type>(
-				std::move(access_layout), 
-				static_cast<output_value_type>(value) // TODO
+			
+			return make_fill_kernel<output_value_type, fill_value_type>(
+				std::move(access_layout),
+				fill_value,
+				typename std::is_convertible<
+					fill_value_type, 
+					output_value_type
+				>::type()
 			);
 		},
 		output_descriptor.get_data_type(),

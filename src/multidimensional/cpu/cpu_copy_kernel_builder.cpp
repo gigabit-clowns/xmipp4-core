@@ -18,7 +18,7 @@ namespace
 {
 
 template <typename T, typename Q>
-std::shared_ptr<cpu_kernel> make_fill_kernel(
+std::shared_ptr<cpu_kernel> make_copy_kernel(
 	array_access_layout access_layout,
 	std::true_type
 )
@@ -29,7 +29,7 @@ std::shared_ptr<cpu_kernel> make_fill_kernel(
 }
 
 template <typename T, typename Q>
-std::shared_ptr<cpu_kernel> make_fill_kernel(
+std::shared_ptr<cpu_kernel> make_copy_kernel(
 	array_access_layout,
 	std::false_type
 )
@@ -115,7 +115,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 			using output_value_type = typename decltype(output_tag)::type;
 			using input_value_type = typename decltype(input_tag)::type;
 
-			return make_fill_kernel<output_value_type, input_value_type>(
+			return make_copy_kernel<output_value_type, input_value_type>(
 				std::move(access_layout),
 				typename std::is_convertible<
 					input_value_type, 

@@ -21,8 +21,8 @@ numerical_type_promotion_lattice::add_edge(
 	numerical_type to
 ) noexcept
 {
-	const auto v = static_cast<std::size_t>(from);
 	const auto u = static_cast<std::size_t>(to);
+	const auto v = static_cast<std::size_t>(from);
 
 	if (m_reach[u].test(v))
 	{

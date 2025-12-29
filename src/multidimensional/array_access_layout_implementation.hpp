@@ -57,6 +57,10 @@ public:
 
 	std::ptrdiff_t get_offset(std::size_t operand) const;
 
+	std::size_t iter(array_iterator &ite) const;
+
+	std::size_t next(array_iterator &ite, std::size_t n) const noexcept;
+
 private:
 	extent_vector_type m_extents;
 	operand_vector_type m_operands;

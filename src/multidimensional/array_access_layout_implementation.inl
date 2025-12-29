@@ -5,6 +5,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <numeric>
+#include <algorithm>
 #include <sstream>
 
 /**
@@ -159,6 +160,102 @@ std::ptrdiff_t
 array_access_layout_implementation::get_offset(std::size_t operand) const
 {
 	return get_operand(operand).get_offset();
+}
+
+inline
+std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
+{
+	const auto valid = std::all_of(
+		m_extents.cbegin(), 
+		m_extents.cend(),
+		[] (auto extent)
+		{
+			return extent > 0;
+		}
+	);
+
+	if (!valid)
+	{
+		// There is at least 1 empty axis
+		return 0UL;
+	}
+
+	std::vector<std::size_t> offsets;
+	offsets.reserve(m_operands.size());
+	std::transform(
+		m_operands.cbegin(),
+		m_operands.cend(),
+		std::back_inserter(offsets),
+		std::mem_fn(&array_access_layout_operand::get_offset)
+	);
+
+	ite =  array_iterator(
+		m_extents.size(),
+		std::move(offsets)
+	);
+
+	if (m_extents.empty())
+	{
+		return 1UL;
+	}
+
+	return m_extents.front();
+}
+
+inline
+std::size_t array_access_layout_implementation::next(
+	array_iterator &ite,
+	std::size_t n
+) const noexcept
+{
+	const auto extents = get_extents();
+	const auto n_dim = extents.size();
+	const auto n_operands = get_number_of_operands();
+
+	const auto indices = ite.get_indices();
+	const auto offsets = ite.get_offsets();
+	XMIPP4_ASSERT( indices.size() == n_dim );
+	XMIPP4_ASSERT( offsets.size() == n_operands );
+
+	if (n_dim)
+	{
+		const auto block_increment = n - 1;
+		indices[0] += block_increment;
+		for (std::size_t j = 0; j < n_operands; ++j) 
+		{
+			const auto strides = m_operands[j].get_strides();
+			offsets[j] += block_increment*strides[0];
+		}
+	}
+
+	for (std::size_t i = 0; i < n_dim; ++i) 
+	{
+		const auto next_index = indices[i] + 1;
+		const auto extent = extents[i];
+
+		if (next_index < extent)
+		{
+			for (std::size_t j = 0; j < n_operands; ++j) 
+			{
+				const auto strides = m_operands[j].get_strides();
+				offsets[j] += strides[i];
+			}
+
+			indices[i] = next_index;
+
+			return extents[0] - indices[0];
+		}
+
+		for (std::size_t j = 0; j < n_operands; ++j)
+		{
+			const auto strides = m_operands[j].get_strides();
+			offsets[j] -= (indices[i] * strides[i]);
+		}
+
+		indices[i] = 0;
+	}
+	
+	return 0UL; 
 }
 
 inline

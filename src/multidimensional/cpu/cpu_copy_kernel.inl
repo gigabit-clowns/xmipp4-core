@@ -9,6 +9,56 @@ namespace xmipp4
 {
 namespace multidimensional
 {
+namespace
+{
+
+template <typename T, typename Q>
+void copy(
+	T *destination, 
+	const Q *source, 
+	std::ptrdiff_t destination_stride, 
+	std::ptrdiff_t source_stride,
+	std::size_t count
+)
+{
+	std::ptrdiff_t destination_index = 0;
+	std::ptrdiff_t source_index = 0;
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		destination[destination_index] = static_cast<T>(source[source_index]);
+		destination_index += destination_stride;
+		source_index += source_stride;
+	}
+}
+
+template <typename T, typename Q>
+void copy(
+	T *destination, 
+	const Q *source, 
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::size_t count
+)
+{
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		destination[i] = static_cast<T>(source[i]);
+	}
+}
+
+template <typename T>
+void copy(
+	T *destination, 
+	const T *source, 
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::size_t count
+)
+{
+	std::memcpy(destination, source, count*sizeof(T));
+}
+
+} // anonymous namespace
 
 template <typename T, typename Q>
 inline
@@ -99,21 +149,28 @@ void cpu_copy_kernel<T, Q>::copy(
 	const input_value_type *source
 ) const
 {
+	const auto destination_stride = m_output_stride;
+	const auto source_stride = m_input_stride;
+
 	array_iterator ite;
-	if (!m_access_layout.iter(ite))
+	std::size_t count;
+	if (!(count = m_access_layout.iter(ite)))
 	{
 		return;
 	}
 
+	const auto offsets = ite.get_offsets();
 	do
 	{
-		// TODO vectorize inner-most loop.
-		const auto offsets = ite.get_offsets();
-		auto *y = destination + offsets[0];
-		const auto *x = source + offsets[1];
-		*y = static_cast<output_value_type>(*x); // TODO
+		copy(
+			destination + offsets[0],
+			source + offsets[1],
+			destination_stride,
+			source_stride,
+			count
+		);
 	}
-	while(m_access_layout.next(ite));
+	while((count = m_access_layout.next(ite, count)));
 }
 
 } // namespace multidimensional

@@ -17,6 +17,7 @@ class cpu_fill_kernel final
 {
 public:
 	using output_value_type = T;
+	using output_stride_type = std::ptrdiff_t; // TODO
 
 	cpu_fill_kernel(
 		array_access_layout access_layout,
@@ -33,6 +34,7 @@ public:
 private:
 	array_access_layout m_access_layout;
 	output_value_type m_fill_value;
+	output_stride_type m_output_stride;
 
 	void fill(output_value_type *destination) const;
 };

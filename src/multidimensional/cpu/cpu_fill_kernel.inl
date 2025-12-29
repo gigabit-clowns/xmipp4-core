@@ -9,6 +9,40 @@ namespace xmipp4
 {
 namespace multidimensional
 {
+namespace
+{
+
+template <typename T>
+void fill(
+	T *destination, 
+	const T &fill_value,
+	std::ptrdiff_t destination_stride, 
+	std::size_t count
+)
+{
+	std::ptrdiff_t destination_index = 0;
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		destination[destination_index] = fill_value;
+		destination_index += destination_stride;
+	}
+}
+
+template <typename T>
+void fill(
+	T *destination, 
+	const T &fill_value,
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::size_t count
+)
+{
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		destination[i] = fill_value;
+	}
+}
+
+} // anonymous namespace
 
 template <typename T>
 inline
@@ -70,20 +104,26 @@ template <typename T>
 inline
 void cpu_fill_kernel<T>::fill(output_value_type *destination) const
 {
+	const auto destination_stride = m_output_stride;
+
 	array_iterator ite;
-	if (!m_access_layout.iter(ite))
+	std::size_t count;
+	if (!(count = m_access_layout.iter(ite)))
 	{
 		return;
 	}
 
+	const auto offsets = ite.get_offsets();
 	do
 	{
-		// TODO vectorize inner-most loop.
-		const auto offsets = ite.get_offsets();
-		auto *y = destination + offsets[0];
-		*y = m_fill_value;
+		fill(
+			destination + offsets[0],
+			m_fill_value,
+			destination_offset,
+			count
+		);
 	}
-	while(m_access_layout.next(ite));
+	while((count = m_access_layout.next(ite, count)));
 }
 
 } // namespace multidimensional

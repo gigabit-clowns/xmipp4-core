@@ -18,6 +18,8 @@ class cpu_copy_kernel final
 public:
 	using output_value_type = T;
 	using input_value_type = Q;
+	using output_stride_type = std::ptrdiff_t; // TODO
+	using input_stride_type = std::ptrdiff_t; // TODO
 
 	explicit cpu_copy_kernel(array_access_layout access_layout) noexcept;
 	~cpu_copy_kernel() override = default;
@@ -30,6 +32,8 @@ public:
 
 private:
 	array_access_layout m_access_layout;
+	output_stride_type m_output_stride;
+	input_stride_type m_input_stride;
 
 	void copy(
 		output_value_type *destination,

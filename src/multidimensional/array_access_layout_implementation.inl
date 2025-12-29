@@ -163,7 +163,7 @@ array_access_layout_implementation::get_offset(std::size_t operand) const
 }
 
 inline
-bool array_access_layout_implementation::iter(array_iterator &ite) const
+std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
 {
 	const auto valid = std::all_of(
 		m_extents.cbegin(), 
@@ -177,7 +177,7 @@ bool array_access_layout_implementation::iter(array_iterator &ite) const
 	if (!valid)
 	{
 		// There is at least 1 empty axis
-		return false;
+		return 0UL;
 	}
 
 	std::vector<std::size_t> offsets;
@@ -194,21 +194,41 @@ bool array_access_layout_implementation::iter(array_iterator &ite) const
 		std::move(offsets)
 	);
 
-	return true;
+	if (m_extents.empty())
+	{
+		return 1UL;
+	}
+
+	return m_extents.front();
 }
 
 inline
-bool array_access_layout_implementation::next(
-	array_iterator &ite
+std::size_t array_access_layout_implementation::next(
+	array_iterator &ite,
+	std::size_t n
 ) const noexcept
 {
-	const auto indices = ite.get_indices();
-	const auto offsets = ite.get_offsets();
 	const auto extents = get_extents();
-	const auto n_dim = indices.size();
+	const auto n_dim = extents.size();
 	const auto n_operands = get_number_of_operands();
 
-	for (auto i = static_cast<int>(n_dim) - 1; i >= 0; --i) 
+	const auto indices = ite.get_indices();
+	const auto offsets = ite.get_offsets();
+	XMIPP4_ASSERT( indices.size() == n_dim );
+	XMIPP4_ASSERT( offsets.size() == n_operands );
+
+	if (n_dim)
+	{
+		const auto block_increment = n - 1;
+		indices.front() += block_increment;
+		for (std::size_t j = 0; j < n_operands; ++j) 
+		{
+			const auto strides = m_operands[j].get_strides();
+			offsets[j] += block_increment*strides.front();
+		}
+	}
+
+	for (std::size_t i = 0; i < n_dim; ++i) 
 	{
 		const auto next_index = indices[i] + 1;
 		const auto extent = extents[i];
@@ -222,7 +242,8 @@ bool array_access_layout_implementation::next(
 			}
 
 			indices[i] = next_index;
-			return true;
+			const auto remaining = extents[i] - indices[i];
+			return remaining;
 		}
 
 		for (std::size_t j = 0; j < n_operands; ++j)
@@ -234,7 +255,7 @@ bool array_access_layout_implementation::next(
 		indices[i] = 0;
 	}
 	
-	return false; 
+	return 0UL; 
 }
 
 inline

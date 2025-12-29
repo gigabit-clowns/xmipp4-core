@@ -87,23 +87,25 @@ public:
 	 * @brief Populate an array iterator for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
-	 * @return true The layout can be iterated.
-	 * @return false The layout is empty.
+	 * @return std::size_t Number of consecutive elements. 0 if none (iteration
+	 * has finished).
 	 */
 	XMIPP4_CORE_API
-	bool iter(array_iterator &ite) const;
+	std::size_t iter(array_iterator &ite) const;
 
 	/**
 	 * @brief Advance an array iterator.
 	 * 
 	 * @param ite The iterator to be advanced. Must have been populated by 
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
-	 * true.
-	 * @return true Iteration continues.
-	 * @return false Iteration finished.
+	 * a non-zero value.
+	 * @param n Number of consecutive elements to be advanced. Must be less or
+	 * equal to the number returned by the previous call to `iter()` or `next()`
+	 * @return std::size_t Number of consecutive elements ahead. 0 if none
+	 * (iteration has finished).
 	 */
 	XMIPP4_CORE_API
-	bool next(array_iterator &ite) const noexcept;
+	std::size_t next(array_iterator &ite, std::size_t n) const noexcept;
 
 	/**
 	 * @brief Get a pointer to the implementation.

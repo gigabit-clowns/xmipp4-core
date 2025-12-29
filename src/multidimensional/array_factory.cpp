@@ -3,6 +3,9 @@
 #include <xmipp4/core/multidimensional/array_factory.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
+#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -106,6 +109,86 @@ array empty(
 	}
 
 	return result;
+}
+
+array zeros(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
+)
+{
+	return full(
+		descriptor,
+		affinity,
+		0,
+		context,
+		out
+	);
+}
+
+array ones(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
+)
+{
+	return full(
+		descriptor,
+		affinity,
+		1,
+		context,
+		out
+	);
+}
+
+array full(
+	array_descriptor descriptor,
+	hardware::memory_resource_affinity affinity,
+	const scalar_ref &fill_value,
+	const execution_context &context,
+	array *out
+)
+{
+	std::array<array, 1> outputs = { 
+		empty(descriptor, affinity, context, out) 
+	};
+
+	auto &dispatcher = context.get_operation_dispatcher();
+	dispatcher.dispatch(
+		fill_operation(fill_value),
+		make_span(outputs),
+		{},
+		context
+	);
+
+	return std::move(outputs[0]);
+}
+
+array copy(
+	array_view source,
+	const execution_context &context,
+	array *out
+)
+{
+	std::array<array, 1> outputs;
+	const std::array<array_view, 1> inputs = { std::move(source) };
+
+	if (out)
+	{
+		outputs = { out->share() };
+	}
+
+	auto &dispatcher = context.get_operation_dispatcher();
+	dispatcher.dispatch(
+		copy_operation(),
+		make_span(outputs),
+		make_span(inputs),
+		context
+	);
+
+	return std::move(outputs[0]);
 }
 
 } // namespace multidimensional

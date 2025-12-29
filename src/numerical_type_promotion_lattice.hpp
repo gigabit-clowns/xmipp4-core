@@ -36,7 +36,6 @@ private:
 
 	XMIPP4_CONSTEXPR
 	bool is_supremum(const reach_set &common, std::size_t i) const noexcept;
-
 };
 
 } // namespace xmipp4

@@ -68,6 +68,11 @@ numerical_type make_complex(numerical_type type) noexcept;
 /**
  * @brief Get the common type of two numerical types.
  * 
+ * The type promotion mechanism is heavily influenced by JAX's approach:
+ * https://docs.jax.dev/en/latest/jep/9407-type-promotion.html
+ * 
+ * However, unlike JAX, it allows type promotion from uint64 to int64.
+ * 
  * @param type1 First numerical type.
  * @param type2 Second numerical type.
  * @return numerical_type The common type.

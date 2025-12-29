@@ -6,6 +6,8 @@
 #include <xmipp4/core/multidimensional/kernel_builder.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
+
+#include "cpu/cpu_kernel_registrar.hpp"
 #include "../find_most_suitable_backend.hpp"
 
 #include <vector>
@@ -98,7 +100,7 @@ kernel_manager::~kernel_manager() = default;
 
 void kernel_manager::register_builtin_backends()
 {
-	// Add operations here.
+	register_cpu_kernels(*this);
 }
 
 bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)

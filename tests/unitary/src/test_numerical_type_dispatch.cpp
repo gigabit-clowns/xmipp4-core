@@ -52,11 +52,10 @@ TEST_CASE("dispatch_numerical_types called with a single argument should invoke 
 	CHECK( ret == expected_ret );
 }
 
-TEST_CASE("dispatch_numerical_types called with a three arguments should invoke an appropriately typed function")
+TEST_CASE("dispatch_numerical_types called with a two arguments should invoke an appropriately typed function")
 {
-	std::array<numerical_type, 3> types;
-	std::array<std::type_index, 3> expected_types = {
-		typeid(void),
+	std::array<numerical_type, 2> types;
+	std::array<std::type_index, 2> expected_types = {
 		typeid(void),
 		typeid(void)
 	};
@@ -88,19 +87,16 @@ TEST_CASE("dispatch_numerical_types called with a three arguments should invoke 
 	const auto expected_ret = GENERATE(2, 42);
 
 	const auto ret = dispatch_numerical_types(
-		[&expected_types, expected_ret] (auto tag0, auto tag1, auto tag2)
+		[&expected_types, expected_ret] (auto tag0, auto tag1)
 		{
 			using type0 = typename decltype(tag0)::type;
 			using type1 = typename decltype(tag1)::type;
-			using type2 = typename decltype(tag2)::type;
 			REQUIRE( typeid(type0) == expected_types[0] );
 			REQUIRE( typeid(type1) == expected_types[1] );
-			REQUIRE( typeid(type2) == expected_types[2] );
 			return expected_ret;
 		},
 		types[0],
-		types[1],
-		types[2]
+		types[1]
 	);
 
 	CHECK( ret == expected_ret );

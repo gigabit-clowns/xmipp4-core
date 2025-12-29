@@ -62,12 +62,14 @@ void fill_operation::sanitize_operands(
 	}
 
 	array_descriptor &output_desc = output_descriptors[0];
-	if (is_initialized(output_desc))
+	if (!is_initialized(output_desc))
 	{
 		throw std::invalid_argument(
 			"Output array must be initialized."
 		);
 	}
+
+	// TODO check if fill value is convertible to output type.
 }
 
 } // namespace multidimensional

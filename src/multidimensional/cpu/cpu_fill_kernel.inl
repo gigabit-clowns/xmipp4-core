@@ -53,6 +53,14 @@ cpu_fill_kernel<T>::cpu_fill_kernel(
 	: m_access_layout(std::move(access_layout))
 	, m_fill_value(fill_value)
 {
+	if (m_access_layout.get_extents().empty())
+	{
+		m_output_stride = 1;
+	}
+	else
+	{
+		m_output_stride = m_access_layout.get_strides(0).front();
+	}
 }
 
 template <typename T>

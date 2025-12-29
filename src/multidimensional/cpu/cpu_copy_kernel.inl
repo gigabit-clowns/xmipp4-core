@@ -67,6 +67,16 @@ cpu_copy_kernel<T, Q>::cpu_copy_kernel(
 ) noexcept
 	: m_access_layout(std::move(access_layout))
 {
+	if (m_access_layout.get_extents().empty())
+	{
+		m_output_stride = 1;
+		m_input_stride = 1;
+	}
+	else
+	{
+		m_output_stride = m_access_layout.get_strides(0).front();
+		m_input_stride = m_access_layout.get_strides(1).front();
+	}
 }
 
 template <typename T, typename Q>

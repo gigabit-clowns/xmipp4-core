@@ -23,7 +23,7 @@ using numerical_type_promotion_table =
 		static_cast<std::size_t>(numerical_type::count)
 	>;
 
-XMIPP4_INLINE_CONSTEXPR
+XMIPP4_INLINE_CONSTEXPR_CPP23
 numerical_type_promotion_lattice
 compute_numerical_type_promotion_lattice() noexcept
 {
@@ -69,7 +69,7 @@ compute_numerical_type_promotion_lattice() noexcept
 	return lattice;
 }
 
-XMIPP4_INLINE_CONSTEXPR
+XMIPP4_INLINE_CONSTEXPR_CPP23
 numerical_type_promotion_table 
 compute_numerical_type_promotion_table() noexcept
 {

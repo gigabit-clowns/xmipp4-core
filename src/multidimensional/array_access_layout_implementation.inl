@@ -5,6 +5,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <numeric>
+#include <algorithm>
 #include <sstream>
 
 /**

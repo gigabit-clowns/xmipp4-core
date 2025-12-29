@@ -1,6 +1,4 @@
 name: Build and Test
-permissions:
-  contents: read
 
 on:
   push:
@@ -16,6 +14,8 @@ on:
 jobs:
   build_and_test_with_cmake:
     name: CMake
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -92,6 +92,8 @@ jobs:
 
   build_with_pip:
     name: pip
+    permissions:
+      contents: read
     if: github.event_name != 'push'
     strategy:
       matrix:
@@ -100,7 +102,7 @@ jobs:
         - ubuntu-22.04
         - macos-latest
         - windows-latest
-  
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -118,6 +120,8 @@ jobs:
 
   build_with_conda:
     name: conda
+    permissions:
+      contents: read
     if: github.event_name != 'push'
     strategy:
       matrix:
@@ -125,7 +129,7 @@ jobs:
         - ubuntu-latest
         - macos-latest
         - windows-latest
-  
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -148,6 +152,8 @@ jobs:
 
   sonar-scan:
     name: SonarQube scan
+    permissions:
+      contents: read
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
@@ -158,3 +164,4 @@ jobs:
           build-artifact-name: "build-artifact"
           coverage-pattern: "coverage-report-*"
           coverage-path: ${{ github.workspace }}/build
+          show-coverage: true

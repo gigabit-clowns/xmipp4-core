@@ -17,7 +17,7 @@ service_catalog::get_service_manager()
 {
 	const std::type_index type(typeid(T));
 
-	T* result = static_cast<T*>(get_service_manager(type));
+	auto* result = static_cast<T*>(get_service_manager(type));
 	if(result == nullptr)
 	{
 		// Interface does not exist. Create it

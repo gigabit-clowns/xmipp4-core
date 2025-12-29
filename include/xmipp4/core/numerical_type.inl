@@ -164,7 +164,7 @@ auto visit(
 ) 
 {
     return visit_single(
-		[&](auto tag) 
+		[&visitor, &other_types...](auto tag) 
 		{
 			const auto bound_visitor = [&](auto... other_tags) 
 			{

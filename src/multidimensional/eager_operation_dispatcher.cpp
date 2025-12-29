@@ -17,6 +17,8 @@
 
 #include <boost/container/small_vector.hpp>
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional

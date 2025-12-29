@@ -2,6 +2,8 @@
 
 #include "host_duplex_region.hpp"
 
+#include "../numerical_type_traits.hpp"
+
 namespace xmipp4 
 {
 namespace communication

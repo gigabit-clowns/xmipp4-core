@@ -5,6 +5,8 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -36,10 +38,7 @@ void fill(
 	std::size_t count
 )
 {
-	for (std::size_t i = 0; i < count; ++i)
-	{
-		destination[i] = fill_value;
-	}
+	std::fill_n(destination, count, fill_value);
 }
 
 } // anonymous namespace

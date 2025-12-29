@@ -5,6 +5,8 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -55,7 +57,7 @@ void copy(
 	std::size_t count
 )
 {
-	std::memcpy(destination, source, count*sizeof(T));
+	std::copy_n(source, count, destination);
 }
 
 } // anonymous namespace

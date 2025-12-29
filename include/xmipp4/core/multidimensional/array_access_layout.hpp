@@ -99,9 +99,9 @@ public:
 	 * @param ite The iterator to be advanced. Must have been populated by 
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
 	 * a non-zero value.
-	 * @param n Number of consecutive elements to be advanced. Must be less or
-	 * equal to the number returned by the previous call to `iter()` or 
-	 * `next()`. Otherwise behavior is undefined.
+	 * @param n Number of elements to be advanced. Must be less or equal to the 
+	 * number returned by the previous call to `iter()` or `next()`. Otherwise 
+	 * behavior is undefined.
 	 * @return std::size_t Number of equispaced elements ahead. 0 if none
 	 * (iteration has finished).
 	 */

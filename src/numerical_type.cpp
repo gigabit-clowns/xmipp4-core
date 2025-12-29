@@ -157,7 +157,7 @@ promote_types(numerical_type type1, numerical_type type2) noexcept
 		return numerical_type::unknown;
 	}
 
-	return static_cast<numerical_type>(lut[i][j]);
+	return lut[i][j];
 }
 
 const char* to_string(numerical_type type) noexcept

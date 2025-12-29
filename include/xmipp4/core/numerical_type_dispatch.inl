@@ -13,95 +13,7 @@
 namespace xmipp4
 {
 
-template <>
-struct numerical_type_of<char>
-	: std::integral_constant<numerical_type, numerical_type::char8>
-{
-};
 
-template <>
-struct numerical_type_of<std::int8_t>
-	: std::integral_constant<numerical_type, numerical_type::int8>
-{
-};
-
-template <>
-struct numerical_type_of<std::uint8_t>
-	: std::integral_constant<numerical_type, numerical_type::uint8>
-{
-};
-
-template <>
-struct numerical_type_of<std::int16_t>
-	: std::integral_constant<numerical_type, numerical_type::int16>
-{
-};
-
-template <>
-struct numerical_type_of<std::uint16_t>
-	: std::integral_constant<numerical_type, numerical_type::uint16>
-{
-};
-
-template <>
-struct numerical_type_of<std::int32_t>
-	: std::integral_constant<numerical_type, numerical_type::int32>
-{
-};
-
-template <>
-struct numerical_type_of<std::uint32_t>
-	: std::integral_constant<numerical_type, numerical_type::uint32>
-{
-};
-
-template <>
-struct numerical_type_of<std::int64_t>
-	: std::integral_constant<numerical_type, numerical_type::int64>
-{
-};
-
-template <>
-struct numerical_type_of<std::uint64_t>
-	: std::integral_constant<numerical_type, numerical_type::uint64>
-{
-};
-
-template <>
-struct numerical_type_of<float16_t>
-	: std::integral_constant<numerical_type, numerical_type::float16>
-{
-};
-
-template <>
-struct numerical_type_of<float32_t>
-	: std::integral_constant<numerical_type, numerical_type::float32>
-{
-};
-
-template <>
-struct numerical_type_of<float64_t>
-	: std::integral_constant<numerical_type, numerical_type::float64>
-{
-};
-
-template <>
-struct numerical_type_of<std::complex<float16_t>>
-	: std::integral_constant<numerical_type, numerical_type::complex_float16>
-{
-};
-
-template <>
-struct numerical_type_of<std::complex<float32_t>>
-	: std::integral_constant<numerical_type, numerical_type::complex_float32>
-{
-};
-
-template <>
-struct numerical_type_of<std::complex<float64_t>>
-	: std::integral_constant<numerical_type, numerical_type::complex_float64>
-{
-};
 
 namespace detail
 {
@@ -183,7 +95,7 @@ auto visit(
 
 template <typename F, typename... Types>
 XMIPP4_INLINE_CONSTEXPR
-auto visit(F&& visitor, Types&& ...types)
+auto dispatch_numerical_types(F&& visitor, Types&& ...types)
 {
 	return detail::visit(std::forward<F>(visitor), types...);
 }
@@ -208,7 +120,7 @@ struct size_of<void>
 XMIPP4_INLINE_CONSTEXPR 
 std::size_t get_size(numerical_type type) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -221,7 +133,7 @@ std::size_t get_size(numerical_type type) noexcept
 XMIPP4_INLINE_CONSTEXPR 
 bool is_unsigned(numerical_type type) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -234,7 +146,7 @@ bool is_unsigned(numerical_type type) noexcept
 XMIPP4_INLINE_CONSTEXPR 
 bool is_integer(numerical_type type) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -264,7 +176,7 @@ struct is_floating_point<half>
 XMIPP4_INLINE_CONSTEXPR 
 bool is_float(numerical_type type) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -294,7 +206,7 @@ struct is_complex<std::complex<T>>
 XMIPP4_INLINE_CONSTEXPR 
 bool is_complex(numerical_type type) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -305,22 +217,7 @@ bool is_complex(numerical_type type) noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-numerical_type make_complex(numerical_type type) noexcept
-{
-	switch (type)
-	{
-	case numerical_type::float16: return numerical_type::complex_float16;
-	case numerical_type::float32: return numerical_type::complex_float32;
-	case numerical_type::float64: return numerical_type::complex_float64;
-	case numerical_type::complex_float16: 
-		return numerical_type::complex_float16;
-	case numerical_type::complex_float32: 
-		return numerical_type::complex_float32;
-	case numerical_type::complex_float64: 
-		return numerical_type::complex_float64;
-	default: return numerical_type::unknown;
-	} 
-}
+
 
 namespace detail
 {
@@ -425,7 +322,7 @@ struct permissive_numerical_type_of<void>
 XMIPP4_INLINE_CONSTEXPR 
 numerical_type common_type(numerical_type type1, numerical_type type2) noexcept
 {
-	return visit(
+	return dispatch_numerical_types(
 		[] (auto tag1, auto tag2)
 		{
 			using type1 = typename decltype(tag1)::type;

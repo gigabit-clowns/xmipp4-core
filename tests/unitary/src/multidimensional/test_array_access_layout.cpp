@@ -193,7 +193,7 @@ TEST_CASE( "calling next on a default constructed array access layout should ret
 	array_access_layout layout;
 	array_iterator ite;
 
-	CHECK( layout.iter(ite) == 0 );
+	CHECK( layout.next(ite, 1) == 0 );
 }
 
 TEST_CASE( "calling next on an array access layout on a stepping basis should advance indices and offsets", "[array_access_layout]" )

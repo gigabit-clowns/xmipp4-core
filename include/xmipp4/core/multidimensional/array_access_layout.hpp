@@ -87,7 +87,7 @@ public:
 	 * @brief Populate an array iterator for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
-	 * @return std::size_t Number of consecutive elements. 0 if none (iteration
+	 * @return std::size_t Number of equispaced elements. 0 if none (iteration
 	 * has finished).
 	 */
 	XMIPP4_CORE_API
@@ -100,8 +100,9 @@ public:
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
 	 * a non-zero value.
 	 * @param n Number of consecutive elements to be advanced. Must be less or
-	 * equal to the number returned by the previous call to `iter()` or `next()`
-	 * @return std::size_t Number of consecutive elements ahead. 0 if none
+	 * equal to the number returned by the previous call to `iter()` or 
+	 * `next()`. Otherwise behavior is undefined.
+	 * @return std::size_t Number of equispaced elements ahead. 0 if none
 	 * (iteration has finished).
 	 */
 	XMIPP4_CORE_API

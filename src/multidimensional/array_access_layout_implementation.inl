@@ -220,11 +220,11 @@ std::size_t array_access_layout_implementation::next(
 	if (n_dim)
 	{
 		const auto block_increment = n - 1;
-		indices.front() += block_increment;
+		indices[0] += block_increment;
 		for (std::size_t j = 0; j < n_operands; ++j) 
 		{
 			const auto strides = m_operands[j].get_strides();
-			offsets[j] += block_increment*strides.front();
+			offsets[j] += block_increment*strides[0];
 		}
 	}
 
@@ -242,8 +242,8 @@ std::size_t array_access_layout_implementation::next(
 			}
 
 			indices[i] = next_index;
-			const auto remaining = extents[i] - indices[i];
-			return remaining;
+
+			return extents[0] - indices[0];
 		}
 
 		for (std::size_t j = 0; j < n_operands; ++j)

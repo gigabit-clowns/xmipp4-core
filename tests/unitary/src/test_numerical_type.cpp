@@ -5,8 +5,6 @@
 
 #include <xmipp4/core/numerical_type.hpp>
 
-#include <array>
-
 using namespace xmipp4;
 
 TEST_CASE( "get_size should return the expected size for each type", "[numerical_type]" ) 

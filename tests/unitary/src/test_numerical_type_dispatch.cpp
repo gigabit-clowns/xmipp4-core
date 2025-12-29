@@ -6,6 +6,7 @@
 
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
+#include <array>
 #include <typeindex>
 
 using namespace xmipp4;

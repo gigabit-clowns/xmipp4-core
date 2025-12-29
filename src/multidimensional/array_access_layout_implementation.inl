@@ -217,7 +217,7 @@ std::size_t array_access_layout_implementation::next(
 	XMIPP4_ASSERT( indices.size() == n_dim );
 	XMIPP4_ASSERT( offsets.size() == n_operands );
 
-	if (n_dim)
+	if (n_dim > 0 && n != 1)
 	{
 		const auto block_increment = n - 1;
 		indices[0] += block_increment;

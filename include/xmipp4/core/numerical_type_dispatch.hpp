@@ -44,3 +44,5 @@ XMIPP4_CONSTEXPR
 auto dispatch_numerical_types(F&& visitor, Types&& ...types);
 
 } // namespace xmipp4
+
+#include "numerical_type_dispatch.inl"

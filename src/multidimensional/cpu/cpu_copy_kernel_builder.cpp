@@ -6,6 +6,7 @@
 #include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_copy_kernel.hpp"
 
@@ -108,7 +109,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 	layout_builder.add_operand(input_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
-	return visit(
+	return dispatch_numerical_types(
 		[&access_layout] 
 		(auto output_tag, auto input_tag) -> std::shared_ptr<cpu_kernel>
 		{

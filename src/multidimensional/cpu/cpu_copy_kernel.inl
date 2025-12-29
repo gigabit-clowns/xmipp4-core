@@ -15,7 +15,7 @@ namespace
 {
 
 template <typename T, typename Q>
-void copy(
+void copy_impl(
 	T *destination, 
 	const Q *source, 
 	std::ptrdiff_t destination_stride, 
@@ -34,7 +34,7 @@ void copy(
 }
 
 template <typename T, typename Q>
-void copy(
+void copy_impl(
 	T *destination, 
 	const Q *source, 
 	std::integral_constant<std::ptrdiff_t, 1>,
@@ -49,7 +49,7 @@ void copy(
 }
 
 template <typename T>
-void copy(
+void copy_impl(
 	T *destination, 
 	const T *source, 
 	std::integral_constant<std::ptrdiff_t, 1>,
@@ -174,7 +174,7 @@ void cpu_copy_kernel<T, Q>::copy(
 	const auto offsets = ite.get_offsets();
 	do
 	{
-		copy(
+		copy_impl(
 			destination + offsets[0],
 			source + offsets[1],
 			destination_stride,

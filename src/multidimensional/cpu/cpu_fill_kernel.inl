@@ -15,7 +15,7 @@ namespace
 {
 
 template <typename T>
-void fill(
+void fill_impl(
 	T *destination, 
 	const T &fill_value,
 	std::ptrdiff_t destination_stride, 
@@ -31,7 +31,7 @@ void fill(
 }
 
 template <typename T>
-void fill(
+void fill_impl(
 	T *destination, 
 	const T &fill_value,
 	std::integral_constant<std::ptrdiff_t, 1>,
@@ -123,10 +123,10 @@ void cpu_fill_kernel<T>::fill(output_value_type *destination) const
 	const auto offsets = ite.get_offsets();
 	do
 	{
-		fill(
+		fill_impl(
 			destination + offsets[0],
 			m_fill_value,
-			destination_offset,
+			destination_stride,
 			count
 		);
 	}

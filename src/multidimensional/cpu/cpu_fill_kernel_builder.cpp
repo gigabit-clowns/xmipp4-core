@@ -6,6 +6,7 @@
 #include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_fill_kernel.hpp"
 
@@ -114,7 +115,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 	const auto fill_value = 
 		dynamic_cast<const fill_operation&>(operation).get_fill_value();
 
-	return visit(
+	return dispatch_numerical_types(
 		[&access_layout, &fill_value] 
 		(auto output_tag, auto fill_tag) -> std::shared_ptr<cpu_kernel>
 		{

@@ -3,6 +3,7 @@
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include <sstream>
 
@@ -29,7 +30,7 @@ std::string fill_operation::serialize_parameters() const
 	oss << to_string(m_fill_value.get_data_type()) << "(";
 
 	const auto &fill_value = m_fill_value;
-	visit(
+	dispatch_numerical_types(
 		[&oss, &fill_value] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
@@ -70,6 +71,11 @@ void fill_operation::sanitize_operands(
 	}
 
 	// TODO check if fill value is convertible to output type.
+}
+
+scalar_ref fill_operation::get_fill_value() const noexcept
+{
+	return m_fill_value;
 }
 
 } // namespace multidimensional

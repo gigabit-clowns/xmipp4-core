@@ -3,9 +3,10 @@
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/numerical_type_dispatch.hpp>
+#include <xmipp4/core/numerical_type.hpp>
+//#include <xmipp4/core/numerical_type_dispatch.hpp> // TODO
 
-#include <sstream>
+#include <fmt/base.h>
 
 namespace xmipp4 
 {
@@ -26,22 +27,18 @@ std::string fill_operation::get_name() const
 
 std::string fill_operation::serialize_parameters() const
 {
-	std::ostringstream oss;
-	oss << to_string(m_fill_value.get_data_type()) << "(";
-
 	const auto &fill_value = m_fill_value;
-	dispatch_numerical_types(
-		[&oss, &fill_value] (auto tag)
+	const auto data_type = fill_value.get_data_type();
+	const auto *type_str = to_string(data_type);
+
+	return dispatch_numerical_types(
+		[type_str, &fill_value] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			oss << fill_value.get<type>();
+			return fmt::format("{0}({1})", type_str, fill_value.get<type>());
 		},
-		fill_value.get_data_type()
+		data_type
 	);
-
-	oss << ")";
-
-	return oss.str();
 }
 
 void fill_operation::sanitize_operands(

@@ -25,10 +25,12 @@ include(CMakePackageConfigHelpers)
 include(fetch_half)
 include(fetch_spdlog)
 include(fetch_boost)
+include(fetch_libfmt)
 
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_boost(VERSION 1.89.0)
+fetch_libfmt(VERSION 12.1.0)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	fetch_spdlog(VERSION 1.15.0)

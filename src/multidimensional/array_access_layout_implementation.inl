@@ -180,7 +180,7 @@ std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
 		return 0UL;
 	}
 
-	std::vector<std::size_t> offsets;
+	std::vector<std::ptrdiff_t> offsets;
 	offsets.reserve(m_operands.size());
 	std::transform(
 		m_operands.cbegin(),
@@ -351,7 +351,7 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 
 inline
 void array_access_layout_implementation::apply_strides(
-	span<std::size_t> offsets, 
+	span<std::ptrdiff_t> offsets, 
 	std::size_t position, 
 	std::ptrdiff_t multiplier
 ) const noexcept

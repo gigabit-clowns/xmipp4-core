@@ -10,7 +10,7 @@ namespace multidimensional
 array_iterator::array_iterator() noexcept = default;
 array_iterator::array_iterator(
 	std::size_t ndim,
-	std::vector<std::size_t> offsets
+	std::vector<std::ptrdiff_t> offsets
 )
 	: m_indices(ndim, 0UL)
 	, m_offsets(std::move(offsets))
@@ -36,12 +36,12 @@ span<std::size_t> array_iterator::get_indices() noexcept
 	return make_span(m_indices);
 }
 
-span<const std::size_t> array_iterator::get_offsets() const noexcept
+span<const std::ptrdiff_t> array_iterator::get_offsets() const noexcept
 {
 	return make_span(m_offsets);
 }
 
-span<std::size_t> array_iterator::get_offsets() noexcept
+span<std::ptrdiff_t> array_iterator::get_offsets() noexcept
 {
 	return make_span(m_offsets);
 }

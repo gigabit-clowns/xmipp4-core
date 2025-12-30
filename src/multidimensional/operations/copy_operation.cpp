@@ -59,7 +59,13 @@ void copy_operation::sanitize_operands(
 	}
 	else
 	{
-		output_desc = input_desc;
+		std::vector<std::size_t> input_extents;
+		input_desc.get_layout().get_extents(input_extents);
+
+		output_desc = array_descriptor(
+			strided_layout::make_contiguous_layout(make_span(input_extents)),
+			input_desc.get_data_type()
+		);
 	}
 }
 

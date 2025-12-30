@@ -17,17 +17,23 @@ TEST_CASE("get_name in copy_operation should return copy", "[copy_operation]")
 	CHECK( op.get_name() == "copy" );
 }
 
-TEST_CASE("sanitize_operands in copy_operation should copy input descriptor to the output when none is provided", "[copy_operation]")
+TEST_CASE("sanitize_operands in copy_operation should set the output descriptor to a contiguous version of the input when no output is provided", "[copy_operation]")
 {
-	const auto extents = GENERATE(
-		std::vector<std::size_t>{1, 2, 4},
-		std::vector<std::size_t>{6, 3}
-	);
+	const std::vector<std::size_t> extents{3, 2, 4};
+	const std::vector<std::ptrdiff_t> strides{18, 8, 1};
 	const auto data_type = GENERATE(
 		numerical_type::int8,
 		numerical_type::complex_float32
 	);
 	const array_descriptor descriptor(
+		strided_layout::make_custom_layout(
+			make_span(extents), 
+			make_span(strides), 
+			1234
+		),
+		data_type
+	);
+	const array_descriptor contiguous_descriptor(
 		strided_layout::make_contiguous_layout(make_span(extents)),
 		data_type
 	);
@@ -41,7 +47,7 @@ TEST_CASE("sanitize_operands in copy_operation should copy input descriptor to t
 		make_span(input_descriptors)
 	);
 
-	CHECK( output_descriptors[0] == descriptor );
+	CHECK( output_descriptors[0] == contiguous_descriptor );
 	CHECK( input_descriptors[0] == descriptor );
 }
 

@@ -72,7 +72,7 @@ void fill_operation::sanitize_operands(
 	if (!is_initialized(output_desc))
 	{
 		throw std::invalid_argument(
-			"Output array must be initialized."
+			"fill_operation requires output descriptor to be initialized."
 		);
 	}
 

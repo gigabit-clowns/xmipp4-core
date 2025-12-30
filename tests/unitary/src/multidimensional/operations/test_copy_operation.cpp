@@ -123,7 +123,7 @@ TEST_CASE("sanitize_operands in copy_operation should throw if an invalid amount
 	);
 }
 
-TEST_CASE("sanitize_operands in copy_operation should throw if output is not initialized", "[copy_operation]")
+TEST_CASE("sanitize_operands in copy_operation should throw if input is not initialized", "[copy_operation]")
 {
 	std::array<array_descriptor, 1> output_descriptors = {};
 	std::array<array_descriptor, 1> input_descriptors = {};

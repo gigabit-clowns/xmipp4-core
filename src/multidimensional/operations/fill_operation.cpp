@@ -75,8 +75,6 @@ void fill_operation::sanitize_operands(
 			"fill_operation requires output descriptor to be initialized."
 		);
 	}
-
-	// TODO check if fill value is convertible to output type.
 }
 
 scalar_ref fill_operation::get_fill_value() const noexcept

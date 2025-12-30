@@ -60,6 +60,31 @@ void copy_impl(
 	std::copy_n(source, count, destination);
 }
 
+template <typename T, typename Q>
+void copy_impl(
+	T *destination, 
+	const Q *source, 
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::integral_constant<std::ptrdiff_t, 0>,
+	std::size_t count
+)
+{
+	const auto fill_value = static_cast<T>(*source);
+	std::fill_n(destination, n, fill_value);
+}
+
+template <typename T>
+void copy_impl(
+	T *destination, 
+	const T *source, 
+	std::integral_constant<std::ptrdiff_t, 1>,
+	std::integral_constant<std::ptrdiff_t, 0>,
+	std::size_t count
+)
+{
+	std::fill_n(destination, n, *source);
+}
+
 } // anonymous namespace
 
 template <typename T, typename Q>

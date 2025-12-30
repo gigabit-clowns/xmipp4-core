@@ -46,8 +46,6 @@ void copy_operation::sanitize_operands(
 	array_descriptor &output_desc = output_descriptors[0];
 	if (is_initialized(output_desc))
 	{
-		// TODO check if input is convertible to output type.
-
 		// Output is initialized, broadcast input to output shape
 		std::vector<std::size_t> output_extents;
 		output_desc.get_layout().get_extents(output_extents);

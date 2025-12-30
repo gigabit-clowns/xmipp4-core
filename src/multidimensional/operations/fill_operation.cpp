@@ -35,16 +35,16 @@ std::string fill_operation::serialize_parameters() const
 		[type_str, &fill_value] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			const auto *value_start = reinterpret_cast<const std::uint8_t*>(
-				&fill_value.get<type>()
-			);
+			const auto value = fill_value.get<type>();
+			const auto *value_start = 
+				reinterpret_cast<const std::uint8_t*>(&value);
 			const auto *value_end = value_start + sizeof(type);
 
 			return fmt::format(
 				"{}({:02x})", 
 				type_str, 
 				fmt::join(value_start, value_end, "")
-    		);
+			);
 		},
 		data_type
 	);

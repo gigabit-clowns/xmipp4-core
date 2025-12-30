@@ -58,6 +58,11 @@ bool operator!=(
 	return !(lhs == rhs);
 }
 
+bool is_initialized(const array_descriptor &descriptor) noexcept
+{
+	return descriptor.get_data_type() != numerical_type::unknown;
+}
+
 std::size_t compute_storage_requirement(const array_descriptor &descriptor)
 {
 	const auto &layout = descriptor.get_layout();

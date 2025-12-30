@@ -86,6 +86,16 @@ bool operator!=(
 ) noexcept;
 
 /**
+ * @brief Check if the array descriptor is initialized.
+ * 
+ * @param descriptor The descriptor to check.
+ * @return true If the descriptor is initialized.
+ * @return false If the descriptor is not initialized.
+ */
+XMIPP4_CORE_API
+bool is_initialized(const array_descriptor &descriptor) noexcept;
+
+/**
  * @brief Compute the number of bytes required to store the given descriptor.
  * 
  * @param descriptor The descriptor from which the storage requirement is 

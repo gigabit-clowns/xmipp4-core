@@ -68,7 +68,7 @@ void fill_operation::sanitize_operands(
 		);
 	}
 
-	array_descriptor &output_desc = output_descriptors[0];
+	const auto &output_desc = output_descriptors[0];
 	if (!is_initialized(output_desc))
 	{
 		throw std::invalid_argument(

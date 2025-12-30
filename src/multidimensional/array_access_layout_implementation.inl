@@ -5,6 +5,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <numeric>
+#include <algorithm>
 #include <sstream>
 
 /**
@@ -162,6 +163,88 @@ array_access_layout_implementation::get_offset(std::size_t operand) const
 }
 
 inline
+std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
+{
+	const auto valid = std::all_of(
+		m_extents.cbegin(), 
+		m_extents.cend(),
+		[] (auto extent)
+		{
+			return extent > 0;
+		}
+	);
+
+	if (!valid)
+	{
+		// There is at least 1 empty axis
+		return 0UL;
+	}
+
+	std::vector<std::ptrdiff_t> offsets;
+	offsets.reserve(m_operands.size());
+	std::transform(
+		m_operands.cbegin(),
+		m_operands.cend(),
+		std::back_inserter(offsets),
+		std::mem_fn(&array_access_layout_operand::get_offset)
+	);
+
+	ite =  array_iterator(
+		m_extents.size(),
+		std::move(offsets)
+	);
+
+	if (m_extents.empty())
+	{
+		return 1UL;
+	}
+
+	return m_extents.front();
+}
+
+inline
+std::size_t array_access_layout_implementation::next(
+	array_iterator &ite,
+	std::size_t n
+) const noexcept
+{
+	const auto extents = get_extents();
+	const auto n_dim = extents.size();
+
+	const auto indices = ite.get_indices();
+	const auto offsets = ite.get_offsets();
+	XMIPP4_ASSERT( indices.size() == n_dim );
+
+	// Advance the inner axis by n - 1, so that when calling next_one it is
+	// advanced by n.
+	if (n_dim > 0 && n != 1)
+	{
+		const auto block_increment = n - 1;
+		apply_strides(offsets, 0, block_increment);
+		indices[0] += block_increment;
+	}
+
+	for (std::size_t i = 0; i < n_dim; ++i) 
+	{
+		const auto next_index = indices[i] + 1;
+		const auto extent = extents[i];
+
+		if (next_index < extent)
+		{
+			apply_strides(offsets, i, 1);
+			indices[i] = next_index;
+
+			return extents[0] - indices[0];
+		}
+
+		apply_strides(offsets, i, -static_cast<std::ptrdiff_t>(indices[i]));
+		indices[i] = 0;
+	}
+	
+	return 0UL; 
+}
+
+inline
 int array_access_layout_implementation::compare_strides(
 	std::size_t i, 
 	std::size_t j
@@ -263,6 +346,22 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 	for (auto &operand : m_operands)
 	{
 		operand.trim_axes(n);
+	}
+}
+
+inline
+void array_access_layout_implementation::apply_strides(
+	span<std::ptrdiff_t> offsets, 
+	std::size_t position, 
+	std::ptrdiff_t multiplier
+) const noexcept
+{
+	const auto n_operands = offsets.size();
+	XMIPP4_ASSERT( m_operands.size() == n_operands );
+	for (std::size_t j = 0; j < n_operands; ++j) 
+	{
+		const auto strides = m_operands[j].get_strides();
+		offsets[j] += multiplier*strides[position];
 	}
 }
 

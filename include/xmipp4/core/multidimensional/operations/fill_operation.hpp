@@ -27,7 +27,7 @@ public:
 	 * @warning The value referenced by fill_value must outlive the the 
 	 * fill_operation.
 	 */
-	XMIPP4_CORE_API fill_operation(scalar_ref fill_value) noexcept;
+	XMIPP4_CORE_API explicit fill_operation(scalar_ref fill_value) noexcept;
 	XMIPP4_CORE_API ~fill_operation() override;
 	
 	XMIPP4_CORE_API std::string get_name() const override;

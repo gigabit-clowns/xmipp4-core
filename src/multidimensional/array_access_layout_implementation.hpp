@@ -82,6 +82,11 @@ private:
 
 	void trim_axes(std::size_t n);
 
+	void apply_strides(
+		span<std::ptrdiff_t> offsets, 
+		std::size_t position, 
+		std::ptrdiff_t multiplier
+	) const noexcept;
 };
 
 } // namespace multidimensional

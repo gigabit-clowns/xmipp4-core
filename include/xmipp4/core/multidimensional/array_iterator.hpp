@@ -34,7 +34,7 @@ public:
 	XMIPP4_CORE_API
 	array_iterator(
 		std::size_t ndim,
-		std::vector<std::size_t> offsets
+		std::vector<std::ptrdiff_t> offsets
 	);
 
 	XMIPP4_CORE_API
@@ -77,10 +77,10 @@ public:
 	 * Unless assigned to another iterator, the pointed span is guaranteed to 
 	 * remain constant.
 	 * 
-	 * @return span<const std::size_t> The offsets.
+	 * @return span<const std::ptrdiff_t> The offsets.
 	 */
 	XMIPP4_CORE_API
-	span<const std::size_t> get_offsets() const noexcept;
+	span<const std::ptrdiff_t> get_offsets() const noexcept;
 
 	/**
 	 * @brief Get the current offsets for each operand.
@@ -88,14 +88,14 @@ public:
 	 * Unless assigned to another iterator, the pointed span is guaranteed to 
 	 * remain constant.
 	 * 
-	 * @return span<std::size_t> The offsets.
+	 * @return span<std::ptrdiff_t> The offsets.
 	 */
 	XMIPP4_CORE_API
-	span<std::size_t> get_offsets() noexcept;
+	span<std::ptrdiff_t> get_offsets() noexcept;
 
 private:
 	std::vector<std::size_t> m_indices;
-	std::vector<std::size_t> m_offsets;
+	std::vector<std::ptrdiff_t> m_offsets;
 };
 
 } // namespace multidimensional

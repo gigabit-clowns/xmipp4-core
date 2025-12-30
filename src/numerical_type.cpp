@@ -100,8 +100,6 @@ compute_numerical_type_promotion_table() noexcept
 
 } // anonymous namespace
 
-
-
 std::size_t get_size(numerical_type type) noexcept
 {
 	switch (type)

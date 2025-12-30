@@ -5,7 +5,8 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
-#include <sstream>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace xmipp4 
 {
@@ -26,22 +27,27 @@ std::string fill_operation::get_name() const
 
 std::string fill_operation::serialize_parameters() const
 {
-	std::ostringstream oss;
-	oss << to_string(m_fill_value.get_data_type()) << "(";
-
 	const auto &fill_value = m_fill_value;
-	dispatch_numerical_types(
-		[&oss, &fill_value] (auto tag)
+	const auto data_type = fill_value.get_data_type();
+	const auto *type_str = to_string(data_type);
+
+	return dispatch_numerical_types(
+		[type_str, &fill_value] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			oss << fill_value.get<type>();
+			const auto value = fill_value.get<type>();
+			const auto *value_start = 
+				reinterpret_cast<const std::uint8_t*>(&value);
+			const auto *value_end = value_start + sizeof(type);
+
+			return fmt::format(
+				"{}({:02x})", 
+				type_str, 
+				fmt::join(value_start, value_end, "")
+			);
 		},
-		fill_value.get_data_type()
+		data_type
 	);
-
-	oss << ")";
-
-	return oss.str();
 }
 
 void fill_operation::sanitize_operands(
@@ -66,7 +72,7 @@ void fill_operation::sanitize_operands(
 	if (!is_initialized(output_desc))
 	{
 		throw std::invalid_argument(
-			"Output array must be initialized."
+			"fill_operation requires output descriptor to be initialized."
 		);
 	}
 

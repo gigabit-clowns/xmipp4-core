@@ -36,24 +36,16 @@ void copy_operation::sanitize_operands(
 	}
 
 	array_descriptor &input_desc = input_descriptors[0];
-	array_descriptor &output_desc = output_descriptors[0];
-
-	if (input_desc.get_data_type() == numerical_type::unknown)
+	if (!is_initialized(input_desc))
 	{
 		throw std::invalid_argument(
-			"Input array data type must have a valid numerical type."
+			"copy_operation requires input descriptor to be initialized."
 		);
 	}
 
+	array_descriptor &output_desc = output_descriptors[0];
 	if (is_initialized(output_desc))
 	{
-		if (output_desc.get_data_type() == numerical_type::unknown)
-		{
-			throw std::invalid_argument(
-				"Output array data type must have a valid numerical type."
-			);
-		}
-
 		// TODO check if input is convertible to output type.
 
 		// Output is initialized, broadcast input to output shape

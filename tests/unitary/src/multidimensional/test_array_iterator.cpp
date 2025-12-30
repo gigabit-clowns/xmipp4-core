@@ -17,7 +17,7 @@ TEST_CASE( "default constructed array iterator should be empty", "[array_iterato
 
 TEST_CASE( "array iterator should be initialized at zero position with base offsets", "[array_iterator]" )
 {
-	std::vector<std::size_t> offsets = { 2345, 1234, 983, 1245 };
+	std::vector<std::ptrdiff_t> offsets = { 2345, 1234, 983, 1245 };
 	const std::size_t n_dim = 12; 
 
 	array_iterator iterator(n_dim, offsets);
@@ -64,7 +64,7 @@ TEST_CASE( "array iterator should be initialized at zero position with base offs
 
 TEST_CASE( "array iterator should not reallocate data", "[array_iterator]" )
 {
-	std::vector<std::size_t> offsets = { 2345, 1234, 983, 1245 };
+	std::vector<std::ptrdiff_t> offsets = { 2345, 1234, 983, 1245 };
 	const std::size_t n_dim = 12; 
 
 	array_iterator iterator(n_dim, offsets);

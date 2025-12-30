@@ -363,7 +363,6 @@ void array_access_layout_implementation::apply_strides(
 		const auto strides = m_operands[j].get_strides();
 		offsets[j] += multiplier*strides[position];
 	}
-
 }
 
 } // namespace multidimensional

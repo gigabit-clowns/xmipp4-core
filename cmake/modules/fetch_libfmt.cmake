@@ -11,10 +11,10 @@ function(fetch_libfmt)
 	)
 
 	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	FetchContent_Declare(
 		libfmt
 		URL https://github.com/fmtlib/fmt/archive/refs/tags/${arg_VERSION}.tar.gz
 	)
-	set(DCMAKE_POSITION_INDEPENDENT_CODE ON)
 	FetchContent_MakeAvailable(libfmt)
 endfunction()

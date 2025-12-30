@@ -2,8 +2,7 @@
 
 #include "scalar_ref.hpp"
 
-#include "numerical_type.hpp"
-//#include "numerical_type_traits.hpp" //TODO replace by this
+#include "numerical_type_traits.hpp"
 
 namespace xmipp4
 {

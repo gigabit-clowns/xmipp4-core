@@ -3,10 +3,10 @@
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/numerical_type.hpp>
-//#include <xmipp4/core/numerical_type_dispatch.hpp> // TODO
+#include <xmipp4/core/numerical_type_dispatch.hpp>
 
-#include <fmt/base.h>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace xmipp4 
 {
@@ -35,7 +35,16 @@ std::string fill_operation::serialize_parameters() const
 		[type_str, &fill_value] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			return fmt::format("{0}({1})", type_str, fill_value.get<type>());
+			const auto *value_start = reinterpret_cast<const std::uint8_t*>(
+				&fill_value.get<type>()
+			);
+			const auto *value_end = value_start + sizeof(type);
+
+			return fmt::format(
+				"{}({:02x})", 
+				type_str, 
+				fmt::join(value_start, value_end, "")
+    		);
 		},
 		data_type
 	);

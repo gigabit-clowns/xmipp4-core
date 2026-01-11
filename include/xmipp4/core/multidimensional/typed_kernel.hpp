@@ -3,6 +3,7 @@
 #pragma once
 
 #include "kernel.hpp"
+#include "../platform/cpp_attributes.hpp"
 
 #include <tuple>
 
@@ -11,7 +12,15 @@ namespace xmipp4
 namespace multidimensional
 {
 
-
+/**
+ * @brief Wrap a typed functor with the kernel interface.
+ * 
+ * @tparam Op The functor to be wrapped. Must have the a signature accepting
+ * a tuple of typed operands and a pointer to a hardware queue.
+ * @tparam Getter Method to extract typed handles from buffers. 
+ * @tparam OutputTypeTuple List of output types.
+ * @tparam InputTypeTuple Lust of input types.
+ */
 template <
 	typename Op, 
 	typename Getter,
@@ -27,6 +36,12 @@ public:
 	using output_types = OutputTypeTuple;
 	using input_types = InputTypeTuple;
 
+	/**
+	 * @brief Construct a new typed kernel.
+	 * 
+	 * @param operation Operation to be wrapped.
+	 * @param getter Method to obtain typed handles from the buffer.
+	 */
 	typed_kernel(
 		operation_type operation,
 		getter_type getter
@@ -40,8 +55,8 @@ public:
 	) const override;
 
 private:
-	operation_type m_operation;
-	getter_type m_getter;
+	XMIPP4_NO_UNIQUE_ADDRESS operation_type m_operation;
+	XMIPP4_NO_UNIQUE_ADDRESS getter_type m_getter;
 
 	template<std::size_t... OutputIs, std::size_t... InputIs>
 	void execute_impl(

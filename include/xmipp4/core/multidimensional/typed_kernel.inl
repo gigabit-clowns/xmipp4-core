@@ -81,13 +81,15 @@ void typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::execute_impl(
 	}
 
 	m_operation(
-		queue, // TODO decide where to pass
-        m_getter<typename std::tuple_element<OutputIs, output_types>::type>(
-            *(read_write_operands[OutputIs])
-        )...,
-        m_getter<typename std::tuple_element<InputIs, input_types>::type>(
-            *(read_only_operands[InputIs])
-        )...
+		std::forward_as_tuple(
+			m_getter<typename std::tuple_element<OutputIs, output_types>::type>(
+				*(read_write_operands[OutputIs])
+			)...,
+			m_getter<typename std::tuple_element<InputIs, input_types>::type>(
+				*(read_only_operands[InputIs])
+			)...
+		),
+		queue
 	);
 }
 

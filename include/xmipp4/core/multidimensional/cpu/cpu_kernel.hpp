@@ -22,6 +22,10 @@ public:
 	using operation_type = Op;
 	using output_pointer_tuple_type = OutputPointerTuple;
 	using input_pointer_tuple_type = InputPointerTuple;
+	using operand_pointer_tuple_type = decltype(std::tuple_cat(
+		std::declval<output_pointer_tuple_type>(),
+		std::declval<input_pointer_tuple_type>()
+	));
 
 	cpu_kernel(
 		operation_type operation,
@@ -39,9 +43,24 @@ private:
 	operation_type m_operation;
 	array_access_layout m_access_layout;
 
+	template<std::size_t... Is>
 	void loop(
-		const output_pointer_tuple_type &output_pointers,
-		const input_pointer_tuple_type &input_pointers
+		const operand_pointer_tuple_type& operand_pointers,
+		std::index_sequence<Is...>
+	) const;
+
+	template<std::size_t... Is>
+	static
+	output_pointer_tuple_type pack_output_pointers(
+		span<const std::shared_ptr<hardware::buffer>> buffers,
+		std::index_sequence<Is...>
+	);
+
+	template<std::size_t... Is>
+	static
+	input_pointer_tuple_type pack_input_pointers(
+		span<const std::shared_ptr<const hardware::buffer>> buffers,
+		std::index_sequence<Is...>
 	);
 };
 

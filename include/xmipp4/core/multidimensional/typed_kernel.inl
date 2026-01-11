@@ -1,28 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cpu_kernel.hpp"
-
-#include <tuple>
+#include "typed_kernel.hpp"
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
-template <typename Op, typename OutputPointerTuple, typename InputPointerTuple>
+template <typename Op, typename Getter, typename OutputPointerTuple, typename InputPointerTuple>
 inline
-cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::cpu_kernel(
+typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::typed_kernel(
 	operation_type operation,
-	array_access_layout access_layout
+	getter_type getter
 )
 	: m_operation(std::move(operation))
-	, m_access_layout(std::move(access_layout))
+	, m_getter(std::move(getter))
 {
 }
 
-template <typename Op, typename OutputPointerTuple, typename InputPointerTuple>
+template <typename Op, typename Getter, typename OutputPointerTuple, typename InputPointerTuple>
 inline
-void cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::execute(
+void typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::execute(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue
@@ -34,6 +32,7 @@ void cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::execute(
 			std::tuple_size<output_pointer_tuple_type>::value
 		>()
 	);
+
 	const auto input_pointers = pack_input_pointers(
 		read_only_operands,
 		std::make_integer_sequence<
@@ -41,12 +40,7 @@ void cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::execute(
 		>()
 	);
 
-	if (queue)
-	{
-		queue->wait_until_completed();
-	}
-
-	loop(
+	invoke(
 		std::tuple_cat(output_pointers, input_pointers),
 		std::make_integer_sequence<
 			std::tuple_size<operand_pointer_tuple_type>::value
@@ -54,46 +48,31 @@ void cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::execute(
 	);
 }
 
-template <typename Op, typename OutputPointerTuple, typename InputPointerTuple>
+template <typename Op, typename Getter, typename OutputPointerTuple, typename InputPointerTuple>
 template<std::size_t... Is>
 inline
-void cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::loop(
+void typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::invoke(
 	const operand_pointer_tuple_type& operand_pointers,
 	std::index_sequence<Is...>
 ) const
 {
-	array_iterator ite;
-	std::size_t count;
-	if (!(count = m_access_layout.iter(ite)))
-	{
-		return;
-	}
-
-	const auto offsets = ite.get_offsets(); // Stable address
-	do
-	{
-		m_operation(
-			count,
-			std::get<Is>(operand_pointers) + offsets[Is]...
-		);
-	}
-	while((count = m_access_layout.next(ite, count)));
+	m_operation(std::get<Is>(operand_pointers)...);
 }
 
-template <typename Op, typename OutputPointerTuple, typename InputPointerTuple>
+template <typename Op, typename Getter, typename OutputPointerTuple, typename InputPointerTuple>
 template<std::size_t... Is>
 inline
 typename
-cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::output_pointer_tuple_type 
-cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::pack_output_pointers(
+typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::output_pointer_tuple_type 
+typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::pack_output_pointers(
 	span<const std::shared_ptr<hardware::buffer>> buffers,
 	std::index_sequence<Is...>
-)
+) const
 {
     if (buffers.size() != sizeof...(Is))
 	{
         throw std::invalid_argument(
-			"cpu_kernel: incorrect number of output buffers"
+			"typed_kernel::execute: incorrect number of output buffers"
 		);
 	}
 
@@ -102,34 +81,34 @@ cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::pack_output_pointers(
         if (!buffers[i])
 		{
             throw std::invalid_argument(
-				"cpu_kernel: null output buffer encountered"
+				"typed_kernel::execute: null output buffer encountered"
 			);
 		}
 	}
 
     return output_pointer_tuple_type(
-        static_cast<
+        m_getter<
 			typename std::tuple_element<Is, output_pointer_tuple_type>::type
 		>(
-            buffers[Is]->get_host_ptr()
+            *(buffers[Is])
         )...
 	);
 }
 
-template <typename Op, typename OutputPointerTuple, typename InputPointerTuple>
+template <typename Op, typename Getter, typename OutputPointerTuple, typename InputPointerTuple>
 template<std::size_t... Is>
 inline
 typename
-cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::input_pointer_tuple_type 
-cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::pack_input_pointers(
+typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::input_pointer_tuple_type 
+typed_kernel<Op, Getter, OutputPointerTuple, InputPointerTuple>::pack_input_pointers(
 	span<const std::shared_ptr<const hardware::buffer>> buffers,
 	std::index_sequence<Is...>
-)
+) const
 {
     if (buffers.size() != sizeof...(Is))
 	{
         throw std::invalid_argument(
-			"cpu_kernel: incorrect number of input buffers"
+			"typed_kernel: incorrect number of input buffers"
 		);
 	}
 
@@ -138,16 +117,16 @@ cpu_kernel<Op, OutputPointerTuple, InputPointerTuple>::pack_input_pointers(
         if (!buffers[i])
 		{
             throw std::invalid_argument(
-				"cpu_kernel: null input buffer encountered"
+				"typed_kernel: null input buffer encountered"
 			);
 		}
 	}
 
     return input_pointer_tuple_type(
-        static_cast<
+        m_getter<
 			typename std::tuple_element<Is, input_pointer_tuple_type>::type
 		>(
-            buffers[Is]->get_host_ptr()
+            *(buffers[Is])
         )...
 	);
 }

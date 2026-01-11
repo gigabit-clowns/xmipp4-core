@@ -5,10 +5,9 @@
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/cpu/cpu_kernel.hpp>
 #include <xmipp4/core/hardware/cpu/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
-
-#include "cpu_copy_kernel.hpp"
 
 namespace xmipp4 
 {
@@ -18,19 +17,75 @@ namespace multidimensional
 namespace
 {
 
+struct cpu_copy
+{
+	template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
+	void operator()(
+		std::size_t count, 
+		T* output, 
+		const Q* input,
+		DstStrideT dst_stride,
+		SrcStrideT src_stride
+	) const noexcept
+	{
+		std::ptrdiff_t destination_index = 0;
+		std::ptrdiff_t source_index = 0;
+		for (std::size_t i = 0; i < count; ++i)
+		{
+			destination[destination_index] = 
+				static_cast<T>(source[source_index]);
+			destination_index += dst_stride;
+			source_index += src_stride;
+		}
+	}
+
+	template <typename T>
+	void operator()(
+		std::size_t count, 
+		T* output, 
+		const T* input,
+		std::integral_constant<std::ptrdiff_t, 1>,
+		std::integral_constant<std::ptrdiff_t, 1>
+	) const noexcept
+	{
+		std::copy_n(input, count, output);
+	}
+
+	template <typename T, typename Q>
+	void operator()(
+		std::size_t count, 
+		T* output, 
+		const Q* input,
+		std::integral_constant<std::ptrdiff_t, 1>,
+		std::integral_constant<std::ptrdiff_t, 0>
+	) const noexcept
+	{
+		const auto input_value = static_cast<T>(*input);
+		std::fill_n(output, count, input_value);
+	}
+};
+
+
 template <typename T, typename Q>
-std::shared_ptr<cpu_kernel> make_copy_kernel(
+std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
 	std::true_type
 )
 {
-	return std::make_shared<cpu_copy_kernel<T, Q>>(
+	using kernel_type = cpu_kernel<
+		cpu_copy,
+		std::tuple<T*>,
+		std::tuple<const Q*>
+	>;
+
+	return std::make_shared<kernel_type>(
+		cpu_copy(),
 		std::move(access_layout)
 	);
 }
 
 template <typename T, typename Q>
-std::shared_ptr<cpu_kernel> make_copy_kernel(
+std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout,
 	std::false_type
 )
@@ -111,7 +166,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 
 	return dispatch_numerical_types(
 		[&access_layout] 
-		(auto output_tag, auto input_tag) -> std::shared_ptr<cpu_kernel>
+		(auto output_tag, auto input_tag) -> std::shared_ptr<kernel>
 		{
 			using output_value_type = typename decltype(output_tag)::type;
 			using input_value_type = typename decltype(input_tag)::type;

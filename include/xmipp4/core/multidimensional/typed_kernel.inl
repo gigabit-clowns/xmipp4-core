@@ -32,8 +32,8 @@ void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute(
 		read_write_operands,
 		read_only_operands,
 		queue,
-		std::make_integer_sequence<std::tuple_size<output_types>::value>(),
-		std::make_integer_sequence<std::tuple_size<input_types>::value>()
+		std::make_integer_sequence<type_list_size<output_types>::value>(),
+		std::make_integer_sequence<type_list_size<input_types>::value>()
 	);
 }
 

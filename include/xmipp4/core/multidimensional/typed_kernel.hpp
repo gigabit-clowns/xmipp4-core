@@ -14,6 +14,15 @@ namespace xmipp4
 template <typename... Ts>
 struct type_list {};
 
+template <typename T>
+struct type_list_size;
+
+template <typename... Ts>
+struct type_list_size<type_list<Ts...>>
+	: std::integral_constant<std::size_t, sizeof...(Ts)>
+{
+};
+
 template<std::size_t I, typename T>
 struct type_list_element;
 

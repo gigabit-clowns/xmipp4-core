@@ -5,10 +5,30 @@
 #include "kernel.hpp"
 #include "../platform/cpp_attributes.hpp"
 
-#include <tuple>
+#include <type_traits>
+#include <cstddef>
 
 namespace xmipp4 
 {
+
+template <typename... Ts>
+struct type_list {};
+
+template<std::size_t I, typename T>
+struct type_list_element;
+
+template<std::size_t I, typename Head, typename... Tail>
+struct type_list_element<I, type_list<Head, Tail...>>
+    : type_list_element<I - 1, type_list<Tail...>>
+{
+};
+ 
+template<class Head, typename... Tail>
+struct type_list_element<0, type_list<Head, Tail...>>
+{
+    using type = Head;
+};
+
 namespace multidimensional
 {
 
@@ -18,14 +38,16 @@ namespace multidimensional
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
  * a tuple of typed operands and a pointer to a hardware queue.
  * @tparam Getter Method to extract typed handles from buffers. 
- * @tparam OutputTypeTuple List of output types.
- * @tparam InputTypeTuple Lust of input types.
+ * @tparam OutputTypeList List of output types. Must be an specialization of
+ * `xmipp4::type_list`
+ * @tparam InputTypeList Lust of input types. Must be an specialization of
+ * `xmipp4::type_list`
  */
 template <
 	typename Op, 
 	typename Getter,
-	typename OutputTypeTuple, 
-	typename InputTypeTuple
+	typename OutputTypeList, 
+	typename InputTypeList
 >
 class typed_kernel final
 	: public kernel
@@ -33,8 +55,8 @@ class typed_kernel final
 public:
 	using operation_type = Op;
 	using getter_type = Getter;
-	using output_types = OutputTypeTuple;
-	using input_types = InputTypeTuple;
+	using output_types = OutputTypeList;
+	using input_types = InputTypeList;
 
 	/**
 	 * @brief Construct a new typed kernel.

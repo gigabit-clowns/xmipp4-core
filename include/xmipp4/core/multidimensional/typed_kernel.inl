@@ -2,14 +2,16 @@
 
 #include "typed_kernel.hpp"
 
+#include <tuple>
+
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
-template <typename Op, typename Getter, typename OutputTypeTuple, typename InputTypeTuple>
+template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
 inline
-typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::typed_kernel(
+typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::typed_kernel(
 	operation_type operation,
 	getter_type getter
 )
@@ -18,9 +20,9 @@ typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::typed_kernel(
 {
 }
 
-template <typename Op, typename Getter, typename OutputTypeTuple, typename InputTypeTuple>
+template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
 inline
-void typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::execute(
+void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue
@@ -35,10 +37,10 @@ void typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::execute(
 	);
 }
 
-template <typename Op, typename Getter, typename OutputTypeTuple, typename InputTypeTuple>
+template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
 template<std::size_t... OutputIs, std::size_t... InputIs>
 inline
-void typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::execute_impl(
+void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute_impl(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue,
@@ -82,10 +84,12 @@ void typed_kernel<Op, Getter, OutputTypeTuple, InputTypeTuple>::execute_impl(
 
 	m_operation(
 		std::forward_as_tuple(
-			m_getter<typename std::tuple_element<OutputIs, output_types>::type>(
+			m_getter<typename type_list_element<OutputIs, output_types>::type>(
 				*(read_write_operands[OutputIs])
-			)...,
-			m_getter<typename std::tuple_element<InputIs, input_types>::type>(
+			)...
+		),
+		std::forward_as_tuple(
+			m_getter<typename type_list_element<InputIs, input_types>::type>(
 				*(read_only_operands[InputIs])
 			)...
 		),

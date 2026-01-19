@@ -29,7 +29,7 @@ void cpu_kernel<Op>::operator()(
 {
 	loop(
 		std::tuple_cat(output_pointers, input_pointers),
-		std::make_index_sequence(sizeof...(OutputTypes) + sizeof...(InputTypes))
+		std::make_index_sequence<sizeof...(OutputTypes)+sizeof...(InputTypes)>()
 	);
 }
 
@@ -38,7 +38,7 @@ template <typename... Pointers, std::size_t... Is>
 inline
 void cpu_kernel<Op>::loop(
 	const std::tuple<Pointers...> &pointers,
-	std::integer_sequence<std::size_t, Is...>
+	std::index_sequence<Is...>
 ) const
 {
 	array_iterator ite;

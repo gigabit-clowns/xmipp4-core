@@ -51,7 +51,7 @@ private:
 	template <typename... Pointers, std::size_t... Is>
 	void loop(
 		const std::tuple<Pointers...> &pointers,
-		std::integer_sequence<std::size_t, Is...>
+		std::index_sequence<Is...>
 	) const;
 };
 

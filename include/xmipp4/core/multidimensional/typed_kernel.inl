@@ -9,9 +9,9 @@ namespace xmipp4
 namespace multidimensional
 {
 
-template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
 inline
-typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::typed_kernel(
+typed_kernel<Op, Getter, Outputs, Inputs>::typed_kernel(
 	operation_type operation,
 	getter_type getter
 )
@@ -20,9 +20,9 @@ typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::typed_kernel(
 {
 }
 
-template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
 inline
-void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute(
+void typed_kernel<Op, Getter, Outputs, Inputs>::execute(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue
@@ -37,10 +37,10 @@ void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute(
 	);
 }
 
-template <typename Op, typename Getter, typename OutputTypeList, typename InputTypeList>
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
 template<std::size_t... OutputIs, std::size_t... InputIs>
 inline
-void typed_kernel<Op, Getter, OutputTypeList, InputTypeList>::execute_impl(
+void typed_kernel<Op, Getter, Outputs, Inputs>::execute_impl(
 	span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 	span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
 	hardware::device_queue *queue,

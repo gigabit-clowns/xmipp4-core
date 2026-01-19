@@ -47,16 +47,16 @@ namespace multidimensional
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
  * a tuple of typed operands and a pointer to a hardware queue.
  * @tparam Getter Method to extract typed handles from buffers. 
- * @tparam OutputTypeList List of output types. Must be an specialization of
+ * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
- * @tparam InputTypeList Lust of input types. Must be an specialization of
+ * @tparam Inputs Lust of input types. Must be an specialization of
  * `xmipp4::type_list`
  */
 template <
 	typename Op, 
 	typename Getter,
-	typename OutputTypeList, 
-	typename InputTypeList
+	typename Outputs, 
+	typename Inputs
 >
 class typed_kernel final
 	: public kernel
@@ -64,8 +64,8 @@ class typed_kernel final
 public:
 	using operation_type = Op;
 	using getter_type = Getter;
-	using output_types = OutputTypeList;
-	using input_types = InputTypeList;
+	using output_types = Outputs;
+	using input_types = Inputs;
 
 	/**
 	 * @brief Construct a new typed kernel.

@@ -9,6 +9,9 @@ namespace xmipp4
 namespace multidimensional
 {
 
+/**
+ * @brief Getter functor to be used in `typed_kernel`.
+ */
 class host_pointer_getter
 {
 public:

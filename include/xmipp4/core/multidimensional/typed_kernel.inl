@@ -83,12 +83,12 @@ void typed_kernel<Op, Getter, Outputs, Inputs>::execute_impl(
 	}
 
 	m_operation(
-		std::forward_as_tuple(
+		std::make_tuple(
 			m_getter<typename type_list_element<OutputIs, output_types>::type>(
 				*(read_write_operands[OutputIs])
 			)...
 		),
-		std::forward_as_tuple(
+		std::make_tuple(
 			m_getter<typename type_list_element<InputIs, input_types>::type>(
 				*(read_only_operands[InputIs])
 			)...

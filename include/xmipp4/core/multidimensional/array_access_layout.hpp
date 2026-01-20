@@ -87,26 +87,42 @@ public:
 	 * @brief Populate an array iterator for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
-	 * @return std::size_t Number of equispaced elements. 0 if none (iteration
-	 * has finished).
+	 * @return false The layout is empty and thus can not be iterated. `ite` is 
+	 * not modified.
+	 * @return true the layout has at least one element and it may be iterated.
 	 */
 	XMIPP4_CORE_API
-	std::size_t iter(array_iterator &ite) const;
+	bool iter(array_iterator &ite) const;
+
+	/**
+	 * @brief Populate an array iterator for traversing the outer axes of this 
+	 * layout.
+	 * 
+	 * Unlike `iter`, iter outer skips the inner-most (first) dimensions of the 
+	 * layout.
+	 * 
+	 * @param ite The iterator to be populated.
+	 * @param n The number of inner dimensions to be skipped. 1 by default.
+	 * @return false The layout is empty and thus can not be iterated. `ite` is 
+	 * not modified.
+	 * @return true the layout has at least one element and it may be iterated.
+	 * @see iter
+	 */
+	XMIPP4_CORE_API
+	bool iter_outer(array_iterator &ite, std::size_t n=1) const;
 
 	/**
 	 * @brief Advance an array iterator.
 	 * 
 	 * @param ite The iterator to be advanced. Must have been populated by 
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
-	 * a non-zero value.
-	 * @param n Number of elements to be advanced. Must be less or equal to the 
-	 * number returned by the previous call to `iter()` or `next()`. Otherwise 
-	 * behavior is undefined.
-	 * @return std::size_t Number of equispaced elements ahead. 0 if none
-	 * (iteration has finished).
+	 * true.
+	 * @return false Iteration has reached the end and no subsequent call to 
+	 * next() may be done.
+	 * @return true Iteration continues.
 	 */
 	XMIPP4_CORE_API
-	std::size_t next(array_iterator &ite, std::size_t n) const noexcept;
+	bool next(array_iterator &ite) const noexcept;
 
 	/**
 	 * @brief Get a pointer to the implementation.

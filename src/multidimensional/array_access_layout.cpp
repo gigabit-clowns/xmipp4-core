@@ -72,27 +72,34 @@ std::ptrdiff_t array_access_layout::get_offset(std::size_t operand) const
 	return m_implementation->get_offset(operand);
 }
 
-std::size_t array_access_layout::iter(array_iterator &ite) const
+bool array_access_layout::iter(array_iterator &ite) const
 {
 	if (!m_implementation)
 	{
-		return 0UL;
+		return false;
 	}
 
 	return m_implementation->iter(ite);
 }
 
-std::size_t array_access_layout::next(
-	array_iterator &ite, 
-	std::size_t n
-) const noexcept
+bool array_access_layout::iter_outer(array_iterator &ite, std::size_t n) const
 {
 	if (!m_implementation)
 	{
-		return 0UL;
+		return false;
 	}
 
-	return m_implementation->next(ite, n);
+	return m_implementation->iter_outer(ite, n);
+}
+
+bool array_access_layout::next(array_iterator &ite) const noexcept
+{
+	if (!m_implementation)
+	{
+		return false;
+	}
+
+	return m_implementation->next(ite);
 }
 
 const array_access_layout_implementation*

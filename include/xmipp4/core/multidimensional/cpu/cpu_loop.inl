@@ -42,13 +42,12 @@ void cpu_loop<Op>::loop(
 ) const
 {
 	array_iterator ite;
-
-	if (!m_layout.iter(ite))
+	if (!m_layout.iter_outer(ite))
 	{
 		return;
 	}
 
-	const auto offsets = static_cast<const array_iterator&>(&).get_offsets();
+	const auto offsets = static_cast<const array_iterator&>(ite).get_offsets();
 	do
 	{
 		m_operation(std::get<Is>(pointers) + offsets[Is]...);

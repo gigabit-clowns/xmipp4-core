@@ -52,12 +52,7 @@ namespace multidimensional
  * @tparam Inputs Lust of input types. Must be an specialization of
  * `xmipp4::type_list`
  */
-template <
-	typename Op, 
-	typename Getter,
-	typename Outputs, 
-	typename Inputs
->
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
 class typed_kernel final
 	: public kernel
 {
@@ -99,6 +94,32 @@ private:
 	) const;
 
 };
+
+/**
+ * @brief Infer types and construct a `typed_kernel`
+ * 
+ * @tparam Op The functor to be wrapped. Must have the a signature accepting
+ * a tuple of typed operands and a pointer to a hardware queue.
+ * @tparam Getter Method to extract typed handles from buffers. 
+ * @tparam Outputs List of output types. Must be an specialization of
+ * `xmipp4::type_list`
+ * @tparam Inputs Lust of input types. Must be an specialization of
+ * `xmipp4::type_list`
+ * @param operation Operation to be wrapped.
+ * @param getter Method to obtain typed handles from the buffer.
+ * @param output_types_tag Instance of `xmipp4::type_list` specialized with the
+ * output types.
+ * @param input_types_tag Instance of `xmipp4::type_list` specialized with the
+ * input types.
+ * @return typed_kernel<Op, Getter, Outputs, Inputs> The constructed kernel.
+ */
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
+typed_kernel<Op, Getter, Outputs, Inputs> make_typed_kernel(
+	Op operation, 
+	Getter getter,
+	Outputs output_types_tag,
+	Inputs input_types_tag
+);
 
 } // namespace multidimensional
 } // namespace xmipp4

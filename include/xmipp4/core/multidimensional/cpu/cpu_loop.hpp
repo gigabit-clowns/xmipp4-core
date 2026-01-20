@@ -21,21 +21,21 @@ namespace multidimensional
 {
 
 template <typename Op>
-class cpu_kernel
+class cpu_loop
 {
 public:
 	using operation_type = Op;
 
-	explicit cpu_kernel(
+	explicit cpu_loop(
 		array_access_layout layout,
 		operation_type operation = {}
 	);
-	cpu_kernel(const cpu_kernel &other) = default;
-	cpu_kernel(cpu_kernel &&other) = default;
-	~cpu_kernel() = default;
+	cpu_loop(const cpu_loop &other) = default;
+	cpu_loop(cpu_loop &&other) = default;
+	~cpu_loop() = default;
 
-	cpu_kernel& operator=(const cpu_kernel &other) = default;
-	cpu_kernel& operator=(cpu_kernel &&other) = default;
+	cpu_loop& operator=(const cpu_loop &other) = default;
+	cpu_loop& operator=(cpu_loop &&other) = default;
 
 	template <typename... OutputTypes, typename... InputTypes>
 	void operator()(
@@ -56,7 +56,7 @@ private:
 };
 
 template<typename Op>
-cpu_kernel<Op> make_cpu_kernel(array_access_layout layout, Op operation = {});
+cpu_loop<Op> make_cpu_loop(array_access_layout layout, Op operation = {});
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -97,5 +97,20 @@ void typed_kernel<Op, Getter, Outputs, Inputs>::execute_impl(
 	);
 }
 
+template <typename Op, typename Getter, typename Outputs, typename Inputs>
+inline
+typed_kernel<Op, Getter, Outputs, Inputs> make_typed_kernel(
+	Op operation, 
+	Getter getter,
+	Outputs,
+	Inputs
+)
+{
+	return typed_kernel<Op, Getter, Outputs, Inputs>(
+		std::move(operation), 
+		std::move(getter)
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

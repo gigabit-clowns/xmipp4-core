@@ -3,8 +3,9 @@
 #pragma once
 
 #include "device_type.hpp"
-#include "../platform/constexpr.hpp"
+#include "../platform/dynamic_shared_object.h"
 
+#include <memory>
 #include <string>
 
 namespace xmipp4
@@ -20,26 +21,34 @@ namespace hardware
 class device_properties
 {
 public:
-	device_properties();
-	device_properties(const device_properties& other) = default;
-	device_properties(device_properties&& other) = default;
-	~device_properties() = default;
+	XMIPP4_CORE_API
+	device_properties() noexcept;
+	XMIPP4_CORE_API
+	device_properties(const device_properties& other);
+	XMIPP4_CORE_API
+	device_properties(device_properties&& other) noexcept;
+	XMIPP4_CORE_API
+	~device_properties();
 
-	device_properties& operator=(const device_properties& other) = default;
-	device_properties& operator=(device_properties&& other) = default;
+	XMIPP4_CORE_API
+	device_properties& operator=(const device_properties& other);
+	XMIPP4_CORE_API
+	device_properties& operator=(device_properties&& other) noexcept;
 
 	/**
 	 * @brief Set the device type.
 	 * 
 	 * @param type The device type.
 	 */
-	void set_type(device_type type) noexcept;
+	XMIPP4_CORE_API
+	void set_type(device_type type);
 
 	/**
 	 * @brief Get the device type.
 	 * 
 	 * @return device_type The device type. 
 	 */
+	XMIPP4_CORE_API
 	device_type get_type() const noexcept;
 
 	/**
@@ -48,14 +57,15 @@ public:
 	 * @tparam Str String type.
 	 * @param name The device name.
 	 */
-	template <typename Str>
-	void set_name(Str &&name);
+	XMIPP4_CORE_API
+	void set_name(const std::string &name);
 
 	/**
 	 * @brief Get the device name.
 	 * 
 	 * @return const std::string& The device name.
 	 */
+	XMIPP4_CORE_API
 	const std::string& get_name() const noexcept;
 
 	/**
@@ -66,8 +76,8 @@ public:
 	 * @tparam Str String type.
 	 * @param location The physical location of the device.
 	 */
-	template <typename Str>
-	void set_physical_location(Str &&location);
+	XMIPP4_CORE_API
+	void set_physical_location(const std::string &location);
 
 	/**
 	 * @brief Get the physical location of the device.
@@ -76,6 +86,7 @@ public:
 	 * 
 	 * @return const std::string& The physical location of the device.
 	 */
+	XMIPP4_CORE_API
 	const std::string& get_physical_location() const noexcept;
 
 	/**
@@ -83,13 +94,15 @@ public:
 	 * 
 	 * @param bytes Number of bytes.
 	 */
-	void set_total_memory_bytes(std::size_t bytes) noexcept;
+	XMIPP4_CORE_API
+	void set_total_memory_bytes(std::size_t bytes);
 
 	/**
 	 * @brief Get the total memory of the device in bytes.
 	 * 
 	 * @return std::size_t Number of bytes
 	 */
+	XMIPP4_CORE_API
 	std::size_t get_total_memory_bytes() const noexcept;
 
 	/**
@@ -97,24 +110,24 @@ public:
 	 * 
 	 * @param bytes The optimal data alignment in bytes.
 	 */
-	void set_optimal_data_alignment(std::size_t alignment) noexcept;
+	XMIPP4_CORE_API
+	void set_optimal_data_alignment(std::size_t alignment);
 
 	/**
 	 * @brief Get the optimal data alignment.
 	 * 
 	 * @return std::size_t The optimal data alignment in bytes.
 	 */
+	XMIPP4_CORE_API
 	std::size_t get_optimal_data_alignment() const noexcept;
 
 private:
-	device_type m_type;
-	std::string m_name;
-	std::string m_physical_location;
-	std::size_t m_total_memory_bytes;
-	std::size_t m_optimal_data_alignment;
+	class implementation;
+	std::unique_ptr<implementation> m_implementation;
+
+	implementation& create_implementation_if_null();
+	const implementation& get_implementation() const noexcept;
 };
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "device_properties.inl"

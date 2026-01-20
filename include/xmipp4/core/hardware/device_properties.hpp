@@ -23,12 +23,14 @@ class device_properties
 public:
 	XMIPP4_CORE_API
 	device_properties() noexcept;
+	XMIPP4_CORE_API
 	device_properties(const device_properties& other);
 	XMIPP4_CORE_API
 	device_properties(device_properties&& other) noexcept;
 	XMIPP4_CORE_API
 	~device_properties();
 
+	XMIPP4_CORE_API
 	device_properties& operator=(const device_properties& other);
 	XMIPP4_CORE_API
 	device_properties& operator=(device_properties&& other) noexcept;

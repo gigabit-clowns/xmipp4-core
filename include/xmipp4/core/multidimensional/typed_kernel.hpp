@@ -92,7 +92,6 @@ private:
 		std::index_sequence<OutputIs...>,
 		std::index_sequence<InputIs...>
 	) const;
-
 };
 
 /**

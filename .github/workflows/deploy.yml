@@ -74,6 +74,8 @@ jobs:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist]
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    permissions:
+        id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacs

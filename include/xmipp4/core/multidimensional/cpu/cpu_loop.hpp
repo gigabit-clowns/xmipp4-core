@@ -37,10 +37,9 @@ public:
 	cpu_loop& operator=(const cpu_loop &other) = default;
 	cpu_loop& operator=(cpu_loop &&other) = default;
 
-	template <typename... OutputTypes, typename... InputTypes>
+	template <typename... Types>
 	void operator()(
-		const std::tuple<OutputTypes*...> &output_pointers,
-		const std::tuple<const InputTypes*...> &input_pointers,
+		const std::tuple<Types*...> &operand_pointers,
 		hardware::queue *queue
 	) const;
 
@@ -48,9 +47,9 @@ private:
 	array_access_layout m_layout;
 	XMIPP4_NO_UNIQUE_ADDRESS operation_type m_operation;
 
-	template <typename... Pointers, std::size_t... Is>
+	template <typename... Types, std::size_t... Is>
 	void loop(
-		const std::tuple<Pointers...> &pointers,
+		const std::tuple<Types...> &operand_pointers,
 		std::index_sequence<Is...>
 	) const;
 };

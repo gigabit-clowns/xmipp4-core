@@ -19,25 +19,26 @@ cpu_loop<Op>::cpu_loop(
 }
 
 template <typename Op>
-template <typename... OutputTypes, typename... InputTypes>
+template <typename... Types>
 inline
 void cpu_loop<Op>::operator()(
-	const std::tuple<OutputTypes*...> &output_pointers,
-	const std::tuple<const InputTypes*...> &input_pointers,
-	hardware::queue*
+	const std::tuple<Types*...> &operand_pointers,
+	hardware::queue* queue
 ) const
 {
-	loop(
-		std::tuple_cat(output_pointers, input_pointers),
-		std::make_index_sequence<sizeof...(OutputTypes)+sizeof...(InputTypes)>()
-	);
+	if (queue)
+	{
+		queue->wait_for_completion();
+	}
+
+	loop(operand_pointers, std::make_index_sequence<sizeof...(Types)>());
 }
 
 template <typename Op>
 template <typename... Pointers, std::size_t... Is>
 inline
 void cpu_loop<Op>::loop(
-	const std::tuple<Pointers...> &pointers,
+	const std::tuple<Pointers...> &operand_pointers,
 	std::index_sequence<Is...>
 ) const
 {
@@ -50,7 +51,7 @@ void cpu_loop<Op>::loop(
 	const auto offsets = static_cast<const array_iterator&>(ite).get_offsets();
 	do
 	{
-		m_operation(std::get<Is>(pointers) + offsets[Is]...);
+		m_operation(std::get<Is>(operand_pointers) + offsets[Is]...);
 	} while (m_layout.next(ite));
 }
 

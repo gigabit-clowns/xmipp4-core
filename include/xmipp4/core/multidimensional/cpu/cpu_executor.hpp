@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "../array_access_layout.hpp"
 #include "../../platform/attributes.hpp"
 
 #include <tuple>
@@ -26,10 +25,7 @@ class cpu_executor
 public:
 	using operation_type = Op;
 
-	explicit cpu_executor(
-		array_access_layout layout,
-		operation_type operation = {}
-	);
+	explicit cpu_executor(operation_type operation = {});
 	cpu_executor(const cpu_executor &other) = default;
 	cpu_executor(cpu_executor &&other) = default;
 	~cpu_executor() = default;
@@ -44,18 +40,11 @@ public:
 	) const;
 
 private:
-	array_access_layout m_layout;
 	XMIPP4_NO_UNIQUE_ADDRESS operation_type m_operation;
-
-	template <typename... Types, std::size_t... Is>
-	void execute(
-		const std::tuple<Types...> &operand_pointers,
-		std::index_sequence<Is...>
-	) const;
 };
 
 template<typename Op>
-cpu_executor<Op> make_cpu_executor(array_access_layout layout, Op operation);
+cpu_executor<Op> make_cpu_executor(Op operation);
 
 } // namespace multidimensional
 } // namespace xmipp4

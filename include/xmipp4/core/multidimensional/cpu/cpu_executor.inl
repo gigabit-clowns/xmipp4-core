@@ -9,12 +9,8 @@ namespace multidimensional
 
 template <typename Op>
 inline
-cpu_executor<Op>::cpu_executor(
-	array_access_layout layout,
-	operation_type operation
-)
-	: m_layout(std::move(layout))
-	, m_operation(std::move(operation))
+cpu_executor<Op>::cpu_executor(operation_type operation)
+	: m_operation(std::move(operation))
 {
 }
 
@@ -31,35 +27,14 @@ void cpu_executor<Op>::operator()(
 		queue->wait_for_completion();
 	}
 
-	loop(operand_pointers, std::make_index_sequence<sizeof...(Types)>());
-}
-
-template <typename Op>
-template <typename... Pointers, std::size_t... Is>
-inline
-void cpu_executor<Op>::execute(
-	const std::tuple<Pointers...> &operand_pointers,
-	std::index_sequence<Is...>
-) const
-{
-	array_iterator ite;
-	if (!m_layout.iter_outer(ite))
-	{
-		return;
-	}
-
-	const auto offsets = static_cast<const array_iterator&>(ite).get_offsets();
-	do
-	{
-		m_operation(std::get<Is>(operand_pointers) + offsets[Is]...);
-	} while (m_layout.next(ite));
+	m_operation(operand_pointers);
 }
 
 template<typename Op>
 inline
-cpu_executor<Op> make_cpu_executor(array_access_layout layout, Op operation)
+cpu_executor<Op> make_cpu_executor(Op operation)
 {
-	return cpu_executor<Op>(std::move(layout), std::move(operation));
+	return cpu_executor<Op>(std::move(operation));
 }
 
 } // namespace multidimensional

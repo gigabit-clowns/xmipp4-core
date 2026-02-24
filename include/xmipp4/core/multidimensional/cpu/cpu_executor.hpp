@@ -21,21 +21,21 @@ namespace multidimensional
 {
 
 template <typename Op>
-class cpu_loop
+class cpu_executor
 {
 public:
 	using operation_type = Op;
 
-	explicit cpu_loop(
+	explicit cpu_executor(
 		array_access_layout layout,
 		operation_type operation = {}
 	);
-	cpu_loop(const cpu_loop &other) = default;
-	cpu_loop(cpu_loop &&other) = default;
-	~cpu_loop() = default;
+	cpu_executor(const cpu_executor &other) = default;
+	cpu_executor(cpu_executor &&other) = default;
+	~cpu_executor() = default;
 
-	cpu_loop& operator=(const cpu_loop &other) = default;
-	cpu_loop& operator=(cpu_loop &&other) = default;
+	cpu_executor& operator=(const cpu_executor &other) = default;
+	cpu_executor& operator=(cpu_executor &&other) = default;
 
 	template <typename... Types>
 	void operator()(
@@ -48,14 +48,16 @@ private:
 	XMIPP4_NO_UNIQUE_ADDRESS operation_type m_operation;
 
 	template <typename... Types, std::size_t... Is>
-	void loop(
+	void execute(
 		const std::tuple<Types...> &operand_pointers,
 		std::index_sequence<Is...>
 	) const;
 };
 
 template<typename Op>
-cpu_loop<Op> make_cpu_loop(array_access_layout layout, Op operation = {});
+cpu_executor<Op> make_cpu_executor(array_access_layout layout, Op operation);
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+#include "cpu_executor.inl"

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cpu_loop.hpp"
+#include "cpu_executor.hpp"
 
 namespace xmipp4 
 {
@@ -9,7 +9,7 @@ namespace multidimensional
 
 template <typename Op>
 inline
-cpu_loop<Op>::cpu_loop(
+cpu_executor<Op>::cpu_executor(
 	array_access_layout layout,
 	operation_type operation
 )
@@ -21,7 +21,7 @@ cpu_loop<Op>::cpu_loop(
 template <typename Op>
 template <typename... Types>
 inline
-void cpu_loop<Op>::operator()(
+void cpu_executor<Op>::operator()(
 	const std::tuple<Types*...> &operand_pointers,
 	hardware::queue* queue
 ) const
@@ -37,7 +37,7 @@ void cpu_loop<Op>::operator()(
 template <typename Op>
 template <typename... Pointers, std::size_t... Is>
 inline
-void cpu_loop<Op>::loop(
+void cpu_executor<Op>::execute(
 	const std::tuple<Pointers...> &operand_pointers,
 	std::index_sequence<Is...>
 ) const
@@ -57,9 +57,9 @@ void cpu_loop<Op>::loop(
 
 template<typename Op>
 inline
-cpu_loop<Op> make_cpu_loop(array_access_layout layout, Op operation)
+cpu_executor<Op> make_cpu_executor(array_access_layout layout, Op operation)
 {
-	return cpu_loop<Op>(std::move(layout), std::move(operation));
+	return cpu_executor<Op>(std::move(layout), std::move(operation));
 }
 
 } // namespace multidimensional

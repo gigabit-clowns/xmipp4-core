@@ -78,13 +78,13 @@ jobs:
 
       - name: Upload coverage report
         if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
           path: coverage.xml
 
       - name: Upload build folder (ubuntu-latest + gcc only)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.c == 'gcc'
         with:
           name: build-artifact

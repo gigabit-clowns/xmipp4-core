@@ -103,7 +103,7 @@ T* cpu_kernel<Op, Outputs, Inputs>::get_pointer(hardware::buffer &buffer)
 	if (!result)
 	{
 		throw std::invalid_argument(
-			"cpu_kernel: Provided buffer is not host accessible"
+			"cpu_kernel: Provided output buffer is not host accessible"
 		);
 	}
 
@@ -121,7 +121,7 @@ cpu_kernel<Op, Outputs, Inputs>::get_pointer(const hardware::buffer &buffer)
 	if (!result)
 	{
 		throw std::invalid_argument(
-			"cpu_kernel: Provided buffer is not host accessible"
+			"cpu_kernel: Provided input buffer is not host accessible"
 		);
 	}
 

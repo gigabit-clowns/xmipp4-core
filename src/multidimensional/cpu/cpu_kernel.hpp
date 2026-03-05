@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "kernel.hpp"
-#include "../platform/cpp_attributes.hpp"
+#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <type_traits>
 #include <cstddef>
@@ -46,19 +46,17 @@ namespace multidimensional
  * 
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
  * a tuple of typed operands and a pointer to a hardware queue.
- * @tparam Getter Method to extract typed handles from buffers. 
  * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
  * @tparam Inputs Lust of input types. Must be an specialization of
  * `xmipp4::type_list`
  */
-template <typename Op, typename Getter, typename Outputs, typename Inputs>
-class typed_kernel final
+template <typename Op, typename Outputs, typename Inputs>
+class cpu_kernel final
 	: public kernel
 {
 public:
 	using operation_type = Op;
-	using getter_type = Getter;
 	using output_types = Outputs;
 	using input_types = Inputs;
 
@@ -66,13 +64,11 @@ public:
 	 * @brief Construct a new typed kernel.
 	 * 
 	 * @param operation Operation to be wrapped.
-	 * @param getter Method to obtain typed handles from the buffer.
 	 */
-	typed_kernel(
-		operation_type operation,
-		getter_type getter
+	explicit cpu_kernel(
+		operation_type operation = {}
 	);
-	~typed_kernel() override = default;
+	~cpu_kernel() override = default;
 
 	void execute(
 		span<const std::shared_ptr<hardware::buffer>> read_write_operands,
@@ -82,40 +78,43 @@ public:
 
 private:
 	XMIPP4_NO_UNIQUE_ADDRESS operation_type m_operation;
-	XMIPP4_NO_UNIQUE_ADDRESS getter_type m_getter;
 
 	template<std::size_t... OutputIs, std::size_t... InputIs>
 	void execute_impl(
 		span<const std::shared_ptr<hardware::buffer>> read_write_operands,
 		span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
-		hardware::device_queue *queue,
 		std::index_sequence<OutputIs...>,
 		std::index_sequence<InputIs...>
 	) const;
+
+	template <typename T>
+	static
+	T* get_pointer(hardware::buffer &buffer);
+
+	template <typename T>
+	static
+	const T* get_pointer(const hardware::buffer &buffer);
 };
 
 /**
- * @brief Infer types and construct a `typed_kernel`
+ * @brief Infer types and construct a `cpu_kernel`
  * 
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
  * a tuple of typed operands and a pointer to a hardware queue.
- * @tparam Getter Method to extract typed handles from buffers. 
  * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
  * @tparam Inputs Lust of input types. Must be an specialization of
  * `xmipp4::type_list`
  * @param operation Operation to be wrapped.
- * @param getter Method to obtain typed handles from the buffer.
  * @param output_types_tag Instance of `xmipp4::type_list` specialized with the
  * output types.
  * @param input_types_tag Instance of `xmipp4::type_list` specialized with the
  * input types.
- * @return typed_kernel<Op, Getter, Outputs, Inputs> The constructed kernel.
+ * @return cpu_kernel<Op, Getter, Outputs, Inputs> The constructed kernel.
  */
-template <typename Op, typename Getter, typename Outputs, typename Inputs>
-typed_kernel<Op, Getter, Outputs, Inputs> make_typed_kernel(
+template <typename Op, typename Outputs, typename Inputs>
+cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
 	Op operation, 
-	Getter getter,
 	Outputs output_types_tag,
 	Inputs input_types_tag
 );
@@ -123,4 +122,4 @@ typed_kernel<Op, Getter, Outputs, Inputs> make_typed_kernel(
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "typed_kernel.inl"
+#include "cpu_kernel.inl"

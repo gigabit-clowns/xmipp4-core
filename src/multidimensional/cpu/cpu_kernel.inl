@@ -2,6 +2,9 @@
 
 #include "cpu_kernel.hpp"
 
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/device_queue.hpp>
+
 #include <tuple>
 
 namespace xmipp4 
@@ -26,7 +29,7 @@ void cpu_kernel<Op, Outputs, Inputs>::execute(
 {
 	if (queue)
 	{
-		queue->wait_for_completion();
+		queue->wait_until_completed();
 	}
 
 	execute_impl(

@@ -9,6 +9,7 @@
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
+#include "cpu_inner_loop_dispatch.hpp"
 
 namespace xmipp4 
 {
@@ -106,6 +107,47 @@ std::shared_ptr<kernel> make_copy_kernel(
 	);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <typename T, typename Q, typename... Strides>
+std::shared_ptr<kernel> make_copy_kernel(
+	array_access_layout access_layout,
+	std::size_t inner_extent,
+	const std::tuple<Strides...> inner_strides,
+	type_tag<T> destination_type_tag,
+	type_tag<Q> source_type_tag
+)
+{
+	using destination_type = T;
+	using source_type = Q;
+
+	/*return make_typed_kernel_shared(
+		[layout = std::move(layout), inner_extent, &inner_strides]
+		(const auto &pointers)
+		{
+			auto *destination = 
+				std::get<copy_operation::OPERAND_DESTINATION>(pointers);
+			const auto *source = 
+				std::get<copy_operation::OPERAND_SOURCE>(pointers);
+		},
+		type_list<destination_type>(),
+		type_list<source_type>()
+	);*/
+	return nullptr;
+}
+
 } // anonymous namespace
 
 operation_id 
@@ -150,7 +192,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		);
 	}
 
-	if (descriptors.size() != 2)
+	if (descriptors.size() != copy_operation::OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"cpu_copy_kernel_builder::build: Expected exactly 2 "
@@ -158,8 +200,10 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		);
 	}
 
-	const auto &destination_descriptor = descriptors[0];
-	const auto &source_descriptor = descriptors[1];
+	const auto &destination_descriptor = 
+		descriptors[copy_operation::OPERAND_DESTINATION];
+	const auto &source_descriptor = 
+		descriptors[copy_operation::OPERAND_SOURCE];
 
 	array_access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
@@ -170,15 +214,24 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		[&access_layout] 
 		(auto destination_tag, auto source_tag) -> std::shared_ptr<kernel>
 		{
-			using output_value_type = typename decltype(destination_tag)::type;
-			using input_value_type = typename decltype(source_tag)::type;
-			
-			return make_copy_kernel<output_value_type, input_value_type>(
-				std::move(access_layout),
-				typename std::is_convertible<
-					input_value_type, 
-					output_value_type
-				>::type()
+			XMIPP4_CONST_CONSTEXPR
+			std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT> 
+			count;
+
+			return dispatch_inner_loop(
+				[&access_layout, destination_tag, source_tag]
+				(std::size_t inner_extent, const auto &inner_strides)
+				{
+					return make_copy_kernel(
+						std::move(access_layout),
+						inner_extent,
+						inner_strides,
+						destination_tag,
+						source_tag
+					);
+				},
+				access_layout,
+				count
 			);
 		},
 		destination_descriptor.get_data_type(),

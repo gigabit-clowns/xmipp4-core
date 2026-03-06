@@ -52,12 +52,12 @@ auto dispatch_strides(
    				return std::forward<F>(visitor)(tag, other_tags...);
         	};
 
-        	return dispatch_numerical_types(
+        	return dispatch_strides(
 				bound_visitor,
 				other_strides...
 			);
    		},
-		type
+		stride
 	);
 }
 
@@ -105,7 +105,7 @@ auto dispatch_inner_loop(
 		{
 			return std::forward<F>(callable)(
 				inner_extent,
-				std::make_tuple(stride_tags)
+				std::make_tuple(stride_tags...)
 			);
 		},
 		(layout.get_strides(Is)[inner_index])...

@@ -22,20 +22,21 @@ void copy_operation::sanitize_operands(
 	span<array_descriptor> input_descriptors
 ) const
 {
-	if (input_descriptors.size() != 1)
+	if (input_descriptors.size() != INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"copy_operation requires exactly one input operand."
 		);
 	}
-	if (output_descriptors.size() != 1)
+	if (output_descriptors.size() != OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"copy_operation requires exactly one output operand."
 		);
 	}
 
-	array_descriptor &input_desc = input_descriptors[0];
+	array_descriptor &input_desc = 
+		input_descriptors[INPUT_OPERAND_SOURCE];
 	if (!is_initialized(input_desc))
 	{
 		throw std::invalid_argument(
@@ -43,7 +44,8 @@ void copy_operation::sanitize_operands(
 		);
 	}
 
-	array_descriptor &output_desc = output_descriptors[0];
+	array_descriptor &output_desc = 
+		output_descriptors[OUTPUT_OPERAND_DESTINATION];
 	if (is_initialized(output_desc))
 	{
 		// Output is initialized, broadcast input to output shape

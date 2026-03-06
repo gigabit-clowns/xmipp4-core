@@ -19,6 +19,9 @@ class copy_operation
 	: public operation
 {
 public:
+	/**
+	 * @brief Indices for output operands.
+	 */
 	enum output_operand_indices
 	{
 		OUTPUT_OPERAND_DESTINATION,
@@ -28,6 +31,9 @@ public:
 		OUTPUT_OPERAND_COUNT
 	};
 
+	/**
+	 * @brief Indices for input operands.
+	 */
 	enum input_operand_indices
 	{
 		INPUT_OPERAND_SOURCE,
@@ -37,6 +43,9 @@ public:
 		INPUT_OPERAND_COUNT
 	};
 
+	/**
+	 * @brief Indices for mixed operands.
+	 */
 	enum operand_indices
 	{
 		OPERAND_DESTINATION,

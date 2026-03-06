@@ -142,5 +142,18 @@ cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
 	return cpu_kernel<Op, Outputs, Inputs>(std::move(operation));
 }
 
+template <typename Op, typename Outputs, typename Inputs>
+inline
+std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_typed_kernel_shared(
+	Op operation, 
+	Outputs,
+	Inputs
+)
+{
+	return std::make_shared<cpu_kernel<Op, Outputs, Inputs>>(
+		std::move(operation)
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

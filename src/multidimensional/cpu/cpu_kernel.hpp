@@ -5,6 +5,7 @@
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
+#include <memory>
 #include <type_traits>
 #include <cstddef>
 
@@ -114,6 +115,30 @@ private:
  */
 template <typename Op, typename Outputs, typename Inputs>
 cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
+	Op operation, 
+	Outputs output_types_tag,
+	Inputs input_types_tag
+);
+
+/**
+ * @brief Infer types and construct a `cpu_kernel`
+ * 
+ * @tparam Op The functor to be wrapped. Must have the a signature accepting
+ * a tuple of typed operands and a pointer to a hardware queue.
+ * @tparam Outputs List of output types. Must be an specialization of
+ * `xmipp4::type_list`
+ * @tparam Inputs Lust of input types. Must be an specialization of
+ * `xmipp4::type_list`
+ * @param operation Operation to be wrapped.
+ * @param output_types_tag Instance of `xmipp4::type_list` specialized with the
+ * output types.
+ * @param input_types_tag Instance of `xmipp4::type_list` specialized with the
+ * input types.
+ * @return std::shared_ptr<cpu_kernel<Op, Getter, Outputs, Inputs>> 
+ * The constructed kernel.
+ */
+template <typename Op, typename Outputs, typename Inputs>
+std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_typed_kernel_shared(
 	Op operation, 
 	Outputs output_types_tag,
 	Inputs input_types_tag

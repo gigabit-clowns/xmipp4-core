@@ -126,8 +126,8 @@ std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
 	std::size_t inner_extent,
 	const std::tuple<Strides...> inner_strides,
-	type_tag<T> destination_type_tag,
-	type_tag<Q> source_type_tag
+	type_tag<T>,
+	type_tag<Q>
 )
 {
 	using destination_type = T;

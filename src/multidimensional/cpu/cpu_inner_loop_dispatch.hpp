@@ -6,12 +6,24 @@
 
 #include <type_traits>
 #include <cstddef>
+#include <tuple>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
 
+/**
+ * @brief Dispatch a function with potentially statically typed strides.
+ * 
+ * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
+ * a tuple of `N` integers or `std::integral_constant<std::ptrdiff_t, X>`.
+ * @tparam N Statically defined number of operands in the array_access_layout.
+ * @param callable The functor to be invoked. 
+ * @param layout The layout to be dispatched.
+ * @param n_operands Tag defining the number of operands.
+ * @return auto The result of invoking the callable with the provided layout.
+ */
 template <typename F, std::size_t N>
 auto dispatch_inner_loop(
 	F &&callable, 
@@ -19,6 +31,20 @@ auto dispatch_inner_loop(
 	std::integral_constant<std::size_t, N> n_operands
 );
 
+/**
+ * @brief Dispatch a function with potentially statically typed strides.
+ * 
+ * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
+ * a tuple of `sizeof...(Is)` integers or 
+ * `std::integral_constant<std::ptrdiff_t, X>`.
+ * @tparam Is Indices of operands at which strides are extracted from the 
+ * layout.
+ * @param callable The functor to be invoked. 
+ * @param layout The layout to be dispatched.
+ * @param operand_indices Tag indicating operand indices from which strides
+ * are extracted. 
+ * @return auto The result of invoking the callable with the provided layout.
+ */
 template <typename F, std::size_t... Is>
 auto dispatch_inner_loop(
 	F &&callable, 

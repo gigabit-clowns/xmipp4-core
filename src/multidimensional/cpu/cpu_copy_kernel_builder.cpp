@@ -133,18 +133,18 @@ std::shared_ptr<kernel> make_copy_kernel(
 	using destination_type = T;
 	using source_type = Q;
 
-	/*return make_typed_kernel_shared(
-		[layout = std::move(layout), inner_extent, &inner_strides]
-		(const auto &pointers)
+	return make_typed_kernel_shared(
+		[] (const auto &pointers)
 		{
 			auto *destination = 
 				std::get<copy_operation::OPERAND_DESTINATION>(pointers);
 			const auto *source = 
 				std::get<copy_operation::OPERAND_SOURCE>(pointers);
+			// TODO handle this
 		},
 		type_list<destination_type>(),
 		type_list<source_type>()
-	);*/
+	);
 	return nullptr;
 }
 

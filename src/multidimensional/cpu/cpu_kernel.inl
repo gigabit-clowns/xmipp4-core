@@ -119,7 +119,7 @@ inline
 const T* 
 cpu_kernel<Op, Outputs, Inputs>::get_pointer(const hardware::buffer &buffer)
 {
-	const auto *result = static_cast<T*>(buffer.get_host_ptr());
+	const auto *result = static_cast<const T*>(buffer.get_host_ptr());
 
 	if (!result)
 	{

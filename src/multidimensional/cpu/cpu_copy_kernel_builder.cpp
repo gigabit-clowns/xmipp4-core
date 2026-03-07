@@ -84,57 +84,18 @@ struct cpu_copy
 };
 
 
-template <typename T, typename Q>
-std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout access_layout,
-	std::true_type
-)
-{
-	//using kernel_type = cpu_kernel<type_list<T>, type_list<Q>>;
-	//return std::make_shared<kernel_type>();
-	return nullptr;
-}
 
-template <typename T, typename Q>
-std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout,
-	std::false_type
-)
-{
-	throw std::invalid_argument(
-		"cpu_copy_kernel_builder::build: Input value can not be converted into "
-		"the output value"
-	);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-template <typename T, typename Q, typename... Strides>
+template <typename T, typename... Strides>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
 	std::size_t inner_extent,
 	const std::tuple<Strides...> inner_strides,
-	type_tag<T>,
-	type_tag<Q>
+	type_tag<T>
 )
 {
-	using destination_type = T;
-	using source_type = Q;
-
 	return make_typed_kernel_shared(
-		[] (const auto &pointers)
+		[access_layout=std::move(access_layout), inner_extent, &inner_strides] 
+		(const auto &pointers)
 		{
 			auto *destination = 
 				std::get<copy_operation::OPERAND_DESTINATION>(pointers);
@@ -142,8 +103,8 @@ std::shared_ptr<kernel> make_copy_kernel(
 				std::get<copy_operation::OPERAND_SOURCE>(pointers);
 			// TODO handle this
 		},
-		type_list<destination_type>(),
-		type_list<source_type>()
+		type_list<T>(),
+		type_list<T>()
 	);
 	return nullptr;
 }
@@ -205,6 +166,15 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 	const auto &source_descriptor = 
 		descriptors[copy_operation::OPERAND_SOURCE];
 
+	const auto data_type = destination_descriptor.get_data_type();
+	if (source_descriptor.get_data_type() != data_type)
+	{
+		throw std::invalid_argument(
+			"cpu_copy_kernel_builder::build: Expected source and destination "
+			"operands to have same data type."
+		);
+	}
+
 	array_access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	layout_builder.add_operand(source_descriptor.get_layout());
@@ -212,30 +182,28 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 
 	return dispatch_numerical_types(
 		[&access_layout] 
-		(auto destination_tag, auto source_tag) -> std::shared_ptr<kernel>
+		(auto tag) -> std::shared_ptr<kernel>
 		{
 			XMIPP4_CONST_CONSTEXPR
 			std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT> 
-			count;
+			operand_count;
 
 			return dispatch_inner_loop(
-				[&access_layout, destination_tag, source_tag]
+				[&access_layout, tag]
 				(std::size_t inner_extent, const auto &inner_strides)
 				{
 					return make_copy_kernel(
 						std::move(access_layout),
 						inner_extent,
 						inner_strides,
-						destination_tag,
-						source_tag
+						tag
 					);
 				},
 				access_layout,
-				count
+				operand_count
 			);
 		},
-		destination_descriptor.get_data_type(),
-		source_descriptor.get_data_type()
+		data_type
 	);
 }
 

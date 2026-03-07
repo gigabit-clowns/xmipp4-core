@@ -35,36 +35,44 @@ void copy_operation::sanitize_operands(
 		);
 	}
 
-	array_descriptor &input_desc = 
+	array_descriptor &source_desc = 
 		input_descriptors[INPUT_OPERAND_SOURCE];
-	if (!is_initialized(input_desc))
+	if (!is_initialized(source_desc))
 	{
 		throw std::invalid_argument(
-			"copy_operation requires input descriptor to be initialized."
+			"copy_operation requires source descriptor to be initialized."
 		);
 	}
 
-	array_descriptor &output_desc = 
+	array_descriptor &destination_desc = 
 		output_descriptors[OUTPUT_OPERAND_DESTINATION];
-	if (is_initialized(output_desc))
+	if (is_initialized(destination_desc))
 	{
 		// Output is initialized, broadcast input to output shape
-		std::vector<std::size_t> output_extents;
-		output_desc.get_layout().get_extents(output_extents);
+		std::vector<std::size_t> destination_extents;
+		destination_desc.get_layout().get_extents(destination_extents);
 
-		input_desc = array_descriptor(
-			input_desc.get_layout().broadcast_to(make_span(output_extents)),
-			input_desc.get_data_type()
+		if (destination_desc.get_data_type() != source_desc.get_data_type())
+		{
+			throw std::invalid_argument(
+				"copy_operation requires the same data type at the source "
+				"and destination"
+			);
+		}
+
+		source_desc = array_descriptor(
+			source_desc.get_layout().broadcast_to(make_span(destination_extents)),
+			source_desc.get_data_type()
 		);
 	}
 	else
 	{
-		std::vector<std::size_t> input_extents;
-		input_desc.get_layout().get_extents(input_extents);
+		std::vector<std::size_t> source_extents;
+		source_desc.get_layout().get_extents(source_extents);
 
-		output_desc = array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(input_extents)),
-			input_desc.get_data_type()
+		destination_desc = array_descriptor(
+			strided_layout::make_contiguous_layout(make_span(source_extents)),
+			source_desc.get_data_type()
 		);
 	}
 }

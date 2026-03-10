@@ -26,8 +26,6 @@ public:
 	{
 		OUTPUT_OPERAND_DESTINATION,
 
-		// Add here
-
 		OUTPUT_OPERAND_COUNT
 	};
 
@@ -37,8 +35,6 @@ public:
 	enum input_operand_indices
 	{
 		INPUT_OPERAND_SOURCE,
-
-		// Add here
 
 		INPUT_OPERAND_COUNT
 	};
@@ -50,8 +46,6 @@ public:
 	{
 		OPERAND_DESTINATION,
 		OPERAND_SOURCE,
-
-		// Add here
 
 		OPERAND_COUNT
 	};

@@ -85,14 +85,12 @@ void cpu_kernel<Op, Outputs, Inputs>::execute_impl(
 	}
 
 	m_operation(
-		std::make_tuple(
-			get_pointer<typename type_list_element<OutputIs, output_types>::type>(
-				*(read_write_operands[OutputIs])
-			)...,
-			get_pointer<typename type_list_element<InputIs, input_types>::type>(
-				*(read_only_operands[InputIs])
-			)...
-		)
+		get_pointer<typename type_list_element<OutputIs, output_types>::type>(
+			*(read_write_operands[OutputIs])
+		)...,
+		get_pointer<typename type_list_element<InputIs, input_types>::type>(
+			*(read_only_operands[InputIs])
+		)...
 	);
 }
 

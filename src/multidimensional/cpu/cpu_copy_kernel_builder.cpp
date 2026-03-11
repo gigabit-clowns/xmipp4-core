@@ -10,6 +10,7 @@
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
+#include "cpu_outer_loop.hpp"
 
 namespace xmipp4 
 {
@@ -28,19 +29,24 @@ std::shared_ptr<kernel> make_copy_kernel(
 )
 {
 	return make_typed_kernel_shared(
-		[access_layout=std::move(access_layout), inner_extent, &inner_strides] 
-		(const auto &pointers)
-		{
-			auto *destination = 
-				std::get<copy_operation::OPERAND_DESTINATION>(pointers);
-			const auto *source = 
-				std::get<copy_operation::OPERAND_SOURCE>(pointers);
-			// TODO handle this
-		},
+		make_cpu_outer_loop(
+			[] (
+				auto* destination, 
+				const auto *source, 
+				std::size_t extent, 
+				std::ptrdiff_t destination_stride, 
+				std::ptrdiff_t source_stride
+			)
+			{
+				// TODO jeje
+			},
+			std::move(access_layout),
+			inner_extent,
+			inner_strides
+		),
 		type_list<T>(),
 		type_list<T>()
 	);
-	return nullptr;
 }
 
 } // anonymous namespace

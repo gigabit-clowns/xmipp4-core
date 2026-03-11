@@ -46,7 +46,7 @@ namespace multidimensional
  * @brief Wrap a typed functor with the kernel interface.
  * 
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
- * a tuple of typed operands and a pointer to a hardware queue.
+ * const-qualified pointers to operands.
  * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
  * @tparam Inputs Lust of input types. Must be an specialization of
@@ -101,7 +101,7 @@ private:
  * @brief Infer types and construct a `cpu_kernel`
  * 
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
- * a tuple of typed operands and a pointer to a hardware queue.
+ * const-qualified pointers to operands.
  * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
  * @tparam Inputs Lust of input types. Must be an specialization of
@@ -124,7 +124,7 @@ cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
  * @brief Infer types and construct a `cpu_kernel`
  * 
  * @tparam Op The functor to be wrapped. Must have the a signature accepting
- * a tuple of typed operands and a pointer to a hardware queue.
+ * const-qualified pointers to operands.
  * @tparam Outputs List of output types. Must be an specialization of
  * `xmipp4::type_list`
  * @tparam Inputs Lust of input types. Must be an specialization of

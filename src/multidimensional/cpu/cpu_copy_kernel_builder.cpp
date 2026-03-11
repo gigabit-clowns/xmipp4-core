@@ -12,6 +12,8 @@
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -19,6 +21,51 @@ namespace multidimensional
 
 namespace
 {
+
+template <typename T>
+struct cpu_copy
+{
+	void operator()(
+		T *destination, 
+		const T* source, 
+		std::size_t count,
+		std::ptrdiff_t destination_stride,
+		std::ptrdiff_t source_stride
+	) const
+	{
+		std::ptrdiff_t destination_index = 0;
+		std::ptrdiff_t source_index = 0;
+		for (std::size_t i = 0; i < count; ++i)
+		{
+			destination[destination_index] = source[source_index];
+
+			destination_index += destination_stride;
+			source_index += source_stride;
+		}
+	}
+
+	void operator()(
+		T *destination, 
+		const T* source, 
+		std::size_t count,
+		std::integral_constant<std::ptrdiff_t, 1>,
+		std::integral_constant<std::ptrdiff_t, 1>
+	) const
+	{
+		std::copy_n(source, count, destination);
+	}
+
+	void operator()(
+		T *destination, 
+		const T* source, 
+		std::size_t count,
+		std::integral_constant<std::ptrdiff_t, 1>,
+		std::integral_constant<std::ptrdiff_t, 0>
+	) const
+	{
+		std::fill(destination, destination + count, *source);
+	}
+};
 
 template <typename T, typename... Strides>
 std::shared_ptr<kernel> make_copy_kernel(
@@ -30,16 +77,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[] (
-				auto* destination, 
-				const auto *source, 
-				std::size_t extent, 
-				std::ptrdiff_t destination_stride, 
-				std::ptrdiff_t source_stride
-			)
-			{
-				// TODO jeje
-			},
+			cpu_copy<T>(),
 			std::move(access_layout),
 			inner_extent,
 			inner_strides

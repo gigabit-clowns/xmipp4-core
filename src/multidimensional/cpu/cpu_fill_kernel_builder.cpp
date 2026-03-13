@@ -23,56 +23,52 @@ namespace
 {
 
 template <typename T>
-class cpu_fill
-{
-public:
-	explicit cpu_fill(const T &fill_value)
-		: m_fill_value(fill_value)
-	{
-	}
-
-	void operator()(
-		T *destination, 
-		std::size_t count,
-		std::ptrdiff_t destination_stride
-	) const
-	{
-		std::ptrdiff_t destination_index = 0;
-		for (std::size_t i = 0; i < count; ++i)
-		{
-			destination[destination_index] = m_fill_value;
-
-			destination_index += destination_stride;
-		}
-	}
-
-	void operator()(
-		T *destination, 
-		std::size_t count,
-		std::integral_constant<std::ptrdiff_t, 1>
-	) const
-	{
-		std::fill(destination, destination + count, m_fill_value);
-	}
-
-private:
-	T m_fill_value;
-};
-
-template <typename T, typename... Strides>
 std::shared_ptr<kernel> make_fill_kernel(
 	array_access_layout access_layout,
 	std::size_t inner_extent,
-	const std::tuple<Strides...> inner_strides,
+	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
 	const T &fill_value
 )
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			cpu_fill<T>(fill_value),
-			std::move(access_layout),
-			inner_extent,
-			inner_strides
+			[inner_extent, fill_value]
+			(T* destination)
+			{
+				std::fill_n(destination, inner_extent, fill_value);
+			},
+			std::move(access_layout)
+		),
+		type_list<T>(),
+		type_list<>()
+	);
+}
+
+template <typename T, typename Stride>
+std::shared_ptr<kernel> make_fill_kernel(
+	array_access_layout access_layout,
+	std::size_t inner_extent,
+	const std::tuple<Stride> inner_strides,
+	const T &fill_value
+)
+{
+	return make_typed_kernel_shared(
+		make_cpu_outer_loop(
+			[inner_extent, inner_strides, fill_value]
+			(T* destination)
+			{
+				const auto destination_inner_stride =
+					std::get<fill_operation::OPERAND_DESTINATION>(inner_strides);
+
+				std::ptrdiff_t destination_index = 0;
+				for (std::size_t i = 0; i < inner_extent; ++i)
+				{
+					destination[destination_index] = fill_value;
+
+					destination_index += destination_inner_stride;
+				}
+			},
+			std::move(access_layout)
 		),
 		type_list<T>(),
 		type_list<>()

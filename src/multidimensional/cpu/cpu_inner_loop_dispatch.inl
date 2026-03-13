@@ -15,15 +15,12 @@ template <typename F>
 XMIPP4_INLINE_CONSTEXPR
 auto dispatch_single_stride(F&& visitor, std::ptrdiff_t stride) 
 {
-	XMIPP4_CONST_CONSTEXPR std::integral_constant<std::ptrdiff_t, 0> zero;
-	XMIPP4_CONST_CONSTEXPR std::integral_constant<std::ptrdiff_t, 1> one;
-
     switch (stride) 
 	{
 	case 0: 
-		return std::forward<F>(visitor)(zero);
+		return std::forward<F>(visitor)(broadcasting_stride_tag());
 	case 1: 
-		return std::forward<F>(visitor)(one);
+		return std::forward<F>(visitor)(contiguous_stride_tag());
 	default: 
 		return std::forward<F>(visitor)(stride);
     }

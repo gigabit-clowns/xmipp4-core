@@ -13,6 +13,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
+using contiguous_stride_tag = 
+	std::integral_constant<std::ptrdiff_t, 1>;
+
+using broadcasting_stride_tag = 
+	std::integral_constant<std::ptrdiff_t, 0>;
+
 /**
  * @brief Dispatch a function with potentially statically typed strides.
  * 

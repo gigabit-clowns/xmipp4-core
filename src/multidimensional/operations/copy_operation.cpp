@@ -52,14 +52,6 @@ void copy_operation::sanitize_operands(
 		std::vector<std::size_t> destination_extents;
 		destination_desc.get_layout().get_extents(destination_extents);
 
-		if (destination_desc.get_data_type() != source_desc.get_data_type())
-		{
-			throw std::invalid_argument(
-				"copy_operation requires the same data type at the source "
-				"and destination"
-			);
-		}
-
 		source_desc = array_descriptor(
 			source_desc.get_layout().broadcast_to(make_span(destination_extents)),
 			source_desc.get_data_type()

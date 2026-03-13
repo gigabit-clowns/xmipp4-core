@@ -23,8 +23,9 @@ namespace
 {
 
 template <typename T, typename Q>
-struct cpu_copy
+class cpu_copy
 {
+public:
 	void operator()(
 		T *destination, 
 		const Q* source, 

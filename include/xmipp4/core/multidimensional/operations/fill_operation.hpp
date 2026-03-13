@@ -21,6 +21,37 @@ class fill_operation
 {
 public:
 	/**
+	 * @brief Indices for output operands.
+	 */
+	enum output_operand_indices
+	{
+		OUTPUT_OPERAND_DESTINATION,
+
+		OUTPUT_OPERAND_COUNT
+	};
+
+	/**
+	 * @brief Indices for input operands.
+	 */
+	enum input_operand_indices
+	{
+		// No input operands
+
+		INPUT_OPERAND_COUNT
+	};
+
+	/**
+	 * @brief Indices for mixed operands.
+	 */
+	enum operand_indices
+	{
+		OPERAND_DESTINATION,
+
+		OPERAND_COUNT
+	};
+
+
+	/**
 	 * @brief Construct a fill operation by the value used to fill.
 	 * 
 	 * @param fill_value Value used for filling.

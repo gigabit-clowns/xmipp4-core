@@ -160,21 +160,21 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 
 	return dispatch_numerical_types(
 		[&access_layout] 
-		(auto tag) -> std::shared_ptr<kernel>
+		(auto type_tag)
 		{
 			XMIPP4_CONST_CONSTEXPR
 			std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT> 
 			operand_count;
 
 			return dispatch_inner_loop(
-				[&access_layout, tag]
+				[&access_layout, type_tag]
 				(std::size_t inner_extent, const auto &inner_strides)
 				{
 					return make_copy_kernel(
 						std::move(access_layout),
 						inner_extent,
 						inner_strides,
-						tag
+						type_tag
 					);
 				},
 				access_layout,

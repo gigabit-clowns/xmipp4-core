@@ -14,7 +14,7 @@ authors = [
 ]
 description = "Core component of the xmipp4 framework"
 classifiers = [
-	"Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Image Processing",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Operating System :: POSIX",

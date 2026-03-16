@@ -22,6 +22,9 @@ namespace multidimensional
 namespace
 {
 
+using fill_operand_count =
+	std::integral_constant<std::size_t, fill_operation::OPERAND_COUNT>;
+
 template <typename T>
 std::shared_ptr<kernel> make_fill_kernel(
 	array_access_layout access_layout,
@@ -52,14 +55,14 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const T &fill_value
 )
 {
+	const auto destination_inner_stride =
+		std::get<fill_operation::OPERAND_DESTINATION>(inner_strides);
+
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent, inner_strides, fill_value]
+			[inner_extent, destination_inner_stride, fill_value]
 			(T* destination)
 			{
-				const auto destination_inner_stride =
-					std::get<fill_operation::OPERAND_DESTINATION>(inner_strides);
-
 				std::ptrdiff_t destination_index = 0;
 				for (std::size_t i = 0; i < inner_extent; ++i)
 				{
@@ -195,10 +198,6 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 			return fill_value_cast_handler(
 				[&access_layout] (const auto &fill_value)
 				{
-					XMIPP4_CONST_CONSTEXPR
-					std::integral_constant<std::size_t, fill_operation::OPERAND_COUNT> 
-					operand_count;
-
 					return dispatch_inner_loop(
 						[&access_layout, &fill_value]
 						(std::size_t inner_extent, const auto &inner_strides)
@@ -211,7 +210,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 							);
 						},
 						access_layout,
-						operand_count
+						fill_operand_count()
 					);
 				},
 				fill_value.get<typename decltype(fill_value_type_tag)::type>(),

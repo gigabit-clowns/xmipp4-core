@@ -22,6 +22,9 @@ namespace multidimensional
 namespace
 {
 
+using copy_operand_count =
+	std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT>;
+
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
@@ -119,18 +122,18 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<Q> /*source_type_tag*/
 )
 {
+	const auto destination_inner_stride = 
+		std::get<copy_operation::OPERAND_DESTINATION>(inner_strides);
+	const auto source_inner_stride = 
+		std::get<copy_operation::OPERAND_SOURCE>(inner_strides);
+
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent, inner_strides] (
+			[inner_extent, destination_inner_stride, source_inner_stride] (
 				T *destination, 
 				const Q* source
 			)
 			{
-				const auto destination_inner_stride = 
-					std::get<copy_operation::OPERAND_DESTINATION>(inner_strides);
-				const auto source_inner_stride = 
-					std::get<copy_operation::OPERAND_SOURCE>(inner_strides);
-
 				std::ptrdiff_t destination_index = 0;
 				std::ptrdiff_t source_index = 0;
 				for (std::size_t i = 0; i < inner_extent; ++i)
@@ -259,10 +262,6 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 				[&access_layout] 
 				(auto destination_type_tag, auto source_type_tag)
 				{
-					XMIPP4_CONST_CONSTEXPR
-					std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT> 
-					operand_count;
-
 					return dispatch_inner_loop(
 						[&access_layout, destination_type_tag, source_type_tag]
 						(std::size_t inner_extent, const auto &inner_strides)
@@ -276,7 +275,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 							);
 						},
 						access_layout,
-						operand_count
+						copy_operand_count()
 					);
 				},
 				destination_type_tag,

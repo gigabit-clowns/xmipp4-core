@@ -22,6 +22,9 @@ using broadcasting_stride_tag =
 /**
  * @brief Dispatch a function with potentially statically typed strides.
  * 
+ * The callable will be invoked with a combination of `contiguous_stride_tag`,
+ * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
+ * 
  * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
  * a tuple of `N` integers or `std::integral_constant<std::ptrdiff_t, X>`.
  * @tparam N Statically defined number of operands in the array_access_layout.
@@ -39,6 +42,9 @@ auto dispatch_inner_loop(
 
 /**
  * @brief Dispatch a function with potentially statically typed strides.
+ * 
+ * The callable will be invoked with a combination of `contiguous_stride_tag`,
+ * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
  * 
  * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
  * a tuple of `sizeof...(Is)` integers or 

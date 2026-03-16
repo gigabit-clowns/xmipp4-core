@@ -22,7 +22,7 @@ namespace multidimensional
 namespace
 {
 
-using copy_operand_count =
+using copy_operand_count_tag =
 	std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT>;
 
 template <typename T, typename Q>
@@ -113,11 +113,11 @@ std::shared_ptr<kernel> make_copy_kernel(
 	);
 }
 
-template <typename T, typename Q, typename... Strides>
+template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
 	std::size_t inner_extent,
-	const std::tuple<Strides...> inner_strides,
+	const std::tuple<DstStrideT, SrcStrideT> inner_strides,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -275,7 +275,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 							);
 						},
 						access_layout,
-						copy_operand_count()
+						copy_operand_count_tag()
 					);
 				},
 				destination_type_tag,

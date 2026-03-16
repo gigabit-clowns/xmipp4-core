@@ -22,7 +22,7 @@ namespace multidimensional
 namespace
 {
 
-using fill_operand_count =
+using fill_operand_count_tag =
 	std::integral_constant<std::size_t, fill_operation::OPERAND_COUNT>;
 
 template <typename T>
@@ -210,7 +210,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 							);
 						},
 						access_layout,
-						fill_operand_count()
+						fill_operand_count_tag()
 					);
 				},
 				fill_value.get<typename decltype(fill_value_type_tag)::type>(),

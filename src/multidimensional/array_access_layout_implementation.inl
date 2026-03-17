@@ -176,7 +176,7 @@ bool array_access_layout_implementation::iter_outer(
 {
 	n = std::min(n, m_extents.size());
 
-	const auto valid = std::all_of(
+	const auto empty = std::any_of(
 		std::next(m_extents.cbegin(), n), 
 		m_extents.cend(),
 		[] (auto extent)
@@ -185,7 +185,7 @@ bool array_access_layout_implementation::iter_outer(
 		}
 	);
 
-	if (!valid)
+	if (empty)
 	{
 		return false;
 	}

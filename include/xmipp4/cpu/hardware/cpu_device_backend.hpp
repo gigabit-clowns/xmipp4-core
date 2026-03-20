@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../device_backend.hpp"
+#include <xmipp4/core/hardware/device_backend.hpp>
 
 namespace xmipp4 
 {
@@ -12,12 +12,12 @@ namespace hardware
 class device_manager;
 
 /**
- * @brief Special implementation of the device_backend interface to be able 
- * to use the CPU as a device.
+ * @brief Implementation of the `device_backend` interface to retrieve the 
+ * CPU device.
  * 
  */
 class cpu_device_backend final
-		: public device_backend
+	: public device_backend
 {
 public:
 	std::string get_name() const override;

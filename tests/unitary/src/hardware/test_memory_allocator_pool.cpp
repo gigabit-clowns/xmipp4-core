@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/memory_allocator_pool.hpp>
+#include <core/hardware/memory_allocator_pool.hpp>
 
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 

@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/hardware/device_manager.hpp>
 
-#include <xmipp4/core/hardware/cpu/cpu_device_backend.hpp>
+#include <xmipp4/cpu/hardware/cpu_device_backend.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "../named_service_manager_implementation.hpp"

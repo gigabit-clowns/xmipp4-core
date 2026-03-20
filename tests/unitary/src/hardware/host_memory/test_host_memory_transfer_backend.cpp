@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/host_memory/host_memory_transfer_backend.hpp>
+#include <core/hardware/host_memory/host_memory_transfer_backend.hpp>
 
 #include "../mock/mock_memory_resource.hpp"
 

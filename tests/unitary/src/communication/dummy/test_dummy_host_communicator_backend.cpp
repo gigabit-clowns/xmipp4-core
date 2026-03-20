@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <communication/dummy/dummy_host_communicator_backend.hpp>
+#include <core/communication/dummy/dummy_host_communicator_backend.hpp>
 
 #include <xmipp4/core/core_version.hpp>
 

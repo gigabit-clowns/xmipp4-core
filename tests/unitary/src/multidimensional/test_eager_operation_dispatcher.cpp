@@ -4,7 +4,7 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <multidimensional/eager_operation_dispatcher.hpp>
+#include <core/multidimensional/eager_operation_dispatcher.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
 #include <xmipp4/core/execution_context.hpp>

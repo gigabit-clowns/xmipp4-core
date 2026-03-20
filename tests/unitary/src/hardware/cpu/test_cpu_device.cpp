@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/cpu/hardware/cpu_device.hpp>
 
 using namespace xmipp4::hardware;
 

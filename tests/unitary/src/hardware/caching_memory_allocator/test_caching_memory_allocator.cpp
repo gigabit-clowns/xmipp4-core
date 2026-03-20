@@ -4,7 +4,7 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <trompeloeil/lifetime.hpp>
 
-#include <hardware/caching_memory_allocator/caching_memory_allocator.hpp>
+#include <core/hardware/caching_memory_allocator/caching_memory_allocator.hpp>
 
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>

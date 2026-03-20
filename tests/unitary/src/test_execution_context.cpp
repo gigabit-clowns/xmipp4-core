@@ -10,7 +10,7 @@
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/service_catalog.hpp>
-#include <multidimensional/eager_operation_dispatcher.hpp>
+#include <core/multidimensional/eager_operation_dispatcher.hpp>
 
 #include "hardware/mock/mock_device.hpp"
 #include "hardware/mock/mock_device_queue.hpp"

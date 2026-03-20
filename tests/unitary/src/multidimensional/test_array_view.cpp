@@ -8,7 +8,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <multidimensional/array_implementation.hpp>
+#include <core/multidimensional/array_implementation.hpp>
 
 #include <vector>
 

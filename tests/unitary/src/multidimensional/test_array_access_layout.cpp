@@ -6,7 +6,7 @@
 
 #include <xmipp4/core/multidimensional/array_access_layout.hpp>
 
-#include <multidimensional/array_access_layout_implementation.hpp>
+#include <core/multidimensional/array_access_layout_implementation.hpp>
 
 #include <algorithm>
 #include <stdexcept>

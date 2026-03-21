@@ -38,11 +38,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[] (
-				T *destination, 
-				const Q *source,
-				std::size_t count
-			)
+			[] (T *destination, const Q *source, std::size_t count)
 			{
 				for (std::size_t i = 0; i < count; ++i)
 				{
@@ -69,11 +65,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[] (
-				T *destination, 
-				const T *source,
-				std::size_t count
-			)
+			[] (T *destination, const T *source, std::size_t count)
 			{
 				std::copy_n(source, count, destination);
 			},
@@ -97,11 +89,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[] (
-				T *destination, 
-				const Q *source,
-				std::size_t count
-			)
+			[] (T *destination, const Q *source, std::size_t count)
 			{
 				const auto fill_value = static_cast<T>(*source);
 				std::fill_n(destination, count, fill_value);
@@ -128,11 +116,8 @@ std::shared_ptr<kernel> make_copy_kernel(
 
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[destination_inner_stride, source_inner_stride] (
-				T *destination, 
-				const Q* source,
-				std::size_t count
-			)
+			[destination_inner_stride, source_inner_stride] 
+			(T *destination, const Q* source, std::size_t count)
 			{
 				std::ptrdiff_t destination_index = 0;
 				std::ptrdiff_t source_index = 0;

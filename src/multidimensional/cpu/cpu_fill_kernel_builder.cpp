@@ -125,6 +125,12 @@ std::shared_ptr<kernel> fill_value_cast_handler(
 	return std::forward<F>(callable)(fill_value);
 }
 
+template <typename T>
+const T& get(const scalar_ref &val, type_tag<T> /*tag*/)
+{
+	return val.get<T>();
+}
+
 } // anonymous namespace
 
 operation_id 
@@ -210,7 +216,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 						fill_operand_count_tag()
 					);
 				},
-				fill_value.get<typename decltype(fill_value_type_tag)::type>(),
+				get(fill_value, fill_value_type_tag),
 				destination_type_tag
 			);
 		},

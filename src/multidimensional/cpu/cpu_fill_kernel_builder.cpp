@@ -28,17 +28,16 @@ using fill_operand_count_tag =
 template <typename T>
 std::shared_ptr<kernel> make_fill_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
 	const T &fill_value
 )
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent, fill_value]
-			(T* destination)
+			[fill_value]
+			(T* destination, std::size_t count)
 			{
-				std::fill_n(destination, inner_extent, fill_value);
+				std::fill_n(destination, count, fill_value);
 			},
 			std::move(access_layout)
 		),
@@ -50,7 +49,6 @@ std::shared_ptr<kernel> make_fill_kernel(
 template <typename T, typename Stride>
 std::shared_ptr<kernel> make_fill_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<Stride> inner_strides,
 	const T &fill_value
 )
@@ -60,11 +58,11 @@ std::shared_ptr<kernel> make_fill_kernel(
 
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent, destination_inner_stride, fill_value]
-			(T* destination)
+			[destination_inner_stride, fill_value]
+			(T* destination, std::size_t count)
 			{
 				std::ptrdiff_t destination_index = 0;
-				for (std::size_t i = 0; i < inner_extent; ++i)
+				for (std::size_t i = 0; i < count; ++i)
 				{
 					destination[destination_index] = fill_value;
 
@@ -200,11 +198,10 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 				{
 					return dispatch_inner_loop(
 						[&access_layout, &fill_value]
-						(std::size_t inner_extent, const auto &inner_strides)
+						(const auto &inner_strides)
 						{
 							return make_fill_kernel(
 								std::move(access_layout),
-								inner_extent,
 								inner_strides,
 								fill_value
 							);

@@ -40,7 +40,8 @@ void cpu_outer_loop<Op>::loop_impl(
 ) const
 {
 	array_iterator ite;
-	if (!m_access_layout.iter_outer(ite))
+	std::size_t count;
+	if (!(count = m_access_layout.iter(ite)))
 	{
 		return;
 	}
@@ -48,8 +49,8 @@ void cpu_outer_loop<Op>::loop_impl(
 	const auto offsets = ite.get_offsets();
 	do
 	{
-		m_vector_handler(std::get<Is>(pointers) + offsets[Is]...);
-	} while (m_access_layout.next(ite));
+		m_vector_handler(std::get<Is>(pointers) + offsets[Is]..., count);
+	} while ((count = m_access_layout.next(ite, count)));
 }
 
 template <typename Op>

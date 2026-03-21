@@ -17,7 +17,7 @@ namespace multidimensional
  * @brief Handles outer dimensions of multi-dimensional loops
  * 
  * @tparam Op Functor to be dispatched for 1D vectors. Must have a signature
- * accepting `(Pointers... operands)`
+ * accepting `(Pointers... operands, std::size_t count)`
  */
 template <typename Op>
 class cpu_outer_loop
@@ -68,7 +68,7 @@ private:
  * @brief Construct a `cpu_outer_loop` by deducing its arguments.
  * 
  * @tparam Op Functor to be dispatched for 1D vectors. Must have a signature
- * accepting `(Pointers... operands)`
+ * accepting `(Pointers... operands, std::size_t count)`
  * @return cpu_outer_loop<Op> The newly created 
  * `cpu_outer_loop`
  * @param vector_handler Function to be called for each 1D vector in the

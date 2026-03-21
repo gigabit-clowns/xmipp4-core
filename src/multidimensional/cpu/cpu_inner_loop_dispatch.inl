@@ -89,21 +89,14 @@ auto dispatch_inner_loop(
 		// Zero dimensions, no stride to be obtained. Invoke the function
 		// with one element.
 		XMIPP4_CONST_CONSTEXPR std::integral_constant<std::ptrdiff_t, 0> zero;
-		return std::forward<F>(callable)(
-			1, 
-			std::make_tuple(((void)Is, zero)...)
-		);
+		return std::forward<F>(callable)(std::make_tuple(((void)Is, zero)...));
 	}
 
 	XMIPP4_CONST_CONSTEXPR std::size_t inner_index = 0;
-	const auto inner_extent = extents[inner_index];
 	return detail::dispatch_strides(
-		[&callable, inner_extent] (auto... stride_tags)
+		[&callable] (auto... stride_tags)
 		{
-			return std::forward<F>(callable)(
-				inner_extent,
-				std::make_tuple(stride_tags...)
-			);
+			return std::forward<F>(callable)(std::make_tuple(stride_tags...));
 		},
 		(layout.get_strides(Is)[inner_index])...
 	);

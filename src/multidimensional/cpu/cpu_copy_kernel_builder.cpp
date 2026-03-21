@@ -28,7 +28,6 @@ using copy_operand_count_tag =
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag
@@ -39,12 +38,13 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent] (
+			[] (
 				T *destination, 
-				const Q *source
+				const Q *source,
+				std::size_t count
 			)
 			{
-				for (std::size_t i = 0; i < inner_extent; ++i)
+				for (std::size_t i = 0; i < count; ++i)
 				{
 					destination[i] = static_cast<T>(source[i]);
 				}
@@ -59,7 +59,6 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag
@@ -70,12 +69,13 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent] (
+			[] (
 				T *destination, 
-				const T *source
+				const T *source,
+				std::size_t count
 			)
 			{
-				std::copy_n(source, inner_extent, destination);
+				std::copy_n(source, count, destination);
 			},
 			std::move(access_layout)
 		),
@@ -87,7 +87,6 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag
@@ -98,13 +97,14 @@ std::shared_ptr<kernel> make_copy_kernel(
 {
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent] (
+			[] (
 				T *destination, 
-				const Q *source
+				const Q *source,
+				std::size_t count
 			)
 			{
 				const auto fill_value = static_cast<T>(*source);
-				std::fill_n(destination, inner_extent, fill_value);
+				std::fill_n(destination, count, fill_value);
 			},
 			std::move(access_layout)
 		),
@@ -116,7 +116,6 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
 std::shared_ptr<kernel> make_copy_kernel(
 	array_access_layout access_layout,
-	std::size_t inner_extent,
 	const std::tuple<DstStrideT, SrcStrideT> inner_strides,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
@@ -129,14 +128,15 @@ std::shared_ptr<kernel> make_copy_kernel(
 
 	return make_typed_kernel_shared(
 		make_cpu_outer_loop(
-			[inner_extent, destination_inner_stride, source_inner_stride] (
+			[destination_inner_stride, source_inner_stride] (
 				T *destination, 
-				const Q* source
+				const Q* source,
+				std::size_t count
 			)
 			{
 				std::ptrdiff_t destination_index = 0;
 				std::ptrdiff_t source_index = 0;
-				for (std::size_t i = 0; i < inner_extent; ++i)
+				for (std::size_t i = 0; i < count; ++i)
 				{
 					destination[destination_index] = 
 						static_cast<T>(source[source_index]);
@@ -264,11 +264,10 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 				{
 					return dispatch_inner_loop(
 						[&access_layout, destination_type_tag, source_type_tag]
-						(std::size_t inner_extent, const auto &inner_strides)
+						(const auto &inner_strides)
 						{
 							return make_copy_kernel(
 								std::move(access_layout),
-								inner_extent,
 								inner_strides,
 								destination_type_tag,
 								source_type_tag

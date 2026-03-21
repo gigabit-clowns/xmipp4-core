@@ -37,8 +37,8 @@ struct broadcasting_stride_tag
  * The callable will be invoked with a combination of `contiguous_stride_tag`,
  * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
  * 
- * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
- * a tuple of `N` integers or `std::integral_constant<std::ptrdiff_t, X>`.
+ * @tparam F Type of the functor to be called. Must accept a tuple of `N` 
+ * integers or `std::integral_constant<std::ptrdiff_t, X>`.
  * @tparam N Statically defined number of operands in the array_access_layout.
  * @param callable The functor to be invoked. 
  * @param layout The layout to be dispatched.
@@ -58,9 +58,8 @@ auto dispatch_inner_loop(
  * The callable will be invoked with a combination of `contiguous_stride_tag`,
  * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
  * 
- * @tparam F Type of the functor to be called. Must accept a `std::size_t` and
- * a tuple of `sizeof...(Is)` integers or 
- * `std::integral_constant<std::ptrdiff_t, X>`.
+ * @tparam F Type of the functor to be called. Must accept a tuple of 
+ * `sizeof...(Is)` integers or `std::integral_constant<std::ptrdiff_t, X>`.
  * @tparam Is Indices of operands at which strides are extracted from the 
  * layout.
  * @param callable The functor to be invoked. 

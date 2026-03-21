@@ -163,21 +163,10 @@ array_access_layout_implementation::get_offset(std::size_t operand) const
 }
 
 inline
-bool array_access_layout_implementation::iter(array_iterator &ite) const
+std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
 {
-	return iter_outer(ite, 0);
-}
-
-inline
-bool array_access_layout_implementation::iter_outer(
-	array_iterator &ite, 
-	std::size_t n
-) const
-{
-	n = std::min(n, m_extents.size());
-
-	const auto empty = std::any_of(
-		std::next(m_extents.cbegin(), n), 
+	const auto valid = std::all_of(
+		m_extents.cbegin(), 
 		m_extents.cend(),
 		[] (auto extent)
 		{
@@ -185,9 +174,10 @@ bool array_access_layout_implementation::iter_outer(
 		}
 	);
 
-	if (empty)
+	if (!valid)
 	{
-		return false;
+		// There is at least 1 empty axis
+		return 0UL;
 	}
 
 	std::vector<std::ptrdiff_t> offsets;
@@ -200,42 +190,58 @@ bool array_access_layout_implementation::iter_outer(
 	);
 
 	ite =  array_iterator(
-		m_extents.size() - n,
+		m_extents.size(),
 		std::move(offsets)
 	);
 
-	return true;
+	if (m_extents.empty())
+	{
+		return 1UL;
+	}
+
+	return m_extents.front();
 }
+
 inline
-bool array_access_layout_implementation::next(
-	array_iterator &ite
+std::size_t array_access_layout_implementation::next(
+	array_iterator &ite,
+	std::size_t n
 ) const noexcept
 {
-	const auto indices = ite.get_indices();
-	const auto offsets = ite.get_offsets();
 	const auto extents = get_extents();
 	const auto n_dim = extents.size();
-	const auto n_outer_dim = indices.size();
-	const auto n_inner_dim = n_dim - n_outer_dim;
 
-	for (std::size_t i = 0; i < n_outer_dim; ++i) 
+	const auto indices = ite.get_indices();
+	const auto offsets = ite.get_offsets();
+	XMIPP4_ASSERT( indices.size() == n_dim );
+
+	// Advance the inner axis by n - 1, so that when calling next_one it is
+	// advanced by n.
+	if (n_dim > 0 && n != 1)
 	{
-		const auto j = i + n_inner_dim;
+		const auto block_increment = n - 1;
+		apply_strides(offsets, 0, block_increment);
+		indices[0] += block_increment;
+	}
+
+	for (std::size_t i = 0; i < n_dim; ++i) 
+	{
 		const auto next_index = indices[i] + 1;
-		const auto extent = extents[j];
+		const auto extent = extents[i];
 
 		if (next_index < extent)
 		{
-			apply_strides(offsets, j, 1);
+			apply_strides(offsets, i, 1);
 			indices[i] = next_index;
-			return true;
+
+			return extents[0] - indices[0];
 		}
 
-		apply_strides(offsets, j, -static_cast<std::ptrdiff_t>(indices[i]));
+		apply_strides(offsets, i, -static_cast<std::ptrdiff_t>(indices[i]));
 		indices[i] = 0;
 	}
 	
-	return false; 
+	return 0UL; 
 }
 
 inline

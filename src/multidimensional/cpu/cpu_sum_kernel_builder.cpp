@@ -170,6 +170,8 @@ std::shared_ptr<kernel> make_sum_kernel(
 	const auto x_inner_stride = 
 		std::get<sum_operation::OPERAND_X>(inner_strides);
 
+	XMIPP4_ASSERT(result_inner_stride != 0);
+
 	return make_typed_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(

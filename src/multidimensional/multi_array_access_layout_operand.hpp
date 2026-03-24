@@ -48,4 +48,4 @@ private:
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "array_access_layout_operand.inl"
+#include "multi_array_access_layout_operand.inl"

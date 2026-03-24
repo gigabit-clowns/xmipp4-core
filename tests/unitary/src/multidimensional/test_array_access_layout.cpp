@@ -4,112 +4,112 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <xmipp4/core/multidimensional/array_access_layout.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
 
-#include <multidimensional/array_access_layout_implementation.hpp>
+#include <multidimensional/multi_array_access_layout_implementation.hpp>
 
 #include <algorithm>
 #include <stdexcept>
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE( "getting extents on an default constructed array_access_layout should return empty ", "[array_access_layout]" )
+TEST_CASE( "getting extents on an default constructed multi_array_access_layout should return empty ", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	const auto extents = layout.get_extents();
 	REQUIRE( extents.empty() );
 }
 
-TEST_CASE( "getting extents on an default constructed array_access_layout should have no operands ", "[array_access_layout]" )
+TEST_CASE( "getting extents on an default constructed multi_array_access_layout should have no operands ", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	REQUIRE( layout.get_number_of_operands() == 0 );
 }
 
-TEST_CASE( "getting strides on an default constructed array_access_layout should throw ", "[array_access_layout]" )
+TEST_CASE( "getting strides on an default constructed multi_array_access_layout should throw ", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	REQUIRE_THROWS_AS( 
 		layout.get_strides(0),
 		std::out_of_range
 	);
 }
 
-TEST_CASE( "getting the offset on an default constructed array_access_layout should throw ", "[array_access_layout]" )
+TEST_CASE( "getting the offset on an default constructed multi_array_access_layout should throw ", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	REQUIRE_THROWS_AS( 
 		layout.get_offset(0),
 		std::out_of_range
 	);
 };
 
-TEST_CASE( "getting extents on an initialized array_access_layout should return its extents ", "[array_access_layout]" )
+TEST_CASE( "getting extents on an initialized multi_array_access_layout should return its extents ", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents =
+	multi_array_access_layout_implementation::extent_vector_type extents =
 		{ 20, 4, 16, 2 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
-	array_access_layout layout(std::move(implementation));
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	multi_array_access_layout layout(std::move(implementation));
 
 	const auto result = layout.get_extents();
 	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "getting the number of operands on an array_access_layout should return its operand count", "[array_access_layout]" )
+TEST_CASE( "getting the number of operands on an multi_array_access_layout should return its operand count", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 0UL);
 	implementation->add_operand(strides, 0UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 
 	REQUIRE( layout.get_number_of_operands() == 2 );
 }
 
-TEST_CASE( "getting the strides of an operand on an array_access_layout should return its strides", "[array_access_layout]" )
+TEST_CASE( "getting the strides of an operand on an multi_array_access_layout should return its strides", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 0UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 
 	const auto result = layout.get_strides(0);
 	REQUIRE( std::equal(strides.cbegin(), strides.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "getting the offset of an operand in an array_access_layout should return its offset", "[array_access_layout]" )
+TEST_CASE( "getting the offset of an operand in an multi_array_access_layout should return its offset", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 1234UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 
 	REQUIRE( layout.get_offset(0) == 1234UL );
 }
 
-TEST_CASE( "getting the strides of an invalid operand on an array_access_layout should throw", "[array_access_layout]" )
+TEST_CASE( "getting the strides of an invalid operand on an multi_array_access_layout should throw", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 0UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 
 		layout.get_strides(1),
@@ -117,16 +117,16 @@ TEST_CASE( "getting the strides of an invalid operand on an array_access_layout 
 	);
 }
 
-TEST_CASE( "getting the offset of an invalid operand in an array_access_layout should throw", "[array_access_layout]" )
+TEST_CASE( "getting the offset of an invalid operand in an multi_array_access_layout should throw", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 1234UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 
 	REQUIRE_THROWS_AS( 
 		layout.get_offset(1),
@@ -134,40 +134,40 @@ TEST_CASE( "getting the offset of an invalid operand in an array_access_layout s
 	);
 }
 
-TEST_CASE( "calling iter on a default constructed array access layout should return 0", "[array_access_layout]" )
+TEST_CASE( "calling iter on a default constructed array access layout should return 0", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	array_iterator ite;
 
 	CHECK( layout.iter(ite) == 0 );
 }
 
-TEST_CASE( "calling iter on an array access layout with an axis of size zero should return 0", "[array_access_layout]" )
+TEST_CASE( "calling iter on an array access layout with an axis of size zero should return 0", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 0, 16, 2 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
-	array_access_layout layout(std::move(implementation));
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	multi_array_access_layout layout(std::move(implementation));
 	array_iterator ite;
 
 	CHECK( layout.iter(ite) == 0 );
 }
 
-TEST_CASE( "calling iter on an array access layout should populate the iterator and return the inner-most extent", "[array_access_layout]" )
+TEST_CASE( "calling iter on an array access layout should populate the iterator and return the inner-most extent", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 20, 4, 16, 2 };
-	array_access_layout_implementation::stride_vector_type strides = 
+	multi_array_access_layout_implementation::stride_vector_type strides = 
 		{ 1, 20, 80, 1280 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides, 1234UL);
 	implementation->add_operand(strides, 6532UL);
 	implementation->add_operand(strides, 4UL);
 	implementation->add_operand(strides, 8UL);
 	implementation->add_operand(strides, 2UL);
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 	array_iterator ite;
 
 	CHECK( layout.iter(ite) == extents.front() );
@@ -188,28 +188,28 @@ TEST_CASE( "calling iter on an array access layout should populate the iterator 
 	CHECK( offsets[4] == 2UL );
 }
 
-TEST_CASE( "calling next on a default constructed array access layout should return 0", "[array_access_layout]" )
+TEST_CASE( "calling next on a default constructed array access layout should return 0", "[multi_array_access_layout]" )
 {
-	array_access_layout layout;
+	multi_array_access_layout layout;
 	array_iterator ite;
 
 	CHECK( layout.next(ite, 1) == 0 );
 }
 
-TEST_CASE( "calling next on an array access layout on a stepping basis should advance indices and offsets", "[array_access_layout]" )
+TEST_CASE( "calling next on an array access layout on a stepping basis should advance indices and offsets", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 8, 2, 3 };
-	array_access_layout_implementation::stride_vector_type strides1 = 
+	multi_array_access_layout_implementation::stride_vector_type strides1 = 
 		{ 1, 20, 80 };
-	array_access_layout_implementation::stride_vector_type strides2 = 
+	multi_array_access_layout_implementation::stride_vector_type strides2 = 
 		{ 1, 8, 18 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides1, 2048UL);
 	implementation->add_operand(strides2, 1024UL);
 
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 	array_iterator ite;
 
 	REQUIRE( layout.iter(ite) == extents.front() );
@@ -255,20 +255,20 @@ TEST_CASE( "calling next on an array access layout on a stepping basis should ad
 	}
 }
 
-TEST_CASE( "calling next on an array access layout on a block basis should advance indices and offsets", "[array_access_layout]" )
+TEST_CASE( "calling next on an array access layout on a block basis should advance indices and offsets", "[multi_array_access_layout]" )
 {
-	array_access_layout_implementation::extent_vector_type extents = 
+	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 15, 2, 4 };
-	array_access_layout_implementation::stride_vector_type strides1 = 
+	multi_array_access_layout_implementation::stride_vector_type strides1 = 
 		{ 1, 20, 80 };
-	array_access_layout_implementation::stride_vector_type strides2 = 
+	multi_array_access_layout_implementation::stride_vector_type strides2 = 
 		{ 1, 15, 32 };
 	auto implementation = 
-		std::make_unique<array_access_layout_implementation>(extents);
+		std::make_unique<multi_array_access_layout_implementation>(extents);
 	implementation->add_operand(strides1, 2048UL);
 	implementation->add_operand(strides2, 1024UL);
 
-	array_access_layout layout(std::move(implementation));
+	multi_array_access_layout layout(std::move(implementation));
 	array_iterator ite;
 
 	REQUIRE( layout.iter(ite) == 15 );

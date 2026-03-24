@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
+
+#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+
+#include "multi_array_access_layout_implementation.hpp"
+#include "strided_layout_implementation.hpp"
+
+namespace xmipp4 
+{
+namespace multidimensional
+{
+
+multi_array_access_layout_builder::multi_array_access_layout_builder(
+) noexcept = default;
+
+multi_array_access_layout_builder::multi_array_access_layout_builder(
+	multi_array_access_layout_builder&& other
+) noexcept = default;
+
+multi_array_access_layout_builder::~multi_array_access_layout_builder(
+) = default;
+
+multi_array_access_layout_builder& 
+multi_array_access_layout_builder::operator=(
+	multi_array_access_layout_builder&& other
+) noexcept = default;
+
+multi_array_access_layout_builder& 
+multi_array_access_layout_builder::set_extents(span<const std::size_t> extents)
+{
+	if (m_implementation)
+	{
+		throw invalid_operation_error(
+			"Extents can only be set once and before adding any operand"
+		);
+	}
+
+	m_implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(
+			multi_array_access_layout_implementation::extent_vector_type(
+				extents.begin(),
+				extents.end()
+			)
+		);
+
+	return *this;
+}
+
+multi_array_access_layout_builder& 
+multi_array_access_layout_builder::add_operand(const strided_layout &layout)
+{
+	const auto &layout_impl = layout.get_implementation();
+
+	if (m_implementation)
+	{
+		if (!layout.extents_equal(m_implementation->get_extents()))
+		{
+			throw std::invalid_argument(
+				"Provided layout's extents do not match the iteration extents"
+			);
+		}
+	}
+	else
+	{
+		multi_array_access_layout_implementation::extent_vector_type extents;
+		layout_impl.get_extents(extents);
+
+		m_implementation = 
+			std::make_unique<multi_array_access_layout_implementation>(
+				std::move(extents)
+			);
+	}
+
+	multi_array_access_layout_implementation::stride_vector_type strides;
+	layout_impl.get_strides(strides);
+	const auto offset = layout_impl.get_offset();
+
+	XMIPP4_ASSERT( m_implementation );
+	m_implementation->add_operand(std::move(strides), offset);
+
+	return *this;
+}
+
+const multi_array_access_layout_implementation* 
+multi_array_access_layout_builder::get_implementation() const noexcept
+{
+	return m_implementation.get();
+}
+
+multi_array_access_layout multi_array_access_layout_builder::build(
+	multi_array_access_layout_build_flags flags
+)
+{
+	if (m_implementation)
+	{
+		const auto enable_reordering = flags.contains(
+			multi_array_access_layout_build_flag_bits::enable_reordering
+		);
+		const auto enable_coalescing = flags.contains(
+			multi_array_access_layout_build_flag_bits::enable_coalescing
+		);
+
+		if (enable_reordering)
+		{
+			m_implementation->sort_axes_by_locality();
+		}
+		if (enable_coalescing)
+		{
+			m_implementation->coalesce_contiguous_axes();
+		}
+	}
+
+	return multi_array_access_layout(std::move(m_implementation));
+}
+
+} // namespace multidimensional
+} // namespace xmipp4

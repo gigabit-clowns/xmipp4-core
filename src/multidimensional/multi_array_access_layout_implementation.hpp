@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "array_access_layout_operand.hpp"
+#include "multi_array_access_layout_operand.hpp"
 
 #include "../config.hpp"
 
@@ -20,7 +20,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array_access_layout_implementation
+class multi_array_access_layout_implementation
 {
 public:    
 	using extent_vector_type = boost::container::small_vector<
@@ -33,8 +33,8 @@ public:
 	>;
 	using stride_vector_type = array_access_layout_operand::stride_vector_type;
 
-	array_access_layout_implementation() = default;
-	explicit array_access_layout_implementation(
+	multi_array_access_layout_implementation() = default;
+	explicit multi_array_access_layout_implementation(
 		const extent_vector_type &extents
 	);
 
@@ -43,7 +43,7 @@ public:
 		std::ptrdiff_t offset
 	);
 
-	const array_access_layout_operand& get_operand(std::size_t index) const ;
+	const array_access_layout_operand& get_operand(std::size_t index) const;
 
 	void sort_axes_by_locality();
 
@@ -92,4 +92,4 @@ private:
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "array_access_layout_implementation.inl"
+#include "multi_array_access_layout_implementation.inl"

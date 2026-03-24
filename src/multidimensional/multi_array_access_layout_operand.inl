@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "array_access_layout_operand.hpp"
+#include "multi_array_access_layout_operand.hpp"
 
 namespace xmipp4 
 {

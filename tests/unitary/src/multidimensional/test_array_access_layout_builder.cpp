@@ -4,29 +4,29 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/multidimensional/broadcast_error.hpp>
-#include <xmipp4/core/multidimensional/array_access_layout.hpp>
-#include <multidimensional/array_access_layout_implementation.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
+#include <multidimensional/multi_array_access_layout_implementation.hpp>
 
 #include <algorithm>
 #include <iostream>
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE( "default constructing a array_access_layout_builder should point to a null implementation", "[array_access_layout_builder]" )
+TEST_CASE( "default constructing a multi_array_access_layout_builder should point to a null implementation", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 	const auto *impl = builder.get_implementation();
 	REQUIRE( impl == nullptr );
 }
 
-TEST_CASE( "setting the iteration extents in array_access_layout_builder should initialize the implementation", "[array_access_layout_builder]" )
+TEST_CASE( "setting the iteration extents in multi_array_access_layout_builder should initialize the implementation", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -37,9 +37,9 @@ TEST_CASE( "setting the iteration extents in array_access_layout_builder should 
 	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "setting the iteration extents in array_access_layout_builder with an implementation should throw", "[array_access_layout_builder]" )
+TEST_CASE( "setting the iteration extents in multi_array_access_layout_builder with an implementation should throw", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -51,9 +51,9 @@ TEST_CASE( "setting the iteration extents in array_access_layout_builder with an
 	);
 }
 
-TEST_CASE( "adding the first operand array_access_layout_builder should initialize it", "[array_access_layout_builder]" )
+TEST_CASE( "adding the first operand multi_array_access_layout_builder should initialize it", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
@@ -66,9 +66,9 @@ TEST_CASE( "adding the first operand array_access_layout_builder should initiali
 	CHECK( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "Adding a valid operand array_access_layout_builder should add it", "[array_access_layout_builder]" )
+TEST_CASE( "Adding a valid operand multi_array_access_layout_builder should add it", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
@@ -89,9 +89,9 @@ TEST_CASE( "Adding a valid operand array_access_layout_builder should add it", "
 	CHECK( impl->get_offset(0) == offset );
 }
 
-TEST_CASE( "Adding a operand with different extents in array_access_layout_builder should throw", "[array_access_layout_builder]" )
+TEST_CASE( "Adding a operand with different extents in multi_array_access_layout_builder should throw", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents1 = {20, 6, 12, 12};
 	std::vector<std::size_t> extents2 = {20, 4, 12, 12};
@@ -108,9 +108,9 @@ TEST_CASE( "Adding a operand with different extents in array_access_layout_build
 	);
 }
 
-TEST_CASE("build on array_access_layout_builder should move the implementation", "[array_access_layout_builder]" )
+TEST_CASE("build on multi_array_access_layout_builder should move the implementation", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -121,9 +121,9 @@ TEST_CASE("build on array_access_layout_builder should move the implementation",
 	REQUIRE( access_layout.get_implementation() == impl );
 }
 
-TEST_CASE("build with enable_reordering on array_access_layout_builder should re-order axes such that the first operand appears in column major ordering", "[array_access_layout_builder]" )
+TEST_CASE("build with enable_reordering on multi_array_access_layout_builder should re-order axes such that the first operand appears in column major ordering", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -134,7 +134,7 @@ TEST_CASE("build with enable_reordering on array_access_layout_builder should re
 	const auto operand_layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
 	builder.add_operand(operand_layout2);
 
-	auto layout = builder.build(array_access_layout_build_flag_bits::enable_reordering);
+	auto layout = builder.build(multi_array_access_layout_build_flag_bits::enable_reordering);
 
 	const std::vector<std::size_t> expected_extents = {12, 12, 6, 20};
 	const std::vector<std::ptrdiff_t> expected_strides1 = { 1, 12, 144, 864 };
@@ -147,9 +147,9 @@ TEST_CASE("build with enable_reordering on array_access_layout_builder should re
 	REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on array_access_layout_builder should coalesce contiguous axes", "[array_access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on multi_array_access_layout_builder should coalesce contiguous axes", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -159,7 +159,7 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
 	builder.add_operand(operand_layout);
 	builder.add_operand(operand_layout);
 
-	auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(multi_array_access_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 17280 };
 	const std::vector<std::ptrdiff_t> expected_strides = { 1 };
@@ -171,9 +171,9 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on array_access_layout_builder should coalesce phantom axes", "[array_access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on multi_array_access_layout_builder should coalesce phantom axes", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 1, 1, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -183,7 +183,7 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
 	builder.add_operand(operand_layout);
 	builder.add_operand(operand_layout);
 
-	auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(multi_array_access_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 240 };
 	const std::vector<std::ptrdiff_t> expected_strides = { 1 };
@@ -195,9 +195,9 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should co
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on array_access_layout_builder should not coalesce non-contiguous axes", "[array_access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on multi_array_access_layout_builder should not coalesce non-contiguous axes", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -210,7 +210,7 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should no
 	builder.add_operand(operand_layout1);
 	builder.add_operand(operand_layout2);
 
-	auto layout = builder.build(array_access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(multi_array_access_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 20, 72, 12 };
 	const std::vector<std::ptrdiff_t> expected_strides1 = { 1, 40, 2880 };
@@ -223,9 +223,9 @@ TEST_CASE("build with enable_coalescing on array_access_layout_builder should no
 	REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build on array_access_layout_builder without flags should not modify the layout", "[array_access_layout_builder]" )
+TEST_CASE("build on multi_array_access_layout_builder without flags should not modify the layout", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -245,9 +245,9 @@ TEST_CASE("build on array_access_layout_builder without flags should not modify 
 	REQUIRE( std::equal(strides.cbegin(), strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE( "build with default flags on array_access_layout should re-order and coalesce contiguous axes", "[array_access_layout_builder]" )
+TEST_CASE( "build with default flags on multi_array_access_layout should re-order and coalesce contiguous axes", "[multi_array_access_layout_builder]" )
 {
-	array_access_layout_builder builder;
+	multi_array_access_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));

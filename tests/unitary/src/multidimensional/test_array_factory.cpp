@@ -14,7 +14,7 @@
 #include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/service_catalog.hpp>
 
-#include <hardware/host_memory/host_buffer.hpp>
+#include <core/hardware/host_memory/host_buffer.hpp>
 
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_device_queue.hpp"

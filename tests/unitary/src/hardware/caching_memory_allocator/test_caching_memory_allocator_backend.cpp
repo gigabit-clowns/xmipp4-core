@@ -3,9 +3,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/caching_memory_allocator/caching_memory_allocator_backend.hpp>
+#include <core/hardware/caching_memory_allocator/caching_memory_allocator_backend.hpp>
 
-#include <hardware/host_memory/host_memory_resource.hpp>
+#include <core/hardware/host_memory/host_memory_resource.hpp>
 
 #include "../mock/mock_memory_resource.hpp"
 

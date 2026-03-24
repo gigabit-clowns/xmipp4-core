@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/host_memory/host_memory_heap.hpp>
+#include <core/hardware/host_memory/host_memory_heap.hpp>
 
 #include <xmipp4/core/hardware/buffer.hpp>
 

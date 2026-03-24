@@ -5,7 +5,7 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <communication/dummy/dummy_host_communicator.hpp>
+#include <core/communication/dummy/dummy_host_communicator.hpp>
 
 #include <xmipp4/core/communication/host_send_region.hpp>
 #include <xmipp4/core/communication/host_duplex_region.hpp>

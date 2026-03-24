@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../device.hpp"
+#include <xmipp4/core/hardware/device.hpp>
 
 namespace xmipp4 
 {
@@ -14,9 +14,8 @@ class cpu_device_queue;
 class cpu_memory_resource;
 
 /**
- * @brief Special implementation of the device interface to be able to use
- * the "host" as a device.
- * 
+ * @brief Implementation of the `device` interface to represent the CPU.
+ *  
  */
 class cpu_device final
 	: public device

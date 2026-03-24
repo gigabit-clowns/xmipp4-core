@@ -2,9 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <hardware/caching_memory_allocator/caching_buffer_sentinel.hpp>
+#include <core/hardware/caching_memory_allocator/caching_buffer_sentinel.hpp>
 
-#include <hardware/caching_memory_allocator/caching_memory_allocator.hpp>
+#include <core/hardware/caching_memory_allocator/caching_memory_allocator.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include "../mock/mock_device_queue.hpp"

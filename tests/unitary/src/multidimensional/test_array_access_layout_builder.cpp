@@ -10,7 +10,7 @@
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/multidimensional/broadcast_error.hpp>
 #include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
-#include <multidimensional/multi_array_access_layout_implementation.hpp>
+#include <core/multidimensional/multi_array_access_layout_implementation.hpp>
 
 #include <algorithm>
 #include <iostream>

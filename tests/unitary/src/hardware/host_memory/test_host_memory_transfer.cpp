@@ -4,9 +4,9 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/host_memory/host_memory_transfer.hpp>
+#include <core/hardware/host_memory/host_memory_transfer.hpp>
 
-#include <hardware/host_memory/host_buffer.hpp>
+#include <core/hardware/host_memory/host_buffer.hpp>
 #include <xmipp4/core/hardware/copy_region.hpp>
 
 #include "../mock/mock_device_queue.hpp"

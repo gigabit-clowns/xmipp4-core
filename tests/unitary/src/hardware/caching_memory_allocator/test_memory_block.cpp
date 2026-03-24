@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <hardware/caching_memory_allocator/memory_block.hpp>
+#include <core/hardware/caching_memory_allocator/memory_block.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
 

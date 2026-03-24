@@ -3,10 +3,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/caching_memory_allocator/memory_block_deferred_release.hpp>
+#include <core/hardware/caching_memory_allocator/memory_block_deferred_release.hpp>
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
-#include <hardware/caching_memory_allocator/memory_block_pool.hpp>
+#include <core/hardware/caching_memory_allocator/memory_block_pool.hpp>
 
 #include "../mock/mock_device.hpp"
 #include "../mock/mock_device_queue.hpp"

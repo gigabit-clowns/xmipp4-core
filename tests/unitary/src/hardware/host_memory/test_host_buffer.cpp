@@ -3,10 +3,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
-#include <hardware/host_memory/host_buffer.hpp>
+#include <core/hardware/host_memory/host_buffer.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-#include <hardware/host_memory/host_memory_resource.hpp>
+#include <core/hardware/host_memory/host_memory_resource.hpp>
 
 #include "../mock/mock_device_queue.hpp"
 

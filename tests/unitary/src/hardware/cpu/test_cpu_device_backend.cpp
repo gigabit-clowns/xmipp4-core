@@ -5,7 +5,7 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/hardware/cpu/cpu_device_backend.hpp>
+#include <xmipp4/cpu/hardware/cpu_device_backend.hpp>
 
 #include <xmipp4/core/core_version.hpp>
 

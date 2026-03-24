@@ -36,7 +36,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 )
 {
 	return make_typed_kernel_shared(
-		// TODO fill with zeros befor accumulating
+		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
 			{

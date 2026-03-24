@@ -128,10 +128,7 @@ std::shared_ptr<kernel> make_add_kernel(
 			{
 				// TODO vectorize
 				const auto fill_value = *lhs + *rhs;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[i] = fill_value;
-				}
+				std::fill_n(result, count, fill_value);
 			},
 			std::move(access_layout)
 		),

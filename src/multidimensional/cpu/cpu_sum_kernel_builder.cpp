@@ -64,6 +64,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 )
 {
 	return make_typed_kernel_shared(
+		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
 			{
@@ -74,7 +75,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 					sum += x[i];
 				}
 
-				*result = sum;
+				*result += sum;
 			},
 			std::move(access_layout)
 		),
@@ -108,10 +109,11 @@ std::shared_ptr<kernel> make_sum_kernel(
 	// Rare case. Explicitly declared to avoid ambiguous call error. Getting the 
 	// optimized path for "free".
 	return make_typed_kernel_shared(
+		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
 			{
-				*result = scalar_cast(count, type_tag<T>()) * (*x);
+				*result += scalar_cast(count, type_tag<T>()) * (*x);
 			},
 			std::move(access_layout)
 		),
@@ -134,6 +136,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 		std::get<sum_operation::OPERAND_X>(inner_strides);
 
 	return make_typed_kernel_shared(
+		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[x_inner_stride] (T *result, const T *x, std::size_t count)
 			{
@@ -146,7 +149,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 					x_index += x_inner_stride;
 				}
 
-				*result = sum;
+				*result += sum;
 			},
 			std::move(access_layout)
 		),

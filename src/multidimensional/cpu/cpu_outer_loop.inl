@@ -61,7 +61,7 @@ cpu_outer_loop<Op> make_cpu_outer_loop(
 )
 {
 	return cpu_outer_loop<Op>(
-		std::move(vector_handler),
+		std::forward<Op>(vector_handler),
 		std::move(access_layout)
 	);
 }

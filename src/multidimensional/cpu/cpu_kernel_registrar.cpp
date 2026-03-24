@@ -7,6 +7,7 @@
 #include "cpu_add_kernel_builder.hpp"
 #include "cpu_copy_kernel_builder.hpp"
 #include "cpu_fill_kernel_builder.hpp"
+#include "cpu_sum_kernel_builder.hpp"
 
 namespace xmipp4 
 {
@@ -18,6 +19,7 @@ void register_cpu_kernels(kernel_manager &manager)
 	manager.register_kernel(std::make_unique<cpu_add_kernel_builder>());
 	manager.register_kernel(std::make_unique<cpu_copy_kernel_builder>());
 	manager.register_kernel(std::make_unique<cpu_fill_kernel_builder>());
+	manager.register_kernel(std::make_unique<cpu_sum_kernel_builder>());
 }
 
 } // namespace multidimensional

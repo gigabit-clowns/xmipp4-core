@@ -49,6 +49,8 @@ public:
 
 	void coalesce_contiguous_axes();
 
+	std::size_t get_rank() const noexcept;
+
 	std::size_t get_number_of_operands() const noexcept;
 
 	span<const std::size_t> get_extents() const noexcept;
@@ -57,9 +59,10 @@ public:
 
 	std::ptrdiff_t get_offset(std::size_t operand) const;
 
-	std::size_t iter(array_iterator &ite) const;
+	std::size_t iter(array_iterator &ite, std::size_t dim) const;
 
-	std::size_t next(array_iterator &ite, std::size_t n) const noexcept;
+	std::size_t 
+	next(array_iterator &ite, std::size_t n, std::size_t dim) const noexcept;
 
 private:
 	extent_vector_type m_extents;

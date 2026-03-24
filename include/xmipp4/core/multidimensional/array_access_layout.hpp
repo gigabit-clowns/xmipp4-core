@@ -52,6 +52,13 @@ public:
 	XMIPP4_CORE_API std::size_t get_number_of_operands() const noexcept;
 
 	/**
+	 * @brief Get the number of dimensions.
+	 * 
+	 * @return std::size_t Number of dimensions.
+	 */
+	XMIPP4_CORE_API std::size_t get_rank() const noexcept;
+
+	/**
 	 * @brief Get the extents of the iteration space.
 	 * 
 	 * @return span<const std::size_t> The extents of the iteration space.
@@ -87,11 +94,13 @@ public:
 	 * @brief Populate an array iterator for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
-	 * @return std::size_t Number of equispaced elements. 0 if none (iteration
-	 * has finished).
+	 * @param dim Index of the inner-most dimension to be iterated. Must
+	 * be less or equal to get_rank(). Defaults to zero.
+	 * @return std::size_t Number of elements in the dimension. 0 if the
+	 * layout can not be iterated.
 	 */
 	XMIPP4_CORE_API
-	std::size_t iter(array_iterator &ite) const;
+	std::size_t iter(array_iterator &ite, std::size_t dim=0) const;
 
 	/**
 	 * @brief Advance an array iterator.
@@ -102,11 +111,24 @@ public:
 	 * @param n Number of elements to be advanced. Must be less or equal to the 
 	 * number returned by the previous call to `iter()` or `next()`. Otherwise 
 	 * behavior is undefined.
-	 * @return std::size_t Number of equispaced elements ahead. 0 if none
-	 * (iteration has finished).
+	 * @param dim Index of the inner-most dimension to be iterated. Must
+	 * be less or equal to `get_rank()`. Defaults to zero. Although strictly not
+	 * mandated, it is recommended to keep this parameter constant across 
+	 * iterations. 
+	 * @return std::size_t Number of remaining elements in `dim`. 0 if iteration 
+	 * has finished.
+	 * 
+	 * @warning If dim is modified during iteration, the value provided to `n` 
+	 * needs special attention as the limit may be smaller than the last value 
+	 * returned by `iter()` or `next()`. If unsure, the new limit may be 
+	 * computed using `next(ite, 0, dim)`.
 	 */
 	XMIPP4_CORE_API
-	std::size_t next(array_iterator &ite, std::size_t n) const noexcept;
+	std::size_t next(
+		array_iterator &ite, 
+		std::size_t n, 
+		std::size_t dim = 0
+	) const noexcept;
 
 	/**
 	 * @brief Get a pointer to the implementation.

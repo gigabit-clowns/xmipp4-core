@@ -37,6 +37,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 			[fill_value]
 			(T* destination, std::size_t count)
 			{
+				// TODO vectorize
 				std::fill_n(destination, count, fill_value);
 			},
 			std::move(access_layout)

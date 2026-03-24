@@ -91,6 +91,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 		make_cpu_outer_loop(
 			[] (T *destination, const Q *source, std::size_t count)
 			{
+				// TODO vectorize
 				const auto fill_value = static_cast<T>(*source);
 				std::fill_n(destination, count, fill_value);
 			},

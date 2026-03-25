@@ -79,6 +79,7 @@ target_link_libraries(
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
 		fmt::fmt
+		hwy
 		${CMAKE_DL_LIBS}
 )
 

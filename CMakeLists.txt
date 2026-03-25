@@ -26,11 +26,13 @@ include(fetch_half)
 include(fetch_spdlog)
 include(fetch_boost)
 include(fetch_libfmt)
+include(fetch_highway)
 
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_boost(VERSION 1.89.0)
 fetch_libfmt(VERSION 12.1.0)
+fetch_highway(VERSION 1.3.0)
 
 if (XMIPP4_CORE_BUILD_SPDLOG)
 	fetch_spdlog(VERSION 1.15.0)

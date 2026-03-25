@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
@@ -137,7 +138,7 @@ TEST_CASE( "getting the offset of an invalid operand in an multi_array_access_la
 TEST_CASE( "calling iter on a default constructed array access layout should return 0", "[multi_array_access_layout]" )
 {
 	multi_array_access_layout layout;
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	CHECK( layout.iter(ite) == 0 );
 }
@@ -149,7 +150,7 @@ TEST_CASE( "calling iter on an array access layout with an axis of size zero sho
 	auto implementation = 
 		std::make_unique<multi_array_access_layout_implementation>(extents);
 	multi_array_access_layout layout(std::move(implementation));
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	CHECK( layout.iter(ite) == 0 );
 }
@@ -168,7 +169,7 @@ TEST_CASE( "calling iter on an array access layout should populate the iterator 
 	implementation->add_operand(strides, 8UL);
 	implementation->add_operand(strides, 2UL);
 	multi_array_access_layout layout(std::move(implementation));
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	CHECK( layout.iter(ite) == extents.front() );
 	
@@ -191,7 +192,7 @@ TEST_CASE( "calling iter on an array access layout should populate the iterator 
 TEST_CASE( "calling next on a default constructed array access layout should return 0", "[multi_array_access_layout]" )
 {
 	multi_array_access_layout layout;
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	CHECK( layout.next(ite, 1) == 0 );
 }
@@ -210,7 +211,7 @@ TEST_CASE( "calling next on an array access layout on a stepping basis should ad
 	implementation->add_operand(strides2, 1024UL);
 
 	multi_array_access_layout layout(std::move(implementation));
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	REQUIRE( layout.iter(ite) == extents.front() );
 
@@ -253,6 +254,12 @@ TEST_CASE( "calling next on an array access layout on a stepping basis should ad
 			}
 		}
 	}
+
+	CHECK( indices[0] == 0 );
+	CHECK( indices[1] == 0 );
+	CHECK( indices[2] == 0 );
+	CHECK( offsets[0] == 2048 );
+	CHECK( offsets[1] == 1024 );
 }
 
 TEST_CASE( "calling next on an array access layout on a block basis should advance indices and offsets", "[multi_array_access_layout]" )
@@ -269,7 +276,7 @@ TEST_CASE( "calling next on an array access layout on a block basis should advan
 	implementation->add_operand(strides2, 1024UL);
 
 	multi_array_access_layout layout(std::move(implementation));
-	array_iterator ite;
+	multi_array_iterator ite;
 
 	REQUIRE( layout.iter(ite) == 15 );
 
@@ -309,4 +316,137 @@ TEST_CASE( "calling next on an array access layout on a block basis should advan
 			REQUIRE( layout.next(ite, 7) == expected );
 		}
 	}
+
+	CHECK( indices[0] == 0 );
+	CHECK( indices[1] == 0 );
+	CHECK( indices[2] == 0 );
+	CHECK( offsets[0] == 2048 );
+	CHECK( offsets[1] == 1024 );
 }
+
+TEST_CASE( "calling next on an array access layout on an outer dimension block basis should posterior indices and offsets", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides1 = 
+		{ 1, 5, 80 };
+	multi_array_access_layout_implementation::stride_vector_type strides2 = 
+		{ 1, 4, 60 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides1, 2048UL);
+	implementation->add_operand(strides2, 1024UL);
+
+	multi_array_access_layout layout(std::move(implementation));
+	multi_array_iterator ite;
+
+	REQUIRE( layout.iter(ite, 1) == 15 );
+
+	const auto offsets = ite.get_offsets();
+	const auto indices = ite.get_indices();
+	REQUIRE( offsets.size() == 2 );
+	REQUIRE( indices.size() == 3 );
+
+	const auto first_index = GENERATE(0, 2, 3);
+	indices[0] = first_index; // Should not be modified.
+
+	for (std::size_t i = 0; i < extents[2]; ++i)
+	{
+		REQUIRE( indices[0] == first_index );
+		REQUIRE( indices[1] == 0 );
+		REQUIRE( indices[2] == i );
+		REQUIRE( 2048 + i*strides1[2] == offsets[0] );
+		REQUIRE( 1024 + i*strides2[2] == offsets[1] );
+
+		REQUIRE( layout.next(ite, 8, 1) == 7 );
+
+		REQUIRE( indices[0] == first_index );
+		REQUIRE( indices[1] == 8 );
+		REQUIRE( indices[2] == i );
+		REQUIRE( 2048 + 8*strides1[1] + i*strides1[2] == offsets[0] );
+		REQUIRE( 1024 + 8*strides2[1] + i*strides2[2] == offsets[1] );
+
+		std::size_t expected;
+		if (i == extents[2]-1)
+		{
+			expected = 0;
+		}
+		else
+		{
+			expected = 15;
+		}
+
+		REQUIRE( layout.next(ite, 7, 1) == expected );
+	}
+
+	CHECK( indices[0] == first_index );
+	CHECK( indices[1] == 0 );
+	CHECK( indices[2] == 0 );
+	CHECK( offsets[0] == 2048 );
+	CHECK( offsets[1] == 1024 );
+}
+
+TEST_CASE( "calling next on an array access layout with zero step should not advance the iterator", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides = 
+		{ 1, 5, 80 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides, 1024);
+
+	multi_array_access_layout layout(std::move(implementation));
+	multi_array_iterator ite;
+
+	const auto dim = GENERATE(0, 1, 2);
+	REQUIRE( layout.iter(ite, dim) == extents[dim] );
+
+	const auto expected_ite = ite;
+	const auto expected_offsets = expected_ite.get_offsets();
+	const auto expected_indices = expected_ite.get_indices();
+	for (std::size_t i = 0; i < 100; ++i)
+	{
+		REQUIRE( layout.next(ite, 0, dim) == extents[dim] );
+
+		const auto offsets = ite.get_offsets();
+		const auto indices = ite.get_indices();
+		REQUIRE( std::equal(expected_offsets.begin(), expected_offsets.end(), offsets.begin(), offsets.end()) );
+		REQUIRE( std::equal(expected_indices.begin(), expected_indices.end(), indices.begin(), indices.end()) );
+	}
+
+}
+
+TEST_CASE( "calling iter on a multi_array_access_layout with dim equal to rank should return one", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides = 
+		{ 1, 5, 80 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides, 1024);
+
+	multi_array_access_layout layout(std::move(implementation));
+
+	multi_array_iterator ite;
+	REQUIRE( layout.iter(ite, 3) == 1 );
+}
+
+TEST_CASE( "calling next on a multi_array_access_layout with dim equal to rank should return zero", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides = 
+		{ 1, 5, 80 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides, 1024);
+
+	multi_array_access_layout layout(std::move(implementation));
+
+	multi_array_iterator ite;
+	REQUIRE( layout.iter(ite, 3) == 1 );
+	REQUIRE( layout.next(ite, 1, 3) == 0 );
+}
+

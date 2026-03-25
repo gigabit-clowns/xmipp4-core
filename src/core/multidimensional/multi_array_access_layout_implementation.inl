@@ -171,7 +171,7 @@ multi_array_access_layout_implementation::get_offset(std::size_t operand) const
 
 inline
 std::size_t multi_array_access_layout_implementation::iter(
-	array_iterator &ite,
+	multi_array_iterator &ite,
 	std::size_t dim
 ) const
 {
@@ -199,7 +199,7 @@ std::size_t multi_array_access_layout_implementation::iter(
 		std::mem_fn(&array_access_layout_operand::get_offset)
 	);
 
-	ite =  array_iterator(
+	ite =  multi_array_iterator(
 		m_extents.size(),
 		std::move(offsets)
 	);
@@ -214,7 +214,7 @@ std::size_t multi_array_access_layout_implementation::iter(
 
 inline
 std::size_t multi_array_access_layout_implementation::next(
-	array_iterator &ite,
+	multi_array_iterator &ite,
 	std::size_t n,
 	std::size_t dim
 ) const noexcept

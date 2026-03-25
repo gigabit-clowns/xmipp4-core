@@ -2,30 +2,30 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/array_iterator.hpp>
+#include <xmipp4/core/multidimensional/multi_array_iterator.hpp>
 
 using namespace xmipp4::multidimensional;
 
-TEST_CASE( "default constructed array iterator should be empty", "[array_iterator]" )
+TEST_CASE( "default constructed array iterator should be empty", "[multi_array_iterator]" )
 {
-	array_iterator iterator;
+	multi_array_iterator iterator;
 	CHECK( iterator.get_indices().data() == nullptr );
 	CHECK( iterator.get_indices().size() == 0UL );
 	CHECK( iterator.get_offsets().data() == nullptr );
 	CHECK( iterator.get_offsets().size() == 0UL );
 }
 
-TEST_CASE( "array iterator should be initialized at zero position with base offsets", "[array_iterator]" )
+TEST_CASE( "array iterator should be initialized at zero position with base offsets", "[multi_array_iterator]" )
 {
 	std::vector<std::ptrdiff_t> offsets = { 2345, 1234, 983, 1245 };
 	const std::size_t n_dim = 12; 
 
-	array_iterator iterator(n_dim, offsets);
+	multi_array_iterator iterator(n_dim, offsets);
 	
 	SECTION("const")
 	{
 		const auto indices = 
-			static_cast<const array_iterator&>(iterator).get_indices();
+			static_cast<const multi_array_iterator&>(iterator).get_indices();
 	
 		REQUIRE( indices.size() == n_dim );
 		for (std::size_t i = 0; i < indices.size(); ++i)
@@ -34,7 +34,7 @@ TEST_CASE( "array iterator should be initialized at zero position with base offs
 		}
 
 		const auto offsets2 = 
-			static_cast<const array_iterator&>(iterator).get_offsets();
+			static_cast<const multi_array_iterator&>(iterator).get_offsets();
 
 		REQUIRE( offsets2.size() == offsets.size() );
 		for (std::size_t i = 0; i < offsets2.size(); ++i)
@@ -62,12 +62,12 @@ TEST_CASE( "array iterator should be initialized at zero position with base offs
 	}
 }
 
-TEST_CASE( "array iterator should not reallocate data", "[array_iterator]" )
+TEST_CASE( "array iterator should not reallocate data", "[multi_array_iterator]" )
 {
 	std::vector<std::ptrdiff_t> offsets = { 2345, 1234, 983, 1245 };
 	const std::size_t n_dim = 12; 
 
-	array_iterator iterator(n_dim, offsets);
+	multi_array_iterator iterator(n_dim, offsets);
 	
 	auto *offsets_ptr = iterator.get_offsets().data();
 	auto *indices_ptr = iterator.get_indices().data();

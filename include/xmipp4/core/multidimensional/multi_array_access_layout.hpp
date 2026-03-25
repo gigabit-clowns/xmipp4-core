@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "array_iterator.hpp"
+#include "multi_array_iterator.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -103,7 +103,7 @@ public:
 	 * layout can not be iterated.
 	 */
 	XMIPP4_CORE_API
-	std::size_t iter(array_iterator &ite, std::size_t dim=0) const;
+	std::size_t iter(multi_array_iterator &ite, std::size_t dim=0) const;
 
 	/**
 	 * @brief Advance an array iterator.
@@ -128,7 +128,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	std::size_t next(
-		array_iterator &ite, 
+		multi_array_iterator &ite, 
 		std::size_t n, 
 		std::size_t dim = 0
 	) const noexcept;

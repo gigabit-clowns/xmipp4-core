@@ -29,6 +29,16 @@ multi_array_access_layout::~multi_array_access_layout() = default;
 multi_array_access_layout& 
 multi_array_access_layout::operator=(multi_array_access_layout&& other) noexcept = default;
 
+std::size_t multi_array_access_layout::get_rank() const noexcept
+{
+	if (!m_implementation)
+	{
+		return 0UL;
+	}
+
+	return m_implementation->get_rank();
+}
+
 std::size_t multi_array_access_layout::get_number_of_operands() const noexcept
 {
 	if (!m_implementation)
@@ -72,19 +82,23 @@ std::ptrdiff_t multi_array_access_layout::get_offset(std::size_t operand) const
 	return m_implementation->get_offset(operand);
 }
 
-std::size_t multi_array_access_layout::iter(array_iterator &ite) const
+std::size_t multi_array_access_layout::iter(
+	multi_array_iterator &ite, 
+	std::size_t dim
+) const
 {
 	if (!m_implementation)
 	{
 		return 0UL;
 	}
 
-	return m_implementation->iter(ite);
+	return m_implementation->iter(ite, dim);
 }
 
 std::size_t multi_array_access_layout::next(
-	array_iterator &ite, 
-	std::size_t n
+	multi_array_iterator &ite, 
+	std::size_t n,
+	std::size_t dim
 ) const noexcept
 {
 	if (!m_implementation)
@@ -92,7 +106,7 @@ std::size_t multi_array_access_layout::next(
 		return 0UL;
 	}
 
-	return m_implementation->next(ite, n);
+	return m_implementation->next(ite, n, dim);
 }
 
 const multi_array_access_layout_implementation*

@@ -135,6 +135,13 @@ void multi_array_access_layout_implementation::coalesce_contiguous_axes()
 
 inline
 std::size_t 
+multi_array_access_layout_implementation::get_rank() const noexcept
+{
+	return m_extents.size();
+}
+
+inline
+std::size_t 
 multi_array_access_layout_implementation::get_number_of_operands(
 ) const noexcept
 {
@@ -163,8 +170,10 @@ multi_array_access_layout_implementation::get_offset(std::size_t operand) const
 }
 
 inline
-std::size_t 
-multi_array_access_layout_implementation::iter(array_iterator &ite) const
+std::size_t multi_array_access_layout_implementation::iter(
+	multi_array_iterator &ite,
+	std::size_t dim
+) const
 {
 	const auto valid = std::all_of(
 		m_extents.cbegin(), 
@@ -190,42 +199,56 @@ multi_array_access_layout_implementation::iter(array_iterator &ite) const
 		std::mem_fn(&array_access_layout_operand::get_offset)
 	);
 
-	ite =  array_iterator(
+	ite =  multi_array_iterator(
 		m_extents.size(),
 		std::move(offsets)
 	);
 
-	if (m_extents.empty())
+	if (dim >= m_extents.size())
 	{
 		return 1UL;
 	}
 
-	return m_extents.front();
+	return m_extents[dim];
 }
 
 inline
 std::size_t multi_array_access_layout_implementation::next(
-	array_iterator &ite,
-	std::size_t n
+	multi_array_iterator &ite,
+	std::size_t n,
+	std::size_t dim
 ) const noexcept
 {
 	const auto extents = get_extents();
 	const auto n_dim = extents.size();
 
+	if (dim >= n_dim)
+	{
+		// No "outer" loop to process.
+		return 0;
+	}
+	
 	const auto indices = ite.get_indices();
-	const auto offsets = ite.get_offsets();
 	XMIPP4_ASSERT( indices.size() == n_dim );
 
-	// Advance the inner axis by n - 1, so that when calling next_one it is
-	// advanced by n.
-	if (n_dim > 0 && n != 1)
+	if (n == 0)
 	{
-		const auto block_increment = n - 1;
-		apply_strides(offsets, 0, block_increment);
-		indices[0] += block_increment;
+		// Fast return for query.
+		return extents[dim] - indices[dim];
 	}
 
-	for (std::size_t i = 0; i < n_dim; ++i) 
+	const auto offsets = ite.get_offsets();
+
+	// Advance the inner axis by n - 1, so that after the loop it is incremented
+	// by n
+	if (n > 1)
+	{
+		const auto base_increment = n - 1;
+		apply_strides(offsets, dim, base_increment);
+		indices[dim] += base_increment;
+	}
+
+	for (std::size_t i = dim; i < n_dim; ++i) 
 	{
 		const auto next_index = indices[i] + 1;
 		const auto extent = extents[i];
@@ -235,7 +258,7 @@ std::size_t multi_array_access_layout_implementation::next(
 			apply_strides(offsets, i, 1);
 			indices[i] = next_index;
 
-			return extents[0] - indices[0];
+			return extents[dim] - indices[dim];
 		}
 
 		apply_strides(offsets, i, -static_cast<std::ptrdiff_t>(indices[i]));

@@ -15,14 +15,14 @@ namespace multidimensional
 /**
  * @brief State of a multidimensional multi-array traversal.
  */
-class array_iterator
+class multi_array_iterator
 {
 public:
 	/**
 	 * @brief Default constructor.
 	 */
 	XMIPP4_CORE_API
-	array_iterator() noexcept;
+	multi_array_iterator() noexcept;
 
 	/**
 	 * @brief Construct an array iterator at its initial state.
@@ -32,22 +32,22 @@ public:
 	 * @param offsets The base offsets for each operand.
 	 */
 	XMIPP4_CORE_API
-	array_iterator(
+	multi_array_iterator(
 		std::size_t ndim,
 		std::vector<std::ptrdiff_t> offsets
 	);
 
 	XMIPP4_CORE_API
-	array_iterator(const array_iterator &other);
+	multi_array_iterator(const multi_array_iterator &other);
 	XMIPP4_CORE_API
-	array_iterator(array_iterator &&other) noexcept;
+	multi_array_iterator(multi_array_iterator &&other) noexcept;
 	XMIPP4_CORE_API
-	~array_iterator();
+	~multi_array_iterator();
 
 	XMIPP4_CORE_API
-	array_iterator& operator=(const array_iterator &other);
+	multi_array_iterator& operator=(const multi_array_iterator &other);
 	XMIPP4_CORE_API
-	array_iterator& operator=(array_iterator &&other) noexcept;
+	multi_array_iterator& operator=(multi_array_iterator &&other) noexcept;
 
 	/**
 	 * @brief Get the current multidimensional indices.

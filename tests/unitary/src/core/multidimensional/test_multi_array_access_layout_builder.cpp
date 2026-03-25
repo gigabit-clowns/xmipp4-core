@@ -338,13 +338,13 @@ TEST_CASE( "building a reduce operation in multi_array_access_layout_builder sho
 
 	const std::vector<std::size_t> expected_extents = {144, 120};
 	const auto compiled_extents = layout.get_extents();
-	CHECK( std::equal(expected_extents.crbegin(), expected_extents.crend(), compiled_extents.begin(), compiled_extents.end()) );
+	CHECK( std::equal(expected_extents.cbegin(), expected_extents.cend(), compiled_extents.begin(), compiled_extents.end()) );
 
 	const std::vector<std::ptrdiff_t> expected_result_strides = {1, 0};
 	const auto compiled_result_strides = layout.get_strides(0);
-	CHECK( std::equal(expected_result_strides.crbegin(), expected_result_strides.crend(), compiled_result_strides.begin(), compiled_result_strides.end()) );
+	CHECK( std::equal(expected_result_strides.cbegin(), expected_result_strides.cend(), compiled_result_strides.begin(), compiled_result_strides.end()) );
 
 	const std::vector<std::ptrdiff_t> expected_input_strides = {1, 144};
 	const auto compiled_input_strides = layout.get_strides(1);
-	CHECK( std::equal(expected_input_strides.crbegin(), expected_input_strides.crend(), compiled_input_strides.begin(), compiled_input_strides.end()) );
+	CHECK( std::equal(expected_input_strides.cbegin(), expected_input_strides.cend(), compiled_input_strides.begin(), compiled_input_strides.end()) );
 }

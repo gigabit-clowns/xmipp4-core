@@ -13,7 +13,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class array_access_layout_implementation;
+class multi_array_access_layout_implementation;
 
 /**
  * @brief Provides joint access semantics for array-s
@@ -23,26 +23,29 @@ class array_access_layout_implementation;
  * and offset for each of the operands.
  * 
  * Instances of this object must be obtained through 
- * array_access_layout_builder. Once built, it is inmutable.
+ * multi_array_access_layout_builder. Once built, it is inmutable.
  * 
- * @see array_access_layout_builder
+ * @see multi_array_access_layout_builder
  * 
  */
-class array_access_layout
+class multi_array_access_layout
 {
 public:
-	XMIPP4_CORE_API array_access_layout();
-	XMIPP4_CORE_API explicit array_access_layout(
-		std::unique_ptr<const array_access_layout_implementation> implementation
+	XMIPP4_CORE_API multi_array_access_layout();
+	XMIPP4_CORE_API explicit multi_array_access_layout(
+		std::unique_ptr<
+			const multi_array_access_layout_implementation
+		> implementation
 	);
-	array_access_layout(const array_access_layout&) = delete;
-	XMIPP4_CORE_API array_access_layout(array_access_layout&& other) noexcept;
-	XMIPP4_CORE_API ~array_access_layout();
+	multi_array_access_layout(const multi_array_access_layout&) = delete;
+	XMIPP4_CORE_API 
+	multi_array_access_layout(multi_array_access_layout&& other) noexcept;
+	XMIPP4_CORE_API ~multi_array_access_layout();
 
-	array_access_layout& 
-	operator=(const array_access_layout&) = delete;
-	XMIPP4_CORE_API array_access_layout& 
-	operator=(array_access_layout&& other) noexcept;
+	multi_array_access_layout& 
+	operator=(const multi_array_access_layout&) = delete;
+	XMIPP4_CORE_API multi_array_access_layout& 
+	operator=(multi_array_access_layout&& other) noexcept;
 
 	/**
 	 * @brief Get the number of operands
@@ -117,11 +120,13 @@ public:
 	 * @note This method is meant to be used for testing purposes, as the 
 	 * array_access_layout_implementation is not publicly available.
 	 */
-	const array_access_layout_implementation* 
+	const multi_array_access_layout_implementation* 
 	get_implementation() const noexcept;
 
 private:
-	std::unique_ptr<const array_access_layout_implementation> m_implementation;
+	std::unique_ptr<
+		const multi_array_access_layout_implementation
+	> m_implementation;
 };
 
 } // namespace multidimensional

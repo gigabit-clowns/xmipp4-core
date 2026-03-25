@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "array_access_layout_operand.hpp"
+#include "multi_array_access_layout_implementation.hpp"
 
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -21,15 +21,14 @@ namespace multidimensional
 {
 
 inline
-array_access_layout_implementation::array_access_layout_implementation(
-	const extent_vector_type &extents
-)
+multi_array_access_layout_implementation::
+multi_array_access_layout_implementation(const extent_vector_type &extents)
 	: m_extents(extents)
 {
 }
 
 inline
-void array_access_layout_implementation::add_operand(
+void multi_array_access_layout_implementation::add_operand(
 	stride_vector_type strides,
 	std::ptrdiff_t offset
 )
@@ -43,7 +42,7 @@ void array_access_layout_implementation::add_operand(
 
 inline
 const array_access_layout_operand& 
-array_access_layout_implementation::get_operand(std::size_t index) const
+multi_array_access_layout_implementation::get_operand(std::size_t index) const
 {
 	if (index >= m_operands.size())
 	{
@@ -54,7 +53,7 @@ array_access_layout_implementation::get_operand(std::size_t index) const
 }
 
 inline
-void array_access_layout_implementation::insert_largest_stride(
+void multi_array_access_layout_implementation::insert_largest_stride(
 	span<std::size_t> permutation,
 	std::size_t i
 )
@@ -81,7 +80,7 @@ void array_access_layout_implementation::insert_largest_stride(
 }
 
 inline
-void array_access_layout_implementation::sort_axes_by_locality()
+void multi_array_access_layout_implementation::sort_axes_by_locality()
 {
 	const auto n = m_extents.size();
 	if (n <= 1)
@@ -110,7 +109,7 @@ void array_access_layout_implementation::sort_axes_by_locality()
 }
 
 inline
-void array_access_layout_implementation::coalesce_contiguous_axes()
+void multi_array_access_layout_implementation::coalesce_contiguous_axes()
 {
 	const auto n = m_extents.size();
 	if (n <= 1)
@@ -136,34 +135,36 @@ void array_access_layout_implementation::coalesce_contiguous_axes()
 
 inline
 std::size_t 
-array_access_layout_implementation::get_number_of_operands() const noexcept
+multi_array_access_layout_implementation::get_number_of_operands(
+) const noexcept
 {
 	return m_operands.size();
 }
 
 inline
 span<const std::size_t> 
-array_access_layout_implementation::get_extents() const noexcept
+multi_array_access_layout_implementation::get_extents() const noexcept
 {
 	return span<const std::size_t>(m_extents.data(), m_extents.size());
 }
 
 inline
 span<const std::ptrdiff_t> 
-array_access_layout_implementation::get_strides(std::size_t operand) const
+multi_array_access_layout_implementation::get_strides(std::size_t operand) const
 {
 	return get_operand(operand).get_strides();
 }
 
 inline
 std::ptrdiff_t 
-array_access_layout_implementation::get_offset(std::size_t operand) const
+multi_array_access_layout_implementation::get_offset(std::size_t operand) const
 {
 	return get_operand(operand).get_offset();
 }
 
 inline
-std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
+std::size_t 
+multi_array_access_layout_implementation::iter(array_iterator &ite) const
 {
 	const auto valid = std::all_of(
 		m_extents.cbegin(), 
@@ -203,7 +204,7 @@ std::size_t array_access_layout_implementation::iter(array_iterator &ite) const
 }
 
 inline
-std::size_t array_access_layout_implementation::next(
+std::size_t multi_array_access_layout_implementation::next(
 	array_iterator &ite,
 	std::size_t n
 ) const noexcept
@@ -245,7 +246,7 @@ std::size_t array_access_layout_implementation::next(
 }
 
 inline
-int array_access_layout_implementation::compare_strides(
+int multi_array_access_layout_implementation::compare_strides(
 	std::size_t i, 
 	std::size_t j
 ) noexcept
@@ -264,7 +265,7 @@ int array_access_layout_implementation::compare_strides(
 }
 
 inline
-void array_access_layout_implementation::swap_axes(
+void multi_array_access_layout_implementation::swap_axes(
 	std::size_t i, 
 	std::size_t j
 ) noexcept
@@ -277,7 +278,7 @@ void array_access_layout_implementation::swap_axes(
 }
 
 inline
-void array_access_layout_implementation::permute_axes(
+void multi_array_access_layout_implementation::permute_axes(
 	span<std::size_t> permutation
 )
 {
@@ -292,7 +293,7 @@ void array_access_layout_implementation::permute_axes(
 }
 
 inline
-bool array_access_layout_implementation::try_coalesce_axes(
+bool multi_array_access_layout_implementation::try_coalesce_axes(
 	std::size_t i, 
 	std::size_t j
 )
@@ -313,7 +314,7 @@ bool array_access_layout_implementation::try_coalesce_axes(
 }
 
 inline
-bool array_access_layout_implementation::can_coalesce_axes(
+bool multi_array_access_layout_implementation::can_coalesce_axes(
 	std::size_t i, 
 	std::size_t j
 )
@@ -340,7 +341,7 @@ bool array_access_layout_implementation::can_coalesce_axes(
 }
 
 inline
-void array_access_layout_implementation::trim_axes(std::size_t n)
+void multi_array_access_layout_implementation::trim_axes(std::size_t n)
 {
 	m_extents.resize(n);
 	for (auto &operand : m_operands)
@@ -350,7 +351,7 @@ void array_access_layout_implementation::trim_axes(std::size_t n)
 }
 
 inline
-void array_access_layout_implementation::apply_strides(
+void multi_array_access_layout_implementation::apply_strides(
 	span<std::ptrdiff_t> offsets, 
 	std::size_t position, 
 	std::ptrdiff_t multiplier

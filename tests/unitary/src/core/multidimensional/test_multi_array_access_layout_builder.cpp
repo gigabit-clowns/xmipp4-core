@@ -3,6 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 
@@ -266,4 +267,84 @@ TEST_CASE( "build with default flags on multi_array_access_layout should re-orde
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides1.begin(), result_strides1.end()) );
 	const auto result_strides2 = layout.get_strides(1);
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
+}
+
+
+TEST_CASE( "building a reduce operation in multi_array_access_layout_builder should produce expected axis ordering", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(extents));
+
+	auto result_strides = GENERATE(
+		std::vector<std::ptrdiff_t>{ 12, 0, 1, 0 },
+		std::vector<std::ptrdiff_t>{ 0, 12, 0, 1 },
+		std::vector<std::ptrdiff_t>{ 0, 12, 0, 1 },
+		std::vector<std::ptrdiff_t>{ 12, 0, 0, 1 },
+		std::vector<std::ptrdiff_t>{ 0, 0, 24, 1 }
+	);
+	const auto result_layout = 
+		strided_layout::make_custom_layout(
+			xmipp4::make_span(extents), 
+			xmipp4::make_span(result_strides)
+		);
+	builder.add_operand(result_layout);
+
+	const std::vector<std::ptrdiff_t> input_strides = { 3456, 288, 12, 1 };
+	const auto input_layout = 
+		strided_layout::make_custom_layout(
+			xmipp4::make_span(extents), 
+			xmipp4::make_span(input_strides)
+		);
+	builder.add_operand(input_layout);
+
+	auto layout = builder.build();
+
+	const auto compiled_extents = layout.get_extents();
+	CHECK( std::equal(extents.crbegin(), extents.crend(), compiled_extents.begin(), compiled_extents.end()) );
+
+	const auto compiled_result_strides = layout.get_strides(0);
+	CHECK( std::equal(result_strides.crbegin(), result_strides.crend(), compiled_result_strides.begin(), compiled_result_strides.end()) );
+
+	const auto compiled_input_strides = layout.get_strides(1);
+	CHECK( std::equal(input_strides.crbegin(), input_strides.crend(), compiled_input_strides.begin(), compiled_input_strides.end()) );
+}
+
+TEST_CASE( "building a reduce operation in multi_array_access_layout_builder should simplify when possible", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(extents));
+
+	std::vector<std::ptrdiff_t> result_strides = { 0, 0, 12, 1 };
+	const auto result_layout = 
+		strided_layout::make_custom_layout(
+			xmipp4::make_span(extents), 
+			xmipp4::make_span(result_strides)
+		);
+	builder.add_operand(result_layout);
+
+	const std::vector<std::ptrdiff_t> input_strides = { 864, 144, 12, 1 };
+	const auto input_layout = 
+		strided_layout::make_custom_layout(
+			xmipp4::make_span(extents), 
+			xmipp4::make_span(input_strides)
+		);
+	builder.add_operand(input_layout);
+
+	auto layout = builder.build();
+
+	const std::vector<std::size_t> expected_extents = {144, 120};
+	const auto compiled_extents = layout.get_extents();
+	CHECK( std::equal(expected_extents.crbegin(), expected_extents.crend(), compiled_extents.begin(), compiled_extents.end()) );
+
+	const std::vector<std::ptrdiff_t> expected_result_strides = {1, 0};
+	const auto compiled_result_strides = layout.get_strides(0);
+	CHECK( std::equal(expected_result_strides.crbegin(), expected_result_strides.crend(), compiled_result_strides.begin(), compiled_result_strides.end()) );
+
+	const std::vector<std::ptrdiff_t> expected_input_strides = {1, 144};
+	const auto compiled_input_strides = layout.get_strides(1);
+	CHECK( std::equal(expected_input_strides.crbegin(), expected_input_strides.crend(), compiled_input_strides.begin(), compiled_input_strides.end()) );
 }

@@ -76,7 +76,7 @@ void add_operation::sanitize_operands(
 			input_descriptors[i] = array_descriptor(
 				input_descriptors[i].get_layout()
 					.broadcast_to(make_span(result_extents)),
-				input_descriptors[i].get_data_type()
+				data_type
 			);
 		}
 	}
@@ -95,7 +95,7 @@ void add_operation::sanitize_operands(
 			input_descriptors[i] = array_descriptor(
 				input_descriptors[i].get_layout()
 					.broadcast_to(make_span(result_extents)),
-				input_descriptors[i].get_data_type()
+				data_type
 			);
 		}
 

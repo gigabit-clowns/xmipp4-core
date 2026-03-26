@@ -53,7 +53,8 @@ void copy_operation::sanitize_operands(
 		destination_desc.get_layout().get_extents(destination_extents);
 
 		source_desc = array_descriptor(
-			source_desc.get_layout().broadcast_to(make_span(destination_extents)),
+			source_desc.get_layout()
+				.broadcast_to(make_span(destination_extents)),
 			source_desc.get_data_type()
 		);
 	}

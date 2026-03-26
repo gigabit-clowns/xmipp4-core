@@ -131,7 +131,7 @@ cpu_kernel<Op, Outputs, Inputs>::get_pointer(const hardware::buffer &buffer)
 
 template <typename Op, typename Outputs, typename Inputs>
 inline
-cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
+cpu_kernel<Op, Outputs, Inputs> make_cpu_kernel(
 	Op operation, 
 	Outputs,
 	Inputs
@@ -142,7 +142,7 @@ cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
 
 template <typename Op, typename Outputs, typename Inputs>
 inline
-std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_typed_kernel_shared(
+std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_cpu_kernel_shared(
 	Op operation, 
 	Outputs,
 	Inputs

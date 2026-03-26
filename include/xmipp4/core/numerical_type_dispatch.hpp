@@ -2,26 +2,12 @@
 
 #pragma once
 
+#include "type_wrap.hpp"
 #include "numerical_type.hpp"
 #include "platform/constexpr.hpp"
 
 namespace xmipp4
 {
-
-/**
- * @brief Helper class to pass type information to a function.
- * 
- * Eventually to be replaced with std::type_identity in C++20.
- * 
- * @tparam T Type passed.
- */
-template <typename T>
-class type_tag
-{
-public:
-	using type = T;
-
-};
 
 /**
  * @brief Dispatch a function with the numerical types.

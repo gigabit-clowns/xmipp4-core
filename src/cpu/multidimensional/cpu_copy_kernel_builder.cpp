@@ -36,7 +36,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<Q> /*source_type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *destination, const Q *source, std::size_t count)
 			{
@@ -63,7 +63,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<T> /*source_type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *destination, const T *source, std::size_t count)
 			{
@@ -87,7 +87,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<Q> /*source_type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *destination, const Q *source, std::size_t count)
 			{
@@ -115,7 +115,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 	const auto source_inner_stride = 
 		std::get<copy_operation::OPERAND_SOURCE>(inner_strides);
 
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[destination_inner_stride, source_inner_stride] 
 			(T *destination, const Q* source, std::size_t count)

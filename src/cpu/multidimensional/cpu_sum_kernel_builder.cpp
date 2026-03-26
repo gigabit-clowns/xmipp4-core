@@ -35,7 +35,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
@@ -63,7 +63,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
@@ -108,7 +108,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 {
 	// Rare case. Explicitly declared to avoid ambiguous call error. Getting the 
 	// optimized path for "free".
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
@@ -135,7 +135,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	const auto x_inner_stride = 
 		std::get<sum_operation::OPERAND_X>(inner_strides);
 
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[x_inner_stride] (T *result, const T *x, std::size_t count)
@@ -175,7 +175,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 
 	XMIPP4_ASSERT(result_inner_stride != 0);
 
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
 			[result_inner_stride, x_inner_stride] 

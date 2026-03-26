@@ -32,7 +32,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const T &fill_value
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[fill_value]
 			(T* destination, std::size_t count)
@@ -57,7 +57,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const auto destination_inner_stride =
 		std::get<fill_operation::OPERAND_DESTINATION>(inner_strides);
 
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[destination_inner_stride, fill_value]
 			(T* destination, std::size_t count)

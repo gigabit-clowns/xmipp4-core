@@ -11,34 +11,6 @@
 
 namespace xmipp4 
 {
-
-template <typename... Ts>
-struct type_list {};
-
-template <typename T>
-struct type_list_size;
-
-template <typename... Ts>
-struct type_list_size<type_list<Ts...>>
-	: std::integral_constant<std::size_t, sizeof...(Ts)>
-{
-};
-
-template<std::size_t I, typename T>
-struct type_list_element;
-
-template<std::size_t I, typename Head, typename... Tail>
-struct type_list_element<I, type_list<Head, Tail...>>
-    : type_list_element<I - 1, type_list<Tail...>>
-{
-};
- 
-template<class Head, typename... Tail>
-struct type_list_element<0, type_list<Head, Tail...>>
-{
-    using type = Head;
-};
-
 namespace multidimensional
 {
 
@@ -114,7 +86,7 @@ private:
  * @return cpu_kernel<Op, Getter, Outputs, Inputs> The constructed kernel.
  */
 template <typename Op, typename Outputs, typename Inputs>
-cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
+cpu_kernel<Op, Outputs, Inputs> make_cpu_kernel(
 	Op operation, 
 	Outputs output_types_tag,
 	Inputs input_types_tag
@@ -138,7 +110,7 @@ cpu_kernel<Op, Outputs, Inputs> make_typed_kernel(
  * The constructed kernel.
  */
 template <typename Op, typename Outputs, typename Inputs>
-std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_typed_kernel_shared(
+std::shared_ptr<cpu_kernel<Op, Outputs, Inputs>> make_cpu_kernel_shared(
 	Op operation, 
 	Outputs output_types_tag,
 	Inputs input_types_tag

@@ -36,7 +36,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
@@ -64,7 +64,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
@@ -93,7 +93,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
@@ -122,7 +122,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
@@ -155,7 +155,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	const auto rhs_inner_stride = 
 		std::get<add_operation::OPERAND_RHS>(inner_strides);
 
-	return make_typed_kernel_shared(
+	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[result_inner_stride, lhs_inner_stride, rhs_inner_stride] 
 			(T *result, const T *lhs, const T *rhs, std::size_t count)

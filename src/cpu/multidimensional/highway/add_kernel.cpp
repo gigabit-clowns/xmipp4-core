@@ -16,6 +16,25 @@ namespace HWY_NAMESPACE
 
 namespace hn = hwy::HWY_NAMESPACE;
 
+#if !HWY_HAVE_FLOAT16
+
+void AddImpl(
+	hwy::float16_t* result, 
+	const hwy::float16_t* x, 
+	const hwy::float16_t* y, 
+	std::size_t count
+) 
+{
+	// Very inefficient. Only as fallback
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		result[i] = 
+			hwy::F16FromF32(hwy::F32FromF16(x[i]) + hwy::F32FromF16(y[i]));
+	}
+}
+
+#endif // !HWY_HAVE_FLOAT16
+
 template <typename T>
 void AddImpl(
 	T* result_array, 
@@ -143,6 +162,16 @@ void AddI64(
 	AddImpl(result, x, y, count);
 }
 
+void AddF16(
+	hwy::float16_t* result, 
+	const hwy::float16_t* x, 
+	const hwy::float16_t* y, 
+	std::size_t count
+)
+{
+	AddImpl(result, x, y, count);
+}
+
 void AddF32(
 	float* result, 
 	const float* x, 
@@ -163,10 +192,20 @@ void AddF64(
 	AddImpl(result, x, y, count);
 }
 
+void AddC32(
+	std::complex<hwy::float16_t>* result, 
+	const std::complex<hwy::float16_t>* x, 
+	const std::complex<hwy::float16_t>* y, 
+	std::size_t count
+)
+{
+	AddImpl(result, x, y, count);
+}
+
 void AddC64(
-	std::complex<float>* result, 
-	const std::complex<float>* x, 
-	const std::complex<float>* y, 
+	std::complex<hwy::float32_t>* result, 
+	const std::complex<hwy::float32_t>* x, 
+	const std::complex<hwy::float32_t>* y, 
 	std::size_t count
 )
 {
@@ -174,9 +213,9 @@ void AddC64(
 }
 
 void AddC128(
-	std::complex<double>* result, 
-	const std::complex<double>* x, 
-	const std::complex<double>* y, 
+	std::complex<hwy::float64_t>* result, 
+	const std::complex<hwy::float64_t>* x, 
+	const std::complex<hwy::float64_t>* y, 
 	std::size_t count
 )
 {

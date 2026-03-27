@@ -11,8 +11,8 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
-
-#include <cpu/highway/add_kernel.hpp>
+#include "highway/add_kernel.hpp"
+#include "highway/sum_kernel.hpp"
 
 #include <algorithm>
 
@@ -37,13 +37,13 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_kernel<T> accumulate_kernel;
+	xmipp4::add_kernel<T> add;
 	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
-			[accumulate_kernel] (T *result, const T *x, std::size_t count)
+			[add] (T *result, const T *x, std::size_t count)
 			{
-				accumulate_kernel(result, result, x, count);
+				add(result, result, x, count);
 			},
 			std::move(access_layout)
 		),
@@ -62,19 +62,13 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	xmipp4::sum_kernel<T> sum;
 	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
-			[] (T *result, const T *x, std::size_t count)
+			[sum] (T *result, const T *x, std::size_t count)
 			{
-				// TODO vectorize
-				T sum = {};
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					sum += x[i];
-				}
-
-				*result += sum;
+				*result += sum(x, count);
 			},
 			std::move(access_layout)
 		),

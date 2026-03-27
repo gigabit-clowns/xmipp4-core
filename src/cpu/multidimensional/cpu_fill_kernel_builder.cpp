@@ -11,8 +11,7 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
-
-#include <cpu/highway/fill_constant_kernel.hpp>
+#include "highway/fill_constant_kernel.hpp"
 
 #include <algorithm>
 
@@ -34,13 +33,13 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const T &fill_value
 )
 {
-	xmipp4::fill_constant_kernel<T> kernel;
+	xmipp4::fill_constant_kernel<T> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[kernel, fill_value]
+			[fill, fill_value]
 			(T* destination, std::size_t count)
 			{
-				kernel(destination, count, fill_value);
+				fill(destination, count, fill_value);
 			},
 			std::move(access_layout)
 		),

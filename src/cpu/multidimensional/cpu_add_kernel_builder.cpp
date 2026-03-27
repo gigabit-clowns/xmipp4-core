@@ -11,10 +11,9 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
-
-#include <cpu/highway/add_kernel.hpp>
-#include <cpu/highway/add_constant_kernel.hpp>
-#include <cpu/highway/fill_constant_kernel.hpp>
+#include "highway/add_kernel.hpp"
+#include "highway/add_constant_kernel.hpp"
+#include "highway/fill_constant_kernel.hpp"
 
 #include <algorithm>
 
@@ -61,12 +60,12 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_constant_kernel<T> kernel;
+	xmipp4::add_constant_kernel<T> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				kernel(result, rhs, count, *lhs);
+				add(result, rhs, count, *lhs);
 			},
 			std::move(access_layout)
 		),
@@ -86,12 +85,12 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_constant_kernel<T> kernel;
+	xmipp4::add_constant_kernel<T> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				kernel(result, lhs, count, *rhs);
+				add(result, lhs, count, *rhs);
 			},
 			std::move(access_layout)
 		),
@@ -111,13 +110,13 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	fill_constant_kernel<T> kernel;
+	fill_constant_kernel<T> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[fill] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
 				const auto fill_value = *lhs + *rhs;
-				kernel(result, count, fill_value);
+				fill(result, count, fill_value);
 			},
 			std::move(access_layout)
 		),

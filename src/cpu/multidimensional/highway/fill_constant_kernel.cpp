@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "cpu/highway/fill_constant_kernel.cpp"
+#define HWY_TARGET_INCLUDE "cpu/multidimensional/highway/fill_constant_kernel.cpp"
 
 #include "hwy/foreach_target.h"
 #include "hwy/highway.h"
@@ -34,7 +34,7 @@ void FillConstantImpl(
 		}
 	}
 
-	if (HWY_UNLIKELY(i == count)) return;
+	if (i == count) return;
 	const auto remaining = count - i;
 	HWY_DASSERT(0 != remaining && remaining < n);
 	hn::StoreN(y, d, result_array + i, remaining);

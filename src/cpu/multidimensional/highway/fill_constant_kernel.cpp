@@ -71,6 +71,15 @@ void FillConstantImpl(
 	);
 }
 
+void FillConstantU8(
+	std::uint8_t* result, 
+	std::size_t count,
+	const std::uint8_t& value
+)
+{
+	FillConstantImpl(result, count, value);
+}
+
 void FillConstantU16(
 	std::uint16_t* result, 
 	std::size_t count,
@@ -93,6 +102,15 @@ void FillConstantU64(
 	std::uint64_t* result, 
 	std::size_t count,
 	const std::uint64_t& value
+)
+{
+	FillConstantImpl(result, count, value);
+}
+
+void FillConstantI8(
+	std::int8_t* result, 
+	std::size_t count,
+	const std::int8_t& value
 )
 {
 	FillConstantImpl(result, count, value);
@@ -175,9 +193,11 @@ HWY_AFTER_NAMESPACE();
 namespace xmipp4 
 {
 
+HWY_EXPORT(FillConstantU8);
 HWY_EXPORT(FillConstantU16);
 HWY_EXPORT(FillConstantU32);
 HWY_EXPORT(FillConstantU64);
+HWY_EXPORT(FillConstantI8);
 HWY_EXPORT(FillConstantI16);
 HWY_EXPORT(FillConstantI32);
 HWY_EXPORT(FillConstantI64);
@@ -185,6 +205,11 @@ HWY_EXPORT(FillConstantF32);
 HWY_EXPORT(FillConstantF64);
 HWY_EXPORT(FillConstantC64);
 HWY_EXPORT(FillConstantC128);
+
+auto get_fill_constant_kernel_pointer(type_tag<std::uint8_t>)
+{
+	return HWY_DYNAMIC_POINTER(FillConstantU8);
+}
 
 auto get_fill_constant_kernel_pointer(type_tag<std::uint16_t>)
 {
@@ -199,6 +224,11 @@ auto get_fill_constant_kernel_pointer(type_tag<std::uint32_t>)
 auto get_fill_constant_kernel_pointer(type_tag<std::uint64_t>)
 {
 	return HWY_DYNAMIC_POINTER(FillConstantU64);
+}
+
+auto get_fill_constant_kernel_pointer(type_tag<std::int8_t>)
+{
+	return HWY_DYNAMIC_POINTER(FillConstantI8);
 }
 
 auto get_fill_constant_kernel_pointer(type_tag<std::int16_t>)
@@ -261,9 +291,11 @@ void fill_constant_kernel<T>::operator()(
 	m_handle(result, count, value);
 }
 
+template class fill_constant_kernel<std::uint8_t>;
 template class fill_constant_kernel<std::uint16_t>;
 template class fill_constant_kernel<std::uint32_t>;
 template class fill_constant_kernel<std::uint64_t>;
+template class fill_constant_kernel<std::int8_t>;
 template class fill_constant_kernel<std::int16_t>;
 template class fill_constant_kernel<std::int32_t>;
 template class fill_constant_kernel<std::int64_t>;

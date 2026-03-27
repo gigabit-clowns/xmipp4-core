@@ -71,6 +71,14 @@ std::complex<T> SumImpl(const std::complex<T>* values, std::size_t count)
 	return std::complex<T>(sum_real, sum_imag);
 }
 
+std::uint8_t SumU8(
+	const std::uint8_t* values, 
+	std::size_t count
+)
+{
+	return SumImpl(values, count);
+}
+
 std::uint16_t SumU16(
 	const std::uint16_t* values, 
 	std::size_t count
@@ -89,6 +97,14 @@ std::uint32_t SumU32(
 
 std::uint64_t SumU64(
 	const std::uint64_t* values, 
+	std::size_t count
+)
+{
+	return SumImpl(values, count);
+}
+
+std::int8_t SumI8(
+	const std::int8_t* values, 
 	std::size_t count
 )
 {
@@ -165,9 +181,11 @@ HWY_AFTER_NAMESPACE();
 namespace xmipp4 
 {
 
+HWY_EXPORT(SumU8);
 HWY_EXPORT(SumU16);
 HWY_EXPORT(SumU32);
 HWY_EXPORT(SumU64);
+HWY_EXPORT(SumI8);
 HWY_EXPORT(SumI16);
 HWY_EXPORT(SumI32);
 HWY_EXPORT(SumI64);
@@ -175,6 +193,11 @@ HWY_EXPORT(SumF32);
 HWY_EXPORT(SumF64);
 HWY_EXPORT(SumC64);
 HWY_EXPORT(SumC128);
+
+auto get_sum_kernel_pointer(type_tag<std::uint8_t>)
+{
+	return HWY_DYNAMIC_POINTER(SumU8);
+}
 
 auto get_sum_kernel_pointer(type_tag<std::uint16_t>)
 {
@@ -189,6 +212,11 @@ auto get_sum_kernel_pointer(type_tag<std::uint32_t>)
 auto get_sum_kernel_pointer(type_tag<std::uint64_t>)
 {
 	return HWY_DYNAMIC_POINTER(SumU64);
+}
+
+auto get_sum_kernel_pointer(type_tag<std::int8_t>)
+{
+	return HWY_DYNAMIC_POINTER(SumI8);
 }
 
 auto get_sum_kernel_pointer(type_tag<std::int16_t>)
@@ -250,9 +278,11 @@ typename sum_kernel<T>::value_type sum_kernel<T>::operator()(
 	return m_handle(values, count);
 }
 
+template class sum_kernel<std::uint8_t>;
 template class sum_kernel<std::uint16_t>;
 template class sum_kernel<std::uint32_t>;
 template class sum_kernel<std::uint64_t>;
+template class sum_kernel<std::int8_t>;
 template class sum_kernel<std::int16_t>;
 template class sum_kernel<std::int32_t>;
 template class sum_kernel<std::int64_t>;

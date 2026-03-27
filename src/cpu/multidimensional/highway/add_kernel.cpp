@@ -63,6 +63,16 @@ void AddImpl(
 	);
 }
 
+void AddU8(
+	std::uint8_t* result, 
+	const std::uint8_t* x, 
+	const std::uint8_t* y, 
+	std::size_t count
+)
+{
+	AddImpl(result, x, y, count);
+}
+
 void AddU16(
 	std::uint16_t* result, 
 	const std::uint16_t* x, 
@@ -87,6 +97,16 @@ void AddU64(
 	std::uint64_t* result, 
 	const std::uint64_t* x, 
 	const std::uint64_t* y, 
+	std::size_t count
+)
+{
+	AddImpl(result, x, y, count);
+}
+
+void AddI8(
+	std::int8_t* result, 
+	const std::int8_t* x, 
+	const std::int8_t* y, 
 	std::size_t count
 )
 {
@@ -177,9 +197,11 @@ HWY_AFTER_NAMESPACE();
 namespace xmipp4 
 {
 
+HWY_EXPORT(AddU8);
 HWY_EXPORT(AddU16);
 HWY_EXPORT(AddU32);
 HWY_EXPORT(AddU64);
+HWY_EXPORT(AddI8);
 HWY_EXPORT(AddI16);
 HWY_EXPORT(AddI32);
 HWY_EXPORT(AddI64);
@@ -187,6 +209,11 @@ HWY_EXPORT(AddF32);
 HWY_EXPORT(AddF64);
 HWY_EXPORT(AddC64);
 HWY_EXPORT(AddC128);
+
+auto get_add_kernel_pointer(type_tag<std::uint8_t>)
+{
+	return HWY_DYNAMIC_POINTER(AddU8);
+}
 
 auto get_add_kernel_pointer(type_tag<std::uint16_t>)
 {
@@ -201,6 +228,11 @@ auto get_add_kernel_pointer(type_tag<std::uint32_t>)
 auto get_add_kernel_pointer(type_tag<std::uint64_t>)
 {
 	return HWY_DYNAMIC_POINTER(AddU64);
+}
+
+auto get_add_kernel_pointer(type_tag<std::int8_t>)
+{
+	return HWY_DYNAMIC_POINTER(AddI8);
 }
 
 auto get_add_kernel_pointer(type_tag<std::int16_t>)
@@ -264,9 +296,11 @@ void add_kernel<T>::operator()(
 	m_handle(result, x, y, count);
 }
 
+template class add_kernel<std::uint8_t>;
 template class add_kernel<std::uint16_t>;
 template class add_kernel<std::uint32_t>;
 template class add_kernel<std::uint64_t>;
+template class add_kernel<std::int8_t>;
 template class add_kernel<std::int16_t>;
 template class add_kernel<std::int32_t>;
 template class add_kernel<std::int64_t>;

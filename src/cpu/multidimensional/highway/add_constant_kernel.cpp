@@ -79,6 +79,16 @@ void AddConstantImpl(
 	);
 }
 
+void AddConstantU8(
+	std::uint8_t* result, 
+	const std::uint8_t* x, 
+	std::size_t count,
+	const std::uint8_t& value
+)
+{
+	AddConstantImpl(result, x, count, value);
+}
+
 void AddConstantU16(
 	std::uint16_t* result, 
 	const std::uint16_t* x, 
@@ -104,6 +114,16 @@ void AddConstantU64(
 	const std::uint64_t* x, 
 	std::size_t count,
 	const std::uint64_t& value
+)
+{
+	AddConstantImpl(result, x, count, value);
+}
+
+void AddConstantI8(
+	std::int8_t* result, 
+	const std::int8_t* x, 
+	std::size_t count,
+	const std::int8_t& value
 )
 {
 	AddConstantImpl(result, x, count, value);
@@ -194,8 +214,10 @@ namespace xmipp4
 {
 
 HWY_EXPORT(AddConstantU16);
+HWY_EXPORT(AddConstantU8);
 HWY_EXPORT(AddConstantU32);
 HWY_EXPORT(AddConstantU64);
+HWY_EXPORT(AddConstantI8);
 HWY_EXPORT(AddConstantI16);
 HWY_EXPORT(AddConstantI32);
 HWY_EXPORT(AddConstantI64);
@@ -203,6 +225,11 @@ HWY_EXPORT(AddConstantF32);
 HWY_EXPORT(AddConstantF64);
 HWY_EXPORT(AddConstantC64);
 HWY_EXPORT(AddConstantC128);
+
+auto get_add_constant_kernel_pointer(type_tag<std::uint8_t>)
+{
+	return HWY_DYNAMIC_POINTER(AddConstantU8);
+}
 
 auto get_add_constant_kernel_pointer(type_tag<std::uint16_t>)
 {
@@ -217,6 +244,11 @@ auto get_add_constant_kernel_pointer(type_tag<std::uint32_t>)
 auto get_add_constant_kernel_pointer(type_tag<std::uint64_t>)
 {
 	return HWY_DYNAMIC_POINTER(AddConstantU64);
+}
+
+auto get_add_constant_kernel_pointer(type_tag<std::int8_t>)
+{
+	return HWY_DYNAMIC_POINTER(AddConstantI8);
 }
 
 auto get_add_constant_kernel_pointer(type_tag<std::int16_t>)
@@ -280,9 +312,11 @@ void add_constant_kernel<T>::operator()(
 	m_handle(result, x, count, value);
 }
 
+template class add_constant_kernel<std::uint8_t>;
 template class add_constant_kernel<std::uint16_t>;
 template class add_constant_kernel<std::uint32_t>;
 template class add_constant_kernel<std::uint64_t>;
+template class add_constant_kernel<std::int8_t>;
 template class add_constant_kernel<std::int16_t>;
 template class add_constant_kernel<std::int32_t>;
 template class add_constant_kernel<std::int64_t>;

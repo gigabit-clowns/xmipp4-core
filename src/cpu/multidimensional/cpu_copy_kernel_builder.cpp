@@ -3,14 +3,16 @@
 #include "cpu_copy_kernel_builder.hpp"
 
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
-#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
+
+#include <cpu/highway/fill_constant_kernel.hpp>
 
 #include <algorithm>
 
@@ -27,7 +29,7 @@ using copy_operand_count_tag =
 
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag
@@ -54,7 +56,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag
@@ -78,7 +80,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag
@@ -87,13 +89,13 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<Q> /*source_type_tag*/
 )
 {
+	xmipp4::fill_constant_kernel<T> kernel;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[] (T *destination, const Q *source, std::size_t count)
+			[kernel] (T *destination, const Q *source, std::size_t count)
 			{
-				// TODO vectorize
 				const auto fill_value = static_cast<T>(*source);
-				std::fill_n(destination, count, fill_value);
+				kernel(destination, count, fill_value);
 			},
 			std::move(access_layout)
 		),
@@ -104,7 +106,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 
 template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
 std::shared_ptr<kernel> make_copy_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<DstStrideT, SrcStrideT> inner_strides,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
@@ -235,7 +237,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 	const auto &source_descriptor = 
 		descriptors[copy_operation::OPERAND_SOURCE];
 
-	array_access_layout_builder layout_builder;
+	multi_array_access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	layout_builder.add_operand(source_descriptor.get_layout());
 	auto access_layout = layout_builder.build();

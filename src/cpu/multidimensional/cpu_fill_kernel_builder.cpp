@@ -3,14 +3,16 @@
 #include "cpu_fill_kernel_builder.hpp"
 
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
-#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
+
+#include <cpu/highway/fill_constant_kernel.hpp>
 
 #include <algorithm>
 
@@ -27,18 +29,18 @@ using fill_operand_count_tag =
 
 template <typename T>
 std::shared_ptr<kernel> make_fill_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
 	const T &fill_value
 )
 {
+	xmipp4::fill_constant_kernel<T> kernel;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[fill_value]
+			[kernel, fill_value]
 			(T* destination, std::size_t count)
 			{
-				// TODO vectorize
-				std::fill_n(destination, count, fill_value);
+				kernel(destination, count, fill_value);
 			},
 			std::move(access_layout)
 		),
@@ -49,7 +51,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 
 template <typename T, typename Stride>
 std::shared_ptr<kernel> make_fill_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<Stride> inner_strides,
 	const T &fill_value
 )
@@ -192,7 +194,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 	const auto data_type = destination_descriptor.get_data_type();
 	const auto fill_value = fill_op->get_fill_value();
 
-	array_access_layout_builder layout_builder;
+	multi_array_access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 

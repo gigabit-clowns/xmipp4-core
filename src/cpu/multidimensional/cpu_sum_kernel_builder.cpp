@@ -3,14 +3,16 @@
 #include "cpu_sum_kernel_builder.hpp"
 
 #include <xmipp4/core/multidimensional/operations/sum_operation.hpp>
-#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
+
+#include <cpu/highway/add_kernel.hpp>
 
 #include <algorithm>
 
@@ -27,7 +29,7 @@ using sum_operand_count_tag =
 
 template <typename T>
 std::shared_ptr<kernel> make_sum_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag
@@ -35,16 +37,13 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	xmipp4::add_kernel<T> accumulate_kernel;
 	return make_cpu_kernel_shared(
 		// TODO fill with zeros before accumulating
 		make_cpu_outer_loop(
-			[] (T *result, const T *x, std::size_t count)
+			[accumulate_kernel] (T *result, const T *x, std::size_t count)
 			{
-				// TODO vectorize
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[i] += x[i];
-				}
+				accumulate_kernel(result, result, x, count);
 			},
 			std::move(access_layout)
 		),
@@ -55,7 +54,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_sum_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		broadcasting_stride_tag,
 		contiguous_stride_tag
@@ -98,7 +97,7 @@ T scalar_cast(std::size_t value, type_tag<std::complex<T>>)
 
 template <typename T>
 std::shared_ptr<kernel> make_sum_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		broadcasting_stride_tag,
 		broadcasting_stride_tag
@@ -124,7 +123,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_sum_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		broadcasting_stride_tag,
 		std::ptrdiff_t
@@ -160,7 +159,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_sum_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		std::ptrdiff_t,
 		std::ptrdiff_t
@@ -263,7 +262,7 @@ std::shared_ptr<kernel> cpu_sum_kernel_builder::build(
 		}
 	}
 
-	array_access_layout_builder layout_builder;
+	multi_array_access_layout_builder layout_builder;
 	for (const auto &descriptor : descriptors)
 	{
 		layout_builder.add_operand(descriptor.get_layout());

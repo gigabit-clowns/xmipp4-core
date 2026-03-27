@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/array_iterator.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
+#include <xmipp4/core/multidimensional/multi_array_iterator.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <tuple>
@@ -34,7 +34,7 @@ public:
 	 */
 	cpu_outer_loop(
 		operator_type vector_handler,
-		array_access_layout access_layout
+		multi_array_access_layout access_layout
 	);
 	cpu_outer_loop(const cpu_outer_loop &other) = delete;
 	cpu_outer_loop(cpu_outer_loop &&other) = default;
@@ -54,7 +54,7 @@ public:
 
 private:
 	operator_type m_vector_handler;
-	array_access_layout m_access_layout;
+	multi_array_access_layout m_access_layout;
 
 	template <typename... Pointers, std::size_t... Is>
 	void loop_impl(
@@ -78,7 +78,7 @@ private:
 template <typename Op>
 cpu_outer_loop<Op> make_cpu_outer_loop(
 	Op vector_handler,
-	array_access_layout access_layout
+	multi_array_access_layout access_layout
 );
 
 } // namespace multidimensional

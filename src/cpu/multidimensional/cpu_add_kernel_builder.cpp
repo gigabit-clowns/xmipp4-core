@@ -3,14 +3,18 @@
 #include "cpu_add_kernel_builder.hpp"
 
 #include <xmipp4/core/multidimensional/operations/add_operation.hpp>
-#include <xmipp4/core/multidimensional/array_access_layout_builder.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/cpu/cpu_device.hpp>
+#include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_outer_loop.hpp"
+
+#include <cpu/highway/add_kernel.hpp>
+#include <cpu/highway/add_constant_kernel.hpp>
+#include <cpu/highway/fill_constant_kernel.hpp>
 
 #include <algorithm>
 
@@ -27,7 +31,7 @@ using add_operand_count_tag =
 
 template <typename T>
 std::shared_ptr<kernel> make_add_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag,
@@ -38,14 +42,7 @@ std::shared_ptr<kernel> make_add_kernel(
 {
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
-			{
-				// TODO vectorize
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[i] = lhs[i] + rhs[i];
-				}
-			},
+			xmipp4::add_kernel<T>(),
 			std::move(access_layout)
 		),
 		type_list<T>(),
@@ -55,7 +52,7 @@ std::shared_ptr<kernel> make_add_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_add_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag,
@@ -64,16 +61,12 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	xmipp4::add_constant_kernel<T> kernel;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				// TODO vectorize
-				const auto add_val = *lhs;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[i] = rhs[i] + add_val;
-				}
+				kernel(result, rhs, count, *lhs);
 			},
 			std::move(access_layout)
 		),
@@ -84,7 +77,7 @@ std::shared_ptr<kernel> make_add_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_add_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag,
@@ -93,16 +86,12 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	xmipp4::add_constant_kernel<T> kernel;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				// TODO vectorize
-				const auto add_val = *rhs;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[i] = lhs[i] + add_val;
-				}
+				kernel(result, lhs, count, *rhs);
 			},
 			std::move(access_layout)
 		),
@@ -113,7 +102,7 @@ std::shared_ptr<kernel> make_add_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_add_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag,
@@ -122,13 +111,13 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	fill_constant_kernel<T> kernel;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			[] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			[kernel] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				// TODO vectorize
 				const auto fill_value = *lhs + *rhs;
-				std::fill_n(result, count, fill_value);
+				kernel(result, count, fill_value);
 			},
 			std::move(access_layout)
 		),
@@ -139,7 +128,7 @@ std::shared_ptr<kernel> make_add_kernel(
 
 template <typename T>
 std::shared_ptr<kernel> make_add_kernel(
-	array_access_layout access_layout,
+	multi_array_access_layout access_layout,
 	const std::tuple<
 		ptrdiff_t,
 		ptrdiff_t,
@@ -244,7 +233,7 @@ std::shared_ptr<kernel> cpu_add_kernel_builder::build(
 		}
 	}
 
-	array_access_layout_builder layout_builder;
+	multi_array_access_layout_builder layout_builder;
 	for (const auto &descriptor : descriptors)
 	{
 		layout_builder.add_operand(descriptor.get_layout());

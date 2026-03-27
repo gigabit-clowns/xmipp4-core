@@ -11,7 +11,7 @@ template <typename Op>
 inline
 cpu_outer_loop<Op>::cpu_outer_loop(
 	operator_type vector_handler,
-	array_access_layout access_layout
+	multi_array_access_layout access_layout
 )
 	: m_vector_handler(std::move(vector_handler))
 	, m_access_layout(std::move(access_layout))
@@ -39,7 +39,7 @@ void cpu_outer_loop<Op>::loop_impl(
 	std::index_sequence<Is...>
 ) const
 {
-	array_iterator ite;
+	multi_array_iterator ite;
 	std::size_t count;
 	if (!(count = m_access_layout.iter(ite)))
 	{
@@ -57,7 +57,7 @@ template <typename Op>
 inline
 cpu_outer_loop<Op> make_cpu_outer_loop(
 	Op vector_handler,
-	array_access_layout access_layout
+	multi_array_access_layout access_layout
 )
 {
 	return cpu_outer_loop<Op>(

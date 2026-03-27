@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <xmipp4/core/type_wrap.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 

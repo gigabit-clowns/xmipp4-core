@@ -62,7 +62,7 @@ void FillConstantImpl(
 	hn::ScalableTag<T> d;
 	const auto y_real = hn::Set(d, value.real());
 	const auto y_imag = hn::Set(d, value.imag());
-	const auto y = hn::InterleaveLower(y_real, y_imag);
+	const auto y = hn::OddEven(y_imag, y_real);
 	FillConstantImpl(
 		d, 
 		reinterpret_cast<T*>(result), 

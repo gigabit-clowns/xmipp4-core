@@ -5,6 +5,11 @@
 namespace xmipp4 
 {
 
+/**
+ * @brief Functor to reduce an array into the sum of all of its elements.
+ * 
+ * @tparam T Type of the elements in the arrays.
+ */
 template <typename T>
 class sum_kernel
 {

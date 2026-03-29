@@ -5,6 +5,11 @@
 namespace xmipp4 
 {
 
+/**
+ * @brief Functor to add two arrays into a result array.
+ * 
+ * @tparam T Type of the items in the arrays.
+ */
 template <typename T>
 class add_kernel
 {

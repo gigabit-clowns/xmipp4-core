@@ -5,6 +5,11 @@
 namespace xmipp4 
 {
 
+/**
+ * @brief Functor to fill an array with a constant value.
+ * 
+ * @tparam T Type of the array to be filled.
+ */
 template <typename T>
 class fill_constant_kernel
 {

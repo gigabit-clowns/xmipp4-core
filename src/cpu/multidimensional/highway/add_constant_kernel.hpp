@@ -5,6 +5,11 @@
 namespace xmipp4 
 {
 
+/**
+ * @brief Functor to add a constant to an array.
+ * 
+ * @tparam T Type of the elements stored in the array.
+ */
 template <typename T>
 class add_constant_kernel
 {

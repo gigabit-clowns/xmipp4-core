@@ -3,13 +3,17 @@
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "cpu/multidimensional/kernels/highway/sum_kernel.cpp"
 
-#include "hwy/foreach_target.h"
-#include "hwy/highway.h"
+#include <hwy/foreach_target.h>
+#include <hwy/highway.h>
+
+#include "helpers/foreach_data_type.hpp"
 
 #include <complex>
 
 HWY_BEFORE_NAMESPACE();
 namespace xmipp4 
+{
+namespace multidimensional
 {
 namespace HWY_NAMESPACE 
 {
@@ -71,104 +75,22 @@ std::complex<T> SumImpl(const std::complex<T>* values, std::size_t count)
 	return std::complex<T>(sum_real, sum_imag);
 }
 
-std::uint8_t SumU8(
-	const std::uint8_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
 
-std::uint16_t SumU16(
-	const std::uint16_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
 
-std::uint32_t SumU32(
-	const std::uint32_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
+#define XMIPP4_HWY_DECLARE_SUM(T, Suffix) \
+	T Sum##Suffix( \
+		const T* x, \
+		std::size_t count \
+	) \
+	{ \
+		return SumImpl(x, count); \
+	}
 
-std::uint64_t SumU64(
-	const std::uint64_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_DECLARE_SUM)
 
-std::int8_t SumI8(
-	const std::int8_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-std::int16_t SumI16(
-	const std::int16_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-std::int32_t SumI32(
-	const std::int32_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-std::int64_t SumI64(
-	const std::int64_t* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-float SumF32(
-	const float* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-double SumF64(
-	const double* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-std::complex<float> SumC64(
-	const std::complex<float>* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-std::complex<double> SumC128(
-	const std::complex<double>* values, 
-	std::size_t count
-)
-{
-	return SumImpl(values, count);
-}
-
-}  // namespace HWY_NAMESPACE
-}  // namespace xmipp4
+} // namespace HWY_NAMESPACE
+} // namespace multidimensional
+} // namespace xmipp4
 HWY_AFTER_NAMESPACE();
 
 #if HWY_ONCE
@@ -180,85 +102,17 @@ HWY_AFTER_NAMESPACE();
 
 namespace xmipp4 
 {
-
-HWY_EXPORT(SumU8);
-HWY_EXPORT(SumU16);
-HWY_EXPORT(SumU32);
-HWY_EXPORT(SumU64);
-HWY_EXPORT(SumI8);
-HWY_EXPORT(SumI16);
-HWY_EXPORT(SumI32);
-HWY_EXPORT(SumI64);
-HWY_EXPORT(SumF32);
-HWY_EXPORT(SumF64);
-HWY_EXPORT(SumC64);
-HWY_EXPORT(SumC128);
-
-auto get_sum_kernel_pointer(type_tag<std::uint8_t>)
+namespace multidimensional
 {
-	return HWY_DYNAMIC_POINTER(SumU8);
-}
 
-auto get_sum_kernel_pointer(type_tag<std::uint16_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumU16);
-}
+#define XMIPP4_HWY_EXPORT_SUM(T, Suffix) \
+	HWY_EXPORT(Sum##Suffix); \
+	auto get_sum_kernel_pointer(type_tag<T>) \
+	{ \
+		return HWY_DYNAMIC_POINTER(Sum##Suffix); \
+	}
 
-auto get_sum_kernel_pointer(type_tag<std::uint32_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumU32);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::uint64_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumU64);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::int8_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumI8);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::int16_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumI16);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::int32_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumI32);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::int64_t>)
-{
-	return HWY_DYNAMIC_POINTER(SumI64);
-}
-
-auto get_sum_kernel_pointer(type_tag<float>)
-{
-	return HWY_DYNAMIC_POINTER(SumF32);
-}
-
-auto get_sum_kernel_pointer(type_tag<double>)
-{
-	return HWY_DYNAMIC_POINTER(SumF64);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::complex<float>>)
-{
-	return HWY_DYNAMIC_POINTER(SumC64);
-}
-
-auto get_sum_kernel_pointer(type_tag<std::complex<double>>)
-{
-	return HWY_DYNAMIC_POINTER(SumC128);
-}
-
-template <typename T>
-auto get_sum_kernel_pointer(type_tag<T>)
-{
-	return &HWY_STATIC_DISPATCH(SumImpl<T>); // Sub-optimal
-}
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_SUM)
 
 
 
@@ -291,6 +145,7 @@ template class sum_kernel<double>;
 template class sum_kernel<std::complex<float>>;
 template class sum_kernel<std::complex<double>>;
 
-}  // namespace xmipp4
+} // namespace multidimensional
+} // namespace xmipp4
 
 #endif  // HWY_ONCE

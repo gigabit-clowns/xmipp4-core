@@ -4,6 +4,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 /**
  * @brief Functor to reduce an array into the sum of all of its elements.
@@ -38,4 +40,5 @@ private:
 	handle_type m_handle;
 };
 
+} // namespace multidimensional
 } // namespace xmipp4

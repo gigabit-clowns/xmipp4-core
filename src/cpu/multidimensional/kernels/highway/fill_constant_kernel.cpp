@@ -3,13 +3,17 @@
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "cpu/multidimensional/kernels/highway/fill_constant_kernel.cpp"
 
-#include "hwy/foreach_target.h"
-#include "hwy/highway.h"
+#include <hwy/foreach_target.h>
+#include <hwy/highway.h>
+
+#include "helpers/foreach_data_type.hpp"
 
 #include <complex>
 
 HWY_BEFORE_NAMESPACE();
 namespace xmipp4 
+{
+namespace multidimensional
 {
 namespace HWY_NAMESPACE 
 {
@@ -71,116 +75,23 @@ void FillConstantImpl(
 	);
 }
 
-void FillConstantU8(
-	std::uint8_t* result, 
-	std::size_t count,
-	const std::uint8_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
 
-void FillConstantU16(
-	std::uint16_t* result, 
-	std::size_t count,
-	const std::uint16_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
 
-void FillConstantU32(
-	std::uint32_t* result, 
-	std::size_t count,
-	const std::uint32_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
+#define XMIPP4_HWY_DECLARE_FILL_CONSTANT(T, Suffix) \
+	void FillConstant##Suffix( \
+		T* result, \
+		std::size_t count, \
+		const T& value \
+	) \
+	{ \
+		FillConstantImpl(result, count, value); \
+	}
 
-void FillConstantU64(
-	std::uint64_t* result, 
-	std::size_t count,
-	const std::uint64_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_DECLARE_FILL_CONSTANT)
 
-void FillConstantI8(
-	std::int8_t* result, 
-	std::size_t count,
-	const std::int8_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantI16(
-	std::int16_t* result, 
-	std::size_t count,
-	const std::int16_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantI32(
-	std::int32_t* result, 
-	std::size_t count,
-	const std::int32_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantI64(
-	std::int64_t* result, 
-	std::size_t count,
-	const std::int64_t& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantF32(
-	float* result, 
-	std::size_t count,
-	const float& value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantF64(
-	double* result, 
-	std::size_t count,
-	const double &value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantC64(
-	std::complex<float>* result, 
-	std::size_t count,
-	const std::complex<float> &value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-void FillConstantC128(
-	std::complex<double>* result, 
-	std::size_t count,
-	const std::complex<double> &value
-)
-{
-	FillConstantImpl(result, count, value);
-}
-
-}  // namespace HWY_NAMESPACE
-}  // namespace xmipp4
+} // namespace HWY_NAMESPACE
+} // namespace multidimensional
+} // namespace xmipp4
 HWY_AFTER_NAMESPACE();
 
 #if HWY_ONCE
@@ -192,85 +103,17 @@ HWY_AFTER_NAMESPACE();
 
 namespace xmipp4 
 {
-
-HWY_EXPORT(FillConstantU8);
-HWY_EXPORT(FillConstantU16);
-HWY_EXPORT(FillConstantU32);
-HWY_EXPORT(FillConstantU64);
-HWY_EXPORT(FillConstantI8);
-HWY_EXPORT(FillConstantI16);
-HWY_EXPORT(FillConstantI32);
-HWY_EXPORT(FillConstantI64);
-HWY_EXPORT(FillConstantF32);
-HWY_EXPORT(FillConstantF64);
-HWY_EXPORT(FillConstantC64);
-HWY_EXPORT(FillConstantC128);
-
-auto get_fill_constant_kernel_pointer(type_tag<std::uint8_t>)
+namespace multidimensional
 {
-	return HWY_DYNAMIC_POINTER(FillConstantU8);
-}
 
-auto get_fill_constant_kernel_pointer(type_tag<std::uint16_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantU16);
-}
+#define XMIPP4_HWY_EXPORT_FILL_CONSTANT(T, Suffix) \
+	HWY_EXPORT(FillConstant##Suffix); \
+	auto get_fill_constant_kernel_pointer(type_tag<T>) \
+	{ \
+		return HWY_DYNAMIC_POINTER(FillConstant##Suffix); \
+	}
 
-auto get_fill_constant_kernel_pointer(type_tag<std::uint32_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantU32);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::uint64_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantU64);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::int8_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantI8);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::int16_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantI16);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::int32_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantI32);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::int64_t>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantI64);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<float>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantF32);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<double>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantF64);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::complex<float>>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantC64);
-}
-
-auto get_fill_constant_kernel_pointer(type_tag<std::complex<double>>)
-{
-	return HWY_DYNAMIC_POINTER(FillConstantC128);
-}
-
-template <typename T>
-auto get_fill_constant_kernel_pointer(type_tag<T>)
-{
-	return &HWY_STATIC_DISPATCH(FillConstantImpl<T>); // Sub-optimal
-}
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_FILL_CONSTANT)
 
 
 
@@ -304,6 +147,7 @@ template class fill_constant_kernel<double>;
 template class fill_constant_kernel<std::complex<float>>;
 template class fill_constant_kernel<std::complex<double>>;
 
-}  // namespace xmipp4
+} // namespace multidimensional
+} // namespace xmipp4
 
 #endif  // HWY_ONCE

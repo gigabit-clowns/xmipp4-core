@@ -4,6 +4,8 @@
 
 namespace xmipp4 
 {
+namespace multidimensional
+{
 
 /**
  * @brief Functor to fill an array with a constant value.
@@ -40,4 +42,5 @@ private:
 	handle_type m_handle;
 };
 
+} // namespace multidimensional
 } // namespace xmipp4

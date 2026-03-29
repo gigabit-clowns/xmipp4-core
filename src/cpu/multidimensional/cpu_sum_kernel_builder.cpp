@@ -111,8 +111,11 @@ std::shared_ptr<kernel> make_sum_kernel(
 	// Rare case. Explicitly declared to avoid ambiguous call error. Getting the 
 	// optimized path for "free".
 	return make_cpu_kernel_shared(
-		// TODO fill with zeros before accumulating
-		make_cpu_outer_loop(
+		make_cpu_reduce_outer_loop(
+			[] (T *result, const T *x, std::size_t count)
+			{
+				*result = scalar_cast(count, type_tag<T>()) * (*x);
+			},
 			[] (T *result, const T *x, std::size_t count)
 			{
 				*result += scalar_cast(count, type_tag<T>()) * (*x);

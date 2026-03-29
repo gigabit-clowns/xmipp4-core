@@ -42,7 +42,7 @@ std::shared_ptr<kernel> make_add_kernel(
 {
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			xmipp4::add_kernel<T>(),
+			add_kernel<T>(),
 			std::move(access_layout)
 		),
 		type_list<T>(),
@@ -61,7 +61,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_constant_kernel<T> add;
+	add_constant_kernel<T> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
@@ -86,7 +86,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_constant_kernel<T> add;
+	add_constant_kernel<T> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)

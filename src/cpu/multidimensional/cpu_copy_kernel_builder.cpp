@@ -86,7 +86,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 	type_tag<Q> /*source_type_tag*/
 )
 {
-	xmipp4::fill_constant_kernel<T> fill;
+	fill_constant_kernel<T> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[fill] (T *destination, const Q *source, std::size_t count)

@@ -34,7 +34,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const T &fill_value
 )
 {
-	xmipp4::fill_constant_kernel<T> fill;
+	fill_constant_kernel<T> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[fill, fill_value]

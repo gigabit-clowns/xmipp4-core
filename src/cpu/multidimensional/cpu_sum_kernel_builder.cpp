@@ -40,7 +40,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::add_kernel<T> add;
+	add_kernel<T> add;
 	return make_cpu_kernel_shared(
 		make_cpu_reduce_outer_loop(
 			[] (T *result, const T *x, std::size_t count)
@@ -68,7 +68,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	xmipp4::sum_kernel<T> sum;
+	sum_kernel<T> sum;
 	return make_cpu_kernel_shared(
 		make_cpu_reduce_outer_loop(
 			[sum] (T *result, const T *x, std::size_t count)

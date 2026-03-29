@@ -11,7 +11,8 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_elementwise_outer_loop.hpp"
-#include "highway/fill_constant_kernel.hpp"
+#include "kernels/generic/copy.hpp"
+#include "kernels/highway/fill_constant_kernel.hpp"
 
 #include <algorithm>
 
@@ -41,10 +42,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 		make_cpu_outer_loop(
 			[] (T *destination, const Q *source, std::size_t count)
 			{
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					destination[i] = static_cast<T>(source[i]);
-				}
+				cast_contiguous(destination, source, count);
 			},
 			std::move(access_layout)
 		),
@@ -121,16 +119,13 @@ std::shared_ptr<kernel> make_copy_kernel(
 			[destination_inner_stride, source_inner_stride] 
 			(T *destination, const Q* source, std::size_t count)
 			{
-				std::ptrdiff_t destination_index = 0;
-				std::ptrdiff_t source_index = 0;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					destination[destination_index] = 
-						static_cast<T>(source[source_index]);
-
-					destination_index += destination_inner_stride;
-					source_index += source_inner_stride;
-				}
+				cast_strided(
+					destination,
+					source,
+					count,
+					destination_inner_stride,
+					source_inner_stride
+				);
 			},
 			std::move(access_layout)
 		),

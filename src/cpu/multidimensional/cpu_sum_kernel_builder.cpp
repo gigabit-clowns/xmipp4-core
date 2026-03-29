@@ -10,9 +10,12 @@
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
-#include "cpu_elementwise_outer_loop.hpp"
-#include "highway/add_kernel.hpp"
-#include "highway/sum_kernel.hpp"
+#include "cpu_reduce_outer_loop.hpp"
+#include "kernels/generic/copy.hpp"
+#include "kernels/generic/arithmetic.hpp"
+#include "kernels/generic/reduce.hpp"
+#include "kernels/highway/add_kernel.hpp"
+#include "kernels/highway/sum_kernel.hpp"
 
 #include <algorithm>
 
@@ -39,8 +42,11 @@ std::shared_ptr<kernel> make_sum_kernel(
 {
 	xmipp4::add_kernel<T> add;
 	return make_cpu_kernel_shared(
-		// TODO fill with zeros before accumulating
-		make_cpu_outer_loop(
+		make_cpu_reduce_outer_loop(
+			[] (T *result, const T *x, std::size_t count)
+			{
+				std::copy_n(x, count, result);
+			},
 			[add] (T *result, const T *x, std::size_t count)
 			{
 				add(result, result, x, count);
@@ -64,8 +70,11 @@ std::shared_ptr<kernel> make_sum_kernel(
 {
 	xmipp4::sum_kernel<T> sum;
 	return make_cpu_kernel_shared(
-		// TODO fill with zeros before accumulating
-		make_cpu_outer_loop(
+		make_cpu_reduce_outer_loop(
+			[sum] (T *result, const T *x, std::size_t count)
+			{
+				*result = sum(x, count);
+			},
 			[sum] (T *result, const T *x, std::size_t count)
 			{
 				*result += sum(x, count);
@@ -129,20 +138,14 @@ std::shared_ptr<kernel> make_sum_kernel(
 		std::get<sum_operation::OPERAND_X>(inner_strides);
 
 	return make_cpu_kernel_shared(
-		// TODO fill with zeros before accumulating
-		make_cpu_outer_loop(
+		make_cpu_reduce_outer_loop(
 			[x_inner_stride] (T *result, const T *x, std::size_t count)
 			{
-				T sum = {};
-				std::ptrdiff_t x_index = 0;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					sum += x[x_index];
-
-					x_index += x_inner_stride;
-				}
-
-				*result += sum;
+				*result = sum_strided(x, count, x_inner_stride);
+			},
+			[x_inner_stride] (T *result, const T *x, std::size_t count)
+			{
+				*result += sum_strided(x, count, x_inner_stride);
 			},
 			std::move(access_layout)
 		),
@@ -169,21 +172,30 @@ std::shared_ptr<kernel> make_sum_kernel(
 	XMIPP4_ASSERT(result_inner_stride != 0);
 
 	return make_cpu_kernel_shared(
-		// TODO fill with zeros before accumulating
-		make_cpu_outer_loop(
+		make_cpu_reduce_outer_loop(
 			[result_inner_stride, x_inner_stride] 
 			(T *result, const T *x, std::size_t count)
 			{
-				std::ptrdiff_t result_index = 0;
-				std::ptrdiff_t x_index = 0;
-
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[result_index] += x[x_index];
-
-					result_index += result_inner_stride;
-					x_index += x_inner_stride;
-				}
+				copy_strided(
+					result, 
+					x, 
+					count, 
+					result_inner_stride, 
+					x_inner_stride
+				);
+			},
+			[result_inner_stride, x_inner_stride] 
+			(T *result, const T *x, std::size_t count)
+			{
+				add_strided(
+					result,
+					result,
+					x,
+					count,
+					result_inner_stride,
+					result_inner_stride,
+					x_inner_stride
+				);
 			},
 			std::move(access_layout)
 		),

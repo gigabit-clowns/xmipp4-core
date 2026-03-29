@@ -10,12 +10,12 @@ namespace multidimensional
 template <typename OpInit, typename OpAcc>
 inline
 cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
-	init_operator_type vector_init_handler,
-	accum_operator_type vector_accum_handler,
-	array_access_layout access_layout
+	init_functor_type vector_init_handler,
+	accum_functor_type vector_accum_handler,
+	multi_array_access_layout access_layout
 )
 	: m_vector_init_handler(std::move(vector_init_handler))
-	, m_vector_accum_handler(std::move(vector_accum_handler)
+	, m_vector_accum_handler(std::move(vector_accum_handler))
 	, m_access_layout(std::move(access_layout))
 	, m_first_reduction_axis(0)
 {
@@ -54,12 +54,15 @@ void cpu_reduce_outer_loop<OpInit, OpAcc>::loop_impl(
 {
 	const std::size_t max_tile_width = 4096; // TODO determine
 
-	array_iterator ite;
+	multi_array_iterator ite;
 	std::size_t tile_width;
 	if (!(tile_width = m_access_layout.iter(ite)))
 	{
 		return;
 	}
+
+	// TODO initialize when necessary.
+	// TODO decide optimal iteration pattern.
 
 	const auto offsets = ite.get_offsets();
 	do
@@ -77,7 +80,7 @@ inline
 cpu_reduce_outer_loop<OpInit, OpAcc> make_cpu_reduce_outer_loop(
 	OpInit vector_init_handler,
 	OpAcc vector_accum_handler,
-	array_access_layout access_layout
+	multi_array_access_layout access_layout
 )
 {
 	return cpu_reduce_outer_loop<OpInit, OpAcc>(

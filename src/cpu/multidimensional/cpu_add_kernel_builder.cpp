@@ -11,9 +11,10 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_elementwise_outer_loop.hpp"
-#include "highway/add_kernel.hpp"
-#include "highway/add_constant_kernel.hpp"
-#include "highway/fill_constant_kernel.hpp"
+#include "kernels/generic/arithmetic.hpp"
+#include "kernels/highway/add_kernel.hpp"
+#include "kernels/highway/add_constant_kernel.hpp"
+#include "kernels/highway/fill_constant_kernel.hpp"
 
 #include <algorithm>
 
@@ -148,18 +149,15 @@ std::shared_ptr<kernel> make_add_kernel(
 			[result_inner_stride, lhs_inner_stride, rhs_inner_stride] 
 			(T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				std::ptrdiff_t result_index = 0;
-				std::ptrdiff_t lhs_index = 0;
-				std::ptrdiff_t rhs_index = 0;
-
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					result[result_index] = lhs[lhs_index] + rhs[rhs_index];
-
-					result_index += result_inner_stride;
-					lhs_index += lhs_inner_stride;
-					rhs_index += rhs_inner_stride;
-				}
+				add_strided(
+					result, 
+					lhs, 
+					rhs, 
+					count, 
+					result_inner_stride, 
+					lhs_inner_stride, 
+					rhs_inner_stride
+				);
 			},
 			std::move(access_layout)
 		),

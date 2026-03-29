@@ -11,7 +11,8 @@
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_elementwise_outer_loop.hpp"
-#include "highway/fill_constant_kernel.hpp"
+#include "kernels/generic/copy.hpp"
+#include "kernels/highway/fill_constant_kernel.hpp"
 
 #include <algorithm>
 
@@ -63,13 +64,12 @@ std::shared_ptr<kernel> make_fill_kernel(
 			[destination_inner_stride, fill_value]
 			(T* destination, std::size_t count)
 			{
-				std::ptrdiff_t destination_index = 0;
-				for (std::size_t i = 0; i < count; ++i)
-				{
-					destination[destination_index] = fill_value;
-
-					destination_index += destination_inner_stride;
-				}
+				fill_strided(
+					destination,
+					count,
+					destination_inner_stride,
+					fill_value
+				);
 			},
 			std::move(access_layout)
 		),

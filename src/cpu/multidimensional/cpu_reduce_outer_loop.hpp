@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/array_iterator.hpp>
+#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
+#include <xmipp4/core/multidimensional/multi_array_iterator.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <tuple>
@@ -16,23 +16,34 @@ namespace multidimensional
 /**
  * @brief Handles outer dimensions of multi-dimensional reduction loop.
  * 
+ * @tparam OpInit Functor to be dispatched for initializing 1D vectors. 
+ * Must have a signature accepting `(Pointers... operands, std::size_t count)`
+ * @tparam OpAccum Functor to be dispatched for accumulation 1D vectors. 
+ * Must have a signature accepting `(Pointers... operands, std::size_t count)`
  */
-template <typename OpInit, typename OpAcc>
+template <typename OpInit, typename OpAccum>
 class cpu_reduce_outer_loop
 {
 public:
-	using init_operator_type = OpInit;
-	using accum_operator_type = OpAcc;
+	using init_functor_type = OpInit;
+	using accum_functor_type = OpAccum;
 
 	/**
 	 * @brief Construct a new cpu reduce_outer loop.
 	 * 
+	 * @param vector_init_handler Functor to be called for the first iteration
+	 * on the reduction loop. It should not read from the output values and
+	 * instead only write the result of the first iteration given the first 
+	 * input vector.
+	 * @param vector_accum_handler Functor to be called in subsequent reduction
+	 * iterations. It should apply to the output the result of the current
+	 * iteration.
 	 * @param access_layout Access layout used for iterating over the layout.
 	 */
 	cpu_reduce_outer_loop(
-		init_operator_type vector_init_handler,
-		accum_operator_type vector_accum_handler,
-		array_access_layout access_layout
+		init_functor_type vector_init_handler,
+		accum_functor_type vector_accum_handler,
+		multi_array_access_layout access_layout
 	);
 	cpu_reduce_outer_loop(const cpu_reduce_outer_loop &other) = delete;
 	cpu_reduce_outer_loop(cpu_reduce_outer_loop &&other) = default;
@@ -51,8 +62,8 @@ public:
 	void operator()(Pointers... pointers) const;
 
 private:
-	init_operator_type m_vector_init_handler;
-	accum_operator_type m_vector_accum_handler;
+	init_functor_type m_vector_init_handler;
+	accum_functor_type m_vector_accum_handler;
 	array_access_layout m_access_layout;
 	std::size_t m_first_reduction_axis;
 
@@ -67,15 +78,26 @@ private:
 /**
  * @brief Construct a `cpu_reduce_outer_loop` by deducing its arguments.
  * 
- * @return cpu_reduce_outer_loop<OpInit, OpAcc> The newly created 
- * `cpu_reduce_outer_loop`
+ * @tparam OpInit Functor to be dispatched for initializing 1D vectors. 
+ * Must have a signature accepting `(Pointers... operands, std::size_t count)`
+ * @tparam OpAccum Functor to be dispatched for accumulation 1D vectors. 
+ * Must have a signature accepting `(Pointers... operands, std::size_t count)`
+ * 
+ * @param vector_init_handler Functor to be called for the first iteration
+ * on the reduction loop. It should not read from the output values and
+ * instead only write the result of the first iteration given the first 
+ * input vector.
+ * @param vector_accum_handler Functor to be called in subsequent reduction
+ * iterations. It should apply to the output the result of the current
+ * iteration.
  * @param access_layout Access layout used for iterating over the layout.
+ * @return cpu_reduce_outer_loop<Op> The newly created `cpu_reduce_outer_loop`
  */
-template <typename OpInit, typename OpAcc>
-cpu_reduce_outer_loop<OpInit, OpAcc> make_cpu_reduce_outer_loop(
+template <typename OpInit, typename OpAccum>
+cpu_reduce_outer_loop<OpInit, OpAccum> make_cpu_reduce_outer_loop(
 	OpInit vector_init_handler,
-	OpAcc vector_accum_handler,
-	array_access_layout access_layout
+	OpAccum vector_accum_handler,
+	multi_array_access_layout access_layout
 );
 
 } // namespace multidimensional

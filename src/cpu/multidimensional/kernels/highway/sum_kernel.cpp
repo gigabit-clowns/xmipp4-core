@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "cpu/multidimensional/highway/sum_kernel.cpp"
+#define HWY_TARGET_INCLUDE "cpu/multidimensional/kernels/highway/sum_kernel.cpp"
 
 #include "hwy/foreach_target.h"
 #include "hwy/highway.h"

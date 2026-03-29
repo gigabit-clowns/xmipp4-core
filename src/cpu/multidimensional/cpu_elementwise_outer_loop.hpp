@@ -20,7 +20,7 @@ namespace multidimensional
  * accepting `(Pointers... operands, std::size_t count)`
  */
 template <typename Op>
-class cpu_outer_loop
+class cpu_elementwise_outer_loop
 {
 public:
 	using operator_type = Op;
@@ -32,16 +32,16 @@ public:
 	 * multidimensional array.
 	 * @param access_layout Access layout used for iterating over the layout.
 	 */
-	cpu_outer_loop(
+	cpu_elementwise_outer_loop(
 		operator_type vector_handler,
 		multi_array_access_layout access_layout
 	);
-	cpu_outer_loop(const cpu_outer_loop &other) = delete;
-	cpu_outer_loop(cpu_outer_loop &&other) = default;
-	~cpu_outer_loop() = default;
+	cpu_elementwise_outer_loop(const cpu_elementwise_outer_loop &other) = delete;
+	cpu_elementwise_outer_loop(cpu_elementwise_outer_loop &&other) = default;
+	~cpu_elementwise_outer_loop() = default;
 
-	cpu_outer_loop& operator=(const cpu_outer_loop &other) = delete;
-	cpu_outer_loop& operator=(cpu_outer_loop &&other) = default;
+	cpu_elementwise_outer_loop& operator=(const cpu_elementwise_outer_loop &other) = delete;
+	cpu_elementwise_outer_loop& operator=(cpu_elementwise_outer_loop &&other) = default;
 
 	/**
 	 * @brief Invoke the loop with a set of operands.
@@ -65,18 +65,18 @@ private:
 };
 
 /**
- * @brief Construct a `cpu_outer_loop` by deducing its arguments.
+ * @brief Construct a `cpu_elementwise_outer_loop` by deducing its arguments.
  * 
  * @tparam Op Functor to be dispatched for 1D vectors. Must have a signature
  * accepting `(Pointers... operands, std::size_t count)`
- * @return cpu_outer_loop<Op> The newly created 
- * `cpu_outer_loop`
+ * @return cpu_elementwise_outer_loop<Op> The newly created 
+ * `cpu_elementwise_outer_loop`
  * @param vector_handler Function to be called for each 1D vector in the
  * multidimensional array.
  * @param access_layout Access layout used for iterating over the layout.
  */
 template <typename Op>
-cpu_outer_loop<Op> make_cpu_outer_loop(
+cpu_elementwise_outer_loop<Op> make_cpu_outer_loop(
 	Op vector_handler,
 	multi_array_access_layout access_layout
 );
@@ -84,4 +84,4 @@ cpu_outer_loop<Op> make_cpu_outer_loop(
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "cpu_outer_loop.inl"
+#include "cpu_elementwise_outer_loop.inl"

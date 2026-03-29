@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cpu_outer_loop.hpp"
+#include "cpu_elementwise_outer_loop.hpp"
 
 namespace xmipp4 
 {
@@ -9,7 +9,7 @@ namespace multidimensional
 
 template <typename Op>
 inline
-cpu_outer_loop<Op>::cpu_outer_loop(
+cpu_elementwise_outer_loop<Op>::cpu_elementwise_outer_loop(
 	operator_type vector_handler,
 	multi_array_access_layout access_layout
 )
@@ -21,7 +21,7 @@ cpu_outer_loop<Op>::cpu_outer_loop(
 template <typename Op>
 template <typename... Pointers>
 inline
-void cpu_outer_loop<Op>::operator()(
+void cpu_elementwise_outer_loop<Op>::operator()(
 	Pointers... pointers
 ) const
 {
@@ -34,7 +34,7 @@ void cpu_outer_loop<Op>::operator()(
 template <typename Op>
 template <typename... Pointers, std::size_t... Is>
 inline
-void cpu_outer_loop<Op>::loop_impl(
+void cpu_elementwise_outer_loop<Op>::loop_impl(
 	const std::tuple<Pointers...> &pointers, 
 	std::index_sequence<Is...>
 ) const
@@ -55,12 +55,12 @@ void cpu_outer_loop<Op>::loop_impl(
 
 template <typename Op>
 inline
-cpu_outer_loop<Op> make_cpu_outer_loop(
+cpu_elementwise_outer_loop<Op> make_cpu_outer_loop(
 	Op vector_handler,
 	multi_array_access_layout access_layout
 )
 {
-	return cpu_outer_loop<Op>(
+	return cpu_elementwise_outer_loop<Op>(
 		std::forward<Op>(vector_handler),
 		std::move(access_layout)
 	);

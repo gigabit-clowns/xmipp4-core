@@ -10,7 +10,7 @@
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
-#include "cpu_outer_loop.hpp"
+#include "cpu_elementwise_outer_loop.hpp"
 #include "highway/fill_constant_kernel.hpp"
 
 #include <algorithm>

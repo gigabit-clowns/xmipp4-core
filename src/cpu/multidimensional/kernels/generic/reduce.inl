@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "arithmetic.hpp"
+#include "reduce.hpp"
 
 namespace xmipp4
 {
@@ -21,7 +21,7 @@ T sum_strided(
 	{
 		total += x[x_index];
 
-		x_index += x_inner_stride;
+		x_index += x_stride;
 	}
 
 	return total;

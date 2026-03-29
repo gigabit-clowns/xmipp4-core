@@ -190,12 +190,10 @@ std::shared_ptr<kernel> make_sum_kernel(
 			[result_inner_stride, x_inner_stride] 
 			(T *result, const T *x, std::size_t count)
 			{
-				add_strided(
-					result,
+				add_inplace_strided(
 					result,
 					x,
 					count,
-					result_inner_stride,
 					result_inner_stride,
 					x_inner_stride
 				);

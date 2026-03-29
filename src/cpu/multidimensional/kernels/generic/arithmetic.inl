@@ -34,6 +34,27 @@ void add_strided(
 
 template <typename T>
 inline
+void add_inplace_strided(
+	T* result, 
+	const T* x, 
+	std::size_t count, 
+	std::ptrdiff_t result_stride, 
+	std::ptrdiff_t x_stride
+)
+{
+	std::ptrdiff_t result_index = 0;
+	std::ptrdiff_t x_index = 0;
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		result[result_index] += x[x_index];
+
+		result_index += result_stride;
+		x_index += x_stride;
+	}
+}
+
+template <typename T>
+inline
 void add_constant_strided(
 	T* result, 
 	const T* input, 

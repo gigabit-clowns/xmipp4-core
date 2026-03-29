@@ -17,7 +17,7 @@ cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
 	: m_vector_init_handler(std::move(vector_init_handler))
 	, m_vector_accum_handler(std::move(vector_accum_handler))
 	, m_access_layout(std::move(access_layout))
-	, m_first_reduction_axis(0)
+	, m_first_reduction_axis(m_access_layout.get_rank())
 {
 	const auto strides = m_access_layout.get_strides(0);
 	for (std::size_t i = 0; i < strides.size(); ++i)
@@ -67,10 +67,13 @@ void cpu_reduce_outer_loop<OpInit, OpAcc>::loop_impl(
 	const auto offsets = ite.get_offsets();
 	do
 	{
-		tile_width = std::min(tile_width, max_tile_width)
+		tile_width = std::min(tile_width, max_tile_width);
 		do
 		{
-			m_vector_accum_handler(std::get<Is>(pointers) + offsets[Is]..., count);
+			m_vector_accum_handler(
+				std::get<Is>(pointers) + offsets[Is]..., 
+				tile_width
+			);
 		} while (m_access_layout.next(ite, 1, m_first_reduction_axis));
 	} while ((tile_width = m_access_layout.next(ite, tile_width, 0)));
 }

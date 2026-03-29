@@ -19,4 +19,4 @@ T sum_strided(
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "arithmetic.inl"
+#include "reduce.inl"

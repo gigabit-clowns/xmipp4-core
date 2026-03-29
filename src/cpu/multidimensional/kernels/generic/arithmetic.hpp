@@ -21,6 +21,15 @@ void add_strided(
 );
 
 template <typename T>
+void add_inplace_strided(
+	T* result, 
+	const T* x, 
+	std::size_t count, 
+	std::ptrdiff_t result_stride, 
+	std::ptrdiff_t x_stride
+);
+
+template <typename T>
 void add_constant_strided(
 	T* result, 
 	const T* input, 

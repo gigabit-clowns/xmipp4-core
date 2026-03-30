@@ -77,6 +77,48 @@ std::complex<T> SumImpl(const std::complex<T>* values, std::size_t count)
 
 
 
+#if !HWY_HAVE_FLOAT16
+
+hwy::float16_t SumImpl(
+	const hwy::float16_t* x, 
+	std::size_t count
+) 
+{
+	hwy::float32_t sum = 0;
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		sum += hwy::F32FromF16(x[i]);
+	}
+
+	return hwy::F16FromF32(sum);
+}
+
+std::complex<hwy::float16_t> SumImpl(
+	const std::complex<hwy::float16_t>* x, 
+	std::size_t count
+) 
+{
+	std::complex<hwy::float32_t> sum = {};
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		sum += std::complex<hwy::float32_t>(
+			hwy::F32FromF16(x[i].real()),
+			hwy::F32FromF16(x[i].imag())
+		);
+	}
+
+	return std::complex<hwy::float16_t>(
+		hwy::F16FromF32(sum.real()),
+		hwy::F16FromF32(sum.imag())
+	);
+}
+
+#endif // !HWY_HAVE_FLOAT16
+
+
+
 #define XMIPP4_HWY_DECLARE_SUM(T, Suffix) \
 	T Sum##Suffix( \
 		const T* x, \
@@ -132,18 +174,12 @@ typename sum_kernel<T>::value_type sum_kernel<T>::operator()(
 	return m_handle(values, count);
 }
 
-template class sum_kernel<std::uint8_t>;
-template class sum_kernel<std::uint16_t>;
-template class sum_kernel<std::uint32_t>;
-template class sum_kernel<std::uint64_t>;
-template class sum_kernel<std::int8_t>;
-template class sum_kernel<std::int16_t>;
-template class sum_kernel<std::int32_t>;
-template class sum_kernel<std::int64_t>;
-template class sum_kernel<float>;
-template class sum_kernel<double>;
-template class sum_kernel<std::complex<float>>;
-template class sum_kernel<std::complex<double>>;
+
+
+#define XMIPP4_HWY_EXPORT_SUM_KERNEL(T, Suffix) \
+	template class sum_kernel<T>;
+
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_SUM_KERNEL)
 
 } // namespace multidimensional
 } // namespace xmipp4

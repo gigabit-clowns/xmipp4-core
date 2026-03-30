@@ -85,6 +85,49 @@ void AddConstantImpl(
 
 
 
+#if !HWY_HAVE_FLOAT16
+
+void AddConstantImpl(
+	hwy::float16_t* result, 
+	const hwy::float16_t* x, 
+	std::size_t count,
+	const hwy::float16_t& value
+) 
+{
+	const auto value_f32 = hwy::F32FromF16(value);
+
+	// Very inefficient. Only as fallback
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		result[i] = 
+			hwy::F16FromF32(hwy::F32FromF16(x[i]) + value_f32);
+	}
+}
+
+void AddConstantImpl(
+	std::complex<hwy::float16_t>* result, 
+	const std::complex<hwy::float16_t>* x, 
+	std::size_t count,
+	const std::complex<hwy::float16_t>& value
+) 
+{
+	const auto value_real_f32 = hwy::F32FromF16(value.real());
+	const auto value_imag_f32 = hwy::F32FromF16(value.imag());
+
+	// Very inefficient. Only as fallback
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		result[i] = std::complex<hwy::float16_t>(
+			hwy::F16FromF32(hwy::F32FromF16(x[i].real()) + value_real_f32),
+			hwy::F16FromF32(hwy::F32FromF16(x[i].imag()) + value_imag_f32)
+		);
+	}
+}
+
+#endif // !HWY_HAVE_FLOAT16
+
+
+
 #define XMIPP4_HWY_DECLARE_ADD_CONSTANT(T, Suffix) \
 	void AddConstant##Suffix( \
 		T* result, \
@@ -144,20 +187,12 @@ void add_constant_kernel<T>::operator()(
 	m_handle(result, x, count, value);
 }
 
-template class add_constant_kernel<std::uint8_t>;
-template class add_constant_kernel<std::uint16_t>;
-template class add_constant_kernel<std::uint32_t>;
-template class add_constant_kernel<std::uint64_t>;
-template class add_constant_kernel<std::int8_t>;
-template class add_constant_kernel<std::int16_t>;
-template class add_constant_kernel<std::int32_t>;
-template class add_constant_kernel<std::int64_t>;
-// TODO add F16
-template class add_constant_kernel<float>;
-template class add_constant_kernel<double>;
-template class add_constant_kernel<std::complex<float>>;
-template class add_constant_kernel<std::complex<double>>;
-// TODO add F32
+
+
+#define XMIPP4_HWY_EXPORT_ADD_CONSTANT_KERNEL(T, Suffix) \
+	template class add_constant_kernel<T>;
+
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_ADD_CONSTANT_KERNEL)
 
 } // namespace multidimensional
 } // namespace xmipp4

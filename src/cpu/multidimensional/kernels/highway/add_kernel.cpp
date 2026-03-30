@@ -20,25 +20,6 @@ namespace HWY_NAMESPACE
 
 namespace hn = hwy::HWY_NAMESPACE;
 
-#if !HWY_HAVE_FLOAT16
-
-void AddImpl(
-	hwy::float16_t* result, 
-	const hwy::float16_t* x, 
-	const hwy::float16_t* y, 
-	std::size_t count
-) 
-{
-	// Very inefficient. Only as fallback
-	for (std::size_t i = 0; i < count; ++i)
-	{
-		result[i] = 
-			hwy::F16FromF32(hwy::F32FromF16(x[i]) + hwy::F32FromF16(y[i]));
-	}
-}
-
-#endif // !HWY_HAVE_FLOAT16
-
 template <typename T>
 void AddImpl(
 	T* result_array, 
@@ -69,6 +50,25 @@ void AddImpl(
 	const auto result = hn::Add(x, y);
 	hn::StoreN(result, d, result_array + i, remaining);
 }
+
+#if !HWY_HAVE_FLOAT16
+
+void AddImpl(
+	hwy::float16_t* result, 
+	const hwy::float16_t* x, 
+	const hwy::float16_t* y, 
+	std::size_t count
+) 
+{
+	// Very inefficient. Only as fallback
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		result[i] = 
+			hwy::F16FromF32(hwy::F32FromF16(x[i]) + hwy::F32FromF16(y[i]));
+	}
+}
+
+#endif // !HWY_HAVE_FLOAT16
 
 template <typename T>
 void AddImpl(
@@ -147,20 +147,12 @@ void add_kernel<T>::operator()(
 	m_handle(result, x, y, count);
 }
 
-template class add_kernel<std::uint8_t>;
-template class add_kernel<std::uint16_t>;
-template class add_kernel<std::uint32_t>;
-template class add_kernel<std::uint64_t>;
-template class add_kernel<std::int8_t>;
-template class add_kernel<std::int16_t>;
-template class add_kernel<std::int32_t>;
-template class add_kernel<std::int64_t>;
-// TODO add F16
-template class add_kernel<float>;
-template class add_kernel<double>;
-// TODO add C32
-template class add_kernel<std::complex<float>>;
-template class add_kernel<std::complex<double>>;
+
+
+#define XMIPP4_HWY_EXPORT_ADD_KERNEL(T, Suffix) \
+	template class add_kernel<T>;
+
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_ADD_KERNEL)
 
 } // namespace multidimensional
 } // namespace xmipp4

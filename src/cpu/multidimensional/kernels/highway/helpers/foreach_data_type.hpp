@@ -41,11 +41,13 @@
 
 // TODO add F16
 #define XMIPP4_HWY_FOR_EACH_FLOATING_TYPE(F) \
+	F(hwy::float16_t, F16) \
 	F(hwy::float32_t, F32) \
 	F(hwy::float64_t, F64)
 
 // TODO add C32
 #define XMIPP4_HWY_FOR_EACH_COMPLEX_TYPE(F) \
+	F(std::complex<hwy::float16_t>, C32) \
 	F(std::complex<hwy::float32_t>, C64) \
 	F(std::complex<hwy::float64_t>, C128)
 

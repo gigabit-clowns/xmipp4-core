@@ -77,6 +77,30 @@ void FillConstantImpl(
 
 
 
+#if !HWY_HAVE_FLOAT16
+
+void FillConstantImpl(
+	hwy::float16_t* result, 
+	std::size_t count,
+	const hwy::float16_t& value
+) 
+{
+	std::fill_n(result, count, value);
+}
+
+void FillConstantImpl(
+	std::complex<hwy::float16_t>* result, 
+	std::size_t count,
+	const std::complex<hwy::float16_t>& value
+) 
+{
+	std::fill_n(result, count, value);
+}
+
+#endif // !HWY_HAVE_FLOAT16
+
+
+
 #define XMIPP4_HWY_DECLARE_FILL_CONSTANT(T, Suffix) \
 	void FillConstant##Suffix( \
 		T* result, \
@@ -134,18 +158,12 @@ void fill_constant_kernel<T>::operator()(
 	m_handle(result, count, value);
 }
 
-template class fill_constant_kernel<std::uint8_t>;
-template class fill_constant_kernel<std::uint16_t>;
-template class fill_constant_kernel<std::uint32_t>;
-template class fill_constant_kernel<std::uint64_t>;
-template class fill_constant_kernel<std::int8_t>;
-template class fill_constant_kernel<std::int16_t>;
-template class fill_constant_kernel<std::int32_t>;
-template class fill_constant_kernel<std::int64_t>;
-template class fill_constant_kernel<float>;
-template class fill_constant_kernel<double>;
-template class fill_constant_kernel<std::complex<float>>;
-template class fill_constant_kernel<std::complex<double>>;
+
+
+#define XMIPP4_HWY_EXPORT_FILL_CONSTANT_KERNEL(T, Suffix) \
+	template class fill_constant_kernel<T>;
+
+XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_FILL_CONSTANT_KERNEL)
 
 } // namespace multidimensional
 } // namespace xmipp4

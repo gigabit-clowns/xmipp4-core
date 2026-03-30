@@ -59,10 +59,18 @@ public:
 
 	std::ptrdiff_t get_offset(std::size_t operand) const;
 
-	std::size_t iter(multi_array_iterator &ite, std::size_t dim) const;
+	std::size_t iter(
+		multi_array_iterator &ite, 
+		std::size_t first_dim, 
+		std::size_t last_dim
+	) const;
 
-	std::size_t 
-	next(multi_array_iterator &ite, std::size_t n, std::size_t dim) const noexcept;
+	std::size_t next(
+		multi_array_iterator &ite, 
+		std::size_t n, 
+		std::size_t first_dim,
+		std::size_t last_dim
+	) const noexcept;
 
 private:
 	extent_vector_type m_extents;

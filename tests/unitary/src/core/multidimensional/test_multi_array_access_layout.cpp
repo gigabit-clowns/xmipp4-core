@@ -324,7 +324,7 @@ TEST_CASE( "calling next on an array access layout on a block basis should advan
 	CHECK( offsets[1] == 1024 );
 }
 
-TEST_CASE( "calling next on an array access layout on an outer dimension block basis should posterior indices and offsets", "[multi_array_access_layout]" )
+TEST_CASE( "calling next on an array access layout on an first_dim should posterior indices and offsets", "[multi_array_access_layout]" )
 {
 	multi_array_access_layout_implementation::extent_vector_type extents = 
 		{ 4, 15, 4 };
@@ -384,6 +384,69 @@ TEST_CASE( "calling next on an array access layout on an outer dimension block b
 	CHECK( indices[2] == 0 );
 	CHECK( offsets[0] == 2048 );
 	CHECK( offsets[1] == 1024 );
+}
+
+TEST_CASE( "calling next on an array access layout with first_dim and last_dim should update in-between indices and offsets", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides1 = 
+		{ 1, 5, 80 };
+	multi_array_access_layout_implementation::stride_vector_type strides2 = 
+		{ 1, 4, 60 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides1, 2048UL);
+	implementation->add_operand(strides2, 1024UL);
+
+	multi_array_access_layout layout(std::move(implementation));
+	multi_array_iterator ite;
+
+	REQUIRE( layout.iter(ite, 1, 2) == 15 );
+
+	const auto offsets = ite.get_offsets();
+	const auto indices = ite.get_indices();
+	REQUIRE( offsets.size() == 2 );
+	REQUIRE( indices.size() == 3 );
+
+	const auto first_index = GENERATE(0, 2, 3);
+	const auto last_index = GENERATE(0, 2, 3);
+	indices[0] = first_index; // Should not be modified.
+	indices[2] = last_index; // Should not be modified.
+
+	REQUIRE( indices[1] == 0 );
+	REQUIRE( offsets[0] == 2048);
+	REQUIRE( offsets[1] == 1024);
+
+	REQUIRE( layout.next(ite, 8, 1, 2) == 7 );
+
+	REQUIRE( indices[0] == first_index );
+	REQUIRE( indices[1] == 8 );
+	REQUIRE( indices[2] == last_index );
+	REQUIRE( 2048 + 8*strides1[1] == offsets[0] );
+	REQUIRE( 1024 + 8*strides2[1] == offsets[1] );
+
+	REQUIRE( layout.next(ite, 7, 1, 2) == 0 );
+}
+
+TEST_CASE( "calling next on an array access layout with same first_dim and last_dim should prompt single iteration", "[multi_array_access_layout]" )
+{
+	multi_array_access_layout_implementation::extent_vector_type extents = 
+		{ 4, 15, 4 };
+	multi_array_access_layout_implementation::stride_vector_type strides1 = 
+		{ 1, 5, 80 };
+	multi_array_access_layout_implementation::stride_vector_type strides2 = 
+		{ 1, 4, 60 };
+	auto implementation = 
+		std::make_unique<multi_array_access_layout_implementation>(extents);
+	implementation->add_operand(strides1, 2048UL);
+	implementation->add_operand(strides2, 1024UL);
+
+	multi_array_access_layout layout(std::move(implementation));
+	multi_array_iterator ite;
+
+	REQUIRE( layout.iter(ite, 2, 2) == 1 );
+	REQUIRE( layout.next(ite, 1, 2, 2) == 0 );
 }
 
 TEST_CASE( "calling next on an array access layout with zero step should not advance the iterator", "[multi_array_access_layout]" )

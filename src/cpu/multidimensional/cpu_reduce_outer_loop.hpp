@@ -66,6 +66,7 @@ private:
 	accum_functor_type m_vector_accum_handler;
 	multi_array_access_layout m_access_layout;
 	std::size_t m_first_reduction_axis;
+	std::size_t m_last_reduction_axis;
 
 	template <typename... Pointers, std::size_t... Is>
 	void loop_impl(

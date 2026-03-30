@@ -18,6 +18,7 @@ cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
 	, m_vector_accum_handler(std::move(vector_accum_handler))
 	, m_access_layout(std::move(access_layout))
 	, m_first_reduction_axis(m_access_layout.get_rank())
+	, m_last_reduction_axis(m_access_layout.get_rank())
 {
 	const auto strides = m_access_layout.get_strides(0);
 	for (std::size_t i = 0; i < strides.size(); ++i)
@@ -28,7 +29,13 @@ cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
 			break;
 		}
 	}
-
+	for (std::size_t i = m_first_reduction_axis; i < strides.size(); ++i)
+	{
+		if (strides[i] == 0)
+		{
+			m_last_reduction_axis = i;
+		}
+	}
 }
 
 template <typename OpInit, typename OpAcc>
@@ -52,30 +59,29 @@ void cpu_reduce_outer_loop<OpInit, OpAcc>::loop_impl(
 	std::index_sequence<Is...>
 ) const
 {
-	const std::size_t max_tile_width = 4096; // TODO determine
-
+	std::size_t count;
 	multi_array_iterator ite;
-	std::size_t tile_width;
-	if (!(tile_width = m_access_layout.iter(ite)))
+	if (!(count = m_access_layout.iter(ite)))
 	{
 		return;
 	}
 
-	// TODO initialize when necessary.
-	// TODO decide optimal iteration pattern.
+	const auto offsets = 
+		static_cast<const multi_array_iterator&>(ite).get_offsets();
 
-	const auto offsets = ite.get_offsets();
-	do
+	m_vector_init_handler(
+		std::get<Is>(pointers) + offsets[Is]..., 
+		count
+	);
+
+	// TODO implement a tiling strategy.
+	while ((count = m_access_layout.next(ite, count)))
 	{
-		tile_width = std::min(tile_width, max_tile_width);
-		do
-		{
-			m_vector_accum_handler(
-				std::get<Is>(pointers) + offsets[Is]..., 
-				tile_width
-			);
-		} while (m_access_layout.next(ite, 1, m_first_reduction_axis));
-	} while ((tile_width = m_access_layout.next(ite, tile_width, 0)));
+		m_vector_accum_handler(
+			std::get<Is>(pointers) + offsets[Is]..., 
+			count
+		);
+	} 
 }
 
 template <typename OpInit, typename OpAcc>

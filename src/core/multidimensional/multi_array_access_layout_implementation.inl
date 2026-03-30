@@ -172,7 +172,8 @@ multi_array_access_layout_implementation::get_offset(std::size_t operand) const
 inline
 std::size_t multi_array_access_layout_implementation::iter(
 	multi_array_iterator &ite,
-	std::size_t dim
+	std::size_t first_dim,
+	std::size_t last_dim
 ) const
 {
 	const auto valid = std::all_of(
@@ -204,25 +205,28 @@ std::size_t multi_array_access_layout_implementation::iter(
 		std::move(offsets)
 	);
 
-	if (dim >= m_extents.size())
+	last_dim = std::min(last_dim, m_extents.size());
+	if (first_dim >= last_dim)
 	{
 		return 1UL;
 	}
 
-	return m_extents[dim];
+	return m_extents[first_dim];
 }
 
 inline
 std::size_t multi_array_access_layout_implementation::next(
 	multi_array_iterator &ite,
 	std::size_t n,
-	std::size_t dim
+	std::size_t first_dim,
+	std::size_t last_dim
 ) const noexcept
 {
 	const auto extents = get_extents();
 	const auto n_dim = extents.size();
+	last_dim = std::min(last_dim, n_dim);
 
-	if (dim >= n_dim)
+	if (first_dim >= last_dim)
 	{
 		// No "outer" loop to process.
 		return 0;
@@ -234,7 +238,7 @@ std::size_t multi_array_access_layout_implementation::next(
 	if (n == 0)
 	{
 		// Fast return for query.
-		return extents[dim] - indices[dim];
+		return extents[first_dim] - indices[first_dim];
 	}
 
 	const auto offsets = ite.get_offsets();
@@ -244,11 +248,11 @@ std::size_t multi_array_access_layout_implementation::next(
 	if (n > 1)
 	{
 		const auto base_increment = n - 1;
-		apply_strides(offsets, dim, base_increment);
-		indices[dim] += base_increment;
+		apply_strides(offsets, first_dim, base_increment);
+		indices[first_dim] += base_increment;
 	}
 
-	for (std::size_t i = dim; i < n_dim; ++i) 
+	for (std::size_t i = first_dim; i < last_dim; ++i) 
 	{
 		const auto next_index = indices[i] + 1;
 		const auto extent = extents[i];
@@ -258,7 +262,7 @@ std::size_t multi_array_access_layout_implementation::next(
 			apply_strides(offsets, i, 1);
 			indices[i] = next_index;
 
-			return extents[dim] - indices[dim];
+			return extents[first_dim] - indices[first_dim];
 		}
 
 		apply_strides(offsets, i, -static_cast<std::ptrdiff_t>(indices[i]));

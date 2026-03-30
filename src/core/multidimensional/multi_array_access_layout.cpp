@@ -84,7 +84,8 @@ std::ptrdiff_t multi_array_access_layout::get_offset(std::size_t operand) const
 
 std::size_t multi_array_access_layout::iter(
 	multi_array_iterator &ite, 
-	std::size_t dim
+	std::size_t first_dim,
+	std::size_t last_dim
 ) const
 {
 	if (!m_implementation)
@@ -92,13 +93,14 @@ std::size_t multi_array_access_layout::iter(
 		return 0UL;
 	}
 
-	return m_implementation->iter(ite, dim);
+	return m_implementation->iter(ite, first_dim, last_dim);
 }
 
 std::size_t multi_array_access_layout::next(
 	multi_array_iterator &ite, 
 	std::size_t n,
-	std::size_t dim
+	std::size_t first_dim,
+	std::size_t last_dim
 ) const noexcept
 {
 	if (!m_implementation)
@@ -106,7 +108,7 @@ std::size_t multi_array_access_layout::next(
 		return 0UL;
 	}
 
-	return m_implementation->next(ite, n, dim);
+	return m_implementation->next(ite, n, first_dim, last_dim);
 }
 
 const multi_array_access_layout_implementation*

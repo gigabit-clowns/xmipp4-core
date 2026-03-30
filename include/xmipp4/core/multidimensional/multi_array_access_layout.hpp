@@ -31,6 +31,13 @@ class multi_array_access_layout_implementation;
 class multi_array_access_layout
 {
 public:
+	/**
+	 * Constant value to be passed to the `last_dim` parameter of `iter()` and
+	 * `next()` to signal the past-the-end axis of the layout.
+	 */
+	static XMIPP4_CONST_CONSTEXPR std::size_t end_dim = 
+		std::numeric_limits<std::size_t>::max();
+
 	XMIPP4_CORE_API multi_array_access_layout();
 	XMIPP4_CORE_API explicit multi_array_access_layout(
 		std::unique_ptr<
@@ -97,13 +104,20 @@ public:
 	 * @brief Populate an array iterator for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
-	 * @param dim Index of the inner-most dimension to be iterated. Must
+	 * @param first_dim Index of the inner-most dimension to be iterated. Must
 	 * be less or equal to get_rank(). Defaults to zero.
+	 * @param last_dim Index of the outer-most dimension to be iterated. Must
+	 * be less or equal to `get_rank()` or equal to `end_dim`. Defaults to 
+	 * `end_dim`.
 	 * @return std::size_t Number of elements in the dimension. 0 if the
 	 * layout can not be iterated.
 	 */
 	XMIPP4_CORE_API
-	std::size_t iter(multi_array_iterator &ite, std::size_t dim=0) const;
+	std::size_t iter(
+		multi_array_iterator &ite, 
+		std::size_t first_dim = 0,
+		std::size_t last_dim = end_dim
+	) const;
 
 	/**
 	 * @brief Advance an array iterator.
@@ -114,23 +128,26 @@ public:
 	 * @param n Number of elements to be advanced. Must be less or equal to the 
 	 * number returned by the previous call to `iter()` or `next()`. Otherwise 
 	 * behavior is undefined.
-	 * @param dim Index of the inner-most dimension to be iterated. Must
-	 * be less or equal to `get_rank()`. Defaults to zero. Although strictly not
-	 * mandated, it is recommended to keep this parameter constant across 
-	 * iterations. 
+	 * @param first_dim Index of the inner-most dimension to be iterated. Must
+	 * be less or equal to `get_rank()`. Defaults to zero. 
+	 * @param last_dim Index of the outer-most dimension to be iterated. Must
+	 * be less or equal to `get_rank()` or equal to `end_dim`. Defaults to 
+	 * `end_dim`.
 	 * @return std::size_t Number of remaining elements in `dim`. 0 if iteration 
 	 * has finished.
 	 * 
-	 * @warning If dim is modified during iteration, the value provided to `n` 
-	 * needs special attention as the limit may be smaller than the last value 
-	 * returned by `iter()` or `next()`. If unsure, the new limit may be 
-	 * computed using `next(ite, 0, dim)`.
+	 * @warning If `first_dim` or `last_dim` is modified during iteration, the 
+	 * value provided to `n` needs special attention as the limit may be smaller 
+	 * than the last value returned by `iter()` or last `next()`. If unsure, 
+	 * the new limit may be computed using `next(ite, 0, first_dim, last_dim)`.
 	 */
 	XMIPP4_CORE_API
 	std::size_t next(
 		multi_array_iterator &ite, 
 		std::size_t n, 
-		std::size_t dim = 0
+		std::size_t first_dim = 0,
+		std::size_t last_dim = end_dim
+
 	) const noexcept;
 
 	/**

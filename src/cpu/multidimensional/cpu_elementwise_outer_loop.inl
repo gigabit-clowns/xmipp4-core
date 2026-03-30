@@ -50,7 +50,8 @@ void cpu_elementwise_outer_loop<Op>::loop_impl(
 	do
 	{
 		m_vector_handler(std::get<Is>(pointers) + offsets[Is]..., count);
-	} while ((count = m_access_layout.next(ite, count)));
+	} 
+	while ((count = m_access_layout.next(ite, count)));
 }
 
 template <typename Op>

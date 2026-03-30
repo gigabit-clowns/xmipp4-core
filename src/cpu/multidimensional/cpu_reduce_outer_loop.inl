@@ -17,25 +17,7 @@ cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
 	: m_vector_init_handler(std::move(vector_init_handler))
 	, m_vector_accum_handler(std::move(vector_accum_handler))
 	, m_access_layout(std::move(access_layout))
-	, m_first_reduction_axis(m_access_layout.get_rank())
-	, m_last_reduction_axis(m_access_layout.get_rank())
 {
-	const auto strides = m_access_layout.get_strides(0);
-	for (std::size_t i = 0; i < strides.size(); ++i)
-	{
-		if (strides[i] == 0)
-		{
-			m_first_reduction_axis = i;
-			break;
-		}
-	}
-	for (std::size_t i = m_first_reduction_axis; i < strides.size(); ++i)
-	{
-		if (strides[i] == 0)
-		{
-			m_last_reduction_axis = i;
-		}
-	}
 }
 
 template <typename OpInit, typename OpAcc>
@@ -75,6 +57,7 @@ void cpu_reduce_outer_loop<OpInit, OpAcc>::loop_impl(
 	);
 
 	// TODO implement a tiling strategy.
+	// TODO decide if this is correct.
 	while ((count = m_access_layout.next(ite, count)))
 	{
 		m_vector_accum_handler(

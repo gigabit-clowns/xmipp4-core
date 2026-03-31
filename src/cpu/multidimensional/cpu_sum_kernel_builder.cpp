@@ -31,7 +31,7 @@ namespace
 using sum_operand_count_tag =
 	std::integral_constant<std::size_t, sum_operation::OPERAND_COUNT>;
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -59,7 +59,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -101,7 +101,7 @@ T scalar_cast(std::size_t value, type_tag<std::complex<T>>)
 	return T(value);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -130,7 +130,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -160,13 +160,10 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		std::ptrdiff_t,
-		std::ptrdiff_t
-	> inner_strides,
+	const std::tuple<std::ptrdiff_t, std::ptrdiff_t>& inner_strides,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -205,6 +202,18 @@ std::shared_ptr<kernel> make_sum_kernel(
 		),
 		type_list<T>(),
 		type_list<T>()
+	);
+}
+
+template <typename Stride1, typename Stride2>
+std::shared_ptr<kernel> make_sum_kernel(
+	multi_array_access_layout /*access_layout*/,
+	const std::tuple<Stride1, Stride2>& /*inner_strides*/,
+	type_tag<void> /*type_tag*/
+)
+{
+	throw std::invalid_argument(
+		"cpu_sum_kernel_builder::build: Expected an arithmetic type."
 	);
 }
 
@@ -297,6 +306,7 @@ std::shared_ptr<kernel> cpu_sum_kernel_builder::build(
 				sum_operand_count_tag()
 			);
 		},
+		native_arithmetic_type_map(),
 		data_type
 	);
 }

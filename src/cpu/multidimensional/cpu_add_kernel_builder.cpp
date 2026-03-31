@@ -30,14 +30,14 @@ namespace
 using add_operand_count_tag =
 	std::integral_constant<std::size_t, add_operation::OPERAND_COUNT>;
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
+	std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag,
 		contiguous_stride_tag
-	>, /*inner_strides*/
+	> /*inner_strides*/,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -55,14 +55,14 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
+	std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag,
 		contiguous_stride_tag
-	>, /*inner_strides*/
+	> /*inner_strides*/,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -80,14 +80,14 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
+	std::tuple<
 		contiguous_stride_tag,
 		contiguous_stride_tag,
 		broadcasting_stride_tag
-	>, /*inner_strides*/
+	> /*inner_strides*/,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -105,14 +105,14 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
+	std::tuple<
 		contiguous_stride_tag,
 		broadcasting_stride_tag,
 		broadcasting_stride_tag
-	>, /*inner_strides*/
+	> /*inner_strides*/,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -131,14 +131,10 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		ptrdiff_t,
-		ptrdiff_t,
-		ptrdiff_t
-	> inner_strides,
+	const std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t>& inner_strides,
 	type_tag<T> /*type_tag*/
 )
 {
@@ -168,6 +164,18 @@ std::shared_ptr<kernel> make_add_kernel(
 		),
 		type_list<T>(),
 		type_list<T, T>()
+	);
+}
+
+template <typename Stride1, typename Stride2, typename Stride3>
+std::shared_ptr<kernel> make_add_kernel(
+	multi_array_access_layout /*access_layout*/,
+	const std::tuple<Stride1, Stride2, Stride3>& /*inner_strides*/,
+	type_tag<void> /*type_tag*/
+)
+{
+	throw std::invalid_argument(
+		"cpu_add_kernel_builder::build: Expected an arithmetic type."
 	);
 }
 
@@ -260,6 +268,7 @@ std::shared_ptr<kernel> cpu_add_kernel_builder::build(
 				add_operand_count_tag()
 			);
 		},
+		native_arithmetic_type_map(),
 		data_type
 	);
 }

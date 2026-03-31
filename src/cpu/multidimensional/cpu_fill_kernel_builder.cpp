@@ -31,7 +31,7 @@ using fill_operand_count_tag =
 template <typename T>
 std::shared_ptr<kernel> make_fill_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
+	std::tuple<contiguous_stride_tag> /*inner_strides*/,
 	const T &fill_value
 )
 {
@@ -72,7 +72,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 
 std::shared_ptr<kernel> make_fill_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
+	std::tuple<contiguous_stride_tag> /*inner_strides*/,
 	char fill_value
 )
 {
@@ -93,7 +93,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 template <typename T, typename Stride>
 std::shared_ptr<kernel> make_fill_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<Stride> inner_strides,
+	std::tuple<Stride> inner_strides,
 	const T &fill_value
 )
 {
@@ -263,6 +263,7 @@ std::shared_ptr<kernel> cpu_fill_kernel_builder::build(
 				destination_type_tag
 			);
 		},
+		native_type_map(),
 		data_type,
 		fill_value.get_data_type()
 	);

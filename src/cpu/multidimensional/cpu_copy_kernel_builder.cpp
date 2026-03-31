@@ -31,10 +31,7 @@ using copy_operand_count_tag =
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		contiguous_stride_tag,
-		contiguous_stride_tag
-	>, /*inner_strides*/
+	std::tuple<contiguous_stride_tag, contiguous_stride_tag> /*inner_strides*/,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -55,10 +52,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		contiguous_stride_tag,
-		contiguous_stride_tag
-	>, /*inner_strides*/
+	std::tuple<contiguous_stride_tag, contiguous_stride_tag> /*inner_strides*/,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<T> /*source_type_tag*/
 )
@@ -79,10 +73,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		contiguous_stride_tag,
-		broadcasting_stride_tag
-	>, /*inner_strides*/
+	std::tuple<contiguous_stride_tag, broadcasting_stride_tag> /*inner_strides*/,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -105,10 +96,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		contiguous_stride_tag,
-		broadcasting_stride_tag
-	>, /*inner_strides*/
+	std::tuple<contiguous_stride_tag, broadcasting_stride_tag> /*inner_strides*/,
 	type_tag<bool> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -130,10 +118,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<
-		contiguous_stride_tag,
-		broadcasting_stride_tag
-	>, /*inner_strides*/
+	std::tuple<contiguous_stride_tag, broadcasting_stride_tag> /*inner_strides*/,
 	type_tag<char> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -155,7 +140,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,
-	const std::tuple<DstStrideT, SrcStrideT> inner_strides,
+	const std::tuple<DstStrideT, SrcStrideT>& inner_strides,
 	type_tag<T> /*destination_type_tag*/,
 	type_tag<Q> /*source_type_tag*/
 )
@@ -314,6 +299,7 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 				source_type_tag
 			);
 		},
+		native_type_map(),
 		destination_descriptor.get_data_type(),
 		source_descriptor.get_data_type()
 	);

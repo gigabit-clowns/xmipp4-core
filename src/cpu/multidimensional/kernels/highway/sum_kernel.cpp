@@ -7,6 +7,7 @@
 #include <hwy/highway.h>
 
 #include "helpers/foreach_data_type.hpp"
+#include "helpers/dispatch_pointer.hpp"
 
 #include <complex>
 
@@ -148,10 +149,10 @@ namespace multidimensional
 {
 
 #define XMIPP4_HWY_EXPORT_SUM(T, Suffix) \
-	HWY_EXPORT(Sum##Suffix); \
+	XMIPP4_HWY_EXPORT(Sum##Suffix); \
 	auto get_sum_kernel_pointer(type_tag<T>) \
 	{ \
-		return HWY_DYNAMIC_POINTER(Sum##Suffix); \
+		return XMIPP4_HWY_FUNCTION_POINTER(Sum##Suffix); \
 	}
 
 XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_SUM)

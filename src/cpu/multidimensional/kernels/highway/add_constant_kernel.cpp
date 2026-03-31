@@ -7,6 +7,7 @@
 #include <hwy/highway.h>
 
 #include "helpers/foreach_data_type.hpp"
+#include "helpers/dispatch_pointer.hpp"
 
 #include <complex>
 
@@ -159,10 +160,10 @@ namespace multidimensional
 {
 
 #define XMIPP4_HWY_EXPORT_ADD_CONSTANT(T, Suffix) \
-	HWY_EXPORT(AddConstant##Suffix); \
+	XMIPP4_HWY_EXPORT(AddConstant##Suffix); \
 	auto get_add_constant_kernel_pointer(type_tag<T>) \
 	{ \
-		return HWY_DYNAMIC_POINTER(AddConstant##Suffix); \
+		return XMIPP4_HWY_FUNCTION_POINTER(AddConstant##Suffix); \
 	}
 
 XMIPP4_HWY_FOR_EACH_ARITHMETIC_TYPE(XMIPP4_HWY_EXPORT_ADD_CONSTANT)

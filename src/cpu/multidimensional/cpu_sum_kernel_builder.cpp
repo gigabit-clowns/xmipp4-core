@@ -50,7 +50,7 @@ std::shared_ptr<kernel> make_sum_kernel(
 			},
 			[add] (T *result, const T *x, std::size_t count)
 			{
-				add(result, result, x, count);
+				add(to_hwy(result), to_hwy(result), to_hwy(x), count);
 			},
 			std::move(access_layout)
 		),
@@ -74,11 +74,13 @@ std::shared_ptr<kernel> make_sum_kernel(
 		make_cpu_reduce_outer_loop(
 			[sum] (T *result, const T *x, std::size_t count)
 			{
-				*result = sum(x, count);
+				const auto total = sum(to_hwy(x), count);
+				*result = reinterpret_cast<const T&>(total);
 			},
 			[sum] (T *result, const T *x, std::size_t count)
 			{
-				*result += sum(x, count);
+				const auto total = sum(to_hwy(x), count);
+				*result += reinterpret_cast<const T&>(total);
 			},
 			std::move(access_layout)
 		),

@@ -41,7 +41,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 			[fill, fill_value]
 			(T* destination, std::size_t count)
 			{
-				fill(destination, count, fill_value);
+				fill(to_hwy(destination), count, *to_hwy(&fill_value));
 			},
 			std::move(access_layout)
 		),

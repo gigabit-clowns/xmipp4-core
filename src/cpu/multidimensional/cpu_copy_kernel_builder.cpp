@@ -93,7 +93,7 @@ std::shared_ptr<kernel> make_copy_kernel(
 			[fill] (T *destination, const Q *source, std::size_t count)
 			{
 				const auto fill_value = static_cast<T>(*source);
-				fill(destination, count, fill_value);
+				fill(to_hwy(destination), count, *to_hwy(&fill_value));
 			},
 			std::move(access_layout)
 		),

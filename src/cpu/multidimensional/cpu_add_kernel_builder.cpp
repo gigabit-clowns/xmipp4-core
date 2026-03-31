@@ -46,7 +46,7 @@ std::shared_ptr<kernel> make_add_kernel(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				add(result, lhs, rhs, count);
+				add(to_hwy(result), to_hwy(lhs), to_hwy(rhs), count);
 			},
 			std::move(access_layout)
 		),
@@ -71,7 +71,7 @@ std::shared_ptr<kernel> make_add_kernel(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				add(result, rhs, count, *lhs);
+				add(to_hwy(result), to_hwy(rhs), count, *to_hwy(lhs));
 			},
 			std::move(access_layout)
 		),
@@ -96,7 +96,7 @@ std::shared_ptr<kernel> make_add_kernel(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
-				add(result, lhs, count, *rhs);
+				add(to_hwy(result), to_hwy(lhs), count, *to_hwy(rhs));
 			},
 			std::move(access_layout)
 		),
@@ -122,7 +122,7 @@ std::shared_ptr<kernel> make_add_kernel(
 			[fill] (T *result, const T *lhs, const T *rhs, std::size_t count)
 			{
 				const auto fill_value = *lhs + *rhs;
-				fill(result, count, fill_value);
+				fill(to_hwy(result), count, *to_hwy(&fill_value));
 			},
 			std::move(access_layout)
 		),

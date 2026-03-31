@@ -15,6 +15,7 @@
 #include "kernels/highway/add_kernel.hpp"
 #include "kernels/highway/add_constant_kernel.hpp"
 #include "kernels/highway/fill_constant_kernel.hpp"
+#include "kernels/highway/helpers/convert_data_type.hpp"
 
 #include <algorithm>
 
@@ -40,9 +41,13 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
+	add_kernel<typename to_hwy_data_type<T>::type> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
-			add_kernel<T>(),
+			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
+			{
+				add(result, lhs, rhs, count);
+			},
 			std::move(access_layout)
 		),
 		type_list<T>(),
@@ -61,7 +66,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	add_constant_kernel<T> add;
+	add_constant_kernel<typename to_hwy_data_type<T>::type> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
@@ -86,7 +91,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	add_constant_kernel<T> add;
+	add_constant_kernel<typename to_hwy_data_type<T>::type> add;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[add] (T *result, const T *lhs, const T *rhs, std::size_t count)
@@ -111,7 +116,7 @@ std::shared_ptr<kernel> make_add_kernel(
 	type_tag<T> /*type_tag*/
 )
 {
-	fill_constant_kernel<T> fill;
+	fill_constant_kernel<typename to_hwy_data_type<T>::type> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[fill] (T *result, const T *lhs, const T *rhs, std::size_t count)

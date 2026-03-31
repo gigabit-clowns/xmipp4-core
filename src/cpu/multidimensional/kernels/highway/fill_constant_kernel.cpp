@@ -85,7 +85,11 @@ void FillConstantImpl(
 	const hwy::float16_t& value
 ) 
 {
-	std::fill_n(result, count, value);
+	FillConstantImpl(
+		reinterpret_cast<std::uint16_t*>(result),
+		count,
+		reinterpret_cast<const std::uint16_t&>(value)
+	);
 }
 
 void FillConstantImpl(
@@ -94,7 +98,11 @@ void FillConstantImpl(
 	const std::complex<hwy::float16_t>& value
 ) 
 {
-	std::fill_n(result, count, value);
+	FillConstantImpl(
+		reinterpret_cast<std::uint32_t*>(result),
+		count,
+		reinterpret_cast<const std::uint32_t&>(value)
+	);
 }
 
 #endif // !HWY_HAVE_FLOAT16

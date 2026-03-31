@@ -5,6 +5,8 @@
 #include <complex>
 #include <cstdint>
 
+#include <hwy/highway.h>
+
 #define XMIPP4_HWY_CHAR8_SUFFIX C8
 #define XMIPP4_HWY_UINT8_SUFFIX U8
 #define XMIPP4_HWY_INT8_SUFFIX I8

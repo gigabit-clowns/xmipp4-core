@@ -31,7 +31,10 @@ namespace
 using sum_operand_count_tag =
 	std::integral_constant<std::size_t, sum_operation::OPERAND_COUNT>;
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -59,7 +62,10 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -101,7 +107,10 @@ T scalar_cast(std::size_t value, type_tag<std::complex<T>>)
 	return T(value);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -130,7 +139,10 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<
@@ -160,7 +172,10 @@ std::shared_ptr<kernel> make_sum_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_sum_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<std::ptrdiff_t, std::ptrdiff_t>& inner_strides,

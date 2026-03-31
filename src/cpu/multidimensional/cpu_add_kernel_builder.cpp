@@ -30,7 +30,10 @@ namespace
 using add_operand_count_tag =
 	std::integral_constant<std::size_t, add_operation::OPERAND_COUNT>;
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
 	std::tuple<
@@ -55,7 +58,10 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
 	std::tuple<
@@ -80,7 +86,10 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
 	std::tuple<
@@ -105,7 +114,10 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
 	std::tuple<
@@ -131,7 +143,10 @@ std::shared_ptr<kernel> make_add_kernel(
 	);
 }
 
-template <typename T, typename = typename std::enable_if<!std::is_void<T>::value>::type>
+template <
+	typename T, 
+	typename = typename std::enable_if<!std::is_void<T>::value>::type
+>
 std::shared_ptr<kernel> make_add_kernel(
 	multi_array_access_layout access_layout,
 	const std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t>& inner_strides,

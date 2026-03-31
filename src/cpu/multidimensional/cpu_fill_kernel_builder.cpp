@@ -13,6 +13,7 @@
 #include "cpu_elementwise_outer_loop.hpp"
 #include "kernels/generic/copy.hpp"
 #include "kernels/highway/fill_constant_kernel.hpp"
+#include "kernels/highway/helpers/convert_data_type.hpp"
 
 #include <algorithm>
 
@@ -34,7 +35,7 @@ std::shared_ptr<kernel> make_fill_kernel(
 	const T &fill_value
 )
 {
-	fill_constant_kernel<T> fill;
+	fill_constant_kernel<typename to_hwy_data_type<T>::type> fill;
 	return make_cpu_kernel_shared(
 		make_cpu_outer_loop(
 			[fill, fill_value]

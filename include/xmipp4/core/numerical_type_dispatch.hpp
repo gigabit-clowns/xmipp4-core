@@ -113,7 +113,7 @@ using native_uint32_entry =
 using native_uint64_entry = 
 	type_map_entry<numerical_type::uint64, std::uint64_t>;
 using native_int8_entry = 
-	type_map_entry<numerical_type::int8, std::uint8_t>;
+	type_map_entry<numerical_type::int8, std::int8_t>;
 using native_int16_entry = 
 	type_map_entry<numerical_type::int16, std::int16_t>;
 using native_int32_entry = 

@@ -3,13 +3,50 @@
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 
 #include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
+
+#include "../config.hpp"
+
+#include <boost/container/small_vector.hpp>
+
+#include <algorithm>
 
 namespace xmipp4 
 {
 namespace multidimensional
 {
+namespace
+{
+
+void populate_input_descriptors(
+	span<const array_view> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array_view::get_descriptor)
+	);
+}
+
+void populate_output_descriptors(
+	span<const array> operands,
+	span<array_descriptor> descriptors
+)
+{	std::transform(
+		operands.begin(), 
+		operands.end(),
+		descriptors.begin(),
+		std::mem_fn(&array::get_descriptor)
+	);
+}
+
+} // anonymous namespace
+
+
 
 void execute(
 	const operation &operation,
@@ -18,6 +55,28 @@ void execute(
 	const execution_context &context
 )
 {
+	const auto n_outputs = output_operands.size();
+	const auto n_inputs = input_operands.size();
+	const auto n_operands = n_outputs + n_inputs;
+
+	boost::container::small_vector<
+		array_descriptor, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT + XMIPP4_SMALL_INPUT_OPERAND_COUNT
+	> descriptors(n_operands);
+
+	const span<array_descriptor> output_descriptors(
+		descriptors.data(), 
+		n_outputs
+	);
+	populate_output_descriptors(output_operands, output_descriptors);
+	const span<array_descriptor> input_descriptors(
+		descriptors.data() + n_outputs, 
+		n_inputs
+	);
+	populate_input_descriptors(input_operands, input_descriptors);
+
+	operation.sanitize_operands(output_descriptors, input_descriptors);
+
 	// TODO
 	//       ___
     //      /   \

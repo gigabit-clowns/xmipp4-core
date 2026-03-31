@@ -102,6 +102,56 @@ std::shared_ptr<kernel> make_copy_kernel(
 	);
 }
 
+template <typename Q>
+std::shared_ptr<kernel> make_copy_kernel(
+	multi_array_access_layout access_layout,
+	const std::tuple<
+		contiguous_stride_tag,
+		broadcasting_stride_tag
+	>, /*inner_strides*/
+	type_tag<bool> /*destination_type_tag*/,
+	type_tag<Q> /*source_type_tag*/
+)
+{
+	return make_cpu_kernel_shared(
+		make_cpu_outer_loop(
+			[] (bool *destination, const Q *source, std::size_t count)
+			{
+				const auto fill_value = static_cast<bool>(*source);
+				std::fill_n(destination, count, fill_value);
+			},
+			std::move(access_layout)
+		),
+		type_list<bool>(),
+		type_list<Q>()
+	);
+}
+
+template <typename Q>
+std::shared_ptr<kernel> make_copy_kernel(
+	multi_array_access_layout access_layout,
+	const std::tuple<
+		contiguous_stride_tag,
+		broadcasting_stride_tag
+	>, /*inner_strides*/
+	type_tag<char> /*destination_type_tag*/,
+	type_tag<Q> /*source_type_tag*/
+)
+{
+	return make_cpu_kernel_shared(
+		make_cpu_outer_loop(
+			[] (char *destination, const Q *source, std::size_t count)
+			{
+				const auto fill_value = static_cast<char>(*source);
+				std::fill_n(destination, count, fill_value);
+			},
+			std::move(access_layout)
+		),
+		type_list<char>(),
+		type_list<Q>()
+	);
+}
+
 template <typename T, typename Q, typename DstStrideT, typename SrcStrideT>
 std::shared_ptr<kernel> make_copy_kernel(
 	multi_array_access_layout access_layout,

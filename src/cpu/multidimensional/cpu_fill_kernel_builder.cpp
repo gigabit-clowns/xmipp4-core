@@ -50,6 +50,46 @@ std::shared_ptr<kernel> make_fill_kernel(
 	);
 }
 
+std::shared_ptr<kernel> make_fill_kernel(
+	multi_array_access_layout access_layout,
+	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
+	bool fill_value
+)
+{
+	return make_cpu_kernel_shared(
+		make_cpu_outer_loop(
+			[fill_value]
+			(bool* destination, std::size_t count)
+			{
+				std::fill_n(destination, count, fill_value);
+			},
+			std::move(access_layout)
+		),
+		type_list<bool>(),
+		type_list<>()
+	);
+}
+
+std::shared_ptr<kernel> make_fill_kernel(
+	multi_array_access_layout access_layout,
+	const std::tuple<contiguous_stride_tag> /*inner_strides*/,
+	char fill_value
+)
+{
+	return make_cpu_kernel_shared(
+		make_cpu_outer_loop(
+			[fill_value]
+			(char* destination, std::size_t count)
+			{
+				std::fill_n(destination, count, fill_value);
+			},
+			std::move(access_layout)
+		),
+		type_list<char>(),
+		type_list<>()
+	);
+}
+
 template <typename T, typename Stride>
 std::shared_ptr<kernel> make_fill_kernel(
 	multi_array_access_layout access_layout,

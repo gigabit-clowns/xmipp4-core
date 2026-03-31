@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/fixed_float.hpp>
 
+#include <complex>
+
 #include <hwy/highway.h>
 
 namespace xmipp4 
@@ -21,6 +23,12 @@ template <>
 struct to_hwy_data_type<xmipp4::float16_t>
 {
 	using type = hwy::float16_t;
+};
+
+template <>
+struct to_hwy_data_type<std::complex<xmipp4::float16_t>>
+{
+	using type = std::complex<hwy::float16_t>;
 };
 
 template<typename T>

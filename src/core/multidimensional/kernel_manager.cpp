@@ -7,7 +7,7 @@
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 
-#include "cpu/cpu_kernel_registrar.hpp"
+#include "cpu/multidimensional/cpu_kernel_registrar.hpp"
 #include "../find_most_suitable_backend.hpp"
 
 #include <vector>

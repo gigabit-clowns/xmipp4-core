@@ -159,7 +159,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Setup Pages
-      uses: actions/configure-pages@v5
+      uses: actions/configure-pages@v6
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y doxygen
@@ -195,7 +195,7 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v5
 
   create_developer_release:
     name: Create development release

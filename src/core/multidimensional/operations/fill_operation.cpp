@@ -46,6 +46,7 @@ std::string fill_operation::serialize_parameters() const
 				fmt::join(value_start, value_end, "")
 			);
 		},
+		native_type_map(),
 		data_type
 	);
 }

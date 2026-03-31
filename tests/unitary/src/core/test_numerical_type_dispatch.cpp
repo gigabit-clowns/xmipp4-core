@@ -11,7 +11,7 @@
 
 using namespace xmipp4;
 
-TEST_CASE("dispatch_numerical_types called with a single argument should invoke an appropriately typed function")
+TEST_CASE("dispatch_numerical_types called with a single argument and default mapping should invoke an appropriately typed function")
 {
 	numerical_type type;
 	std::type_index expected_type(typeid(void));
@@ -52,7 +52,7 @@ TEST_CASE("dispatch_numerical_types called with a single argument should invoke 
 	CHECK( ret == expected_ret );
 }
 
-TEST_CASE("dispatch_numerical_types called with a two arguments should invoke an appropriately typed function")
+TEST_CASE("dispatch_numerical_types called with a two arguments and default mapping should invoke an appropriately typed function")
 {
 	std::array<numerical_type, 2> types;
 	std::array<std::type_index, 2> expected_types = {
@@ -116,4 +116,41 @@ TEST_CASE("dispatch_numerical_types called with an invalid type should throw")
 			"Unknown numerical type"
 		)
 	);
+}
+
+TEST_CASE("dispatch_numerical_types called with a custom mapping should invoke an appropriately typed function")
+{
+	numerical_type type;
+	std::type_index expected_type(typeid(void));
+
+	struct custom_type1 {};
+	struct custom_type2 {};
+
+	using custom_map = type_map<
+		type_map_entry<numerical_type::int8, custom_type1>,
+		type_map_entry<numerical_type::complex_float32, custom_type2>
+	>;
+
+	std::tie(type, expected_type) = GENERATE(
+		table<numerical_type, std::type_index>({
+			{ numerical_type::int8, typeid(custom_type1) },
+			{ numerical_type::complex_float32, typeid(custom_type2) },
+			{ numerical_type::float16, typeid(void) }
+		})
+	);
+
+	const auto expected_ret = GENERATE(2, 42);
+
+	const auto ret = dispatch_numerical_types(
+		[&expected_type, expected_ret] (auto tag)
+		{
+			using type = typename decltype(tag)::type;
+			REQUIRE( typeid(type) == expected_type );
+			return expected_ret;
+		},
+		custom_map(),
+		type
+	);
+
+	CHECK( ret == expected_ret );
 }

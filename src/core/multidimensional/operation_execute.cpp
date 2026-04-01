@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 
+#include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
@@ -44,6 +45,31 @@ void populate_output_descriptors(
 	);
 }
 
+void populate_input_storages(
+	span<const array_view> operands,
+	span<std::shared_ptr<const hardware::buffer>> storages
+)
+{
+	std::transform(
+		operands.begin(), 
+		operands.end(),
+		storages.begin(),
+		[&] (const auto &arr)
+		{
+			auto buffer = arr.share_storage();
+
+			if (!buffer)
+			{
+				throw std::invalid_argument(
+					"One of the input operands does not an associated storage"
+				);
+			}
+
+			return buffer;
+		}
+	);
+}
+
 } // anonymous namespace
 
 
@@ -63,6 +89,14 @@ void execute(
 		array_descriptor, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT + XMIPP4_SMALL_INPUT_OPERAND_COUNT
 	> descriptors(n_operands);
+	boost::container::small_vector<
+		std::shared_ptr<hardware::buffer>, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
+	> output_storages(n_outputs);
+	boost::container::small_vector<
+		std::shared_ptr<const hardware::buffer>, 
+		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
+	> input_storages(n_inputs);
 
 	const span<array_descriptor> output_descriptors(
 		descriptors.data(), 
@@ -76,6 +110,14 @@ void execute(
 	populate_input_descriptors(input_operands, input_descriptors);
 
 	operation.sanitize_operands(output_descriptors, input_descriptors);
+
+	populate_input_storages(
+		input_operands, 
+		span<std::shared_ptr<const hardware::buffer>>(
+			input_storages.data(),
+			n_inputs
+		)
+	);
 
 	// TODO
 	//       ___

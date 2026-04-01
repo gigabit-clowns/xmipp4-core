@@ -45,6 +45,7 @@ jobs:
 
       - name: Install coverage tool
         id: install-coverage
+        if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
         uses: gigabit-clowns/.github/.github/composites/install-cpp-coverage-tool@main
         with:
           compiler-c: ${{ matrix.compiler.c }}
@@ -69,6 +70,7 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       - name: Generate coverage report
+        if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
         uses: gigabit-clowns/.github/.github/composites/run-ctest/coverage-report@main
         with:
           compiler-c: ${{ matrix.compiler.c }}

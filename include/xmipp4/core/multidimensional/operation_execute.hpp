@@ -17,6 +17,14 @@ class array;
 class array_view;
 class operation;
 
+/**
+ * @brief Execute a operation.
+ * 
+ * @param operation The operation to be executed.
+ * @param output_operands The output operands. 
+ * @param input_operands The input operands.
+ * @param context The execution context used for dispatching.
+ */
 XMIPP4_CORE_API
 void execute(
 	const operation &operation,

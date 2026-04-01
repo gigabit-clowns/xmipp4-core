@@ -7,6 +7,7 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
 
 #include "../config.hpp"
 

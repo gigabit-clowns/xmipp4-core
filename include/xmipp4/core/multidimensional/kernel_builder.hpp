@@ -24,7 +24,7 @@ namespace multidimensional
 
 class kernel;
 class operation;
-class array_descriptor;
+class array_specification;
 
 /**
  * @brief Abstract representation of a factory class for kernels
@@ -56,14 +56,18 @@ public:
 	 * 
 	 * @param operation The operation. Its ID must be equal to the ID returned
 	 * by get_operation_id.
-	 * @param descriptors The array descriptors involved in the operation.
+	 * @param output_spec The output array specifications involved in the 
+	 * operation.
+	 * @param input_spec The output array specifications involved in the 
+	 * operation.
 	 * @param device The device where the operation is expected to be executed.
 	 * @return backend_priority The suitability of this builder for the 
 	 * requested launch configuration.
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
+		span<const array_specification> output_specs,
+		span<const array_specification> input_specs,
 		hardware::device &device
 	) const = 0;
 
@@ -75,7 +79,10 @@ public:
 	 * 
 	 * @param operation The operation. Its ID must be equal to the ID returned
 	 * by get_operation_id.
-	 * @param descriptors The array descriptors involved in the operation.
+	 * @param output_spec The output array specifications involved in the 
+	 * operation.
+	 * @param input_spec The output array specifications involved in the 
+	 * operation.
 	 * @param device The device where the operation is expected to be executed.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
@@ -83,7 +90,8 @@ public:
 	virtual 
 	std::shared_ptr<kernel> build(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
+		span<const array_specification> output_specs,
+		span<const array_specification> input_specs,
 		hardware::device &device
 	) const = 0;
 };

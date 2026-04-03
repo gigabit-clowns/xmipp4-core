@@ -12,7 +12,7 @@ namespace multidimensional
 {
 
 /**
- * @brief Description of a multidimensional array.
+ * @brief Description of the memory representation of a multidimensional array.
  * 
  * This class represents the (strided_layout, numerical_type) pair that
  * defines the data interpretation on a multidimensional array.

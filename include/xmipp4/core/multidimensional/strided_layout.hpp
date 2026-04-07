@@ -32,6 +32,15 @@ public:
 	strided_layout& operator=(strided_layout &&other) noexcept;
 
 
+
+	/**
+	 * @brief Obtain a hash of the layout.
+	 * 
+	 * @return std::size_t The hash. 
+	 */
+	XMIPP4_CORE_API
+	std::size_t hash() const noexcept;
+
 	/**
 	 * @brief Get the number of axis in the layout
 	 * 
@@ -225,3 +234,19 @@ bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+namespace std
+{
+
+template<>
+struct hash<xmipp4::multidimensional::strided_layout>
+{
+	std::size_t operator()(
+		const xmipp4::multidimensional::strided_layout &layout
+	) const noexcept
+	{
+		return layout.hash();
+	}
+};
+
+} // namespace std

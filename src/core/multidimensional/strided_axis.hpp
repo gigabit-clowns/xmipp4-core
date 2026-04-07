@@ -46,6 +46,13 @@ public:
 	XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &other) noexcept;
 
 	/**
+	 * @brief Get the hash value of the axis.
+	 * 
+	 * @return std::size_t The hash.
+	 */
+	XMIPP4_CONSTEXPR std::size_t hash() const noexcept;
+
+	/**
 	 * @brief Set the element count
 	 * 
 	 * @param extent The element count

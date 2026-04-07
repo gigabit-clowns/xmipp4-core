@@ -920,3 +920,54 @@ TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadca
 		Catch::Matchers::Message("Cannot broadcast axis of extent 56 into an extent of 55.")
 	);
 }
+
+TEST_CASE("value returned specialization of std::hash<strided_layout> should be the one returned by strided_layout::hash", "[strided_layout]")
+{
+	const auto layout = make_test_layout();
+	std::hash<strided_layout> hasher;
+	CHECK(layout.hash() == hasher(layout) );
+}
+
+TEST_CASE("hash of a default-constructed strided_layout should be zero", "[strided_layout]")
+{
+	const strided_layout layout;
+	CHECK( layout.hash() == 0 );
+}
+
+TEST_CASE("hash of a strided_layout should change with axis ordering", "[strided_layout]")
+{
+	const auto layout = make_test_layout();
+	CHECK(layout.hash() != layout.matrix_transpose().hash());
+}
+
+TEST_CASE("hash of two equal strided_layout should be equal", "[strided_layout]")
+{
+	const auto layout1 = make_test_layout();
+	const auto layout2 = make_test_layout();
+	CHECK(layout1.hash() == layout2.hash());
+}
+
+TEST_CASE("hash of a strided_layout should change when adding a phantom axis", "[strided_layout]")
+{	
+	const auto layout = make_test_layout();
+	const std::array<dynamic_subscript, 1> subscripts = { ellipsis() };
+	CHECK(layout.hash() != layout.apply_subscripts(xmipp4::make_span(subscripts)).hash());
+}
+
+TEST_CASE("hash of a strided_layout should change when changing the offset", "[strided_layout]")
+{	
+
+	const std::vector<std::size_t> extents = {8, 10, 1, 24, 56, 120};
+	const std::vector<std::ptrdiff_t> strides = {2, 16, 160, 320, 7680, 860160};
+	const auto layout1 = strided_layout::make_custom_layout(
+		xmipp4::make_span(extents),
+		xmipp4::make_span(strides),
+		1
+	);
+	const auto layout2 = strided_layout::make_custom_layout(
+		xmipp4::make_span(extents),
+		xmipp4::make_span(strides),
+		2
+	);
+	CHECK(layout1.hash() != layout2.hash());
+}

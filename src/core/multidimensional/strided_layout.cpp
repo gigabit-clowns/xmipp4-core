@@ -35,7 +35,11 @@ strided_layout::strided_layout(strided_layout_implementation &&impl)
 
 
 
-XMIPP4_NODISCARD
+std::size_t strided_layout::hash() const noexcept
+{
+	return get_implementation().hash();
+}
+
 std::size_t strided_layout::get_rank() const noexcept
 {
 	return get_implementation().get_rank();

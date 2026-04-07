@@ -9,6 +9,7 @@
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
+#include <functional>
 #include <cstddef>
 
 namespace xmipp4 

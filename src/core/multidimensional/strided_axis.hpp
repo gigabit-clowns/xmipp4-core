@@ -50,7 +50,7 @@ public:
 	 * 
 	 * @return std::size_t The hash.
 	 */
-	XMIPP4_CONSTEXPR std::size_t hash() const noexcept;
+	std::size_t hash() const noexcept;
 
 	/**
 	 * @brief Set the element count

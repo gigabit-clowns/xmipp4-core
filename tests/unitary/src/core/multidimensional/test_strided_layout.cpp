@@ -950,7 +950,7 @@ TEST_CASE("hash of two equal strided_layout should be equal", "[strided_layout]"
 TEST_CASE("hash of a strided_layout should change when adding a phantom axis", "[strided_layout]")
 {	
 	const auto layout = make_test_layout();
-	const std::array<dynamic_subscript, 1> subscripts = { ellipsis() };
+	const std::array<dynamic_subscript, 1> subscripts = { new_axis() };
 	CHECK(layout.hash() != layout.apply_subscripts(xmipp4::make_span(subscripts)).hash());
 }
 

@@ -68,3 +68,41 @@ TEST_CASE("Array descriptors should be unequal if either data_type or layout are
 	CHECK( array_descriptor(layout1, data_type1) != array_descriptor(layout1, data_type2) );
 	CHECK( array_descriptor(layout1, data_type1) != array_descriptor(layout2, data_type2) );
 }
+
+TEST_CASE("value returned specialization of std::hash<array_descriptor> should be the one returned by array_descriptor::hash", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents = {20, 30, 2, 16};
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const array_descriptor descriptor(layout, numerical_type::int32);
+	std::hash<array_descriptor> hasher;
+	CHECK(descriptor.hash() == hasher(descriptor) );
+}
+
+TEST_CASE("hash value of two equal array descriptors should be equal", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents = {20, 30, 2, 16};
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const array_descriptor descriptor1(layout, numerical_type::int32);
+	const array_descriptor descriptor2(layout, numerical_type::int32);
+	CHECK( descriptor1.hash() == descriptor2.hash() );
+}
+
+TEST_CASE("hash value of array_descriptor should be different for different layouts", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents1 = {20, 30, 2, 16};
+	const std::vector<std::size_t> extents2 = {20, 30, 1, 16};
+	const auto layout1 = strided_layout::make_contiguous_layout(make_span(extents1));
+	const auto layout2 = strided_layout::make_contiguous_layout(make_span(extents2));
+	const array_descriptor descriptor1(layout1, numerical_type::int32);
+	const array_descriptor descriptor2(layout2, numerical_type::int32);
+	CHECK( descriptor1.hash() != descriptor2.hash() );
+}
+
+TEST_CASE("hash value of array_descriptor should be different for different data types", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents = {20, 30, 2, 16};
+	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
+	const array_descriptor descriptor1(layout, numerical_type::int32);
+	const array_descriptor descriptor2(layout, numerical_type::uint32);
+	CHECK( descriptor1.hash() != descriptor2.hash() );
+}

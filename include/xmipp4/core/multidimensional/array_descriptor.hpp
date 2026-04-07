@@ -53,6 +53,14 @@ public:
 	array_descriptor& operator=(array_descriptor &&other) noexcept;
 
 	/**
+	 * @brief Get the hash value for this descriptor.
+	 * 
+	 * @return std::size_t The hash value.
+	 */
+	XMIPP4_CORE_API
+	std::size_t hash() const noexcept;
+
+	/**
 	 * @brief Get the layout of the array.
 	 * 
 	 * @return const strided_layout& The layout.
@@ -107,3 +115,19 @@ std::size_t compute_storage_requirement(const array_descriptor &descriptor);
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+namespace std
+{
+
+template<>
+struct hash<xmipp4::multidimensional::array_descriptor>
+{
+	std::size_t operator()(
+		const xmipp4::multidimensional::array_descriptor &descriptor
+	) const noexcept
+	{
+		return descriptor.hash();
+	}
+};
+
+} // namespace std

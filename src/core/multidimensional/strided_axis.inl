@@ -37,7 +37,7 @@ void strided_axis::swap(strided_axis &other) noexcept
 	std::swap(m_stride, other.m_stride);
 }
 
-XMIPP4_INLINE_CONSTEXPR 
+inline
 std::size_t strided_axis::hash() const noexcept
 {
 	std::size_t seed = boost::hash_value(m_extent);

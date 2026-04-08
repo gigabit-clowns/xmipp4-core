@@ -4,8 +4,8 @@
 
 #include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
@@ -22,45 +22,39 @@ namespace multidimensional
 namespace
 {
 
-void populate_output_descriptors(
-	const array* operands,
-	array_descriptor* descriptors,
+template <typename Arr>
+void populate_array_signatures(
+	const Arr* operands,
+	array_signature* signatures,
 	std::size_t count
 )
 {	std::transform(
 		operands, 
 		operands + count,
-		descriptors,
-		std::mem_fn(&array::get_descriptor)
-	);
-}
-
-void populate_input_descriptors(
-	const array_view* operands,
-	array_descriptor* descriptors,
-	std::size_t count
-)
-{	std::transform(
-		operands, 
-		operands + count,
-		descriptors,
-		std::mem_fn(&array_view::get_descriptor)
+		signatures,
+		[] (const auto &a)
+		{
+			return array_signature::from_array(a);
+		}
 	);
 }
 
 void populate_output_storages(
 	array *operands,
-	hardware::memory_resource_affinity* affinities,
+	const array_signature* specifications,
 	std::shared_ptr<hardware::buffer>* storages,
 	std::size_t count
 )
 {
-	// TODO
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		// TODO
+	}
 }
 
 void populate_input_storages(
 	const array_view *operands,
-	hardware::memory_resource_affinity* affinities,
+	const array_signature* signatures,
 	std::shared_ptr<const hardware::buffer>* storages,
 	std::size_t count
 )
@@ -68,6 +62,8 @@ void populate_input_storages(
 	for (std::size_t i = 0; i < count; ++i)
 	{
 		storages[i] = operands[i].share_storage();
+		const auto *expected_resource = 
+			signatures[i].get_memory_resource();
 
 		if (!storages[i])
 		{
@@ -75,14 +71,13 @@ void populate_input_storages(
 				"One of the input operands does not an associated storage"
 			);
 		}
-		// TODO check placement
-		/*if (!check_storage_placement(*storages[i], affinities[i]))
+		if (&storages[i]->get_memory_resource() != expected_resource)
 		{
 			throw std::invalid_argument(
 				"One of the input operands is not placed in a suitable memory "
 				"resource"
 			);
-		}*/
+		}
 	}
 }
 
@@ -125,21 +120,13 @@ void execute(
 	const auto n_inputs = input_operands.size();
 
 	boost::container::small_vector<
-		array_descriptor, 
+		array_signature, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
-	> output_descriptors(n_outputs);
+	> output_signatures(n_outputs);
 	boost::container::small_vector<
-		array_descriptor, 
+		array_signature, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT
-	> input_descriptors(n_inputs);
-	boost::container::small_vector<
-		hardware::memory_resource_affinity, 
-		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
-	> output_affinities(n_outputs);
-	boost::container::small_vector<
-		hardware::memory_resource_affinity, 
-		XMIPP4_SMALL_INPUT_OPERAND_COUNT
-	> input_affinities(n_inputs);
+	> input_signatures(n_inputs);
 	boost::container::small_vector<
 		std::shared_ptr<hardware::buffer>, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
@@ -149,18 +136,18 @@ void execute(
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
 	> input_storages(n_inputs);
 
-	populate_output_descriptors(
+	populate_array_signatures(
 		output_operands.data(), 
-		output_descriptors.data(), 
+		output_signatures.data(), 
 		n_outputs
 	);
-	populate_input_descriptors(
+	populate_array_signatures(
 		input_operands.data(), 
-		input_descriptors.data(), 
+		input_signatures.data(), 
 		n_inputs
 	);
 
-	operation.sanitize_operands(
+	/*operation.sanitize_operands(
 		make_span(output_descriptors.data(), n_outputs),
 		make_span(input_descriptors.data(), n_inputs)
 	);
@@ -168,16 +155,17 @@ void execute(
 		make_span(output_affinities.data(), n_outputs),
 		make_span(input_affinities.data(), n_inputs)
 	);
+	*/
 
 	populate_output_storages(
 		output_operands.data(), 
-		output_affinities.data(),
+		output_signatures.data(),
 		output_storages.data(),
 		n_outputs
 	);
 	populate_input_storages(
 		input_operands.data(), 
-		input_affinities.data(),
+		input_signatures.data(),
 		input_storages.data(),
 		n_inputs
 	);

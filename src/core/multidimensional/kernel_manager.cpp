@@ -29,8 +29,8 @@ public:
 
 	kernel_builder* get_most_suitable_builder(
 		const operation &operation,
-		span<const array_specification> output_specs,
-		span<const array_specification> input_specs,
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures,
 		hardware::device &device
 	) const
 	{
@@ -45,13 +45,13 @@ public:
 		const auto ite2 = find_most_suitable_backend(
 			available_backends.begin(),
 			available_backends.end(),
-			[&operation, &output_specs, &input_specs, &device] 
+			[&operation, &output_signatures, &input_signatures, &device] 
 			(const auto &item)
 			{
 				return item->get_suitability(
 					operation, 
-					output_specs,
-					input_specs,
+					output_signatures,
+					input_signatures,
 					device
 				);
 			}
@@ -67,15 +67,15 @@ public:
 
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const array_specification> output_specs,
-		span<const array_specification> input_specs,
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures,
 		hardware::device &device
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
 			operation, 
-			output_specs,
-			input_specs,
+			output_signatures,
+			input_signatures,
 			device
 		);
 
@@ -87,7 +87,12 @@ public:
 			);
 		}
 
-		return builder->build(operation, output_specs, input_specs, device);
+		return builder->build(
+			operation, 
+			output_signatures, 
+			input_signatures, 
+			device
+		);
 	}
 
 private:
@@ -118,15 +123,15 @@ bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)
 
 std::shared_ptr<kernel> kernel_manager::build_kernel(
 	const operation &operation,
-	span<const array_specification> output_specs,
-	span<const array_specification> input_specs,
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures,
 	hardware::device &device
 ) const
 {
 	return get_implementation().build_kernel(
 		operation, 
-		output_specs, 
-		input_specs, 
+		output_signatures, 
+		input_signatures, 
 		device
 	);
 }

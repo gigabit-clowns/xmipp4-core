@@ -22,7 +22,7 @@ namespace multidimensional
 {
 
 class operation;
-class array_specification;
+class array_signature;
 class kernel_builder;
 class kernel;
 
@@ -63,9 +63,9 @@ public:
 	 * @brief Build an executable kernel for a given launch configuration.
 	 * 
 	 * @param operation The operation for which the kernel is built.
-	 * @param output_spec The output array specifications involved in the 
+	 * @param output_signatures The output array signatures involved in the 
 	 * operation.
-	 * @param input_spec The output array specifications involved in the 
+	 * @param input_signatures The output array signatures involved in the 
 	 * operation.
 	 * @param device The device where the operation is expected to be executed.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
@@ -74,8 +74,8 @@ public:
 	XMIPP4_CORE_API
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const array_specification> output_specs,
-		span<const array_specification> input_specs,
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures,
 		hardware::device &device
 	) const;
 

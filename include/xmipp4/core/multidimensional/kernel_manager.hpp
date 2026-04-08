@@ -22,7 +22,7 @@ namespace multidimensional
 {
 
 class operation;
-class array_descriptor;
+class array_specification;
 class kernel_builder;
 class kernel;
 

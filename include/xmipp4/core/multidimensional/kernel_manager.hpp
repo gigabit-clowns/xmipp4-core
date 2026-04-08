@@ -63,7 +63,10 @@ public:
 	 * @brief Build an executable kernel for a given launch configuration.
 	 * 
 	 * @param operation The operation for which the kernel is built.
-	 * @param descriptors The array descriptors involved in the operation.
+	 * @param output_spec The output array specifications involved in the 
+	 * operation.
+	 * @param input_spec The output array specifications involved in the 
+	 * operation.
 	 * @param device The device where the operation is expected to be executed.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
@@ -71,7 +74,8 @@ public:
 	XMIPP4_CORE_API
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
+		span<const array_specification> output_specs,
+		span<const array_specification> input_specs,
 		hardware::device &device
 	) const;
 

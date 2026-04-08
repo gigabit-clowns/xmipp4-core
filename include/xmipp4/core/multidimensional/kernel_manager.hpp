@@ -67,7 +67,6 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the 
 	 * operation.
-	 * @param device The device where the operation is expected to be executed.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
 	 */
@@ -75,8 +74,7 @@ public:
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
-		hardware::device &device
+		span<const array_signature> input_signatures
 	) const;
 
 private:

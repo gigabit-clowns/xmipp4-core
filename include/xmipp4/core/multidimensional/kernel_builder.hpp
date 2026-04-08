@@ -60,15 +60,13 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the 
 	 * operation.
-	 * @param device The device where the operation is expected to be executed.
 	 * @return backend_priority The suitability of this builder for the 
 	 * requested launch configuration.
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
-		hardware::device &device
+		span<const array_signature> input_signatures
 	) const = 0;
 
 	/**
@@ -83,7 +81,6 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the 
 	 * operation.
-	 * @param device The device where the operation is expected to be executed.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
 	 */
@@ -91,8 +88,7 @@ public:
 	std::shared_ptr<kernel> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
-		hardware::device &device
+		span<const array_signature> input_signatures
 	) const = 0;
 };
 

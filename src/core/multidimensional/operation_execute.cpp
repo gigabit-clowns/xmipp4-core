@@ -207,4 +207,3 @@ void execute(
 
 } // namespace multidimensional
 } // namespace xmipp4
-

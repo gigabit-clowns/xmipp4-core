@@ -31,6 +31,9 @@ public:
 			*m_device, 
 			catalog.get_service_manager<hardware::memory_allocator_manager>()
 		)
+		, m_kernel_manager(
+			catalog.get_service_manager<multidimensional::kernel_manager>()
+		)
 	{
 	}
 
@@ -65,11 +68,17 @@ public:
 		return m_active_queue;
 	}
 
+	const multidimensional::kernel_manager& get_kernel_manager() const noexcept
+	{
+		return m_kernel_manager;
+	}
+
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	hardware::memory_allocator_pool m_allocator_pool;
 	std::shared_ptr<hardware::device_queue> m_active_queue;
+	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
 
 	static std::shared_ptr<hardware::device> create_device(
 		service_catalog &catalog, 
@@ -145,6 +154,12 @@ const std::shared_ptr<hardware::device_queue>&
 execution_context::get_active_queue() const
 {
 	return get_implementation().get_active_queue();
+}
+
+const multidimensional::kernel_manager& 
+execution_context::get_kernel_manager() const
+{
+	return get_implementation().get_kernel_manager();
 }
 
 execution_context::implementation& execution_context::get_implementation()

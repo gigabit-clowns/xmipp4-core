@@ -23,6 +23,13 @@ class memory_allocator;
 
 } // namespace hardware
 
+namespace multidimensional
+{
+
+class kernel_manager;
+
+} // namespace multidimensional
+
 /**
  * @brief Centralization and management of execution related resources.
  */
@@ -107,6 +114,14 @@ public:
 	 */
 	XMIPP4_CORE_API
 	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
+
+	/**
+	 * @brief Get a reference to the kernel manager.
+	 * 
+	 * @return const kernel_manager& The kernel manager. 
+	 */
+	XMIPP4_CORE_API
+	const multidimensional::kernel_manager& get_kernel_manager() const;
 
 private:
 	class implementation;

@@ -261,8 +261,8 @@ void execute(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	kernel_manager manager; // TODO obtain
-	auto kernel = manager.build_kernel(
+	const auto &kernel_manager = context.get_kernel_manager();
+	auto kernel = kernel_manager.build_kernel(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs)

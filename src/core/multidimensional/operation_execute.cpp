@@ -117,7 +117,7 @@ void populate_input_storages(
 
 template <typename Ptr>
 void populate_array_signatures(
-	const array_descriptor *descriptors,
+	array_descriptor *descriptors,
 	const Ptr* storages,
 	array_signature *signatures,
 	std::size_t count
@@ -127,7 +127,7 @@ void populate_array_signatures(
 	{
 		XMIPP4_ASSERT(storages[i]);
 		signatures[i] = array_signature(
-			descriptors[i],
+			std::move(descriptors[i]),
 			&(storages[i]->get_memory_resource())
 		);
 	}

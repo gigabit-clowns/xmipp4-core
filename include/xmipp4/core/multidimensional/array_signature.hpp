@@ -39,6 +39,12 @@ public:
 	) noexcept;
 
 	XMIPP4_CORE_API
+	explicit array_signature(
+		array_descriptor &&descriptor,
+		const hardware::memory_resource* resource = nullptr
+	) noexcept;
+
+	XMIPP4_CORE_API
 	array_signature(
 		const strided_layout& layout,
 		numerical_type data_type,

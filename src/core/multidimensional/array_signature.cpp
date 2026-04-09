@@ -44,6 +44,15 @@ array_signature::array_signature(
 }
 
 array_signature::array_signature(
+	array_descriptor &&descriptor,
+	const hardware::memory_resource* resource
+) noexcept
+	: m_descriptor(std::move(descriptor))
+	, m_memory_region(resource)
+{
+}
+
+array_signature::array_signature(
 	const strided_layout& layout,
 	numerical_type data_type,
 	const hardware::memory_resource* resource

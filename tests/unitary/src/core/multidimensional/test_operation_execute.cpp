@@ -260,7 +260,7 @@ TEST_CASE("execute should execute a properly configured kernel", "[operation_exe
 	const array_signature signature(descriptor, &device_resource);
 	REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
 		.LR_WITH(&_1 == &operation)
-		.WITH(_2.size() == 5)
+		.WITH(_2.size() == 2)
 		.WITH(_2[0] == signature)
 		.WITH(_2[1] == signature)
 		.WITH(_3.size() == 3)
@@ -380,28 +380,6 @@ TEST_CASE("execute should throw if an storage-less input array is provided", "[o
 	ALLOW_CALL(*device, get_memory_resource(memory_resource_affinity::device))
 		.LR_RETURN(device_resource);
 
-	const array_signature signature(descriptor, &device_resource);
-	REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-		.LR_WITH(&_1 == &operation)
-		.WITH(_2.size() == 2)
-		.WITH(_2[0] == signature)
-		.WITH(_2[1] == signature)
-		.WITH(_3.size() == 3)
-		.WITH(_3[0] == signature)
-		.WITH(_3[1] == signature)
-		.WITH(_3[2] == signature)
-		.RETURN(backend_priority::normal);
-	REQUIRE_CALL(*kernel_builder, build(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-		.LR_WITH(&_1 == &operation)
-		.WITH(_2.size() == 2)
-		.WITH(_2[0] == signature)
-		.WITH(_2[1] == signature)
-		.WITH(_3.size() == 3)
-		.WITH(_3[0] == signature)
-		.WITH(_3[1] == signature)
-		.WITH(_3[2] == signature)
-		.RETURN(kernel);
-
 	{
 		REQUIRE_CALL(*kernel_builder, get_operation_id())
 			.LR_RETURN(operation.get_id());
@@ -427,8 +405,9 @@ TEST_CASE("execute should throw if an storage-less input array is provided", "[o
 			context
 		),
 		std::invalid_argument,
-		Catch::Matchers::Message(
-			"One of the input operands does not an associated storage"
+		Catch::Matchers::Message( 
+			"One of the input operands does not have associated storage. "
+			"Input arrays must be populated before calling execute."
 		)
 	);
 }

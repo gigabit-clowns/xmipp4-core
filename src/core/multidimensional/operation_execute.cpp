@@ -191,7 +191,7 @@ create_signatures(
 	{
 		XMIPP4_ASSERT(storages[i]);
         result[i] = array_signature(
-            std::move(descriptors[i]), 
+            std::move(descriptors[i]), // Steal descriptors
             &(storages[i]->get_memory_resource())
         );
 	}

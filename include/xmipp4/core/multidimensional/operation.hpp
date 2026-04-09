@@ -87,17 +87,6 @@ public:
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors
 	) const = 0;
-
-	/**
-	 * @brief Get the memory affinities for each operand
-	 * 
-	 * @param output_affinities Affinities for output operands. 
-	 * @param input_affinities Affinities for input operands.
-	 */
-	virtual void get_operand_affinities(
-		span<hardware::memory_resource_affinity> output_affinities,
-		span<hardware::memory_resource_affinity> input_affinities
-	) const = 0;
 };
 
 } // namespace multidimensional

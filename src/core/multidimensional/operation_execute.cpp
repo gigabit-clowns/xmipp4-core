@@ -47,6 +47,50 @@ extract_descriptors(
     return result;
 }
 
+std::shared_ptr<hardware::buffer>
+allocate_output_operand_storage(
+	array &operand,
+	const array_descriptor &descriptor,
+	hardware::memory_allocator &allocator,
+	std::size_t base_alignment,
+	hardware::device_queue *queue
+)
+{
+	const auto size = compute_storage_requirement(descriptor);
+	const auto alignment = std::min(
+		base_alignment,
+		binary::bit_ceil(size)
+	);
+	auto storage = allocator.allocate(size, alignment, queue);
+	operand = array(storage, descriptor);
+	return storage;
+}
+
+void validate_output_operand_storage(
+	array &operand,
+	const array_descriptor &descriptor,
+	const std::shared_ptr<hardware::buffer> &storage
+)
+{
+	const auto size = compute_storage_requirement(descriptor);
+
+	if (storage->get_size() < size)
+	{
+		throw std::invalid_argument(
+			"An output array without sufficient storage was provided"
+		);
+	}
+
+	if (operand.get_descriptor() != descriptor)
+	{
+		XMIPP4_LOG_WARN(
+			"Provided output operand's descriptor is overriden due "
+			"to a mismatch."
+		);
+		operand = array(storage, descriptor);
+	}
+}
+
 template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
 resolve_output_storage(
@@ -78,35 +122,26 @@ resolve_output_storage(
     for (std::size_t i = 0; i < n; ++i)
     {
 		auto storage = operands[i].share_storage();
-		auto size = compute_storage_requirement(descriptors[i]);
 		if (storage)
 		{
-			if (storage->get_size() < size)
-			{
-				throw std::invalid_argument(
-					"An output array without sufficient storage was provided"
-				);
-			}
-
-			if (operands[i].get_descriptor() != descriptors[i])
-			{
-				XMIPP4_LOG_WARN(
-					"Provided output operand's descriptor is overriden due "
-					"to a mismatch."
-				);
-				operands[i] = array(storage, descriptors[i]);
-			}
+			validate_output_operand_storage(
+				operands[i], 
+				descriptors[i], 
+				storage
+			);
 		}
 		else
 		{
-			const auto alignment = std::min(
+			storage = allocate_output_operand_storage(
+				operands[i],
+				descriptors[i],
+				allocator,
 				base_alignment,
-				binary::bit_ceil(size)
+				queue
 			);
-			storage = allocator.allocate(size, alignment, queue);
-			operands[i] = array(storage, descriptors[i]);
-		}
+		}	
 
+		XMIPP4_ASSERT(storage);
 		result[i] = std::move(storage);
     }
 

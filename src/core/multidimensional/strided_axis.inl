@@ -46,14 +46,6 @@ std::size_t strided_axis::hash() const noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR 
-std::size_t strided_axis::hash() const noexcept
-{
-	std::size_t seed = boost::hash_value(m_extent);
-	boost::hash_combine(seed, boost::hash_value(m_stride));
-	return seed;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
 void strided_axis::set_extent(std::size_t extent) noexcept
 {
 	m_extent = extent;

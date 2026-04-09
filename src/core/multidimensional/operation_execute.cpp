@@ -8,7 +8,6 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>

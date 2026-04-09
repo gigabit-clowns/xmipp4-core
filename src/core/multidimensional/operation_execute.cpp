@@ -17,9 +17,9 @@
 
 #include "../config.hpp"
 
-#include <boost/container/small_vector.hpp>
-
 #include <algorithm>
+
+#include <boost/container/small_vector.hpp>
 
 namespace xmipp4 
 {
@@ -28,31 +28,44 @@ namespace multidimensional
 namespace
 {
 
-template <typename Arr>
-void populate_array_descriptors(
-	const Arr* operands,
-	array_descriptor* descriptors,
-	std::size_t count
+template <typename ArrayType, std::size_t N>
+boost::container::small_vector<array_descriptor, N>
+extract_descriptors(
+	span<ArrayType> operands, 
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
-{	std::transform(
-		operands, 
-		operands + count,
-		descriptors,
-		[] (const auto &a)
-		{
-			return a.get_descriptor();
-		}
-	);
+{
+    boost::container::small_vector<array_descriptor, N> result(operands.size());
+
+    std::transform(
+        operands.begin(), 
+        operands.end(),
+        result.begin(),
+        [](const auto &a) { return a.get_descriptor(); }
+    );
+
+    return result;
 }
 
-void populate_output_storages(
-	array *operands,
-	const array_descriptor *descriptors,
-	std::shared_ptr<hardware::buffer>* storages,
-	std::size_t count,
+template <std::size_t N>
+boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
+resolve_output_storage(
+	span<array> operands,
+	span<const array_descriptor> descriptors,
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/,
 	const execution_context &context
 )
 {
+	using result_type = boost::container::small_vector<
+		std::shared_ptr<hardware::buffer>, 
+		N
+	>; 
+
+	const auto n = operands.size();
+	XMIPP4_ASSERT(n == descriptors.size());
+
+	result_type result(operands.size());
+
 	auto &allocator = context.get_memory_allocator(
 		hardware::memory_resource_affinity::device
 	);
@@ -60,9 +73,10 @@ void populate_output_storages(
 	const auto &properties = context.get_device_properties();
     const auto max_alignment = allocator.get_max_alignment();
     const auto preferred_alignment = properties.get_optimal_data_alignment();
+	const auto base_alignment = std::min(max_alignment, preferred_alignment);
 
-	for (std::size_t i = 0; i < count; ++i)
-	{
+    for (std::size_t i = 0; i < n; ++i)
+    {
 		auto storage = operands[i].share_storage();
 		auto size = compute_storage_requirement(descriptors[i]);
 		if (storage)
@@ -86,68 +100,73 @@ void populate_output_storages(
 		else
 		{
 			const auto alignment = std::min(
-				std::min(max_alignment, preferred_alignment),
+				base_alignment,
 				binary::bit_ceil(size)
 			);
-
 			storage = allocator.allocate(size, alignment, queue);
 			operands[i] = array(storage, descriptors[i]);
 		}
 
-		storages[i] = std::move(storage);
-	}
+		result[i] = std::move(storage);
+    }
+
+    return result;
 }
 
-void populate_input_storages(
-	const array_view *operands,
-	std::shared_ptr<const hardware::buffer>* storages,
-	std::size_t count
+template <std::size_t N>
+boost::container::small_vector<std::shared_ptr<const hardware::buffer>, N>
+resolve_input_storage(
+	span<const array_view> operands,
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
-	for (std::size_t i = 0; i < count; ++i)
-	{
-		storages[i] = operands[i].share_storage();
-		if (!storages[i])
-		{
-			throw std::invalid_argument(
-				"One of the input operands does not an associated storage"
+	using result_type = boost::container::small_vector<
+		std::shared_ptr<const hardware::buffer>, 
+		N
+	>; 
+	result_type result(operands.size());
+
+    for (std::size_t i = 0; i < operands.size(); ++i)
+    {
+        result[i] = operands[i].share_storage();
+        if (!result[i])
+        {
+            throw std::invalid_argument(
+				"One of the input operands does not have associated storage. "
+				"Input arrays must be populated before calling execute."
 			);
-		}
+        }
+    }
+
+    return result;
+}
+
+template <typename Ptr, std::size_t N>
+boost::container::small_vector<array_signature, N>
+create_signatures(
+	boost::container::small_vector<array_descriptor, N> &&descriptors,
+	span<Ptr> storages
+)
+{
+	const auto n = descriptors.size();
+	XMIPP4_ASSERT(n == storages.size());
+
+	boost::container::small_vector<array_signature, N> result(n);
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		XMIPP4_ASSERT(storages[i]);
+        result[i] = array_signature(
+            std::move(descriptors[i]), 
+            &(storages[i]->get_memory_resource())
+        );
 	}
+
+	return result;
 }
 
 template <typename Ptr>
-void populate_array_signatures(
-	array_descriptor *descriptors,
-	const Ptr* storages,
-	array_signature *signatures,
-	std::size_t count
-)
-{
-	for (std::size_t i = 0; i < count; ++i)
-	{
-		XMIPP4_ASSERT(storages[i]);
-		signatures[i] = array_signature(
-			std::move(descriptors[i]),
-			&(storages[i]->get_memory_resource())
-		);
-	}
-}
-
 void record_queues(
-	span<const std::shared_ptr<hardware::buffer>> storages,
-	hardware::device_queue &queue
-)
-{		
-	for (const auto &storage : storages)
-	{
-		XMIPP4_ASSERT(storage);
-		storage->record_queue(queue);
-	}
-}
-
-void record_queues(
-	span<const std::shared_ptr<const hardware::buffer>> storages,
+	span<Ptr> storages,
 	hardware::device_queue &queue
 )
 {		
@@ -169,76 +188,42 @@ void execute(
 	const execution_context &context
 )
 {
+	using small_output_size_tag = 
+		std::integral_constant<std::size_t, XMIPP4_SMALL_OUTPUT_OPERAND_COUNT>;
+	using small_input_size_tag = 
+		std::integral_constant<std::size_t, XMIPP4_SMALL_INPUT_OPERAND_COUNT>;
+
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
 
-	boost::container::small_vector<
-		array_descriptor, 
-		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
-	> output_descriptors(n_outputs);
-	populate_array_descriptors(
-		output_operands.data(), 
-		output_descriptors.data(), 
-		n_outputs
-	);
-
-	boost::container::small_vector<
-		array_descriptor, 
-		XMIPP4_SMALL_INPUT_OPERAND_COUNT
-	> input_descriptors(n_inputs);
-	populate_array_descriptors(
-		input_operands.data(), 
-		input_descriptors.data(), 
-		n_inputs
-	);
+	auto output_descriptors = 
+		extract_descriptors(output_operands, small_output_size_tag());
+	auto input_descriptors = 
+		extract_descriptors(input_operands, small_input_size_tag());
 
 	operation.sanitize_operands(
 		make_span(output_descriptors.data(), n_outputs),
 		make_span(input_descriptors.data(), n_inputs)
 	);
 
-	boost::container::small_vector<
-		std::shared_ptr<hardware::buffer>, 
-		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
-	> output_storages(n_outputs);
-	populate_output_storages(
-		output_operands.data(), 
-		output_descriptors.data(),
-		output_storages.data(),
-		n_outputs,
+	auto output_storages = resolve_output_storage(
+		output_operands, 
+		make_span(output_descriptors.data(), n_outputs),
+		small_output_size_tag(),
 		context
 	);
-
-	boost::container::small_vector<
-		std::shared_ptr<const hardware::buffer>, 
-		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
-	> input_storages(n_inputs);
-	populate_input_storages(
-		input_operands.data(), 
-		input_storages.data(),
-		n_inputs
+	auto input_storages = resolve_input_storage(
+		input_operands, 
+		small_input_size_tag()
 	);
 
-	boost::container::small_vector<
-		array_signature, 
-		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
-	> output_signatures(n_outputs);
-	populate_array_signatures(
-		output_descriptors.data(),
-		output_storages.data(),
-		output_signatures.data(),
-		n_outputs
+	auto output_signatures = create_signatures(
+		std::move(output_descriptors), // No longer needed.
+		make_span(output_storages.data(), n_outputs)
 	);
-
-	boost::container::small_vector<
-		array_signature, 
-		XMIPP4_SMALL_INPUT_OPERAND_COUNT
-	> input_signatures(n_inputs);
-	populate_array_signatures(
-		input_descriptors.data(),
-		input_storages.data(),
-		input_signatures.data(),
-		n_inputs
+	auto input_signatures = create_signatures(
+		std::move(input_descriptors),  // No longer needed.
+		make_span(input_storages.data(), n_inputs)
 	);
 
 	kernel_manager manager; // TODO obtain

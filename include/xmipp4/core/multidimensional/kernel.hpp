@@ -44,16 +44,16 @@ public:
 	 * construction of the kernel. The read_only operands refer to the last
 	 * descriptors passed during the construction of the kernel.
 	 *  
-	 * @param read_write_operands Operands where data may be written. Neither
+	 * @param output_operands Operands where data may be written. Neither
 	 * of them may be null.
-	 * @param read_only_operands  Read-only operands. Neither of them may be
+	 * @param input_operands  Read-only operands. Neither of them may be
 	 * null.
 	 * @param queue Optional queue where this kernel will be executed. Must 
 	 * belong to the device used in construction.
 	 */
 	virtual void execute(
-		span<const std::shared_ptr<hardware::buffer>> read_write_operands,
-		span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
+		span<const std::shared_ptr<hardware::buffer>> output_operands,
+		span<const std::shared_ptr<const hardware::buffer>> input_operands,
 		hardware::device_queue *queue
 	) const = 0;
 };

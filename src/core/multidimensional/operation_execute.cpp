@@ -2,11 +2,16 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 
+#include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/execution_context.hpp>
+#include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/multidimensional/array_factory.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include "../config.hpp"
@@ -39,6 +44,23 @@ void populate_array_signatures(
 	);
 }
 
+template <typename Arr>
+void populate_array_descriptors(
+	const Arr* operands,
+	array_signature* signatures,
+	std::size_t count
+)
+{	std::transform(
+		operands, 
+		operands + count,
+		signatures,
+		[] (const auto &a)
+		{
+			return array_signature::from_array(a);
+		}
+	);
+}
+
 void populate_output_storages(
 	array *operands,
 	const array_signature* specifications,
@@ -52,9 +74,59 @@ void populate_output_storages(
 	}
 }
 
+void populate_output_storages(
+	array *operands,
+	const array_descriptor *descriptors,
+	std::shared_ptr<hardware::buffer>* storages,
+	std::size_t count,
+	const execution_context &context
+)
+{
+	auto &allocator = context.get_memory_allocator(
+		hardware::memory_resource_affinity::device
+	);
+	auto *queue = context.get_active_queue().get();
+	const auto &properties = context.get_device_properties();
+    const auto max_alignment = allocator.get_max_alignment();
+    const auto preferred_alignment = properties.get_optimal_data_alignment();
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		auto storage = operands[i].share_storage();
+		auto size = compute_storage_requirement(descriptors[i]);
+		if (storage)
+		{
+			if (storage->get_size() < size)
+			{
+				throw std::invalid_argument(
+					"An output array without sufficient storage was provided"
+				);
+			}
+
+			if (operands[i].get_descriptor() != descriptors[i])
+			{
+				XMIPP4_LOG_WARN(
+					"Provided output operand's descriptor is overriden due "
+					"to a mismatch."
+				);
+				operands[i] = array(storage, descriptors[i]);
+			}
+		}
+		else
+		{
+			size = binary::bit_ceil(size);
+			const auto alignment = 
+				std::min(std::min(max_alignment, preferred_alignment), size);
+			storage = allocator.allocate(size, alignment, queue);
+			operands[i] = array(storage, descriptors[i]);
+		}
+
+		storages[i] = std::move(storage);
+	}
+}
+
 void populate_input_storages(
 	const array_view *operands,
-	const array_signature* signatures,
 	std::shared_ptr<const hardware::buffer>* storages,
 	std::size_t count
 )
@@ -62,20 +134,10 @@ void populate_input_storages(
 	for (std::size_t i = 0; i < count; ++i)
 	{
 		storages[i] = operands[i].share_storage();
-		const auto *expected_resource = 
-			signatures[i].get_memory_resource();
-
 		if (!storages[i])
 		{
 			throw std::invalid_argument(
 				"One of the input operands does not an associated storage"
-			);
-		}
-		if (&storages[i]->get_memory_resource() != expected_resource)
-		{
-			throw std::invalid_argument(
-				"One of the input operands is not placed in a suitable memory "
-				"resource"
 			);
 		}
 	}
@@ -148,15 +210,9 @@ void execute(
 	);
 
 	/*operation.sanitize_operands(
-		make_span(output_descriptors.data(), n_outputs),
-		make_span(input_descriptors.data(), n_inputs)
-	);
-	operation.get_operand_affinities(
-		make_span(output_affinities.data(), n_outputs),
-		make_span(input_affinities.data(), n_inputs)
-	);
-	*/
-
+		make_span(output_signatures.data(), n_outputs),
+		make_span(input_signatures.data(), n_inputs)
+	);*/
 	populate_output_storages(
 		output_operands.data(), 
 		output_signatures.data(),
@@ -165,7 +221,6 @@ void execute(
 	);
 	populate_input_storages(
 		input_operands.data(), 
-		input_signatures.data(),
 		input_storages.data(),
 		n_inputs
 	);

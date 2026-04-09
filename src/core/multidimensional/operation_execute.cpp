@@ -86,9 +86,11 @@ void populate_output_storages(
 		}
 		else
 		{
-			size = binary::bit_ceil(size);
-			const auto alignment = 
-				std::min(std::min(max_alignment, preferred_alignment), size);
+			const auto alignment = std::min(
+				std::min(max_alignment, preferred_alignment),
+				binary::bit_ceil(size)
+			);
+
 			storage = allocator.allocate(size, alignment, queue);
 			operands[i] = array(storage, descriptors[i]);
 		}

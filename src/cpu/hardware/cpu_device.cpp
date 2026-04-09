@@ -9,9 +9,11 @@ namespace xmipp4
 namespace hardware
 {
 
-memory_resource& cpu_device::get_memory_resource(memory_resource_affinity)
+void cpu_device::get_memory_resources(
+	std::vector<memory_resource*> &resources
+)
 {
-	return get_host_memory_resource(); // Always host.
+	resources = { &get_host_memory_resource() };
 }
 
 std::shared_ptr<device_queue> cpu_device::create_device_queue()

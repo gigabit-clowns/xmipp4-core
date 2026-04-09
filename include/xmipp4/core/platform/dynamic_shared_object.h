@@ -41,7 +41,8 @@
 
 /**
  * @def XMIPP4_LOCAL
- * @brief Declares that the function is only used used locally at the current shared object
+ * @brief Declares that the function is only used used locally at the current 
+ * shared object
  * 
  */
 #if defined(XMIPP4_WINDOWS)

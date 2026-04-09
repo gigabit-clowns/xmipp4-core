@@ -239,21 +239,19 @@ TEST_CASE("execute should execute a properly configured kernel", "[operation_exe
 	SECTION("if empty output is provided it should allocate")
 	{
 		auto &allocator = *device_allocator;
-
 		output_arrays.resize(2);
 		for (const auto &buffer : output_buffers)
 		{
 			const auto size = buffer->get_size();
-			auto expectation1 = NAMED_REQUIRE_CALL(allocator, get_max_alignment())
-				.RETURN(256);
-			auto expectation2 = NAMED_REQUIRE_CALL(allocator, allocate(size, 256, queue.get()))
+			auto expectation = NAMED_REQUIRE_CALL(allocator, allocate(size, 256, queue.get()))
 				.RETURN(buffer);
 
-			expectations.push_back(std::move(expectation1));
-			expectations.push_back(std::move(expectation2));
+			expectations.push_back(std::move(expectation));
 		}
 	}
 
+	ALLOW_CALL(*device_allocator, get_max_alignment())
+		.RETURN(256);
 	ALLOW_CALL(*device_allocator, get_memory_resource())
 		.LR_RETURN(device_resource);
 	ALLOW_CALL(*device, get_memory_resource(memory_resource_affinity::device))
@@ -375,6 +373,8 @@ TEST_CASE("execute should throw if an storage-less input array is provided", "[o
 		context
 	);
 
+	ALLOW_CALL(*device_allocator, get_max_alignment())
+		.RETURN(256);
 	ALLOW_CALL(*device_allocator, get_memory_resource())
 		.LR_RETURN(device_resource);
 	ALLOW_CALL(*device, get_memory_resource(memory_resource_affinity::device))

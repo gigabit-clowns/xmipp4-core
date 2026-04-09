@@ -37,13 +37,13 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get the memory resources known to this device.
+	 * @brief Get the most suitable memory resource for the intended usage.
 	 * 
-	 * @param resources Output parameter with memory resources known to this 
-	 * device. None of them will be nullptr.
+	 * @param affinity The affinity of the memory resource.
+	 * @return memory_resource& The memory resource.
 	 */
-	virtual 
-	void get_memory_resources(std::vector<memory_resource*> &resources) = 0;
+	virtual memory_resource& 
+	get_memory_resource(memory_resource_affinity affinity) = 0;
 
 	/**
 	 * @brief Create a device queue.

@@ -9,6 +9,8 @@
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/multidimensional/array_factory.hpp>
+#include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -28,50 +30,20 @@ namespace
 {
 
 template <typename Arr>
-void populate_array_signatures(
-	const Arr* operands,
-	array_signature* signatures,
-	std::size_t count
-)
-{	std::transform(
-		operands, 
-		operands + count,
-		signatures,
-		[] (const auto &a)
-		{
-			return array_signature::from_array(a);
-		}
-	);
-}
-
-template <typename Arr>
 void populate_array_descriptors(
 	const Arr* operands,
-	array_signature* signatures,
+	array_descriptor* descriptors,
 	std::size_t count
 )
 {	std::transform(
 		operands, 
 		operands + count,
-		signatures,
+		descriptors,
 		[] (const auto &a)
 		{
-			return array_signature::from_array(a);
+			return a.get_descriptor();
 		}
 	);
-}
-
-void populate_output_storages(
-	array *operands,
-	const array_signature* specifications,
-	std::shared_ptr<hardware::buffer>* storages,
-	std::size_t count
-)
-{
-	for (std::size_t i = 0; i < count; ++i)
-	{
-		// TODO
-	}
 }
 
 void populate_output_storages(
@@ -143,6 +115,24 @@ void populate_input_storages(
 	}
 }
 
+template <typename Ptr>
+void populate_array_signatures(
+	const array_descriptor *descriptors,
+	const Ptr* storages,
+	array_signature *signatures,
+	std::size_t count
+)
+{
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		XMIPP4_ASSERT(storages[i]);
+		signatures[i] = array_signature(
+			descriptors[i],
+			&(storages[i]->get_memory_resource())
+		);
+	}
+}
+
 void record_queues(
 	span<const std::shared_ptr<hardware::buffer>> storages,
 	hardware::device_queue &queue
@@ -182,82 +172,94 @@ void execute(
 	const auto n_inputs = input_operands.size();
 
 	boost::container::small_vector<
-		array_signature, 
+		array_descriptor, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
-	> output_signatures(n_outputs);
+	> output_descriptors(n_outputs);
+	populate_array_descriptors(
+		output_operands.data(), 
+		output_descriptors.data(), 
+		n_outputs
+	);
+
 	boost::container::small_vector<
-		array_signature, 
+		array_descriptor, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT
-	> input_signatures(n_inputs);
+	> input_descriptors(n_inputs);
+	populate_array_descriptors(
+		input_operands.data(), 
+		input_descriptors.data(), 
+		n_inputs
+	);
+
+	operation.sanitize_operands(
+		make_span(output_descriptors.data(), n_outputs),
+		make_span(input_descriptors.data(), n_inputs)
+	);
+
 	boost::container::small_vector<
 		std::shared_ptr<hardware::buffer>, 
 		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT 
 	> output_storages(n_outputs);
+	populate_output_storages(
+		output_operands.data(), 
+		output_descriptors.data(),
+		output_storages.data(),
+		n_outputs,
+		context
+	);
+
 	boost::container::small_vector<
 		std::shared_ptr<const hardware::buffer>, 
 		XMIPP4_SMALL_INPUT_OPERAND_COUNT 
 	> input_storages(n_inputs);
-
-	populate_array_signatures(
-		output_operands.data(), 
-		output_signatures.data(), 
-		n_outputs
-	);
-	populate_array_signatures(
-		input_operands.data(), 
-		input_signatures.data(), 
-		n_inputs
-	);
-
-	/*operation.sanitize_operands(
-		make_span(output_signatures.data(), n_outputs),
-		make_span(input_signatures.data(), n_inputs)
-	);*/
-	populate_output_storages(
-		output_operands.data(), 
-		output_signatures.data(),
-		output_storages.data(),
-		n_outputs
-	);
 	populate_input_storages(
 		input_operands.data(), 
 		input_storages.data(),
 		n_inputs
 	);
 
+	boost::container::small_vector<
+		array_signature, 
+		XMIPP4_SMALL_OUTPUT_OPERAND_COUNT
+	> output_signatures(n_outputs);
+	populate_array_signatures(
+		output_descriptors.data(),
+		output_storages.data(),
+		output_signatures.data(),
+		n_outputs
+	);
+
+	boost::container::small_vector<
+		array_signature, 
+		XMIPP4_SMALL_INPUT_OPERAND_COUNT
+	> input_signatures(n_inputs);
+	populate_array_signatures(
+		input_descriptors.data(),
+		input_storages.data(),
+		input_signatures.data(),
+		n_inputs
+	);
+
+	kernel_manager manager; // TODO obtain
+	auto kernel = manager.build_kernel(
+		operation,
+		xmipp4::make_span(output_signatures.data(), n_outputs),
+		xmipp4::make_span(input_signatures.data(), n_inputs)
+	);
+
 	const auto& queue = context.get_active_queue();
-	/*kernel.execute( // TODO
+
+	kernel->execute(
 		make_span(output_storages.data(), n_outputs), 
 		make_span(input_storages.data(), n_inputs), 
 		queue.get()
-	);*/
-
+	);
 
 	if (queue)
 	{
 		record_queues(make_span(output_storages.data(), n_outputs), *queue);
 		record_queues(make_span(input_storages.data(), n_inputs), *queue);
 	}
-
-
-	// TODO
-	//       ___
-    //      /   \
-    //     |--o--|
-    //     |  _  |
-    //     |     |
-    //     |     |
-    //     |     |        C'mon,
-    //     |     |\       do something...
-    //     |     | \
-    //     |     |  \
-    //     |_____|   \
-    //     |  |  |    \
-    //     |  |  |     \
-    //     |  |  |      \
-    //     |  |  |       `--
-    //     |  |  |
-    //     |__|__|
 }
 
 } // namespace multidimensional

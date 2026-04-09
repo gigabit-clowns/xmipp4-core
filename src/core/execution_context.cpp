@@ -8,12 +8,10 @@
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "hardware/memory_allocator_pool.hpp"
-#include "multidimensional/eager_operation_dispatcher.hpp"
 
 #include <stdexcept>
 
@@ -33,7 +31,6 @@ public:
 			*m_device, 
 			catalog.get_service_manager<hardware::memory_allocator_manager>()
 		)
-		, m_dispatcher(create_dispatcher(catalog))
 	{
 	}
 
@@ -68,19 +65,11 @@ public:
 		return m_active_queue;
 	}
 
-	multidimensional::operation_dispatcher& 
-	get_operation_dispatcher() const noexcept
-	{
-		XMIPP4_ASSERT(m_dispatcher);
-		return *m_dispatcher;
-	}
-
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	hardware::memory_allocator_pool m_allocator_pool;
 	std::shared_ptr<hardware::device_queue> m_active_queue;
-	std::shared_ptr<multidimensional::operation_dispatcher> m_dispatcher;
 
 	static std::shared_ptr<hardware::device> create_device(
 		service_catalog &catalog, 
@@ -101,16 +90,6 @@ private:
 		auto device = dev_manager.create_device(index);
 		XMIPP4_ASSERT( device );
 		return device;
-	}
-
-	static std::shared_ptr<multidimensional::operation_dispatcher> 
-	create_dispatcher(service_catalog &catalog)
-	{
-		// In the future, if needed, we can have fancier to select a dispatcher.
-		// For now, we only have the eager dispatcher.
-		return std::make_shared<multidimensional::eager_operation_dispatcher>(
-			catalog.get_service_manager<multidimensional::kernel_manager>()
-		);
 	}
 };
 
@@ -166,12 +145,6 @@ const std::shared_ptr<hardware::device_queue>&
 execution_context::get_active_queue() const
 {
 	return get_implementation().get_active_queue();
-}
-
-multidimensional::operation_dispatcher& 
-execution_context::get_operation_dispatcher() const
-{
-	return get_implementation().get_operation_dispatcher();
 }
 
 execution_context::implementation& execution_context::get_implementation()

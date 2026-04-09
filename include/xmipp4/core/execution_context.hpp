@@ -23,13 +23,6 @@ class memory_allocator;
 
 } // namespace hardware
 
-namespace multidimensional
-{
-
-class operation_dispatcher;
-
-} // namespace multidimensional
-
 /**
  * @brief Centralization and management of execution related resources.
  */
@@ -114,14 +107,6 @@ public:
 	 */
 	XMIPP4_CORE_API
 	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
-
-	/**
-	 * @brief Get the operation dispatcher.
-	 * 
-	 * @return multidimensional::operation_dispatcher& The dispatcher.
-	 */
-	multidimensional::operation_dispatcher& 
-	get_operation_dispatcher() const;
 
 private:
 	class implementation;

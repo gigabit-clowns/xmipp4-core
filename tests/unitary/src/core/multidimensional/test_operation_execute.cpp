@@ -182,6 +182,7 @@ public:
 } // anonymous namespace
 
 
+
 TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly configured kernel", "[operation_execute]") {
     auto queue = GENERATE(
 		std::shared_ptr<mock_device_queue>(), 

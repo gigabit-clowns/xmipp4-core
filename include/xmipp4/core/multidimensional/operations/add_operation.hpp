@@ -40,20 +40,6 @@ public:
 		INPUT_OPERAND_COUNT
 	};
 
-	/**
-	 * @brief Indices for mixed operands.
-	 */
-	enum operand_indices
-	{
-		OPERAND_RESULT,
-		OPERAND_LHS,
-		OPERAND_RHS,
-
-		OPERAND_COUNT
-	};
-
-
-
 	XMIPP4_CORE_API add_operation() noexcept;
 	XMIPP4_CORE_API ~add_operation() override;
 	

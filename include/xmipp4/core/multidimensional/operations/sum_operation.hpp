@@ -39,17 +39,6 @@ public:
 		INPUT_OPERAND_COUNT
 	};
 
-	/**
-	 * @brief Indices for mixed operands.
-	 */
-	enum operand_indices
-	{
-		OPERAND_RESULT,
-		OPERAND_X,
-
-		OPERAND_COUNT
-	};
-
 	XMIPP4_CORE_API explicit sum_operation(std::vector<std::size_t> axes);
 	XMIPP4_CORE_API ~sum_operation() override;
 	

@@ -20,14 +20,14 @@ public:
 
 	backend_priority get_suitability(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const override;
 
 	std::shared_ptr<kernel> build(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const override;
 };
 

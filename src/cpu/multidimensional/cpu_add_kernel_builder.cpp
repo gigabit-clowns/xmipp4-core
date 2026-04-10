@@ -27,9 +27,6 @@ namespace multidimensional
 namespace
 {
 
-using add_operand_count_tag =
-	std::integral_constant<std::size_t, add_operation::OPERAND_COUNT>;
-
 template <
 	typename T, 
 	typename = typename std::enable_if<!std::is_void<T>::value>::type
@@ -204,22 +201,17 @@ cpu_add_kernel_builder::get_operation_id() const noexcept
 
 backend_priority cpu_add_kernel_builder::get_suitability(
 	const operation&,
-	span<const array_descriptor>,
-	hardware::device &device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
-	if (dynamic_cast<const hardware::cpu_device*>(&device) != nullptr)
-	{
-		return backend_priority::normal;
-	}
-
-	return backend_priority::unsupported;
+	// TODO
 }
 
 std::shared_ptr<kernel> cpu_add_kernel_builder::build(
 	const operation& operation,
-	span<const array_descriptor> descriptors,
-	hardware::device& device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
 	if (dynamic_cast<const add_operation*>(&operation) == nullptr)
@@ -230,26 +222,26 @@ std::shared_ptr<kernel> cpu_add_kernel_builder::build(
 		);
 	}
 
-	if (dynamic_cast<const hardware::cpu_device*>(&device) == nullptr)
+	if (output_signatures.size() != add_operation::OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
-			"cpu_add_kernel_builder::build: Expected device to be an instance "
-			"of cpu_device"
+			"cpu_add_kernel_builder::build: Expected exactly 1 "
+			"output operand signature."
 		);
 	}
 
-	if (descriptors.size() != add_operation::OPERAND_COUNT)
+	if (output_signatures.size() != add_operation::OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
-			"cpu_add_kernel_builder::build: Expected exactly 3 "
-			"array descriptors."
+			"cpu_add_kernel_builder::build: Expected exactly 2 "
+			"input operand signatures."
 		);
 	}
 
-	const auto data_type = descriptors[0].get_data_type();
-	for (std::size_t i = 1; i < add_operation::OPERAND_COUNT; ++i)
+	const auto data_type = output_signatures.front().get_data_type();
+	for (std::size_t i = 0; i < add_operation::INPUT_OPERAND_COUNT; ++i)
 	{
-		if (descriptors[i].get_data_type() != data_type)
+		if (input_signatures[i].get_data_type() != data_type)
 		{
 			throw std::invalid_argument(
 				"cpu_add_kernel_builder::build: Expected all operands to have "
@@ -259,9 +251,13 @@ std::shared_ptr<kernel> cpu_add_kernel_builder::build(
 	}
 
 	multi_array_access_layout_builder layout_builder;
-	for (const auto &descriptor : descriptors)
+	for (const auto &signature : output_signatures)
 	{
-		layout_builder.add_operand(descriptor.get_layout());
+		layout_builder.add_operand(signature.get_layout());
+	}
+	for (const auto &signature : input_signatures)
+	{
+		layout_builder.add_operand(signature.get_layout());
 	}
 	auto access_layout = layout_builder.build();
 

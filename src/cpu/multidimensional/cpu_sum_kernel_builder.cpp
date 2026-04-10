@@ -242,22 +242,17 @@ cpu_sum_kernel_builder::get_operation_id() const noexcept
 
 backend_priority cpu_sum_kernel_builder::get_suitability(
 	const operation&,
-	span<const array_descriptor>,
-	hardware::device &device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
-	if (dynamic_cast<const hardware::cpu_device*>(&device) != nullptr)
-	{
-		return backend_priority::normal;
-	}
-
-	return backend_priority::unsupported;
+	// TODO
 }
 
 std::shared_ptr<kernel> cpu_sum_kernel_builder::build(
 	const operation& operation,
-	span<const array_descriptor> descriptors,
-	hardware::device& device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
 	if (dynamic_cast<const sum_operation*>(&operation) == nullptr)

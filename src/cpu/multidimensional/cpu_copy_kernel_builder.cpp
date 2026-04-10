@@ -5,12 +5,14 @@
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include "cpu_kernel.hpp"
 #include "cpu_inner_loop_dispatch.hpp"
 #include "cpu_elementwise_outer_loop.hpp"
+#include "cpu_array_signature_check.hpp"
 #include "kernels/generic/copy.hpp"
 #include "kernels/highway/fill_constant_kernel.hpp"
 #include "kernels/highway/helpers/convert_data_type.hpp"
@@ -24,9 +26,6 @@ namespace multidimensional
 
 namespace
 {
-
-using copy_operand_count_tag =
-	std::integral_constant<std::size_t, copy_operation::OPERAND_COUNT>;
 
 template <typename T, typename Q>
 std::shared_ptr<kernel> make_copy_kernel(
@@ -220,13 +219,13 @@ cpu_copy_kernel_builder::get_operation_id() const noexcept
 
 backend_priority cpu_copy_kernel_builder::get_suitability(
 	const operation&,
-	span<const array_descriptor>,
-	hardware::device &device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
-	if (dynamic_cast<const hardware::cpu_device*>(&device) != nullptr)
+	if (cpu_check_array_signatures(output_signatures, input_signatures))
 	{
-		return backend_priority::normal;
+		return backend_priority::fallback;
 	}
 
 	return backend_priority::unsupported;
@@ -234,8 +233,8 @@ backend_priority cpu_copy_kernel_builder::get_suitability(
 
 std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 	const operation& operation,
-	span<const array_descriptor> descriptors,
-	hardware::device& device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
 	if (dynamic_cast<const copy_operation*>(&operation) == nullptr)
@@ -246,26 +245,25 @@ std::shared_ptr<kernel> cpu_copy_kernel_builder::build(
 		);
 	}
 
-	if (dynamic_cast<const hardware::cpu_device*>(&device) == nullptr)
+	if (output_signatures.size() != copy_operation::OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
-			"cpu_copy_kernel_builder::build: Expected device to be an instance "
-			"of cpu_device"
+			"cpu_copy_kernel_builder::build: Expected exactly 1 "
+			"output array signatures."
 		);
 	}
-
-	if (descriptors.size() != copy_operation::OPERAND_COUNT)
+	if (output_signatures.size() != copy_operation::INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
-			"cpu_copy_kernel_builder::build: Expected exactly 2 "
-			"array descriptors."
+			"cpu_copy_kernel_builder::build: Expected exactly 1 "
+			"input array signatures."
 		);
 	}
 
 	const auto &destination_descriptor = 
-		descriptors[copy_operation::OPERAND_DESTINATION];
+		output_signatures[copy_operation::OUTPUT_OPERAND_DESTINATION];
 	const auto &source_descriptor = 
-		descriptors[copy_operation::OPERAND_SOURCE];
+		input_signatures[copy_operation::INPUT_OPERAND_SOURCE];
 
 	multi_array_access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());

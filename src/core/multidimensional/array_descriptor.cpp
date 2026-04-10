@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 
+#include <boost/functional/hash.hpp>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -29,6 +31,13 @@ array_descriptor&
 array_descriptor::operator=(const array_descriptor &other) = default;
 array_descriptor&
 array_descriptor::operator=(array_descriptor &&other) noexcept = default;
+
+std::size_t array_descriptor::hash() const noexcept
+{
+	auto seed = m_layout.hash();
+	boost::hash_combine(seed, boost::hash_value(m_data_type));
+	return seed;
+}
 
 const strided_layout& array_descriptor::get_layout() const noexcept
 {

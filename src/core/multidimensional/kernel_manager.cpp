@@ -31,8 +31,8 @@ public:
 
 	kernel_builder* get_most_suitable_builder(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const
 	{
 		const auto op_id = operation.get_id();
@@ -46,12 +46,13 @@ public:
 		const auto ite2 = find_most_suitable_backend(
 			available_backends.begin(),
 			available_backends.end(),
-			[&operation, &descriptors, &device] (const auto &item)
+			[&operation, &output_signatures, &input_signatures] 
+			(const auto &item)
 			{
 				return item->get_suitability(
 					operation, 
-					descriptors,
-					device
+					output_signatures,
+					input_signatures
 				);
 			}
 		);
@@ -66,14 +67,14 @@ public:
 
 	std::shared_ptr<kernel> build_kernel(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
 			operation, 
-			descriptors,
-			device
+			output_signatures,
+			input_signatures
 		);
 
 		if (!builder)
@@ -84,7 +85,7 @@ public:
 			);
 		}
 
-		return builder->build(operation, descriptors, device);
+		return builder->build(operation, output_signatures, input_signatures);
 	}
 
 private:
@@ -115,11 +116,15 @@ bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)
 
 std::shared_ptr<kernel> kernel_manager::build_kernel(
 	const operation &operation,
-	span<const array_descriptor> descriptors,
-	hardware::device &device
+	span<const array_signature> output_signatures,
+	span<const array_signature> input_signatures
 ) const
 {
-	return get_implementation().build_kernel(operation, descriptors, device);
+	return get_implementation().build_kernel(
+		operation, 
+		output_signatures, 
+		input_signatures
+	);
 }
 
 kernel_manager::implementation& kernel_manager::create_if_null()

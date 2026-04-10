@@ -12,7 +12,7 @@ namespace multidimensional
 {
 
 /**
- * @brief Description of a multidimensional array.
+ * @brief Description of the memory representation of a multidimensional array.
  * 
  * This class represents the (strided_layout, numerical_type) pair that
  * defines the data interpretation on a multidimensional array.
@@ -51,6 +51,14 @@ public:
 	array_descriptor& operator=(const array_descriptor &other);
 	XMIPP4_CORE_API
 	array_descriptor& operator=(array_descriptor &&other) noexcept;
+
+	/**
+	 * @brief Get the hash value for this descriptor.
+	 * 
+	 * @return std::size_t The hash value.
+	 */
+	XMIPP4_CORE_API
+	std::size_t hash() const noexcept;
 
 	/**
 	 * @brief Get the layout of the array.
@@ -107,3 +115,19 @@ std::size_t compute_storage_requirement(const array_descriptor &descriptor);
 
 } // namespace multidimensional
 } // namespace xmipp4
+
+namespace std
+{
+
+template<>
+struct hash<xmipp4::multidimensional::array_descriptor>
+{
+	std::size_t operator()(
+		const xmipp4::multidimensional::array_descriptor &descriptor
+	) const noexcept
+	{
+		return descriptor.hash();
+	}
+};
+
+} // namespace std

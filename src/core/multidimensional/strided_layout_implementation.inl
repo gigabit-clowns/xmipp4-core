@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include <boost/functional/hash.hpp>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -306,6 +308,17 @@ bool strided_layout_implementation::operator==(
 	}
 
 	return true;
+}
+
+inline
+std::size_t strided_layout_implementation::hash() const noexcept
+{
+	std::size_t seed = boost::hash_value(m_offset);
+	for (const auto &axis : m_axes)
+	{
+		boost::hash_combine(seed, axis.hash());
+	}
+	return seed;
 }
 
 inline

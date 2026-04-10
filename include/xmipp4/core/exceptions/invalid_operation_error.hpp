@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+
 namespace xmipp4 
 {
 
@@ -12,7 +14,7 @@ namespace xmipp4
  * a misconfiguration of the class.
  * 
  */
-class invalid_operation_error
+class XMIPP4_CORE_API invalid_operation_error
 	: public std::logic_error
 {
 	using logic_error::logic_error;

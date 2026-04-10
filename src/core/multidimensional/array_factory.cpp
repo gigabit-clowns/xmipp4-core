@@ -5,7 +5,7 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
-#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
+#include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -155,8 +155,7 @@ array full(
 		empty(descriptor, affinity, context, out) 
 	};
 
-	auto &dispatcher = context.get_operation_dispatcher();
-	dispatcher.dispatch(
+	execute(
 		fill_operation(fill_value),
 		make_span(outputs),
 		{},
@@ -180,8 +179,7 @@ array copy(
 		outputs = { out->share() };
 	}
 
-	auto &dispatcher = context.get_operation_dispatcher();
-	dispatcher.dispatch(
+	execute(
 		copy_operation(),
 		make_span(outputs),
 		make_span(inputs),

@@ -67,8 +67,8 @@ TEST_CASE("build in kernel_manager should call build on the most appropiate kern
 	};
 	
 	const mock_operation1 op;
-	const std::array<array_descriptor, 4> descriptors;
-	hardware::mock_device device;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
 
 	auto builder1 = std::make_unique<mock_kernel_builder>();
 	auto builder2 = std::make_unique<mock_kernel_builder>();
@@ -80,13 +80,13 @@ TEST_CASE("build in kernel_manager should call build on the most appropiate kern
 		*builder1, 
 		get_suitability(
 			ANY(const operation&), 
-			ANY(span<const array_descriptor>),
-			ANY(hardware::device&)
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
 		)
 	)
 		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == descriptors.data() && _2.size() == descriptors.size())
-		.LR_WITH(&_3 == &device)
+		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
+		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::fallback);
 
 	REQUIRE_CALL(*builder2, get_operation_id())
@@ -95,25 +95,25 @@ TEST_CASE("build in kernel_manager should call build on the most appropiate kern
 		*builder2, 
 		get_suitability(
 			ANY(const operation&), 
-			ANY(span<const array_descriptor>),
-			ANY(hardware::device&)
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
 		)
 	)
 		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == descriptors.data() && _2.size() == descriptors.size())
-		.LR_WITH(&_3 == &device)
+		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
+		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(
 		*builder2, 
 		build(
 			ANY(const operation&), 
-			ANY(span<const array_descriptor>),
-			ANY(hardware::device&)
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
 		)
 	)
 		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == descriptors.data() && _2.size() == descriptors.size())
-		.LR_WITH(&_3 == &device)
+		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
+		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(kernel);
 
 	REQUIRE_CALL(*builder3, get_operation_id())
@@ -123,7 +123,8 @@ TEST_CASE("build in kernel_manager should call build on the most appropiate kern
 	REQUIRE( manager.register_kernel(std::move(builder2)) );
 	REQUIRE( manager.register_kernel(std::move(builder3)) );
 
-	auto result = manager.build_kernel(op, make_span(descriptors), device);
+	auto result = manager.build_kernel(op, make_span(output_signatures), make_span(input_signatures));
+	;
 	CHECK( result == kernel );
 }
 
@@ -132,8 +133,8 @@ TEST_CASE("build in kernel_manager should throw if no builder is supported", "[k
 	kernel_manager manager;
 
 	const mock_operation op;
-	const std::array<array_descriptor, 4> descriptors;
-	hardware::mock_device device;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
 
 	auto builder1 = std::make_unique<mock_kernel_builder>();
 	auto builder2 = std::make_unique<mock_kernel_builder>();
@@ -144,13 +145,13 @@ TEST_CASE("build in kernel_manager should throw if no builder is supported", "[k
 		*builder1, 
 		get_suitability(
 			ANY(const operation&), 
-			ANY(span<const array_descriptor>),
-			ANY(hardware::device&)
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
 		)
 	)
 		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == descriptors.data() && _2.size() == descriptors.size())
-		.LR_WITH(&_3 == &device)
+		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
+		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::unsupported);
 
 	REQUIRE_CALL(*builder2, get_operation_id())
@@ -159,20 +160,20 @@ TEST_CASE("build in kernel_manager should throw if no builder is supported", "[k
 		*builder2, 
 		get_suitability(
 			ANY(const operation&), 
-			ANY(span<const array_descriptor>),
-			ANY(hardware::device&)
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
 		)
 	)
 		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == descriptors.data() && _2.size() == descriptors.size())
-		.LR_WITH(&_3 == &device)
+		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
+		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::unsupported);
 
 	REQUIRE( manager.register_kernel(std::move(builder1)) );
 	REQUIRE( manager.register_kernel(std::move(builder2)) );
 
 	REQUIRE_THROWS_MATCHES(
-		manager.build_kernel(op, make_span(descriptors), device),
+		manager.build_kernel(op, make_span(output_signatures), make_span(input_signatures)),
 		invalid_operation_error,
 		Catch::Matchers::Message(
 			"Could not find a suitable kernel builder for the requested "
@@ -197,8 +198,8 @@ TEST_CASE("build in kernel_manager should throw if there are no backends for the
 	};
 
 	const mock_operation2 op;
-	const std::array<array_descriptor, 4> descriptors;
-	hardware::mock_device device;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
 
 	auto builder = std::make_unique<mock_kernel_builder>();
 	auto kernel = std::make_shared<mock_kernel>();
@@ -208,7 +209,7 @@ TEST_CASE("build in kernel_manager should throw if there are no backends for the
 	REQUIRE( manager.register_kernel(std::move(builder)) );
 
 	REQUIRE_THROWS_MATCHES(
-		manager.build_kernel(op, make_span(descriptors), device),
+		manager.build_kernel(op, make_span(output_signatures), make_span(input_signatures)),
 		invalid_operation_error,
 		Catch::Matchers::Message(
 			"Could not find a suitable kernel builder for the requested "

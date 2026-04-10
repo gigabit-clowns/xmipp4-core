@@ -37,6 +37,8 @@ public:
 
 	bool operator==(const strided_layout_implementation &other) const noexcept;
 
+	std::size_t hash() const noexcept;
+
 	std::size_t get_rank() const noexcept;
 
 	template <typename Vec>

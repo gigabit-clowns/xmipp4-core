@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+
 namespace xmipp4 
 {
 
@@ -12,7 +14,7 @@ namespace xmipp4
  * backend candidates.
  * 
  */
-class ambiguous_backend_error
+class XMIPP4_CORE_API ambiguous_backend_error
 	: public std::runtime_error
 {
 	using runtime_error::runtime_error;

@@ -15,6 +15,8 @@ set_target_properties(
 	PROPERTIES 
 		SOVERSION ${PROJECT_VERSION}
 		DEFINE_SYMBOL XMIPP4_CORE_EXPORTING
+		C_VISIBILITY_PRESET hidden
+    	CXX_VISIBILITY_PRESET hidden
 )
 target_include_directories(
 	xmipp4-core

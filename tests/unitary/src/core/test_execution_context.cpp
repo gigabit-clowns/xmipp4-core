@@ -10,7 +10,6 @@
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/service_catalog.hpp>
-#include <core/multidimensional/eager_operation_dispatcher.hpp>
 
 #include "hardware/mock/mock_device.hpp"
 #include "hardware/mock/mock_device_queue.hpp"
@@ -24,7 +23,6 @@
 
 using namespace xmipp4;
 using namespace xmipp4::hardware;
-using namespace xmipp4::multidimensional;
 
 static
 execution_context make_test_execution_context()
@@ -132,7 +130,6 @@ TEST_CASE( "Constructing a execution_context from an index should create and sto
 	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == host_allocator.get() );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_device_properties().get_name() == properties.get_name() );
-	CHECK( dynamic_cast<eager_operation_dispatcher*>(&context.get_operation_dispatcher()) );
 }
 
 TEST_CASE( "Constructing a execution_context for a device with unified memory should share a single allocator", "[execution_context]" )
@@ -186,7 +183,6 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 	CHECK( &context.get_memory_allocator(memory_resource_affinity::host) == host_allocator.get() );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_device_properties().get_name() == properties.get_name() );
-	CHECK( dynamic_cast<eager_operation_dispatcher*>(&context.get_operation_dispatcher()) );
 }
 
 TEST_CASE( "Calling set_active queue on a execution_context should update the active queue and return the previous one", "[execution_context]" )

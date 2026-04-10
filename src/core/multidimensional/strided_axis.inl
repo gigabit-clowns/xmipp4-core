@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/multidimensional/index.hpp>
 
+#include <boost/functional/hash.hpp>
+
 namespace xmipp4
 {
 namespace multidimensional
@@ -33,6 +35,14 @@ void strided_axis::swap(strided_axis &other) noexcept
 {
 	std::swap(m_extent, other.m_extent);
 	std::swap(m_stride, other.m_stride);
+}
+
+inline
+std::size_t strided_axis::hash() const noexcept
+{
+	std::size_t seed = boost::hash_value(m_extent);
+	boost::hash_combine(seed, boost::hash_value(m_stride));
+	return seed;
 }
 
 XMIPP4_INLINE_CONSTEXPR 

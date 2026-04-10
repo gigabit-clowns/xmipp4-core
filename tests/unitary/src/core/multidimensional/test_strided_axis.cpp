@@ -260,3 +260,13 @@ TEST_CASE("apply_slice should throw with an out of range index", "[strided_axis]
 	auto offset = initial_offset;
 	REQUIRE_THROWS_AS( apply_slice(axis, offset, slice), std::out_of_range );
 }
+
+TEST_CASE("hash of strided_axis should change if any of the components changes", "[strided_axis]")
+{
+	strided_axis axis(12, 15);
+	CHECK( axis.hash() == 0xcdbe0b208405a297 );
+	axis.set_extent(11);
+	CHECK( axis.hash() == 0x60cd1d2ee0fd46ab );
+	axis.set_stride(43);
+	CHECK( axis.hash() == 0x5654c5717cd925d1 );
+}

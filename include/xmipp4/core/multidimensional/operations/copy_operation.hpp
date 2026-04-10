@@ -39,18 +39,6 @@ public:
 		INPUT_OPERAND_COUNT
 	};
 
-	/**
-	 * @brief Indices for mixed operands.
-	 */
-	enum operand_indices
-	{
-		OPERAND_DESTINATION,
-		OPERAND_SOURCE,
-
-		OPERAND_COUNT
-	};
-
-
 
 	XMIPP4_CORE_API copy_operation() noexcept;
 	XMIPP4_CORE_API ~copy_operation() override;

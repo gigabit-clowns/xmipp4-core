@@ -40,17 +40,7 @@ public:
 		INPUT_OPERAND_COUNT
 	};
 
-	/**
-	 * @brief Indices for mixed operands.
-	 */
-	enum operand_indices
-	{
-		OPERAND_DESTINATION,
-
-		OPERAND_COUNT
-	};
-
-
+	
 	/**
 	 * @brief Construct a fill operation by the value used to fill.
 	 * 

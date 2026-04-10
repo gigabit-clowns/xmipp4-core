@@ -4,8 +4,7 @@
 
 #include <xmipp4/core/multidimensional/kernel_builder.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/multidimensional/array_signature.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -29,8 +28,8 @@ public:
 		get_suitability, 
 		backend_priority (
 			const operation &operation,
-			span<const array_descriptor> descriptors,
-			hardware::device &device
+			span<const array_signature> output_signatures,
+			span<const array_signature> input_signatures
 		), 
 		override
 	);
@@ -39,8 +38,8 @@ public:
 		build, 
 		std::shared_ptr<kernel> (
 			const operation &operation,
-			span<const array_descriptor> descriptors,
-			hardware::device &device
+			span<const array_signature> output_signatures,
+			span<const array_signature> input_signatures
 		), 
 		override
 	);

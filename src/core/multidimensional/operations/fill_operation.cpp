@@ -56,13 +56,13 @@ void fill_operation::sanitize_operands(
 	span<array_descriptor> input_descriptors
 ) const
 {
-	if (input_descriptors.size() != 0)
+	if (input_descriptors.size() != INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"fill_operation requires exactly no input operand."
 		);
 	}
-	if (output_descriptors.size() != 1)
+	if (output_descriptors.size() != OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"fill_operation requires exactly one output operand."

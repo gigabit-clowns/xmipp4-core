@@ -142,7 +142,7 @@ TEST_CASE("sanitize_operands in copy_operation should throw if input is not init
 		),
 		std::invalid_argument,
 		Catch::Matchers::Message(
-			"copy_operation requires input descriptor to be initialized."
+			"copy_operation requires source descriptor to be initialized."
 		)
 	);
 }

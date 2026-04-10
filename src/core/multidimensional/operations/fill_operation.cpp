@@ -69,11 +69,12 @@ void fill_operation::sanitize_operands(
 		);
 	}
 
-	const auto &output_desc = output_descriptors[0];
-	if (!is_initialized(output_desc))
+	const auto &destination_desc = 
+		output_descriptors[OUTPUT_OPERAND_DESTINATION];
+	if (!is_initialized(destination_desc))
 	{
 		throw std::invalid_argument(
-			"fill_operation requires output descriptor to be initialized."
+			"fill_operation requires destination descriptor to be initialized."
 		);
 	}
 }

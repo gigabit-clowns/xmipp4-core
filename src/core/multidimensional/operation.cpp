@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/multidimensional/operation.hpp>
 
+#include <sstream>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -18,6 +20,27 @@ operation_id operation::get_id() const noexcept
 std::string operation::serialize_parameters() const
 {
 	return "";
+}
+
+std::ostream& operator<<(std::ostream& os, const operation& op)
+{
+	const auto name = op.get_name();
+	os << name;
+
+	const auto parameters = op.serialize_parameters();
+	if(!parameters.empty())
+	{
+		os << '(' << parameters << ')';
+	}
+
+	return os;
+}
+
+std::string to_string(const operation& op)
+{
+	std::ostringstream oss;
+	oss << op;
+	return oss.str();
 }
 
 } // namespace multidimensional

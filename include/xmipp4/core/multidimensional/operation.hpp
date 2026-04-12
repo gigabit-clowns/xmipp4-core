@@ -3,11 +3,12 @@
 #pragma once
 
 #include "operation_id.hpp"
-#include "../platform/dynamic_shared_object.h"
-#include "../span.hpp"
 
+#include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
+#include <ostream>
 #include <string>
 
 namespace xmipp4 
@@ -88,6 +89,10 @@ public:
 		span<array_descriptor> input_descriptors
 	) const = 0;
 };
+
+std::ostream& operator<<(std::ostream& os, const operation& op);
+
+std::string to_string(const operation& op);
 
 } // namespace multidimensional
 } // namespace xmipp4

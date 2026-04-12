@@ -2,6 +2,8 @@
 
 #include "cpu_reduce_outer_loop.hpp"
 
+#include <algorithm>
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -18,6 +20,14 @@ cpu_reduce_outer_loop<OpInit, OpAcc>::cpu_reduce_outer_loop(
 	, m_vector_accum_handler(std::move(vector_accum_handler))
 	, m_access_layout(std::move(access_layout))
 {
+	const auto strides = m_access_layout.get_strides(0);
+	for (std::size_t i = 0; i < strides.size(); ++i)
+	{
+		if (strides[i] == 0)
+		{
+			m_reduce_axes.push_back(i);
+		}
+	}
 }
 
 template <typename OpInit, typename OpAcc>
@@ -50,21 +60,41 @@ void cpu_reduce_outer_loop<OpInit, OpAcc>::loop_impl(
 
 	const auto offsets = 
 		static_cast<const multi_array_iterator&>(ite).get_offsets();
-
-	m_vector_init_handler(
-		std::get<Is>(pointers) + offsets[Is]..., 
-		count
-	);
-
-	// TODO implement a tiling strategy.
-	// TODO decide if this is correct.
+	const auto indices = 
+		static_cast<const multi_array_iterator&>(ite).get_indices();
 	while ((count = m_access_layout.next(ite, count)))
 	{
-		m_vector_accum_handler(
-			std::get<Is>(pointers) + offsets[Is]..., 
-			count
-		);
+		if (is_first_iter(indices))
+		{
+			m_vector_init_handler(
+				std::get<Is>(pointers) + offsets[Is]..., 
+				count
+			);
+		}
+		else
+		{
+			m_vector_accum_handler(
+				std::get<Is>(pointers) + offsets[Is]..., 
+				count
+			);
+		}
 	} 
+}
+
+template <typename OpInit, typename OpAcc>
+bool cpu_reduce_outer_loop<OpInit, OpAcc>::is_first_iter(
+	span<const std::size_t> indices
+) const noexcept
+{
+	return std::all_of(
+		m_reduce_axes.cbegin(),
+		m_reduce_axes.cend(),
+		[&indices] (std::size_t reduce_axis)
+		{
+			XMIPP4_ASSERT(reduce_axis < indices.size());
+			return indices[reduce_axis] == 0;
+		}
+	)
 }
 
 template <typename OpInit, typename OpAcc>

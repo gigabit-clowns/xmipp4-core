@@ -7,6 +7,7 @@
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <tuple>
+#include <vector>
 
 namespace xmipp4 
 {
@@ -65,12 +66,15 @@ private:
 	init_functor_type m_vector_init_handler;
 	accum_functor_type m_vector_accum_handler;
 	multi_array_access_layout m_access_layout;
+	std::vector<std::size_t> m_reduce_axes;
 
 	template <typename... Pointers, std::size_t... Is>
 	void loop_impl(
 		const std::tuple<Pointers...> &pointers, 
 		std::index_sequence<Is...>
 	) const;
+
+	bool is_first_iter(span<const std::size_t> indices) const noexcept;
 
 };
 

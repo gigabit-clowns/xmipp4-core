@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "../operation.hpp"
-#include "../../platform/dynamic_shared_object.h"
+#include "elementwise_operation.hpp"
 
-#include <string>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4 
 {
@@ -16,19 +15,10 @@ namespace multidimensional
  * @brief Copy elements from an input array to an output array.
  */
 class copy_operation
-	: public operation
+	: public unary_elementwise_operation
 {
 public:
-	XMIPP4_CORE_API copy_operation() noexcept;
-	XMIPP4_CORE_API ~copy_operation() override;
-	
 	XMIPP4_CORE_API std::string get_name() const override;
-
-	XMIPP4_CORE_API
-	void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const override;
 };
 
 } // namespace multidimensional

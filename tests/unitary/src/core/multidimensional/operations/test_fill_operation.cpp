@@ -127,7 +127,7 @@ TEST_CASE("sanitize_operands in fill_operation should throw if output is not ini
 		),
 		std::invalid_argument,
 		Catch::Matchers::Message(
-			"fill_operation requires output descriptor to be initialized."
+			"fill_operation requires destination descriptor to be initialized."
 		)
 	);
 }

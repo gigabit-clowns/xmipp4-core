@@ -56,24 +56,25 @@ void fill_operation::sanitize_operands(
 	span<array_descriptor> input_descriptors
 ) const
 {
-	if (input_descriptors.size() != 0)
+	if (input_descriptors.size() != INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"fill_operation requires exactly no input operand."
 		);
 	}
-	if (output_descriptors.size() != 1)
+	if (output_descriptors.size() != OUTPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"fill_operation requires exactly one output operand."
 		);
 	}
 
-	const auto &output_desc = output_descriptors[0];
-	if (!is_initialized(output_desc))
+	const auto &destination_desc = 
+		output_descriptors[OUTPUT_OPERAND_DESTINATION];
+	if (!is_initialized(destination_desc))
 	{
 		throw std::invalid_argument(
-			"fill_operation requires output descriptor to be initialized."
+			"fill_operation requires destination descriptor to be initialized."
 		);
 	}
 }

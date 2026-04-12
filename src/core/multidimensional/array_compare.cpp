@@ -36,7 +36,7 @@ array less(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(less_operation(), lhs, rhs, context, out);
@@ -46,7 +46,7 @@ array less_equal(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(less_equal_operation(), lhs, rhs, context, out);
@@ -56,7 +56,7 @@ array greater(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(greater_operation(), lhs, rhs, context, out);
@@ -66,7 +66,7 @@ array greater_equal(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(greater_equal_operation(), lhs, rhs, context, out);
@@ -76,7 +76,7 @@ array equal(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(equal_operation(), lhs, rhs, context, out);
@@ -86,7 +86,7 @@ array inequal(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
-	array *out = nullptr
+	array *out
 )
 {
 	return execute_comparison(inequal_operation(), lhs, rhs, context, out);

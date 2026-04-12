@@ -14,11 +14,11 @@ namespace multidimensional
 /**
  * @brief Copy elements from an input array to an output array.
  */
-class copy_operation
+class XMIPP4_CORE_API copy_operation
 	: public unary_elementwise_operation
 {
 public:
-	XMIPP4_CORE_API std::string get_name() const override;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

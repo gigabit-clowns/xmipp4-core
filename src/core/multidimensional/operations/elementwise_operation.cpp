@@ -81,15 +81,13 @@ void elementwise_operation::deduce_output(
 		broadcast_extents(broadcasted_extents, extents);
 	}
 
-	const auto data_type = 
-		input_descriptors[0].get_data_type(); // Best guess
 	for (std::size_t i = 0; i < output_descriptors.size(); ++i)
 	{
 		output_descriptors[i] = array_descriptor(
 			strided_layout::make_contiguous_layout(
 				make_span(broadcasted_extents)
 			),
-			data_type
+			numerical_type::unknown // Set by child classes.
 		);
 	}
 

@@ -47,6 +47,7 @@ private:
 class XMIPP4_CORE_API unary_elementwise_operation
 	: public elementwise_operation
 {
+public:
 	void sanitize_operands(
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors
@@ -62,6 +63,7 @@ class XMIPP4_CORE_API unary_elementwise_operation
 class XMIPP4_CORE_API binary_elementwise_operation
 	: public elementwise_operation
 {
+public:
 	void sanitize_operands(
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors
@@ -77,9 +79,7 @@ class XMIPP4_CORE_API binary_elementwise_operation
 class XMIPP4_CORE_API ternary_elementwise_operation
 	: public elementwise_operation
 {
-	ternary_elementwise_operation() noexcept;
-	~ternary_elementwise_operation();
-
+public:
 	void sanitize_operands(
 		span<array_descriptor> output_descriptors,
 		span<array_descriptor> input_descriptors

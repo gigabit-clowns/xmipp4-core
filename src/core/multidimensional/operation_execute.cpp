@@ -283,5 +283,36 @@ void execute(
 	}
 }
 
+array execute(
+	const operation &operation,
+	span<const array_view> input_operands,
+	const execution_context &context,
+	array *out
+)
+{
+	if (out)
+	{
+		execute(
+			operation,
+			make_span(out, 1),
+			input_operands,
+			context
+		);
+
+		return out->share();
+	}
+	else
+	{
+		array output_operand;
+		execute(
+			operation,
+			make_span(&output_operand, 1),
+			input_operands,
+			context
+		);
+		return output_operand;
+	}
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

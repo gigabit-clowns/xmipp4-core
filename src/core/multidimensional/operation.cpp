@@ -22,12 +22,18 @@ std::string operation::serialize_parameters() const
 	return "";
 }
 
-std::ostream& operator<<(std::ostream& os, const operation& op)
+namespace
 {
-	const auto name = op.get_name();
-	os << name;
 
-	const auto parameters = op.serialize_parameters();
+template <typename Os>
+Os& format_operation(
+	Os& os, 
+	const std::string &name, 
+	const std::string &parameters
+)
+{
+
+	os << name;
 	if(!parameters.empty())
 	{
 		os << '(' << parameters << ')';
@@ -36,10 +42,26 @@ std::ostream& operator<<(std::ostream& os, const operation& op)
 	return os;
 }
 
+} // anonymous namespace
+
+std::ostream& operator<<(std::ostream& os, const operation& op)
+{
+	const auto name = op.get_name();
+	const auto parameters = op.serialize_parameters();
+	return format_operation(os, name, parameters);
+}
+
 std::string to_string(const operation& op)
 {
+	const auto name = op.get_name();
+	const auto parameters = op.serialize_parameters();
+	if(parameters.empty())
+	{
+		return name; // Fast return
+	}
+
 	std::ostringstream oss;
-	oss << op;
+	format_operation(oss, name, parameters);
 	return oss.str();
 }
 

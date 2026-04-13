@@ -118,6 +118,71 @@ array mean(
 );
 
 /**
+ * @brief Get the variance over a set of axes.
+ *
+ * The variance is defined as `sum(square(x-mean), axes, where) / (N-1)`. 
+ * Where `N` is the number of elements.
+ * 
+ * @param x Array where the mean is computed.
+ * @param axes The axes on which elements are added.
+ * @param context The device context to handle the allocation.
+ * @param keep_dim When false, the reduced axes are removed from the output. If 
+ * true reduced axes are replaced by axes with extent 1.
+ * @param mean Optional mean array. If provided, the operation it must be 
+ * broadcastable to x. This can be guaranteed by computing it with 
+ * `keep_dim==true`.
+ * @param where Optional masking array. If provided, the operation is performed
+ * on elements where this array evaluates to true. Must be broadcastble with
+ * the input array.
+ * @param out Optional array to reuse. If provided, its resources may be re-used
+ * and it will be overwritten with the newly created array.
+ * @return array The result.
+ */
+XMIPP4_CORE_API
+array variance(
+	const array_view &x,
+	span<const std::size_t> axes,
+	const execution_context &context,
+	bool keep_dim = false,
+	const array_view *mean = nullptr,
+	const array_view *where = nullptr,
+	array *out = nullptr
+);
+
+/**
+ * @brief Get the standard deviation over a set of axes.
+ *
+ * The standard deviation is defined as 
+ * `sqrt(sum(square(x-mean), axes, where) / (N-1))` where `N` is the number of 
+ * elements.
+ * 
+ * @param x Array where the mean is computed.
+ * @param axes The axes on which elements are added.
+ * @param context The device context to handle the allocation.
+ * @param keep_dim When false, the reduced axes are removed from the output. If 
+ * true reduced axes are replaced by axes with extent 1.
+ * @param mean Optional mean array. If provided, the operation it must be 
+ * broadcastable to x. This can be guaranteed by computing it with 
+ * `keep_dim==true`.
+ * @param where Optional masking array. If provided, the operation is performed
+ * on elements where this array evaluates to true. Must be broadcastble with
+ * the input array. 
+ * @param out Optional array to reuse. If provided, its resources may be re-used
+ * and it will be overwritten with the newly created array.
+ * @return array The result.
+ */
+XMIPP4_CORE_API
+array stddev(
+	const array_view &x,
+	span<const std::size_t> axes,
+	const execution_context &context,
+	bool keep_dim = false,
+	const array_view *mean = nullptr,
+	const array_view *where = nullptr,
+	array *out = nullptr
+);
+
+/**
  * @brief Get the energy over a set of axes.
  *
  * The energy is defined as `sum(square(x), axes, where)`.

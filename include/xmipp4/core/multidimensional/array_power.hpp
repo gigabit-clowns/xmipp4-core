@@ -58,7 +58,7 @@ array exp(
  * @return array The resulting empty array.
  */
 XMIPP4_CORE_API
-array exp(
+array log(
 	const array_view &x,
 	const execution_context &context,
 	array *out = nullptr

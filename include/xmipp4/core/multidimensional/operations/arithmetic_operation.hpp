@@ -13,6 +13,8 @@ namespace multidimensional
 
 /**
  * @brief Compute `-x` for all elements.
+ * 
+ * Input and output must have the same data type
  */
 class XMIPP4_CORE_API negate_operation
 	: public unary_elementwise_operation // TODO

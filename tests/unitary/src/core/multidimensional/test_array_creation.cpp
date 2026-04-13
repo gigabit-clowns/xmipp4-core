@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/array_factory.hpp>
+#include <xmipp4/core/multidimensional/array_creation.hpp>
 
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
@@ -77,7 +77,7 @@ execution_context make_test_device_context()
 	return execution_context(catalog, index);
 }
 
-TEST_CASE("Calling empty without an output array should allocate with the appropiate allocator.", "[array_factory]")
+TEST_CASE("Calling empty without an output array should allocate with the appropiate allocator.", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 
@@ -123,7 +123,7 @@ TEST_CASE("Calling empty without an output array should allocate with the approp
 	CHECK( result.get_storage() == buffer.get() );
 }
 
-TEST_CASE("Calling empty with an output array with the same descriptor should return an alias", "[array_factory]")
+TEST_CASE("Calling empty with an output array with the same descriptor should return an alias", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 
@@ -157,7 +157,7 @@ TEST_CASE("Calling empty with an output array with the same descriptor should re
 	CHECK( array2.get_storage() == storage.get() );
 }
 
-TEST_CASE("Calling empty with an output array with a different descriptor should alias storage", "[array_factory]")
+TEST_CASE("Calling empty with an output array with a different descriptor should alias storage", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 
@@ -195,7 +195,7 @@ TEST_CASE("Calling empty with an output array with a different descriptor should
 	CHECK( array2.get_storage() == storage.get() );
 }
 
-TEST_CASE("Calling empty with an output array with no storage should allocate it", "[array_factory]")
+TEST_CASE("Calling empty with an output array with no storage should allocate it", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 
@@ -232,7 +232,7 @@ TEST_CASE("Calling empty with an output array with no storage should allocate it
 	CHECK( array2.get_storage() == buffer.get() );
 }
 
-TEST_CASE("Calling empty with a output array with insufficient storage should allocate it", "[array_factory]")
+TEST_CASE("Calling empty with a output array with insufficient storage should allocate it", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 
@@ -276,7 +276,7 @@ TEST_CASE("Calling empty with a output array with insufficient storage should al
 	CHECK( array2.get_storage() == buffer2.get() );
 }
 
-TEST_CASE("Calling empty with an output array with a storage in a different memory resource should allocate", "[array_factory]")
+TEST_CASE("Calling empty with an output array with a storage in a different memory resource should allocate", "[array_creation]")
 {
 	const auto context = make_test_device_context();
 

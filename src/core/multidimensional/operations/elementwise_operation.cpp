@@ -120,7 +120,7 @@ void unary_elementwise_operation::sanitize_operands(
 		);
 	}
 
-	operation::sanitize_operands(output_descriptors, input_descriptors);
+	elementwise_operation::sanitize_operands(output_descriptors, input_descriptors);
 }
 
 void binary_elementwise_operation::sanitize_operands(
@@ -142,7 +142,7 @@ void binary_elementwise_operation::sanitize_operands(
 		);
 	}
 
-	operation::sanitize_operands(output_descriptors, input_descriptors);
+	elementwise_operation::sanitize_operands(output_descriptors, input_descriptors);
 }
 
 void ternary_elementwise_operation::sanitize_operands(
@@ -164,7 +164,7 @@ void ternary_elementwise_operation::sanitize_operands(
 		);
 	}
 
-	operation::sanitize_operands(output_descriptors, input_descriptors);
+	elementwise_operation::sanitize_operands(output_descriptors, input_descriptors);
 }
 
 } // namespace multidimensional

@@ -11,7 +11,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/array_factory.hpp>
+#include <xmipp4/core/multidimensional/array_creation.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>

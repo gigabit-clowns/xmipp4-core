@@ -69,10 +69,14 @@ public:
 
 	strided_layout_implementation squeeze() const;
 
+	strided_layout_implementation pop_axes(
+		span<const std::size_t> indices
+	) const;
 
 	strided_layout_implementation broadcast_to(
 		span<const std::size_t> extents
 	) const;
+
 
 private:
 	strided_axis_vector_type m_axes;

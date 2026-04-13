@@ -146,6 +146,12 @@ strided_layout strided_layout::squeeze() const
 }
 
 XMIPP4_NODISCARD
+strided_layout strided_layout::pop_axes(span<const std::size_t> indices) const
+{
+	return strided_layout(get_implementation().pop_axes(indices));
+}
+
+XMIPP4_NODISCARD
 strided_layout 
 strided_layout::broadcast_to(span<const std::size_t> extents) const
 {

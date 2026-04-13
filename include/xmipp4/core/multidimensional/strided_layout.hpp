@@ -171,6 +171,14 @@ public:
 	strided_layout squeeze() const;
 
 	/**
+	 * @brief Remove axes from the layout.
+	 * 
+	 * @return strided_layout The resulting layout.
+	 */
+	XMIPP4_NODISCARD XMIPP4_CORE_API
+	strided_layout pop_axes(span<const std::size_t> indices) const;
+
+	/**
 	 * @brief Perform a broadcast of the layout to match the provided extents.
 	 * 
 	 * This function modifies the layout to match the provided extents by 

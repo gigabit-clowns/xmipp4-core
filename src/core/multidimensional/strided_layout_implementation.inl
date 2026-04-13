@@ -556,6 +556,28 @@ strided_layout_implementation strided_layout_implementation::squeeze() const
 }
 
 inline
+strided_layout_implementation strided_layout_implementation::pop_axes(
+	span<const std::size_t> indices
+) const
+{
+	// Due to the small size of indices and axes, a naive O(N^2) approach
+	// is good enough.
+	strided_axis_vector_type axes;
+	for (std::size_t i = 0; i < m_axes.size(); ++i)
+	{
+		if (std::find(indices.begin(), indices.end(), i) == indices.end())
+		{
+			axes.push_back(m_axes[i]);
+		}
+	}
+
+	return strided_layout_implementation(
+		std::move(axes),
+		m_offset
+	);	
+}
+
+inline
 strided_layout_implementation strided_layout_implementation::broadcast_to(
 	span<const std::size_t> extents
 ) const

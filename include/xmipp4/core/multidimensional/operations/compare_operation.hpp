@@ -12,7 +12,10 @@ namespace multidimensional
 {
 
 /**
- * @brief Base class ofr comparing two arrays value by value.
+ * @brief Base class for comparing two arrays value by value.
+ * 
+ * Comparison operations are not defined for complex types. Both input data 
+ * types must be equal. Output data type is always boolean.
  */
 class XMIPP4_CORE_API compare_operation
 	: public binary_elementwise_operation
@@ -31,7 +34,7 @@ class XMIPP4_CORE_API less_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -41,7 +44,7 @@ class XMIPP4_CORE_API less_equal_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -51,7 +54,7 @@ class XMIPP4_CORE_API greater_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -61,7 +64,7 @@ class XMIPP4_CORE_API greater_equal_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -71,7 +74,7 @@ class XMIPP4_CORE_API equal_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -81,7 +84,7 @@ class XMIPP4_CORE_API inequal_operation final
 	: public compare_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

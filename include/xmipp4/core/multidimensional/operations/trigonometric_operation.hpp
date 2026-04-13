@@ -20,7 +20,7 @@ class XMIPP4_CORE_API sin_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -33,7 +33,7 @@ class XMIPP4_CORE_API cos_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -46,7 +46,12 @@ class XMIPP4_CORE_API sincos_operation
 	: public elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
+
+	void sanitize_operands(
+		span<array_descriptor> output_descriptors,
+		span<array_descriptor> input_descriptors
+	) const override;
 };
 
 /**
@@ -59,7 +64,7 @@ class XMIPP4_CORE_API tan_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -72,7 +77,7 @@ class XMIPP4_CORE_API asin_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -85,7 +90,7 @@ class XMIPP4_CORE_API acos_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -98,7 +103,7 @@ class XMIPP4_CORE_API atan_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -111,7 +116,7 @@ class XMIPP4_CORE_API atan2_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

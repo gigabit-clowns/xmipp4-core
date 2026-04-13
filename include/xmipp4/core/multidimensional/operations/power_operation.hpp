@@ -18,7 +18,7 @@ class XMIPP4_CORE_API power_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -28,7 +28,7 @@ class XMIPP4_CORE_API exp_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -38,7 +38,7 @@ class XMIPP4_CORE_API log_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -48,7 +48,7 @@ class XMIPP4_CORE_API square_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -58,7 +58,7 @@ class XMIPP4_CORE_API sqrt_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

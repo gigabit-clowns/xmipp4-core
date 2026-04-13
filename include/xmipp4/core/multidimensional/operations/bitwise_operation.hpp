@@ -12,43 +12,75 @@ namespace multidimensional
 {
 
 /**
- * @brief Compute `~x` for all elements.
+ * @brief Base class for unary bitwise operations.
+ * 
+ * Mandates integer data types. Input and output operands must have the same 
+ * integer type.
  */
-class XMIPP4_CORE_API bitwise_negate_operation
-	: public unary_elementwise_operation // TODO
+class XMIPP4_CORE_API unary_bitwise_operation
+	: public unary_elementwise_operation
 {
 public:
-	std::string get_name() const;
+	void sanitize_operands(
+		span<array_descriptor> output_descriptors,
+		span<array_descriptor> input_descriptors
+	) const override;
+};
+
+/**
+ * @brief Base class for binary bitwise operations.
+ * 
+ * Mandates integer data types. All input and output operands must have the same 
+ * integer type.
+ */
+class XMIPP4_CORE_API binary_bitwise_operation
+	: public binary_elementwise_operation
+{
+public:
+	void sanitize_operands(
+		span<array_descriptor> output_descriptors,
+		span<array_descriptor> input_descriptors
+	) const override;
+};
+
+/**
+ * @brief Compute `~x` for all elements.
+ */
+class XMIPP4_CORE_API bitwise_negate_operation final
+	: public unary_bitwise_operation
+{
+public:
+	std::string get_name() const override;
 };
 
 /**
  * @brief Compute `x & y` for all elements.
  */
-class XMIPP4_CORE_API bitwise_and_operation
-	: public binary_elementwise_operation // TODO
+class XMIPP4_CORE_API bitwise_and_operation final
+	: public binary_bitwise_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
  * @brief Compute `x | y` for all elements.
  */
-class XMIPP4_CORE_API bitwise_or_operation
-	: public binary_elementwise_operation // TODO
+class XMIPP4_CORE_API bitwise_or_operation final
+	: public binary_bitwise_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
  * @brief Compute `x ^ y` for all elements.
  */
-class XMIPP4_CORE_API bitwise_xor_operation
-	: public binary_elementwise_operation // TODO
+class XMIPP4_CORE_API bitwise_xor_operation final
+	: public binary_bitwise_operation
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

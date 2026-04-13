@@ -20,7 +20,7 @@ class XMIPP4_CORE_API negate_operation
 	: public unary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -30,7 +30,7 @@ class XMIPP4_CORE_API add_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -40,7 +40,7 @@ class XMIPP4_CORE_API subtract_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -50,7 +50,7 @@ class XMIPP4_CORE_API multiply_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 /**
@@ -60,7 +60,7 @@ class XMIPP4_CORE_API divide_operation
 	: public binary_elementwise_operation // TODO
 {
 public:
-	std::string get_name() const;
+	std::string get_name() const override;
 };
 
 } // namespace multidimensional

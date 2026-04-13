@@ -66,7 +66,7 @@ TEST_CASE("converting to string an operation with parameters to a std::ostream s
 	REQUIRE_CALL(op, serialize_parameters())
 		.LR_RETURN("2*3");
 
-	CHECK( to_string(op) == "sum(2+3)" );
+	CHECK( to_string(op) == "mul(2*3)" );
 }
 
 TEST_CASE("converting to string an operation without parameters to a std::ostream should produce correctly formatted output", "[operation]")
@@ -78,5 +78,5 @@ TEST_CASE("converting to string an operation without parameters to a std::ostrea
 	REQUIRE_CALL(op, serialize_parameters())
 		.LR_RETURN("");
 
-	CHECK( to_string(op) == "sub" );
+	CHECK( to_string(op) == "div" );
 }

@@ -38,7 +38,7 @@ array negate(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting addition.
  */
 XMIPP4_CORE_API
 array add(
@@ -56,7 +56,7 @@ array add(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting subtraction.
  */
 XMIPP4_CORE_API
 array subtract(
@@ -74,7 +74,7 @@ array subtract(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The result of the multiplication.
  */
 XMIPP4_CORE_API
 array multiply(
@@ -92,7 +92,7 @@ array multiply(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The result of the division.
  */
 XMIPP4_CORE_API
 array divide(

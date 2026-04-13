@@ -21,7 +21,7 @@ class array_view;
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting logical negation.
  */
 XMIPP4_CORE_API
 array logical_negate(
@@ -38,7 +38,7 @@ array logical_negate(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting logical anding.
  */
 XMIPP4_CORE_API
 array logical_and(
@@ -56,7 +56,7 @@ array logical_and(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting logical oring.
  */
 XMIPP4_CORE_API
 array logical_or(

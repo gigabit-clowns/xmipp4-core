@@ -96,7 +96,7 @@ array full(
  * @param out Optional array to which contents are copied. If provided, the
  * input is broadcasted to match the shape of this array. Therefore, input
  * must be broadcastable to out's shape.
- * @return array The resulting empty array.
+ * @return array The resulting copy of the input array.
  */
 XMIPP4_CORE_API
 array copy(

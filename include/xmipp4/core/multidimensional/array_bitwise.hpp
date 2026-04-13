@@ -21,7 +21,7 @@ class array_view;
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting bitwise negation.
  */
 XMIPP4_CORE_API
 array bitwise_negate(
@@ -38,7 +38,7 @@ array bitwise_negate(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting bitwise anding.
  */
 XMIPP4_CORE_API
 array bitwise_and(
@@ -56,7 +56,7 @@ array bitwise_and(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting bitwise oring.
  */
 XMIPP4_CORE_API
 array bitwise_or(
@@ -67,14 +67,14 @@ array bitwise_or(
 );
 
 /**
- * @brief Evaluate `x ^ y` for each element in the arrays.
+ * @brief Evaluate `x ^ y` (exclusive or) for each element in the arrays.
  *
  * @param lhs Left hand side operand. 
  * @param rhs Right hand side operand. 
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting bitwise exclusive oring.
  */
 XMIPP4_CORE_API
 array bitwise_xor(

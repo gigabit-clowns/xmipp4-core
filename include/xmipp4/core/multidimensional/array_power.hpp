@@ -22,7 +22,7 @@ class array_view;
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting power.
  */
 XMIPP4_CORE_API
 array pow(
@@ -39,7 +39,9 @@ array pow(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting exponentiation.
+ * 
+ * @note The exponent base is `e` (Euler's number).
  */
 XMIPP4_CORE_API
 array exp(
@@ -55,7 +57,9 @@ array exp(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting logarithm.
+
+ * @note The logarithm base is `e` (Euler's number).
  */
 XMIPP4_CORE_API
 array log(
@@ -71,7 +75,7 @@ array log(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting squared array.
  */
 XMIPP4_CORE_API
 array square(
@@ -81,13 +85,13 @@ array square(
 );
 
 /**
- * @brief Evaluate `sqrt(x)` for each element in the arrays.
+ * @brief Evaluate `sqrt(x)` (square root) for each element in the arrays.
  *
  * @param x The input array. 
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting square root array.
  */
 XMIPP4_CORE_API
 array sqrt(

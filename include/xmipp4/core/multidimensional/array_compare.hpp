@@ -22,7 +22,7 @@ class array_view;
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array less(
@@ -40,7 +40,7 @@ array less(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array less_equal(
@@ -58,7 +58,7 @@ array less_equal(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array greater(
@@ -76,7 +76,7 @@ array greater(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array greater_equal(
@@ -94,7 +94,7 @@ array greater_equal(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array equal(
@@ -112,7 +112,7 @@ array equal(
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
+ * @return array The resulting comparison.
  */
 XMIPP4_CORE_API
 array inequal(

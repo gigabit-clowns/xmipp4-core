@@ -37,7 +37,8 @@ array greater(
 	array *out
 )
 {
-	return execute_binary(greater_operation(), lhs, rhs, context, out);
+	// using less and swapping operands.
+	return execute_binary(less_operation(), rhs, lhs, context, out);
 }
 
 array greater_equal(
@@ -47,7 +48,8 @@ array greater_equal(
 	array *out
 )
 {
-	return execute_binary(greater_equal_operation(), lhs, rhs, context, out);
+	// using less_equal and swapping operands.
+	return execute_binary(less_equal_operation(), rhs, lhs, context, out);
 }
 
 array equal(

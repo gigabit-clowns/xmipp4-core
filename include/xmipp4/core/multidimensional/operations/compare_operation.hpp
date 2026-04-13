@@ -48,26 +48,6 @@ public:
 };
 
 /**
- * @brief Computes `x > y`.
- */
-class XMIPP4_CORE_API greater_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-};
-
-/**
- * @brief Computes `x >= y`.
- */
-class XMIPP4_CORE_API greater_equal_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-};
-
-/**
  * @brief Computes `x == y`.
  */
 class XMIPP4_CORE_API equal_operation final

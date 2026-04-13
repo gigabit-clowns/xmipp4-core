@@ -29,16 +29,6 @@ std::string less_equal_operation::get_name() const
 	return "less_equal";
 }
 
-std::string greater_operation::get_name() const
-{
-	return "greater";
-}
-
-std::string greater_equal_operation::get_name() const
-{
-	return "greater_equal";
-}
-
 std::string equal_operation::get_name() const
 {
 	return "equal";

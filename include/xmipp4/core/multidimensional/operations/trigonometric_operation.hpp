@@ -16,7 +16,7 @@ namespace multidimensional
  * 
  * Input and output dtypes must be equal and they must be floating-point types.
  */
-class XMIPP4_CORE_API sin_operation
+class XMIPP4_CORE_API sin_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -29,7 +29,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API cos_operation
+class XMIPP4_CORE_API cos_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -42,8 +42,8 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API sincos_operation
-	: public elementwise_operation // TODO
+class XMIPP4_CORE_API sincos_operation final
+	: public elementwise_operation
 {
 public:
 	std::string get_name() const override;
@@ -60,7 +60,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API tan_operation
+class XMIPP4_CORE_API tan_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -73,7 +73,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API asin_operation
+class XMIPP4_CORE_API asin_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -86,7 +86,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API acos_operation
+class XMIPP4_CORE_API acos_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -99,7 +99,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API atan_operation
+class XMIPP4_CORE_API atan_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -112,7 +112,7 @@ public:
  * Input and output data types must be equal and they must be floating-point 
  * types.
  */
-class XMIPP4_CORE_API atan2_operation
+class XMIPP4_CORE_API atan2_operation final
 	: public binary_elementwise_operation // TODO
 {
 public:

@@ -14,7 +14,7 @@ namespace multidimensional
 /**
  * @brief Compute `x^y` for all elements.
  */
-class XMIPP4_CORE_API power_operation
+class XMIPP4_CORE_API power_operation final
 	: public binary_elementwise_operation // TODO
 {
 public:
@@ -24,7 +24,7 @@ public:
 /**
  * @brief Compute `exp(x)` for all elements.
  */
-class XMIPP4_CORE_API exp_operation
+class XMIPP4_CORE_API exp_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -34,7 +34,7 @@ public:
 /**
  * @brief Compute `log(x)` for all elements.
  */
-class XMIPP4_CORE_API log_operation
+class XMIPP4_CORE_API log_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -44,7 +44,7 @@ public:
 /**
  * @brief Compute `x^2` for all elements.
  */
-class XMIPP4_CORE_API square_operation
+class XMIPP4_CORE_API square_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:
@@ -54,7 +54,7 @@ public:
 /**
  * @brief Compute `sqrt(x)` for all elements.
  */
-class XMIPP4_CORE_API sqrt_operation
+class XMIPP4_CORE_API sqrt_operation final
 	: public unary_elementwise_operation // TODO
 {
 public:

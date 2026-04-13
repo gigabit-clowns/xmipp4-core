@@ -14,7 +14,7 @@ namespace multidimensional
 /**
  * @brief Copy elements from an input array to an output array.
  */
-class XMIPP4_CORE_API copy_operation
+class XMIPP4_CORE_API copy_operation final
 	: public unary_elementwise_operation
 {
 public:

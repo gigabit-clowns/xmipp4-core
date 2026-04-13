@@ -16,7 +16,7 @@ namespace multidimensional
 /**
  * @brief Fill an array with a constant value.
  */
-class fill_operation
+class fill_operation final
 	: public operation
 {
 public:

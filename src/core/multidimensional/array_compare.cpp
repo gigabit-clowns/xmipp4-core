@@ -10,9 +10,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-namespace
-{
-
 array less(
 	const array_view &lhs,
 	const array_view &rhs,

@@ -25,7 +25,7 @@ public:
 };
 
 /**
- * @brief Computes a < b.
+ * @brief Computes `x < y`.
  */
 class XMIPP4_CORE_API less_operation final
 	: public compare_operation
@@ -35,7 +35,7 @@ public:
 };
 
 /**
- * @brief Computes a <= b.
+ * @brief Computes `x <= y`.
  */
 class XMIPP4_CORE_API less_equal_operation final
 	: public compare_operation
@@ -45,7 +45,7 @@ public:
 };
 
 /**
- * @brief Computes a > b.
+ * @brief Computes `x > y`.
  */
 class XMIPP4_CORE_API greater_operation final
 	: public compare_operation
@@ -55,7 +55,7 @@ public:
 };
 
 /**
- * @brief Computes a >= b.
+ * @brief Computes `x >= y`.
  */
 class XMIPP4_CORE_API greater_equal_operation final
 	: public compare_operation
@@ -65,7 +65,7 @@ public:
 };
 
 /**
- * @brief Computes a == b.
+ * @brief Computes `x == y`.
  */
 class XMIPP4_CORE_API equal_operation final
 	: public compare_operation
@@ -75,7 +75,7 @@ public:
 };
 
 /**
- * @brief Computes a != b.
+ * @brief Computes `x != y`.
  */
 class XMIPP4_CORE_API inequal_operation final
 	: public compare_operation
@@ -83,5 +83,6 @@ class XMIPP4_CORE_API inequal_operation final
 public:
 	std::string get_name() const;
 };
+
 } // namespace multidimensional
 } // namespace xmipp4

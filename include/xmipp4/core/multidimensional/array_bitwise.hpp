@@ -15,7 +15,23 @@ namespace multidimensional
 class array_view;
 
 /**
- * @brief Evaluate `x < y` for each element in the arrays.
+ * @brief Evaluate `~x` for each element in the arrays.
+ *
+ * @param x Array to be negated. 
+ * @param context The device context to handle the allocation.
+ * @param out Optional array to reuse. If provided, its resources may be re-used
+ * and it will be overwritten with the newly created array.
+ * @return array The resulting empty array.
+ */
+XMIPP4_CORE_API
+array bitwise_negate(
+	const array_view &x,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Evaluate `x & y` for each element in the arrays.
  *
  * @param lhs Left hand side operand. 
  * @param rhs Right hand side operand. 
@@ -25,7 +41,7 @@ class array_view;
  * @return array The resulting empty array.
  */
 XMIPP4_CORE_API
-array less(
+array bitwise_and(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
@@ -33,7 +49,7 @@ array less(
 );
 
 /**
- * @brief Evaluate `x <= y` for each element in the arrays.
+ * @brief Evaluate `x | y` for each element in the arrays.
  *
  * @param lhs Left hand side operand. 
  * @param rhs Right hand side operand. 
@@ -43,7 +59,7 @@ array less(
  * @return array The resulting empty array.
  */
 XMIPP4_CORE_API
-array less_equal(
+array bitwise_or(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,
@@ -51,7 +67,7 @@ array less_equal(
 );
 
 /**
- * @brief Evaluate `x > y` for each element in the arrays.
+ * @brief Evaluate `x ^ y` for each element in the arrays.
  *
  * @param lhs Left hand side operand. 
  * @param rhs Right hand side operand. 
@@ -61,61 +77,7 @@ array less_equal(
  * @return array The resulting empty array.
  */
 XMIPP4_CORE_API
-array greater(
-	const array_view &lhs,
-	const array_view &rhs,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
- * @brief Evaluate `x >= y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
- */
-XMIPP4_CORE_API
-array greater_equal(
-	const array_view &lhs,
-	const array_view &rhs,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
- * @brief Evaluate `x == y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
- */
-XMIPP4_CORE_API
-array equal(
-	const array_view &lhs,
-	const array_view &rhs,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
- * @brief Evaluate `x != y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
- */
-XMIPP4_CORE_API
-array inequal(
+array bitwise_xor(
 	const array_view &lhs,
 	const array_view &rhs,
 	const execution_context &context,

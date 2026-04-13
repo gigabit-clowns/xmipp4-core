@@ -173,6 +173,9 @@ public:
 	/**
 	 * @brief Remove axes from the layout.
 	 * 
+	 * @param indices. Indices to be removed. All indices must be less than
+	 * get_rank().
+	 * 
 	 * @return strided_layout The resulting layout.
 	 */
 	XMIPP4_NODISCARD XMIPP4_CORE_API

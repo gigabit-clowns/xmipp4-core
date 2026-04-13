@@ -562,6 +562,17 @@ strided_layout_implementation strided_layout_implementation::pop_axes(
 {
 	// Due to the small size of indices and axes, a naive O(N^2) approach
 	// is good enough.
+	for (auto index : indices)
+	{
+		if (index >= m_axes.size())
+		{
+			throw std::out_of_range(
+				"Out of range index provided to pop_axes. All indices must "
+				"be less than get_rank()."
+			);
+		}
+	}
+
 	strided_axis_vector_type axes;
 	for (std::size_t i = 0; i < m_axes.size(); ++i)
 	{

@@ -13,25 +13,6 @@ namespace multidimensional
 namespace
 {
 
-array execute_comparison(
-	const compare_operation &comparison,
-	const array_view &lhs,
-	const array_view &rhs,
-	const execution_context &context,
-	array *out
-)
-{
-	std::array<array_view, 2> input_operands = { lhs.share(), rhs.share() };
-	return execute(
-		comparison,
-		make_span(input_operands),
-		context,
-		out
-	);
-}
-
-} // anonymous namespace
-
 array less(
 	const array_view &lhs,
 	const array_view &rhs,
@@ -39,7 +20,7 @@ array less(
 	array *out
 )
 {
-	return execute_comparison(less_operation(), lhs, rhs, context, out);
+	return execute_binary(less_operation(), lhs, rhs, context, out);
 }
 
 array less_equal(
@@ -49,7 +30,7 @@ array less_equal(
 	array *out
 )
 {
-	return execute_comparison(less_equal_operation(), lhs, rhs, context, out);
+	return execute_binary(less_equal_operation(), lhs, rhs, context, out);
 }
 
 array greater(
@@ -59,7 +40,7 @@ array greater(
 	array *out
 )
 {
-	return execute_comparison(greater_operation(), lhs, rhs, context, out);
+	return execute_binary(greater_operation(), lhs, rhs, context, out);
 }
 
 array greater_equal(
@@ -69,7 +50,7 @@ array greater_equal(
 	array *out
 )
 {
-	return execute_comparison(greater_equal_operation(), lhs, rhs, context, out);
+	return execute_binary(greater_equal_operation(), lhs, rhs, context, out);
 }
 
 array equal(
@@ -79,7 +60,7 @@ array equal(
 	array *out
 )
 {
-	return execute_comparison(equal_operation(), lhs, rhs, context, out);
+	return execute_binary(equal_operation(), lhs, rhs, context, out);
 }
 
 array inequal(
@@ -89,7 +70,7 @@ array inequal(
 	array *out
 )
 {
-	return execute_comparison(inequal_operation(), lhs, rhs, context, out);
+	return execute_binary(inequal_operation(), lhs, rhs, context, out);
 }
 
 } // namespace multidimensional

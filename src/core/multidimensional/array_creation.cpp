@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_factory.hpp>
+#include <xmipp4/core/multidimensional/array_creation.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
@@ -171,22 +171,7 @@ array copy(
 	array *out
 )
 {
-	std::array<array, 1> outputs;
-	const std::array<array_view, 1> inputs = { std::move(source) };
-
-	if (out)
-	{
-		outputs = { out->share() };
-	}
-
-	execute(
-		copy_operation(),
-		make_span(outputs),
-		make_span(inputs),
-		context
-	);
-
-	return std::move(outputs[0]);
+	return execute_unary(copy_operation(), source, context, out);
 }
 
 } // namespace multidimensional

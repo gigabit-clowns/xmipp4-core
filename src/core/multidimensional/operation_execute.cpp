@@ -314,5 +314,63 @@ array execute(
 	}
 }
 
+array execute_unary(
+	const operation &operation,
+	const array_view &input,
+	const execution_context &context,
+	array *out
+)
+{
+	std::array<array_view, 1> inputs = { input.share() };
+	return execute(
+		operation,
+		make_span(inputs),
+		context,
+		out
+	);
+}
+
+array execute_binary(
+	const operation &operation,
+	const array_view &first_input,
+	const array_view &second_input,
+	const execution_context &context,
+	array *out
+)
+{
+	std::array<array_view, 2> inputs = { 
+		first_input.share(), 
+		second_input.share() 
+	};
+	return execute(
+		operation,
+		make_span(inputs),
+		context,
+		out
+	);
+}
+
+array execute_ternary(
+	const operation &operation,
+	const array_view &first_input,
+	const array_view &second_input,
+	const array_view &third_input,
+	const execution_context &context,
+	array *out
+)
+{
+	std::array<array_view, 3> inputs = { 
+		first_input.share(), 
+		second_input.share(),
+		third_input.share()
+	};
+	return execute(
+		operation,
+		make_span(inputs),
+		context,
+		out
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

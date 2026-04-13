@@ -49,5 +49,59 @@ array execute(
 	array *out = nullptr
 );
 
+/**
+ * @brief Execute an unary operation.
+ * 
+ * @param operation The operation to be executed.
+ * @param input The input operand.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ */
+XMIPP4_CORE_API
+array execute_unary(
+	const operation &operation,
+	const array_view &input,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Execute an unary operation.
+ * 
+ * @param operation The operation to be executed.
+ * @param first_input The first input operand.
+ * @param second_input The second input operand.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ */
+XMIPP4_CORE_API
+array execute_binary(
+	const operation &operation,
+	const array_view &first_input,
+	const array_view &second_input,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Execute an unary operation.
+ * 
+ * @param operation The operation to be executed.
+ * @param first_input The first input operand.
+ * @param second_input The second input operand.
+ * @param third_input The third input operand.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ */
+XMIPP4_CORE_API
+array execute_ternary(
+	const operation &operation,
+	const array_view &first_input,
+	const array_view &second_input,
+	const array_view &third_input,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 } // namespace multidimensional
 } // namespace xmipp4

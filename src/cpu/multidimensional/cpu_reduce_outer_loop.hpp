@@ -6,6 +6,8 @@
 #include <xmipp4/core/multidimensional/multi_array_iterator.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
+#include <boost/container/small_vector.hpp>
+
 #include <tuple>
 #include <vector>
 
@@ -66,7 +68,7 @@ private:
 	init_functor_type m_vector_init_handler;
 	accum_functor_type m_vector_accum_handler;
 	multi_array_access_layout m_access_layout;
-	std::vector<std::size_t> m_reduce_axes;
+	boost::container::small_vector<std::size_t, 4> m_reduce_axes;
 
 	template <typename... Pointers, std::size_t... Is>
 	void loop_impl(

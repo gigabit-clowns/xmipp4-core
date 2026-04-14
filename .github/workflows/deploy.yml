@@ -177,7 +177,7 @@ jobs:
         build-args: --target doxygen
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v4
+      uses: actions/upload-pages-artifact@v5
       with:
         path: ${{ github.workspace }}/build/doc/doxygen/html
 
@@ -235,7 +235,7 @@ jobs:
           done
 
       - name: Create or update development release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

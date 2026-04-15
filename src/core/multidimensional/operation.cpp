@@ -9,6 +9,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
+shape_policy::shape_policy() noexcept = default;
+shape_policy::~shape_policy() = default;
+
+data_type_policy::data_type_policy() noexcept = default;
+data_type_policy::~data_type_policy() = default;
+
 operation::operation() noexcept = default;
 operation::~operation() = default;
 

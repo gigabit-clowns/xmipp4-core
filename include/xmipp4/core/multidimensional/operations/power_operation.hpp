@@ -12,10 +12,24 @@ namespace multidimensional
 {
 
 /**
+ * @brief Base class for logic operations.
+ * 
+ * `shape_policy`: `elementwise_shape_policy`
+ * `data_type_policy`: `same_floating_data_type_policy`
+ */
+class XMIPP4_CORE_API logical_operation
+	: public operation
+{
+public:
+	const shape_policy& get_shape_policy() const noexcept override;
+	const data_type_policy& get_data_type_policy() const noexcept override;
+};
+
+/**
  * @brief Compute `x^y` for all elements.
  */
 class XMIPP4_CORE_API power_operation final
-	: public binary_elementwise_operation // TODO
+	: public logical_operation
 {
 public:
 	std::string get_name() const override;
@@ -25,7 +39,7 @@ public:
  * @brief Compute `exp(x)` for all elements.
  */
 class XMIPP4_CORE_API exp_operation final
-	: public unary_elementwise_operation // TODO
+	: public logical_operation
 {
 public:
 	std::string get_name() const override;
@@ -35,7 +49,7 @@ public:
  * @brief Compute `log(x)` for all elements.
  */
 class XMIPP4_CORE_API log_operation final
-	: public unary_elementwise_operation // TODO
+	: public logical_operation
 {
 public:
 	std::string get_name() const override;
@@ -45,7 +59,7 @@ public:
  * @brief Compute `x^2` for all elements.
  */
 class XMIPP4_CORE_API square_operation final
-	: public unary_elementwise_operation // TODO
+	: public logical_operation
 {
 public:
 	std::string get_name() const override;
@@ -55,7 +69,7 @@ public:
  * @brief Compute `sqrt(x)` for all elements.
  */
 class XMIPP4_CORE_API sqrt_operation final
-	: public unary_elementwise_operation // TODO
+	: public logical_operation
 {
 public:
 	std::string get_name() const override;

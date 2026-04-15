@@ -12,12 +12,26 @@ namespace multidimensional
 {
 
 /**
+ * @brief Base class for trigonometric operations.
+ * 
+ * `shape_policy`: `elementwise_shape_policy`
+ * `data_type_policy`: `same_floating_data_type_policy`
+ */
+class XMIPP4_CORE_API trigonometric_operation
+	: public operation
+{
+public:
+	const shape_policy& get_shape_policy() const noexcept override;
+	const data_type_policy& get_data_type_policy() const noexcept override;
+};
+
+/**
  * @brief Compute `sin(x)` for all elements.
  * 
  * Input and output dtypes must be equal and they must be floating-point types.
  */
 class XMIPP4_CORE_API sin_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -30,7 +44,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API cos_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -43,15 +57,10 @@ public:
  * types.
  */
 class XMIPP4_CORE_API sincos_operation final
-	: public elementwise_operation
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
-
-	void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const override;
 };
 
 /**
@@ -61,7 +70,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API tan_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -74,7 +83,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API asin_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -87,7 +96,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API acos_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -100,7 +109,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API atan_operation final
-	: public unary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;
@@ -113,7 +122,7 @@ public:
  * types.
  */
 class XMIPP4_CORE_API atan2_operation final
-	: public binary_elementwise_operation // TODO
+	: public trigonometric_operation
 {
 public:
 	std::string get_name() const override;

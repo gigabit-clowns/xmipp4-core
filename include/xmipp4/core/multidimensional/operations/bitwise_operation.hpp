@@ -12,42 +12,24 @@ namespace multidimensional
 {
 
 /**
- * @brief Base class for unary bitwise operations.
+ * @brief Base class for bitwise operations.
  * 
- * Mandates integer data types. Input and output operands must have the same 
- * integer type.
+ * `shape_policy`: `elementwise_shape_policy`
+ * `data_type_policy`: `same_arithmetic_data_type_policy`
  */
-class XMIPP4_CORE_API unary_bitwise_operation
-	: public unary_elementwise_operation
+class XMIPP4_CORE_API bitwise_operation
+	: public operation
 {
 public:
-	void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const override;
-};
-
-/**
- * @brief Base class for binary bitwise operations.
- * 
- * Mandates integer data types. All input and output operands must have the same 
- * integer type.
- */
-class XMIPP4_CORE_API binary_bitwise_operation
-	: public binary_elementwise_operation
-{
-public:
-	void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const override;
+	const shape_policy& get_shape_policy() const noexcept override;
+	const data_type_policy& get_data_type_policy() const noexcept override;
 };
 
 /**
  * @brief Compute `~x` for all elements.
  */
 class XMIPP4_CORE_API bitwise_negate_operation final
-	: public unary_bitwise_operation
+	: public bitwise_operation
 {
 public:
 	std::string get_name() const override;
@@ -57,7 +39,7 @@ public:
  * @brief Compute `x & y` for all elements.
  */
 class XMIPP4_CORE_API bitwise_and_operation final
-	: public binary_bitwise_operation
+	: public bitwise_operation
 {
 public:
 	std::string get_name() const override;
@@ -67,7 +49,7 @@ public:
  * @brief Compute `x | y` for all elements.
  */
 class XMIPP4_CORE_API bitwise_or_operation final
-	: public binary_bitwise_operation
+	: public bitwise_operation
 {
 public:
 	std::string get_name() const override;
@@ -77,7 +59,7 @@ public:
  * @brief Compute `x ^ y` for all elements.
  */
 class XMIPP4_CORE_API bitwise_xor_operation final
-	: public binary_bitwise_operation
+	: public bitwise_operation
 {
 public:
 	std::string get_name() const override;

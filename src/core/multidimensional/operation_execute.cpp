@@ -310,11 +310,11 @@ void execute(
 	}
 
 	auto output_descriptors = build_descriptors(
-		std::move(output_layouts),
+		std::move(output_layouts),// No longer needed.
 		output_data_types
 	);
 	auto input_descriptors = build_descriptors(
-		std::move(input_layouts),
+		std::move(input_layouts), // No longer needed.
 		input_data_types
 	);
 

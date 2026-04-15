@@ -38,9 +38,6 @@ public:
 	) const override;
 
 	const elementwise_shape_policy& get() noexcept;
-
-private:
-	static const elementwise_shape_policy instance;
 };
 
 } // namespace multidimensional

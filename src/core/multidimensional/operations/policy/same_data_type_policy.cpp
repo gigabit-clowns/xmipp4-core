@@ -213,10 +213,9 @@ void same_data_type_policy::validate(
 
 const same_data_type_policy& same_data_type_policy::get() noexcept
 {
+	static const same_data_type_policy instance;
 	return instance;
 }
-
-const same_data_type_policy same_data_type_policy::instance;
 
 
 
@@ -247,10 +246,9 @@ void same_floating_data_type_policy::validate(
 const same_floating_data_type_policy&
 same_floating_data_type_policy::get() noexcept
 {
+	static const same_floating_data_type_policy instance;
 	return instance;
 }
-
-const same_floating_data_type_policy same_floating_data_type_policy::instance;
 
 
 
@@ -281,10 +279,9 @@ void same_complex_data_type_policy::validate(
 const same_complex_data_type_policy&
 same_complex_data_type_policy::get() noexcept
 {
+	static const same_complex_data_type_policy instance;
 	return instance;
 }
-
-const same_complex_data_type_policy same_complex_data_type_policy::instance;
 
 
 
@@ -315,11 +312,9 @@ void same_arithmetic_data_type_policy::validate(
 const same_arithmetic_data_type_policy&
 same_arithmetic_data_type_policy::get() noexcept
 {
+	static const same_arithmetic_data_type_policy instance;
 	return instance;
 }
-
-const same_arithmetic_data_type_policy
-same_arithmetic_data_type_policy::instance;
 
 
 
@@ -350,10 +345,9 @@ void same_integer_data_type_policy::validate(
 const same_integer_data_type_policy&
 same_integer_data_type_policy::get() noexcept
 {
+	static const same_integer_data_type_policy instance;
 	return instance;
 }
-
-const same_integer_data_type_policy same_integer_data_type_policy::instance;
 
 
 
@@ -383,10 +377,9 @@ void boolean_data_type_policy::validate(
 
 const boolean_data_type_policy& boolean_data_type_policy::get() noexcept
 {
+	static const boolean_data_type_policy instance;
 	return instance;
 }
-
-const boolean_data_type_policy boolean_data_type_policy::instance;
 
 } // namespace multidimensional
 } // namespace xmipp4

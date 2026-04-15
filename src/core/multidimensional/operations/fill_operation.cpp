@@ -2,7 +2,8 @@
 
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operations/policies/same_data_type_policy.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 
 #include <fmt/format.h>
@@ -51,32 +52,14 @@ std::string fill_operation::serialize_parameters() const
 	);
 }
 
-void fill_operation::sanitize_operands(
-	span<array_descriptor> output_descriptors,
-	span<array_descriptor> input_descriptors
-) const
+const shape_policy& fill_operation::get_shape_policy() const noexcept
 {
-	if (input_descriptors.size() != INPUT_OPERAND_COUNT)
-	{
-		throw std::invalid_argument(
-			"fill_operation requires exactly no input operand."
-		);
-	}
-	if (output_descriptors.size() != OUTPUT_OPERAND_COUNT)
-	{
-		throw std::invalid_argument(
-			"fill_operation requires exactly one output operand."
-		);
-	}
+	return elementwise_shape_policy::get();
+}
 
-	const auto &destination_desc = 
-		output_descriptors[OUTPUT_OPERAND_DESTINATION];
-	if (!is_initialized(destination_desc))
-	{
-		throw std::invalid_argument(
-			"fill_operation requires destination descriptor to be initialized."
-		);
-	}
+const data_type_policy& fill_operation::get_data_type_policy() const noexcept
+{
+	return same_data_type_policy::get();
 }
 
 scalar_ref fill_operation::get_fill_value() const noexcept

@@ -2,11 +2,9 @@
 
 #pragma once
 
-#include "../operation.hpp"
-#include "../../scalar_ref.hpp"
-#include "../../platform/dynamic_shared_object.h"
-
-#include <string>
+#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/scalar_ref.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4 
 {
@@ -20,27 +18,6 @@ class fill_operation final
 	: public operation
 {
 public:
-	/**
-	 * @brief Indices for output operands.
-	 */
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_DESTINATION,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	/**
-	 * @brief Indices for input operands.
-	 */
-	enum input_operand_indices
-	{
-		// No input operands
-
-		INPUT_OPERAND_COUNT
-	};
-
-	
 	/**
 	 * @brief Construct a fill operation by the value used to fill.
 	 * 
@@ -57,10 +34,10 @@ public:
 	std::string serialize_parameters() const override;
 
 	XMIPP4_CORE_API
-	void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const override;
+	const shape_policy& get_shape_policy() const noexcept override;
+
+	XMIPP4_CORE_API
+	const data_type_policy& get_data_type_policy() const noexcept override;
 
 	/**
 	 * @brief Get the fill value.

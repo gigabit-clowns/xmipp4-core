@@ -16,7 +16,7 @@ namespace multidimensional
  * 
  * `infer_output` sets the output to the input type.
  * 
- * `validate` ensures that all input may be converted into the output.
+ * `validate` ensures that all input can be converted into the output type.
  */
 class XMIPP4_CORE_API copy_operation_data_type_policy
 	: public data_type_policy
@@ -32,7 +32,7 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const data_type_policy& get() noexcept;
+	static const data_type_policy& get() noexcept;
 };
 
 /**

@@ -35,7 +35,10 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const same_data_type_policy& get() noexcept;
+	static const same_data_type_policy& get() noexcept;
+
+private:
+	static void check(numerical_type type);
 };
 
 /**
@@ -65,7 +68,10 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const same_floating_data_type_policy& get() noexcept;
+	static const same_floating_data_type_policy& get() noexcept;
+
+private:
+	static void check(numerical_type type);
 };
 
 /**
@@ -95,7 +101,10 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const same_complex_data_type_policy& get() noexcept;
+	static const same_complex_data_type_policy& get() noexcept;
+
+private:
+	static void check(numerical_type type);
 };
 
 /**
@@ -125,7 +134,10 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const same_arithmetic_data_type_policy& get() noexcept;
+	static const same_arithmetic_data_type_policy& get() noexcept;
+
+private:
+	static void check(numerical_type type);
 };
 
 /**
@@ -155,7 +167,10 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const same_integer_data_type_policy& get() noexcept;
+	static const same_integer_data_type_policy& get() noexcept;
+
+private:
+	static void check(numerical_type type);
 };
 
 /**
@@ -182,7 +197,7 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const boolean_data_type_policy& get() noexcept;
+	static const boolean_data_type_policy& get() noexcept;
 };
 
 } // namespace multidimensional

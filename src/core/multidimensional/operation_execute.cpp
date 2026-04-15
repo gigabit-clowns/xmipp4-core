@@ -8,7 +8,9 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
+#include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -29,22 +31,54 @@ namespace
 {
 
 template <typename ArrayType, std::size_t N>
-boost::container::small_vector<array_descriptor, N>
-extract_descriptors(
-	span<ArrayType> operands, 
+boost::container::small_vector<strided_layout, N>
+extract_layouts(
+	span<ArrayType> operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
-    boost::container::small_vector<array_descriptor, N> result(operands.size());
-
-    std::transform(
-        operands.begin(), 
-        operands.end(),
-        result.begin(),
-        [](const auto &a) { return a.get_descriptor(); }
-    );
-
+    boost::container::small_vector<strided_layout, N> result;
+    result.reserve(operands.size());
+    for (const auto &a : operands)
+    {
+        result.push_back(a.get_descriptor().get_layout());
+    }
     return result;
+}
+
+template <typename ArrayType, std::size_t N>
+boost::container::small_vector<numerical_type, N>
+extract_data_types(
+	span<ArrayType> operands,
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/
+)
+{
+    boost::container::small_vector<numerical_type, N> result;
+    result.reserve(operands.size());
+    for (const auto &a : operands)
+    {
+        result.push_back(a.get_descriptor().get_data_type());
+    }
+    return result;
+}
+
+template <std::size_t N>
+boost::container::small_vector<array_descriptor, N>
+build_descriptors(
+	boost::container::small_vector<strided_layout, N> &&layouts,
+	const boost::container::small_vector<numerical_type, N> &data_types
+)
+{
+	const auto n = layouts.size();
+	XMIPP4_ASSERT(n == data_types.size());
+
+	boost::container::small_vector<array_descriptor, N> result;
+	result.reserve(n);
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		result.emplace_back(std::move(layouts[i]), data_types[i]);
+	}
+	return result;
 }
 
 std::shared_ptr<hardware::buffer>
@@ -231,14 +265,57 @@ void execute(
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
 
-	auto output_descriptors = 
-		extract_descriptors(output_operands, small_output_size_tag());
-	auto input_descriptors = 
-		extract_descriptors(input_operands, small_input_size_tag());
+	auto output_layouts =
+		extract_layouts(output_operands, small_output_size_tag());
+	auto output_data_types =
+		extract_data_types(output_operands, small_output_size_tag());
+	auto input_layouts =
+		extract_layouts(input_operands, small_input_size_tag());
+	auto input_data_types =
+		extract_data_types(input_operands, small_input_size_tag());
 
-	operation.sanitize_operands(
-		make_span(output_descriptors.data(), n_outputs),
-		make_span(input_descriptors.data(), n_inputs)
+	const auto outputs_initialized = std::all_of(
+		output_operands.begin(),
+		output_operands.end(),
+		[](const array &a)
+		{
+			return static_cast<bool>(a.get_storage());
+		}
+	);
+
+	const auto &shape_policy = operation.get_shape_policy();
+	const auto &data_type_policy = operation.get_data_type_policy();
+
+	if (outputs_initialized)
+	{
+		shape_policy.validate(
+			make_span(output_layouts.data(), n_outputs),
+			make_span(input_layouts.data(), n_inputs)
+		);
+		data_type_policy.validate(
+			make_span(output_data_types.data(), n_outputs),
+			make_span(input_data_types.data(), n_inputs)
+		);
+	}
+	else
+	{
+		shape_policy.infer_output(
+			make_span(output_layouts.data(), n_outputs),
+			make_span(input_layouts.data(), n_inputs)
+		);
+		data_type_policy.infer_output(
+			make_span(output_data_types.data(), n_outputs),
+			make_span(input_data_types.data(), n_inputs)
+		);
+	}
+
+	auto output_descriptors = build_descriptors(
+		std::move(output_layouts),
+		output_data_types
+	);
+	auto input_descriptors = build_descriptors(
+		std::move(input_layouts),
+		input_data_types
 	);
 
 	auto output_storages = resolve_output_storage(

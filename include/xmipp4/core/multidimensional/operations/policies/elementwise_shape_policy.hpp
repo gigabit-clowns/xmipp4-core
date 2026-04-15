@@ -37,7 +37,7 @@ public:
 		span<strided_layout> input_layouts
 	) const override;
 
-	const elementwise_shape_policy& get() noexcept;
+	static const elementwise_shape_policy& get() noexcept;
 };
 
 } // namespace multidimensional

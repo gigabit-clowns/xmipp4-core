@@ -2,21 +2,46 @@
 
 #include <xmipp4/core/multidimensional/operations/compare_operation.hpp>
 
-namespace xmipp4 
+#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/numerical_type.hpp>
+
+#include <stdexcept>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-void compare_operation::sanitize_operands(
-	span<array_descriptor> output_descriptors,
-	span<array_descriptor> input_descriptors
+void comparison_data_type_policy::infer_output(
+	span<numerical_type> output_types,
+	span<const numerical_type> input_types
 ) const
 {
-	binary_elementwise_operation::sanitize_operands(
-		output_descriptors, 
-		input_descriptors
-	);
-	// TODO: Ensure output types are equal and ensure output type is bool.
+	// TODO
+}
+
+void comparison_data_type_policy::validate(
+	span<const numerical_type> output_types,
+	span<const numerical_type> input_types
+) const
+{
+	// TODO
+}
+
+const comparison_data_type_policy& comparison_data_type_policy::get() noexcept
+{
+	static const comparison_data_type_policy instance;
+	return instance;
+}
+
+const shape_policy& compare_operation::get_shape_policy() const noexcept
+{
+	return elementwise_shape_policy::get();
+}
+
+const data_type_policy& compare_operation::get_data_type_policy() const noexcept
+{
+	return comparison_data_type_policy::get();
 }
 
 std::string less_operation::get_name() const

@@ -36,7 +36,7 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	const comparison_data_type_policy& get() noexcept;
+	static const comparison_data_type_policy& get() noexcept;
 };
 
 /**

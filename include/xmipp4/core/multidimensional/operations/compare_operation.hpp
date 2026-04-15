@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "elementwise_operation.hpp"
-
+#include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4 
@@ -47,7 +46,7 @@ public:
  * `data_type_policy`: `comparison_data_type_policy`
  */
 class XMIPP4_CORE_API compare_operation
-	: public binary_elementwise_operation
+	: public operation
 {
 public:
 	const shape_policy& get_shape_policy() const noexcept override;

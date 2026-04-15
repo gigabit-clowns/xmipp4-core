@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "elementwise_operation.hpp"
-
+#include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4 

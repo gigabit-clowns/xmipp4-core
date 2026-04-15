@@ -5,6 +5,8 @@
 
 #include <xmipp4/core/numerical_type.hpp>
 
+#include <sstream>
+
 using namespace xmipp4;
 
 TEST_CASE( "get_size should return the expected size for each type", "[numerical_type]" ) 
@@ -348,4 +350,122 @@ TEST_CASE( "to_string with numerical_type should produce correct results", "[num
 		})
 	);
 	CHECK( std::string(to_string(type)) == expected_str );
+}
+
+TEST_CASE( "get_category should return the expected category for each type", "[numerical_type]" )
+{
+	numerical_type type;
+	numerical_type_category expected_category;
+
+	std::tie(type, expected_category) = GENERATE(
+		table<numerical_type, numerical_type_category>({
+			{ numerical_type::boolean, numerical_type_category::boolean },
+			{ numerical_type::char8, numerical_type_category::character },
+			{ numerical_type::int8, numerical_type_category::signed_integer },
+			{ numerical_type::int16, numerical_type_category::signed_integer },
+			{ numerical_type::int32, numerical_type_category::signed_integer },
+			{ numerical_type::int64, numerical_type_category::signed_integer },
+			{ numerical_type::uint8, numerical_type_category::unsigned_integer },
+			{ numerical_type::uint16, numerical_type_category::unsigned_integer },
+			{ numerical_type::uint32, numerical_type_category::unsigned_integer },
+			{ numerical_type::uint64, numerical_type_category::unsigned_integer },
+			{ numerical_type::float16, numerical_type_category::floating_point },
+			{ numerical_type::float32, numerical_type_category::floating_point },
+			{ numerical_type::float64, numerical_type_category::floating_point },
+			{ numerical_type::complex_float16, numerical_type_category::complex },
+			{ numerical_type::complex_float32, numerical_type_category::complex },
+			{ numerical_type::complex_float64, numerical_type_category::complex },
+			{ numerical_type::unknown, numerical_type_category::unknown },
+			{ numerical_type::count, numerical_type_category::unknown },
+		})
+	);
+
+	CHECK( get_category(type) == expected_category );
+}
+
+TEST_CASE( "get_category of an invalid type should return unknown", "[numerical_type]" )
+{
+	const auto invalid_type = GENERATE(
+		numerical_type::unknown,
+		numerical_type::count
+	);
+
+	CHECK( get_category(invalid_type) == numerical_type_category::unknown );
+}
+
+TEST_CASE( "to_string with numerical_type_category should produce correct results", "[numerical_type]" )
+{
+	numerical_type_category category;
+	std::string expected_str;
+	std::tie(category, expected_str) = GENERATE(
+		table<numerical_type_category, std::string>({
+			{ numerical_type_category::boolean, "boolean" },
+			{ numerical_type_category::character, "character" },
+			{ numerical_type_category::signed_integer, "signed_integer" },
+			{ numerical_type_category::unsigned_integer, "unsigned_integer" },
+			{ numerical_type_category::floating_point, "floating_point" },
+			{ numerical_type_category::complex, "complex" },
+		})
+	);
+	CHECK( std::string(to_string(category)) == expected_str );
+}
+
+TEST_CASE( "to_string with invalid numerical_type_category should return empty string", "[numerical_type]" )
+{
+	const auto invalid_category = GENERATE(
+		numerical_type_category::unknown,
+		numerical_type_category::count
+	);
+
+	CHECK( std::string(to_string(invalid_category)) == "" );
+}
+
+TEST_CASE( "operator<< with numerical_type should write the expected string", "[numerical_type]" )
+{
+	numerical_type type;
+	std::string expected_str;
+	std::tie(type, expected_str) = GENERATE(
+		table<numerical_type, std::string>({
+			{ numerical_type::boolean, "boolean" },
+			{ numerical_type::char8, "char8" },
+			{ numerical_type::int8, "int8" },
+			{ numerical_type::uint8, "uint8" },
+			{ numerical_type::int16, "int16" },
+			{ numerical_type::uint16, "uint16" },
+			{ numerical_type::int32, "int32" },
+			{ numerical_type::uint32, "uint32" },
+			{ numerical_type::int64, "int64" },
+			{ numerical_type::uint64, "uint64" },
+			{ numerical_type::float16, "float16" },
+			{ numerical_type::float32, "float32" },
+			{ numerical_type::float64, "float64" },
+			{ numerical_type::complex_float16, "complex_float16" },
+			{ numerical_type::complex_float32, "complex_float32" },
+			{ numerical_type::complex_float64, "complex_float64" },
+		})
+	);
+
+	std::ostringstream oss;
+	oss << type;
+	CHECK( oss.str() == expected_str );
+}
+
+TEST_CASE( "operator<< with numerical_type_category should write the expected string", "[numerical_type]" )
+{
+	numerical_type_category category;
+	std::string expected_str;
+	std::tie(category, expected_str) = GENERATE(
+		table<numerical_type_category, std::string>({
+			{ numerical_type_category::boolean, "boolean" },
+			{ numerical_type_category::character, "character" },
+			{ numerical_type_category::signed_integer, "signed_integer" },
+			{ numerical_type_category::unsigned_integer, "unsigned_integer" },
+			{ numerical_type_category::floating_point, "floating_point" },
+			{ numerical_type_category::complex, "complex" },
+		})
+	);
+
+	std::ostringstream oss;
+	oss << category;
+	CHECK( oss.str() == expected_str );
 }

@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operations/policies/reduction_shape_policy.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/broadcast.hpp>
+
+#include <algorithm>
 
 namespace xmipp4
 {
 namespace multidimensional
 {
 
-void elementwise_shape_policy::infer_output(
+void reduction_shape_policy::infer_output(
 	span<strided_layout> output_layouts,
 	span<strided_layout> input_layouts
 ) const
@@ -18,7 +20,7 @@ void elementwise_shape_policy::infer_output(
 	if (input_layouts.empty())
 	{
 		throw std::invalid_argument(
-			"elementwise_shape_policy::infer_output requires at least one input"
+			"reduction_shape_policy::infer_output requires at least one input"
 		);
 	}
 
@@ -32,10 +34,18 @@ void elementwise_shape_policy::infer_output(
 		broadcast_extents(broadcasted_extents, extents);
 	}
 
+	auto reduced_extents = broadcasted_extents;
+	for (auto reduction_axis : m_reduction_axes)
+	{
+		reduced_extents.at(reduction_axis) = 1;
+	}
+
+	const auto physical_layout = 
+		strided_layout::make_contiguous_layout(make_span(reduced_extents));
 	std::fill(
 		output_layouts.begin(),
 		output_layouts.end(),
-		strided_layout::make_contiguous_layout(make_span(broadcasted_extents))
+		physical_layout.broadcast_to(make_span(broadcasted_extents))
 	);
 
 	for (auto &layout : input_layouts)
@@ -44,7 +54,7 @@ void elementwise_shape_policy::infer_output(
 	}
 }
 
-void elementwise_shape_policy::validate(
+void reduction_shape_policy::validate(
 	span<const strided_layout> output_layouts,
 	span<strided_layout> input_layouts
 ) const
@@ -52,7 +62,7 @@ void elementwise_shape_policy::validate(
 	if (input_layouts.empty())
 	{
 		throw std::invalid_argument(
-			"elementwise_shape_policy::validate requires at least one output"
+			"reduction_shape_policy::validate requires at least one output"
 		);
 	}
 
@@ -63,7 +73,7 @@ void elementwise_shape_policy::validate(
 		if(!output_layouts[i].extents_equal(make_span(output_extents)))
 		{
 			throw std::invalid_argument(
-				"multi-output elementwise_shape_policy::validate requires all "
+				"multi-output reduction_shape_policy::validate requires all "
 				"outputs to have the same extents."
 			);
 		}
@@ -74,30 +84,42 @@ void elementwise_shape_policy::validate(
 		layout = layout.broadcast_to(make_span(output_extents));
 	}
 
+
 	std::vector<std::ptrdiff_t> strides;
 	for (const auto &layout : output_layouts)
 	{
 		layout.get_strides(strides);
 		XMIPP4_ASSERT( strides.size() == output_extents.size() );
-		for (std::size_t i = 0; i < output_extents.size(); ++i)
+		for (std::size_t axis = 0; axis < strides.size(); ++axis)
 		{
-			if (output_extents[i] > 1 && strides[i] == 0)
+			const auto is_reduction_axis =
+				this->is_reduction_axis(axis);
+			const auto is_broadcasted_axis = 
+				(output_extents[axis] > 1 && strides[axis] == 0);
+			if (is_reduction_axis && !is_broadcasted_axis)
 			{
 				throw std::invalid_argument(
-					"elementwise_shape_policy::validate does not allow "
-					"broadcasted output operands."
+					"reduction_shape_policy::validate: reduction axis does not "
+					"have a zero stride in the output"
+				);
+			}
+			if (!is_reduction_axis && is_broadcasted_axis)
+			{
+				throw std::invalid_argument(
+					"reduction_shape_policy::validate: non-reduction axis has "
+					"a zero stride in the output"
 				);
 			}
 		}
 	}
 }
 
-const elementwise_shape_policy& elementwise_shape_policy::get() noexcept
+bool reduction_shape_policy::is_reduction_axis(std::size_t axis) const noexcept
 {
-	static const elementwise_shape_policy instance;
-	return instance;
+	const auto ite = 
+		std::find(m_reduction_axes.begin(), m_reduction_axes.end(), axis);
+	return ite != m_reduction_axes.end();
 }
-
 
 } // namespace multidimensional
 } // namespace xmipp4

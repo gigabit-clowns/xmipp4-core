@@ -1,0 +1,59 @@
+Already declared
+    Assignment
+        - copy
+        - fill
+        - complex_from_real_imag
+        - complex_from_polar
+    Arithmetic (elementwise)
+        - negate, abs, conjugate
+        - add, subtract, multiply, divide
+    Bitwise (elementwise)
+        - bitwise_negate (~x)
+        - bitwise_and, bitwise_or, bitwise_xor
+    Logical (elementwise)
+        - logical_negate (!x)
+        - logical_and, logical_or
+    Compare (elementwise, boolean output)
+        - less, less_equal, equal, inequal
+        NOTE: greater / greater_equal not needed (swap operands of less / less_equal)
+    Power / exponential (elementwise)
+        - square, sqrt
+        - power (x^y)
+        - exp, log
+    Trigonometric (elementwise)
+        - sin, cos, sincos, tan
+        - asin, acos, atan, atan2
+
+Pending — primitives worth adding
+    Arithmetic (elementwise)
+        - clamp (min(max(x, lo), hi)) — ubiquitous in image processing pipelines
+        - reciprocal (1/x) — avoids a fill + divide; common in normalisation
+    Power / exponential (elementwise)
+        - log2, log10 — common in signal processing and display
+        - exp2 (2^x) — pairs naturally with log2
+        - cbrt (x^(1/3)) — occasionally useful
+        - hypot (sqrt(x^2+y^2)) — numerically stable, avoids temporaries
+    Complex decomposition (elementwise)
+        - phase (arg) — complement complex_from_polar
+    Rounding (elementwise)
+        - floor, ceil, round, trunc
+    Reductions (whole-array or along an axis)
+        - sum, prod
+        - min, max  (and their argument variants: argmin, argmax)
+        - mean, var, stddev
+        - any, all (logical reductions)
+        - norm (L2: sqrt(sum(x^2))), energy (sum(x^2)), rms, power (energy/N)
+        - sumproduct (dot product of two arrays), euclidean_distance, euclidean_distance2
+    Masked reductions
+        - same set as plain reductions, but accepting a boolean mask array
+    Linear algebra
+        - matmul (matrix * matrix)
+        - matvec (matrix * vector)
+		- dot (vec-vec)
+    FFT
+        - Decide axis/nd strategy: single class parameterised by axis list, or separate
+          1d/2d/3d/nd classes?
+        - Decide real-to-complex (rfft) and complex-to-complex (fft) forward/backward pairs
+    Scatter / gather (index-based)
+        - gather (index into array along an axis)
+		- scatter

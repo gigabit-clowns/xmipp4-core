@@ -14,12 +14,12 @@ void boolean_data_type_policy::infer_output(
 	span<const numerical_type> input_types
 ) const
 {
-	detail::require_exact(
+	require_exact(
 		input_types,
 		numerical_type::boolean,
 		"boolean_data_type_policy::infer_output"
 	);
-	detail::fill(output_types, numerical_type::boolean);
+	fill(output_types, numerical_type::boolean);
 }
 
 void boolean_data_type_policy::validate(
@@ -27,12 +27,12 @@ void boolean_data_type_policy::validate(
 	span<const numerical_type> input_types
 ) const
 {
-	detail::require_exact(
+	require_exact(
 		output_types,
 		numerical_type::boolean,
 		"boolean_data_type_policy::validate"
 	);
-	detail::require_exact(
+	require_exact(
 		input_types,
 		numerical_type::boolean,
 		"boolean_data_type_policy::validate"

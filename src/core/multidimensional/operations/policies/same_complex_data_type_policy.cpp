@@ -14,12 +14,12 @@ void same_complex_data_type_policy::infer_output(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = detail::require_same(
+	const auto reference = require_same(
 		input_types,
 		"same_complex_data_type_policy::infer_output"
 	);
 	check(reference);
-	detail::fill(output_types, reference);
+	fill(output_types, reference);
 }
 
 void same_complex_data_type_policy::validate(
@@ -27,12 +27,12 @@ void same_complex_data_type_policy::validate(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = detail::require_same(
+	const auto reference = require_same(
 		output_types,
 		"same_complex_data_type_policy::validate"
 	);
 	check(reference);
-	detail::require_exact(
+	require_exact(
 		input_types, reference, "same_complex_data_type_policy::validate"
 	);
 }
@@ -41,7 +41,7 @@ void same_complex_data_type_policy::check(numerical_type type)
 {
 	if (get_category(type) != numerical_type_category::complex)
 	{
-		detail::throw_category(type, "complex", "same_complex_data_type_policy");
+		throw_category(type, "complex", "same_complex_data_type_policy");
 	}
 }
 

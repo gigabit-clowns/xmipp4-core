@@ -12,6 +12,15 @@ namespace xmipp4
 namespace multidimensional
 {
 
+reduction_shape_policy::reduction_shape_policy(
+	span<const std::size_t> reduction_axes
+) noexcept
+	: m_reduction_axes(reduction_axes)
+{
+}
+
+reduction_shape_policy::~reduction_shape_policy() = default;
+
 void reduction_shape_policy::infer_output(
 	span<strided_layout> output_layouts,
 	span<strided_layout> input_layouts

@@ -14,12 +14,12 @@ void same_arithmetic_data_type_policy::infer_output(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = detail::require_same(
+	const auto reference = require_same(
 		input_types,
 		"same_arithmetic_data_type_policy::infer_output"
 	);
 	check(reference);
-	detail::fill(output_types, reference);
+	fill(output_types, reference);
 }
 
 void same_arithmetic_data_type_policy::validate(
@@ -27,12 +27,12 @@ void same_arithmetic_data_type_policy::validate(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = detail::require_same(
+	const auto reference = require_same(
 		output_types,
 		"same_arithmetic_data_type_policy::validate"
 	);
 	check(reference);
-	detail::require_exact(
+	require_exact(
 		input_types, reference, "same_arithmetic_data_type_policy::validate"
 	);
 }
@@ -47,7 +47,7 @@ void same_arithmetic_data_type_policy::check(numerical_type type)
 	case numerical_type_category::complex:
 		break;
 	default:
-		detail::throw_category(
+		throw_category(
 			type, "arithmetic", "same_arithmetic_data_type_policy"
 		);
 	}

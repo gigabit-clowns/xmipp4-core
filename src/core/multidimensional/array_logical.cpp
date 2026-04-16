@@ -3,7 +3,9 @@
 #include <xmipp4/core/multidimensional/array_logical.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-#include <xmipp4/core/multidimensional/operations/logical_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/logical/logical_negate_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/logical/logical_and_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/logical/logical_or_operation.hpp>
 
 namespace xmipp4 
 {

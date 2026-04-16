@@ -3,7 +3,10 @@
 #include <xmipp4/core/multidimensional/array_compare.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-#include <xmipp4/core/multidimensional/operations/compare_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/compare/less_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/compare/less_equal_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/compare/equal_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/compare/inequal_operation.hpp>
 
 namespace xmipp4 
 {

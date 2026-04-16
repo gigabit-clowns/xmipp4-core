@@ -12,20 +12,6 @@ namespace multidimensional
 {
 
 /**
- * @brief Copy elements from an input array to an output array.
- */
-class XMIPP4_CORE_API copy_operation final
-	: public operation
-{
-public:
-	std::string get_name() const override;
-	const shape_policy& get_shape_policy() const noexcept override;
-	const data_type_policy& get_data_type_policy() const noexcept override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
-};
-
-/**
  * @brief Fill an array with a constant value.
  */
 class fill_operation final

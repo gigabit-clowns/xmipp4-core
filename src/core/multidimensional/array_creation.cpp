@@ -3,7 +3,8 @@
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/operations/assignment_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>

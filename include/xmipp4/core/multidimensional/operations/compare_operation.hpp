@@ -5,7 +5,7 @@
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
@@ -22,54 +22,6 @@ class XMIPP4_CORE_API compare_operation
 public:
 	const shape_policy& get_shape_policy() const noexcept override;
 	const data_type_policy& get_data_type_policy() const noexcept override;
-};
-
-/**
- * @brief Computes `x < y`.
- */
-class XMIPP4_CORE_API less_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
-};
-
-/**
- * @brief Computes `x <= y`.
- */
-class XMIPP4_CORE_API less_equal_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
-};
-
-/**
- * @brief Computes `x == y`.
- */
-class XMIPP4_CORE_API equal_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
-};
-
-/**
- * @brief Computes `x != y`.
- */
-class XMIPP4_CORE_API inequal_operation final
-	: public compare_operation
-{
-public:
-	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

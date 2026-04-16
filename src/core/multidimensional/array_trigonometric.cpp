@@ -4,7 +4,14 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/operations/trigonometric_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/sin_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/cos_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/sincos_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/tan_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/asin_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/acos_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/atan_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/trigonometric/atan2_operation.hpp>
 
 #include <tuple>
 

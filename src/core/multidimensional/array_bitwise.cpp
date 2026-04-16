@@ -3,7 +3,10 @@
 #include <xmipp4/core/multidimensional/array_bitwise.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-#include <xmipp4/core/multidimensional/operations/bitwise_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/bitwise/bitwise_negate_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/bitwise/bitwise_and_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/bitwise/bitwise_or_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/bitwise/bitwise_xor_operation.hpp>
 
 namespace xmipp4 
 {

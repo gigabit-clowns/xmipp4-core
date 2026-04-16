@@ -3,7 +3,11 @@
 #include <xmipp4/core/multidimensional/array_power.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-#include <xmipp4/core/multidimensional/operations/power_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/power/power_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/power/exp_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/power/log_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/power/square_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/power/sqrt_operation.hpp>
 
 namespace xmipp4 
 {

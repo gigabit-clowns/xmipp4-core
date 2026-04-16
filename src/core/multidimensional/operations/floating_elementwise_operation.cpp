@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operations/bases/floating_elementwise_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/floating_elementwise_operation.hpp>
 
 #include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 #include <xmipp4/core/multidimensional/data_type_policies/same_floating_data_type_policy.hpp>

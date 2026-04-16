@@ -3,7 +3,11 @@
 #include <xmipp4/core/multidimensional/array_arithmetic.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-#include <xmipp4/core/multidimensional/operations/arithmetic_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/negate_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/add_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/subtract_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/multiply_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/divide_operation.hpp>
 
 namespace xmipp4 
 {

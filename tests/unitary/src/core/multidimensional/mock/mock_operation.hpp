@@ -4,8 +4,6 @@
 
 #include <xmipp4/core/multidimensional/operation.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
-
 #include <trompeloeil.hpp>
 
 namespace xmipp4
@@ -19,10 +17,15 @@ class mock_operation
 public:
 	MAKE_CONST_MOCK0(get_name, std::string(), override);
 	MAKE_CONST_MOCK0(serialize_parameters, std::string(), override);
-	MAKE_CONST_MOCK2(
-		sanitize_operands, 
-		void(span<array_descriptor>, span<array_descriptor>), 
-		override
+	MAKE_CONST_MOCK0(
+		get_shape_policy, 
+		const shape_policy&(), 
+		noexcept override
+	);
+	MAKE_CONST_MOCK0(
+		get_data_type_policy, 
+		const data_type_policy&(), 
+		noexcept override
 	);
 };
 

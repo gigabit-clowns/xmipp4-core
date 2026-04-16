@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/broadcast.hpp>

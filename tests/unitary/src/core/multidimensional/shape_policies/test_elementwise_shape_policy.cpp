@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
 using namespace xmipp4;

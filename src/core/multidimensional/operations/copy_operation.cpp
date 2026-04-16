@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 
-#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
 #include <stdexcept>

@@ -4,8 +4,8 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operations/fill_operation.hpp>
-#include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/operations/policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/data_type_policies/same_data_type_policy.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;

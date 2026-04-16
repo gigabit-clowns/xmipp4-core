@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operations/policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/data_type_policies/same_data_type_policy.hpp>
 
 #include "data_type_policy_helpers.hpp"
 

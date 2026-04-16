@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/operations/policies/same_arithmetic_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/data_type_policies/same_arithmetic_data_type_policy.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;

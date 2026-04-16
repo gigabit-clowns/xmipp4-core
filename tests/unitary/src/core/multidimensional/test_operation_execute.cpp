@@ -214,12 +214,16 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
     SECTION("provided a pre-allocated output should re-use")
 	{
         output_arrays = create_device_arrays<array>(output_buffers, descriptor);
-        REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3);
-        REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3);
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
+				.WITH(_1.size() == 2)
+				.WITH(_2.size() == 3)
+		);
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
+				.WITH(_1.size() == 2)
+				.WITH(_2.size() == 3)
+		);
     }
     SECTION("if empty output is provided it should allocate")
 	{
@@ -230,16 +234,20 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
                     .RETURN(buffer)
             );
         }
-        REQUIRE_CALL(shape_pol, infer_output(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3)
-            .SIDE_EFFECT(_1[0] = descriptor.get_layout())
-            .SIDE_EFFECT(_1[1] = descriptor.get_layout());
-        REQUIRE_CALL(data_type_pol, infer_output(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3)
-            .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
-            .SIDE_EFFECT(_1[1] = descriptor.get_data_type());
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(shape_pol, infer_output(trompeloeil::_, trompeloeil::_))
+				.WITH(_1.size() == 2)
+				.WITH(_2.size() == 3)
+				.SIDE_EFFECT(_1[0] = descriptor.get_layout())
+				.SIDE_EFFECT(_1[1] = descriptor.get_layout())
+		);
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(data_type_pol, infer_output(trompeloeil::_, trompeloeil::_))
+				.WITH(_1.size() == 2)
+				.WITH(_2.size() == 3)
+				.SIDE_EFFECT(_1[0] = descriptor.get_data_type())
+				.SIDE_EFFECT(_1[1] = descriptor.get_data_type())
+		);
     }
 
 

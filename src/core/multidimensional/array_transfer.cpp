@@ -6,7 +6,7 @@
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment_operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 namespace xmipp4 

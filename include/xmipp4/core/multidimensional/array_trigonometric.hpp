@@ -25,7 +25,7 @@ class array_view;
  */
 XMIPP4_CORE_API
 array sin(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -41,7 +41,7 @@ array sin(
  */
 XMIPP4_CORE_API
 array cos(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -57,7 +57,7 @@ array cos(
  */
 XMIPP4_CORE_API
 void sincos(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array &sin,
 	array &cos
@@ -74,7 +74,7 @@ void sincos(
  */
 XMIPP4_CORE_API
 array tan(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -90,7 +90,7 @@ array tan(
  */
 XMIPP4_CORE_API
 array asin(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -106,7 +106,7 @@ array asin(
  */
 XMIPP4_CORE_API
 array acos(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -122,7 +122,7 @@ array acos(
  */
 XMIPP4_CORE_API
 array atan(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -140,8 +140,8 @@ array atan(
  */
 XMIPP4_CORE_API
 array atan(
-	const array_view &y,
-	const array_view &x,
+	array_view y,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );

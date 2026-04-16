@@ -26,8 +26,8 @@ class array_view;
  */
 XMIPP4_CORE_API
 array less(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -44,8 +44,8 @@ array less(
  */
 XMIPP4_CORE_API
 array less_equal(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -62,8 +62,8 @@ array less_equal(
  */
 XMIPP4_CORE_API
 array greater(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -80,8 +80,8 @@ array greater(
  */
 XMIPP4_CORE_API
 array greater_equal(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -98,8 +98,8 @@ array greater_equal(
  */
 XMIPP4_CORE_API
 array equal(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -116,8 +116,8 @@ array equal(
  */
 XMIPP4_CORE_API
 array inequal(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );

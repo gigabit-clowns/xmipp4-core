@@ -20,33 +20,25 @@ namespace xmipp4
 namespace multidimensional
 {
 
-array sin(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array sin(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(sin_operation(), x, context, out); // TODO
+	return execute_unary(sin_operation(), std::move(x), context, out);
 }
 
-array cos(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array cos(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(cos_operation(), x, context, out); // TODO
+	return execute_unary(cos_operation(), std::move(x), context, out);
 }
 
 void sincos(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array &sin,
 	array &cos
 )
 {
 	std::array<array, 2> output = { sin.share(), cos.share() };
-	std::array<array_view, 1> input = { x.share() };
+	std::array<array_view, 1> input = { std::move(x) };
 
 	execute(
 		sincos_operation(),
@@ -59,50 +51,40 @@ void sincos(
 	cos = std::move(output[1]);
 }
 
-array tan(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array tan(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(tan_operation(), x, context, out); // TODO
+	return execute_unary(tan_operation(), std::move(x), context, out);
 }
 
-array asin(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array asin(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(asin_operation(), x, context, out); // TODO
+	return execute_unary(asin_operation(), std::move(x), context, out);
 }
 
-array acos(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array acos(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(acos_operation(), x, context, out); // TODO
+	return execute_unary(acos_operation(), std::move(x), context, out);
 }
 
-array atan(
-	const array_view &x,
-	const execution_context &context,
-	array *out
-)
+array atan(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(atan_operation(), x, context, out); // TODO
+	return execute_unary(atan_operation(), std::move(x), context, out);
 }
 
 array atan2(
-	const array_view &y,
-	const array_view &x,
+	array_view y,
+	array_view x,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(atan2_operation(), y, x, context, out); // TODO
+	return execute_binary(
+		atan2_operation(), 
+		std::move(y), 
+		std::move(x), 
+		context, 
+		out
+	);
 }
 
 } // namespace multidimensional

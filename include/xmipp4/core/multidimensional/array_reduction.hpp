@@ -31,7 +31,7 @@ class array_view;
  */
 XMIPP4_CORE_API
 array sum(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -56,7 +56,7 @@ array sum(
  */
 XMIPP4_CORE_API
 array max(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -81,7 +81,7 @@ array max(
  */
 XMIPP4_CORE_API
 array min(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -109,7 +109,7 @@ array min(
  */
 XMIPP4_CORE_API
 array mean(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -140,7 +140,7 @@ array mean(
  */
 XMIPP4_CORE_API
 array variance(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -173,7 +173,7 @@ array variance(
  */
 XMIPP4_CORE_API
 array stddev(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -201,7 +201,7 @@ array stddev(
  */
 XMIPP4_CORE_API
 array energy(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -229,7 +229,7 @@ array energy(
  */
 XMIPP4_CORE_API
 array power(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -257,7 +257,7 @@ array power(
  */
 XMIPP4_CORE_API
 array rms(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -284,7 +284,7 @@ array rms(
  */
 XMIPP4_CORE_API
 array norm(
-	const array_view &x,
+	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -313,8 +313,8 @@ array norm(
  */
 XMIPP4_CORE_API
 array sumproduct(
-	const array_view &x,
-	const array_view &y,
+	array_view x,
+	array_view y,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -343,8 +343,8 @@ array sumproduct(
  */
 XMIPP4_CORE_API
 array euclidean_distance(
-	const array_view &x,
-	const array_view &y,
+	array_view x,
+	array_view y,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
@@ -373,8 +373,8 @@ array euclidean_distance(
  */
 XMIPP4_CORE_API
 array euclidean_distance2(
-	const array_view &x,
-	const array_view &y,
+	array_view x,
+	array_view y,
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,

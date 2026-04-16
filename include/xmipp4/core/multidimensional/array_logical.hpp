@@ -25,7 +25,7 @@ class array_view;
  */
 XMIPP4_CORE_API
 array logical_negate(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -42,8 +42,8 @@ array logical_negate(
  */
 XMIPP4_CORE_API
 array logical_and(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -60,8 +60,8 @@ array logical_and(
  */
 XMIPP4_CORE_API
 array logical_or(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );

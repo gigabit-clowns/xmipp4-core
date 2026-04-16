@@ -15,52 +15,81 @@ namespace multidimensional
 {
 
 array negate(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_unary(negate_operation(), x, context, out);
+	return execute_unary(
+		negate_operation(), 
+		std::move(x), 
+		context, 
+		out
+	);
 }
 
 array add(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(add_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		add_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 array subtract(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(subtract_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		subtract_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 array multiply(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(multiply_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		multiply_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 array divide(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(divide_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		divide_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 } // namespace multidimensional

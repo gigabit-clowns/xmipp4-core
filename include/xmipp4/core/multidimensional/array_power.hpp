@@ -26,8 +26,8 @@ class array_view;
  */
 XMIPP4_CORE_API
 array pow(
-	const array_view &base,
-	const array_view &exponent,
+	array_view base,
+	array_view exponent,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -45,7 +45,7 @@ array pow(
  */
 XMIPP4_CORE_API
 array exp(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -63,7 +63,7 @@ array exp(
  */
 XMIPP4_CORE_API
 array log(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -79,7 +79,7 @@ array log(
  */
 XMIPP4_CORE_API
 array square(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -95,7 +95,7 @@ array square(
  */
 XMIPP4_CORE_API
 array sqrt(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );

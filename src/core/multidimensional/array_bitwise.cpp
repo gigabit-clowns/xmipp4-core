@@ -14,42 +14,65 @@ namespace multidimensional
 {
 
 array bitwise_negate(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_unary(bitwise_negate_operation(), x, context, out);
+	return execute_unary(
+		bitwise_negate_operation(), 
+		std::move(x), 
+		context, 
+		out
+	);
 }
 
 array bitwise_and(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(bitwise_and_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		bitwise_and_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 array bitwise_or(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(bitwise_or_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		bitwise_or_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 array bitwise_xor(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out
 )
 {
-	return execute_binary(bitwise_xor_operation(), lhs, rhs, context, out);
+	return execute_binary(
+		bitwise_xor_operation(), 
+		std::move(lhs), 
+		std::move(rhs), 
+		context, 
+		out
+	);
 }
 
 } // namespace multidimensional

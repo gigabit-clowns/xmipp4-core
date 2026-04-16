@@ -24,6 +24,7 @@ array pop_axes(array &x, span<const std::size_t> axes)
 
 } // anonymous namespace
 
+/*
 array sum(
 	const array_view &x,
 	span<const std::size_t> axes,
@@ -421,6 +422,6 @@ array euclidean_distance2(
 
 	return result;
 }
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4

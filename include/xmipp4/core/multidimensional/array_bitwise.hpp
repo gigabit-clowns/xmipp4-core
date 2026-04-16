@@ -25,7 +25,7 @@ class array_view;
  */
 XMIPP4_CORE_API
 array bitwise_negate(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -42,8 +42,8 @@ array bitwise_negate(
  */
 XMIPP4_CORE_API
 array bitwise_and(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -60,8 +60,8 @@ array bitwise_and(
  */
 XMIPP4_CORE_API
 array bitwise_or(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -78,8 +78,8 @@ array bitwise_or(
  */
 XMIPP4_CORE_API
 array bitwise_xor(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );

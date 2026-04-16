@@ -25,7 +25,7 @@ class array_view;
  */
 XMIPP4_CORE_API
 array negate(
-	const array_view &x,
+	array_view x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -42,8 +42,8 @@ array negate(
  */
 XMIPP4_CORE_API
 array add(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -60,8 +60,8 @@ array add(
  */
 XMIPP4_CORE_API
 array subtract(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -78,8 +78,8 @@ array subtract(
  */
 XMIPP4_CORE_API
 array multiply(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -96,8 +96,8 @@ array multiply(
  */
 XMIPP4_CORE_API
 array divide(
-	const array_view &lhs,
-	const array_view &rhs,
+	array_view lhs,
+	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
 );

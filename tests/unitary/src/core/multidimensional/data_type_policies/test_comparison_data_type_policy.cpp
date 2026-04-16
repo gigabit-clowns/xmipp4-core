@@ -135,7 +135,6 @@ TEST_CASE("comparison_data_type_policy validate should succeed with valid operan
 	policy.validate(make_span(outputs), make_span(inputs));
 }
 
-
 TEST_CASE("comparison_data_type_policy validate should throw when inputs are invalid types", "[comparison_data_type_policy]")
 {
 	const auto &policy = comparison_data_type_policy::get();

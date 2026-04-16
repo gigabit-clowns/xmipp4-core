@@ -5,6 +5,8 @@
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 
+#include <core/multidimensional/data_type_policies/copy_data_type_policy.hpp>
+
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
@@ -23,5 +25,5 @@ TEST_CASE("get_shape_policy in copy_operation should return the elementwise_shap
 TEST_CASE("get_data_type_policy in copy_operation should return the copy_operation_data_type_policy singleton", "[copy_operation]")
 {
 	copy_operation op;
-	CHECK( &op.get_data_type_policy() == &copy_operation_data_type_policy::get() );
+	CHECK( &op.get_data_type_policy() == &copy_data_type_policy::get() );
 }

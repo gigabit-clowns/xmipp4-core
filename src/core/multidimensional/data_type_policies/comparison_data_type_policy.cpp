@@ -1,0 +1,125 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "comparison_data_type_policy.hpp"
+
+#include "data_type_policy_helpers.hpp"
+
+namespace xmipp4
+{
+namespace multidimensional
+{
+
+void comparison_data_type_policy::infer_output(
+	span<numerical_type> output_types,
+	span<const numerical_type> input_types
+) const
+{
+	if (output_types.size() != 1)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::infer_output: expected 1 output "
+			"operand."
+		);
+	}
+	output_types[0] = numerical_type::boolean;
+
+
+	if (input_types.size() != 2)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::infer_output: expected 2 input "
+			"operands."
+		);
+	}
+
+	if (input_types[0] != input_types[1])
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::infer_output: expected equal "
+			"input operands."
+		);
+	}
+
+	const auto reference = input_types.front();
+
+	if (get_size(reference) == 0)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::infer_output: unknown input type "
+			"input operands."
+		);
+	}
+
+	if (get_category(reference) == numerical_type_category::complex)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::infer_output: can not operate on "
+			"complex types."
+		);
+	}
+}
+
+void comparison_data_type_policy::validate(
+	span<const numerical_type> output_types,
+	span<const numerical_type> input_types
+) const
+{
+	if (output_types.size() != 1)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: expected 1 output "
+			"operand."
+		);
+	}
+
+	if (output_types[0] != numerical_type::boolean)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: expected boolean output "
+			"type."
+		);
+	}
+
+	if (input_types.size() != 2)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: expected 2 input "
+			"operands."
+		);
+	}
+
+	if (input_types[0] != input_types[1])
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: expected equal "
+			"input operands."
+		);
+	}
+
+	const auto reference = input_types.front();
+
+	if (get_size(reference) == 0)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: unknown input type "
+			"input operands."
+		);
+	}
+
+	if (get_category(reference) == numerical_type_category::complex)
+	{
+		throw std::invalid_argument(
+			"comparison_data_type_policy::validate: can not operate on "
+			"complex types."
+		);
+	}
+}
+
+const comparison_data_type_policy& comparison_data_type_policy::get() noexcept
+{
+	static const comparison_data_type_policy instance;
+	return instance;
+}
+
+} // namespace multidimensional
+} // namespace xmipp4

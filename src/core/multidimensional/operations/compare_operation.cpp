@@ -5,35 +5,14 @@
 #include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
+#include <core/multidimensional/data_type_policies/comparison_data_type_policy.hpp>
+
 #include <stdexcept>
 
 namespace xmipp4
 {
 namespace multidimensional
 {
-
-void comparison_data_type_policy::infer_output(
-	span<numerical_type> output_types,
-	span<const numerical_type> input_types
-) const
-{
-	// TODO
-}
-
-void comparison_data_type_policy::validate(
-	span<const numerical_type> output_types,
-	span<const numerical_type> input_types
-) const
-{
-	// TODO
-}
-
-const comparison_data_type_policy& comparison_data_type_policy::get() noexcept
-{
-	static const comparison_data_type_policy instance;
-	return instance;
-}
-
 const shape_policy& compare_operation::get_shape_policy() const noexcept
 {
 	return elementwise_shape_policy::get();

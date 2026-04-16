@@ -32,6 +32,8 @@ class XMIPP4_CORE_API logical_negate_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -42,6 +44,8 @@ class XMIPP4_CORE_API logical_and_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -52,6 +56,8 @@ class XMIPP4_CORE_API logical_or_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

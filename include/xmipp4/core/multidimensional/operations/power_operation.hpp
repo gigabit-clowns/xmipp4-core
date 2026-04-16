@@ -20,6 +20,8 @@ class XMIPP4_CORE_API power_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -30,6 +32,8 @@ class XMIPP4_CORE_API exp_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -40,6 +44,8 @@ class XMIPP4_CORE_API log_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -50,6 +56,8 @@ class XMIPP4_CORE_API square_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -60,6 +68,8 @@ class XMIPP4_CORE_API sqrt_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

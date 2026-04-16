@@ -25,20 +25,40 @@ std::string bitwise_negate_operation::get_name() const
 	return "bitwise_negate";
 }
 
+std::size_t 
+bitwise_negate_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+bitwise_negate_operation::get_input_count() const noexcept { return 1; }
+
 std::string bitwise_and_operation::get_name() const
 {
 	return "bitwise_and";
 }
+
+std::size_t 
+bitwise_and_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+bitwise_and_operation::get_input_count() const noexcept { return 2; }
 
 std::string bitwise_or_operation::get_name() const
 {
 	return "bitwise_or";
 }
 
+std::size_t 
+bitwise_or_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+bitwise_or_operation::get_input_count() const noexcept { return 2; }
+
 std::string bitwise_xor_operation::get_name() const
 {
 	return "bitwise_xor";
 }
+
+std::size_t 
+bitwise_xor_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+bitwise_xor_operation::get_input_count() const noexcept { return 2; }
 
 } // namespace multidimensional
 } // namespace xmipp4

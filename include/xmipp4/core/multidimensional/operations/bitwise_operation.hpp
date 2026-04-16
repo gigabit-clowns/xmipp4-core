@@ -32,6 +32,8 @@ class XMIPP4_CORE_API bitwise_negate_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -42,6 +44,8 @@ class XMIPP4_CORE_API bitwise_and_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -52,6 +56,8 @@ class XMIPP4_CORE_API bitwise_or_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -62,6 +68,8 @@ class XMIPP4_CORE_API bitwise_xor_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

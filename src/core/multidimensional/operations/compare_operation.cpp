@@ -49,20 +49,34 @@ std::string less_operation::get_name() const
 	return "less";
 }
 
+std::size_t less_operation::get_output_count() const noexcept { return 1; }
+std::size_t less_operation::get_input_count() const noexcept { return 2; }
+
 std::string less_equal_operation::get_name() const
 {
 	return "less_equal";
 }
+
+std::size_t 
+less_equal_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+less_equal_operation::get_input_count() const noexcept { return 2; }
 
 std::string equal_operation::get_name() const
 {
 	return "equal";
 }
 
+std::size_t equal_operation::get_output_count() const noexcept { return 1; }
+std::size_t equal_operation::get_input_count() const noexcept { return 2; }
+
 std::string inequal_operation::get_name() const
 {
 	return "inequal";
 }
+
+std::size_t inequal_operation::get_output_count() const noexcept { return 1; }
+std::size_t inequal_operation::get_input_count() const noexcept { return 2; }
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -20,10 +20,11 @@
 #include "../config.hpp"
 
 #include <algorithm>
+#include <sstream>
 
 #include <boost/container/small_vector.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
@@ -135,9 +136,9 @@ resolve_output_storage(
 )
 {
 	using result_type = boost::container::small_vector<
-		std::shared_ptr<hardware::buffer>, 
+		std::shared_ptr<hardware::buffer>,
 		N
-	>; 
+	>;
 
 	const auto n = operands.size();
 	XMIPP4_ASSERT(n == descriptors.size());
@@ -159,8 +160,8 @@ resolve_output_storage(
 		if (storage)
 		{
 			validate_output_operand_storage(
-				operands[i], 
-				descriptors[i], 
+				operands[i],
+				descriptors[i],
 				storage
 			);
 		}
@@ -173,7 +174,7 @@ resolve_output_storage(
 				base_alignment,
 				queue
 			);
-		}	
+		}
 
 		XMIPP4_ASSERT(storage);
 		result[i] = std::move(storage);
@@ -190,9 +191,9 @@ resolve_input_storage(
 )
 {
 	using result_type = boost::container::small_vector<
-		std::shared_ptr<const hardware::buffer>, 
+		std::shared_ptr<const hardware::buffer>,
 		N
-	>; 
+	>;
 	result_type result(operands.size());
 
     for (std::size_t i = 0; i < operands.size(); ++i)
@@ -238,11 +239,39 @@ void record_queues(
 	span<Ptr> storages,
 	hardware::device_queue &queue
 )
-{		
+{
 	for (const auto &storage : storages)
 	{
 		XMIPP4_ASSERT(storage);
 		storage->record_queue(queue);
+	}
+}
+
+void validate_arity(
+	const operation &operation,
+	std::size_t n_outputs,
+	std::size_t n_inputs
+)
+{
+	const auto expected_outputs = operation.get_output_count();
+	const auto expected_inputs = operation.get_input_count();
+
+	if (n_outputs != expected_outputs)
+	{
+		std::ostringstream oss;
+		oss << "Operation '" << operation.get_name()
+			<< "' expects " << expected_outputs
+			<< " output(s), but " << n_outputs << " provided.";
+		throw std::invalid_argument(oss.str());
+	}
+
+	if (n_inputs != expected_inputs)
+	{
+		std::ostringstream oss;
+		oss << "Operation '" << operation.get_name()
+			<< "' expects " << expected_inputs
+			<< " input(s), but " << n_inputs << " provided.";
+		throw std::invalid_argument(oss.str());
 	}
 }
 
@@ -257,13 +286,15 @@ void execute(
 	const execution_context &context
 )
 {
-	using small_output_size_tag = 
+	using small_output_size_tag =
 		std::integral_constant<std::size_t, XMIPP4_SMALL_OUTPUT_OPERAND_COUNT>;
-	using small_input_size_tag = 
+	using small_input_size_tag =
 		std::integral_constant<std::size_t, XMIPP4_SMALL_INPUT_OPERAND_COUNT>;
 
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
+
+	validate_arity(operation, n_outputs, n_inputs);
 
 	auto output_layouts =
 		extract_layouts(output_operands, small_output_size_tag());
@@ -319,13 +350,13 @@ void execute(
 	);
 
 	auto output_storages = resolve_output_storage(
-		output_operands, 
+		output_operands,
 		make_span(output_descriptors.data(), n_outputs),
 		small_output_size_tag(),
 		context
 	);
 	auto input_storages = resolve_input_storage(
-		input_operands, 
+		input_operands,
 		small_input_size_tag()
 	);
 
@@ -348,8 +379,8 @@ void execute(
 	const auto& queue = context.get_active_queue();
 
 	kernel->execute(
-		make_span(output_storages.data(), n_outputs), 
-		make_span(input_storages.data(), n_inputs), 
+		make_span(output_storages.data(), n_outputs),
+		make_span(input_storages.data(), n_inputs),
 		queue.get()
 	);
 
@@ -415,9 +446,9 @@ array execute_binary(
 	array *out
 )
 {
-	std::array<array_view, 2> inputs = { 
-		first_input.share(), 
-		second_input.share() 
+	std::array<array_view, 2> inputs = {
+		first_input.share(),
+		second_input.share()
 	};
 	return execute(
 		operation,
@@ -436,8 +467,8 @@ array execute_ternary(
 	array *out
 )
 {
-	std::array<array_view, 3> inputs = { 
-		first_input.share(), 
+	std::array<array_view, 3> inputs = {
+		first_input.share(),
 		second_input.share(),
 		third_input.share()
 	};

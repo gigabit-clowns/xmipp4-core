@@ -70,6 +70,18 @@ public:
 			NAMED_ALLOW_CALL(operation, get_data_type_policy())
 				.LR_RETURN(std::ref(data_type_pol))
 		);
+		expectations.push_back(
+			NAMED_ALLOW_CALL(operation, get_output_count())
+				.RETURN(2)
+		);
+		expectations.push_back(
+			NAMED_ALLOW_CALL(operation, get_input_count())
+				.RETURN(3)
+		);
+		expectations.push_back(
+			NAMED_ALLOW_CALL(operation, get_name())
+				.RETURN(std::string("mock_op"))
+		);
 	}
 
     execution_context& 

@@ -32,6 +32,8 @@ class XMIPP4_CORE_API negate_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -44,6 +46,8 @@ public:
 	std::string get_name() const override;
 	const shape_policy& get_shape_policy() const noexcept override;
 	const data_type_policy& get_data_type_policy() const noexcept override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -54,6 +58,8 @@ class XMIPP4_CORE_API abs_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 
@@ -65,6 +71,8 @@ class XMIPP4_CORE_API add_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -75,6 +83,8 @@ class XMIPP4_CORE_API subtract_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -85,6 +95,8 @@ class XMIPP4_CORE_API multiply_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -95,6 +107,8 @@ class XMIPP4_CORE_API divide_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

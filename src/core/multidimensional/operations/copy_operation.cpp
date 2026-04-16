@@ -77,5 +77,8 @@ const data_type_policy& copy_operation::get_data_type_policy() const noexcept
 	return copy_operation_data_type_policy::get();
 }
 
+std::size_t copy_operation::get_output_count() const noexcept { return 1; }
+std::size_t copy_operation::get_input_count() const noexcept { return 1; }
+
 } // namespace multidimensional
 } // namespace xmipp4

@@ -39,6 +39,12 @@ public:
 	XMIPP4_CORE_API
 	const data_type_policy& get_data_type_policy() const noexcept override;
 
+	XMIPP4_CORE_API
+	std::size_t get_output_count() const noexcept override;
+
+	XMIPP4_CORE_API
+	std::size_t get_input_count() const noexcept override;
+
 	/**
 	 * @brief Get the fill value.
 	 * 

@@ -62,6 +62,9 @@ const data_type_policy& fill_operation::get_data_type_policy() const noexcept
 	return same_data_type_policy::get();
 }
 
+std::size_t fill_operation::get_output_count() const noexcept { return 1; }
+std::size_t fill_operation::get_input_count() const noexcept { return 0; }
+
 scalar_ref fill_operation::get_fill_value() const noexcept
 {
 	return m_fill_value;

@@ -22,6 +22,8 @@ class XMIPP4_CORE_API sin_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -35,6 +37,8 @@ class XMIPP4_CORE_API cos_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -48,6 +52,8 @@ class XMIPP4_CORE_API sincos_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -61,6 +67,8 @@ class XMIPP4_CORE_API tan_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -74,6 +82,8 @@ class XMIPP4_CORE_API asin_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -87,6 +97,8 @@ class XMIPP4_CORE_API acos_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -100,6 +112,8 @@ class XMIPP4_CORE_API atan_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 /**
@@ -113,6 +127,8 @@ class XMIPP4_CORE_API atan2_operation final
 {
 public:
 	std::string get_name() const override;
+	std::size_t get_output_count() const noexcept override;
+	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

@@ -65,6 +65,20 @@ public:
 	virtual std::string serialize_parameters() const;
 
 	/**
+	 * @brief Get the output count of the operation.
+	 * 
+	 * @return std::size_t The output count.
+	 */
+	virtual std::size_t get_output_count() const noexcept = 0;
+
+	/**
+	 * @brief Get the input count of the operation.
+	 * 
+	 * @return std::size_t The input count.
+	 */
+	virtual std::size_t get_input_count() const noexcept = 0;
+
+	/**
 	 * @brief Get the shape policy for the operation.
 	 *
 	 * @return const shape_policy& The shape policy.

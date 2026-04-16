@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/multidimensional/data_type_policy.hpp>
 
 #include <trompeloeil.hpp>
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/multidimensional/shape_policy.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 

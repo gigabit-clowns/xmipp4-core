@@ -3,7 +3,7 @@
 #include <xmipp4/core/multidimensional/operations/logical_operation.hpp>
 
 #include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/operations/policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operations/policies/boolean_data_type_policy.hpp>
 
 namespace xmipp4 
 {

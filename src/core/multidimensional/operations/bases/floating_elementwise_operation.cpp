@@ -3,7 +3,7 @@
 #include <xmipp4/core/multidimensional/operations/bases/floating_elementwise_operation.hpp>
 
 #include <xmipp4/core/multidimensional/operations/policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/operations/policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operations/policies/same_floating_data_type_policy.hpp>
 
 namespace xmipp4
 {

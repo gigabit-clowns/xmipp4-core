@@ -11,17 +11,16 @@ namespace multidimensional
 {
 
 /**
- * @brief Data type policy requiring all operand types to be the same.
+ * @brief Data type policy requiring all operand types to be boolean
  *
- * After validation/inference all operators will have the same data type.
+ * After successful validation/inference all operators will be boolean.
  *
- * `infer_output` ensures that all inputs have the exact same data type and
- * assigns this data type to the output.
+ * `infer_output` ensures that all inputs are boolean type and sets the
+ * output to boolean.
  *
- * `validate` ensures that all input/output operands have the exact same data
- * type.
+ * `validate` ensures that all input/output operands are boolean.
  */
-class XMIPP4_CORE_API same_data_type_policy final
+class XMIPP4_CORE_API boolean_data_type_policy final
 	: public data_type_policy
 {
 public:
@@ -35,10 +34,7 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	static const same_data_type_policy& get() noexcept;
-
-private:
-	static void check(numerical_type type);
+	static const boolean_data_type_policy& get() noexcept;
 };
 
 } // namespace multidimensional

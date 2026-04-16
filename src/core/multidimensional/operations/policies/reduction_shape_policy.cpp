@@ -94,16 +94,18 @@ void reduction_shape_policy::validate(
 		{
 			const auto is_reduction_axis =
 				this->is_reduction_axis(axis);
-			const auto is_broadcasted_axis = 
-				(output_extents[axis] > 1 && strides[axis] == 0);
-			if (is_reduction_axis && !is_broadcasted_axis)
+			const auto is_broadcastable =
+				output_extents[axis] > 1;
+			const auto is_broadcasted =
+				strides[axis] == 0;
+			if (is_reduction_axis && is_broadcastable && !is_broadcasted)
 			{
 				throw std::invalid_argument(
 					"reduction_shape_policy::validate: reduction axis does not "
 					"have a zero stride in the output"
 				);
 			}
-			if (!is_reduction_axis && is_broadcasted_axis)
+			if (!is_reduction_axis && is_broadcastable && is_broadcasted)
 			{
 				throw std::invalid_argument(
 					"reduction_shape_policy::validate: non-reduction axis has "

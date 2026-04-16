@@ -20,6 +20,8 @@
 #include "mock/mock_kernel.hpp"
 #include "mock/mock_kernel_builder.hpp"
 #include "mock/mock_operation.hpp"
+#include "mock/mock_shape_policy.hpp"
+#include "mock/mock_data_type_policy.hpp"
 #include "../hardware/mock/mock_buffer_sentinel.hpp"
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_device_queue.hpp"
@@ -47,6 +49,8 @@ public:
     std::shared_ptr<mock_memory_allocator> device_allocator;
     std::shared_ptr<mock_memory_allocator> host_allocator;
     mock_operation operation;
+    mock_shape_policy shape_pol;
+    mock_data_type_policy data_type_pol;
     std::shared_ptr<mock_kernel> kernel;
     std::unique_ptr<execution_context> context;
     std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
@@ -58,6 +62,14 @@ public:
 		, host_allocator(std::make_shared<mock_memory_allocator>())
 		, kernel(std::make_shared<mock_kernel>())
 	{
+		expectations.push_back(
+			NAMED_ALLOW_CALL(operation, get_shape_policy())
+				.LR_RETURN(std::ref(shape_pol))
+		);
+		expectations.push_back(
+			NAMED_ALLOW_CALL(operation, get_data_type_policy())
+				.LR_RETURN(std::ref(data_type_pol))
+		);
 	}
 
     execution_context& 
@@ -199,11 +211,17 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
     const auto output_buffers = create_device_buffers(2, descriptor);
     std::vector<array> output_arrays;
 
-    SECTION("provided a pre-allocated output should re-use") 
+    SECTION("provided a pre-allocated output should re-use")
 	{
         output_arrays = create_device_arrays<array>(output_buffers, descriptor);
+        REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3);
+        REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3);
     }
-    SECTION("if empty output is provided it should allocate") 
+    SECTION("if empty output is provided it should allocate")
 	{
         output_arrays.resize(2); // Empties
         for (const auto& buffer : output_buffers) {
@@ -212,6 +230,16 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
                     .RETURN(buffer)
             );
         }
+        REQUIRE_CALL(shape_pol, infer_output(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3)
+            .SIDE_EFFECT(_1[0] = descriptor.get_layout())
+            .SIDE_EFFECT(_1[1] = descriptor.get_layout());
+        REQUIRE_CALL(data_type_pol, infer_output(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3)
+            .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
+            .SIDE_EFFECT(_1[1] = descriptor.get_data_type());
     }
 
 
@@ -231,13 +259,6 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
         .LR_RETURN(kernel);
 
     register_kernel_builder(std::move(kernel_builder));
-
-    REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2)
-        .LR_WITH(_1[0] == output_arrays[0].get_descriptor() && _1[1] == output_arrays[1].get_descriptor())
-        .WITH(_2.size() == 3 && _2[0] == descriptor && _2[1] == descriptor && _2[2] == descriptor)
-        .SIDE_EFFECT(_1[0] = descriptor)
-        .SIDE_EFFECT(_1[1] = descriptor);
 
     REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, queue.get()))
         .WITH(_1.size() == 2)
@@ -272,9 +293,12 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-
 
     register_kernel_builder(std::make_unique<mock_kernel_builder>());
 
-    REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2 && _1[0] == descriptor && _1[1] == descriptor)
-        .WITH(_2.size() == 3 && _2[0] == descriptor && _2[1] == descriptor && _2[2] == descriptor);
+    REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
+        .WITH(_1.size() == 2)
+        .WITH(_2.size() == 3);
+    REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
+        .WITH(_1.size() == 2)
+        .WITH(_2.size() == 3);
 
     REQUIRE_THROWS_MATCHES(
         execute(operation, make_span(output_arrays), make_span(input_arrays), context),

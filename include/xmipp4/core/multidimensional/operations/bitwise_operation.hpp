@@ -14,7 +14,7 @@ namespace multidimensional
  * @brief Base class for bitwise operations.
  *
  * `shape_policy`: `elementwise_shape_policy`
- * `data_type_policy`: `same_arithmetic_data_type_policy`
+ * `data_type_policy`: `same_integer_data_type_policy`
  */
 class XMIPP4_CORE_API bitwise_operation
 	: public operation

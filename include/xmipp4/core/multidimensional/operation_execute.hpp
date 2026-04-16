@@ -60,7 +60,7 @@ array execute(
 XMIPP4_CORE_API
 array execute_unary(
 	const operation &operation,
-	const array_view &input,
+	array_view input,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -77,8 +77,8 @@ array execute_unary(
 XMIPP4_CORE_API
 array execute_binary(
 	const operation &operation,
-	const array_view &first_input,
-	const array_view &second_input,
+	array_view first_input,
+	array_view second_input,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -96,9 +96,9 @@ array execute_binary(
 XMIPP4_CORE_API
 array execute_ternary(
 	const operation &operation,
-	const array_view &first_input,
-	const array_view &second_input,
-	const array_view &third_input,
+	array_view first_input,
+	array_view second_input,
+	array_view third_input,
 	const execution_context &context,
 	array *out = nullptr
 );

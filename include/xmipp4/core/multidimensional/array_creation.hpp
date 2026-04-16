@@ -105,5 +105,47 @@ array copy(
 	array *out = nullptr
 );
 
+/**
+ * @brief Create a complex array from its real and imaginary components.
+ * 
+ * Both input values must be floating types.
+ * 
+ * @param real Array with the real values.
+ * @param imag Array with the imaginary values.
+ * @param context The device context to handle the allocation and dispatch.
+ * @param out Optional array to which contents are copied. If provided, the
+ * input is broadcasted to match the shape of this array. Therefore, input
+ * must be broadcastable to out's shape.
+ * @return array The resulting complex array.
+ */
+XMIPP4_CORE_API
+array complex(
+	array_view real,
+	array_view imag,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Create a complex array from its magnitude and phase components.
+ * 
+ * Both input values must be floating types.
+ * 
+ * @param abs The magnitudes.
+ * @param angle The phases.
+ * @param context The device context to handle the allocation and dispatch.
+ * @param out Optional array to which contents are copied. If provided, the
+ * input is broadcasted to match the shape of this array. Therefore, input
+ * must be broadcastable to out's shape.
+ * @return array The resulting complex array.
+ */
+XMIPP4_CORE_API
+array polar(
+	array_view abs,
+	array_view angle,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 } // namespace multidimensional
 } // namespace xmipp4

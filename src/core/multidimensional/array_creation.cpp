@@ -5,6 +5,8 @@
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment/complex_from_real_imag_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment/complex_from_polar_operation.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/device_queue.hpp>
@@ -171,7 +173,39 @@ array copy(
 	array *out
 )
 {
-	return execute_unary(copy_operation(), source, context, out);
+	return execute_unary(copy_operation(), std::move(source), context, out);
+}
+
+array complex(
+	array_view real,
+	array_view imag,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(
+		complex_from_real_imag_operation(),
+		std::move(real),
+		std::move(imag),
+		context,
+		out
+	);
+}
+
+array polar(
+	array_view abs,
+	array_view angle,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(
+		complex_from_polar_operation(),
+		std::move(abs),
+		std::move(angle),
+		context,
+		out
+	);
 }
 
 } // namespace multidimensional

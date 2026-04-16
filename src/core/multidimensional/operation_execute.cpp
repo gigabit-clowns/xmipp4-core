@@ -424,15 +424,14 @@ array execute(
 
 array execute_unary(
 	const operation &operation,
-	const array_view &input,
+	array_view input,
 	const execution_context &context,
 	array *out
 )
 {
-	std::array<array_view, 1> inputs = { input.share() };
 	return execute(
 		operation,
-		make_span(inputs),
+		make_span(&input, 1),
 		context,
 		out
 	);
@@ -440,15 +439,15 @@ array execute_unary(
 
 array execute_binary(
 	const operation &operation,
-	const array_view &first_input,
-	const array_view &second_input,
+	array_view first_input,
+	array_view second_input,
 	const execution_context &context,
 	array *out
 )
 {
 	std::array<array_view, 2> inputs = {
-		first_input.share(),
-		second_input.share()
+		std::move(first_input),
+		std::move(second_input)
 	};
 	return execute(
 		operation,
@@ -460,17 +459,17 @@ array execute_binary(
 
 array execute_ternary(
 	const operation &operation,
-	const array_view &first_input,
-	const array_view &second_input,
-	const array_view &third_input,
+	array_view first_input,
+	array_view second_input,
+	array_view third_input,
 	const execution_context &context,
 	array *out
 )
 {
 	std::array<array_view, 3> inputs = {
-		first_input.share(),
-		second_input.share(),
-		third_input.share()
+		std::move(first_input),
+		std::move(second_input),
+		std::move(third_input)
 	};
 	return execute(
 		operation,

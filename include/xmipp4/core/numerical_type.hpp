@@ -76,15 +76,30 @@ std::size_t get_size(numerical_type type) noexcept;
 
 /**
  * @brief Create a complex version, if exists.
- * 
+ *
  * Create the complex version of a numerical type, if this exists.
  * Otherwise unknown is returned. This includes an already complex type.
- * 
- * @param type 
- * @return numerical_type.
+ *
+ * @param type A potentially floating point numerical type.
+ * @return numerical_type The equivalent complex type. numerical_type::unknown
+ * if error.
  */
 XMIPP4_CORE_API
 numerical_type make_complex(numerical_type type) noexcept;
+
+/**
+ * @brief Get the real (floating-point) equivalent of a numerical type.
+ *
+ * For complex types, returns the corresponding floating-point type
+ * (e.g. complex_float32 -> float32). For other valid types it returns the 
+ * type itself.
+ *
+ * @param type A potentially complex numerical type.
+ * @return numerical_type The equivalent real type. numerical_type::unknown
+ * if error.
+ */
+XMIPP4_CORE_API
+numerical_type make_real(numerical_type type) noexcept;
 
 /**
  * @brief Get the common type of two numerical types.

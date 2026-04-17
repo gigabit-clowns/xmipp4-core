@@ -131,17 +131,44 @@ numerical_type make_complex(numerical_type type) noexcept
 	case numerical_type::float16: return numerical_type::complex_float16;
 	case numerical_type::float32: return numerical_type::complex_float32;
 	case numerical_type::float64: return numerical_type::complex_float64;
+
 	case numerical_type::complex_float16: 
-		return numerical_type::complex_float16;
 	case numerical_type::complex_float32: 
-		return numerical_type::complex_float32;
 	case numerical_type::complex_float64: 
-		return numerical_type::complex_float64;
+		return type;
+
 	default: return numerical_type::unknown;
 	} 
 }
 
-numerical_type 
+numerical_type make_real(numerical_type type) noexcept
+{
+	switch (type)
+	{
+	case numerical_type::boolean:
+	case numerical_type::char8:
+	case numerical_type::int8:
+	case numerical_type::uint8:
+	case numerical_type::int16:
+	case numerical_type::uint16:
+	case numerical_type::int32:
+	case numerical_type::uint32:
+	case numerical_type::int64:
+	case numerical_type::uint64:
+	case numerical_type::float16:
+	case numerical_type::float32:
+	case numerical_type::float64:
+		return type;
+
+	case numerical_type::complex_float16: return numerical_type::float16;
+	case numerical_type::complex_float32: return numerical_type::float32;
+	case numerical_type::complex_float64: return numerical_type::float64;
+
+	default: return numerical_type::unknown;
+	}
+}
+
+numerical_type
 promote_types(numerical_type type1, numerical_type type2) noexcept
 {
 	static const auto lut = compute_numerical_type_promotion_table();

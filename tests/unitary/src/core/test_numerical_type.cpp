@@ -469,3 +469,50 @@ TEST_CASE( "operator<< with numerical_type_category should write the expected st
 	oss << category;
 	CHECK( oss.str() == expected_str );
 }
+
+TEST_CASE( "make_real should return the equivalent floating-point type for complex types", "[numerical_type]" )
+{
+	numerical_type complex_type;
+	numerical_type expected_real_type;
+
+	std::tie(complex_type, expected_real_type) = GENERATE(
+		table<numerical_type, numerical_type>({
+			{ numerical_type::complex_float16, numerical_type::float16 },
+			{ numerical_type::complex_float32, numerical_type::float32 },
+			{ numerical_type::complex_float64, numerical_type::float64 },
+		})
+	);
+
+	CHECK( make_real(complex_type) == expected_real_type );
+}
+
+TEST_CASE( "make_real should return the same type for non-complex types", "[numerical_type]" )
+{
+	const auto type = GENERATE(
+		numerical_type::boolean,
+		numerical_type::char8,
+		numerical_type::int8,
+		numerical_type::uint8,
+		numerical_type::int16,
+		numerical_type::uint16,
+		numerical_type::int32,
+		numerical_type::uint32,
+		numerical_type::int64,
+		numerical_type::uint64,
+		numerical_type::float16,
+		numerical_type::float32,
+		numerical_type::float64
+	);
+
+	CHECK( make_real(type) == type );
+}
+
+TEST_CASE( "make_real should return unknown for invalid types", "[numerical_type]" )
+{
+	const auto invalid_type = GENERATE(
+		numerical_type::unknown,
+		numerical_type::count
+	);
+
+	CHECK( make_real(invalid_type) == numerical_type::unknown );
+}

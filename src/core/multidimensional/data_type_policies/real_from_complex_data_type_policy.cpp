@@ -45,9 +45,9 @@ numerical_type real_from_complex_data_type_policy::check_inputs(
 )
 {
 	const auto reference = require_same(input_types, context);
-	if (get_category(reference) != numerical_type_category::floating_point)
+	if (get_category(reference) != numerical_type_category::complex)
 	{
-		throw_category(reference, "real point", context);
+		throw_category(reference, "complex", context);
 	}
 
 	return reference;

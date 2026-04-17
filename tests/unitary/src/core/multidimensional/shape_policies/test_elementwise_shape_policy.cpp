@@ -153,15 +153,15 @@ TEST_CASE("elementwise_shape_policy validate should broadcast inputs to output s
 	CHECK( broadcasted_extents == out_extents );
 }
 
-TEST_CASE("elementwise_shape_policy validate should throw when inputs are empty", "[elementwise_shape_policy]")
+TEST_CASE("elementwise_shape_policy validate should throw when outputs are empty", "[elementwise_shape_policy]")
 {
 	const auto &policy = elementwise_shape_policy::get();
 
-	std::vector<strided_layout> inputs;
 
 	const std::vector<std::size_t> extents = { 3, 4 };
-	auto output = strided_layout::make_contiguous_layout(make_span(extents));
-	std::vector<strided_layout> outputs = { output };
+	auto input = strided_layout::make_contiguous_layout(make_span(extents));
+	std::vector<strided_layout> inputs = {input};
+	std::vector<strided_layout> outputs;
 
 	REQUIRE_THROWS_AS(
 		policy.validate(

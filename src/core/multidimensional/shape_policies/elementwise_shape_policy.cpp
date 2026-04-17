@@ -49,7 +49,7 @@ void elementwise_shape_policy::validate(
 	span<strided_layout> input_layouts
 ) const
 {
-	if (input_layouts.empty())
+	if (output_layouts.empty())
 	{
 		throw std::invalid_argument(
 			"elementwise_shape_policy::validate requires at least one output"

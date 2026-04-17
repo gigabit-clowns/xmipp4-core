@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operations/fourier/fft_c2c_operation.hpp>
 
+#include <xmipp4/core/multidimensional/shape_policies/same_shape_policy.hpp>
 #include <xmipp4/core/multidimensional/data_type_policies/same_complex_data_type_policy.hpp>
 
 namespace xmipp4
@@ -26,7 +27,7 @@ std::size_t fft_c2c_operation::get_input_count() const noexcept { return 1; }
 
 const shape_policy& fft_c2c_operation::get_shape_policy() const noexcept
 {
-	// TODO
+	return same_shape_policy::get();
 }
 
 const data_type_policy& fft_c2c_operation::get_data_type_policy() const noexcept

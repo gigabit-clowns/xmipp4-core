@@ -3,6 +3,7 @@
 #pragma once
 
 #include "array.hpp"
+#include "array_view.hpp"
 
 namespace xmipp4 
 {
@@ -11,8 +12,6 @@ class execution_context;
 
 namespace multidimensional
 {
-
-class array_view;
 
 /**
  * @brief Evaluate `-x` for each element in the arrays.

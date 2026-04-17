@@ -3,8 +3,10 @@
 #pragma once
 
 #include "array.hpp"
-#include "../scalar_ref.hpp"
-#include "../hardware/memory_resource_affinity.hpp"
+#include "array_view.hpp"
+
+#include <xmipp4/core/scalar_ref.hpp>
+#include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
 namespace xmipp4 
 {

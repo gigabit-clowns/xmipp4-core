@@ -6,6 +6,7 @@
 #include <xmipp4/core/multidimensional/operations/logical/logical_negate_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/logical/logical_and_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/logical/logical_or_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/logical/select_operation.hpp>
 
 namespace xmipp4 
 {
@@ -46,10 +47,28 @@ array logical_or(
 )
 {
 	return execute_binary(
-		logical_or_operation(), 
-		std::move(lhs), 
-		std::move(rhs), 
-		context, 
+		logical_or_operation(),
+		std::move(lhs),
+		std::move(rhs),
+		context,
+		out
+	);
+}
+
+array select(
+	array_view mask,
+	array_view x,
+	array_view y,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_ternary(
+		select_operation(),
+		std::move(mask),
+		std::move(x),
+		std::move(y),
+		context,
 		out
 	);
 }

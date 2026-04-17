@@ -3,23 +3,15 @@
 #pragma once
 
 #include "array.hpp"
+#include "array_view.hpp"
 
 namespace xmipp4 
 {
 
 class execution_context;
 
-namespace hardware
-{
-
-class memory_resource;
-
-} // namespace hardware
-
 namespace multidimensional
 {
-
-class array_view;
 
 /**
  * @brief Transfer an array from host to device memory.

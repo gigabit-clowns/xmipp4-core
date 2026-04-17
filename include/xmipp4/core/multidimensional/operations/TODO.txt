@@ -42,10 +42,6 @@ Pending — primitives worth adding
         - sumproduct (dot product of two arrays), euclidean_distance, euclidean_distance2
     Masked reductions
         - same set as plain reductions, but accepting a boolean mask array
-    Linear algebra
-        - matmul (matrix * matrix)
-        - matvec (matrix * vector)
-		- dot (vec-vec)
     FFT
         - Decide axis/nd strategy: single class parameterised by axis list, or separate
           1d/2d/3d/nd classes?

@@ -31,13 +31,6 @@ Already declared
         - floor, ceil, round, trunc
 
 Pending — primitives worth adding
-    Arithmetic (elementwise)
-        - reciprocal (1/x) — avoids a fill + divide; common in normalisation
-    Power / exponential (elementwise)
-        - log2, log10 — common in signal processing and display
-        - exp2 (2^x) — pairs naturally with log2
-        - cbrt (x^(1/3)) — occasionally useful
-        - hypot (sqrt(x^2+y^2)) — numerically stable, avoids temporaries
     Complex decomposition (elementwise)
         - phase (arg) — complement complex_from_polar
     Reductions (whole-array or along an axis)

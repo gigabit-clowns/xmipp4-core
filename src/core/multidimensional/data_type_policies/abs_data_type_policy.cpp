@@ -56,10 +56,14 @@ numerical_type abs_data_type_policy::check_input(
 	return reference;
 }
 
-numerical_type abs_data_type_policy::expected_output(numerical_type input_type) noexcept
+numerical_type 
+abs_data_type_policy::expected_output(numerical_type input_type) noexcept
 {
 	if (get_category(input_type) == numerical_type_category::complex)
+	{
 		return make_real(input_type);
+	}
+
 	return input_type;
 }
 

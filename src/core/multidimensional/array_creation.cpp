@@ -167,11 +167,7 @@ array full(
 	return std::move(outputs[0]);
 }
 
-array copy(
-	array_view source,
-	const execution_context &context,
-	array *out
-)
+array copy(array_view source, const execution_context &context, array *out)
 {
 	return execute_unary(copy_operation(), std::move(source), context, out);
 }

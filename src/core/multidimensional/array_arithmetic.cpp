@@ -16,46 +16,19 @@ namespace xmipp4
 namespace multidimensional
 {
 
-array negate(
-	array_view x,
-	const execution_context &context,
-	array *out
-)
+array negate(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(
-		negate_operation(), 
-		std::move(x), 
-		context, 
-		out
-	);
+	return execute_unary(negate_operation(), std::move(x), context, out);
 }
 
-array abs(
-	array_view x,
-	const execution_context &context,
-	array *out
-)
+array abs(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(
-		abs_operation(), 
-		std::move(x), 
-		context, 
-		out
-	);
+	return execute_unary(abs_operation(), std::move(x), context, out);
 }
 
-array conj(
-	array_view x,
-	const execution_context &context,
-	array *out
-)
+array conj(array_view x, const execution_context &context, array *out)
 {
-	return execute_unary(
-		conjugate_operation(), 
-		std::move(x), 
-		context, 
-		out
-	);
+	return execute_unary(conjugate_operation(), std::move(x), context, out);
 }
 
 array add(

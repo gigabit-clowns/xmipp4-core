@@ -4,7 +4,8 @@
 
 #include <xmipp4/core/multidimensional/operations/arithmetic_operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
-#include <xmipp4/core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
+
+#include <core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
 
 namespace xmipp4
 {

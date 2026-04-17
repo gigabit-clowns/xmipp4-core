@@ -14,7 +14,7 @@ namespace multidimensional
 {
 
 /**
- * @brief Compute the matrix-matrix product C = A * B.
+ * @brief Compute the matrix-matrix product `C = A * B`.
  *
  * Supports batched multiplication over leading dimensions.
  * The last two axes of each input are the matrix dimensions; all preceding
@@ -36,7 +36,7 @@ array matmul(
 );
 
 /**
- * @brief Compute the matrix-vector product y = A * x.
+ * @brief Compute the matrix-vector product `y = A * x`.
  *
  * @param a Matrix operand of shape (m, n).
  * @param x Vector operand of shape (n,).
@@ -54,7 +54,7 @@ array matvec(
 );
 
 /**
- * @brief Compute the dot product of two 1D vectors: sum(x * y).
+ * @brief Compute the dot product of two 1D vectors: `sum(x * y)`.
  *
  * @param x First vector of shape (n,).
  * @param y Second vector of shape (n,).
@@ -72,7 +72,8 @@ array dot(
 );
 
 /**
- * @brief Compute the outer product of two 1D vectors: result[i, j] = x[i] * y[j].
+ * @brief Compute the outer product of two 1D vectors: 
+ * `result[i, j] = x[i] * y[j]`.
  *
  * @param x First vector of shape (m,).
  * @param y Second vector of shape (n,).

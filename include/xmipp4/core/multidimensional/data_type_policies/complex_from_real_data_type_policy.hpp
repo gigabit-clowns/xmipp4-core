@@ -11,16 +11,16 @@ namespace multidimensional
 {
 
 /**
- * @brief Data type policy for operations that combine floating-point
- * arrays into a complex array.
+ * @brief Data type policy for operations that combine real valued
+ * arrays into complex arrays.
  *
- * `infer_output` requires inputs to be the same floating-point type
- * and sets the output to the corresponding complex type.
+ * `infer_output` requires inputs to be the same real-valued type and sets the 
+ * output to the corresponding complex type.
  *
- * `validate` ensures inputs are the same floating-point type and
- * the output matches make_complex(input_type).
+ * `validate` ensures inputs are the same real-valued type and the output 
+ * matches make_complex(input_type).
  */
-class XMIPP4_CORE_API complex_from_floating_data_type_policy final
+class XMIPP4_CORE_API complex_from_real_data_type_policy final
 	: public data_type_policy
 {
 public:
@@ -34,7 +34,7 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	static const complex_from_floating_data_type_policy& get() noexcept;
+	static const complex_from_real_data_type_policy& get() noexcept;
 
 private:
 	static numerical_type check_inputs(

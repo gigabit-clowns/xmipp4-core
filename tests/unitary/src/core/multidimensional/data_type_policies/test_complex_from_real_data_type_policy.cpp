@@ -3,23 +3,23 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/data_type_policies/complex_from_floating_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/data_type_policies/complex_from_real_data_type_policy.hpp>
 
 #include <xmipp4/core/span.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("complex_from_floating_data_type_policy get should return a singleton", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy get should return a singleton", "[complex_from_real_data_type_policy]")
 {
-	const auto &a = complex_from_floating_data_type_policy::get();
-	const auto &b = complex_from_floating_data_type_policy::get();
+	const auto &a = complex_from_real_data_type_policy::get();
+	const auto &b = complex_from_real_data_type_policy::get();
 	CHECK( &a == &b );
 }
 
-TEST_CASE("complex_from_floating_data_type_policy infer_output should produce complex type for matching floating inputs", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy infer_output should produce complex type for matching real inputs", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	auto [input_type, expected_output] = GENERATE(table<numerical_type, numerical_type>({
 		{ numerical_type::float16, numerical_type::complex_float16 },
@@ -35,9 +35,9 @@ TEST_CASE("complex_from_floating_data_type_policy infer_output should produce co
 	CHECK( outputs[0] == expected_output );
 }
 
-TEST_CASE("complex_from_floating_data_type_policy infer_output should reject mismatched floating inputs", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy infer_output should reject mismatched real inputs", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	std::vector<numerical_type> inputs = {
 		numerical_type::float32, numerical_type::float64
@@ -50,9 +50,9 @@ TEST_CASE("complex_from_floating_data_type_policy infer_output should reject mis
 	);
 }
 
-TEST_CASE("complex_from_floating_data_type_policy infer_output should reject non-floating inputs", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy infer_output should reject non-real inputs", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	auto type = GENERATE(
 		numerical_type::int8,
@@ -71,9 +71,9 @@ TEST_CASE("complex_from_floating_data_type_policy infer_output should reject non
 	);
 }
 
-TEST_CASE("complex_from_floating_data_type_policy validate should succeed with matching types", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy validate should succeed with matching types", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	auto [input_type, output_type] = GENERATE(table<numerical_type, numerical_type>({
 		{ numerical_type::float16, numerical_type::complex_float16 },
@@ -87,9 +87,9 @@ TEST_CASE("complex_from_floating_data_type_policy validate should succeed with m
 	REQUIRE_NOTHROW( policy.validate(make_span(outputs), make_span(inputs)) );
 }
 
-TEST_CASE("complex_from_floating_data_type_policy validate should reject non-floating inputs", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy validate should reject non-real inputs", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	auto type = GENERATE(
 		numerical_type::int8,
@@ -106,9 +106,9 @@ TEST_CASE("complex_from_floating_data_type_policy validate should reject non-flo
 	);
 }
 
-TEST_CASE("complex_from_floating_data_type_policy validate should reject output not matching make_complex of input", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy validate should reject output not matching make_complex of input", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	std::vector<numerical_type> inputs = {
 		numerical_type::float32, numerical_type::float32
@@ -121,9 +121,9 @@ TEST_CASE("complex_from_floating_data_type_policy validate should reject output 
 	);
 }
 
-TEST_CASE("complex_from_floating_data_type_policy validate should reject mismatched inputs", "[complex_from_floating_data_type_policy]")
+TEST_CASE("complex_from_real_data_type_policy validate should reject mismatched inputs", "[complex_from_real_data_type_policy]")
 {
-	const auto &policy = complex_from_floating_data_type_policy::get();
+	const auto &policy = complex_from_real_data_type_policy::get();
 
 	std::vector<numerical_type> inputs = {
 		numerical_type::float32, numerical_type::float64

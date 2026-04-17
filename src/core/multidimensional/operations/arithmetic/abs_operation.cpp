@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operations/arithmetic/abs_operation.hpp>
 
-#include <xmipp4/core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
+#include <core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
 
 namespace xmipp4
 {

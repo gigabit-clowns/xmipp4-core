@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
+#include <core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
 
 #include <xmipp4/core/span.hpp>
 

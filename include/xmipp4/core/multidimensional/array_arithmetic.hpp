@@ -81,6 +81,20 @@ array add(
 );
 
 /**
+ * @brief Evaluate `out += x` for all operands.
+ * 
+ * @param out Accumulator.
+ * @param increment Values to be added.
+ * @param context The device context to handle the allocation.
+ */
+XMIPP4_CORE_API
+void add_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
+);
+
+/**
  * @brief Evaluate `x - y` for each element in the arrays.
  *
  * @param lhs Left hand side operand. 
@@ -114,6 +128,20 @@ array multiply(
 	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
+);
+
+/**
+ * @brief Evaluate `out *= x` for all operands.
+ * 
+ * @param out Accumulator.
+ * @param increment Values to be multiplied.
+ * @param context The device context to handle the allocation.
+ */
+XMIPP4_CORE_API
+void multiply_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
 );
 
 /**

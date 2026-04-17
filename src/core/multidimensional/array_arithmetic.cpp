@@ -47,6 +47,21 @@ array add(
 	);
 }
 
+void add_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
+)
+{
+	std::array<array_view, 2> inputs = { out, std::move(x) };
+	execute(
+		add_operation(), 
+		make_span(&out, 1),
+		make_span(inputs),
+		context
+	);
+}
+
 array subtract(
 	array_view lhs,
 	array_view rhs,
@@ -76,6 +91,21 @@ array multiply(
 		std::move(rhs), 
 		context, 
 		out
+	);
+}
+
+void multiply_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
+)
+{
+	std::array<array_view, 2> inputs = { out, std::move(x) };
+	execute(
+		multiply_operation(), 
+		make_span(&out, 1),
+		make_span(inputs),
+		context
 	);
 }
 

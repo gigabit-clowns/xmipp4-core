@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/negate_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/conjugate_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/arithmetic/abs_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/add_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/subtract_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/multiply_operation.hpp>
@@ -22,6 +24,34 @@ array negate(
 {
 	return execute_unary(
 		negate_operation(), 
+		std::move(x), 
+		context, 
+		out
+	);
+}
+
+array abs(
+	array_view x,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_unary(
+		abs_operation(), 
+		std::move(x), 
+		context, 
+		out
+	);
+}
+
+array conj(
+	array_view x,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_unary(
+		conjugate_operation(), 
 		std::move(x), 
 		context, 
 		out

@@ -47,9 +47,9 @@ array fft(
  * @param out Optional array to reuse. If provided, must have the correct shape
  * and data type.
  * @return array The Fourier Transform of the input array. The shape of the
- * resulting array is the same as the input type except for the last transform
- * dimension, which has a extent of `N//2 + 1`. The data type is the complex
- * equivalent to the input data type.
+ * resulting half-spectrum array is the same as the input type except for the 
+ * last transform dimension, which has a extent of `N//2 + 1`. The data type is 
+ * the complex equivalent to the input data type.
  */
 XMIPP4_CORE_API
 array rfft(
@@ -82,26 +82,28 @@ array ifft(
 );
 
 /**
- * @brief Compute the inverse Fast Fourier Transform (IFFT) of a real-valued 
- * array.
+ * @brief Compute the inverse Fast Fourier Transform (IFFT) of a half-spectrum. 
  *
  * @param a Input array. Must be complex-valued.
  * @param axes Axes for which the fourier transform is computed.
+ * @param is_odd Whether the original array had an odd dimension in the last
+ * transfrom axis.
  * @param context The device context to handle the allocation.
  * @param norm Normalization convention used with the transform.
  * @param out Optional array to reuse. If provided, must have the correct shape
  * and data type.
  * @return array The Fourier Transform of the input array. The shape of the
  * resulting array is the same as the input type except for the last transform
- * dimension, which has a extent of `(N-1)*2`. The data type is the real 
- * equivalent to the input data type. TODO: Define behavior for odd-sized
- * output arrays.
+ * dimension, which has a extent of `(N-1)*2` if `is_odd==false` and `2*N-1`
+ * when `is_odd==true`. The data type of the output array is the real-valued
+ * equivalent of the input complex type.
  */
 XMIPP4_CORE_API
 array irfft(
     array_view x,
 	span<const std::size_t> axes,
     const execution_context &context,
+	bool is_odd = false,
 	fft_normalization norm = fft_normalization::none,
     array *out = nullptr
 );

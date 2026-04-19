@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operations/arithmetic/abs_operation.hpp>
 
-#include <core/multidimensional/data_type_policies/abs_data_type_policy.hpp>
+#include <core/multidimensional/operation_data_type_policies/abs_operation_data_type_policy.hpp>
 
 namespace xmipp4
 {
@@ -17,9 +17,9 @@ std::string abs_operation::get_name() const
 std::size_t abs_operation::get_output_count() const noexcept { return 1; }
 std::size_t abs_operation::get_input_count() const noexcept { return 1; }
 
-const data_type_policy& abs_operation::get_data_type_policy() const noexcept
+const operation_data_type_policy& abs_operation::get_operation_data_type_policy() const noexcept
 {
-	return abs_data_type_policy::get();
+	return abs_operation_data_type_policy::get();
 }
 
 } // namespace multidimensional

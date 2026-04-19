@@ -20,8 +20,8 @@
 #include "mock/mock_kernel.hpp"
 #include "mock/mock_kernel_builder.hpp"
 #include "mock/mock_operation.hpp"
-#include "mock/mock_shape_policy.hpp"
-#include "mock/mock_data_type_policy.hpp"
+#include "mock/mock_operation_shape_policy.hpp"
+#include "mock/mock_operation_data_type_policy.hpp"
 #include "../hardware/mock/mock_buffer_sentinel.hpp"
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_device_queue.hpp"
@@ -49,8 +49,8 @@ public:
     std::shared_ptr<mock_memory_allocator> device_allocator;
     std::shared_ptr<mock_memory_allocator> host_allocator;
     mock_operation operation;
-    mock_shape_policy shape_pol;
-    mock_data_type_policy data_type_pol;
+    mock_operation_shape_policy shape_pol;
+    mock_operation_data_type_policy data_type_pol;
     std::shared_ptr<mock_kernel> kernel;
     std::unique_ptr<execution_context> context;
     std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
@@ -63,11 +63,11 @@ public:
 		, kernel(std::make_shared<mock_kernel>())
 	{
 		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_shape_policy())
+			NAMED_ALLOW_CALL(operation, get_operation_shape_policy())
 				.LR_RETURN(std::ref(shape_pol))
 		);
 		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_data_type_policy())
+			NAMED_ALLOW_CALL(operation, get_operation_data_type_policy())
 				.LR_RETURN(std::ref(data_type_pol))
 		);
 		expectations.push_back(

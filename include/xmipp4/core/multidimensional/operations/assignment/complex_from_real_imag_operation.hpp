@@ -18,8 +18,8 @@ class XMIPP4_CORE_API complex_from_real_imag_operation final
 {
 public:
 	std::string get_name() const override;
-	const shape_policy& get_shape_policy() const noexcept override;
-	const data_type_policy& get_data_type_policy() const noexcept override;
+	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
+	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
 	std::size_t get_output_count() const noexcept override;
 	std::size_t get_input_count() const noexcept override;
 };

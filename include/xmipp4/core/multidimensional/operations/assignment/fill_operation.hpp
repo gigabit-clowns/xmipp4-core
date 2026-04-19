@@ -34,10 +34,10 @@ public:
 	std::string serialize_parameters() const override;
 
 	XMIPP4_CORE_API
-	const shape_policy& get_shape_policy() const noexcept override;
+	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
 
 	XMIPP4_CORE_API
-	const data_type_policy& get_data_type_policy() const noexcept override;
+	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
 
 	XMIPP4_CORE_API
 	std::size_t get_output_count() const noexcept override;

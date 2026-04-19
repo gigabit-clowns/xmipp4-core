@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/operations/real_arithmetic_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/real_operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4
@@ -14,7 +14,7 @@ namespace multidimensional
  * @brief Compute `clamp(x, lo, hi) = min(max(x, lo), hi)` for all elements.
  */
 class XMIPP4_CORE_API clamp_operation final
-    : public real_arithmetic_operation
+    : public real_operation
 {
 public:
     std::string get_name() const override;

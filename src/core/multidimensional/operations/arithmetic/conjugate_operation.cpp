@@ -2,8 +2,8 @@
 
 #include <xmipp4/core/multidimensional/operations/arithmetic/conjugate_operation.hpp>
 
-#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/data_type_policies/same_complex_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_data_type_policies/homogeneous_complex_operation_data_type_policy.hpp>
 
 namespace xmipp4
 {
@@ -15,14 +15,14 @@ std::string conjugate_operation::get_name() const
 	return "conjugate";
 }
 
-const shape_policy& conjugate_operation::get_shape_policy() const noexcept
+const operation_shape_policy& conjugate_operation::get_operation_shape_policy() const noexcept
 {
-	return elementwise_shape_policy::get();
+	return elementwise_operation_shape_policy::get();
 }
 
-const data_type_policy& conjugate_operation::get_data_type_policy() const noexcept
+const operation_data_type_policy& conjugate_operation::get_operation_data_type_policy() const noexcept
 {
-	return same_complex_data_type_policy::get();
+	return homogeneous_complex_operation_data_type_policy::get();
 }
 
 std::size_t conjugate_operation::get_output_count() const noexcept { return 1; }

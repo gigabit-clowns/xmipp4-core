@@ -2,8 +2,8 @@
 
 #include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
 
-#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/data_type_policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
@@ -53,14 +53,14 @@ std::string fill_operation::serialize_parameters() const
 	);
 }
 
-const shape_policy& fill_operation::get_shape_policy() const noexcept
+const operation_shape_policy& fill_operation::get_operation_shape_policy() const noexcept
 {
-	return elementwise_shape_policy::get();
+	return elementwise_operation_shape_policy::get();
 }
 
-const data_type_policy& fill_operation::get_data_type_policy() const noexcept
+const operation_data_type_policy& fill_operation::get_operation_data_type_policy() const noexcept
 {
-	return same_data_type_policy::get();
+	return homogeneous_operation_data_type_policy::get();
 }
 
 std::size_t fill_operation::get_output_count() const noexcept { return 1; }

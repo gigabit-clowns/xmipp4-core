@@ -20,13 +20,13 @@ public:
 	MAKE_CONST_MOCK0(get_output_count, std::size_t(), noexcept override);
 	MAKE_CONST_MOCK0(get_input_count, std::size_t(), noexcept override);
 	MAKE_CONST_MOCK0(
-		get_shape_policy,
-		const shape_policy&(),
+		get_operation_shape_policy,
+		const operation_shape_policy&(),
 		noexcept override
 	);
 	MAKE_CONST_MOCK0(
-		get_data_type_policy,
-		const data_type_policy&(),
+		get_operation_data_type_policy,
+		const operation_data_type_policy&(),
 		noexcept override
 	);
 };

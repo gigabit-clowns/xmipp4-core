@@ -3,8 +3,8 @@
 #pragma once
 
 #include "operation_id.hpp"
-#include "shape_policy.hpp"
-#include "data_type_policy.hpp"
+#include "operation_shape_policy.hpp"
+#include "operation_data_type_policy.hpp"
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -81,16 +81,16 @@ public:
 	/**
 	 * @brief Get the shape policy for the operation.
 	 *
-	 * @return const shape_policy& The shape policy.
+	 * @return const operation_shape_policy& The shape policy.
 	 */
-	virtual const shape_policy& get_shape_policy() const noexcept = 0;
+	virtual const operation_shape_policy& get_operation_shape_policy() const noexcept = 0;
 
 	/**
 	 * @brief Get the data type policy for the operation.
 	 *
-	 * @return const data_type_policy& The data type policy.
+	 * @return const operation_data_type_policy& The data type policy.
 	 */
-	virtual const data_type_policy& get_data_type_policy() const noexcept = 0;
+	virtual const operation_data_type_policy& get_operation_data_type_policy() const noexcept = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const operation& op);

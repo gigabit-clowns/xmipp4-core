@@ -33,8 +33,8 @@ public:
 	std::string get_name() const override;
 	std::size_t get_output_count() const noexcept override;
 	std::size_t get_input_count() const noexcept override;
-    const shape_policy& get_shape_policy() const noexcept override;
-    const data_type_policy& get_data_type_policy() const noexcept override;
+    const operation_shape_policy& get_operation_shape_policy() const noexcept override;
+    const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
 
 private:
 	fft_direction m_direction;

@@ -13,16 +13,16 @@ namespace multidimensional
 /**
  * @brief Base class for linear algebra operations.
  *
- * `data_type_policy`: `same_arithmetic_data_type_policy`
+ * `operation_data_type_policy`: `homogeneous_arithmetic_operation_data_type_policy`
  *
- * Subclasses must provide a `shape_policy` appropriate to their geometry
+ * Subclasses must provide a `operation_shape_policy` appropriate to their geometry
  * (e.g., matmul, matvec, dot, outer).
  */
 class XMIPP4_CORE_API linear_algebra_operation
     : public operation
 {
 public:
-    const data_type_policy& get_data_type_policy() const noexcept override;
+    const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
 };
 
 } // namespace multidimensional

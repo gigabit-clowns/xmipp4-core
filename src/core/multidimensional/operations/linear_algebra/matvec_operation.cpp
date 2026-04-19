@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operations/linear_algebra/matvec_operation.hpp>
 
-#include <core/multidimensional/shape_policies/matvec_shape_policy.hpp>
+#include <core/multidimensional/operation_shape_policies/matvec_operation_shape_policy.hpp>
 
 namespace xmipp4
 {
@@ -24,9 +24,9 @@ std::size_t matvec_operation::get_input_count() const noexcept
     return 2;
 }
 
-const shape_policy& matvec_operation::get_shape_policy() const noexcept
+const operation_shape_policy& matvec_operation::get_operation_shape_policy() const noexcept
 {
-    return matvec_shape_policy::get();
+    return matvec_operation_shape_policy::get();
 }
 
 } // namespace multidimensional

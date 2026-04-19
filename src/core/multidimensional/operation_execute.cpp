@@ -314,27 +314,27 @@ void execute(
 		}
 	);
 
-	const auto &shape_policy = operation.get_shape_policy();
-	const auto &data_type_policy = operation.get_data_type_policy();
+	const auto &operation_shape_policy = operation.get_operation_shape_policy();
+	const auto &operation_data_type_policy = operation.get_operation_data_type_policy();
 
 	if (outputs_initialized)
 	{
-		shape_policy.validate(
+		operation_shape_policy.validate(
 			make_span(output_layouts.data(), n_outputs),
 			make_span(input_layouts.data(), n_inputs)
 		);
-		data_type_policy.validate(
+		operation_data_type_policy.validate(
 			make_span(output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)
 		);
 	}
 	else
 	{
-		shape_policy.infer_output(
+		operation_shape_policy.infer_output(
 			make_span(output_layouts.data(), n_outputs),
 			make_span(input_layouts.data(), n_inputs)
 		);
-		data_type_policy.infer_output(
+		operation_data_type_policy.infer_output(
 			make_span(output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)
 		);

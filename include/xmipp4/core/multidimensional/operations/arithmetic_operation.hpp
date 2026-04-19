@@ -13,15 +13,15 @@ namespace multidimensional
 /**
  * @brief Base class for arithmetic operations.
  *
- * `shape_policy`: `elementwise_shape_policy`
- * `data_type_policy`: `same_arithmetic_data_type_policy`
+ * `operation_shape_policy`: `elementwise_operation_shape_policy`
+ * `operation_data_type_policy`: `homogeneous_arithmetic_operation_data_type_policy`
  */
 class XMIPP4_CORE_API arithmetic_operation
 	: public operation
 {
 public:
-	const shape_policy& get_shape_policy() const noexcept override;
-	const data_type_policy& get_data_type_policy() const noexcept override;
+	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
+	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
 };
 
 } // namespace multidimensional

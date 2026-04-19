@@ -4,8 +4,8 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
-#include <xmipp4/core/multidimensional/shape_policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/data_type_policies/same_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
@@ -45,16 +45,16 @@ TEST_CASE("serialize_parameters should return the unequal representation for une
 	CHECK( fill_operation(value31).serialize_parameters() != fill_operation(value32).serialize_parameters() );
 }
 
-TEST_CASE("get_shape_policy in fill_operation should return the elementwise_shape_policy singleton", "[fill_operation]")
+TEST_CASE("get_operation_shape_policy in fill_operation should return the elementwise_operation_shape_policy singleton", "[fill_operation]")
 {
 	std::int8_t x = 0;
 	fill_operation op(x);
-	CHECK( &op.get_shape_policy() == &elementwise_shape_policy::get() );
+	CHECK( &op.get_operation_shape_policy() == &elementwise_operation_shape_policy::get() );
 }
 
-TEST_CASE("get_data_type_policy in fill_operation should return the same_data_type_policy singleton", "[fill_operation]")
+TEST_CASE("get_operation_data_type_policy in fill_operation should return the homogeneous_operation_data_type_policy singleton", "[fill_operation]")
 {
 	std::int8_t x = 0;
 	fill_operation op(x);
-	CHECK( &op.get_data_type_policy() == &same_data_type_policy::get() );
+	CHECK( &op.get_operation_data_type_policy() == &homogeneous_operation_data_type_policy::get() );
 }

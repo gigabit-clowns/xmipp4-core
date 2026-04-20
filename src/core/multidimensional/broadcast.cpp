@@ -14,7 +14,9 @@ namespace xmipp4
 namespace multidimensional
 {
 
-static
+namespace
+{
+
 bool broadcast_extent(std::size_t &extent1, std::size_t &extent2)
 {
 	if (extent1 == extent2)
@@ -38,7 +40,6 @@ bool broadcast_extent(std::size_t &extent1, std::size_t &extent2)
 	return true;
 }
 
-static
 void pad_extents(
 	std::vector<std::size_t> &extents, 
 	std::size_t target_size
@@ -49,6 +50,26 @@ void pad_extents(
 	const auto padding = target_size - extents.size();
 	extents.insert(extents.cbegin(), padding, 1U);
 }
+
+bool is_axis_broadcast_compatible(
+	std::size_t extent1, 
+	std::size_t extent2
+) noexcept
+{
+	return extent1 == extent2 || extent1 == 1 || extent2 == 1;
+}
+
+bool is_axis_broadcastable_to(
+	std::size_t from_extent, 
+	std::size_t to_extent
+) noexcept
+{
+	return from_extent == to_extent || from_extent == 1;
+}
+
+} // anonymous namespace
+
+
 
 void broadcast_extents(
 	std::vector<std::size_t> &extents1, 
@@ -74,6 +95,58 @@ void broadcast_extents(
 			throw broadcast_error(extents1, extents2);
 		}
 	}
+}
+
+bool is_broadcast_compatible(
+	span<const std::size_t> extents1,
+	span<const std::size_t> extents2
+) noexcept
+{
+	if (extents1.size() < extents2.size())
+	{
+		std::swap(extents1, extents2);
+	}
+
+	XMIPP4_ASSERT( extents1.size() >= extents2.size() );
+	const auto padding = extents1.size() - extents2.size();
+	const auto n = extents2.size();
+	XMIPP4_ASSERT( padding + n == extents1.size() );
+
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		if (!is_axis_broadcast_compatible(extents1[padding+i], extents2[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool is_broadcastable_to(
+	span<const std::size_t> from_extents,
+	span<const std::size_t> to_extents
+) noexcept
+{
+	if (from_extents.size() > to_extents.size())
+	{
+		return false;
+	}
+
+	XMIPP4_ASSERT( to_extents.size() >= from_extents.size() );
+	const auto padding = to_extents.size() - from_extents.size();
+	const auto n = from_extents.size();
+	XMIPP4_ASSERT( padding + n == to_extents.size() );
+
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		if (!is_axis_broadcastable_to(from_extents[padding+i], to_extents[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 } // namespace multidimensional

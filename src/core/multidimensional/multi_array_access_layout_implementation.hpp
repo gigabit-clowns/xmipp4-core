@@ -39,7 +39,12 @@ public:
 	);
 
 	void add_operand(
-		stride_vector_type strides,
+		const stride_vector_type &strides,
+		std::ptrdiff_t offset
+	);
+
+	void add_operand(
+		stride_vector_type &&strides,
 		std::ptrdiff_t offset
 	);
 

@@ -90,7 +90,7 @@ TEST_CASE( "Adding a valid operand multi_array_access_layout_builder should add 
 	CHECK( impl->get_offset(0) == offset );
 }
 
-TEST_CASE( "Adding a operand with different extents in multi_array_access_layout_builder should throw", "[multi_array_access_layout_builder]" )
+TEST_CASE( "Adding an operand with non-broadcastable extents in multi_array_access_layout_builder should throw", "[multi_array_access_layout_builder]" )
 {
 	multi_array_access_layout_builder builder;
 
@@ -104,9 +104,111 @@ TEST_CASE( "Adding a operand with different extents in multi_array_access_layout
 		builder.add_operand(layout),
 		std::invalid_argument,
 		Catch::Matchers::Message(
-			"Provided layout's extents do not match the iteration extents"
+			"Unable to broadcast extent of 6 into target extent of 4."
 		)
 	);
+}
+
+TEST_CASE( "Adding an operand with a size-1 axis in multi_array_access_layout_builder should broadcast it", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(iteration_extents));
+
+	const std::vector<std::size_t> operand_extents = {20, 1, 12, 12};
+	const std::vector<std::ptrdiff_t> operand_strides = { 144, 144, 12, 1 };
+	const auto operand_layout = strided_layout::make_custom_layout(
+		xmipp4::make_span(operand_extents),
+		xmipp4::make_span(operand_strides)
+	);
+	builder.add_operand(operand_layout);
+
+	const auto *impl = builder.get_implementation();
+	REQUIRE( impl );
+	const auto result_extents = impl->get_extents();
+	REQUIRE( std::equal(iteration_extents.cbegin(), iteration_extents.cend(), result_extents.begin(), result_extents.end()) );
+	REQUIRE( impl->get_number_of_operands() == 1 );
+	const std::vector<std::ptrdiff_t> expected_strides = { 144, 0, 12, 1 };
+	const auto result_strides = impl->get_strides(0);
+	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
+}
+
+TEST_CASE( "Adding an operand with fewer dimensions in multi_array_access_layout_builder should pad with size-1 axes", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(iteration_extents));
+
+	const std::vector<std::size_t> operand_extents = {12, 12};
+	const std::vector<std::ptrdiff_t> operand_strides = { 12, 1 };
+	const auto operand_layout = strided_layout::make_custom_layout(
+		xmipp4::make_span(operand_extents),
+		xmipp4::make_span(operand_strides)
+	);
+	builder.add_operand(operand_layout);
+
+	const auto *impl = builder.get_implementation();
+	REQUIRE( impl );
+	const auto result_extents = impl->get_extents();
+	REQUIRE( std::equal(iteration_extents.cbegin(), iteration_extents.cend(), result_extents.begin(), result_extents.end()) );
+	REQUIRE( impl->get_number_of_operands() == 1 );
+	const std::vector<std::ptrdiff_t> expected_strides = { 0, 0, 12, 1 };
+	const auto result_strides = impl->get_strides(0);
+	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
+}
+
+TEST_CASE( "Adding an operand with fewer dimensions and a size-1 axis in multi_array_access_layout_builder should broadcast both", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(iteration_extents));
+
+	const std::vector<std::size_t> operand_extents = {1, 12};
+	const std::vector<std::ptrdiff_t> operand_strides = { 12, 1 };
+	const auto operand_layout = strided_layout::make_custom_layout(
+		xmipp4::make_span(operand_extents),
+		xmipp4::make_span(operand_strides)
+	);
+	builder.add_operand(operand_layout);
+
+	const auto *impl = builder.get_implementation();
+	REQUIRE( impl );
+	const auto result_extents = impl->get_extents();
+	REQUIRE( std::equal(iteration_extents.cbegin(), iteration_extents.cend(), result_extents.begin(), result_extents.end()) );
+	REQUIRE( impl->get_number_of_operands() == 1 );
+	const std::vector<std::ptrdiff_t> expected_strides = { 0, 0, 0, 1 };
+	const auto result_strides = impl->get_strides(0);
+	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
+}
+
+TEST_CASE( "Adding a broadcastable operand via strides and extents in multi_array_access_layout_builder should work", "[multi_array_access_layout_builder]" )
+{
+	multi_array_access_layout_builder builder;
+
+	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
+	builder.set_extents(xmipp4::make_span(iteration_extents));
+
+	const std::vector<std::size_t> operand_extents = {20, 1, 12, 12};
+	const std::vector<std::ptrdiff_t> operand_strides = { 144, 0, 12, 1 };
+	const std::ptrdiff_t offset = 7;
+	builder.add_operand(
+		xmipp4::make_span(operand_extents),
+		xmipp4::make_span(operand_strides),
+		offset
+	);
+
+	const auto *impl = builder.get_implementation();
+	REQUIRE( impl );
+	const auto result_extents = impl->get_extents();
+	REQUIRE( std::equal(iteration_extents.cbegin(), iteration_extents.cend(), result_extents.begin(), result_extents.end()) );
+	REQUIRE( impl->get_number_of_operands() == 1 );
+	const std::vector<std::ptrdiff_t> expected_strides = { 144, 0, 12, 1 };
+	const auto result_strides = impl->get_strides(0);
+	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
+	CHECK( impl->get_offset(0) == offset );
 }
 
 TEST_CASE("build on multi_array_access_layout_builder should move the implementation", "[multi_array_access_layout_builder]" )

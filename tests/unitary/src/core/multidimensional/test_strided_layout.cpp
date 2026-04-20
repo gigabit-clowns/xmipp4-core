@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
@@ -919,6 +920,15 @@ TEST_CASE("broadcast_to in strided_layout should throw if an axis is not broadca
 		std::invalid_argument,
 		Catch::Matchers::Message("Cannot broadcast axis of extent 56 into an extent of 55.")
 	);
+}
+
+TEST_CASE("make_scalar in strided_layout should produce an strided layout with no axes")
+{
+	const std::ptrdiff_t offset = GENERATE(0, 10, -1);
+
+	const auto layout = strided_layout::make_scalar(offset);
+	CHECK( layout.get_offset() == offset );
+	CHECK( layout.get_rank() == 0 );
 }
 
 TEST_CASE("value returned specialization of std::hash<strided_layout> should be the one returned by strided_layout::hash", "[strided_layout]")

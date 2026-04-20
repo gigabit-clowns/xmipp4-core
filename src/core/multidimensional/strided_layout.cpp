@@ -233,6 +233,16 @@ strided_layout strided_layout::make_custom_layout(
 	);
 }
 
+strided_layout strided_layout::make_scalar(std::ptrdiff_t offset)
+{
+	if (!offset)
+	{
+		return strided_layout();
+	}
+
+	return strided_layout(strided_layout_implementation({}, offset));
+}
+
 bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept
 {
 	return lhs.get_implementation() == rhs.get_implementation();

@@ -226,6 +226,10 @@ public:
 		std::ptrdiff_t offset = 0
 	);
 
+	XMIPP4_CORE_API
+	static
+	strided_layout make_scalar(std::ptrdiff_t offset = 0);
+
 private:
 	// Copy-on-write implementation
 	std::shared_ptr<const strided_layout_implementation> m_implementation; 

@@ -32,5 +32,33 @@ void broadcast_extents(
 	std::vector<std::size_t> &extents2
 );  
 
+/**
+ * @brief Check if two extents can be broadcasted together.
+ * 
+ * @param extents1 The first set of extents.
+ * @param extents2 The second set of extents.
+ * @return true If both shapes are compatible. 
+ * @return false If both shapes are not compatible. 
+ */
+XMIPP4_CORE_API
+bool is_broadcast_compatible(
+	span<const std::size_t> extents1,
+	span<const std::size_t> extents2
+) noexcept;
+
+/**
+ * @brief Check if a set of extents can be broadcasted into another.
+ * 
+ * @param from_extents The extents to be broadcasted.
+ * @param to_extents The target set of extents.
+ * @return true If both shapes are compatible. 
+ * @return false If both shapes are not compatible. 
+ */
+XMIPP4_CORE_API
+bool is_broadcastable_to(
+	span<const std::size_t> from_extents,
+	span<const std::size_t> to_extents
+) noexcept;
+
 } // namespace multidimensional
 } // namespace xmipp4

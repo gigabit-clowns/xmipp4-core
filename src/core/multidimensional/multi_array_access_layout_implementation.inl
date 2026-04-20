@@ -29,7 +29,20 @@ multi_array_access_layout_implementation(const extent_vector_type &extents)
 
 inline
 void multi_array_access_layout_implementation::add_operand(
-	stride_vector_type strides,
+	const stride_vector_type &strides,
+	std::ptrdiff_t offset
+)
+{
+	XMIPP4_ASSERT( m_extents.size() == strides.size() );
+	m_operands.emplace_back(
+		strides,
+		offset
+	);
+}
+
+inline
+void multi_array_access_layout_implementation::add_operand(
+	stride_vector_type &&strides,
 	std::ptrdiff_t offset
 )
 {

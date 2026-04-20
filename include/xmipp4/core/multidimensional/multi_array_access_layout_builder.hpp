@@ -67,7 +67,7 @@ public:
 	 * set the extents of the operand as the extents of the iteration space.
 	 * 
 	 * When the iteration space extents are defined, the provided layout must
-	 * have the same extents.
+	 * be broadcastable to these extents.
 	 *  
 	 * @param layout Layout of the operand.
 	 * @return multi_array_access_layout_builder& A reference to *this.
@@ -75,6 +75,28 @@ public:
 	XMIPP4_CORE_API
 	multi_array_access_layout_builder& 
 	add_operand(const strided_layout &layout);
+
+	/**
+	 * @brief Add an operand to the layout.
+	 *
+	 * If set_extents has not been called, the first call to this method will
+	 * set the extents of the operand as the extents of the iteration space.
+	 * 
+	 * When the iteration space extents are defined, the provided layout must
+	 * be broadcastable to these extents.
+	 * 
+	 * @param extents The extents of the operand.
+	 * @param strides The strides of the operand
+	 * @param offset The offset of the operand.
+	 * @return multi_array_access_layout_builder& A reference to *this.
+	 */
+	XMIPP4_CORE_API
+	multi_array_access_layout_builder& 
+	add_operand(
+		span<const std::size_t> extents,
+		span<const std::ptrdiff_t> strides,
+		std::ptrdiff_t offset
+	);
 
 	/**
 	 * @brief Build the array_access_layout from the operands contained in 

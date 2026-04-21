@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "multi_array_access_layout_build_flags.hpp"
+#include "../platform/enum_helpers.hpp"
 
 namespace xmipp4 
 {
@@ -12,10 +13,10 @@ const char* to_string(multi_array_access_layout_build_flag_bits x) noexcept
 {
 	switch (x)
 	{
-	case multi_array_access_layout_build_flag_bits::enable_reordering:     
-		return "enable_reordering";
-	case multi_array_access_layout_build_flag_bits::enable_coalescing:
-		return "enable_coalescing";
+	XMIPP4_ENUM_TO_STR_CASE(
+		multi_array_access_layout_build_flag_bits, enable_reordering)
+	XMIPP4_ENUM_TO_STR_CASE(
+		multi_array_access_layout_build_flag_bits, enable_coalescing)
 	default: return "";
 	}
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "access_flags.hpp"
+#include "platform/enum_helpers.hpp"
 
 namespace xmipp4 
 {
@@ -10,8 +11,8 @@ to_string(access_flag_bits v) noexcept
 {
 	switch (v)
 	{
-	case access_flag_bits::read:    return "read";
-	case access_flag_bits::write:   return "write";
+	XMIPP4_ENUM_TO_STR_CASE(access_flag_bits, read)
+	XMIPP4_ENUM_TO_STR_CASE(access_flag_bits, write)
 	default: return "";
 	}
 }

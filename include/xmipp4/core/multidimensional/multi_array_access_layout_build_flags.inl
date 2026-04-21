@@ -14,9 +14,13 @@ const char* to_string(multi_array_access_layout_build_flag_bits x) noexcept
 	switch (x)
 	{
 	XMIPP4_ENUM_TO_STR_CASE(
-		multi_array_access_layout_build_flag_bits, enable_reordering)
+		multi_array_access_layout_build_flag_bits, 
+		enable_reordering
+	)
 	XMIPP4_ENUM_TO_STR_CASE(
-		multi_array_access_layout_build_flag_bits, enable_coalescing)
+		multi_array_access_layout_build_flag_bits, 
+		enable_coalescing
+	)
 	default: return "";
 	}
 }

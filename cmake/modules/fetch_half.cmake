@@ -24,29 +24,10 @@ function(fetch_half)
 	set(half_INCLUDE_DIR ${half_SOURCE_DIR}/include)
 
 	# Define the target
-	set(HALF_TARGET "half")
-	add_library(${HALF_TARGET} INTERFACE)
+	add_library(half INTERFACE)
 	target_include_directories(
-		${HALF_TARGET}
+		half
 		INTERFACE
-			$<BUILD_INTERFACE:${half_INCLUDE_DIR}>
-			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+			${half_INCLUDE_DIR}
 	)
-
-	# Define install command
-	install(
-		FILES ${half_INCLUDE_DIR}/half.hpp 
-		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-	)
-	install(
-		TARGETS ${HALF_TARGET}
-		EXPORT ${HALF_TARGET}-targets
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${HALF_TARGET}
-	)
-	install(
-		EXPORT ${HALF_TARGET}-targets
-		FILE ${HALF_TARGET}-config.cmake
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${HALF_TARGET}
-	)
-
 endfunction()

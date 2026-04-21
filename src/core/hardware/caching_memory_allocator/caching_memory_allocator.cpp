@@ -4,8 +4,9 @@
 
 #include "caching_buffer_sentinel.hpp"
 
-#include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
+
+#include <core/logger.hpp>
 
 namespace xmipp4
 {

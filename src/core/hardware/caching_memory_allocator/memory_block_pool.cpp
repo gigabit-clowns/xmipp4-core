@@ -5,7 +5,8 @@
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/hardware/memory_heap.hpp>
 #include <xmipp4/core/platform/assert.hpp>
-#include <xmipp4/core/logger.hpp>
+
+#include <core/logger.hpp>
 
 #include <tuple>
 

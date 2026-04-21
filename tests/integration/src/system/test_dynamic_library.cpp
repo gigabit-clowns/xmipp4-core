@@ -39,5 +39,6 @@ TEST_CASE( "recover shared library path from symbol", "[dynamic_library]" )
 
 	// The last part of the path should coincide even if the returned
 	// path is absolute
-	REQUIRE( path2.ends_with(path) );
+	REQUIRE( path2.size() >= path.size() );
+	CHECK( path2.compare(path2.size() - path.size(), path.size(), path) == 0 );
 }

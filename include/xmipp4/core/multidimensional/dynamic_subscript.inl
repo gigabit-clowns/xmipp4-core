@@ -13,13 +13,15 @@ namespace multidimensional
 
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(ellipsis_tag) noexcept
-	: m_type(subscript_type::ellipsis)
+	: m_data{}
+	, m_type(subscript_type::ellipsis)
 {
 }
 
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(new_axis_tag) noexcept
-	: m_type(subscript_type::new_axis)
+	: m_data{}
+	, m_type(subscript_type::new_axis)
 {
 }
 

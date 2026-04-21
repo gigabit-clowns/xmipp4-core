@@ -21,8 +21,6 @@ source:
 
 build:
   number: 0
-  script_env:
-    - XMIPP4_CORE_BUILD_SPDLOG=OFF
   script:
     # Make sure an existing Visual Studio installation is being used 
     - "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%RECIPE_DIR%\\visual-studio-name-detector.ps1\" > generator.txt"  # [win]
@@ -33,7 +31,6 @@ build:
 
 requirements:
   run:
-    - spdlog
 
   build:
     - python                                 # [build_platform != target_platform]
@@ -42,7 +39,6 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake>=3.16
     - make # [unix]
-    - spdlog
 
   host:
     - python

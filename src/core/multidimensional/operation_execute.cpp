@@ -2,7 +2,6 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 
-#include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
@@ -17,7 +16,8 @@
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
-#include "../config.hpp"
+#include <core/logger.hpp>
+#include <core/config.hpp>
 
 #include <algorithm>
 #include <sstream>

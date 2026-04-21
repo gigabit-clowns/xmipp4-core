@@ -2,6 +2,7 @@
 
 #include <xmipp4/core/numerical_type.hpp>
 
+#include <xmipp4/core/platform/enum_helpers.hpp>
 #include <xmipp4/core/fixed_float.hpp>
 
 #include "numerical_type_promotion_lattice.hpp"
@@ -221,22 +222,22 @@ const char* to_string(numerical_type type) noexcept
 {
 	switch (type)
 	{
-	case numerical_type::boolean: return "boolean";
-	case numerical_type::char8: return "char8";
-	case numerical_type::int8: return "int8";
-	case numerical_type::uint8: return "uint8";
-	case numerical_type::int16: return "int16";
-	case numerical_type::uint16: return "uint16";
-	case numerical_type::int32: return "int32";
-	case numerical_type::uint32: return "uint32";
-	case numerical_type::int64: return "int64";
-	case numerical_type::uint64: return "uint64";
-	case numerical_type::float16: return "float16";
-	case numerical_type::float32: return "float32";
-	case numerical_type::float64: return "float64";
-	case numerical_type::complex_float16: return "complex_float16";
-	case numerical_type::complex_float32: return "complex_float32";
-	case numerical_type::complex_float64: return "complex_float64";
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, boolean)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, char8)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, int8)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, uint8)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, int16)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, uint16)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, int32)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, uint32)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, int64)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, uint64)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, float16)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, float32)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, float64)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, complex_float16)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, complex_float32)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type, complex_float64)
 	default: return "";
 	}
 }
@@ -245,12 +246,12 @@ const char* to_string(numerical_type_category category) noexcept
 {
 	switch (category)
 	{
-	case numerical_type_category::boolean: return "boolean";
-	case numerical_type_category::character: return "character";
-	case numerical_type_category::signed_integer: return "signed_integer";
-	case numerical_type_category::unsigned_integer: return "unsigned_integer";
-	case numerical_type_category::floating_point: return "floating_point";
-	case numerical_type_category::complex: return "complex";
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, boolean)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, character)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, signed_integer)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, unsigned_integer)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, floating_point)
+	XMIPP4_ENUM_TO_STR_CASE(numerical_type_category, complex)
 	default: return "";
 	}
 }

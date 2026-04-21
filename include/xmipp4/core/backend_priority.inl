@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "backend_priority.hpp"
+#include "platform/enum_helpers.hpp"
 
 namespace xmipp4 
 {
@@ -36,10 +37,10 @@ const char* to_string(backend_priority priority) noexcept
 {
 	switch (priority)
 	{
-	case backend_priority::unsupported: return "unsupported";
-	case backend_priority::fallback: return "fallback";
-	case backend_priority::normal: return "normal";
-	case backend_priority::optimal: return "optimal";
+	XMIPP4_ENUM_TO_STR_CASE(backend_priority, unsupported)
+	XMIPP4_ENUM_TO_STR_CASE(backend_priority, fallback)
+	XMIPP4_ENUM_TO_STR_CASE(backend_priority, normal)
+	XMIPP4_ENUM_TO_STR_CASE(backend_priority, optimal)
 	default: return "";
 	}
 }

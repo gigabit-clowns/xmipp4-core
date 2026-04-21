@@ -42,12 +42,6 @@ if (XMIPP4_CORE_BUILD_HALF)
 	fetch_half(VERSION 2.2.1)
 else()
 	find_package(half 2 REQUIRED)
-	install(
-		FILES 
-			${PROJECT_SOURCE_DIR}/cmake/modules/Findhalf.cmake
-		DESTINATION 
-			${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core/modules
-	)
 endif()
 
 if(WIN32)

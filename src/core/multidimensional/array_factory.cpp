@@ -12,7 +12,8 @@
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/execution_context.hpp>
-#include <xmipp4/core/logger.hpp>
+
+#include <core/logger.hpp>
 
 namespace xmipp4 
 {

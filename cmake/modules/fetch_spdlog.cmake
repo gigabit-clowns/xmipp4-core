@@ -10,8 +10,9 @@ function(fetch_spdlog)
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
     )
 
-    set(SPDLOG_INSTALL ON)
-	set(SPDLOG_BUILD_SHARED ON)
+    set(SPDLOG_INSTALL OFF)
+	set(SPDLOG_BUILD_SHARED OFF)
+	set(SPDLOG_BUILD_PIC ON)
 	cmake_policy(SET CMP0135 NEW) # To avoid warnings
 	FetchContent_Declare(
 		spdlog

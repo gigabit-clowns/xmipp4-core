@@ -52,4 +52,5 @@ requirements:
   host:
     - python
     - pip
+    - libcxx
     - scikit-build-core>=0.10

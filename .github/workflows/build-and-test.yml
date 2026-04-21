@@ -129,7 +129,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        #- macos-latest # FIXME
+        - macos-latest
         - windows-latest
 
     runs-on: ${{ matrix.os }}

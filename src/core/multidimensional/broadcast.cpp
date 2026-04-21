@@ -140,7 +140,7 @@ bool is_broadcastable_to(
 
 	for (std::size_t i = 0; i < n; ++i)
 	{
-		if (!is_axis_broadcastable_to(from_extents[padding+i], to_extents[i]))
+		if (!is_axis_broadcastable_to(from_extents[i], to_extents[padding+i]))
 		{
 			return false;
 		}

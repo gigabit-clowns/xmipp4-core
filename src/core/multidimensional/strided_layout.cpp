@@ -153,14 +153,21 @@ strided_layout strided_layout::pop_axes(span<const std::size_t> indices) const
 
 XMIPP4_NODISCARD
 strided_layout 
-strided_layout::broadcast_to(span<const std::size_t> extents) const
+strided_layout::broadcast_to(span<const std::size_t> target) const
 {
-	if (extents_equal(extents))
+	if (extents_equal(target))
 	{
 		return *this; // Re-use
 	}
 
-	return strided_layout(get_implementation().broadcast_to(extents));
+	return strided_layout(get_implementation().broadcast_to(target));
+}
+
+bool strided_layout::is_broadcastable_to(
+	span<const std::size_t> target
+) const noexcept
+{
+	return get_implementation().is_broadcastable_to(target);
 }
 
 const strided_layout_implementation&

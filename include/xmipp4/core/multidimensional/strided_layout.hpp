@@ -187,7 +187,7 @@ public:
 	 * This function modifies the layout to match the provided extents by 
 	 * adding phantom axes or adjusting existing axes.
 	 * 
-	 * @param extents Extents to broadcast to.
+	 * @param target Extents to broadcast to.
 	 * untouched. Must be greater or equal to rank. Defaults to zero.
 	 * @return strided_layout The resulting broadcasted layout.
 	 * @throws std::invalid_argument If the layout has more axes than extents.
@@ -195,7 +195,17 @@ public:
 	 * provided extents.
 	 */
 	XMIPP4_NODISCARD XMIPP4_CORE_API
-	strided_layout broadcast_to(span<const std::size_t> extents) const;
+	strided_layout broadcast_to(span<const std::size_t> target) const;
+	
+	/**
+	 * @brief Check if the layout is broadcastable to a target shape.
+	 * 
+	 * @param target The target extents.
+	 * @return true This layout is broadcastable to the target extents.
+	 * @return false This layout is not broadcastable to the target extents.
+	 */
+	XMIPP4_CORE_API
+	bool is_broadcastable_to(span<const std::size_t> target) const noexcept;
 
 	/**
 	 * @brief Get the implementation of this layout.

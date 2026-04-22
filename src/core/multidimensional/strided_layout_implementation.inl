@@ -590,22 +590,22 @@ strided_layout_implementation strided_layout_implementation::pop_axes(
 
 inline
 strided_layout_implementation strided_layout_implementation::broadcast_to(
-	span<const std::size_t> extents
+	span<const std::size_t> target
 ) const
 {
-	if (m_axes.size() > extents.size())
+	if (m_axes.size() > target.size())
 	{
 		std::ostringstream oss;
 		oss << "Cannot broadcast layout with " << m_axes.size()
-			<< " axes into a shape of " << extents.size()
+			<< " axes into a shape of " << target.size()
 			<< " dimensions.";
 		throw std::invalid_argument(oss.str());
 	}
 
 	strided_axis_vector_type axes;
-	axes.reserve(extents.size());
+	axes.reserve(target.size());
 	
-	const std::size_t padding = extents.size() - m_axes.size();
+	const std::size_t padding = target.size() - m_axes.size();
 	std::fill_n(
 		std::back_inserter(axes), padding,
 		make_phantom_axis()
@@ -615,11 +615,11 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 		std::back_inserter(axes)
 	);
 
-	const auto count = extents.size();
+	const auto count = target.size();
 	for(std::size_t i = 0; i < count; ++i)
 	{
 		auto &axis = axes[i];
-		const auto extent = extents[i];
+		const auto extent = target[i];
 		if (!multidimensional::broadcast_to(axis, extent))
 		{
 			std::ostringstream oss;
@@ -630,6 +630,33 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 	}
 
 	return strided_layout_implementation(std::move(axes), m_offset);
+}
+
+inline
+bool strided_layout_implementation::is_broadcastable_to(
+	span<const std::size_t> target
+) const noexcept
+{
+	const auto n = m_axes.size();
+	const auto m = target.size();
+	if (n > m)
+	{
+		return false;
+	}
+
+	XMIPP4_ASSERT( m >= n );
+	const auto padding = m - n;
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		const auto from_extent = m_axes[i].get_extent();
+		const auto to_extent = target[padding + i];
+		if (from_extent != to_extent && from_extent != 1)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 } // namespace multidimensional

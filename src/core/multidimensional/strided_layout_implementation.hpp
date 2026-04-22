@@ -74,9 +74,12 @@ public:
 	) const;
 
 	strided_layout_implementation broadcast_to(
-		span<const std::size_t> extents
+		span<const std::size_t> target
 	) const;
 
+	bool is_broadcastable_to(
+		span<const std::size_t> target
+	) const noexcept;
 
 private:
 	strided_axis_vector_type m_axes;

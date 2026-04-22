@@ -965,7 +965,7 @@ TEST_CASE("hash of a strided_layout should change when adding a phantom axis", "
 }
 
 TEST_CASE("hash of a strided_layout should change when changing the offset", "[strided_layout]")
-{	
+{
 
 	const std::vector<std::size_t> extents = {8, 10, 1, 24, 56, 120};
 	const std::vector<std::ptrdiff_t> strides = {2, 16, 160, 320, 7680, 860160};
@@ -980,4 +980,66 @@ TEST_CASE("hash of a strided_layout should change when changing the offset", "[s
 		2
 	);
 	CHECK(layout1.hash() != layout2.hash());
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return true for identical shape", "[strided_layout]")
+{
+	const auto layout = make_test_layout();
+	const std::vector<std::size_t> target = {120, 56, 24, 1, 10, 8};
+	CHECK( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return true when broadcasting size-1 axis", "[strided_layout]")
+{
+	// Axis 3 has extent 1, so it can broadcast to any size.
+	const auto layout = make_test_layout();
+	const std::vector<std::size_t> target = {120, 56, 24, 7, 10, 8};
+	CHECK( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return true when target has more axes (right-alignment)", "[strided_layout]")
+{
+	// Source has fewer axes; they align to the right.
+	const std::array<std::size_t, 3> extents = {24, 1, 8};
+	const std::array<std::ptrdiff_t, 3> strides = {320, 160, 2};
+	const auto layout = make_custom_layout(extents, strides, 0);
+	const std::vector<std::size_t> target = {120, 56, 24, 5, 8};
+	CHECK( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return true for a scalar layout", "[strided_layout]")
+{
+	const auto layout = strided_layout::make_scalar(0);
+	const std::vector<std::size_t> target = {120, 56, 24};
+	CHECK( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return true when target shape is identical to a scalar layout", "[strided_layout]")
+{
+	const auto layout = strided_layout::make_scalar(0);
+	const std::vector<std::size_t> target = {};
+	CHECK( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return false when source has more axes than target", "[strided_layout]")
+{
+	const auto layout = make_test_layout(); // 6 axes
+	const std::vector<std::size_t> target = {24, 1, 10, 8}; // only 4 axes
+	CHECK_FALSE( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return false when a non-1 axis does not match target", "[strided_layout]")
+{
+	const auto layout = make_test_layout(); // axis 0 has extent 120
+	const std::vector<std::size_t> target = {100, 56, 24, 1, 10, 8};
+	CHECK_FALSE( layout.is_broadcastable_to(xmipp4::make_span(target)) );
+}
+
+TEST_CASE("is_broadcastable_to in strided_layout should return false when a non-1 axis in suffix does not match", "[strided_layout]")
+{
+	const std::array<std::size_t, 3> extents = {24, 1, 8};
+	const std::array<std::ptrdiff_t, 3> strides = {320, 160, 2};
+	const auto layout = make_custom_layout(extents, strides, 0);
+	const std::vector<std::size_t> target = {120, 56, 24, 5, 9}; // last axis 8 vs 9
+	CHECK_FALSE( layout.is_broadcastable_to(xmipp4::make_span(target)) );
 }

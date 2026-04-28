@@ -2,7 +2,6 @@
 
 #include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/broadcast.hpp>
 
 namespace xmipp4
@@ -10,94 +9,82 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void elementwise_operation_shape_policy::infer_output(
-	span<strided_layout> output_layouts,
-	span<strided_layout> input_layouts
+void elementwise_operation_shape_policy::deduce_output(
+	span<shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-	if (input_layouts.empty())
+	if (input_shapes.empty())
 	{
 		throw std::invalid_argument(
-			"elementwise_operation_shape_policy::infer_output requires at least one input"
+			"elementwise_operation_shape_policy requires at least one input "
+			"when deducing outputs."
 		);
 	}
 
-	std::vector<std::size_t> broadcasted_extents;
-	input_layouts[0].get_extents(broadcasted_extents);
-
-	std::vector<std::size_t> extents;
-	for (std::size_t i = 1; i < input_layouts.size(); ++i)
+	shape_type canonical_shape = input_shapes[0];
+	for (std::size_t i = 1; i < input_shapes.size(); ++i)
 	{
-		input_layouts[i].get_extents(extents);
-		broadcast_extents(broadcasted_extents, extents);
+		broadcast_extents_accumulate(
+			canonical_shape, 
+			make_span(input_shapes[i])
+		);
 	}
 
 	std::fill(
-		output_layouts.begin(),
-		output_layouts.end(),
-		strided_layout::make_contiguous_layout(make_span(broadcasted_extents))
+		output_shapes.begin(),
+		output_shapes.end(),
+		std::move(canonical_shape)
 	);
-
-	for (auto &layout : input_layouts)
-	{
-		layout = layout.broadcast_to(make_span(broadcasted_extents));
-	}
 }
 
 void elementwise_operation_shape_policy::validate(
-	span<const strided_layout> output_layouts,
-	span<strided_layout> input_layouts
+	span<const shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-	if (output_layouts.empty())
+	if (output_shapes.empty())
 	{
 		throw std::invalid_argument(
-			"elementwise_operation_shape_policy::validate requires at least one output"
+			"elementwise_operation_shape_policy requires at least one output."
 		);
 	}
 
-	std::vector<std::size_t> output_extents;
-	output_layouts[0].get_extents(output_extents);
-	for (std::size_t i = 1; i < output_layouts.size(); ++i)
+	const auto &reference_shape = output_shapes[0];
+	for (std::size_t i = 1; i < output_shapes.size(); ++i)
 	{
-		if(!output_layouts[i].extents_equal(make_span(output_extents)))
+		if(output_shapes[i] != reference_shape)
 		{
 			throw std::invalid_argument(
-				"multi-output elementwise_operation_shape_policy::validate requires all "
-				"outputs to have the same extents."
+				"elementwise_operation_shape_policy requires all outputs to "
+				"have the same shape."
 			);
 		}
 	}
 
-	for (auto &layout : input_layouts)
+	for (const auto &input_shape : input_shapes)
 	{
-		layout = layout.broadcast_to(make_span(output_extents));
-	}
+		const auto valid = is_broadcastable_to(
+			make_span(input_shape), 
+			make_span(reference_shape)
+		);
 
-	std::vector<std::ptrdiff_t> strides;
-	for (const auto &layout : output_layouts)
-	{
-		layout.get_strides(strides);
-		XMIPP4_ASSERT( strides.size() == output_extents.size() );
-		for (std::size_t i = 0; i < output_extents.size(); ++i)
+		if(!valid)
 		{
-			if (output_extents[i] > 1 && strides[i] == 0)
-			{
-				throw std::invalid_argument(
-					"elementwise_operation_shape_policy::validate does not allow "
-					"broadcasted output operands."
-				);
-			}
+			throw std::invalid_argument(
+				"elementwise_operation_shape_policy requires all inputs to be "
+				"broadcastable to the output shape."
+			);
 		}
 	}
 }
 
-const elementwise_operation_shape_policy& elementwise_operation_shape_policy::get() noexcept
+const elementwise_operation_shape_policy& 
+elementwise_operation_shape_policy::get() noexcept
 {
 	static const elementwise_operation_shape_policy instance;
 	return instance;
 }
-
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -2,104 +2,46 @@
 
 #include "dot_operation_shape_policy.hpp"
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include "operation_shape_policy_helpers.hpp"
 
 #include <stdexcept>
-#include <algorithm>
 
 namespace xmipp4
 {
 namespace multidimensional
 {
 
-void dot_operation_shape_policy::infer_output(
-    span<strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+void dot_operation_shape_policy::deduce_output(
+	span<shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::infer_output: expected exactly 2 inputs."
-        );
-    }
-
-    std::vector<std::size_t> extents0, extents1;
-    input_layouts[0].get_extents(extents0);
-    input_layouts[1].get_extents(extents1);
-
-    if (extents0.size() != 1)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::infer_output: input[0] must be 1D."
-        );
-    }
-    if (extents1.size() != 1)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::infer_output: input[1] must be 1D."
-        );
-    }
-    if (extents0[0] != extents1[0])
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::infer_output: input lengths do not match."
-        );
-    }
-
-    const std::vector<std::size_t> scalar_extents;
-    const auto scalar_layout =
-        strided_layout::make_contiguous_layout(make_span(scalar_extents));
-    std::fill(output_layouts.begin(), output_layouts.end(), scalar_layout);
+	XMIPP4_ASSERT(output_shapes.size() == 1);
+	output_shapes[0] = {};
 }
 
 void dot_operation_shape_policy::validate(
-    span<const strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+	span<const shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (output_layouts.empty())
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: expected at least 1 output."
-        );
-    }
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: expected exactly 2 inputs."
-        );
-    }
+	XMIPP4_ASSERT(output_shapes.size() == 1);
+	XMIPP4_ASSERT(input_shapes.size() == 2);
 
-    std::vector<std::size_t> out_extents, extents0, extents1;
-    output_layouts[0].get_extents(out_extents);
-    input_layouts[0].get_extents(extents0);
-    input_layouts[1].get_extents(extents1);
+	if (output_shapes[0].size() != 0)
+	{
+		throw std::invalid_argument(
+			"dot_operation_shape_policy expected scalar output."
+		);
+	}
 
-    if (!out_extents.empty())
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: output must be a scalar (rank 0)."
-        );
-    }
-    if (extents0.size() != 1)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: input[0] must be 1D."
-        );
-    }
-    if (extents1.size() != 1)
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: input[1] must be 1D."
-        );
-    }
-    if (extents0[0] != extents1[0])
-    {
-        throw std::invalid_argument(
-            "dot_operation_shape_policy::validate: input lengths do not match."
-        );
-    }
+	require_1d(input_shapes[0], "dot_operation_shape_policy", "input");
+	if ( input_shapes[0] != input_shapes[1] )
+	{
+		throw std::invalid_argument(
+			"dot_operation_shape_policy expected operands with equal lengths."
+		);
+	}
 }
 
 const dot_operation_shape_policy& dot_operation_shape_policy::get() noexcept

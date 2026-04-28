@@ -18,18 +18,18 @@ class mock_operation_shape_policy
 {
 public:
 	MAKE_CONST_MOCK2(
-		infer_output, 
+		deduce_output, 
 		void(
-			span<strided_layout> output_layouts,
-			span<strided_layout> input_layouts
+			span<strided_layout> output_shapes,
+			span<const strided_layout> input_shapes
 		),
 		override
 	);
 	MAKE_CONST_MOCK2(
 		validate, 
 		void(
-			span<const strided_layout> output_layouts,
-			span<strided_layout> input_layouts
+			span<const strided_layout> output_shapes,
+			span<const strided_layout> input_shapes
 		),
 		override
 	);

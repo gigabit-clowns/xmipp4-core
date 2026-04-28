@@ -12,27 +12,19 @@ namespace multidimensional
 
 /**
  * @brief Shape policy to ensure that all operands have the same shape.
- * 
- * After validation/inference all operators will have tha same shape through
- * broadcasting. 
- * 
- * `infer_output` Requires all inputs to have the same shape and assigns 
- * this shape to the output.
- * 
- * `validate` Ensures that all outputs and inputs have the same shape.
  */
 class XMIPP4_CORE_API homogeneous_operation_shape_policy final
 	: public operation_shape_policy
 {
 public:
-	void infer_output(
-		span<strided_layout> output_layouts,
-		span<strided_layout> input_layouts
+	void deduce_output(
+		span<shape_type> output_shapes,
+		span<const shape_type> input_shapes
 	) const override;
 
 	void validate(
-		span<const strided_layout> output_layouts,
-		span<strided_layout> input_layouts
+		span<const shape_type> output_shapes,
+		span<const shape_type> input_shapes
 	) const override;
 
 	static const homogeneous_operation_shape_policy& get() noexcept;

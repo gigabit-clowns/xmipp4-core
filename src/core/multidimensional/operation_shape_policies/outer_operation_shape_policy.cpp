@@ -2,106 +2,87 @@
 
 #include "outer_operation_shape_policy.hpp"
 
+#include "operation_shape_policy_helpers.hpp"
+
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
 #include <stdexcept>
-#include <algorithm>
+#include <array>
 
 namespace xmipp4
 {
 namespace multidimensional
 {
 
-void outer_operation_shape_policy::infer_output(
-    span<strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+void outer_operation_shape_policy::deduce_output(
+	span<shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::infer_output: expected exactly 2 inputs."
-        );
-    }
+	XMIPP4_ASSERT( output_shapes.size() == 1 );
+	XMIPP4_ASSERT( input_shapes.size() == 2 );
 
-    std::vector<std::size_t> extents0, extents1;
-    input_layouts[0].get_extents(extents0);
-    input_layouts[1].get_extents(extents1);
+	const auto &first_input_shape = input_shapes[0];
+	require_1d(
+		first_input_shape, 
+		"outer_operation_shape_policy", 
+		"first input"
+	);
+	const auto n = first_input_shape[0];
 
-    if (extents0.size() != 1)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::infer_output: input[0] must be 1D."
-        );
-    }
-    if (extents1.size() != 1)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::infer_output: input[1] must be 1D."
-        );
-    }
+	const auto &second_input_shape = input_shapes[1];
+	require_1d(
+		second_input_shape, 
+		"outer_operation_shape_policy", 
+		"second input"
+	);
+	const auto m = second_input_shape[0];
 
-    const std::vector<std::size_t> out_extents = { extents0[0], extents1[0] };
-    const auto out_layout =
-        strided_layout::make_contiguous_layout(make_span(out_extents));
-    std::fill(output_layouts.begin(), output_layouts.end(), out_layout);
+	output_shapes[0] = { n, m };
 }
 
 void outer_operation_shape_policy::validate(
-    span<const strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+	span<const shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (output_layouts.empty())
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: expected at least 1 output."
-        );
-    }
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: expected exactly 2 inputs."
-        );
-    }
+	XMIPP4_ASSERT(output_shapes.size() == 1);
+	XMIPP4_ASSERT(input_shapes.size() == 2);
 
-    std::vector<std::size_t> out_extents, extents0, extents1;
-    output_layouts[0].get_extents(out_extents);
-    input_layouts[0].get_extents(extents0);
-    input_layouts[1].get_extents(extents1);
+	const auto &output_shape = output_shapes[0];
+	require_2d(output_shape, "outer_operation_shape_policy", "output");
+	const auto n = output_shape[0];
+	const auto m = output_shape[1];
 
-    if (out_extents.size() != 2)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: output must be 2D."
-        );
-    }
-    if (extents0.size() != 1)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: input[0] must be 1D."
-        );
-    }
-    if (extents1.size() != 1)
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: input[1] must be 1D."
-        );
-    }
-    if (extents0[0] != out_extents[0])
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: input[0] length does not match "
-            "output row count."
-        );
-    }
-    if (extents1[0] != out_extents[1])
-    {
-        throw std::invalid_argument(
-            "outer_operation_shape_policy::validate: input[1] length does not match "
-            "output column count."
-        );
-    }
+	const auto &first_input_shape = input_shapes[0];
+	require_1d(
+		first_input_shape, 
+		"outer_operation_shape_policy", 
+		"first input"
+	);
+	const auto n1 = first_input_shape[0];
+	if (n1 != n)
+	{
+		throw std::invalid_argument(
+			"outer_operation_shape_policy requires first operand's length and "
+			"output's row count to be equal."
+		);
+	}
+
+	const auto &second_input_shape = input_shapes[0];
+	require_1d(
+		second_input_shape, 
+		"outer_operation_shape_policy", 
+		"second input"
+	);
+	const auto m2 = second_input_shape[0];
+	if (m2 != m)
+	{
+		throw std::invalid_argument(
+			"outer_operation_shape_policy requires second operand's length and "
+			"output's column count to be equal."
+		);
+	}
 }
 
 const outer_operation_shape_policy& outer_operation_shape_policy::get() noexcept

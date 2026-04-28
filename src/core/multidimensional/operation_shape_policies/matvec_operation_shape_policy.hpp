@@ -16,22 +16,20 @@ namespace multidimensional
  * input[0]: (m, n) - 2D matrix
  * input[1]: (n,)   - 1D vector
  * output:   (m,)   - 1D result vector
- *
- * Both input ranks are strictly enforced (2 and 1 respectively).
  */
 class XMIPP4_CORE_API matvec_operation_shape_policy final
     : public operation_shape_policy
 {
 public:
-    void infer_output(
-        span<strided_layout> output_layouts,
-        span<strided_layout> input_layouts
-    ) const override;
+	void deduce_output(
+		span<shape_type> output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
 
-    void validate(
-        span<const strided_layout> output_layouts,
-        span<strided_layout> input_layouts
-    ) const override;
+	void validate(
+		span<const shape_type> output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
 
     static const matvec_operation_shape_policy& get() noexcept;
 };

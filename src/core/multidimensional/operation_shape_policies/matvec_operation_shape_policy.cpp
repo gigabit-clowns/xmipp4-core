@@ -2,113 +2,71 @@
 
 #include "matvec_operation_shape_policy.hpp"
 
+#include "operation_shape_policy_helpers.hpp"
+
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 
 #include <stdexcept>
-#include <algorithm>
 
 namespace xmipp4
 {
 namespace multidimensional
 {
 
-void matvec_operation_shape_policy::infer_output(
-    span<strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+void matvec_operation_shape_policy::deduce_output(
+	span<shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::infer_output: expected exactly 2 inputs."
-        );
-    }
+	XMIPP4_ASSERT( output_shapes.size() == 1 );
+	XMIPP4_ASSERT( input_shapes.size() == 2 );
 
-    std::vector<std::size_t> mat_extents, vec_extents;
-    input_layouts[0].get_extents(mat_extents);
-    input_layouts[1].get_extents(vec_extents);
-
-    if (mat_extents.size() != 2)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::infer_output: input[0] (matrix) must be 2D."
-        );
-    }
-    if (vec_extents.size() != 1)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::infer_output: input[1] (vector) must be 1D."
-        );
-    }
-    if (mat_extents[1] != vec_extents[0])
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::infer_output: matrix column count does not "
-            "match vector length."
-        );
-    }
-
-    const std::vector<std::size_t> out_extents = { mat_extents[0] };
-    const auto out_layout =
-        strided_layout::make_contiguous_layout(make_span(out_extents));
-    std::fill(output_layouts.begin(), output_layouts.end(), out_layout);
+	require_2d(input_shapes[0], "matvec_operation_shape_policy", "first input");
+	output_shapes[0] = { input_shapes[0][0] };
 }
 
 void matvec_operation_shape_policy::validate(
-    span<const strided_layout> output_layouts,
-    span<strided_layout> input_layouts
+	span<const shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-    if (output_layouts.empty())
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: expected at least 1 output."
-        );
-    }
-    if (input_layouts.size() != 2)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: expected exactly 2 inputs."
-        );
-    }
+	XMIPP4_ASSERT(output_shapes.size() == 1);
+	XMIPP4_ASSERT(input_shapes.size() == 2);
 
-    std::vector<std::size_t> out_extents, mat_extents, vec_extents;
-    output_layouts[0].get_extents(out_extents);
-    input_layouts[0].get_extents(mat_extents);
-    input_layouts[1].get_extents(vec_extents);
+	const auto &output_shape = output_shapes[0];
+	require_1d(output_shape, "matvec_operation_shape_policy", "output");
+	const auto n = output_shape[0];
 
-    if (out_extents.size() != 1)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: output must be 1D."
-        );
-    }
-    if (mat_extents.size() != 2)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: input[0] (matrix) must be 2D."
-        );
-    }
-    if (vec_extents.size() != 1)
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: input[1] (vector) must be 1D."
-        );
-    }
-    if (mat_extents[0] != out_extents[0])
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: matrix row count does not match "
-            "output length."
-        );
-    }
-    if (mat_extents[1] != vec_extents[0])
-    {
-        throw std::invalid_argument(
-            "matvec_operation_shape_policy::validate: matrix column count does not match "
-            "vector length."
-        );
-    }
+	const auto &first_input_shape = input_shapes[0];
+	require_2d(
+		first_input_shape, 
+		"matvec_operation_shape_policy", 
+		"first input"
+	);
+	const auto n1 = first_input_shape[0];
+	const auto m1 = first_input_shape[1];
+	if (n != n1)
+	{
+		throw std::invalid_argument(
+			"matvec_operation_shape_policy requires output operand's length to "
+			"be the same as the row count of the first operand."
+		);
+	}
+
+	const auto &second_input_shape = input_shapes[1];
+	require_1d(
+		second_input_shape, 
+		"matvec_operation_shape_policy", 
+		"second input"
+	);
+	const auto m2 = second_input_shape[0];
+	if (m1 != m2)
+	{
+		throw std::invalid_argument(
+			"matvec_operation_shape_policy requires second operand's length to "
+			"be the same as the column count of the first operand."
+		);
+	}
 }
 
 const matvec_operation_shape_policy& matvec_operation_shape_policy::get() noexcept

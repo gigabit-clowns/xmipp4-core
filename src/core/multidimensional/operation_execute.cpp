@@ -314,31 +314,21 @@ void execute(
 		}
 	);
 
-	const auto &operation_shape_policy = operation.get_operation_shape_policy();
-	const auto &operation_data_type_policy = operation.get_operation_data_type_policy();
+	const auto &shape_policy = operation.get_operation_shape_policy();
+	const auto &data_type_policy = operation.get_operation_data_type_policy();
 
 	if (outputs_initialized)
 	{
-		operation_shape_policy.validate(
-			make_span(output_layouts.data(), n_outputs),
+		shape_policy.deduce_output(
+			make_span(output_layouts.data(), n_outputs), 
 			make_span(input_layouts.data(), n_inputs)
 		);
-		operation_data_type_policy.validate(
-			make_span(output_data_types.data(), n_outputs),
-			make_span(input_data_types.data(), n_inputs)
-		);
 	}
-	else
-	{
-		operation_shape_policy.infer_output(
-			make_span(output_layouts.data(), n_outputs),
-			make_span(input_layouts.data(), n_inputs)
-		);
-		operation_data_type_policy.infer_output(
-			make_span(output_data_types.data(), n_outputs),
-			make_span(input_data_types.data(), n_inputs)
-		);
-	}
+
+	shape_policy.validate(
+		make_span(output_layouts.data(), n_outputs), 
+		make_span(input_layouts.data(), n_inputs)
+	);
 
 	auto output_descriptors = build_descriptors(
 		std::move(output_layouts),// No longer needed.

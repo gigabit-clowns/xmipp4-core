@@ -2,79 +2,62 @@
 
 #include <xmipp4/core/multidimensional/operation_shape_policies/homogeneous_operation_shape_policy.hpp>
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/broadcast.hpp>
-
 namespace xmipp4
 {
 namespace multidimensional
 {
 
-void homogeneous_operation_shape_policy::infer_output(
-	span<strided_layout> output_layouts,
-	span<strided_layout> input_layouts
+void homogeneous_operation_shape_policy::deduce_output(
+	span<shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-	if (input_layouts.empty())
+	if (input_shapes.empty())
 	{
 		throw std::invalid_argument(
-			"homogeneous_operation_shape_policy::infer_output requires at least one input."
+			"homogeneous_operation_shape_policy requires at least one input "
+			"when deducing outputs."
 		);
 	}
 
-	std::vector<std::size_t> extents;
-	input_layouts[0].get_extents(extents);
-
-	for (std::size_t i = 1; i < input_layouts.size(); ++i)
-	{
-		if (!input_layouts[i].extents_equal(make_span(extents)))
-		{
-			throw std::invalid_argument(
-				"homogeneous_operation_shape_policy::infer_output requires all inputs to have "
-				"the same shape."
-			);
-		}
-	}
-
 	std::fill(
-		output_layouts.begin(),
-		output_layouts.end(),
-		strided_layout::make_contiguous_layout(make_span(extents))
+		output_shapes.begin(),
+		output_shapes.end(),
+		input_shapes.front()
 	);
 }
 
 void homogeneous_operation_shape_policy::validate(
-	span<const strided_layout> output_layouts,
-	span<strided_layout> input_layouts
+	span<const shape_type> output_shapes,
+	span<const shape_type> input_shapes
 ) const
 {
-	if (output_layouts.empty())
+	if (output_shapes.empty())
 	{
 		throw std::invalid_argument(
-			"homogeneous_operation_shape_policy::validate requires at least one output"
+			"homogeneous_operation_shape_policy requires at least one output."
 		);
 	}
 
-	std::vector<std::size_t> extents;
-	output_layouts[0].get_extents(extents);
-	for (std::size_t i = 1; i < output_layouts.size(); ++i)
+	const auto &reference_shape = output_shapes[0];
+	for (std::size_t i = 1; i < output_shapes.size(); ++i)
 	{
-		if(!output_layouts[i].extents_equal(make_span(extents)))
+		if(output_shapes[i] != reference_shape)
 		{
 			throw std::invalid_argument(
-				"homogeneous_operation_shape_policy::validate requires all outputs to have the "
-				"same extents."
+				"homogeneous_operation_shape_policy requires all outputs to "
+				"have the same shape."
 			);
 		}
 	}
 
-	for (auto &layout : input_layouts)
+	for (const auto &input_shape : input_shapes)
 	{
-		if (!layout.extents_equal(make_span(extents)))
+		if(input_shape != reference_shape)
 		{
 			throw std::invalid_argument(
-				"homogeneous_operation_shape_policy::validate requires inputs to have the same "
-				"shape as the outputs."
+				"homogeneous_operation_shape_policy requires all inputs to "
+				"have the same shape."
 			);
 		}
 	}
@@ -85,7 +68,6 @@ const homogeneous_operation_shape_policy& homogeneous_operation_shape_policy::ge
 	static const homogeneous_operation_shape_policy instance;
 	return instance;
 }
-
 
 } // namespace multidimensional
 } // namespace xmipp4

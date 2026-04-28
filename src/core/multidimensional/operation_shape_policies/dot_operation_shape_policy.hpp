@@ -23,15 +23,15 @@ class XMIPP4_CORE_API dot_operation_shape_policy final
     : public operation_shape_policy
 {
 public:
-    void infer_output(
-        span<strided_layout> output_layouts,
-        span<strided_layout> input_layouts
-    ) const override;
+	void deduce_output(
+		span<shape_type> output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
 
-    void validate(
-        span<const strided_layout> output_layouts,
-        span<strided_layout> input_layouts
-    ) const override;
+	void validate(
+		span<const shape_type> output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
 
     static const dot_operation_shape_policy& get() noexcept;
 };

@@ -12,29 +12,22 @@ namespace multidimensional
 
 /**
  * @brief Shape policy for elementwise operations.
- * 
- * After validation/inference all operators will have tha same shape through
- * broadcasting. 
- * 
- * `infer_output` finds the "consensus" shape of the inputs
- * and broadcasts them to this shape. Outputs are assigned a contiguous
- * layout with of this consensus shape.
- * 
- * `validate` broadcasts all inputs to the shape of the output. If multiple
- * outputs are provided, all must have matching shapes.
+ *
+ * Unlike `homogeneous_operation_shape_policy` this policy allows broadcast
+ * compatibility of input operands.
  */
 class XMIPP4_CORE_API elementwise_operation_shape_policy final
 	: public operation_shape_policy
 {
 public:
-	void infer_output(
-		span<strided_layout> output_layouts,
-		span<strided_layout> input_layouts
+	void deduce_output(
+		span<shape_type> output_shapes,
+		span<const shape_type> input_shapes
 	) const override;
 
 	void validate(
-		span<const strided_layout> output_layouts,
-		span<strided_layout> input_layouts
+		span<const shape_type> output_shapes,
+		span<const shape_type> input_shapes
 	) const override;
 
 	static const elementwise_operation_shape_policy& get() noexcept;

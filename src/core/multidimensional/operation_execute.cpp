@@ -315,25 +315,28 @@ void execute(
 
 	validate_arity(operation, n_outputs, n_inputs);
 
-	auto output_descriptors =
-		extract_descriptors(output_operands, small_output_size_tag());
-	auto input_descriptors =
-		extract_descriptors(input_operands, small_input_size_tag());
-
-	auto output_data_types = extract_data_types(
-		make_span(output_descriptors.data(), n_outputs),
+	auto output_descriptors = extract_descriptors(
+		output_operands, 
 		small_output_size_tag()
 	);
-	auto input_data_types = extract_data_types(
-		make_span(input_descriptors.data(), n_inputs),
-		small_input_size_tag()
-	);
-
 	auto output_shapes = extract_shapes(
 		make_span(output_descriptors.data(), n_outputs),
 		small_output_size_tag()
 	);
+	auto output_data_types = extract_data_types(
+		make_span(output_descriptors.data(), n_outputs),
+		small_output_size_tag()
+	);
+
+	auto input_descriptors = extract_descriptors(
+		input_operands, 
+		small_input_size_tag()
+	);
 	auto input_shapes = extract_shapes(
+		make_span(input_descriptors.data(), n_inputs),
+		small_input_size_tag()
+	);
+	auto input_data_types = extract_data_types(
 		make_span(input_descriptors.data(), n_inputs),
 		small_input_size_tag()
 	);

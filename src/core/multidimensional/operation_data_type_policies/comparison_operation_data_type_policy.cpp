@@ -9,7 +9,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void comparison_operation_data_type_policy::infer_output(
+void comparison_operation_data_type_policy::deduce_output(
 	span<numerical_type> output_types,
 	span<const numerical_type> input_types
 ) const

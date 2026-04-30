@@ -26,7 +26,7 @@ class XMIPP4_CORE_API select_operation_data_type_policy final
     : public operation_data_type_policy
 {
 public:
-    void infer_output(
+    void deduce_output(
         span<numerical_type> output_types,
         span<const numerical_type> input_types
     ) const override;

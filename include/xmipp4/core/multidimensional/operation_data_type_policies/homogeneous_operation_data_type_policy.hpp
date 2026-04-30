@@ -15,7 +15,7 @@ namespace multidimensional
  *
  * After validation/inference all operators will have the same data type.
  *
- * `infer_output` ensures that all inputs have the exact same data type and
+ * `deduce_output` ensures that all inputs have the exact same data type and
  * assigns this data type to the output.
  *
  * `validate` ensures that all input/output operands have the exact same data
@@ -25,7 +25,7 @@ class XMIPP4_CORE_API homogeneous_operation_data_type_policy final
 	: public operation_data_type_policy
 {
 public:
-	void infer_output(
+	void deduce_output(
 		span<numerical_type> output_types,
 		span<const numerical_type> input_types
 	) const override;

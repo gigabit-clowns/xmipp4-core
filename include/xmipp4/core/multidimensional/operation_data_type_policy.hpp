@@ -22,8 +22,10 @@ public:
 	operation_data_type_policy(operation_data_type_policy &&other) = delete;
 	virtual ~operation_data_type_policy();
 
-	operation_data_type_policy& operator=(const operation_data_type_policy &other) = delete;
-	operation_data_type_policy& operator=(operation_data_type_policy &&other) = delete;
+	operation_data_type_policy& 
+	operator=(const operation_data_type_policy &other) = delete;
+	operation_data_type_policy& 
+	operator=(operation_data_type_policy &&other) = delete;
 
 	/**
 	 * @brief Deduce the data type of the output operands.
@@ -34,7 +36,7 @@ public:
 	 * @param output_types Data types of output operands.
 	 * @param input_types Data types of input operands.
 	 */
-	virtual void infer_output(
+	virtual void deduce_output(
 		span<numerical_type> output_types,
 		span<const numerical_type> input_types
 	) const = 0;

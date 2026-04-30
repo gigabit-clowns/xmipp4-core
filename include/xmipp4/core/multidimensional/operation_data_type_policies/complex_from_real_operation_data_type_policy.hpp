@@ -14,7 +14,7 @@ namespace multidimensional
  * @brief Data type policy for operations that combine real valued
  * arrays into complex arrays.
  *
- * `infer_output` requires inputs to be the same real-valued type and sets the 
+ * `deduce_output` requires inputs to be the same real-valued type and sets the 
  * output to the corresponding complex type.
  *
  * `validate` ensures inputs are the same real-valued type and the output 
@@ -24,7 +24,7 @@ class XMIPP4_CORE_API complex_from_real_operation_data_type_policy final
 	: public operation_data_type_policy
 {
 public:
-	void infer_output(
+	void deduce_output(
 		span<numerical_type> output_types,
 		span<const numerical_type> input_types
 	) const override;

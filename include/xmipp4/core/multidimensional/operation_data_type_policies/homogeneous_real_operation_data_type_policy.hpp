@@ -17,7 +17,7 @@ namespace multidimensional
  * After successful validation/inference all operators will have the same
  * real arithmetic data type.
  *
- * `infer_output` ensures that all inputs have the exact same real arithmetic
+ * `deduce_output` ensures that all inputs have the exact same real arithmetic
  * data type and assigns this data type to the output.
  *
  * `validate` ensures that all input/output operands have the exact same
@@ -27,7 +27,7 @@ class XMIPP4_CORE_API homogeneous_real_operation_data_type_policy final
     : public operation_data_type_policy
 {
 public:
-    void infer_output(
+    void deduce_output(
         span<numerical_type> output_types,
         span<const numerical_type> input_types
     ) const override;

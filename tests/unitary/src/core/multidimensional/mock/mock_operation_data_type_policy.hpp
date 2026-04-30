@@ -16,7 +16,7 @@ class mock_operation_data_type_policy
 {
 public:
 	MAKE_CONST_MOCK2(
-		infer_output, 
+		deduce_output, 
 		void(
 			span<numerical_type> output_types,
 			span<const numerical_type> input_types

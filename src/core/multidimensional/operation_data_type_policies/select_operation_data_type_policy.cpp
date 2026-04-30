@@ -11,7 +11,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void select_operation_data_type_policy::infer_output(
+void select_operation_data_type_policy::deduce_output(
     span<numerical_type> output_types,
     span<const numerical_type> input_types
 ) const

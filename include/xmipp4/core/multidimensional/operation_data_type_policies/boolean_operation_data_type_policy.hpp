@@ -15,7 +15,7 @@ namespace multidimensional
  *
  * After successful validation/inference all operators will be boolean.
  *
- * `infer_output` ensures that all inputs are boolean type and sets the
+ * `deduce_output` ensures that all inputs are boolean type and sets the
  * output to boolean.
  *
  * `validate` ensures that all input/output operands are boolean.
@@ -24,7 +24,7 @@ class XMIPP4_CORE_API boolean_operation_data_type_policy final
 	: public operation_data_type_policy
 {
 public:
-	void infer_output(
+	void deduce_output(
 		span<numerical_type> output_types,
 		span<const numerical_type> input_types
 	) const override;

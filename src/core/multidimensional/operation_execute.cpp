@@ -356,7 +356,7 @@ void execute(
 			make_span(output_shapes.data(), n_outputs),
 			make_span(input_shapes.data(), n_inputs)
 		);
-		data_type_policy.infer_output(
+		data_type_policy.deduce_output(
 			make_span(output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)
 		);

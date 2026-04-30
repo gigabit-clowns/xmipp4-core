@@ -13,7 +13,7 @@ namespace multidimensional
 
 void dot_operation_shape_policy::deduce_output(
 	span<shape_type> output_shapes,
-	span<const shape_type> input_shapes
+	span<const shape_type>
 ) const
 {
 	XMIPP4_ASSERT(output_shapes.size() == 1);

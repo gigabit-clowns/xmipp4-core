@@ -1,8 +1,51 @@
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
+use crate::subscript::{sanitize_slice, DynamicSubscript, Slice};
+use std::hash::{Hash, Hasher};
+
+#[derive(Debug, Clone, Default)]
 pub struct StridedLayout {
 	extents: Vec<usize>,
 	strides: Vec<isize>,
 	offset: isize,
+}
+
+impl PartialEq for StridedLayout {
+	fn eq(&self, other: &Self) -> bool {
+		if self.offset != other.offset {
+			return false;
+		}
+
+		if self.extents.len() != other.extents.len() {
+			return false;
+		}
+
+		for i in 0..self.extents.len() {
+			let extent = self.extents[i];
+			if extent != other.extents[i] {
+				return false;
+			}
+
+			if extent != 1 && self.strides[i] != other.strides[i] {
+				return false;
+			}
+		}
+
+		true
+	}
+}
+
+impl Eq for StridedLayout {}
+
+impl Hash for StridedLayout {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.offset.hash(state);
+		for i in 0..self.extents.len() {
+			let extent = self.extents[i];
+			extent.hash(state);
+
+			let stride = if extent == 1 { 0 } else { self.strides[i] };
+			stride.hash(state);
+		}
+	}
 }
 
 impl StridedLayout {
@@ -67,27 +110,20 @@ impl StridedLayout {
 	}
 
 	pub fn compute_storage_requirement(&self) -> usize {
-		if self.extents.is_empty() || self.extents.contains(&0) {
-			return 0;
-		}
+		let mut result = 0usize;
 
-		let mut min_index = self.offset;
-		let mut max_index = self.offset;
+		for (&extent, &stride) in self.extents.iter().zip(self.strides.iter()) {
+			if extent == 0 {
+				return 0;
+			}
 
-		for (extent, stride) in self.extents.iter().zip(self.strides.iter()) {
-			let delta = (*extent as isize - 1) * *stride;
-			if delta >= 0 {
-				max_index += delta;
-			} else {
-				min_index += delta;
+			if stride > 0 {
+				let last_index = extent - 1;
+				result = result.wrapping_add(last_index.wrapping_mul(stride as usize));
 			}
 		}
 
-		if max_index < min_index {
-			0
-		} else {
-			(max_index - min_index + 1) as usize
-		}
+		(self.offset.wrapping_add(result as isize).wrapping_add(1)) as usize
 	}
 
 	pub fn transpose(&self) -> Self {
@@ -201,48 +237,106 @@ impl StridedLayout {
 			return Ok(self.clone());
 		}
 
-		if self.rank() > extents.len() {
-			return Err(format!(
-				"Cannot broadcast layout with {} axes into a shape of {} dimensions.",
-				self.rank(),
-				extents.len()
-			));
-		}
-
-		let padding = extents.len() - self.rank();
-		let mut out_extents = Vec::with_capacity(extents.len());
-		let mut out_strides = Vec::with_capacity(extents.len());
-
-		for &extent in extents.iter().take(padding) {
-			out_extents.push(extent);
-			out_strides.push(0);
-		}
-
-		for (&extent, &stride) in self.extents.iter().zip(self.strides.iter()) {
-			out_extents.push(extent);
-			out_strides.push(stride);
-		}
-
-		for i in 0..extents.len() {
-			let target_extent = extents[i];
-			let axis_extent = out_extents[i];
-			if axis_extent != target_extent {
-				if axis_extent == 1 {
-					out_extents[i] = target_extent;
-					out_strides[i] = 0;
-				} else {
-					return Err(format!(
-						"Cannot broadcast axis of extent {} into an extent of {}.",
-						axis_extent, target_extent
-					));
-				}
-			}
-		}
+		let padding = compute_broadcast_padding(self.rank(), extents.len())?;
+		let (mut out_extents, mut out_strides) = build_broadcast_axes(self, extents, padding);
+		promote_broadcast_axes(extents, &mut out_extents, &mut out_strides)?;
 
 		Ok(Self {
 			extents: out_extents,
 			strides: out_strides,
 			offset: self.offset,
+		})
+	}
+
+	pub fn apply_subscripts(&self, subscripts: &[DynamicSubscript]) -> Result<Self, String> {
+		if subscripts.is_empty() {
+			return Ok(self.clone());
+		}
+
+		let mut offset = self.offset;
+		let mut left_axis = 0usize;
+		let mut right_axis = self.rank();
+		let mut left_output_extents = Vec::<usize>::new();
+		let mut left_output_strides = Vec::<isize>::new();
+		let mut right_output_extents = Vec::<usize>::new();
+		let mut right_output_strides = Vec::<isize>::new();
+
+		let ellipsis_positions = subscripts
+			.iter()
+			.enumerate()
+			.filter_map(|(i, s)| {
+				if matches!(s, DynamicSubscript::Ellipsis) {
+					Some(i)
+				} else {
+					None
+				}
+			})
+			.collect::<Vec<_>>();
+
+		if ellipsis_positions.len() > 1 {
+			return Err(
+				"Two ellipsis tags were encountered when processing subscripts".to_string(),
+			);
+		}
+
+		if let Some(ellipsis_pos) = ellipsis_positions.first().copied() {
+			for subscript in &subscripts[..ellipsis_pos] {
+				apply_subscript_forward(
+					self,
+					subscript,
+					&mut left_axis,
+					right_axis,
+					&mut offset,
+					&mut left_output_extents,
+					&mut left_output_strides,
+				)?;
+			}
+
+			for subscript in subscripts[ellipsis_pos + 1..].iter().rev() {
+				apply_subscript_backward(
+					self,
+					subscript,
+					left_axis,
+					&mut right_axis,
+					&mut offset,
+					&mut right_output_extents,
+					&mut right_output_strides,
+				)?;
+			}
+		} else {
+			for subscript in subscripts {
+				apply_subscript_forward(
+					self,
+					subscript,
+					&mut left_axis,
+					right_axis,
+					&mut offset,
+					&mut left_output_extents,
+					&mut left_output_strides,
+				)?;
+			}
+		}
+
+		let mut extents = Vec::new();
+		let mut strides = Vec::new();
+
+		extents.extend_from_slice(&left_output_extents);
+		strides.extend_from_slice(&left_output_strides);
+
+		for i in left_axis..right_axis {
+			extents.push(self.extents[i]);
+			strides.push(self.strides[i]);
+		}
+
+		right_output_extents.reverse();
+		right_output_strides.reverse();
+		extents.extend_from_slice(&right_output_extents);
+		strides.extend_from_slice(&right_output_strides);
+
+		Ok(Self {
+			extents,
+			strides,
+			offset,
 		})
 	}
 }
@@ -284,4 +378,176 @@ fn sanitize_index(index: isize, extent: usize) -> Result<usize, String> {
 	}
 
 	Ok(index as usize)
+}
+
+fn compute_broadcast_padding(rank: usize, target_rank: usize) -> Result<usize, String> {
+	if rank > target_rank {
+		return Err(format!(
+			"Cannot broadcast layout with {} axes into a shape of {} dimensions.",
+			rank, target_rank
+		));
+	}
+
+	Ok(target_rank - rank)
+}
+
+fn build_broadcast_axes(
+	layout: &StridedLayout,
+	target_extents: &[usize],
+	padding: usize,
+) -> (Vec<usize>, Vec<isize>) {
+	let mut out_extents = Vec::with_capacity(target_extents.len());
+	let mut out_strides = Vec::with_capacity(target_extents.len());
+
+	for &extent in target_extents.iter().take(padding) {
+		out_extents.push(extent);
+		out_strides.push(0);
+	}
+
+	for (&extent, &stride) in layout.extents.iter().zip(layout.strides.iter()) {
+		out_extents.push(extent);
+		out_strides.push(stride);
+	}
+
+	(out_extents, out_strides)
+}
+
+fn promote_broadcast_axes(
+	target_extents: &[usize],
+	out_extents: &mut [usize],
+	out_strides: &mut [isize],
+) -> Result<(), String> {
+	for i in 0..target_extents.len() {
+		let target_extent = target_extents[i];
+		let axis_extent = out_extents[i];
+		if axis_extent == target_extent {
+			continue;
+		}
+
+		if axis_extent != 1 {
+			return Err(format!(
+				"Cannot broadcast axis of extent {} into an extent of {}.",
+				axis_extent, target_extent
+			));
+		}
+
+		out_extents[i] = target_extent;
+		out_strides[i] = 0;
+	}
+
+	Ok(())
+}
+
+fn apply_subscript_forward(
+	layout: &StridedLayout,
+	subscript: &DynamicSubscript,
+	left_axis: &mut usize,
+	right_axis: usize,
+	offset: &mut isize,
+	out_extents: &mut Vec<usize>,
+	out_strides: &mut Vec<isize>,
+) -> Result<(), String> {
+	match subscript {
+		DynamicSubscript::Ellipsis => Ok(()),
+		DynamicSubscript::NewAxis => {
+			out_extents.push(1);
+			out_strides.push(0);
+			Ok(())
+		}
+		DynamicSubscript::Index(index) => {
+			ensure_axis_for_index(*left_axis, right_axis)?;
+			apply_index(layout, *left_axis, *index, offset)?;
+			*left_axis += 1;
+			Ok(())
+		}
+		DynamicSubscript::Slice(slice) => {
+			ensure_axis_for_slice(*left_axis, right_axis)?;
+			let (extent, stride) = apply_slice(layout, *left_axis, *slice, offset)?;
+			out_extents.push(extent);
+			out_strides.push(stride);
+			*left_axis += 1;
+			Ok(())
+		}
+	}
+}
+
+fn apply_subscript_backward(
+	layout: &StridedLayout,
+	subscript: &DynamicSubscript,
+	left_axis: usize,
+	right_axis: &mut usize,
+	offset: &mut isize,
+	out_extents: &mut Vec<usize>,
+	out_strides: &mut Vec<isize>,
+) -> Result<(), String> {
+	match subscript {
+		DynamicSubscript::Ellipsis => {
+			Err("Two ellipsis tags were encountered when processing subscripts".to_string())
+		}
+		DynamicSubscript::NewAxis => {
+			out_extents.push(1);
+			out_strides.push(0);
+			Ok(())
+		}
+		DynamicSubscript::Index(index) => {
+			ensure_axis_for_index(left_axis, *right_axis)?;
+			let axis_index = *right_axis - 1;
+			apply_index(layout, axis_index, *index, offset)?;
+			*right_axis -= 1;
+			Ok(())
+		}
+		DynamicSubscript::Slice(slice) => {
+			ensure_axis_for_slice(left_axis, *right_axis)?;
+			let axis_index = *right_axis - 1;
+			let (extent, stride) = apply_slice(layout, axis_index, *slice, offset)?;
+			out_extents.push(extent);
+			out_strides.push(stride);
+			*right_axis -= 1;
+			Ok(())
+		}
+	}
+}
+
+fn ensure_axis_for_index(left_axis: usize, right_axis: usize) -> Result<(), String> {
+	if left_axis == right_axis {
+		return Err(
+			"An index subscript was encountered, but there are no more axes to process".to_string(),
+		);
+	}
+
+	Ok(())
+}
+
+fn ensure_axis_for_slice(left_axis: usize, right_axis: usize) -> Result<(), String> {
+	if left_axis == right_axis {
+		return Err(
+			"A slice subscript was encountered, but there are no more axes to process".to_string(),
+		);
+	}
+
+	Ok(())
+}
+
+fn apply_index(
+	layout: &StridedLayout,
+	axis_index: usize,
+	index: isize,
+	offset: &mut isize,
+) -> Result<(), String> {
+	let sanitized_index = sanitize_index(index, layout.extents[axis_index])?;
+	*offset += sanitized_index as isize * layout.strides[axis_index];
+	Ok(())
+}
+
+fn apply_slice(
+	layout: &StridedLayout,
+	axis_index: usize,
+	slice: Slice,
+	offset: &mut isize,
+) -> Result<(usize, isize), String> {
+	let sanitized_slice = sanitize_slice(slice, layout.extents[axis_index])?;
+	*offset += layout.strides[axis_index] * sanitized_slice.start();
+	let new_extent = sanitized_slice.count();
+	let new_stride = layout.strides[axis_index] * sanitized_slice.step();
+	Ok((new_extent, new_stride))
 }

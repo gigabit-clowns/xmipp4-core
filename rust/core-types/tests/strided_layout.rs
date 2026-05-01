@@ -1,8 +1,7 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
-use xmipp4_core_types::{
-	all, ellipsis, even, make_slice, new_axis, odd, DynamicSubscript, StridedLayout,
-};
+use xmipp4_core_types::subscript::{all, ellipsis, even, make_slice, new_axis, odd};
+use xmipp4_core_types::{DynamicSubscript, StridedLayout};
 
 fn make_test_layout() -> StridedLayout {
 	StridedLayout::new(

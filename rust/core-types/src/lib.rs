@@ -10,7 +10,4 @@ pub use numerical_type::{promote_types, NumericalType, NumericalTypeCategory};
 pub use slice_error::SliceError;
 pub use strided_layout::StridedLayout;
 pub use strided_layout_error::StridedLayoutError;
-pub use subscript::{
-	all, ellipsis, end, even, make_slice, make_slice_full, make_slice_start, new_axis, odd,
-	DynamicSubscript, Slice,
-};
+pub use subscript::{DynamicSubscript, Slice};

@@ -1,4 +1,8 @@
-use xmipp4_core_types::StridedLayout;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+use xmipp4_core_types::{
+	all, ellipsis, even, make_slice, new_axis, odd, DynamicSubscript, StridedLayout,
+};
 
 fn make_test_layout() -> StridedLayout {
 	StridedLayout::new(
@@ -14,7 +18,7 @@ fn default_layout_is_empty() {
 	let layout = StridedLayout::default();
 	assert_eq!(layout.rank(), 0);
 	assert_eq!(layout.compute_element_count(), 0);
-	assert_eq!(layout.compute_storage_requirement(), 0);
+	assert_eq!(layout.compute_storage_requirement(), 1);
 }
 
 #[test]
@@ -29,7 +33,29 @@ fn contiguous_layout_has_expected_strides() {
 #[test]
 fn custom_layout_with_negative_stride_reports_required_span() {
 	let layout = StridedLayout::new(vec![2, 3], vec![-3, 1], 5).expect("valid layout");
-	assert_eq!(layout.compute_storage_requirement(), 6);
+	assert_eq!(layout.compute_storage_requirement(), 8);
+}
+
+#[test]
+fn equality_ignores_stride_for_extent_one_axes() {
+	let a = StridedLayout::new(vec![4, 1, 5], vec![5, 111, 1], 3).expect("valid");
+	let b = StridedLayout::new(vec![4, 1, 5], vec![5, -777, 1], 3).expect("valid");
+
+	assert_eq!(a, b);
+}
+
+#[test]
+fn hash_is_equal_when_only_extent_one_stride_changes() {
+	let a = StridedLayout::new(vec![4, 1, 5], vec![5, 111, 1], 3).expect("valid");
+	let b = StridedLayout::new(vec![4, 1, 5], vec![5, -777, 1], 3).expect("valid");
+
+	let mut hasher_a = DefaultHasher::new();
+	a.hash(&mut hasher_a);
+
+	let mut hasher_b = DefaultHasher::new();
+	b.hash(&mut hasher_b);
+
+	assert_eq!(hasher_a.finish(), hasher_b.finish());
 }
 
 #[test]
@@ -253,5 +279,195 @@ fn broadcast_to_fails_when_axis_is_not_broadcastable() {
 	assert_eq!(
 		error,
 		"Cannot broadcast axis of extent 56 into an extent of 55."
+	);
+}
+
+#[test]
+fn apply_subscripts_implicitly_fills_remaining_axes() {
+	let layout = make_test_layout();
+	let subscripts = vec![DynamicSubscript::Index(1)];
+
+	let result = layout
+		.apply_subscripts(&subscripts)
+		.expect("subscripts must be valid");
+
+	assert_eq!(result.extents(), &[56, 24, 1, 10, 8]);
+	assert_eq!(result.strides(), &[7_680, 320, 160, 16, 2]);
+	assert_eq!(result.offset(), layout.offset() + 860_160);
+}
+
+#[test]
+fn apply_subscripts_implicitly_fills_axes_after_ellipsis() {
+	let layout = make_test_layout();
+	let subscripts = vec![ellipsis(), DynamicSubscript::Index(1)];
+
+	let result = layout
+		.apply_subscripts(&subscripts)
+		.expect("subscripts must be valid");
+
+	assert_eq!(result.extents(), &[120, 56, 24, 1, 10]);
+	assert_eq!(result.strides(), &[860_160, 7_680, 320, 160, 16]);
+	assert_eq!(result.offset(), layout.offset() + 2);
+}
+
+#[test]
+fn apply_subscripts_complex_sequence_matches_expected_result() {
+	let layout = make_test_layout();
+	let subscripts = vec![
+		DynamicSubscript::Slice(odd()),
+		new_axis(),
+		ellipsis(),
+		DynamicSubscript::Index(0),
+		DynamicSubscript::Slice(even()),
+		new_axis(),
+		new_axis(),
+		DynamicSubscript::Index(6),
+	];
+
+	let result = layout
+		.apply_subscripts(&subscripts)
+		.expect("subscripts must be valid");
+
+	assert_eq!(result.extents(), &[60, 1, 56, 24, 5, 1, 1]);
+	assert_eq!(result.strides(), &[1_720_320, 0, 7_680, 320, 32, 0, 0]);
+	assert_eq!(result.offset(), 860_192);
+}
+
+#[test]
+fn apply_subscripts_with_no_subscripts_on_default_layout_succeeds() {
+	let layout = StridedLayout::default();
+	let result = layout
+		.apply_subscripts(&[])
+		.expect("empty subscripts must be valid");
+
+	assert_eq!(result, StridedLayout::default());
+}
+
+#[test]
+fn apply_subscripts_with_ellipsis_on_default_layout_succeeds() {
+	let layout = StridedLayout::default();
+	let subscripts = vec![ellipsis()];
+	let result = layout
+		.apply_subscripts(&subscripts)
+		.expect("ellipsis should be valid on empty layout");
+
+	assert_eq!(result, StridedLayout::default());
+}
+
+#[test]
+fn apply_subscripts_with_new_axis_on_default_layout_succeeds() {
+	let layout = StridedLayout::default();
+	let subscripts = vec![new_axis()];
+	let result = layout
+		.apply_subscripts(&subscripts)
+		.expect("new_axis should be valid on empty layout");
+
+	assert_eq!(result.extents(), &[1]);
+	assert_eq!(result.strides(), &[0]);
+	assert_eq!(result.offset(), 0);
+}
+
+#[test]
+fn apply_subscripts_with_two_ellipsis_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![ellipsis(), new_axis(), ellipsis()];
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+
+	assert_eq!(
+		error,
+		"Two ellipsis tags were encountered when processing subscripts"
+	);
+}
+
+#[test]
+fn apply_subscripts_with_too_many_subscripts_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![
+		DynamicSubscript::Index(6),
+		DynamicSubscript::Index(2),
+		DynamicSubscript::Index(2),
+		DynamicSubscript::Slice(odd()),
+		DynamicSubscript::Slice(even()),
+		DynamicSubscript::Slice(all()),
+		DynamicSubscript::Index(2),
+	];
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+
+	assert_eq!(
+		error,
+		"An index subscript was encountered, but there are no more axes to process"
+	);
+}
+
+#[test]
+fn apply_subscripts_with_too_many_subscripts_and_ellipsis_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![
+		DynamicSubscript::Index(6),
+		DynamicSubscript::Index(2),
+		DynamicSubscript::Index(2),
+		ellipsis(),
+		DynamicSubscript::Slice(odd()),
+		DynamicSubscript::Slice(even()),
+		DynamicSubscript::Slice(all()),
+		DynamicSubscript::Index(2),
+	];
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+
+	assert_eq!(
+		error,
+		"A slice subscript was encountered, but there are no more axes to process"
+	);
+}
+
+#[test]
+fn apply_subscripts_with_out_of_bounds_index_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![DynamicSubscript::Index(120)];
+	assert!(layout.apply_subscripts(&subscripts).is_err());
+}
+
+#[test]
+fn apply_subscripts_with_out_of_bounds_index_after_ellipsis_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![ellipsis(), DynamicSubscript::Index(8)];
+	assert!(layout.apply_subscripts(&subscripts).is_err());
+}
+
+#[test]
+fn apply_subscripts_with_out_of_bounds_slice_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![DynamicSubscript::Slice(make_slice(121))];
+	assert!(layout.apply_subscripts(&subscripts).is_err());
+}
+
+#[test]
+fn apply_subscripts_with_out_of_bounds_slice_after_ellipsis_fails() {
+	let layout = make_test_layout();
+	let subscripts = vec![ellipsis(), DynamicSubscript::Slice(make_slice(9))];
+	assert!(layout.apply_subscripts(&subscripts).is_err());
+}
+
+#[test]
+fn apply_subscripts_with_index_in_default_layout_fails() {
+	let layout = StridedLayout::default();
+	let subscripts = vec![DynamicSubscript::Index(0)];
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+
+	assert_eq!(
+		error,
+		"An index subscript was encountered, but there are no more axes to process"
+	);
+}
+
+#[test]
+fn apply_subscripts_with_slice_in_default_layout_fails() {
+	let layout = StridedLayout::default();
+	let subscripts = vec![DynamicSubscript::Slice(make_slice(1))];
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+
+	assert_eq!(
+		error,
+		"A slice subscript was encountered, but there are no more axes to process"
 	);
 }

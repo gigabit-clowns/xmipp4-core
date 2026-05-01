@@ -1,7 +1,7 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use xmipp4_core_types::subscript::{all, ellipsis, even, make_slice, new_axis, odd};
-use xmipp4_core_types::{DynamicSubscript, StridedLayout};
+use xmipp4_core_types::{DynamicSubscript, SliceError, StridedLayout, StridedLayoutError};
 
 fn make_test_layout() -> StridedLayout {
 	StridedLayout::new(
@@ -59,8 +59,8 @@ fn hash_is_equal_when_only_extent_one_stride_changes() {
 
 #[test]
 fn constructor_rejects_mismatched_rank() {
-	let result = StridedLayout::new(vec![2, 2], vec![1], 0);
-	assert!(result.is_err());
+	let error = StridedLayout::new(vec![2, 2], vec![1], 0).expect_err("must fail");
+	assert_eq!(error, StridedLayoutError::RankMismatch);
 }
 
 #[test]
@@ -99,8 +99,8 @@ fn permute_with_non_permutation_fails_with_expected_message() {
 	let error = layout.permute(&[0, 1, 2, 3, 4, 4]).expect_err("must fail");
 
 	assert_eq!(
-		error.to_string(),
-		"Index 5 is missing in the axis permutation"
+		error,
+		StridedLayoutError::MissingAxisInPermutation { index: 5 }
 	);
 }
 
@@ -117,10 +117,7 @@ fn permute_on_default_layout_with_non_empty_permutation_fails() {
 	let layout = StridedLayout::default();
 	let error = layout.permute(&[0]).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"Axis permutation's length does not match the required count"
-	);
+	assert_eq!(error, StridedLayoutError::InvalidAxisPermutationLength);
 }
 
 #[test]
@@ -140,12 +137,24 @@ fn matrix_transpose_fails_when_axis_is_out_of_bounds() {
 	let error = layout
 		.matrix_transpose(6, 0)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 6,
+			extent: 6,
+		}
+	);
 
 	let error = layout
 		.matrix_transpose(0, 6)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 6,
+			extent: 6,
+		}
+	);
 }
 
 #[test]
@@ -155,12 +164,24 @@ fn matrix_transpose_on_default_layout_always_fails() {
 	let error = layout
 		.matrix_transpose(0, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error.to_string(), "Index 0 is out of bounds for extent 0");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 0,
+			extent: 0,
+		}
+	);
 
 	let error = layout
 		.matrix_transpose(1, 1)
 		.expect_err("default layout must fail");
-	assert_eq!(error.to_string(), "Index 1 is out of bounds for extent 0");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 1,
+			extent: 0,
+		}
+	);
 }
 
 #[test]
@@ -198,12 +219,24 @@ fn matrix_diagonal_fails_when_axis_is_out_of_bounds() {
 	let error = layout
 		.matrix_diagonal(6, 0)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 6,
+			extent: 6,
+		}
+	);
 
 	let error = layout
 		.matrix_diagonal(0, 6)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 6,
+			extent: 6,
+		}
+	);
 }
 
 #[test]
@@ -213,12 +246,24 @@ fn matrix_diagonal_on_default_layout_always_fails() {
 	let error = layout
 		.matrix_diagonal(0, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error.to_string(), "Index 0 is out of bounds for extent 0");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 0,
+			extent: 0,
+		}
+	);
 
 	let error = layout
 		.matrix_diagonal(1, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error.to_string(), "Index 1 is out of bounds for extent 0");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 1,
+			extent: 0,
+		}
+	);
 }
 
 #[test]
@@ -226,10 +271,7 @@ fn matrix_diagonal_requires_different_axes() {
 	let layout = make_test_layout();
 	let error = layout.matrix_diagonal(0, 0).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"axis1 and axis2 must represent different axes"
-	);
+	assert_eq!(error, StridedLayoutError::AxesMustDiffer);
 }
 
 #[test]
@@ -270,8 +312,11 @@ fn broadcast_to_fails_when_target_has_fewer_axes() {
 
 	let error = layout.broadcast_to(&target_extents).expect_err("must fail");
 	assert_eq!(
-		error.to_string(),
-		"Cannot broadcast layout with 6 axes into a shape of 5 dimensions."
+		error,
+		StridedLayoutError::BroadcastRankMismatch {
+			rank: 6,
+			target_rank: 5,
+		}
 	);
 }
 
@@ -282,8 +327,11 @@ fn broadcast_to_fails_when_axis_is_not_broadcastable() {
 
 	let error = layout.broadcast_to(&target_extents).expect_err("must fail");
 	assert_eq!(
-		error.to_string(),
-		"Cannot broadcast axis of extent 56 into an extent of 55."
+		error,
+		StridedLayoutError::AxisNotBroadcastable {
+			axis_extent: 56,
+			target_extent: 55,
+		}
 	);
 }
 
@@ -378,10 +426,7 @@ fn apply_subscripts_with_two_ellipsis_fails() {
 	let subscripts = vec![ellipsis(), new_axis(), ellipsis()];
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"Two ellipsis tags were encountered when processing subscripts"
-	);
+	assert_eq!(error, StridedLayoutError::MultipleEllipsis);
 }
 
 #[test]
@@ -398,10 +443,7 @@ fn apply_subscripts_with_too_many_subscripts_fails() {
 	];
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"An index subscript was encountered, but there are no more axes to process"
-	);
+	assert_eq!(error, StridedLayoutError::NoMoreAxesForIndex);
 }
 
 #[test]
@@ -419,38 +461,67 @@ fn apply_subscripts_with_too_many_subscripts_and_ellipsis_fails() {
 	];
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"A slice subscript was encountered, but there are no more axes to process"
-	);
+	assert_eq!(error, StridedLayoutError::NoMoreAxesForSlice);
 }
 
 #[test]
 fn apply_subscripts_with_out_of_bounds_index_fails() {
 	let layout = make_test_layout();
 	let subscripts = vec![DynamicSubscript::Index(120)];
-	assert!(layout.apply_subscripts(&subscripts).is_err());
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 120,
+			extent: 120,
+		}
+	);
 }
 
 #[test]
 fn apply_subscripts_with_out_of_bounds_index_after_ellipsis_fails() {
 	let layout = make_test_layout();
 	let subscripts = vec![ellipsis(), DynamicSubscript::Index(8)];
-	assert!(layout.apply_subscripts(&subscripts).is_err());
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+	assert_eq!(
+		error,
+		StridedLayoutError::IndexOutOfBounds {
+			index: 8,
+			extent: 8,
+		}
+	);
 }
 
 #[test]
 fn apply_subscripts_with_out_of_bounds_slice_fails() {
 	let layout = make_test_layout();
 	let subscripts = vec![DynamicSubscript::Slice(make_slice(121))];
-	assert!(layout.apply_subscripts(&subscripts).is_err());
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+	assert_eq!(
+		error,
+		StridedLayoutError::InvalidSlice(SliceError::PositiveSliceOverflowsExtent {
+			count: 121,
+			start: 0,
+			step: 1,
+			extent: 120,
+		})
+	);
 }
 
 #[test]
 fn apply_subscripts_with_out_of_bounds_slice_after_ellipsis_fails() {
 	let layout = make_test_layout();
 	let subscripts = vec![ellipsis(), DynamicSubscript::Slice(make_slice(9))];
-	assert!(layout.apply_subscripts(&subscripts).is_err());
+	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
+	assert_eq!(
+		error,
+		StridedLayoutError::InvalidSlice(SliceError::PositiveSliceOverflowsExtent {
+			count: 9,
+			start: 0,
+			step: 1,
+			extent: 8,
+		})
+	);
 }
 
 #[test]
@@ -459,10 +530,7 @@ fn apply_subscripts_with_index_in_default_layout_fails() {
 	let subscripts = vec![DynamicSubscript::Index(0)];
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"An index subscript was encountered, but there are no more axes to process"
-	);
+	assert_eq!(error, StridedLayoutError::NoMoreAxesForIndex);
 }
 
 #[test]
@@ -471,8 +539,5 @@ fn apply_subscripts_with_slice_in_default_layout_fails() {
 	let subscripts = vec![DynamicSubscript::Slice(make_slice(1))];
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
-	assert_eq!(
-		error.to_string(),
-		"A slice subscript was encountered, but there are no more axes to process"
-	);
+	assert_eq!(error, StridedLayoutError::NoMoreAxesForSlice);
 }

@@ -7,6 +7,7 @@
 
 /// Array descriptor module.
 pub mod array_descriptor;
+mod c_api;
 /// Numerical type system and promotion rules.
 pub mod numerical_type;
 /// Typed errors produced by slice sanitization.

@@ -4,6 +4,10 @@
 
 #include <boost/functional/hash.hpp>
 
+#ifdef XMIPP4_CORE_ENABLE_RUST_BRIDGE
+	#include "../rust_bridge.hpp"
+#endif
+
 namespace xmipp4 
 {
 namespace multidimensional
@@ -76,7 +80,23 @@ std::size_t compute_storage_requirement(const array_descriptor &descriptor)
 {
 	const auto &layout = descriptor.get_layout();
 	const auto data_type = descriptor.get_data_type();
+
+#ifdef XMIPP4_CORE_ENABLE_RUST_BRIDGE
+	std::vector<std::size_t> extents;
+	std::vector<std::ptrdiff_t> strides;
+	layout.get_extents(extents);
+	layout.get_strides(strides);
+
+	const auto storage_requirement = xmipp4_rust_compute_storage_requirement(
+		extents.data(),
+		strides.data(),
+		extents.size(),
+		layout.get_offset()
+	);
+	return storage_requirement * get_size(data_type);
+#else
 	return layout.compute_storage_requirement() * get_size(data_type);
+#endif
 }
 
 } // namespace multidimensional

@@ -8,6 +8,7 @@ This document is a consolidated snapshot of the current Rust spike state versus 
 - Rust workspace root: `rust/`
 - Main crate: `rust/core-types`
 - C++ reference area: `include/xmipp4/core/multidimensional/*` and `src/core/multidimensional/*`
+- Optional integration flag: `XMIPP4_CORE_ENABLE_RUST_BRIDGE`
 
 ## Implemented Surface In Rust
 
@@ -98,6 +99,24 @@ Only public API names are listed here. Internal helpers are intentionally exclud
   - `cargo clippy --workspace --all-targets -- -D warnings`
   - `cargo test --workspace`
 
+## First C++/Rust Vertical Integration
+
+An initial optional bridge is now implemented behind `XMIPP4_CORE_ENABLE_RUST_BRIDGE`.
+
+- Rust exports C ABI symbols from `rust/core-types/src/c_api.rs`:
+  - `xmipp4_rust_promote_types`
+  - `xmipp4_rust_compute_storage_requirement`
+- C++ routes enabled by flag:
+  - `xmipp4::promote_types` in `src/core/numerical_type.cpp`
+  - `xmipp4::multidimensional::compute_storage_requirement(const array_descriptor&)`
+    in `src/core/multidimensional/array_descriptor.cpp`
+- Build integration:
+  - `src/CMakeLists.txt` triggers `cargo build --release` for `rust/core-types`
+  - links generated static library into `xmipp4-core`
+  - defines `XMIPP4_CORE_ENABLE_RUST_BRIDGE=1` for consumers when enabled
+- C++ comparison tests:
+  - `tests/unitary/src/core/test_rust_bridge.cpp`
+
 ## Documentation And SPDX Requirements
 
 As part of drop-in readiness, parity work is not considered complete with only
@@ -144,13 +163,14 @@ functional/API alignment.
 
 ## Known Gaps Before True Drop-In Replacement
 
-1. No C++/Rust integration boundary yet (no production FFI bridge in use).
-2. Rust code is still isolated under `rust/`; CMake/C++ runtime does not consume it.
+1. Bridge is intentionally narrow (promotion + storage requirement route only).
+2. Integration is opt-in; default build path remains fully C++.
 3. Major runtime-system modules remain C++-only (execution context, allocators/resources, kernel dispatch, plugins/backends, communication stack).
 4. Release/packaging flows are still centered on C++/Python/conda artifacts.
 
 ## Recommended Next Steps
 
-1. Continue parity-by-contract per module.
-2. Freeze public API names listed in this document while drop-in compatibility is a target.
-3. Introduce one narrow C++/Rust bridge vertical path once module-level parity is stable.
+1. Keep this bridge path green in C++ unitary CI with the flag enabled.
+2. Continue parity-by-contract per module.
+3. Freeze public API names listed in this document while drop-in compatibility is a target.
+4. Expand the bridge gradually, preserving optional/flagged rollout until confidence is high.

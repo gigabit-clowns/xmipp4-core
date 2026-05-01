@@ -97,6 +97,68 @@ endif()
 # Create the alias
 add_library(xmipp4::core ALIAS xmipp4-core)
 
+if(XMIPP4_CORE_ENABLE_RUST_BRIDGE)
+	set(XMIPP4_RUST_CORE_TYPES_MANIFEST ${PROJECT_SOURCE_DIR}/rust/core-types/Cargo.toml)
+	set(XMIPP4_RUST_CORE_TYPES_CARGO_ARGS --manifest-path ${XMIPP4_RUST_CORE_TYPES_MANIFEST} --release)
+	set(XMIPP4_RUST_CORE_TYPES_LIB_DIR ${PROJECT_SOURCE_DIR}/rust/target/release)
+	set(XMIPP4_RUST_CORE_TYPES_PREBUILD_COMMAND ${CMAKE_COMMAND} -E true)
+
+	if(WIN32)
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+			list(APPEND XMIPP4_RUST_CORE_TYPES_CARGO_ARGS --target x86_64-pc-windows-gnu)
+			set(XMIPP4_RUST_CORE_TYPES_PREBUILD_COMMAND rustup target add x86_64-pc-windows-gnu)
+			set(XMIPP4_RUST_CORE_TYPES_LIB_DIR ${PROJECT_SOURCE_DIR}/rust/target/x86_64-pc-windows-gnu/release)
+			set(XMIPP4_RUST_CORE_TYPES_LIB ${XMIPP4_RUST_CORE_TYPES_LIB_DIR}/libxmipp4_core_types.a)
+		else()
+			set(XMIPP4_RUST_CORE_TYPES_LIB ${XMIPP4_RUST_CORE_TYPES_LIB_DIR}/xmipp4_core_types.lib)
+		endif()
+	else()
+		set(XMIPP4_RUST_CORE_TYPES_LIB ${XMIPP4_RUST_CORE_TYPES_LIB_DIR}/libxmipp4_core_types.a)
+	endif()
+
+	add_custom_command(
+		OUTPUT ${XMIPP4_RUST_CORE_TYPES_LIB}
+		COMMAND ${XMIPP4_RUST_CORE_TYPES_PREBUILD_COMMAND}
+		COMMAND cargo build ${XMIPP4_RUST_CORE_TYPES_CARGO_ARGS}
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/rust
+		COMMENT "Building Rust bridge static library (xmipp4-core-types)"
+		VERBATIM
+	)
+
+	add_custom_target(
+		xmipp4-rust-core-types-build
+		DEPENDS ${XMIPP4_RUST_CORE_TYPES_LIB}
+	)
+
+	add_library(xmipp4-rust-core-types STATIC IMPORTED GLOBAL)
+	set_target_properties(
+		xmipp4-rust-core-types
+		PROPERTIES
+			IMPORTED_LOCATION ${XMIPP4_RUST_CORE_TYPES_LIB}
+	)
+
+	add_dependencies(xmipp4-core xmipp4-rust-core-types-build)
+	target_link_libraries(
+		xmipp4-core
+		PRIVATE
+			xmipp4-rust-core-types
+	)
+	if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		target_link_libraries(
+			xmipp4-core
+			PRIVATE
+				ws2_32
+				ntdll
+				userenv
+		)
+	endif()
+	target_compile_definitions(
+		xmipp4-core
+		PUBLIC
+			XMIPP4_CORE_ENABLE_RUST_BRIDGE=1
+	)
+endif()
+
 # Install library's binary files and headers
 install(
 	TARGETS xmipp4-core

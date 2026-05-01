@@ -7,6 +7,10 @@
 
 #include "numerical_type_promotion_lattice.hpp"
 
+#ifdef XMIPP4_CORE_ENABLE_RUST_BRIDGE
+	#include "rust_bridge.hpp"
+#endif
+
 #include <complex>
 
 namespace xmipp4
@@ -145,6 +149,22 @@ numerical_type make_complex(numerical_type type) noexcept
 numerical_type 
 promote_types(numerical_type type1, numerical_type type2) noexcept
 {
+#ifdef XMIPP4_CORE_ENABLE_RUST_BRIDGE
+	const auto promoted_raw = xmipp4_rust_promote_types(
+		static_cast<std::int32_t>(type1),
+		static_cast<std::int32_t>(type2)
+	);
+
+	if (
+		promoted_raw < static_cast<std::int32_t>(numerical_type::unknown) ||
+		promoted_raw >= static_cast<std::int32_t>(numerical_type::count)
+	)
+	{
+		return numerical_type::unknown;
+	}
+
+	return static_cast<numerical_type>(promoted_raw);
+#else
 	static const auto lut = compute_numerical_type_promotion_table();
 
 	const auto i = static_cast<int>(type1); 
@@ -157,6 +177,7 @@ promote_types(numerical_type type1, numerical_type type2) noexcept
 	}
 
 	return lut[i][j];
+#endif
 }
 
 XMIPP4_CORE_API

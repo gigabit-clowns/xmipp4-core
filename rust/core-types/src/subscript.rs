@@ -70,12 +70,12 @@ impl Slice {
 }
 
 pub fn sanitize_slice(slice: Slice, extent: usize) -> Result<Slice, SliceError> {
-	sanitize_slice_step(slice)?;
-	let slice = sanitize_slice_start(slice, extent)?;
-	sanitize_slice_count(slice, extent)
+	validate_non_zero_slice_step(slice)?;
+	let slice = normalize_slice_start(slice, extent)?;
+	normalize_slice_count(slice, extent)
 }
 
-fn sanitize_slice_step(slice: Slice) -> Result<(), SliceError> {
+fn validate_non_zero_slice_step(slice: Slice) -> Result<(), SliceError> {
 	if slice.step == 0 {
 		return Err(SliceError::StepZero);
 	}
@@ -83,54 +83,105 @@ fn sanitize_slice_step(slice: Slice) -> Result<(), SliceError> {
 	Ok(())
 }
 
-fn sanitize_slice_start(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
+fn normalize_slice_start(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
 	let start = slice.start;
 	let count = slice.count;
 	let step = slice.step;
 
-	if start < -(extent as isize) {
-		return Err(SliceError::NegativeStartOutOfBounds { start, extent });
-	}
-
-	if step > 0 || count == 0 {
-		if start > extent as isize {
-			return Err(SliceError::StartOutOfBounds { start, extent });
-		}
-	} else if start >= extent as isize {
-		return Err(SliceError::BackwardStartOutOfBounds { start, extent });
-	}
-
-	if start < 0 {
-		slice.start = start + extent as isize;
-	}
+	validate_slice_start_lower_bound(start, extent)?;
+	validate_slice_start_upper_bound(start, count, step, extent)?;
+	remap_negative_slice_start(&mut slice, extent);
 
 	Ok(slice)
 }
 
-fn sanitize_slice_count(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
+fn validate_slice_start_lower_bound(start: isize, extent: usize) -> Result<(), SliceError> {
+	if start < -(extent as isize) {
+		return Err(SliceError::NegativeStartOutOfBounds { start, extent });
+	}
+
+	Ok(())
+}
+
+fn validate_slice_start_upper_bound(
+	start: isize,
+	count: usize,
+	step: isize,
+	extent: usize,
+) -> Result<(), SliceError> {
+	if step > 0 || count == 0 {
+		if start > extent as isize {
+			return Err(SliceError::StartOutOfBounds { start, extent });
+		}
+		return Ok(());
+	}
+
+	if start >= extent as isize {
+		return Err(SliceError::BackwardStartOutOfBounds { start, extent });
+	}
+
+	Ok(())
+}
+
+fn remap_negative_slice_start(slice: &mut Slice, extent: usize) {
+	if slice.start < 0 {
+		slice.start += extent as isize;
+	}
+}
+
+fn normalize_slice_count(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
 	let start = slice.start;
 	let count = slice.count;
 	let step = slice.step;
 
 	if step > 0 {
-		if count == end() {
-			slice.count = (extent - start as usize).div_ceil(step as usize);
-		} else if count > 0 && start + step * (count as isize - 1) >= extent as isize {
-			return Err(SliceError::PositiveSliceOverflowsExtent {
-				count,
-				start,
-				step,
-				extent,
-			});
-		}
+		normalize_forward_slice_count(&mut slice, extent, start, count, step)?;
 	} else {
-		let abs_step = -step;
-		if count == end() {
-			slice.count = start as usize / abs_step as usize + 1;
-		} else if count > 0 && abs_step * (count as isize - 1) > start {
-			return Err(SliceError::ReversedSliceUnderflowsZero { count, start, step });
-		}
+		normalize_backward_slice_count(&mut slice, start, count, step)?;
 	}
 
 	Ok(slice)
+}
+
+fn normalize_forward_slice_count(
+	slice: &mut Slice,
+	extent: usize,
+	start: isize,
+	count: usize,
+	step: isize,
+) -> Result<(), SliceError> {
+	if count == end() {
+		slice.count = (extent - start as usize).div_ceil(step as usize);
+		return Ok(());
+	}
+
+	if count > 0 && start + step * (count as isize - 1) >= extent as isize {
+		return Err(SliceError::PositiveSliceOverflowsExtent {
+			count,
+			start,
+			step,
+			extent,
+		});
+	}
+
+	Ok(())
+}
+
+fn normalize_backward_slice_count(
+	slice: &mut Slice,
+	start: isize,
+	count: usize,
+	step: isize,
+) -> Result<(), SliceError> {
+	let abs_step = -step;
+	if count == end() {
+		slice.count = start as usize / abs_step as usize + 1;
+		return Ok(());
+	}
+
+	if count > 0 && abs_step * (count as isize - 1) > start {
+		return Err(SliceError::ReversedSliceUnderflowsZero { count, start, step });
+	}
+
+	Ok(())
 }

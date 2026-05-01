@@ -150,7 +150,7 @@ impl StridedLayout {
 	}
 
 	pub fn permute(&self, order: &[usize]) -> Result<Self, StridedLayoutError> {
-		check_axis_permutation(order, self.rank())?;
+		validate_axis_permutation(order, self.rank())?;
 
 		let mut extents = Vec::with_capacity(order.len());
 		let mut strides = Vec::with_capacity(order.len());
@@ -168,8 +168,8 @@ impl StridedLayout {
 
 	pub fn matrix_transpose(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
-		let index1 = sanitize_index(axis1, rank)?;
-		let index2 = sanitize_index(axis2, rank)?;
+		let index1 = normalize_axis_index(axis1, rank)?;
+		let index2 = normalize_axis_index(axis2, rank)?;
 
 		let mut extents = self.extents.clone();
 		extents.swap(index1, index2);
@@ -186,8 +186,8 @@ impl StridedLayout {
 
 	pub fn matrix_diagonal(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
-		let mut index1 = sanitize_index(axis1, rank)?;
-		let mut index2 = sanitize_index(axis2, rank)?;
+		let mut index1 = normalize_axis_index(axis1, rank)?;
+		let mut index2 = normalize_axis_index(axis2, rank)?;
 
 		if axis1 == axis2 {
 			return Err(StridedLayoutError::AxesMustDiffer);
@@ -242,9 +242,10 @@ impl StridedLayout {
 			return Ok(self.clone());
 		}
 
-		let padding = compute_broadcast_padding(self.rank(), extents.len())?;
-		let (mut out_extents, mut out_strides) = build_broadcast_axes(self, extents, padding);
-		promote_broadcast_axes(extents, &mut out_extents, &mut out_strides)?;
+		let left_padding_axis_count = compute_broadcast_padding(self.rank(), extents.len())?;
+		let (mut out_extents, mut out_strides) =
+			initialize_broadcast_axes(self, extents, left_padding_axis_count);
+		apply_broadcast_adjustments(extents, &mut out_extents, &mut out_strides)?;
 
 		Ok(Self {
 			extents: out_extents,
@@ -261,93 +262,141 @@ impl StridedLayout {
 			return Ok(self.clone());
 		}
 
-		let mut offset = self.offset;
-		let mut left_axis = 0usize;
-		let mut right_axis = self.rank();
-		let mut left_output_extents = Vec::<usize>::new();
-		let mut left_output_strides = Vec::<isize>::new();
-		let mut right_output_extents = Vec::<usize>::new();
-		let mut right_output_strides = Vec::<isize>::new();
+		let mut state = SubscriptTraversalState::new(self.offset, self.rank());
+		let ellipsis_pos = find_ellipsis_position(subscripts)?;
+		apply_subscript_partitions(self, subscripts, ellipsis_pos, &mut state)?;
 
-		let ellipsis_positions = subscripts
-			.iter()
-			.enumerate()
-			.filter_map(|(i, s)| {
-				if matches!(s, DynamicSubscript::Ellipsis) {
-					Some(i)
-				} else {
-					None
-				}
-			})
-			.collect::<Vec<_>>();
-
-		if ellipsis_positions.len() > 1 {
-			return Err(StridedLayoutError::MultipleEllipsis);
-		}
-
-		if let Some(ellipsis_pos) = ellipsis_positions.first().copied() {
-			for subscript in &subscripts[..ellipsis_pos] {
-				apply_subscript_forward(
-					self,
-					subscript,
-					&mut left_axis,
-					right_axis,
-					&mut offset,
-					&mut left_output_extents,
-					&mut left_output_strides,
-				)?;
-			}
-
-			for subscript in subscripts[ellipsis_pos + 1..].iter().rev() {
-				apply_subscript_backward(
-					self,
-					subscript,
-					left_axis,
-					&mut right_axis,
-					&mut offset,
-					&mut right_output_extents,
-					&mut right_output_strides,
-				)?;
-			}
-		} else {
-			for subscript in subscripts {
-				apply_subscript_forward(
-					self,
-					subscript,
-					&mut left_axis,
-					right_axis,
-					&mut offset,
-					&mut left_output_extents,
-					&mut left_output_strides,
-				)?;
-			}
-		}
-
-		let mut extents = Vec::new();
-		let mut strides = Vec::new();
-
-		extents.extend_from_slice(&left_output_extents);
-		strides.extend_from_slice(&left_output_strides);
-
-		for i in left_axis..right_axis {
-			extents.push(self.extents[i]);
-			strides.push(self.strides[i]);
-		}
-
-		right_output_extents.reverse();
-		right_output_strides.reverse();
-		extents.extend_from_slice(&right_output_extents);
-		strides.extend_from_slice(&right_output_strides);
-
-		Ok(Self {
-			extents,
-			strides,
-			offset,
-		})
+		Ok(assemble_subscripted_layout(self, state))
 	}
 }
 
-fn check_axis_permutation(order: &[usize], count: usize) -> Result<(), StridedLayoutError> {
+struct SubscriptTraversalState {
+	offset: isize,
+	left_axis: usize,
+	right_axis: usize,
+	left_output_extents: Vec<usize>,
+	left_output_strides: Vec<isize>,
+	right_output_extents: Vec<usize>,
+	right_output_strides: Vec<isize>,
+}
+
+impl SubscriptTraversalState {
+	fn new(offset: isize, rank: usize) -> Self {
+		Self {
+			offset,
+			left_axis: 0,
+			right_axis: rank,
+			left_output_extents: Vec::new(),
+			left_output_strides: Vec::new(),
+			right_output_extents: Vec::new(),
+			right_output_strides: Vec::new(),
+		}
+	}
+}
+
+fn find_ellipsis_position(
+	subscripts: &[DynamicSubscript],
+) -> Result<Option<usize>, StridedLayoutError> {
+	let mut ellipsis_pos = None;
+
+	for (index, subscript) in subscripts.iter().enumerate() {
+		if !matches!(subscript, DynamicSubscript::Ellipsis) {
+			continue;
+		}
+
+		if ellipsis_pos.is_some() {
+			return Err(StridedLayoutError::MultipleEllipsis);
+		}
+
+		ellipsis_pos = Some(index);
+	}
+
+	Ok(ellipsis_pos)
+}
+
+fn apply_subscript_partitions(
+	layout: &StridedLayout,
+	subscripts: &[DynamicSubscript],
+	ellipsis_pos: Option<usize>,
+	state: &mut SubscriptTraversalState,
+) -> Result<(), StridedLayoutError> {
+	if let Some(ellipsis_pos) = ellipsis_pos {
+		apply_leading_subscripts(layout, &subscripts[..ellipsis_pos], state)?;
+		apply_trailing_subscripts(layout, &subscripts[ellipsis_pos + 1..], state)?;
+		return Ok(());
+	}
+
+	apply_leading_subscripts(layout, subscripts, state)
+}
+
+fn apply_leading_subscripts(
+	layout: &StridedLayout,
+	subscripts: &[DynamicSubscript],
+	state: &mut SubscriptTraversalState,
+) -> Result<(), StridedLayoutError> {
+	for subscript in subscripts {
+		apply_subscript_forward(
+			layout,
+			subscript,
+			&mut state.left_axis,
+			state.right_axis,
+			&mut state.offset,
+			&mut state.left_output_extents,
+			&mut state.left_output_strides,
+		)?;
+	}
+
+	Ok(())
+}
+
+fn apply_trailing_subscripts(
+	layout: &StridedLayout,
+	subscripts: &[DynamicSubscript],
+	state: &mut SubscriptTraversalState,
+) -> Result<(), StridedLayoutError> {
+	for subscript in subscripts.iter().rev() {
+		apply_subscript_backward(
+			layout,
+			subscript,
+			state.left_axis,
+			&mut state.right_axis,
+			&mut state.offset,
+			&mut state.right_output_extents,
+			&mut state.right_output_strides,
+		)?;
+	}
+
+	Ok(())
+}
+
+fn assemble_subscripted_layout(
+	layout: &StridedLayout,
+	mut state: SubscriptTraversalState,
+) -> StridedLayout {
+	let mut extents = Vec::new();
+	let mut strides = Vec::new();
+
+	extents.extend_from_slice(&state.left_output_extents);
+	strides.extend_from_slice(&state.left_output_strides);
+
+	for i in state.left_axis..state.right_axis {
+		extents.push(layout.extents[i]);
+		strides.push(layout.strides[i]);
+	}
+
+	state.right_output_extents.reverse();
+	state.right_output_strides.reverse();
+	extents.extend_from_slice(&state.right_output_extents);
+	strides.extend_from_slice(&state.right_output_strides);
+
+	StridedLayout {
+		extents,
+		strides,
+		offset: state.offset,
+	}
+}
+
+fn validate_axis_permutation(order: &[usize], count: usize) -> Result<(), StridedLayoutError> {
 	if order.len() != count {
 		return Err(StridedLayoutError::InvalidAxisPermutationLength);
 	}
@@ -361,7 +410,7 @@ fn check_axis_permutation(order: &[usize], count: usize) -> Result<(), StridedLa
 	Ok(())
 }
 
-fn sanitize_index(index: isize, extent: usize) -> Result<usize, StridedLayoutError> {
+fn normalize_axis_index(index: isize, extent: usize) -> Result<usize, StridedLayoutError> {
 	if index < 0 {
 		if index < -(extent as isize) {
 			return Err(StridedLayoutError::ReverseIndexOutOfBounds { index, extent });
@@ -385,7 +434,7 @@ fn compute_broadcast_padding(rank: usize, target_rank: usize) -> Result<usize, S
 	Ok(target_rank - rank)
 }
 
-fn build_broadcast_axes(
+fn initialize_broadcast_axes(
 	layout: &StridedLayout,
 	target_extents: &[usize],
 	padding: usize,
@@ -406,7 +455,7 @@ fn build_broadcast_axes(
 	(out_extents, out_strides)
 }
 
-fn promote_broadcast_axes(
+fn apply_broadcast_adjustments(
 	target_extents: &[usize],
 	out_extents: &mut [usize],
 	out_strides: &mut [isize],
@@ -449,13 +498,13 @@ fn apply_subscript_forward(
 			Ok(())
 		}
 		DynamicSubscript::Index(index) => {
-			ensure_axis_for_index(*left_axis, right_axis)?;
+			ensure_axis_available_for_index(*left_axis, right_axis)?;
 			apply_index(layout, *left_axis, *index, offset)?;
 			*left_axis += 1;
 			Ok(())
 		}
 		DynamicSubscript::Slice(slice) => {
-			ensure_axis_for_slice(*left_axis, right_axis)?;
+			ensure_axis_available_for_slice(*left_axis, right_axis)?;
 			let (extent, stride) = apply_slice(layout, *left_axis, *slice, offset)?;
 			out_extents.push(extent);
 			out_strides.push(stride);
@@ -482,14 +531,14 @@ fn apply_subscript_backward(
 			Ok(())
 		}
 		DynamicSubscript::Index(index) => {
-			ensure_axis_for_index(left_axis, *right_axis)?;
+			ensure_axis_available_for_index(left_axis, *right_axis)?;
 			let axis_index = *right_axis - 1;
 			apply_index(layout, axis_index, *index, offset)?;
 			*right_axis -= 1;
 			Ok(())
 		}
 		DynamicSubscript::Slice(slice) => {
-			ensure_axis_for_slice(left_axis, *right_axis)?;
+			ensure_axis_available_for_slice(left_axis, *right_axis)?;
 			let axis_index = *right_axis - 1;
 			let (extent, stride) = apply_slice(layout, axis_index, *slice, offset)?;
 			out_extents.push(extent);
@@ -500,7 +549,10 @@ fn apply_subscript_backward(
 	}
 }
 
-fn ensure_axis_for_index(left_axis: usize, right_axis: usize) -> Result<(), StridedLayoutError> {
+fn ensure_axis_available_for_index(
+	left_axis: usize,
+	right_axis: usize,
+) -> Result<(), StridedLayoutError> {
 	if left_axis == right_axis {
 		return Err(StridedLayoutError::NoMoreAxesForIndex);
 	}
@@ -508,7 +560,10 @@ fn ensure_axis_for_index(left_axis: usize, right_axis: usize) -> Result<(), Stri
 	Ok(())
 }
 
-fn ensure_axis_for_slice(left_axis: usize, right_axis: usize) -> Result<(), StridedLayoutError> {
+fn ensure_axis_available_for_slice(
+	left_axis: usize,
+	right_axis: usize,
+) -> Result<(), StridedLayoutError> {
 	if left_axis == right_axis {
 		return Err(StridedLayoutError::NoMoreAxesForSlice);
 	}
@@ -522,7 +577,7 @@ fn apply_index(
 	index: isize,
 	offset: &mut isize,
 ) -> Result<(), StridedLayoutError> {
-	let sanitized_index = sanitize_index(index, layout.extents[axis_index])?;
+	let sanitized_index = normalize_axis_index(index, layout.extents[axis_index])?;
 	*offset += sanitized_index as isize * layout.strides[axis_index];
 	Ok(())
 }

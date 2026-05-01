@@ -87,28 +87,13 @@ pub fn promote_types(type1: NumericalType, type2: NumericalType) -> NumericalTyp
 		return type1;
 	}
 
-	let upper1 = collect_upper_bounds(type1);
-	let upper2 = collect_upper_bounds(type2);
-
-	let common = upper1
-		.into_iter()
-		.filter(|candidate| upper2.contains(candidate))
-		.collect::<Vec<_>>();
+	let common = collect_common_promotable_types(type1, type2);
 
 	if common.is_empty() {
 		return NumericalType::Unknown;
 	}
 
-	let minimal = common
-		.iter()
-		.copied()
-		.filter(|candidate| {
-			!common
-				.iter()
-				.copied()
-				.any(|other| other != *candidate && can_reach(other, *candidate))
-		})
-		.collect::<Vec<_>>();
+	let minimal = collect_minimal_common_types(&common);
 
 	if minimal.len() == 1 {
 		minimal[0]
@@ -117,17 +102,42 @@ pub fn promote_types(type1: NumericalType, type2: NumericalType) -> NumericalTyp
 	}
 }
 
-fn collect_upper_bounds(from: NumericalType) -> Vec<NumericalType> {
+fn collect_common_promotable_types(
+	type1: NumericalType,
+	type2: NumericalType,
+) -> Vec<NumericalType> {
+	let promotable_from_type1 = collect_reachable_promotions(type1);
+	let promotable_from_type2 = collect_reachable_promotions(type2);
+
+	promotable_from_type1
+		.into_iter()
+		.filter(|candidate| promotable_from_type2.contains(candidate))
+		.collect::<Vec<_>>()
+}
+
+fn collect_minimal_common_types(common_types: &[NumericalType]) -> Vec<NumericalType> {
+	common_types
+		.iter()
+		.copied()
+		.filter(|candidate| {
+			!common_types
+				.iter()
+				.copied()
+				.any(|other| other != *candidate && has_promotion_path(other, *candidate))
+		})
+		.collect::<Vec<_>>()
+}
+
+fn collect_reachable_promotions(from: NumericalType) -> Vec<NumericalType> {
 	let mut stack = vec![from];
 	let mut visited = Vec::new();
 
 	while let Some(current) = stack.pop() {
-		if visited.contains(&current) {
+		if mark_visited_once(&mut visited, current) {
 			continue;
 		}
 
-		visited.push(current);
-		for &successor in successors(current) {
+		for &successor in promotion_successors(current) {
 			if !visited.contains(&successor) {
 				stack.push(successor);
 			}
@@ -137,7 +147,7 @@ fn collect_upper_bounds(from: NumericalType) -> Vec<NumericalType> {
 	visited
 }
 
-fn can_reach(from: NumericalType, to: NumericalType) -> bool {
+fn has_promotion_path(from: NumericalType, to: NumericalType) -> bool {
 	if from == to {
 		return true;
 	}
@@ -150,12 +160,11 @@ fn can_reach(from: NumericalType, to: NumericalType) -> bool {
 			return true;
 		}
 
-		if visited.contains(&current) {
+		if mark_visited_once(&mut visited, current) {
 			continue;
 		}
 
-		visited.push(current);
-		for &successor in successors(current) {
+		for &successor in promotion_successors(current) {
 			if !visited.contains(&successor) {
 				stack.push(successor);
 			}
@@ -165,7 +174,16 @@ fn can_reach(from: NumericalType, to: NumericalType) -> bool {
 	false
 }
 
-fn successors(value: NumericalType) -> &'static [NumericalType] {
+fn mark_visited_once(visited: &mut Vec<NumericalType>, current: NumericalType) -> bool {
+	if visited.contains(&current) {
+		return true;
+	}
+
+	visited.push(current);
+	false
+}
+
+fn promotion_successors(value: NumericalType) -> &'static [NumericalType] {
 	match value {
 		NumericalType::Unknown => &[],
 		NumericalType::Boolean => &[NumericalType::UInt8, NumericalType::Int8],

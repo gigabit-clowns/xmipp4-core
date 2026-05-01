@@ -127,6 +127,50 @@ jobs:
       - name: Rust tests
         run: cargo test --workspace
 
+  docs_build_and_rust_bridge_test:
+    name: Docs + CMake Rust bridge
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      BUILD_TYPE: Debug
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Install documentation dependencies
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Configure CMake (docs + Rust bridge)
+        run: |
+          cmake -S . -B build-rust-bridge-docs \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DXMIPP4_CORE_BUILD_DOC=ON \
+            -DXMIPP4_CORE_ENABLE_RUST_BRIDGE=ON
+
+      - name: Build documentation
+        run: cmake --build build-rust-bridge-docs --config ${{ env.BUILD_TYPE }} --target doxygen --parallel
+
+      - name: Build project
+        run: cmake --build build-rust-bridge-docs --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Run all tests
+        run: ctest --test-dir build-rust-bridge-docs --build-config ${{ env.BUILD_TYPE }} --output-on-failure
+
+      - name: Run Rust bridge comparison tests
+        run: ./build-rust-bridge-docs/tests/unitary/xmipp4-core-unitary-tests [rust_bridge]
+
   build_with_pip:
     name: pip
     permissions:

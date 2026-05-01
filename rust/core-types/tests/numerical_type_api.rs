@@ -2,7 +2,10 @@ use xmipp4_core_types::{NumericalType, NumericalTypeCategory};
 
 #[test]
 fn make_complex_behaviour_matches_expected_cases() {
-	assert_eq!(NumericalType::Float32.make_complex(), NumericalType::ComplexFloat32);
+	assert_eq!(
+		NumericalType::Float32.make_complex(),
+		NumericalType::ComplexFloat32
+	);
 	assert_eq!(
 		NumericalType::ComplexFloat64.make_complex(),
 		NumericalType::ComplexFloat64

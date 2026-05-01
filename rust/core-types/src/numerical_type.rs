@@ -51,12 +51,14 @@ impl NumericalType {
 			NumericalType::Unknown => NumericalTypeCategory::Unknown,
 			NumericalType::Boolean => NumericalTypeCategory::Boolean,
 			NumericalType::Char8 => NumericalTypeCategory::Character,
-			NumericalType::Int8 | NumericalType::Int16 | NumericalType::Int32 | NumericalType::Int64 => {
-				NumericalTypeCategory::SignedInteger
-			}
-			NumericalType::UInt8 | NumericalType::UInt16 | NumericalType::UInt32 | NumericalType::UInt64 => {
-				NumericalTypeCategory::UnsignedInteger
-			}
+			NumericalType::Int8
+			| NumericalType::Int16
+			| NumericalType::Int32
+			| NumericalType::Int64 => NumericalTypeCategory::SignedInteger,
+			NumericalType::UInt8
+			| NumericalType::UInt16
+			| NumericalType::UInt32
+			| NumericalType::UInt64 => NumericalTypeCategory::UnsignedInteger,
 			NumericalType::Float16 | NumericalType::Float32 | NumericalType::Float64 => {
 				NumericalTypeCategory::FloatingPoint
 			}

@@ -92,6 +92,33 @@ jobs:
           name: build-artifact
           path: build
 
+  rust_build_and_test:
+    name: Rust
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+        working-directory: rust
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Rust check
+        run: cargo check --workspace --all-targets
+
+      - name: Rust tests
+        run: cargo test --workspace
+
   build_with_pip:
     name: pip
     permissions:

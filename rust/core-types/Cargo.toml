@@ -1,0 +1,10 @@
+[package]
+name = "xmipp4-core-types"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "Isolated Rust spike for Xmipp4 core data model types"
+
+[lib]
+name = "xmipp4_core_types"
+path = "src/lib.rs"

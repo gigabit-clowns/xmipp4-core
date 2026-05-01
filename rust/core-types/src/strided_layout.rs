@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Strided layout model and axis-transform operations.
 
 use crate::strided_layout_error::StridedLayoutError;

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Typed errors returned by slice sanitization.
 
 use std::error::Error;

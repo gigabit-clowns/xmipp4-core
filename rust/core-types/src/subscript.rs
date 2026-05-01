@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Dynamic subscript model and slice sanitization utilities.
 
 use crate::slice_error::SliceError;

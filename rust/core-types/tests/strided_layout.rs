@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use xmipp4_core_types::subscript::{all, ellipsis, even, make_slice, new_axis, odd};

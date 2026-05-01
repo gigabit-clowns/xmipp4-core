@@ -98,6 +98,18 @@ Only public API names are listed here. Internal helpers are intentionally exclud
   - `cargo clippy --workspace --all-targets -- -D warnings`
   - `cargo test --workspace`
 
+## Documentation And SPDX Requirements
+
+As part of drop-in readiness, parity work is not considered complete with only
+functional/API alignment.
+
+- Public API must include rustdoc documentation sufficient to generate browsable
+  reference docs.
+- Rust source and test files must include SPDX identifiers matching repository
+  policy (`GPL-3.0-only`).
+- Documentation/state files should be maintained as consolidated current-state
+  snapshots, not incremental journals.
+
 ## Tests
 
 - Public-API integration tests:

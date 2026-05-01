@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Typed errors returned by strided layout operations.
 
 use crate::slice_error::SliceError;

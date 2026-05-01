@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Core public types and helpers used by the Rust parity layer for Xmipp4.
 //!
 //! This crate mirrors selected C++ concepts with stable public names so the

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 use xmipp4_core_types::subscript::{make_slice, make_slice_full, make_slice_start, sanitize_slice};
 use xmipp4_core_types::SliceError;
 

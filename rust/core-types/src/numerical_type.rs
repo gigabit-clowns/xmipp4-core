@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Numerical type model and promotion logic.
 
 /// Enumerates supported scalar and complex numerical representations.

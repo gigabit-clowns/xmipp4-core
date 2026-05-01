@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 use xmipp4_core_types::{
 	compute_storage_requirement, is_initialized, ArrayDescriptor, NumericalType, StridedLayout,
 };

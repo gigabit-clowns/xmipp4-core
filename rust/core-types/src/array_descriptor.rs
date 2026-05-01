@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! Array descriptor type that couples a layout with its numerical data type.
 
 use crate::{NumericalType, StridedLayout};

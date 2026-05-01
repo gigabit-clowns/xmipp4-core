@@ -1,3 +1,5 @@
+use crate::slice_error::SliceError;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Slice {
 	start: isize,
@@ -67,44 +69,35 @@ impl Slice {
 	}
 }
 
-pub fn sanitize_slice(slice: Slice, extent: usize) -> Result<Slice, String> {
+pub fn sanitize_slice(slice: Slice, extent: usize) -> Result<Slice, SliceError> {
 	sanitize_slice_step(slice)?;
 	let slice = sanitize_slice_start(slice, extent)?;
 	sanitize_slice_count(slice, extent)
 }
 
-fn sanitize_slice_step(slice: Slice) -> Result<(), String> {
+fn sanitize_slice_step(slice: Slice) -> Result<(), SliceError> {
 	if slice.step == 0 {
-		return Err("Slice step cannot be zero.".to_string());
+		return Err(SliceError::StepZero);
 	}
 
 	Ok(())
 }
 
-fn sanitize_slice_start(mut slice: Slice, extent: usize) -> Result<Slice, String> {
+fn sanitize_slice_start(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
 	let start = slice.start;
 	let count = slice.count;
 	let step = slice.step;
 
 	if start < -(extent as isize) {
-		return Err(format!(
-			"Slice's negative start index {} is out of bounds for extent {}.",
-			start, extent
-		));
+		return Err(SliceError::NegativeStartOutOfBounds { start, extent });
 	}
 
 	if step > 0 || count == 0 {
 		if start > extent as isize {
-			return Err(format!(
-				"Slice's start index {} is out of bounds for extent {}.",
-				start, extent
-			));
+			return Err(SliceError::StartOutOfBounds { start, extent });
 		}
 	} else if start >= extent as isize {
-		return Err(format!(
-			"Backwards slice's start index {} is out of bounds for extent {}.",
-			start, extent
-		));
+		return Err(SliceError::BackwardStartOutOfBounds { start, extent });
 	}
 
 	if start < 0 {
@@ -114,7 +107,7 @@ fn sanitize_slice_start(mut slice: Slice, extent: usize) -> Result<Slice, String
 	Ok(slice)
 }
 
-fn sanitize_slice_count(mut slice: Slice, extent: usize) -> Result<Slice, String> {
+fn sanitize_slice_count(mut slice: Slice, extent: usize) -> Result<Slice, SliceError> {
 	let start = slice.start;
 	let count = slice.count;
 	let step = slice.step;
@@ -123,20 +116,19 @@ fn sanitize_slice_count(mut slice: Slice, extent: usize) -> Result<Slice, String
 		if count == end() {
 			slice.count = (extent - start as usize).div_ceil(step as usize);
 		} else if count > 0 && start + step * (count as isize - 1) >= extent as isize {
-			return Err(format!(
-				"Slice count {} start index {} and step {} overflows extent {}",
-				count, start, step, extent
-			));
+			return Err(SliceError::PositiveSliceOverflowsExtent {
+				count,
+				start,
+				step,
+				extent,
+			});
 		}
 	} else {
 		let abs_step = -step;
 		if count == end() {
 			slice.count = start as usize / abs_step as usize + 1;
 		} else if count > 0 && abs_step * (count as isize - 1) > start {
-			return Err(format!(
-				"Reversed slice with count {} start index {} and step {} underflows 0",
-				count, start, step
-			));
+			return Err(SliceError::ReversedSliceUnderflowsZero { count, start, step });
 		}
 	}
 

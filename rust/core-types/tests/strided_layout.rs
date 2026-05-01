@@ -99,7 +99,10 @@ fn permute_with_non_permutation_fails_with_expected_message() {
 	let layout = make_test_layout();
 	let error = layout.permute(&[0, 1, 2, 3, 4, 4]).expect_err("must fail");
 
-	assert_eq!(error, "Index 5 is missing in the axis permutation");
+	assert_eq!(
+		error.to_string(),
+		"Index 5 is missing in the axis permutation"
+	);
 }
 
 #[test]
@@ -116,7 +119,7 @@ fn permute_on_default_layout_with_non_empty_permutation_fails() {
 	let error = layout.permute(&[0]).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"Axis permutation's length does not match the required count"
 	);
 }
@@ -138,12 +141,12 @@ fn matrix_transpose_fails_when_axis_is_out_of_bounds() {
 	let error = layout
 		.matrix_transpose(6, 0)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error, "Index 6 is out of bounds for extent 6");
+	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
 
 	let error = layout
 		.matrix_transpose(0, 6)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error, "Index 6 is out of bounds for extent 6");
+	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
 }
 
 #[test]
@@ -153,12 +156,12 @@ fn matrix_transpose_on_default_layout_always_fails() {
 	let error = layout
 		.matrix_transpose(0, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error, "Index 0 is out of bounds for extent 0");
+	assert_eq!(error.to_string(), "Index 0 is out of bounds for extent 0");
 
 	let error = layout
 		.matrix_transpose(1, 1)
 		.expect_err("default layout must fail");
-	assert_eq!(error, "Index 1 is out of bounds for extent 0");
+	assert_eq!(error.to_string(), "Index 1 is out of bounds for extent 0");
 }
 
 #[test]
@@ -196,12 +199,12 @@ fn matrix_diagonal_fails_when_axis_is_out_of_bounds() {
 	let error = layout
 		.matrix_diagonal(6, 0)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error, "Index 6 is out of bounds for extent 6");
+	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
 
 	let error = layout
 		.matrix_diagonal(0, 6)
 		.expect_err("axis must be out of bounds");
-	assert_eq!(error, "Index 6 is out of bounds for extent 6");
+	assert_eq!(error.to_string(), "Index 6 is out of bounds for extent 6");
 }
 
 #[test]
@@ -211,12 +214,12 @@ fn matrix_diagonal_on_default_layout_always_fails() {
 	let error = layout
 		.matrix_diagonal(0, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error, "Index 0 is out of bounds for extent 0");
+	assert_eq!(error.to_string(), "Index 0 is out of bounds for extent 0");
 
 	let error = layout
 		.matrix_diagonal(1, 0)
 		.expect_err("default layout must fail");
-	assert_eq!(error, "Index 1 is out of bounds for extent 0");
+	assert_eq!(error.to_string(), "Index 1 is out of bounds for extent 0");
 }
 
 #[test]
@@ -224,7 +227,10 @@ fn matrix_diagonal_requires_different_axes() {
 	let layout = make_test_layout();
 	let error = layout.matrix_diagonal(0, 0).expect_err("must fail");
 
-	assert_eq!(error, "axis1 and axis2 must represent different axes");
+	assert_eq!(
+		error.to_string(),
+		"axis1 and axis2 must represent different axes"
+	);
 }
 
 #[test]
@@ -265,7 +271,7 @@ fn broadcast_to_fails_when_target_has_fewer_axes() {
 
 	let error = layout.broadcast_to(&target_extents).expect_err("must fail");
 	assert_eq!(
-		error,
+		error.to_string(),
 		"Cannot broadcast layout with 6 axes into a shape of 5 dimensions."
 	);
 }
@@ -277,7 +283,7 @@ fn broadcast_to_fails_when_axis_is_not_broadcastable() {
 
 	let error = layout.broadcast_to(&target_extents).expect_err("must fail");
 	assert_eq!(
-		error,
+		error.to_string(),
 		"Cannot broadcast axis of extent 56 into an extent of 55."
 	);
 }
@@ -374,7 +380,7 @@ fn apply_subscripts_with_two_ellipsis_fails() {
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"Two ellipsis tags were encountered when processing subscripts"
 	);
 }
@@ -394,7 +400,7 @@ fn apply_subscripts_with_too_many_subscripts_fails() {
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"An index subscript was encountered, but there are no more axes to process"
 	);
 }
@@ -415,7 +421,7 @@ fn apply_subscripts_with_too_many_subscripts_and_ellipsis_fails() {
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"A slice subscript was encountered, but there are no more axes to process"
 	);
 }
@@ -455,7 +461,7 @@ fn apply_subscripts_with_index_in_default_layout_fails() {
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"An index subscript was encountered, but there are no more axes to process"
 	);
 }
@@ -467,7 +473,7 @@ fn apply_subscripts_with_slice_in_default_layout_fails() {
 	let error = layout.apply_subscripts(&subscripts).expect_err("must fail");
 
 	assert_eq!(
-		error,
+		error.to_string(),
 		"A slice subscript was encountered, but there are no more axes to process"
 	);
 }

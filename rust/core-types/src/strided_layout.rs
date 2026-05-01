@@ -1,3 +1,4 @@
+use crate::strided_layout_error::StridedLayoutError;
 use crate::subscript::{sanitize_slice, DynamicSubscript, Slice};
 use std::hash::{Hash, Hasher};
 
@@ -49,9 +50,13 @@ impl Hash for StridedLayout {
 }
 
 impl StridedLayout {
-	pub fn new(extents: Vec<usize>, strides: Vec<isize>, offset: isize) -> Result<Self, String> {
+	pub fn new(
+		extents: Vec<usize>,
+		strides: Vec<isize>,
+		offset: isize,
+	) -> Result<Self, StridedLayoutError> {
 		if extents.len() != strides.len() {
-			return Err("extents and strides must have the same length".to_string());
+			return Err(StridedLayoutError::RankMismatch);
 		}
 
 		Ok(Self {
@@ -144,7 +149,7 @@ impl StridedLayout {
 		}
 	}
 
-	pub fn permute(&self, order: &[usize]) -> Result<Self, String> {
+	pub fn permute(&self, order: &[usize]) -> Result<Self, StridedLayoutError> {
 		check_axis_permutation(order, self.rank())?;
 
 		let mut extents = Vec::with_capacity(order.len());
@@ -161,7 +166,7 @@ impl StridedLayout {
 		})
 	}
 
-	pub fn matrix_transpose(&self, axis1: isize, axis2: isize) -> Result<Self, String> {
+	pub fn matrix_transpose(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
 		let index1 = sanitize_index(axis1, rank)?;
 		let index2 = sanitize_index(axis2, rank)?;
@@ -179,13 +184,13 @@ impl StridedLayout {
 		})
 	}
 
-	pub fn matrix_diagonal(&self, axis1: isize, axis2: isize) -> Result<Self, String> {
+	pub fn matrix_diagonal(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
 		let mut index1 = sanitize_index(axis1, rank)?;
 		let mut index2 = sanitize_index(axis2, rank)?;
 
 		if axis1 == axis2 {
-			return Err("axis1 and axis2 must represent different axes".to_string());
+			return Err(StridedLayoutError::AxesMustDiffer);
 		}
 
 		if index1 > index2 {
@@ -232,7 +237,7 @@ impl StridedLayout {
 		}
 	}
 
-	pub fn broadcast_to(&self, extents: &[usize]) -> Result<Self, String> {
+	pub fn broadcast_to(&self, extents: &[usize]) -> Result<Self, StridedLayoutError> {
 		if self.extents_equal(extents) {
 			return Ok(self.clone());
 		}
@@ -248,7 +253,10 @@ impl StridedLayout {
 		})
 	}
 
-	pub fn apply_subscripts(&self, subscripts: &[DynamicSubscript]) -> Result<Self, String> {
+	pub fn apply_subscripts(
+		&self,
+		subscripts: &[DynamicSubscript],
+	) -> Result<Self, StridedLayoutError> {
 		if subscripts.is_empty() {
 			return Ok(self.clone());
 		}
@@ -274,9 +282,7 @@ impl StridedLayout {
 			.collect::<Vec<_>>();
 
 		if ellipsis_positions.len() > 1 {
-			return Err(
-				"Two ellipsis tags were encountered when processing subscripts".to_string(),
-			);
+			return Err(StridedLayoutError::MultipleEllipsis);
 		}
 
 		if let Some(ellipsis_pos) = ellipsis_positions.first().copied() {
@@ -341,51 +347,39 @@ impl StridedLayout {
 	}
 }
 
-fn check_axis_permutation(order: &[usize], count: usize) -> Result<(), String> {
+fn check_axis_permutation(order: &[usize], count: usize) -> Result<(), StridedLayoutError> {
 	if order.len() != count {
-		return Err("Axis permutation's length does not match the required count".to_string());
+		return Err(StridedLayoutError::InvalidAxisPermutationLength);
 	}
 
 	for expected in 0..count {
 		if !order.contains(&expected) {
-			return Err(format!(
-				"Index {} is missing in the axis permutation",
-				expected
-			));
+			return Err(StridedLayoutError::MissingAxisInPermutation { index: expected });
 		}
 	}
 
 	Ok(())
 }
 
-fn sanitize_index(index: isize, extent: usize) -> Result<usize, String> {
+fn sanitize_index(index: isize, extent: usize) -> Result<usize, StridedLayoutError> {
 	if index < 0 {
 		if index < -(extent as isize) {
-			return Err(format!(
-				"Reverse index {} is out of bounds for extent {}",
-				index, extent
-			));
+			return Err(StridedLayoutError::ReverseIndexOutOfBounds { index, extent });
 		}
 
 		return Ok((index + extent as isize) as usize);
 	}
 
 	if index >= extent as isize {
-		return Err(format!(
-			"Index {} is out of bounds for extent {}",
-			index, extent
-		));
+		return Err(StridedLayoutError::IndexOutOfBounds { index, extent });
 	}
 
 	Ok(index as usize)
 }
 
-fn compute_broadcast_padding(rank: usize, target_rank: usize) -> Result<usize, String> {
+fn compute_broadcast_padding(rank: usize, target_rank: usize) -> Result<usize, StridedLayoutError> {
 	if rank > target_rank {
-		return Err(format!(
-			"Cannot broadcast layout with {} axes into a shape of {} dimensions.",
-			rank, target_rank
-		));
+		return Err(StridedLayoutError::BroadcastRankMismatch { rank, target_rank });
 	}
 
 	Ok(target_rank - rank)
@@ -416,7 +410,7 @@ fn promote_broadcast_axes(
 	target_extents: &[usize],
 	out_extents: &mut [usize],
 	out_strides: &mut [isize],
-) -> Result<(), String> {
+) -> Result<(), StridedLayoutError> {
 	for i in 0..target_extents.len() {
 		let target_extent = target_extents[i];
 		let axis_extent = out_extents[i];
@@ -425,10 +419,10 @@ fn promote_broadcast_axes(
 		}
 
 		if axis_extent != 1 {
-			return Err(format!(
-				"Cannot broadcast axis of extent {} into an extent of {}.",
-				axis_extent, target_extent
-			));
+			return Err(StridedLayoutError::AxisNotBroadcastable {
+				axis_extent,
+				target_extent,
+			});
 		}
 
 		out_extents[i] = target_extent;
@@ -446,7 +440,7 @@ fn apply_subscript_forward(
 	offset: &mut isize,
 	out_extents: &mut Vec<usize>,
 	out_strides: &mut Vec<isize>,
-) -> Result<(), String> {
+) -> Result<(), StridedLayoutError> {
 	match subscript {
 		DynamicSubscript::Ellipsis => Ok(()),
 		DynamicSubscript::NewAxis => {
@@ -479,11 +473,9 @@ fn apply_subscript_backward(
 	offset: &mut isize,
 	out_extents: &mut Vec<usize>,
 	out_strides: &mut Vec<isize>,
-) -> Result<(), String> {
+) -> Result<(), StridedLayoutError> {
 	match subscript {
-		DynamicSubscript::Ellipsis => {
-			Err("Two ellipsis tags were encountered when processing subscripts".to_string())
-		}
+		DynamicSubscript::Ellipsis => Err(StridedLayoutError::MultipleEllipsis),
 		DynamicSubscript::NewAxis => {
 			out_extents.push(1);
 			out_strides.push(0);
@@ -508,21 +500,17 @@ fn apply_subscript_backward(
 	}
 }
 
-fn ensure_axis_for_index(left_axis: usize, right_axis: usize) -> Result<(), String> {
+fn ensure_axis_for_index(left_axis: usize, right_axis: usize) -> Result<(), StridedLayoutError> {
 	if left_axis == right_axis {
-		return Err(
-			"An index subscript was encountered, but there are no more axes to process".to_string(),
-		);
+		return Err(StridedLayoutError::NoMoreAxesForIndex);
 	}
 
 	Ok(())
 }
 
-fn ensure_axis_for_slice(left_axis: usize, right_axis: usize) -> Result<(), String> {
+fn ensure_axis_for_slice(left_axis: usize, right_axis: usize) -> Result<(), StridedLayoutError> {
 	if left_axis == right_axis {
-		return Err(
-			"A slice subscript was encountered, but there are no more axes to process".to_string(),
-		);
+		return Err(StridedLayoutError::NoMoreAxesForSlice);
 	}
 
 	Ok(())
@@ -533,7 +521,7 @@ fn apply_index(
 	axis_index: usize,
 	index: isize,
 	offset: &mut isize,
-) -> Result<(), String> {
+) -> Result<(), StridedLayoutError> {
 	let sanitized_index = sanitize_index(index, layout.extents[axis_index])?;
 	*offset += sanitized_index as isize * layout.strides[axis_index];
 	Ok(())
@@ -544,7 +532,7 @@ fn apply_slice(
 	axis_index: usize,
 	slice: Slice,
 	offset: &mut isize,
-) -> Result<(usize, isize), String> {
+) -> Result<(usize, isize), StridedLayoutError> {
 	let sanitized_slice = sanitize_slice(slice, layout.extents[axis_index])?;
 	*offset += layout.strides[axis_index] * sanitized_slice.start();
 	let new_extent = sanitized_slice.count();

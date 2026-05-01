@@ -30,17 +30,10 @@ impl ArrayDescriptor {
 }
 
 pub fn is_initialized(descriptor: &ArrayDescriptor) -> bool {
-	descriptor.data_type() != NumericalType::Unknown && descriptor.layout().rank() > 0
+	descriptor.data_type() != NumericalType::Unknown
 }
 
 pub fn compute_storage_requirement(descriptor: &ArrayDescriptor) -> usize {
-	let bytes_per_element = match descriptor.data_type().size_bytes() {
-		Some(value) => value,
-		None => return 0,
-	};
-
-	descriptor
-		.layout()
-		.compute_storage_requirement()
-		.saturating_mul(bytes_per_element)
+	descriptor.layout().compute_storage_requirement()
+		* descriptor.data_type().size_bytes().unwrap_or(0)
 }

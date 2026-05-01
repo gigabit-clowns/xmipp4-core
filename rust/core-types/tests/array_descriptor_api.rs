@@ -1,9 +1,5 @@
 use xmipp4_core_types::{
-	compute_storage_requirement,
-	is_initialized,
-	ArrayDescriptor,
-	NumericalType,
-	StridedLayout,
+	compute_storage_requirement, is_initialized, ArrayDescriptor, NumericalType, StridedLayout,
 };
 
 #[test]
@@ -14,11 +10,24 @@ fn default_descriptor_is_not_initialized() {
 }
 
 #[test]
+fn initialized_depends_only_on_data_type() {
+	let descriptor = ArrayDescriptor::new(StridedLayout::default(), NumericalType::Float32);
+	assert!(is_initialized(&descriptor));
+}
+
+#[test]
 fn descriptor_storage_requirement_uses_layout_and_data_type() {
 	let layout = StridedLayout::make_contiguous_layout(vec![3, 4]);
 	let descriptor = ArrayDescriptor::new(layout, NumericalType::Float32);
 	assert!(is_initialized(&descriptor));
 	assert_eq!(compute_storage_requirement(&descriptor), 3 * 4 * 4);
+}
+
+#[test]
+fn unknown_data_type_has_zero_storage_requirement() {
+	let layout = StridedLayout::make_contiguous_layout(vec![3, 4]);
+	let descriptor = ArrayDescriptor::new(layout, NumericalType::Unknown);
+	assert_eq!(compute_storage_requirement(&descriptor), 0);
 }
 
 #[test]

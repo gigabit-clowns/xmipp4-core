@@ -1,7 +1,10 @@
+//! Typed errors returned by strided layout operations.
+
 use crate::slice_error::SliceError;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
+/// Errors produced by [`crate::StridedLayout`] methods.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StridedLayoutError {
 	RankMismatch,

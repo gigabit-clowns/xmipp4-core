@@ -1,3 +1,6 @@
+//! Numerical type model and promotion logic.
+
+/// Enumerates supported scalar and complex numerical representations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum NumericalType {
 	Unknown,
@@ -19,6 +22,7 @@ pub enum NumericalType {
 	ComplexFloat64,
 }
 
+/// High-level category for a [`NumericalType`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum NumericalTypeCategory {
 	Unknown,
@@ -31,6 +35,9 @@ pub enum NumericalTypeCategory {
 }
 
 impl NumericalType {
+	/// Returns the size in bytes for values of this type.
+	///
+	/// Returns `None` for [`NumericalType::Unknown`].
 	pub fn size_bytes(self) -> Option<usize> {
 		match self {
 			NumericalType::Unknown => None,
@@ -46,6 +53,7 @@ impl NumericalType {
 		}
 	}
 
+	/// Returns the logical category of this numerical type.
 	pub fn category(self) -> NumericalTypeCategory {
 		match self {
 			NumericalType::Unknown => NumericalTypeCategory::Unknown,
@@ -68,6 +76,9 @@ impl NumericalType {
 		}
 	}
 
+	/// Returns the matching complex type for floating-point inputs.
+	///
+	/// Returns [`NumericalType::Unknown`] for unsupported categories.
 	pub fn make_complex(self) -> NumericalType {
 		match self {
 			NumericalType::Float16 | NumericalType::ComplexFloat16 => NumericalType::ComplexFloat16,
@@ -78,6 +89,10 @@ impl NumericalType {
 	}
 }
 
+/// Promotes two types using the parity lattice equivalent to the C++ model.
+///
+/// Returns [`NumericalType::Unknown`] when no unique least common promotable
+/// type exists.
 pub fn promote_types(type1: NumericalType, type2: NumericalType) -> NumericalType {
 	if matches!(type1, NumericalType::Unknown) || matches!(type2, NumericalType::Unknown) {
 		return NumericalType::Unknown;

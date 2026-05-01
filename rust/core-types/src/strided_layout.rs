@@ -1,7 +1,10 @@
+//! Strided layout model and axis-transform operations.
+
 use crate::strided_layout_error::StridedLayoutError;
 use crate::subscript::{sanitize_slice, DynamicSubscript, Slice};
 use std::hash::{Hash, Hasher};
 
+/// Describes an n-dimensional memory layout using extents, strides, and offset.
 #[derive(Debug, Clone, Default)]
 pub struct StridedLayout {
 	extents: Vec<usize>,
@@ -50,6 +53,11 @@ impl Hash for StridedLayout {
 }
 
 impl StridedLayout {
+	/// Creates a layout from extents, strides and base offset.
+	///
+	/// # Errors
+	///
+	/// Returns an error when extents and strides have different ranks.
 	pub fn new(
 		extents: Vec<usize>,
 		strides: Vec<isize>,
@@ -66,6 +74,7 @@ impl StridedLayout {
 		})
 	}
 
+	/// Builds a contiguous row-major layout for the provided extents.
 	pub fn make_contiguous_layout(extents: Vec<usize>) -> Self {
 		let rank = extents.len();
 		if rank == 0 {
@@ -86,26 +95,32 @@ impl StridedLayout {
 		}
 	}
 
+	/// Returns the number of axes.
 	pub fn rank(&self) -> usize {
 		self.extents.len()
 	}
 
+	/// Returns axis extents.
 	pub fn extents(&self) -> &[usize] {
 		&self.extents
 	}
 
+	/// Returns axis strides.
 	pub fn strides(&self) -> &[isize] {
 		&self.strides
 	}
 
+	/// Returns the storage offset.
 	pub fn offset(&self) -> isize {
 		self.offset
 	}
 
+	/// Checks whether extents exactly match the provided shape.
 	pub fn extents_equal(&self, extents: &[usize]) -> bool {
 		self.extents == extents
 	}
 
+	/// Returns total logical element count.
 	pub fn compute_element_count(&self) -> usize {
 		if self.extents.is_empty() {
 			return 0;
@@ -114,6 +129,7 @@ impl StridedLayout {
 		self.extents.iter().product()
 	}
 
+	/// Computes storage span requirement using C++-aligned semantics.
 	pub fn compute_storage_requirement(&self) -> usize {
 		let mut result = 0usize;
 
@@ -131,6 +147,7 @@ impl StridedLayout {
 		(self.offset.wrapping_add(result as isize).wrapping_add(1)) as usize
 	}
 
+	/// Reverses axis order.
 	pub fn transpose(&self) -> Self {
 		if self.rank() <= 1 {
 			return self.clone();
@@ -149,6 +166,11 @@ impl StridedLayout {
 		}
 	}
 
+	/// Permutes axes according to the provided order.
+	///
+	/// # Errors
+	///
+	/// Returns an error when order is not a valid permutation of all axes.
 	pub fn permute(&self, order: &[usize]) -> Result<Self, StridedLayoutError> {
 		validate_axis_permutation(order, self.rank())?;
 
@@ -166,6 +188,11 @@ impl StridedLayout {
 		})
 	}
 
+	/// Swaps two axes by index (supports negative indices).
+	///
+	/// # Errors
+	///
+	/// Returns an error when an axis index is out of bounds.
 	pub fn matrix_transpose(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
 		let index1 = normalize_axis_index(axis1, rank)?;
@@ -184,6 +211,11 @@ impl StridedLayout {
 		})
 	}
 
+	/// Extracts a diagonal view from two axes.
+	///
+	/// # Errors
+	///
+	/// Returns an error when indices are invalid or axes are identical.
 	pub fn matrix_diagonal(&self, axis1: isize, axis2: isize) -> Result<Self, StridedLayoutError> {
 		let rank = self.rank();
 		let mut index1 = normalize_axis_index(axis1, rank)?;
@@ -219,6 +251,7 @@ impl StridedLayout {
 		})
 	}
 
+	/// Removes axes with extent equal to one.
 	pub fn squeeze(&self) -> Self {
 		let mut extents = Vec::new();
 		let mut strides = Vec::new();
@@ -237,6 +270,11 @@ impl StridedLayout {
 		}
 	}
 
+	/// Broadcasts this layout to the target extents.
+	///
+	/// # Errors
+	///
+	/// Returns an error when broadcasting is not possible.
 	pub fn broadcast_to(&self, extents: &[usize]) -> Result<Self, StridedLayoutError> {
 		if self.extents_equal(extents) {
 			return Ok(self.clone());
@@ -254,6 +292,12 @@ impl StridedLayout {
 		})
 	}
 
+	/// Applies dynamic subscripts and returns the resulting layout view.
+	///
+	/// # Errors
+	///
+	/// Returns an error for invalid subscripts, out-of-range accesses, or
+	/// incompatible slice/index combinations.
 	pub fn apply_subscripts(
 		&self,
 		subscripts: &[DynamicSubscript],

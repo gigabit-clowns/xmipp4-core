@@ -1,6 +1,9 @@
+//! Typed errors returned by slice sanitization.
+
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
+/// Errors produced when normalizing a [`crate::subscript::Slice`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SliceError {
 	StepZero,

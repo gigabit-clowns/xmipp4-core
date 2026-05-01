@@ -3,7 +3,8 @@
 //! Strided layout model and axis-transform operations.
 
 use crate::strided_layout_error::StridedLayoutError;
-use crate::subscript::{sanitize_slice, DynamicSubscript, Slice};
+use crate::dynamic_subscript::DynamicSubscript;
+use crate::slice::{sanitize_slice, Slice};
 use std::hash::{Hash, Hasher};
 
 /// Describes an n-dimensional memory layout using extents, strides, and offset.

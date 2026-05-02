@@ -67,7 +67,10 @@ impl StridedLayout {
 		offset: isize,
 	) -> Result<Self, StridedLayoutError> {
 		if extents.len() != strides.len() {
-			return Err(StridedLayoutError::RankMismatch);
+			return Err(StridedLayoutError::RankMismatch {
+				expected: extents.len(),
+				actual: strides.len(),
+			});
 		}
 
 		Ok(Self {
@@ -225,7 +228,7 @@ impl StridedLayout {
 		let mut index2 = normalize_axis_index(axis2, rank)?;
 
 		if axis1 == axis2 {
-			return Err(StridedLayoutError::AxesMustDiffer);
+			return Err(StridedLayoutError::AxesMustDiffer { axis1, axis2 });
 		}
 
 		if index1 > index2 {

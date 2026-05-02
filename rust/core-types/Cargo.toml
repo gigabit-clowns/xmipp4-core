@@ -9,3 +9,6 @@ description = "Isolated Rust spike for Xmipp4 core data model types"
 name = "xmipp4_core_types"
 path = "src/lib.rs"
 crate-type = ["rlib", "staticlib"]
+
+[dependencies]
+thiserror = "=2.0.18"

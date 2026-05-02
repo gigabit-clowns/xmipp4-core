@@ -62,7 +62,13 @@ fn hash_is_equal_when_only_extent_one_stride_changes() {
 #[test]
 fn constructor_rejects_mismatched_rank() {
 	let error = StridedLayout::new(vec![2, 2], vec![1], 0).expect_err("must fail");
-	assert_eq!(error, StridedLayoutError::RankMismatch);
+	assert_eq!(
+		error,
+		StridedLayoutError::RankMismatch {
+			expected: 2,
+			actual: 1,
+		}
+	);
 }
 
 #[test]
@@ -273,7 +279,10 @@ fn matrix_diagonal_requires_different_axes() {
 	let layout = make_test_layout();
 	let error = layout.matrix_diagonal(0, 0).expect_err("must fail");
 
-	assert_eq!(error, StridedLayoutError::AxesMustDiffer);
+	assert_eq!(
+		error,
+		StridedLayoutError::AxesMustDiffer { axis1: 0, axis2: 0 }
+	);
 }
 
 #[test]

@@ -3,109 +3,36 @@
 //! Typed errors returned by strided layout operations.
 
 use crate::slice_error::SliceError;
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+use thiserror::Error;
 
 /// Errors produced by [`crate::StridedLayout`] methods.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Error, Clone, PartialEq, Eq)]
 pub enum StridedLayoutError {
-	RankMismatch,
+	#[error("extents and strides must have the same length (expected {expected}, got {actual})")]
+	RankMismatch { expected: usize, actual: usize },
+	#[error("Axis permutation's length does not match the required count")]
 	InvalidAxisPermutationLength,
-	MissingAxisInPermutation {
-		index: usize,
-	},
-	ReverseIndexOutOfBounds {
-		index: isize,
-		extent: usize,
-	},
-	IndexOutOfBounds {
-		index: isize,
-		extent: usize,
-	},
-	AxesMustDiffer,
-	BroadcastRankMismatch {
-		rank: usize,
-		target_rank: usize,
-	},
+	#[error("Index {index} is missing in the axis permutation")]
+	MissingAxisInPermutation { index: usize },
+	#[error("Reverse index {index} is out of bounds for extent {extent}")]
+	ReverseIndexOutOfBounds { index: isize, extent: usize },
+	#[error("Index {index} is out of bounds for extent {extent}")]
+	IndexOutOfBounds { index: isize, extent: usize },
+	#[error("axis1 and axis2 must represent different axes (got axis1={axis1}, axis2={axis2})")]
+	AxesMustDiffer { axis1: isize, axis2: isize },
+	#[error("Cannot broadcast layout with {rank} axes into a shape of {target_rank} dimensions.")]
+	BroadcastRankMismatch { rank: usize, target_rank: usize },
+	#[error("Cannot broadcast axis of extent {axis_extent} into an extent of {target_extent}.")]
 	AxisNotBroadcastable {
 		axis_extent: usize,
 		target_extent: usize,
 	},
+	#[error("Two ellipsis tags were encountered when processing subscripts")]
 	MultipleEllipsis,
+	#[error("An index subscript was encountered, but there are no more axes to process")]
 	NoMoreAxesForIndex,
+	#[error("A slice subscript was encountered, but there are no more axes to process")]
 	NoMoreAxesForSlice,
-	InvalidSlice(SliceError),
-}
-
-impl Display for StridedLayoutError {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		match self {
-			StridedLayoutError::RankMismatch => {
-				write!(f, "extents and strides must have the same length")
-			}
-			StridedLayoutError::InvalidAxisPermutationLength => {
-				write!(
-					f,
-					"Axis permutation's length does not match the required count"
-				)
-			}
-			StridedLayoutError::MissingAxisInPermutation { index } => {
-				write!(f, "Index {} is missing in the axis permutation", index)
-			}
-			StridedLayoutError::ReverseIndexOutOfBounds { index, extent } => {
-				write!(
-					f,
-					"Reverse index {} is out of bounds for extent {}",
-					index, extent
-				)
-			}
-			StridedLayoutError::IndexOutOfBounds { index, extent } => {
-				write!(f, "Index {} is out of bounds for extent {}", index, extent)
-			}
-			StridedLayoutError::AxesMustDiffer => {
-				write!(f, "axis1 and axis2 must represent different axes")
-			}
-			StridedLayoutError::BroadcastRankMismatch { rank, target_rank } => write!(
-				f,
-				"Cannot broadcast layout with {} axes into a shape of {} dimensions.",
-				rank, target_rank
-			),
-			StridedLayoutError::AxisNotBroadcastable {
-				axis_extent,
-				target_extent,
-			} => write!(
-				f,
-				"Cannot broadcast axis of extent {} into an extent of {}.",
-				axis_extent, target_extent
-			),
-			StridedLayoutError::MultipleEllipsis => write!(
-				f,
-				"Two ellipsis tags were encountered when processing subscripts"
-			),
-			StridedLayoutError::NoMoreAxesForIndex => write!(
-				f,
-				"An index subscript was encountered, but there are no more axes to process"
-			),
-			StridedLayoutError::NoMoreAxesForSlice => write!(
-				f,
-				"A slice subscript was encountered, but there are no more axes to process"
-			),
-			StridedLayoutError::InvalidSlice(error) => Display::fmt(error, f),
-		}
-	}
-}
-
-impl Error for StridedLayoutError {
-	fn source(&self) -> Option<&(dyn Error + 'static)> {
-		match self {
-			StridedLayoutError::InvalidSlice(error) => Some(error),
-			_ => None,
-		}
-	}
-}
-
-impl From<SliceError> for StridedLayoutError {
-	fn from(value: SliceError) -> Self {
-		StridedLayoutError::InvalidSlice(value)
-	}
+	#[error(transparent)]
+	InvalidSlice(#[from] SliceError),
 }

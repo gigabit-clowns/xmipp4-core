@@ -72,7 +72,7 @@ Current Rust modules:
 
 1. `numerical_type`
 - `NumericalType`, `NumericalTypeCategory`
-- `size_bytes`, `category`, `make_complex`
+- `size_bytes`, `category`, `make_complex`, `promote_types`
 
 2. `array_descriptor`
 - `ArrayDescriptor`
@@ -86,10 +86,21 @@ Current Rust modules:
 - `transpose`, `permute`, `matrix_transpose`, `matrix_diagonal`, `squeeze`
 - `broadcast_to`, `apply_subscripts`
 
-4. `subscript`
-- `DynamicSubscript`, `Slice`
-- helpers: `ellipsis`, `new_axis`, `all`, `even`, `odd`, `make_slice`, `make_slice_start`, `make_slice_full`, `end`
-- `sanitize_slice`
+4. `dynamic_subscript` + `slice`
+- `DynamicSubscript` in `rust/core-types/src/dynamic_subscript.rs`
+- `Slice` and sanitization helpers in `rust/core-types/src/slice.rs`
+- compatibility facade in `rust/core-types/src/subscript.rs`
+- helpers remain available through `xmipp4_core_types::subscript::*`:
+	- `ellipsis`, `new_axis`
+	- `all`, `even`, `odd`
+	- `make_slice`, `make_slice_start`, `make_slice_full`, `end`
+	- `sanitize_slice`
+
+5. C ABI bridge (first vertical integration)
+- `rust/core-types/src/c_api.rs`
+- exported symbols:
+	- `xmipp4_rust_promote_types`
+	- `xmipp4_rust_compute_storage_requirement`
 
 ## CI And Quality Status
 
@@ -99,6 +110,13 @@ Rust checks integrated in `.github/workflows/build-and-test.yml` as independent 
 - `cargo check --workspace --all-targets`
 - `cargo clippy --workspace --all-targets -- -D warnings`
 - `cargo test --workspace`
+
+Additional integration CI job in `.github/workflows/build-and-test.yml`:
+
+- docs generation (`XMIPP4_CORE_BUILD_DOC=ON`)
+- CMake build with Rust bridge (`XMIPP4_CORE_ENABLE_RUST_BRIDGE=ON`)
+- full C++ `ctest` run
+- explicit `[rust_bridge]` comparison test run
 
 Current local status: passing.
 
@@ -112,9 +130,8 @@ Implemented module parity (for implemented surface) is high for:
 
 Still pending for full C++ interchangeability:
 
-- full numerical type promotion lattice parity (`promote_types` equivalent)
 - remaining higher-level runtime modules (execution context, allocators/resources, queue/event/device model, kernel dispatch/manager, plugin/backends, communication)
-- C++ <-> Rust integration boundary (FFI/bridge)
+- broader C++ <-> Rust integration boundary (current bridge is intentionally narrow)
 
 ## What "Drop-In Replacement" Requires
 
@@ -133,15 +150,18 @@ Immediate (already addressed in current branch):
 
 - `strided_layout` storage requirement semantics alignment
 - equality/hash semantics alignment for extent-1 axes
+- `promote_types` parity path + optional C++/Rust bridge route
 
 Manual team review still recommended:
 
-- whether to replace `Result<_, String>` with typed Rust errors now or later
+- slice sanitization overflow hardening for extreme values
+- C ABI preconditions/guard rails documentation for pointer+rank inputs
+- long-term policy for `subscript.rs` compatibility facade (keep/deprecate/internalize)
 - final public API ergonomics for subscript/slice helpers before freezing API
 
 ## Suggested Next Steps
 
 1. Keep closing parity module by module with public API tests.
-2. Add missing numerical type promotion parity.
-3. Define a narrow C++/Rust bridge for first vertical replacement candidate.
-4. Reassess drop-in readiness after first integrated vertical path passes existing behavior checks.
+2. Keep bridge-on and bridge-off C++ test paths green in CI.
+3. Expand C++/Rust bridge incrementally beyond the current narrow vertical path.
+4. Reassess drop-in readiness after additional integrated vertical paths pass existing behavior checks.

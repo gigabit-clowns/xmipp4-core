@@ -49,7 +49,9 @@ This document is a consolidated snapshot of the current Rust spike state versus 
 
 ### subscript/slice
 
-- `DynamicSubscript` and `Slice` in `rust/core-types/src/subscript.rs`
+- `DynamicSubscript` in `rust/core-types/src/dynamic_subscript.rs`
+- `Slice` and sanitization utilities in `rust/core-types/src/slice.rs`
+- Compatibility facade in `rust/core-types/src/subscript.rs`
 - Public constructors/helpers remain available through module path (`xmipp4_core_types::subscript::*`):
   - `ellipsis`, `new_axis`
   - `all`, `even`, `odd`
@@ -167,6 +169,40 @@ functional/API alignment.
 2. Integration is opt-in; default build path remains fully C++.
 3. Major runtime-system modules remain C++-only (execution context, allocators/resources, kernel dispatch, plugins/backends, communication stack).
 4. Release/packaging flows are still centered on C++/Python/conda artifacts.
+
+## Upstreaming Considerations (Backport To Original Repo)
+
+These are quality/integration points to revisit explicitly before proposing this
+Rust work for upstream inclusion.
+
+1. Slice arithmetic overflow hardening.
+   - In `rust/core-types/src/slice.rs`, sanitization currently uses arithmetic
+     expressions such as `start + step * (count - 1)` and variants.
+   - For extreme values, debug/release behavior can diverge if intermediate
+     arithmetic overflows.
+   - Recommendation: switch critical intermediate math to checked operations or
+     widened intermediate types (`i128`) before final comparisons.
+
+2. FFI contract strictness for C ABI entrypoints.
+   - `rust/core-types/src/c_api.rs` uses raw pointers and `from_raw_parts`.
+   - Null pointers are checked, but pointer validity/rank sanity still depends
+     on caller guarantees.
+   - Recommendation: document ABI preconditions in detail and consider guard
+     rails (for example, maximum accepted rank) to reduce accidental UB surface.
+
+3. Transitional module compatibility cleanup.
+   - The split into `dynamic_subscript.rs` and `slice.rs` keeps a legacy facade
+     at `subscript.rs` for compatibility.
+   - Recommendation: decide an upstream policy (keep facade permanently,
+     deprecate it, or make it crate-internal) to avoid long-term API drift.
+
+4. CI parity signal should stay explicit for bridge OFF and bridge ON.
+   - Keep validating that original C++ `ctest` suite passes with default C++
+     path (bridge OFF).
+   - Keep validating that the same C++ `ctest` suite passes with
+     `XMIPP4_CORE_ENABLE_RUST_BRIDGE=ON`.
+   - Bridge-specific comparison tests are useful, but they are not a substitute
+     for full-suite parity checks.
 
 ## Recommended Next Steps
 

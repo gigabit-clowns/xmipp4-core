@@ -4,12 +4,12 @@
 
 #include <xmipp4/core/execution_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
+#include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/multidimensional/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/kernel.hpp>
-#include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_shape_policy.hpp>

@@ -455,7 +455,7 @@ array execute(
 
 array execute_unary(
 	const operation &operation,
-	array_view input,
+	const array_view &input,
 	const execution_context &context,
 	array *out
 )

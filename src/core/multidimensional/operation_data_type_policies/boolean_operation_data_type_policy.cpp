@@ -9,29 +9,17 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void boolean_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
-	span<const numerical_type>
-) const
-{
-	fill(output_types, numerical_type::boolean);
-}
-
-void boolean_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
+void boolean_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
 	require_exact(
-		output_types,
-		numerical_type::boolean,
-		"boolean_operation_data_type_policy::validate"
-	);
-	require_exact(
 		input_types,
 		numerical_type::boolean,
-		"boolean_operation_data_type_policy::validate"
+		"boolean_operation_data_type_policy::deduce"
 	);
+	fill(canonical_output_types, numerical_type::boolean);
 }
 
 const boolean_operation_data_type_policy& 

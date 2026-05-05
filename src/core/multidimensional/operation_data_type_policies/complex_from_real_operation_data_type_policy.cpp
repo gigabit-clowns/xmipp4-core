@@ -9,34 +9,16 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void complex_from_real_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
+void complex_from_real_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
 	const auto input_type = check_inputs(
 		input_types,
-		"complex_from_real_operation_data_type_policy::deduce_output"
+		"complex_from_real_operation_data_type_policy::deduce"
 	);
-	fill(output_types, make_complex(input_type));
-}
-
-void complex_from_real_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
-	span<const numerical_type> input_types
-) const
-{
-	const auto input_type = check_inputs(
-		input_types,
-		"complex_from_real_operation_data_type_policy::validate"
-	);
-
-	const auto expected_output = make_complex(input_type);
-	require_exact(
-		output_types, 
-		expected_output,
-		"complex_from_real_operation_data_type_policy::validate"
-	);
+	fill(canonical_output_types, make_complex(input_type));
 }
 
 numerical_type complex_from_real_operation_data_type_policy::check_inputs(

@@ -13,6 +13,7 @@
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_data_type_policy.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
@@ -80,6 +81,28 @@ extract_shapes(
 		result.push_back(std::move(shape));
 	}
 	return result;
+}
+
+template <std::size_t N>
+boost::container::small_vector<operation_shape_policy::shape_type, N>
+make_empty_shapes(
+	std::size_t count,
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/
+)
+{
+	return boost::container::small_vector<
+		operation_shape_policy::shape_type, N
+	>(count);
+}
+
+template <std::size_t N>
+boost::container::small_vector<numerical_type, N>
+make_empty_data_types(
+	std::size_t count,
+	std::integral_constant<std::size_t, N> /*small_cap_tag*/
+)
+{
+	return boost::container::small_vector<numerical_type, N>(count);
 }
 
 void update_descriptors(
@@ -315,21 +338,8 @@ void execute(
 
 	validate_arity(operation, n_outputs, n_inputs);
 
-	auto output_descriptors = extract_descriptors(
-		output_operands, 
-		small_output_size_tag()
-	);
-	auto output_shapes = extract_shapes(
-		make_span(output_descriptors.data(), n_outputs),
-		small_output_size_tag()
-	);
-	auto output_data_types = extract_data_types(
-		make_span(output_descriptors.data(), n_outputs),
-		small_output_size_tag()
-	);
-
 	auto input_descriptors = extract_descriptors(
-		input_operands, 
+		input_operands,
 		small_input_size_tag()
 	);
 	auto input_shapes = extract_shapes(
@@ -353,32 +363,65 @@ void execute(
 	const auto &shape_policy = operation.get_operation_shape_policy();
 	const auto &data_type_policy = operation.get_operation_data_type_policy();
 
-	if (!outputs_initialized)
+	// Deduce canonical output shapes/types from the inputs alone. This
+	// performs all input-side validation as a side effect.
+	auto output_shapes = make_empty_shapes(n_outputs, small_output_size_tag());
+	auto output_data_types =
+		make_empty_data_types(n_outputs, small_output_size_tag());
+
+	shape_policy.deduce(
+		make_span(output_shapes.data(), n_outputs),
+		make_span(input_shapes.data(), n_inputs)
+	);
+	data_type_policy.deduce(
+		make_span(output_data_types.data(), n_outputs),
+		make_span(input_data_types.data(), n_inputs)
+	);
+
+	auto output_descriptors = extract_descriptors(
+		output_operands,
+		small_output_size_tag()
+	);
+
+	if (outputs_initialized)
 	{
-		shape_policy.deduce_output(
+		// Outputs come from the user: confirm they are admissible given
+		// the canonical ones produced above.
+		auto user_output_shapes = extract_shapes(
+			make_span(output_descriptors.data(), n_outputs),
+			small_output_size_tag()
+		);
+		auto user_output_data_types = extract_data_types(
+			make_span(output_descriptors.data(), n_outputs),
+			small_output_size_tag()
+		);
+
+		shape_policy.accept(
+			make_span(user_output_shapes.data(), n_outputs),
 			make_span(output_shapes.data(), n_outputs),
 			make_span(input_shapes.data(), n_inputs)
 		);
-		data_type_policy.deduce_output(
+		data_type_policy.accept(
+			make_span(user_output_data_types.data(), n_outputs),
 			make_span(output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)
 		);
 
+		// Adopt the user-supplied descriptors going forward; they may
+		// legitimately differ from the canonical ones (e.g. a wider
+		// broadcast-compatible shape, or a converted type).
+		output_shapes = std::move(user_output_shapes);
+		output_data_types = std::move(user_output_data_types);
+	}
+	else
+	{
+		// Outputs were not pre-allocated: install the canonical ones.
 		update_descriptors(
 			make_span(output_descriptors.data(), n_outputs),
 			make_span(output_shapes.data(), n_outputs),
 			make_span(output_data_types.data(), n_outputs)
 		);
 	}
-
-	shape_policy.validate(
-		make_span(output_shapes.data(), n_outputs),
-		make_span(input_shapes.data(), n_inputs)
-	);
-	data_type_policy.validate(
-		make_span(output_data_types.data(), n_outputs),
-		make_span(input_data_types.data(), n_inputs)
-	);
 
 	auto output_storages = resolve_output_storage(
 		output_operands,

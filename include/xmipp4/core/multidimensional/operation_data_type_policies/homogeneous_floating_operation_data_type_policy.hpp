@@ -18,13 +18,8 @@ class XMIPP4_CORE_API homogeneous_floating_operation_data_type_policy final
 	: public operation_data_type_policy
 {
 public:
-	void deduce_output(
-		span<numerical_type> output_types,
-		span<const numerical_type> input_types
-	) const override;
-
-	void validate(
-		span<const numerical_type> output_types,
+	void deduce(
+		span<numerical_type> canonical_output_types,
 		span<const numerical_type> input_types
 	) const override;
 

@@ -21,13 +21,8 @@ class XMIPP4_CORE_API outer_operation_shape_policy final
     : public operation_shape_policy
 {
 public:
-	void deduce_output(
-		span<shape_type> output_shapes,
-		span<const shape_type> input_shapes
-	) const override;
-
-	void validate(
-		span<const shape_type> output_shapes,
+	void deduce(
+		span<shape_type> canonical_output_shapes,
 		span<const shape_type> input_shapes
 	) const override;
 

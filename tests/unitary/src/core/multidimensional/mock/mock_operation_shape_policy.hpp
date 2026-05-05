@@ -4,8 +4,6 @@
 
 #include <xmipp4/core/multidimensional/operation_shape_policy.hpp>
 
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
-
 #include <trompeloeil.hpp>
 
 namespace xmipp4
@@ -17,19 +15,22 @@ class mock_operation_shape_policy
 	: public operation_shape_policy
 {
 public:
+	using shape_type = operation_shape_policy::shape_type;
+
 	MAKE_CONST_MOCK2(
-		deduce_output, 
+		deduce,
 		void(
-			span<strided_layout> output_shapes,
-			span<const strided_layout> input_shapes
+			span<shape_type> canonical_output_shapes,
+			span<const shape_type> input_shapes
 		),
 		override
 	);
-	MAKE_CONST_MOCK2(
-		validate, 
+	MAKE_CONST_MOCK3(
+		accept,
 		void(
-			span<const strided_layout> output_shapes,
-			span<const strided_layout> input_shapes
+			span<const shape_type> user_output_shapes,
+			span<const shape_type> canonical_output_shapes,
+			span<const shape_type> input_shapes
 		),
 		override
 	);

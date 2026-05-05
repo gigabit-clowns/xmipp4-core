@@ -223,18 +223,45 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
     const auto output_buffers = create_device_buffers(2, descriptor);
     std::vector<array> output_arrays;
 
+    // The new pipeline always invokes deduce; accept is invoked only
+    // when the user provides pre-allocated outputs.
+    std::vector<std::size_t> descriptor_extents;
+    descriptor.get_layout().get_extents(descriptor_extents);
+    expectations.push_back(
+        NAMED_REQUIRE_CALL(shape_pol, deduce(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3)
+            .LR_SIDE_EFFECT(_1[0] = descriptor_extents)
+            .LR_SIDE_EFFECT(_1[1] = descriptor_extents)
+    );
+    expectations.push_back(
+        NAMED_REQUIRE_CALL(data_type_pol, deduce(trompeloeil::_, trompeloeil::_))
+            .WITH(_1.size() == 2)
+            .WITH(_2.size() == 3)
+            .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
+            .SIDE_EFFECT(_1[1] = descriptor.get_data_type())
+    );
+
     SECTION("provided a pre-allocated output should re-use")
 	{
         output_arrays = create_device_arrays<array>(output_buffers, descriptor);
 		expectations.push_back(
-			NAMED_REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
+			NAMED_REQUIRE_CALL(
+				shape_pol,
+				accept(trompeloeil::_, trompeloeil::_, trompeloeil::_)
+			)
 				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 3)
+				.WITH(_2.size() == 2)
+				.WITH(_3.size() == 3)
 		);
 		expectations.push_back(
-			NAMED_REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
+			NAMED_REQUIRE_CALL(
+				data_type_pol,
+				accept(trompeloeil::_, trompeloeil::_, trompeloeil::_)
+			)
 				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 3)
+				.WITH(_2.size() == 2)
+				.WITH(_3.size() == 3)
 		);
     }
     SECTION("if empty output is provided it should allocate")
@@ -246,20 +273,6 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
                     .RETURN(buffer)
             );
         }
-		expectations.push_back(
-			NAMED_REQUIRE_CALL(shape_pol, infer_output(trompeloeil::_, trompeloeil::_))
-				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 3)
-				.SIDE_EFFECT(_1[0] = descriptor.get_layout())
-				.SIDE_EFFECT(_1[1] = descriptor.get_layout())
-		);
-		expectations.push_back(
-			NAMED_REQUIRE_CALL(data_type_pol, infer_output(trompeloeil::_, trompeloeil::_))
-				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 3)
-				.SIDE_EFFECT(_1[0] = descriptor.get_data_type())
-				.SIDE_EFFECT(_1[1] = descriptor.get_data_type())
-		);
     }
 
 
@@ -313,12 +326,26 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-
 
     register_kernel_builder(std::make_unique<mock_kernel_builder>());
 
-    REQUIRE_CALL(shape_pol, validate(trompeloeil::_, trompeloeil::_))
+    std::vector<std::size_t> descriptor_extents;
+    descriptor.get_layout().get_extents(descriptor_extents);
+    REQUIRE_CALL(shape_pol, deduce(trompeloeil::_, trompeloeil::_))
         .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3);
-    REQUIRE_CALL(data_type_pol, validate(trompeloeil::_, trompeloeil::_))
+        .WITH(_2.size() == 3)
+        .LR_SIDE_EFFECT(_1[0] = descriptor_extents)
+        .LR_SIDE_EFFECT(_1[1] = descriptor_extents);
+    REQUIRE_CALL(data_type_pol, deduce(trompeloeil::_, trompeloeil::_))
         .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3);
+        .WITH(_2.size() == 3)
+        .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
+        .SIDE_EFFECT(_1[1] = descriptor.get_data_type());
+    REQUIRE_CALL(shape_pol, accept(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+        .WITH(_1.size() == 2)
+        .WITH(_2.size() == 2)
+        .WITH(_3.size() == 3);
+    REQUIRE_CALL(data_type_pol, accept(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+        .WITH(_1.size() == 2)
+        .WITH(_2.size() == 2)
+        .WITH(_3.size() == 3);
 
     REQUIRE_THROWS_MATCHES(
         execute(operation, make_span(output_arrays), make_span(input_arrays), context),

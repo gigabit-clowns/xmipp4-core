@@ -11,62 +11,40 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void select_operation_data_type_policy::deduce_output(
-    span<numerical_type> output_types,
+void select_operation_data_type_policy::deduce(
+    span<numerical_type> canonical_output_types,
     span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_ASSERT(output_types.size() == 1);
-	XMIPP4_ASSERT(input_types.size() == 3);
-	if (get_size(input_types[1]) == 0)
-	{
-		throw std::invalid_argument(
-			"select_operation_data_type_policy::deduce_output: Expected valid " 
-			"input type."
-		);
-	}
-	output_types[0] = input_types[1];
-}
-
-void select_operation_data_type_policy::validate(
-    span<const numerical_type> output_types,
-    span<const numerical_type> input_types
-) const
-{
-	XMIPP4_ASSERT(output_types.size() == 1);
+	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 3);
 
     if (input_types[0] != numerical_type::boolean)
     {
         throw std::invalid_argument(
-            "select_operation_data_type_policy::validate: first input must be "
+            "select_operation_data_type_policy::deduce: first input must be "
             "boolean."
         );
     }
 
-    const auto reference_type = output_types[0];
-    if (get_size(reference_type) == 0)
+    const auto reference = input_types[1];
+    if (get_size(reference) == 0)
     {
         throw std::invalid_argument(
-            "select_operation_data_type_policy::validate: unknown output type."
+            "select_operation_data_type_policy::deduce: Expected valid input "
+            "type."
         );
     }
 
-    if (input_types[1] != reference_type)
+    if (input_types[2] != reference)
     {
         throw std::invalid_argument(
-            "select_operation_data_type_policy::validate: second input must "
-			"match the output type."
+            "select_operation_data_type_policy::deduce: second and third "
+            "inputs must share the same type."
         );
     }
 
-    if (input_types[2] != reference_type)
-    {
-        throw std::invalid_argument(
-            "select_operation_data_type_policy::validate: third input must "
-			"match the output type."
-        );
-    }
+    canonical_output_types[0] = reference;
 }
 
 const select_operation_data_type_policy& 

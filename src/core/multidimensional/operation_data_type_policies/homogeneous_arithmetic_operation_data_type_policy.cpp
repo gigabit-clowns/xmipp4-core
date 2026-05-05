@@ -9,34 +9,17 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void homogeneous_arithmetic_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
+void homogeneous_arithmetic_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
 	const auto reference = require_same(
 		input_types,
-		"homogeneous_arithmetic_operation_data_type_policy::deduce_output"
+		"homogeneous_arithmetic_operation_data_type_policy::deduce"
 	);
 	check(reference);
-	fill(output_types, reference);
-}
-
-void homogeneous_arithmetic_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
-	span<const numerical_type> input_types
-) const
-{
-	const auto reference = require_same(
-		output_types,
-		"homogeneous_arithmetic_operation_data_type_policy::validate"
-	);
-	check(reference);
-	require_exact(
-		input_types, 
-		reference, 
-		"homogeneous_arithmetic_operation_data_type_policy::validate"
-	);
+	fill(canonical_output_types, reference);
 }
 
 void homogeneous_arithmetic_operation_data_type_policy::check(

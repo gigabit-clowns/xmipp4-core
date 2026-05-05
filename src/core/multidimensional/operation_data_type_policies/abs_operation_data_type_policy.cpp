@@ -9,34 +9,18 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void abs_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
+void abs_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_ASSERT(output_types.size() == 1);
+	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 1);
-	output_types[0] = expected_output(
+	canonical_output_types[0] = expected_output(
 		check_input(
-			input_types, 
-			"abs_operation_data_type_policy::deduce_output"
+			input_types,
+			"abs_operation_data_type_policy::deduce"
 		)
-	);
-}
-
-void abs_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
-	span<const numerical_type> input_types
-) const
-{
-	const auto input_type = check_input(
-		input_types,
-		"abs_operation_data_type_policy::validate"
-	);
-	require_exact(
-		output_types,
-		expected_output(input_type),
-		"abs_operation_data_type_policy::validate"
 	);
 }
 

@@ -7,34 +7,18 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void comparison_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
-	span<const numerical_type>
-) const
-{
-	XMIPP4_ASSERT(output_types.size() == 1);
-	output_types[0] = numerical_type::boolean;
-}
-
-void comparison_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
+void comparison_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_ASSERT(output_types.size() == 1);
+	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 2);
-	if (output_types[0] != numerical_type::boolean)
-	{
-		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::validate: expected boolean "
-			"output type."
-		);
-	}
 
 	if (input_types[0] != input_types[1])
 	{
 		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::validate: expected equal "
+			"comparison_operation_data_type_policy::deduce: expected equal "
 			"input operands."
 		);
 	}
@@ -43,18 +27,20 @@ void comparison_operation_data_type_policy::validate(
 	if (get_size(reference) == 0)
 	{
 		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::validate: unknown input "
-			"type input operands."
+			"comparison_operation_data_type_policy::deduce: unknown input "
+			"type."
 		);
 	}
 
 	if (get_category(reference) == numerical_type_category::complex)
 	{
 		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::validate: can not operate "
+			"comparison_operation_data_type_policy::deduce: can not operate "
 			"on complex types."
 		);
 	}
+
+	canonical_output_types[0] = numerical_type::boolean;
 }
 
 const comparison_operation_data_type_policy& 

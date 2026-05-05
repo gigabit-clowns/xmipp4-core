@@ -9,43 +9,37 @@ namespace xmipp4
 namespace multidimensional
 {
 
-void copy_operation_data_type_policy::deduce_output(
-	span<numerical_type> output_types,
+void copy_operation_data_type_policy::deduce(
+	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_ASSERT(output_types.size() == 1);
+	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 1);
 
 	if (get_size(input_types[0]) == 0)
 	{
 		throw std::invalid_argument(
-			"copy_operation_data_type_policy::deduce_output: Expected valid " 
-			"input type."
+			"copy_operation_data_type_policy::deduce: Expected valid input "
+			"type."
 		);
 	}
-	output_types[0] = input_types[0];
+	canonical_output_types[0] = input_types[0];
 }
 
-void copy_operation_data_type_policy::validate(
-	span<const numerical_type> output_types,
-	span<const numerical_type> input_types
+void copy_operation_data_type_policy::accept(
+	span<const numerical_type> user_output_types,
+	span<const numerical_type> /*canonical_output_types*/,
+	span<const numerical_type> /*input_types*/
 ) const
 {
-	XMIPP4_ASSERT(output_types.size() == 1);
-	XMIPP4_ASSERT(input_types.size() == 1);
-	if (get_size(output_types[0]) == 0)
+	XMIPP4_ASSERT(user_output_types.size() == 1);
+
+	if (get_size(user_output_types[0]) == 0)
 	{
 		throw std::invalid_argument(
-			"copy_operation_data_type_policy::validate: Expected valid " 
-			"output type"
-		);
-	}
-	if (get_size(input_types[0]) == 0)
-	{
-		throw std::invalid_argument(
-			"copy_operation_data_type_policy::validate: Expected valid " 
-			"input type"
+			"copy_operation_data_type_policy::accept: Expected valid output "
+			"type."
 		);
 	}
 }

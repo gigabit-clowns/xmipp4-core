@@ -13,10 +13,6 @@ namespace multidimensional
 /**
  * @brief Data type policy allowing converting an input type into an
  * output type.
- *
- * `infer_output` sets the output to the input type.
- *
- * `validate` ensures that all input can be converted into the output type.
  */
 class XMIPP4_CORE_API copy_operation_data_type_policy final
 	: public operation_data_type_policy

@@ -16,7 +16,7 @@ void real_from_complex_operation_data_type_policy::deduce_output(
 {
 	const auto input_type = check_inputs(
 		input_types,
-		"real_from_complex_operation_data_type_policy::infer_output"
+		"real_from_complex_operation_data_type_policy::deduce_output"
 	);
 	fill(output_types, make_real(input_type));
 }

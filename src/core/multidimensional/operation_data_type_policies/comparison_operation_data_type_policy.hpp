@@ -11,16 +11,10 @@ namespace multidimensional
 {
 
 /**
- * @brief Data type policy requiring all input operands to be non complex and
- * output boolean.
- *
- * After successful validation/inference input operators are non-complex and
- * output operators boolean.
- *
- * `infer_output` ensures that all inputs are non-complex type and sets the
- * output to boolean.
- *
- * `validate` ensures that all inputs are non-complex and output is boolean.
+ * @brief Data type policy 
+ * 
+ * All input operands must be valid be non complex types and output must be
+ * boolean.
  */
 class XMIPP4_CORE_API comparison_operation_data_type_policy final
 	: public operation_data_type_policy

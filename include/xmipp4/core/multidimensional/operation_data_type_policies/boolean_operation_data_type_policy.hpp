@@ -12,13 +12,6 @@ namespace multidimensional
 
 /**
  * @brief Data type policy requiring all operand types to be boolean
- *
- * After successful validation/inference all operators will be boolean.
- *
- * `deduce_output` ensures that all inputs are boolean type and sets the
- * output to boolean.
- *
- * `validate` ensures that all input/output operands are boolean.
  */
 class XMIPP4_CORE_API boolean_operation_data_type_policy final
 	: public operation_data_type_policy

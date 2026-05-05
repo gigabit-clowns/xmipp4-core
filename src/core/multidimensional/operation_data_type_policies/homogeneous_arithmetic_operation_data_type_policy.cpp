@@ -16,7 +16,7 @@ void homogeneous_arithmetic_operation_data_type_policy::deduce_output(
 {
 	const auto reference = require_same(
 		input_types,
-		"homogeneous_arithmetic_operation_data_type_policy::infer_output"
+		"homogeneous_arithmetic_operation_data_type_policy::deduce_output"
 	);
 	check(reference);
 	fill(output_types, reference);
@@ -33,11 +33,15 @@ void homogeneous_arithmetic_operation_data_type_policy::validate(
 	);
 	check(reference);
 	require_exact(
-		input_types, reference, "homogeneous_arithmetic_operation_data_type_policy::validate"
+		input_types, 
+		reference, 
+		"homogeneous_arithmetic_operation_data_type_policy::validate"
 	);
 }
 
-void homogeneous_arithmetic_operation_data_type_policy::check(numerical_type type)
+void homogeneous_arithmetic_operation_data_type_policy::check(
+	numerical_type type
+)
 {
 	switch (get_category(type))
 	{
@@ -48,7 +52,9 @@ void homogeneous_arithmetic_operation_data_type_policy::check(numerical_type typ
 		break;
 	default:
 		throw_category(
-			type, "arithmetic", "homogeneous_arithmetic_operation_data_type_policy"
+			type, 
+			"arithmetic", 
+			"homogeneous_arithmetic_operation_data_type_policy"
 		);
 	}
 }

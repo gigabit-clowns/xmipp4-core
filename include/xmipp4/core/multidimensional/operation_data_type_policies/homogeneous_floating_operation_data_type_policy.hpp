@@ -13,15 +13,6 @@ namespace multidimensional
 /**
  * @brief Data type policy requiring all operand types to be the same floating
  * point data type.
- *
- * After successful validation/inference all operators will have the same
- * floating point data type.
- *
- * `deduce_output` ensures that all inputs have the exact same floating point
- * data type and assigns this data type to the output.
- *
- * `validate` ensures that all input/output operands have the exact same
- * floating point data type.
  */
 class XMIPP4_CORE_API homogeneous_floating_operation_data_type_policy final
 	: public operation_data_type_policy

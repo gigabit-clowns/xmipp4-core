@@ -16,7 +16,7 @@ void complex_from_real_operation_data_type_policy::deduce_output(
 {
 	const auto input_type = check_inputs(
 		input_types,
-		"complex_from_real_operation_data_type_policy::infer_output"
+		"complex_from_real_operation_data_type_policy::deduce_output"
 	);
 	fill(output_types, make_complex(input_type));
 }
@@ -47,7 +47,7 @@ numerical_type complex_from_real_operation_data_type_policy::check_inputs(
 	const auto reference = require_same(input_types, context);
 	if (get_category(reference) != numerical_type_category::floating_point)
 	{
-		throw_category(reference, "real point", context);
+		throw_category(reference, "floating-point", context);
 	}
 
 	return reference;

@@ -16,7 +16,7 @@ void homogeneous_integer_operation_data_type_policy::deduce_output(
 {
 	const auto reference = require_same(
 		input_types,
-		"homogeneous_integer_operation_data_type_policy::infer_output"
+		"homogeneous_integer_operation_data_type_policy::deduce_output"
 	);
 	check(reference);
 	fill(output_types, reference);
@@ -33,7 +33,9 @@ void homogeneous_integer_operation_data_type_policy::validate(
 	);
 	check(reference);
 	require_exact(
-		input_types, reference, "homogeneous_integer_operation_data_type_policy::validate"
+		input_types, 
+		reference, 
+		"homogeneous_integer_operation_data_type_policy::validate"
 	);
 }
 
@@ -45,7 +47,11 @@ void homogeneous_integer_operation_data_type_policy::check(numerical_type type)
 	case numerical_type_category::unsigned_integer:
 		break;
 	default:
-		throw_category(type, "integer", "homogeneous_integer_operation_data_type_policy");
+		throw_category(
+			type, 
+			"integer", 
+			"homogeneous_integer_operation_data_type_policy"
+		);
 	}
 }
 

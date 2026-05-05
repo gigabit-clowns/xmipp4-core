@@ -14,11 +14,14 @@ void abs_operation_data_type_policy::deduce_output(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto input_type = check_input(
-		input_types,
-		"abs_operation_data_type_policy::infer_output"
+	XMIPP4_ASSERT(output_types.size() == 1);
+	XMIPP4_ASSERT(input_types.size() == 1);
+	output_types[0] = expected_output(
+		check_input(
+			input_types, 
+			"abs_operation_data_type_policy::deduce_output"
+		)
 	);
-	fill(output_types, expected_output(input_type));
 }
 
 void abs_operation_data_type_policy::validate(
@@ -56,8 +59,9 @@ numerical_type abs_operation_data_type_policy::check_input(
 	return reference;
 }
 
-numerical_type 
-abs_operation_data_type_policy::expected_output(numerical_type input_type) noexcept
+numerical_type abs_operation_data_type_policy::expected_output(
+	numerical_type input_type
+) noexcept
 {
 	if (get_category(input_type) == numerical_type_category::complex)
 	{
@@ -67,7 +71,8 @@ abs_operation_data_type_policy::expected_output(numerical_type input_type) noexc
 	return input_type;
 }
 
-const abs_operation_data_type_policy& abs_operation_data_type_policy::get() noexcept
+const abs_operation_data_type_policy& 
+abs_operation_data_type_policy::get() noexcept
 {
 	static const abs_operation_data_type_policy instance;
 	return instance;

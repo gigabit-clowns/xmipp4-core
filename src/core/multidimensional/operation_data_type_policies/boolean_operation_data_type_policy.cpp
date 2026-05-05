@@ -11,14 +11,9 @@ namespace multidimensional
 
 void boolean_operation_data_type_policy::deduce_output(
 	span<numerical_type> output_types,
-	span<const numerical_type> input_types
+	span<const numerical_type>
 ) const
 {
-	require_exact(
-		input_types,
-		numerical_type::boolean,
-		"boolean_operation_data_type_policy::infer_output"
-	);
 	fill(output_types, numerical_type::boolean);
 }
 
@@ -39,7 +34,8 @@ void boolean_operation_data_type_policy::validate(
 	);
 }
 
-const boolean_operation_data_type_policy& boolean_operation_data_type_policy::get() noexcept
+const boolean_operation_data_type_policy& 
+boolean_operation_data_type_policy::get() noexcept
 {
 	static const boolean_operation_data_type_policy instance;
 	return instance;

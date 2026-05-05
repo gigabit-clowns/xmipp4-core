@@ -16,7 +16,7 @@ void homogeneous_operation_data_type_policy::deduce_output(
 {
 	const auto reference = require_same(
 		input_types,
-		"homogeneous_operation_data_type_policy::infer_output"
+		"homogeneous_operation_data_type_policy::deduce_output"
 	);
 	check(reference);
 	fill(output_types, reference);
@@ -32,7 +32,11 @@ void homogeneous_operation_data_type_policy::validate(
 		"homogeneous_operation_data_type_policy::validate"
 	);
 	check(reference);
-	require_exact(input_types, reference, "homogeneous_operation_data_type_policy::validate");
+	require_exact(
+		input_types, 
+		reference, 
+		"homogeneous_operation_data_type_policy::validate"
+	);
 }
 
 void homogeneous_operation_data_type_policy::check(numerical_type type)
@@ -43,7 +47,8 @@ void homogeneous_operation_data_type_policy::check(numerical_type type)
 	}
 }
 
-const homogeneous_operation_data_type_policy& homogeneous_operation_data_type_policy::get() noexcept
+const homogeneous_operation_data_type_policy& 
+homogeneous_operation_data_type_policy::get() noexcept
 {
 	static const homogeneous_operation_data_type_policy instance;
 	return instance;

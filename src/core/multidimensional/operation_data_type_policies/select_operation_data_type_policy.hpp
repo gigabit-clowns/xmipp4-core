@@ -14,13 +14,7 @@ namespace multidimensional
  * @brief Data type policy for select(mask, x, y) operations.
  *
  * The first input must be boolean. The remaining two inputs and the output
- * must share the same type, which may be any non-unknown numerical type.
- *
- * `infer_output` verifies that input[0] is boolean, input[1] == input[2],
- * and assigns input[1]'s type to the output.
- *
- * `validate` verifies that input[0] is boolean and that output[0] equals
- * input[1] and input[2].
+ * must share the same type, which may be any valid numerical type.
  */
 class XMIPP4_CORE_API select_operation_data_type_policy final
     : public operation_data_type_policy

@@ -13,12 +13,9 @@ namespace multidimensional
 /**
  * @brief Data type policy for operations that combine complex arrays into a 
  * real-valued array.
- *
- * `deduce_output` requires inputs to be the same complex type and sets the 
- * output to the corresponding real type.
- *
- * `validate` ensures inputs are the same real-valued type and the output 
- * matches make_real(input_type).
+ * 
+ * Inputs must be the same complex type and the output must match the
+ * result of `make_real(input_type)`.
  */
 class XMIPP4_CORE_API real_from_complex_operation_data_type_policy final
 	: public operation_data_type_policy

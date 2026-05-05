@@ -16,7 +16,7 @@ void homogeneous_complex_operation_data_type_policy::deduce_output(
 {
 	const auto reference = require_same(
 		input_types,
-		"homogeneous_complex_operation_data_type_policy::infer_output"
+		"homogeneous_complex_operation_data_type_policy::deduce_output"
 	);
 	check(reference);
 	fill(output_types, reference);
@@ -33,7 +33,9 @@ void homogeneous_complex_operation_data_type_policy::validate(
 	);
 	check(reference);
 	require_exact(
-		input_types, reference, "homogeneous_complex_operation_data_type_policy::validate"
+		input_types, 
+		reference, 
+		"homogeneous_complex_operation_data_type_policy::validate"
 	);
 }
 
@@ -41,7 +43,11 @@ void homogeneous_complex_operation_data_type_policy::check(numerical_type type)
 {
 	if (get_category(type) != numerical_type_category::complex)
 	{
-		throw_category(type, "complex", "homogeneous_complex_operation_data_type_policy");
+		throw_category(
+			type, 
+			"complex", 
+			"homogeneous_complex_operation_data_type_policy"
+		);
 	}
 }
 

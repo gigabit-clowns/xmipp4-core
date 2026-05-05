@@ -31,7 +31,7 @@ void matmul_operation_shape_policy::deduce_output(
 	const auto batch_rank1 = first_extents.size() - 2;
 	const auto n = first_extents[batch_rank1 + 0];
 
-	auto second_extents = input_shapes[0];
+	auto second_extents = input_shapes[1];
 	require_at_least_2d(
 		second_extents, 
 		"matmul_operation_shape_policy", 

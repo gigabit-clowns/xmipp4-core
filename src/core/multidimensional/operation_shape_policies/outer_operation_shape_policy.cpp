@@ -69,7 +69,7 @@ void outer_operation_shape_policy::validate(
 		);
 	}
 
-	const auto &second_input_shape = input_shapes[0];
+	const auto &second_input_shape = input_shapes[1];
 	require_1d(
 		second_input_shape, 
 		"outer_operation_shape_policy", 

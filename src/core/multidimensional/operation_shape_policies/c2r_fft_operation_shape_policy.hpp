@@ -66,6 +66,17 @@ public:
      */
     bool is_output_odd() const noexcept;
 
+	/**
+	 * @brief Apply the policy to the transformed axis' extent.
+	 * 
+	 * The result of this operation is `(extent-1)*2 + is_output_odd`.
+	 * 
+	 * @param extent The extent of the transformed axis. Must be greater than
+	 * zero. Otherwise, behavior is undefined.
+	 * @return std::size_t The new extent.
+	 */
+	std::size_t apply_to(std::size_t extent) const noexcept;
+
 private:
     std::size_t m_transformed_axis;
     bool m_is_output_odd;

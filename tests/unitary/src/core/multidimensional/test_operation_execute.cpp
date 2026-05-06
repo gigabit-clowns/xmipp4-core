@@ -207,7 +207,8 @@ public:
 
 
 
-TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly configured kernel", "[operation_execute]") {
+TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly configured kernel", "[operation_execute]") 
+{
     auto queue = GENERATE(
 		std::shared_ptr<mock_device_queue>(), 
 		std::make_shared<mock_device_queue>()
@@ -307,7 +308,8 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
 }
 
 
-TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-less input array is provided", "[operation_execute]") {
+TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-less input array is provided", "[operation_execute]") 
+{
     auto queue = GENERATE(
 		std::shared_ptr<mock_device_queue>(), 
 		std::make_shared<mock_device_queue>()

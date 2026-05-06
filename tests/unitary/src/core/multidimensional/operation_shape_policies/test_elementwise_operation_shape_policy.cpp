@@ -72,19 +72,22 @@ TEST_CASE(
 
 TEST_CASE(
     "elementwise_operation_shape_policy::accept does not throw when all user "
-    "outputs are equal and the canonical shape broadcasts to them",
+    "outputs can be broadcasted to the canonical shape",
     "[elementwise_operation_shape_policy]"
 )
 {
     const auto& pol = elementwise_operation_shape_policy::get();
 
-    const std::vector<shape_type> canonical    = { {1, 8} };
+    const std::vector<shape_type> canonical    = { {1, 8}, {1, 8} };
     const std::vector<shape_type> inputs       = { {1, 8} };
     const std::vector<shape_type> user_outputs = { {4, 8}, {4, 8} };
 
     CHECK_NOTHROW(
-        pol.accept(make_span(user_outputs), make_span(canonical),
-                   make_span(inputs))
+        pol.accept(
+			make_span(user_outputs), 
+			make_span(canonical),
+            make_span(inputs)
+		)
     );
 }
 
@@ -98,7 +101,7 @@ TEST_CASE(
 
     const std::vector<shape_type> canonical    = { {4, 8} };
     const std::vector<shape_type> inputs       = { {4, 8} };
-    const std::vector<shape_type> user_outputs = { {4, 8}, {4, 9} };
+    const std::vector<shape_type> user_outputs = { {4, 9} };
 
     CHECK_THROWS_AS(
         pol.accept(make_span(user_outputs), make_span(canonical),

@@ -58,21 +58,8 @@ public:
 		bool keep_dim = false
 	);
 
-	reduction_operation_shape_policy(
-		const reduction_operation_shape_policy &other
-	) = delete;
-
-	reduction_operation_shape_policy(
-		reduction_operation_shape_policy &&other
-	) noexcept = delete;
-
 	XMIPP4_CORE_API
 	~reduction_operation_shape_policy() override;
-
-	reduction_operation_shape_policy&
-	operator=(const reduction_operation_shape_policy &other) = delete;
-	reduction_operation_shape_policy&
-	operator=(reduction_operation_shape_policy &&other) noexcept = delete;
 
 	XMIPP4_CORE_API
 	void deduce(

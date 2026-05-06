@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operation_data_type_policies/real_from_complex_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 using namespace xmipp4;
@@ -28,20 +30,18 @@ TEST_CASE(
 )
 {
     const auto& pol = real_from_complex_operation_data_type_policy::get();
+    using TypePair = std::pair<numerical_type, numerical_type>;
+    auto tc = GENERATE(
+        TypePair{ numerical_type::complex_float16, numerical_type::float16 },
+        TypePair{ numerical_type::complex_float32, numerical_type::float32 },
+        TypePair{ numerical_type::complex_float64, numerical_type::float64 }
+    );
+    const auto [input, expected] = tc;
 
-    const std::vector<std::pair<numerical_type, numerical_type>> cases = {
-        { numerical_type::complex_float16, numerical_type::float16 },
-        { numerical_type::complex_float32, numerical_type::float32 },
-        { numerical_type::complex_float64, numerical_type::float64 },
-    };
-
-    for (const auto& [input, expected] : cases)
-    {
-        const std::vector<numerical_type> inputs  = { input };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == expected );
-    }
+    const std::vector<numerical_type> inputs  = { input };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == expected );
 }
 
 TEST_CASE(

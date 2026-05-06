@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operation_data_type_policies/homogeneous_real_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
@@ -28,14 +29,15 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_real_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::int32,
+        numerical_type::uint32
+    );
 
-    for (auto t : { numerical_type::int32, numerical_type::uint32 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(
@@ -45,15 +47,16 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_real_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::float16,
+        numerical_type::float32,
+        numerical_type::float64
+    );
 
-    for (auto t : { numerical_type::float16, numerical_type::float32,
-                    numerical_type::float64 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(

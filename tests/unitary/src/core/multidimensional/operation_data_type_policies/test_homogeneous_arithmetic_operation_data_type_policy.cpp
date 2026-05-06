@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operation_data_type_policies/homogeneous_arithmetic_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
@@ -28,15 +29,16 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_arithmetic_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::int8,
+        numerical_type::int32,
+        numerical_type::int64
+    );
 
-    for (auto t : { numerical_type::int8, numerical_type::int32,
-                    numerical_type::int64 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(
@@ -46,15 +48,16 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_arithmetic_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::uint8,
+        numerical_type::uint32,
+        numerical_type::uint64
+    );
 
-    for (auto t : { numerical_type::uint8, numerical_type::uint32,
-                    numerical_type::uint64 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(
@@ -64,15 +67,16 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_arithmetic_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::float16,
+        numerical_type::float32,
+        numerical_type::float64
+    );
 
-    for (auto t : { numerical_type::float16, numerical_type::float32,
-                    numerical_type::float64 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(
@@ -82,16 +86,16 @@ TEST_CASE(
 )
 {
     const auto& pol = homogeneous_arithmetic_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::complex_float16,
+        numerical_type::complex_float32,
+        numerical_type::complex_float64
+    );
 
-    for (auto t : { numerical_type::complex_float16,
-                    numerical_type::complex_float32,
-                    numerical_type::complex_float64 })
-    {
-        const std::vector<numerical_type> inputs  = { t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == t );
-    }
+    const std::vector<numerical_type> inputs  = { t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == t );
 }
 
 TEST_CASE(

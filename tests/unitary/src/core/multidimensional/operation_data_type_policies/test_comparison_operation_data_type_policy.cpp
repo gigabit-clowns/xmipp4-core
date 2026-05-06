@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <core/multidimensional/operation_data_type_policies/comparison_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
@@ -28,15 +29,17 @@ TEST_CASE(
 )
 {
     const auto& pol = comparison_operation_data_type_policy::get();
+    auto t = GENERATE(
+        numerical_type::boolean,
+        numerical_type::int32,
+        numerical_type::uint32,
+        numerical_type::float32
+    );
 
-    for (auto t : { numerical_type::boolean, numerical_type::int32,
-                    numerical_type::uint32, numerical_type::float32 })
-    {
-        const std::vector<numerical_type> inputs  = { t, t };
-        std::vector<numerical_type>       outputs = { numerical_type::unknown };
-        pol.deduce(make_span(outputs), make_span(inputs));
-        CHECK( outputs[0] == numerical_type::boolean );
-    }
+    const std::vector<numerical_type> inputs  = { t, t };
+    std::vector<numerical_type>       outputs = { numerical_type::unknown };
+    pol.deduce(make_span(outputs), make_span(inputs));
+    CHECK( outputs[0] == numerical_type::boolean );
 }
 
 TEST_CASE(

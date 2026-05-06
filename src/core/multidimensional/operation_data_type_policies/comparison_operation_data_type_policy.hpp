@@ -26,9 +26,6 @@ public:
 	) const override;
 
 	static const comparison_operation_data_type_policy& get() noexcept;
-
-private:
-	static void check_non_complex(numerical_type type);
 };
 
 } // namespace multidimensional

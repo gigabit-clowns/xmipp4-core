@@ -23,9 +23,6 @@ public:
 	) const override;
 
 	static const homogeneous_operation_data_type_policy& get() noexcept;
-
-private:
-	static void check(numerical_type type);
 };
 
 } // namespace multidimensional

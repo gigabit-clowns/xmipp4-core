@@ -2,6 +2,8 @@
 
 #include "comparison_operation_data_type_policy.hpp"
 
+#include "data_type_policy_helpers.hpp"
+
 namespace xmipp4
 {
 namespace multidimensional
@@ -15,30 +17,22 @@ void comparison_operation_data_type_policy::deduce(
 	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 2);
 
-	if (input_types[0] != input_types[1])
-	{
-		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::deduce: expected equal "
-			"input operands."
-		);
-	}
-
-	const auto reference = input_types[0];
-	if (get_size(reference) == 0)
-	{
-		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::deduce: unknown input "
-			"type."
-		);
-	}
-
-	if (get_category(reference) == numerical_type_category::complex)
-	{
-		throw std::invalid_argument(
-			"comparison_operation_data_type_policy::deduce: can not operate "
-			"on complex types."
-		);
-	}
+	XMIPP4_CONST_CONSTEXPR auto context = 
+		"comparison_operation_data_type_policy::deduce";
+	const auto reference = require_same(input_types, context);
+	require_valid(reference, context);
+	require_category(
+		reference,
+		{
+			numerical_type_category::boolean,
+			numerical_type_category::character,
+			numerical_type_category::signed_integer,
+			numerical_type_category::unsigned_integer,
+			numerical_type_category::floating_point
+		},
+		"non-complex",
+		context
+	);
 
 	canonical_output_types[0] = numerical_type::boolean;
 }

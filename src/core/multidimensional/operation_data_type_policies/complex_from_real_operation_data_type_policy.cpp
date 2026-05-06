@@ -14,25 +14,16 @@ void complex_from_real_operation_data_type_policy::deduce(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto input_type = check_inputs(
-		input_types,
-		"complex_from_real_operation_data_type_policy::deduce"
-	);
-	fill(canonical_output_types, make_complex(input_type));
-}
-
-numerical_type complex_from_real_operation_data_type_policy::check_inputs(
-	span<const numerical_type> input_types,
-	const char *context
-)
-{
+	XMIPP4_CONST_CONSTEXPR auto context =
+		"complex_from_real_operation_data_type_policy::deduce";
 	const auto reference = require_same(input_types, context);
-	if (get_category(reference) != numerical_type_category::floating_point)
-	{
-		throw_category(reference, "floating-point", context);
-	}
-
-	return reference;
+	require_category(
+		reference,
+		{ numerical_type_category::floating_point },
+		"floating-point",
+		context
+	);
+	fill(canonical_output_types, make_complex(reference));
 }
 
 const complex_from_real_operation_data_type_policy&

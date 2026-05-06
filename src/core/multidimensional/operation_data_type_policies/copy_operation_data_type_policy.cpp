@@ -17,13 +17,10 @@ void copy_operation_data_type_policy::deduce(
 	XMIPP4_ASSERT(canonical_output_types.size() == 1);
 	XMIPP4_ASSERT(input_types.size() == 1);
 
-	if (get_size(input_types[0]) == 0)
-	{
-		throw std::invalid_argument(
-			"copy_operation_data_type_policy::deduce: Expected valid input "
-			"type."
-		);
-	}
+	require_valid(
+		input_types[0],
+		"copy_operation_data_type_policy::deduce"
+	);
 	canonical_output_types[0] = input_types[0];
 }
 
@@ -35,13 +32,10 @@ void copy_operation_data_type_policy::accept(
 {
 	XMIPP4_ASSERT(user_output_types.size() == 1);
 
-	if (get_size(user_output_types[0]) == 0)
-	{
-		throw std::invalid_argument(
-			"copy_operation_data_type_policy::accept: Expected valid output "
-			"type."
-		);
-	}
+	require_valid(
+		user_output_types[0],
+		"copy_operation_data_type_policy::accept"
+	);
 }
 
 const copy_operation_data_type_policy& 

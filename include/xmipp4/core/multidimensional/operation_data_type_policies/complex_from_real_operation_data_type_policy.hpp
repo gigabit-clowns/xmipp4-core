@@ -27,12 +27,6 @@ public:
 	) const override;
 
 	static const complex_from_real_operation_data_type_policy& get() noexcept;
-
-private:
-	static numerical_type check_inputs(
-		span<const numerical_type> input_types,
-		const char *context
-	);
 };
 
 } // namespace multidimensional

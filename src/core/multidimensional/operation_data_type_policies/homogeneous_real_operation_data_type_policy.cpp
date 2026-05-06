@@ -14,29 +14,20 @@ void homogeneous_real_operation_data_type_policy::deduce(
     span<const numerical_type> input_types
 ) const
 {
-    const auto reference = require_same(
-        input_types,
-        "homogeneous_real_operation_data_type_policy::deduce"
+	XMIPP4_CONST_CONSTEXPR auto context =
+        "homogeneous_real_operation_data_type_policy::deduce";
+    const auto reference = require_same(input_types, context);
+    require_category(
+        reference,
+        {
+            numerical_type_category::signed_integer,
+            numerical_type_category::unsigned_integer,
+            numerical_type_category::floating_point
+        },
+        "real arithmetic",
+        context
     );
-    check(reference);
     fill(canonical_output_types, reference);
-}
-
-void homogeneous_real_operation_data_type_policy::check(numerical_type type)
-{
-    switch (get_category(type))
-    {
-    case numerical_type_category::signed_integer:
-    case numerical_type_category::unsigned_integer:
-    case numerical_type_category::floating_point:
-        break;
-    default:
-        throw_category(
-            type, 
-			"real arithmetic", 
-			"homogeneous_real_operation_data_type_policy"
-        );
-    }
 }
 
 const homogeneous_real_operation_data_type_policy&

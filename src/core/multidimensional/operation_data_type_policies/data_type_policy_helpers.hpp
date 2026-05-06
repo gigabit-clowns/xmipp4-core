@@ -5,6 +5,8 @@
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
+#include <initializer_list>
+
 namespace xmipp4
 {
 namespace multidimensional
@@ -21,6 +23,18 @@ XMIPP4_NORETURN
 void throw_category(
 	numerical_type got,
 	const char *category,
+	const char *context
+);
+
+void require_valid(
+	numerical_type type,
+	const char *context
+);
+
+void require_category(
+	numerical_type type,
+	std::initializer_list<numerical_type_category> allowed,
+	const char *category_name,
 	const char *context
 );
 

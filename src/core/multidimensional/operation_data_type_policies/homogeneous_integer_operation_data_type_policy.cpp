@@ -14,28 +14,19 @@ void homogeneous_integer_operation_data_type_policy::deduce(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = require_same(
-		input_types,
-		"homogeneous_integer_operation_data_type_policy::deduce"
+	XMIPP4_CONST_CONSTEXPR auto context =
+		"homogeneous_integer_operation_data_type_policy::deduce";
+	const auto reference = require_same(input_types, context);
+	require_category(
+		reference,
+		{
+			numerical_type_category::signed_integer,
+			numerical_type_category::unsigned_integer
+		},
+		"integer",
+		context
 	);
-	check(reference);
 	fill(canonical_output_types, reference);
-}
-
-void homogeneous_integer_operation_data_type_policy::check(numerical_type type)
-{
-	switch (get_category(type))
-	{
-	case numerical_type_category::signed_integer:
-	case numerical_type_category::unsigned_integer:
-		break;
-	default:
-		throw_category(
-			type, 
-			"integer", 
-			"homogeneous_integer_operation_data_type_policy"
-		);
-	}
 }
 
 const homogeneous_integer_operation_data_type_policy&

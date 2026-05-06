@@ -14,20 +14,11 @@ void homogeneous_operation_data_type_policy::deduce(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = require_same(
-		input_types,
-		"homogeneous_operation_data_type_policy::deduce"
-	);
-	check(reference);
+	XMIPP4_CONST_CONSTEXPR auto context =
+		"homogeneous_operation_data_type_policy::deduce";
+	const auto reference = require_same(input_types, context);
+	require_valid(reference, context);
 	fill(canonical_output_types, reference);
-}
-
-void homogeneous_operation_data_type_policy::check(numerical_type type)
-{
-	if (get_size(type) == 0)
-	{
-		throw std::invalid_argument("invalid numerical type");
-	}
 }
 
 const homogeneous_operation_data_type_policy& 

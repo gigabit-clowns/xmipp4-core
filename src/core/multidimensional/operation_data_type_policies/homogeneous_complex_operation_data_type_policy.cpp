@@ -14,24 +14,16 @@ void homogeneous_complex_operation_data_type_policy::deduce(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto reference = require_same(
-		input_types,
-		"homogeneous_complex_operation_data_type_policy::deduce"
+	XMIPP4_CONST_CONSTEXPR auto context =
+		"homogeneous_complex_operation_data_type_policy::deduce";
+	const auto reference = require_same(input_types, context);
+	require_category(
+		reference,
+		{ numerical_type_category::complex },
+		"complex",
+		context
 	);
-	check(reference);
 	fill(canonical_output_types, reference);
-}
-
-void homogeneous_complex_operation_data_type_policy::check(numerical_type type)
-{
-	if (get_category(type) != numerical_type_category::complex)
-	{
-		throw_category(
-			type, 
-			"complex", 
-			"homogeneous_complex_operation_data_type_policy"
-		);
-	}
 }
 
 const homogeneous_complex_operation_data_type_policy&

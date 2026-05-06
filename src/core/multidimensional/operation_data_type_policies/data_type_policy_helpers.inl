@@ -38,6 +38,38 @@ inline void throw_category(
 	throw std::invalid_argument(oss.str());
 }
 
+inline void require_valid(
+	numerical_type type,
+	const char *context
+)
+{
+	if (get_size(type) == 0)
+	{
+		std::ostringstream oss;
+		oss << context << ": expected a valid numerical type, but got "
+			<< type << ".";
+		throw std::invalid_argument(oss.str());
+	}
+}
+
+inline void require_category(
+	numerical_type type,
+	std::initializer_list<numerical_type_category> allowed,
+	const char *category_name,
+	const char *context
+)
+{
+	const auto category = get_category(type);
+	for (auto a : allowed)
+	{
+		if (category == a)
+		{
+			return;
+		}
+	}
+	throw_category(type, category_name, context);
+}
+
 inline numerical_type require_same(
 	span<const numerical_type> types,
 	const char *context

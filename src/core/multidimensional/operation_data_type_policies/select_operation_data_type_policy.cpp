@@ -2,9 +2,9 @@
 
 #include "select_operation_data_type_policy.hpp"
 
-#include <stdexcept>
+#include "data_type_policy_helpers.hpp"
 
-#include <xmipp4/core/numerical_type.hpp>
+#include <stdexcept>
 
 namespace xmipp4
 {
@@ -16,33 +16,21 @@ void select_operation_data_type_policy::deduce(
     span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_ASSERT(canonical_output_types.size() == 1);
-	XMIPP4_ASSERT(input_types.size() == 3);
+    XMIPP4_ASSERT(canonical_output_types.size() == 1);
+    XMIPP4_ASSERT(input_types.size() == 3);
 
-    if (input_types[0] != numerical_type::boolean)
-    {
-        throw std::invalid_argument(
-            "select_operation_data_type_policy::deduce: first input must be "
-            "boolean."
-        );
-    }
+	XMIPP4_CONST_CONSTEXPR auto context =
+    	"select_operation_data_type_policy::deduce";
 
-    const auto reference = input_types[1];
-    if (get_size(reference) == 0)
-    {
-        throw std::invalid_argument(
-            "select_operation_data_type_policy::deduce: Expected valid input "
-            "type."
-        );
-    }
+    const auto mask_type  = input_types[0];
+    require_exact(make_span(&mask_type, 1), numerical_type::boolean, context);
 
-    if (input_types[2] != reference)
-    {
-        throw std::invalid_argument(
-            "select_operation_data_type_policy::deduce: second and third "
-            "inputs must share the same type."
-        );
-    }
+	const span<const numerical_type> value_types(
+		std::next(input_types.data()),
+		2
+	);
+    const auto reference = require_same(value_types, context);
+    require_valid(reference, context);
 
     canonical_output_types[0] = reference;
 }

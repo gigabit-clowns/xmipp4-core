@@ -14,25 +14,16 @@ void real_from_complex_operation_data_type_policy::deduce(
 	span<const numerical_type> input_types
 ) const
 {
-	const auto input_type = check_inputs(
-		input_types,
-		"real_from_complex_operation_data_type_policy::deduce"
-	);
-	fill(canonical_output_types, make_real(input_type));
-}
-
-numerical_type real_from_complex_operation_data_type_policy::check_inputs(
-	span<const numerical_type> input_types,
-	const char *context
-)
-{
+	XMIPP4_CONST_CONSTEXPR auto context =
+		"real_from_complex_operation_data_type_policy::deduce";
 	const auto reference = require_same(input_types, context);
-	if (get_category(reference) != numerical_type_category::complex)
-	{
-		throw_category(reference, "complex", context);
-	}
-
-	return reference;
+	require_category(
+		reference,
+		{ numerical_type_category::complex },
+		"complex",
+		context
+	);
+	fill(canonical_output_types, make_real(reference));
 }
 
 const real_from_complex_operation_data_type_policy&

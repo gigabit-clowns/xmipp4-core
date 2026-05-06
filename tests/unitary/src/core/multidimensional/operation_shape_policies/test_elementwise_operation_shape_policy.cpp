@@ -123,8 +123,11 @@ TEST_CASE(
     const std::vector<shape_type> user_outputs = { {3, 8} };
 
     CHECK_THROWS_AS(
-        pol.accept(make_span(user_outputs), make_span(canonical),
-                   make_span(inputs)),
+        pol.accept(
+			make_span(user_outputs), 
+			make_span(canonical),
+   			make_span(inputs)
+		),
         std::invalid_argument
     );
 }

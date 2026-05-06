@@ -12,8 +12,10 @@ std::string logical_negate_operation::get_name() const
 	return "logical_negate";
 }
 
-std::size_t logical_negate_operation::get_output_count() const noexcept { return 1; }
-std::size_t logical_negate_operation::get_input_count() const noexcept { return 1; }
+std::size_t 
+logical_negate_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+logical_negate_operation::get_input_count() const noexcept { return 1; }
 
 } // namespace multidimensional
 } // namespace xmipp4

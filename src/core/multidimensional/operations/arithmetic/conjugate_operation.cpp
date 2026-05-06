@@ -15,12 +15,14 @@ std::string conjugate_operation::get_name() const
 	return "conjugate";
 }
 
-const operation_shape_policy& conjugate_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+conjugate_operation::get_operation_shape_policy() const noexcept
 {
 	return elementwise_operation_shape_policy::get();
 }
 
-const operation_data_type_policy& conjugate_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+conjugate_operation::get_operation_data_type_policy() const noexcept
 {
 	return homogeneous_complex_operation_data_type_policy::get();
 }

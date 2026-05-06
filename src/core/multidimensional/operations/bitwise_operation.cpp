@@ -10,12 +10,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-const operation_shape_policy& bitwise_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+bitwise_operation::get_operation_shape_policy() const noexcept
 {
 	return elementwise_operation_shape_policy::get();
 }
 
-const operation_data_type_policy& bitwise_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+bitwise_operation::get_operation_data_type_policy() const noexcept
 {
 	return homogeneous_integer_operation_data_type_policy::get();
 }

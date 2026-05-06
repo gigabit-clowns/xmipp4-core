@@ -24,7 +24,8 @@ std::size_t matmul_operation::get_input_count() const noexcept
     return 2;
 }
 
-const operation_shape_policy& matmul_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+matmul_operation::get_operation_shape_policy() const noexcept
 {
     return matmul_operation_shape_policy::get();
 }

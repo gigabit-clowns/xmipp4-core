@@ -53,12 +53,14 @@ std::string fill_operation::serialize_parameters() const
 	);
 }
 
-const operation_shape_policy& fill_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+fill_operation::get_operation_shape_policy() const noexcept
 {
 	return elementwise_operation_shape_policy::get();
 }
 
-const operation_data_type_policy& fill_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+fill_operation::get_operation_data_type_policy() const noexcept
 {
 	return homogeneous_operation_data_type_policy::get();
 }

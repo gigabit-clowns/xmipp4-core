@@ -16,12 +16,14 @@ std::string copy_operation::get_name() const
 	return "copy";
 }
 
-const operation_shape_policy& copy_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+copy_operation::get_operation_shape_policy() const noexcept
 {
 	return elementwise_operation_shape_policy::get();
 }
 
-const operation_data_type_policy& copy_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+copy_operation::get_operation_data_type_policy() const noexcept
 {
 	return copy_operation_data_type_policy::get();
 }

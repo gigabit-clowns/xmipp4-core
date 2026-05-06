@@ -17,7 +17,8 @@ std::string abs_operation::get_name() const
 std::size_t abs_operation::get_output_count() const noexcept { return 1; }
 std::size_t abs_operation::get_input_count() const noexcept { return 1; }
 
-const operation_data_type_policy& abs_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+abs_operation::get_operation_data_type_policy() const noexcept
 {
 	return abs_operation_data_type_policy::get();
 }

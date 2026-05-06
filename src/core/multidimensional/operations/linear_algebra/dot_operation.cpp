@@ -24,7 +24,8 @@ std::size_t dot_operation::get_input_count() const noexcept
     return 2;
 }
 
-const operation_shape_policy& dot_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+dot_operation::get_operation_shape_policy() const noexcept
 {
     return dot_operation_shape_policy::get();
 }

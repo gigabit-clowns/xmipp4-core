@@ -12,8 +12,10 @@ std::string bitwise_and_operation::get_name() const
 	return "bitwise_and";
 }
 
-std::size_t bitwise_and_operation::get_output_count() const noexcept { return 1; }
-std::size_t bitwise_and_operation::get_input_count() const noexcept { return 2; }
+std::size_t 
+bitwise_and_operation::get_output_count() const noexcept { return 1; }
+std::size_t 
+bitwise_and_operation::get_input_count() const noexcept { return 2; }
 
 } // namespace multidimensional
 } // namespace xmipp4

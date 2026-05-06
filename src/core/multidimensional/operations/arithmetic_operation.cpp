@@ -10,7 +10,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-const operation_shape_policy& arithmetic_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+arithmetic_operation::get_operation_shape_policy() const noexcept
 {
 	return elementwise_operation_shape_policy::get();
 }

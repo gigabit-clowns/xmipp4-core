@@ -21,12 +21,14 @@ std::string fft_r2c_operation::get_name() const
 std::size_t fft_r2c_operation::get_output_count() const noexcept { return 1; }
 std::size_t fft_r2c_operation::get_input_count() const noexcept { return 1; }
 
-const operation_shape_policy& fft_r2c_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+fft_r2c_operation::get_operation_shape_policy() const noexcept
 {
 	// TODO
 }
 
-const operation_data_type_policy& fft_r2c_operation::get_operation_data_type_policy() const noexcept
+const operation_data_type_policy& 
+fft_r2c_operation::get_operation_data_type_policy() const noexcept
 {
 	return complex_from_real_operation_data_type_policy::get();
 }

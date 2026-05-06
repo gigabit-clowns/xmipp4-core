@@ -24,7 +24,8 @@ std::size_t outer_operation::get_input_count() const noexcept
     return 2;
 }
 
-const operation_shape_policy& outer_operation::get_operation_shape_policy() const noexcept
+const operation_shape_policy& 
+outer_operation::get_operation_shape_policy() const noexcept
 {
     return outer_operation_shape_policy::get();
 }

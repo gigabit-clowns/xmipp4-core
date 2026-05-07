@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "memory_resource_affinity.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 

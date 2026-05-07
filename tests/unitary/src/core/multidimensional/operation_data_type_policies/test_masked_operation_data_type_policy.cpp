@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <core/multidimensional/operation_data_type_policies/select_operation_data_type_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_data_type_policies/masked_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
@@ -14,21 +14,21 @@ using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
 TEST_CASE(
-    "select_operation_data_type_policy::get returns a singleton",
-    "[select_operation_data_type_policy]"
+    "masked_operation_data_type_policy::get returns a singleton",
+    "[masked_operation_data_type_policy]"
 )
 {
-    CHECK( &select_operation_data_type_policy::get() ==
-           &select_operation_data_type_policy::get() );
+    CHECK( &masked_operation_data_type_policy::get() ==
+           &masked_operation_data_type_policy::get() );
 }
 
 TEST_CASE(
-    "select_operation_data_type_policy::deduce propagates the value type "
+    "masked_operation_data_type_policy::deduce propagates the value type "
     "when mask is boolean and both values share the same valid type",
-    "[select_operation_data_type_policy]"
+    "[masked_operation_data_type_policy]"
 )
 {
-    const auto& pol = select_operation_data_type_policy::get();
+    const auto& pol = masked_operation_data_type_policy::get();
     auto t = GENERATE(
         numerical_type::int32,
         numerical_type::float32,
@@ -44,11 +44,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "select_operation_data_type_policy::deduce throws when mask is not boolean",
-    "[select_operation_data_type_policy]"
+    "masked_operation_data_type_policy::deduce throws when mask is not boolean",
+    "[masked_operation_data_type_policy]"
 )
 {
-    const auto& pol = select_operation_data_type_policy::get();
+    const auto& pol = masked_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs = {
         numerical_type::int32, numerical_type::float32, numerical_type::float32
@@ -62,11 +62,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "select_operation_data_type_policy::deduce throws when value types differ",
-    "[select_operation_data_type_policy]"
+    "masked_operation_data_type_policy::deduce throws when value types differ",
+    "[masked_operation_data_type_policy]"
 )
 {
-    const auto& pol = select_operation_data_type_policy::get();
+    const auto& pol = masked_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs = {
         numerical_type::boolean, numerical_type::float32, numerical_type::float64
@@ -80,11 +80,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "select_operation_data_type_policy::deduce throws when value type is unknown",
-    "[select_operation_data_type_policy]"
+    "masked_operation_data_type_policy::deduce throws when value type is unknown",
+    "[masked_operation_data_type_policy]"
 )
 {
-    const auto& pol = select_operation_data_type_policy::get();
+    const auto& pol = masked_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs = {
         numerical_type::boolean,

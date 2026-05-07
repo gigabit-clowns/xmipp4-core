@@ -11,12 +11,13 @@ namespace multidimensional
 {
 
 /**
- * @brief Data type policy for select(mask, x, y) operations.
+ * @brief Data type policy for operations accepting a mask as the first 
+ * argument.
  *
- * The first input must be boolean. The remaining two inputs and the output
+ * The first input must be boolean. The remaining inputs and the output
  * must share the same type, which may be any valid numerical type.
  */
-class XMIPP4_CORE_API select_operation_data_type_policy final
+class XMIPP4_CORE_API masked_operation_data_type_policy final
     : public operation_data_type_policy
 {
 public:
@@ -25,7 +26,7 @@ public:
         span<const numerical_type> input_types
     ) const override;
 
-    static const select_operation_data_type_policy& get() noexcept;
+    static const masked_operation_data_type_policy& get() noexcept;
 };
 
 } // namespace multidimensional

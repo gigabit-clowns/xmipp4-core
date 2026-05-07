@@ -1,14 +1,5 @@
 Complex decomposition (elementwise)
 	- phase (arg) — complement complex_from_polar
-Reductions (whole-array or along an axis)
-	- sum, prod
-	- min, max  (and their argument variants: argmin, argmax)
-	- mean, var, stddev
-	- any, all (logical reductions)
-	- norm (L2: sqrt(sum(x^2))), energy (sum(x^2)), rms, power (energy/N)
-	- sumproduct (dot product of two arrays), euclidean_distance, euclidean_distance2
-Masked reductions
-	- same set as plain reductions, but accepting a boolean mask array
 Scatter / gather (index-based)
 	- gather (index into array along an axis)
 	- scatter

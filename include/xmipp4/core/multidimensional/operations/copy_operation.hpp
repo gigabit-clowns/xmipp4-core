@@ -19,6 +19,27 @@ class copy_operation
 	: public operation
 {
 public:
+	/**
+	 * @brief Indices for output operands.
+	 */
+	enum output_operand_indices
+	{
+		OUTPUT_OPERAND_DESTINATION,
+
+		OUTPUT_OPERAND_COUNT
+	};
+
+	/**
+	 * @brief Indices for input operands.
+	 */
+	enum input_operand_indices
+	{
+		INPUT_OPERAND_SOURCE,
+
+		INPUT_OPERAND_COUNT
+	};
+
+
 	XMIPP4_CORE_API copy_operation() noexcept;
 	XMIPP4_CORE_API ~copy_operation() override;
 	

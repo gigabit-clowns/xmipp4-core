@@ -26,7 +26,7 @@ class memory_allocator;
 namespace multidimensional
 {
 
-class operation_dispatcher;
+class kernel_manager;
 
 } // namespace multidimensional
 
@@ -116,12 +116,12 @@ public:
 	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
 
 	/**
-	 * @brief Get the operation dispatcher.
+	 * @brief Get a reference to the kernel manager.
 	 * 
-	 * @return multidimensional::operation_dispatcher& The dispatcher.
+	 * @return const kernel_manager& The kernel manager. 
 	 */
-	multidimensional::operation_dispatcher& 
-	get_operation_dispatcher() const;
+	XMIPP4_CORE_API
+	const multidimensional::kernel_manager& get_kernel_manager() const;
 
 private:
 	class implementation;

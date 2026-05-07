@@ -43,7 +43,7 @@ TEST_CASE("dispatch_numerical_types called with a single argument and default ma
 		[&expected_type, expected_ret] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			REQUIRE( typeid(type) == expected_type );
+			REQUIRE( std::type_index(typeid(type)) == expected_type );
 			return expected_ret;
 		},
 		type
@@ -91,8 +91,8 @@ TEST_CASE("dispatch_numerical_types called with a two arguments and default mapp
 		{
 			using type0 = typename decltype(tag0)::type;
 			using type1 = typename decltype(tag1)::type;
-			REQUIRE( typeid(type0) == expected_types[0] );
-			REQUIRE( typeid(type1) == expected_types[1] );
+			REQUIRE( std::type_index(typeid(type0)) == expected_types[0] );
+			REQUIRE( std::type_index(typeid(type1)) == expected_types[1] );
 			return expected_ret;
 		},
 		types[0],
@@ -145,7 +145,7 @@ TEST_CASE("dispatch_numerical_types called with a custom mapping should invoke a
 		[&expected_type, expected_ret] (auto tag)
 		{
 			using type = typename decltype(tag)::type;
-			REQUIRE( typeid(type) == expected_type );
+			REQUIRE( std::type_index(typeid(type)) == expected_type );
 			return expected_ret;
 		},
 		custom_map(),

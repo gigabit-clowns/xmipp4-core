@@ -24,7 +24,7 @@ namespace multidimensional
 
 class kernel;
 class operation;
-class array_descriptor;
+class array_signature;
 
 /**
  * @brief Abstract representation of a factory class for kernels
@@ -56,15 +56,17 @@ public:
 	 * 
 	 * @param operation The operation. Its ID must be equal to the ID returned
 	 * by get_operation_id.
-	 * @param descriptors The array descriptors involved in the operation.
-	 * @param device The device where the operation is expected to be executed.
+	 * @param output_signatures The output array signatures involved in the 
+	 * operation.
+	 * @param input_signatures The output array signatures involved in the 
+	 * operation.
 	 * @return backend_priority The suitability of this builder for the 
 	 * requested launch configuration.
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const = 0;
 
 	/**
@@ -75,16 +77,18 @@ public:
 	 * 
 	 * @param operation The operation. Its ID must be equal to the ID returned
 	 * by get_operation_id.
-	 * @param descriptors The array descriptors involved in the operation.
-	 * @param device The device where the operation is expected to be executed.
+	 * @param output_signatures The output array signatures involved in the 
+	 * operation.
+	 * @param input_signatures The output array signatures involved in the 
+	 * operation.
 	 * @return std::shared_ptr<kernel> The executable kernel suited for the
 	 * requested launch parameters.
 	 */
 	virtual 
 	std::shared_ptr<kernel> build(
 		const operation &operation,
-		span<const array_descriptor> descriptors,
-		hardware::device &device
+		span<const array_signature> output_signatures,
+		span<const array_signature> input_signatures
 	) const = 0;
 };
 

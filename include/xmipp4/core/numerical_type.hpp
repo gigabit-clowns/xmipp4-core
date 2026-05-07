@@ -45,6 +45,27 @@ enum class numerical_type
 };
 
 /**
+ * @brief Broad categorical classification of `numerical_type`.
+ * 
+ * @see numerical_type
+ */
+enum class numerical_type_category
+{
+	unknown = -1,
+
+	boolean,
+	character,
+	signed_integer,
+	unsigned_integer,
+	floating_point,
+	complex,
+
+	// Add here
+
+	count
+};
+
+/**
  * @brief Get the size of a numerical type.
  * 
  * @param type The type for which the size should be obtained.
@@ -81,10 +102,26 @@ XMIPP4_CORE_API
 numerical_type 
 promote_types(numerical_type type1, numerical_type type2) noexcept;
 
+/**
+ * @brief Get the category of the provided numerical type.
+ * 
+ * @param type The type from which the category is inferred.
+ * @return numerical_type_category The category of the input type or
+ * `numerical_type_category::unknown` if error.
+ */
+XMIPP4_CORE_API
+numerical_type_category get_category(numerical_type type) noexcept;
+
 XMIPP4_CORE_API
 const char* to_string(numerical_type type) noexcept;
 
 XMIPP4_CORE_API
+const char* to_string(numerical_type_category category) noexcept;
+
+XMIPP4_CORE_API
 std::ostream& operator<<(std::ostream &os, numerical_type type);
+
+XMIPP4_CORE_API
+std::ostream& operator<<(std::ostream &os, numerical_type_category category);
 
 } // namespace xmipp4

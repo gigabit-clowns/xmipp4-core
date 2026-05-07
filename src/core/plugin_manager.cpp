@@ -5,8 +5,9 @@
 #include "plugin_loader.hpp"
 
 #include <xmipp4/core/plugin.hpp>
-#include <xmipp4/core/logger.hpp>
 #include <xmipp4/core/exceptions/plugin_load_error.hpp>
+
+#include <core/logger.hpp>
 
 #include <vector>
 #include <functional>

@@ -23,6 +23,8 @@ target_include_directories(
 	PUBLIC 
 		$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_compile_definitions(
 	xmipp4-core
@@ -73,14 +75,14 @@ target_link_libraries(
 	xmipp4-core
 	PUBLIC
 		Threads::Threads
-		spdlog::spdlog_header_only
-		half
 	PRIVATE
+		spdlog::spdlog_header_only
 		Boost::filesystem # Eventually replace by std::filesystem (C++17)
 		Boost::container # Eventually replace in C++23
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
 		fmt::fmt
+		half
 		${CMAKE_DL_LIBS}
 )
 
@@ -108,9 +110,9 @@ install(
 
 # Create and install CMake config files
 configure_package_config_file(
-		${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
-		${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config.cmake
-		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
+	${PROJECT_SOURCE_DIR}/cmake/config/config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
 )
 write_basic_package_version_file(
 	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config-version.cmake

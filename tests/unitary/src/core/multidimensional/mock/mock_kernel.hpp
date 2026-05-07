@@ -21,8 +21,8 @@ public:
 	MAKE_CONST_MOCK3(
 		execute, 
 		void(
-			span<const std::shared_ptr<hardware::buffer>> read_write_operands,
-			span<const std::shared_ptr<const hardware::buffer>> read_only_operands,
+			span<const std::shared_ptr<hardware::buffer>> output_operands,
+			span<const std::shared_ptr<const hardware::buffer>> input_operands,
 			hardware::device_queue *queue
 		),
 		override

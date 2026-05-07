@@ -265,6 +265,14 @@ template <typename T, std::size_t N>
 XMIPP4_CONSTEXPR span<const memory::byte, N*sizeof(T)> 
 as_bytes(const span<const T, N> &other) noexcept;
 
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<T> make_span(T* ptr, std::size_t count) noexcept;
+
+template <typename T>
+XMIPP4_CONSTEXPR 
+span<const T> make_span(const T* ptr, std::size_t count) noexcept;
+
 template <typename T, std::size_t N>
 XMIPP4_CONSTEXPR span<T, N> make_span(std::array<T, N> &array) noexcept;
 

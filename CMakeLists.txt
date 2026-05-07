@@ -42,12 +42,6 @@ if (XMIPP4_CORE_BUILD_HALF)
 	fetch_half(VERSION 2.2.1)
 else()
 	find_package(half 2 REQUIRED)
-	install(
-		FILES 
-			${PROJECT_SOURCE_DIR}/cmake/modules/Findhalf.cmake
-		DESTINATION 
-			${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core/modules
-	)
 endif()
 
 if(WIN32)
@@ -58,7 +52,7 @@ endif()
 set(XMIPP4_PLUGIN_INSTALL_DIR ${XMIPP4_PLUGIN_INSTALL_DIR} CACHE PATH "Directory where the xmipp4 plugins are installed")
 
 # Set project-wide compilation options
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 # Add source directory

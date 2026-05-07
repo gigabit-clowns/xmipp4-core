@@ -1,51 +1,14 @@
-Already declared
-    Assignment
-        - copy
-        - fill
-        - complex_from_real_imag
-        - complex_from_polar
-    Arithmetic (elementwise)
-        - negate, abs, conjugate
-        - add, subtract, multiply, divide
-    Bitwise (elementwise)
-        - bitwise_negate (~x)
-        - bitwise_and, bitwise_or, bitwise_xor
-    Logical (elementwise)
-        - logical_negate (!x)
-        - logical_and, logical_or
-        - select (mask ? x : y)
-    Compare (elementwise, boolean output)
-        - less, less_equal, equal, inequal
-        NOTE: greater / greater_equal not needed (swap operands of less / less_equal)
-    Numeric / real arithmetic (elementwise, no complex)
-        - minimum, maximum
-        - clamp
-    Power / exponential (elementwise)
-        - square, sqrt
-        - power (x^y)
-        - exp, log
-    Trigonometric (elementwise)
-        - sin, cos, sincos, tan
-        - asin, acos, atan, atan2
-    Rounding (elementwise)
-        - floor, ceil, round, trunc
-
-Pending — primitives worth adding
-    Complex decomposition (elementwise)
-        - phase (arg) — complement complex_from_polar
-    Reductions (whole-array or along an axis)
-        - sum, prod
-        - min, max  (and their argument variants: argmin, argmax)
-        - mean, var, stddev
-        - any, all (logical reductions)
-        - norm (L2: sqrt(sum(x^2))), energy (sum(x^2)), rms, power (energy/N)
-        - sumproduct (dot product of two arrays), euclidean_distance, euclidean_distance2
-    Masked reductions
-        - same set as plain reductions, but accepting a boolean mask array
-    FFT
-        - Decide axis/nd strategy: single class parameterised by axis list, or separate
-          1d/2d/3d/nd classes?
-        - Decide real-to-complex (rfft) and complex-to-complex (fft) forward/backward pairs
-    Scatter / gather (index-based)
-        - gather (index into array along an axis)
-		- scatter
+Complex decomposition (elementwise)
+	- phase (arg) — complement complex_from_polar
+Reductions (whole-array or along an axis)
+	- sum, prod
+	- min, max  (and their argument variants: argmin, argmax)
+	- mean, var, stddev
+	- any, all (logical reductions)
+	- norm (L2: sqrt(sum(x^2))), energy (sum(x^2)), rms, power (energy/N)
+	- sumproduct (dot product of two arrays), euclidean_distance, euclidean_distance2
+Masked reductions
+	- same set as plain reductions, but accepting a boolean mask array
+Scatter / gather (index-based)
+	- gather (index into array along an axis)
+	- scatter

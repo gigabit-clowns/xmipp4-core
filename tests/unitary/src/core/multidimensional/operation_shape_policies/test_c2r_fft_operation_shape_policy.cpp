@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <core/multidimensional/operation_shape_policies/c2r_fft_operation_shape_policy.hpp>
+#include <xmipp4/core/multidimensional/operation_shape_policies/c2r_fft_operation_shape_policy.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <stdexcept>

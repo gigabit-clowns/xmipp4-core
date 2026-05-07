@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "c2r_fft_operation_shape_policy.hpp"
+#include <xmipp4/core/multidimensional/operation_shape_policies/c2r_fft_operation_shape_policy.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
 

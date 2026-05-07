@@ -10,8 +10,13 @@ namespace xmipp4
 namespace multidimensional
 {
 
-fft_c2c_operation::fft_c2c_operation(fft_direction direction) noexcept
-	: m_direction(direction)
+fft_c2c_operation::fft_c2c_operation(
+	std::vector<std::size_t> axes,
+	fft_direction direction,
+	fft_normalization normalization
+) noexcept
+	: fourier_operation(std::move(axes), normalization)
+	, m_direction(direction)
 {
 }
 
@@ -25,16 +30,21 @@ std::string fft_c2c_operation::get_name() const
 std::size_t fft_c2c_operation::get_output_count() const noexcept { return 1; }
 std::size_t fft_c2c_operation::get_input_count() const noexcept { return 1; }
 
-const operation_shape_policy& 
+const operation_shape_policy&
 fft_c2c_operation::get_operation_shape_policy() const noexcept
 {
 	return homogeneous_operation_shape_policy::get();
 }
 
-const operation_data_type_policy& 
+const operation_data_type_policy&
 fft_c2c_operation::get_operation_data_type_policy() const noexcept
 {
 	return homogeneous_complex_operation_data_type_policy::get();
+}
+
+fft_direction fft_c2c_operation::get_direction() const noexcept
+{
+	return m_direction;
 }
 
 } // namespace multidimensional

@@ -119,16 +119,18 @@ array mean(
 /**
  * @brief Get the variance over a set of axes.
  *
- * The variance is defined as `sum(square(x-mean), axes, where) / (N-1)`. 
+ * The variance is defined as `sum(square(x-mean), axes, where) / (N-ddof)`.
  * Where `N` is the number of elements.
- * 
+ *
  * @param x Array where the mean is computed.
  * @param axes The axes on which elements are added.
  * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
+ * @param keep_dim When false, the reduced axes are removed from the output. If
  * true reduced axes are replaced by axes with extent 1.
- * @param mean Optional mean array. If provided, the operation it must be 
- * broadcastable to x. This can be guaranteed by computing it with 
+ * @param ddof Delta degrees of freedom. The divisor is `N - ddof`. Defaults
+ * to 1 (sample variance).
+ * @param mean Optional mean array. If provided, the operation it must be
+ * broadcastable to x. This can be guaranteed by computing it with
  * `keep_dim==true`.
  * @param where Optional masking array. If provided, the operation is performed
  * on elements where this array evaluates to true. Must be broadcastble with
@@ -143,6 +145,7 @@ array variance(
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
+	std::size_t ddof = 0,
 	const array_view *mean = nullptr,
 	const array_view *where = nullptr,
 	array *out = nullptr
@@ -151,21 +154,23 @@ array variance(
 /**
  * @brief Get the standard deviation over a set of axes.
  *
- * The standard deviation is defined as 
- * `sqrt(sum(square(x-mean), axes, where) / (N-1))` where `N` is the number of 
- * elements.
- * 
+ * The standard deviation is defined as
+ * `sqrt(sum(square(x-mean), axes, where) / (N-ddof))` where `N` is the number
+ * of elements.
+ *
  * @param x Array where the mean is computed.
  * @param axes The axes on which elements are added.
  * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
+ * @param keep_dim When false, the reduced axes are removed from the output. If
  * true reduced axes are replaced by axes with extent 1.
- * @param mean Optional mean array. If provided, the operation it must be 
- * broadcastable to x. This can be guaranteed by computing it with 
+ * @param ddof Delta degrees of freedom. The divisor is `N - ddof`. Defaults
+ * to 1 (sample standard deviation).
+ * @param mean Optional mean array. If provided, the operation it must be
+ * broadcastable to x. This can be guaranteed by computing it with
  * `keep_dim==true`.
  * @param where Optional masking array. If provided, the operation is performed
  * on elements where this array evaluates to true. Must be broadcastble with
- * the input array. 
+ * the input array.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
  * @return array The result.
@@ -176,30 +181,29 @@ array stddev(
 	span<const std::size_t> axes,
 	const execution_context &context,
 	bool keep_dim = false,
+	std::size_t ddof = 0,
 	const array_view *mean = nullptr,
 	const array_view *where = nullptr,
 	array *out = nullptr
 );
 
 /**
- * @brief Get the energy over a set of axes.
+ * @brief Compute the sum of squares over a set of axes.
  *
- * The energy is defined as `sum(square(x), axes, where)`.
- * 
- * @param x Array where the energy is computed.
- * @param axes The axes on which elements are added.
+ * Defined as `sum(square(x), axes, where)`.
+ *
+ * @param x Input array.
+ * @param axes The axes along which the reduction is performed.
  * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
- * true reduced axes are replaced by axes with extent 1.
- * @param where Optional masking array. If provided, the operation is performed
- * on elements where this array evaluates to true. Must be broadcastble with
- * the input array.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
+ * @param keep_dim When false, the reduced axes are removed from the output. If
+ * true, reduced axes are replaced by axes with extent 1.
+ * @param where Optional masking array. If provided, only elements where this
+ * array evaluates to true are included. Must be broadcastable with @p x.
+ * @param out Optional array to reuse.
  * @return array The result.
  */
 XMIPP4_CORE_API
-array energy(
+array sum_square(
 	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
@@ -209,25 +213,23 @@ array energy(
 );
 
 /**
- * @brief Get the power over a set of axes.
+ * @brief Compute the mean of squares over a set of axes.
  *
- * The power is defined as `sum(square(x), axes, where) / N` where `N` is the 
- * number of elements.
- * 
- * @param x Array where the power is computed.
- * @param axes The axes on which elements are added.
+ * Defined as `sum(square(x), axes, where) / N` where @c N is the number of
+ * (unmasked) elements.
+ *
+ * @param x Input array.
+ * @param axes The axes along which the reduction is performed.
  * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
- * true reduced axes are replaced by axes with extent 1.
- * @param where Optional masking array. If provided, the operation is performed
- * on elements where this array evaluates to true. Must be broadcastble with
- * the input array.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
+ * @param keep_dim When false, the reduced axes are removed from the output. If
+ * true, reduced axes are replaced by axes with extent 1.
+ * @param where Optional masking array. If provided, only elements where this
+ * array evaluates to true are included. Must be broadcastable with @p x.
+ * @param out Optional array to reuse.
  * @return array The result.
  */
 XMIPP4_CORE_API
-array power(
+array mean_square(
 	array_view x,
 	span<const std::size_t> axes,
 	const execution_context &context,
@@ -312,66 +314,6 @@ array norm(
  */
 XMIPP4_CORE_API
 array sumproduct(
-	array_view x,
-	array_view y,
-	span<const std::size_t> axes,
-	const execution_context &context,
-	bool keep_dim = false,
-	const array_view *where = nullptr,
-	array *out = nullptr
-);
-
-/**
- * @brief Get the euclidean distance between to arrays.
- *
- * The squared euclidean distance is defined as 
- * `sqrt(sum(square(x - y), axes, where))`.
- * 
- * @param x First array.
- * @param y Second array.
- * @param axes The axes on which elements are added.
- * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
- * true reduced axes are replaced by axes with extent 1.
- * @param where Optional masking array. If provided, the operation is performed
- * on elements where this array evaluates to true. Must be broadcastble with
- * the input array.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The euclidean distance computation.
- */
-XMIPP4_CORE_API
-array euclidean_distance(
-	array_view x,
-	array_view y,
-	span<const std::size_t> axes,
-	const execution_context &context,
-	bool keep_dim = false,
-	const array_view *where = nullptr,
-	array *out = nullptr
-);
-
-/**
- * @brief Get the squared euclidean distance between to arrays.
- *
- * The squared euclidean distance is defined as 
- * `sum(square(x - y), axes, where)`.
- * 
- * @param x First array.
- * @param y Second array.
- * @param axes The axes on which elements are added.
- * @param context The device context to handle the allocation.
- * @param keep_dim When false, the reduced axes are removed from the output. If 
- * true reduced axes are replaced by axes with extent 1.
- * @param where Optional masking array. If provided, the operation is performed
- * on elements where this array evaluates to true. Must be broadcastble with
- * the input array.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The squared euclidean distance computation.
- */
-XMIPP4_CORE_API
-array euclidean_distance2(
 	array_view x,
 	array_view y,
 	span<const std::size_t> axes,

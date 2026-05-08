@@ -42,7 +42,9 @@ public:
 	 * device. None of them will be nullptr.
 	 */
 	virtual 
-	void get_memory_resources(std::vector<memory_resource*> &resources) = 0;
+	void get_memory_resources(
+		std::vector<const memory_resource*> &resources
+	) = 0;
 
 	/**
 	 * @brief Create a device executor.

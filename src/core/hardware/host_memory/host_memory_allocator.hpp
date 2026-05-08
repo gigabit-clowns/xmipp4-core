@@ -24,7 +24,7 @@ public:
 	host_memory_allocator() = default;
 	~host_memory_allocator() override = default;
 
-	memory_resource& get_memory_resource() const noexcept override;
+	const memory_resource& get_memory_resource() const noexcept override;
 
 	std::size_t get_max_alignment() const noexcept override;
 

@@ -88,7 +88,7 @@ public:
 	 * 
 	 * @return memory_resource& The resource where the buffer is stored.
 	 */
-	virtual memory_resource& get_memory_resource() const noexcept = 0;
+	virtual const memory_resource& get_memory_resource() const noexcept = 0;
 };
 
 } // namespace hardware

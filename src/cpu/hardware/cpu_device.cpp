@@ -10,7 +10,7 @@ namespace hardware
 {
 
 void cpu_device::get_memory_resources(
-	std::vector<memory_resource*> &resources
+	std::vector<const memory_resource*> &resources
 )
 {
 	resources = { &get_host_memory_resource() };

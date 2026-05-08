@@ -40,7 +40,7 @@ public:
 	 * allocates buffers.
 	 */
 	virtual
-	memory_resource& get_memory_resource() const noexcept = 0;
+	const memory_resource& get_memory_resource() const noexcept = 0;
 
 	/**
 	 * @brief Get the maximum alignment allowed for buffers.

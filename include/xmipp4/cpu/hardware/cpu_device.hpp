@@ -25,7 +25,7 @@ public:
 	~cpu_device() override = default;
 
 	void get_memory_resources(
-		std::vector<memory_resource*> &resources
+		std::vector<const memory_resource*> &resources
 	) override;
 
 	std::shared_ptr<device_executor> create_executor() override;

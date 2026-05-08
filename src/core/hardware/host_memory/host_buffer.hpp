@@ -19,6 +19,17 @@ class host_buffer final
 public:
 	host_buffer(std::size_t size, std::size_t alignment);
 	~host_buffer() override;
+
+	void* get_host_ptr() noexcept override;
+	const void* get_host_ptr() const noexcept override;
+	void* get_device_handle() noexcept override;
+	const void* get_device_handle() const noexcept override;
+	std::size_t get_size() const noexcept override;
+	const memory_resource& get_memory_resource() const noexcept override;
+
+private:
+	void *m_data;
+	std::size_t m_size;
 };
 
 } // namespace hardware

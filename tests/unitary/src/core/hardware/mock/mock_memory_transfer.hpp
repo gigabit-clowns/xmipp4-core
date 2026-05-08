@@ -23,7 +23,7 @@ public:
 			const buffer &source, 
 			buffer &destination,
 			span<const copy_region> regions, 
-			device_queue *queue
+			device_executor *queue
 		),
 		const override
 	);

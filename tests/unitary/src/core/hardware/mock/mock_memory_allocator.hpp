@@ -27,7 +27,7 @@ public:
 	);
 	MAKE_MOCK3(
 		allocate, 
-		std::shared_ptr<buffer>(std::size_t, std::size_t, device_queue*), 
+		std::shared_ptr<buffer>(std::size_t, std::size_t, device_executor*), 
 		override
 	);
 };

@@ -10,7 +10,7 @@ namespace hardware
 {
 
 class cpu_event;
-class cpu_device_queue;
+class cpu_device_executor;
 class cpu_memory_resource;
 
 /**
@@ -28,7 +28,7 @@ public:
 		std::vector<memory_resource*> &resources
 	) override;
 
-	std::shared_ptr<device_queue> create_device_queue() override;
+	std::shared_ptr<device_executor> create_executor() override;
 
 	std::shared_ptr<device_event> create_device_event() override;
 

@@ -16,7 +16,7 @@ void cpu_device::get_memory_resources(
 	resources = { &get_host_memory_resource() };
 }
 
-std::shared_ptr<device_queue> cpu_device::create_device_queue()
+std::shared_ptr<device_executor> cpu_device::create_executor()
 {
 	return nullptr;
 }

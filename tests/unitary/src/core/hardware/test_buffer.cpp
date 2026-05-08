@@ -9,7 +9,7 @@
 
 #include "mock/mock_buffer_sentinel.hpp"
 #include "mock/mock_memory_resource.hpp"
-#include "mock/mock_device_queue.hpp"
+#include "mock/mock_device_executor.hpp"
 
 #include <cstddef>
 
@@ -38,15 +38,15 @@ TEST_CASE( "Calling record_buffer in buffer should forward the call to the senti
 	mock_memory_resource resource;
 	auto sentinel = std::make_unique<mock_buffer_sentinel>();
 	auto *sentinel_ptr = sentinel.get();
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	buffer buf(nullptr, 1024, resource, std::move(sentinel));
 
-	REQUIRE_CALL(*sentinel_ptr, record_queue(ANY(device_queue&), true))
+	REQUIRE_CALL(*sentinel_ptr, record_queue(ANY(device_executor&), true))
 		.LR_WITH(&_1 == &queue);
 	buf.record_queue(queue, true);
 
-	REQUIRE_CALL(*sentinel_ptr, record_queue(ANY(device_queue&), false))
+	REQUIRE_CALL(*sentinel_ptr, record_queue(ANY(device_executor&), false))
 		.LR_WITH(&_1 == &queue);
 	buf.record_queue(queue, false);
 }
@@ -54,7 +54,7 @@ TEST_CASE( "Calling record_buffer in buffer should forward the call to the senti
 TEST_CASE( "Calling record_buffer a buffer without a sentinel should throw", "[buffer]" )
 {
 	mock_memory_resource resource;
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	buffer buf(nullptr, 1024, resource, nullptr);
 

@@ -7,7 +7,7 @@
 
 #include <xmipp4/core/hardware/buffer.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 #include "../mock/mock_buffer_sentinel.hpp"
 
 #include <stdexcept>
@@ -57,8 +57,8 @@ TEST_CASE( "host_memory_heap should pass the buffer_sentinel to the buffer", "[h
 	host_memory_heap heap(heap_size, heap_alignment);
 	auto sentinel = std::make_unique<mock_buffer_sentinel>();
 
-	mock_device_queue queue;
-	REQUIRE_CALL((*sentinel), record_queue(ANY(device_queue&), true))
+	mock_device_executor queue;
+	REQUIRE_CALL((*sentinel), record_queue(ANY(device_executor&), true))
 		.LR_WITH(&_1 == &queue);
 
 	auto buffer = heap.create_buffer(buffer_offset, buffer_size, std::move(sentinel) );

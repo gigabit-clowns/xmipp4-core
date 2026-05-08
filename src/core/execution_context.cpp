@@ -55,17 +55,17 @@ public:
 		return m_allocator_pool.get_memory_allocator(affinity);
 	}
 
-	std::shared_ptr<hardware::device_queue> 
-	set_active_queue(std::shared_ptr<hardware::device_queue> queue) noexcept
+	std::shared_ptr<hardware::device_executor>
+	set_active_executor(std::shared_ptr<hardware::device_executor> executor) noexcept
 	{
-		std::swap(queue, m_active_queue);
-		return queue;
+		std::swap(executor, m_active_executor);
+		return executor;
 	}
 
-	const std::shared_ptr<hardware::device_queue>& 
-	get_active_queue() const noexcept
+	const std::shared_ptr<hardware::device_executor>&
+	get_active_executor() const noexcept
 	{
-		return m_active_queue;
+		return m_active_executor;
 	}
 
 	const multidimensional::kernel_manager& get_kernel_manager() const noexcept
@@ -77,7 +77,7 @@ private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	hardware::memory_allocator_pool m_allocator_pool;
-	std::shared_ptr<hardware::device_queue> m_active_queue;
+	std::shared_ptr<hardware::device_executor> m_active_executor;
 	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
 
 	static std::shared_ptr<hardware::device> create_device(
@@ -142,18 +142,18 @@ execution_context::get_memory_allocator(
 	return get_implementation().get_memory_allocator(affinity);
 }
 
-std::shared_ptr<hardware::device_queue> 
-execution_context::set_active_queue(
-	std::shared_ptr<hardware::device_queue> queue
+std::shared_ptr<hardware::device_executor>
+execution_context::set_active_executor(
+	std::shared_ptr<hardware::device_executor> executor
 )
 {
-	return get_implementation().set_active_queue(std::move(queue));
+	return get_implementation().set_active_executor(std::move(executor));
 }
 
-const std::shared_ptr<hardware::device_queue>& 
-execution_context::get_active_queue() const
+const std::shared_ptr<hardware::device_executor>&
+execution_context::get_active_executor() const
 {
-	return get_implementation().get_active_queue();
+	return get_implementation().get_active_executor();
 }
 
 const multidimensional::kernel_manager& 

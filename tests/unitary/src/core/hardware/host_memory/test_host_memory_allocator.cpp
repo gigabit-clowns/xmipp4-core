@@ -9,7 +9,7 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/system/host.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 
 #include <sstream>
 
@@ -45,7 +45,7 @@ TEST_CASE( "host_memory_allocator should wait the queue to complete", "[host_mem
 {
 	host_memory_allocator allocator;
 
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	REQUIRE_CALL(queue, wait_until_completed());
 

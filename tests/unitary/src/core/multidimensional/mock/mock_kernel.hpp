@@ -5,7 +5,7 @@
 #include <xmipp4/core/multidimensional/kernel.hpp>
 
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/device_executor.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -23,7 +23,7 @@ public:
 		void(
 			span<const std::shared_ptr<hardware::buffer>> output_operands,
 			span<const std::shared_ptr<const hardware::buffer>> input_operands,
-			hardware::device_queue *queue
+			hardware::device_executor *queue
 		),
 		override
 	);

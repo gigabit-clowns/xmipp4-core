@@ -11,7 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
+class device_executor;
 
 /**
  * @brief Abstract class to inform a memory allocator about the status of
@@ -38,7 +38,7 @@ public:
 	 * @param exclusive Whether the new queue is explicitly synchronized
 	 * with the previous usage-s.
 	 */
-	virtual void record_queue(device_queue &queue, bool exclusive) = 0;
+	virtual void record_queue(device_executor &queue, bool exclusive) = 0;
 }; 
 
 } // namespace hardware

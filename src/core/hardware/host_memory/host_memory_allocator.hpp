@@ -31,7 +31,7 @@ public:
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_queue *queue
+		device_executor *queue
 	) override;
 };
 

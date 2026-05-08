@@ -6,7 +6,7 @@
 
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 #include "../mock/mock_memory_heap.hpp"
 
 #include <cstddef>
@@ -18,7 +18,7 @@ TEST_CASE( "constructing a memory_block should store the arguments", "[caching_m
 	mock_memory_heap heap;
 	const std::size_t offset = 1234;
 	const std::size_t size = 9876;
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	memory_block block(&queue, size, &heap, offset);
 
@@ -33,7 +33,7 @@ TEST_CASE( "setting the size in a memory heap should store its value", "[caching
 	mock_memory_heap heap;
 	const std::size_t offset = 1234;
 	const std::size_t size = 9876;
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	memory_block block(&queue, size, &heap, offset);
 
@@ -47,7 +47,7 @@ TEST_CASE( "setting the offset in a memory heap should store its value", "[cachi
 	mock_memory_heap heap;
 	const std::size_t offset = 1234;
 	const std::size_t size = 9876;
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	memory_block block(&queue, size, &heap, offset);
 

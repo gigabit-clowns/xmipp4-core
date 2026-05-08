@@ -14,9 +14,9 @@ namespace hardware
 {
 
 static
-void wait_on_queues(span<device_queue *const> queues)
+void wait_on_queues(span<device_executor *const> queues)
 {
-	for (const device_queue *queue : queues)
+	for (const device_executor *queue : queues)
 	{
 		if (!queue)
 		{
@@ -70,7 +70,7 @@ std::size_t caching_memory_allocator::get_max_alignment() const noexcept
 std::shared_ptr<buffer> caching_memory_allocator::allocate(
 	std::size_t size, 
 	std::size_t alignment, 
-	device_queue *queue
+	device_executor *queue
 )
 {
 	if (alignment > m_maximum_alignment)
@@ -138,7 +138,7 @@ std::shared_ptr<buffer> caching_memory_allocator::allocate(
 
 void caching_memory_allocator::recycle_block(
 	memory_block &block, 
-	span<device_queue *const> queues
+	span<device_executor *const> queues
 )
 {
 	if (queues.empty())

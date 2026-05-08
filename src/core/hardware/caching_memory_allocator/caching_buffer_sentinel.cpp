@@ -26,14 +26,14 @@ caching_buffer_sentinel::~caching_buffer_sentinel()
 	m_allocator.get().recycle_block(m_block, get_queues());
 }
 
-span<device_queue *const> 
+span<device_executor *const> 
 caching_buffer_sentinel::get_queues() const noexcept
 {
 	const auto &queues = m_queues.get_sequence_cref();
-	return span<device_queue *const>(queues.data(), queues.size());
+	return span<device_executor *const>(queues.data(), queues.size());
 }
 
-void caching_buffer_sentinel::record_queue(device_queue &queue, bool exclusive)
+void caching_buffer_sentinel::record_queue(device_executor &queue, bool exclusive)
 {
 	if (exclusive)
 	{

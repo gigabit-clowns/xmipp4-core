@@ -17,7 +17,7 @@
 #include <core/hardware/host_memory/host_buffer.hpp>
 
 #include "../hardware/mock/mock_device.hpp"
-#include "../hardware/mock/mock_device_queue.hpp"
+#include "../hardware/mock/mock_device_executor.hpp"
 #include "../hardware/mock/mock_device_backend.hpp"
 #include "../hardware/mock/mock_memory_resource.hpp"
 #include "../hardware/mock/mock_memory_allocator.hpp"

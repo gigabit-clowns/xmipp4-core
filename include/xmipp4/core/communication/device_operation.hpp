@@ -10,7 +10,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
+class device_executor;
 
 } // namespace hardware
 
@@ -46,7 +46,7 @@ public:
 	 * device_transaction::begin() and device_transaction::commit()
 	 * 
 	 */
-	virtual void execute(hardware::device_queue *queue) = 0;
+	virtual void execute(hardware::device_executor *queue) = 0;
 };
 
 } // namespace communication

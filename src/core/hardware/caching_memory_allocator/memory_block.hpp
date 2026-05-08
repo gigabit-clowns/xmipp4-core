@@ -13,7 +13,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
+class device_executor;
 class memory_heap;
 
 /**
@@ -41,7 +41,7 @@ public:
 	 * 
 	 */
 	memory_block(
-		const device_queue *queue,
+		const device_executor *queue,
 		std::size_t size,
 		memory_heap *heap,
 		std::size_t offset
@@ -57,9 +57,9 @@ public:
 	/**
 	 * @brief Get the queue where this block is synchronous.
 	 * 
-	 * @return const device_queue* Pointer to the queue.
+	 * @return const device_executor* Pointer to the queue.
 	 */
-	const device_queue* get_queue() const noexcept;
+	const device_executor* get_queue() const noexcept;
 
 	/**
 	 * @brief Set the size of the block.
@@ -105,7 +105,7 @@ public:
 	bool is_free() const noexcept;
 
 private:
-	const device_queue *m_queue;
+	const device_executor *m_queue;
 	std::size_t m_size;
 	memory_heap *m_heap;
 	std::size_t m_offset;

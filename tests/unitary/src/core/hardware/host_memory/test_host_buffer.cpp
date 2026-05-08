@@ -8,7 +8,7 @@
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <core/hardware/host_memory/host_memory_resource.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 
 #include <sstream>
 
@@ -45,7 +45,7 @@ TEST_CASE( "host_buffer should throw when recording queues", "[host_buffer]" )
 	const std::size_t alignment = 64;
 	host_buffer buffer(size, alignment);
 
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	REQUIRE_THROWS_MATCHES(
 		buffer.record_queue(queue, false),

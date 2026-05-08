@@ -32,12 +32,12 @@ public:
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_queue *queue
+		device_executor *queue
 	) override;
 
 	void recycle_block(
 		memory_block &block, 
-		span<device_queue *const> queues
+		span<device_executor *const> queues
 	);
 
 private:

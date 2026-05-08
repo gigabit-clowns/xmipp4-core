@@ -9,7 +9,7 @@ using namespace xmipp4::hardware;
 TEST_CASE( "creating a device queue on a cpu_device should return null", "[cpu_device]" )
 {
 	cpu_device dev;
-	REQUIRE( dev.create_device_queue() == nullptr );
+	REQUIRE( dev.create_device_executor() == nullptr );
 }
 
 TEST_CASE( "creating a device event on a cpu_device should return null", "[cpu_device]" )

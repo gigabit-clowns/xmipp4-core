@@ -9,7 +9,7 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 #include "../mock/mock_memory_resource.hpp"
 #include "../mock/mock_memory_heap.hpp"
 
@@ -258,7 +258,7 @@ TEST_CASE( "requesting a buffer from caching_allocator should exclusively serve 
 	REQUIRE_CALL(resource, create_memory_heap(request_size_step, max_alignment))
 		.RETURN(heap);
 
-	mock_device_queue queue1;
+	mock_device_executor queue1;
 	allocator.allocate(20, 32, &queue1);
 
 	heap = std::make_shared<mock_memory_heap>();
@@ -269,6 +269,6 @@ TEST_CASE( "requesting a buffer from caching_allocator should exclusively serve 
 	REQUIRE_CALL(resource, create_memory_heap(request_size_step, max_alignment))
 		.RETURN(heap);
 
-	mock_device_queue queue2;
+	mock_device_executor queue2;
 	allocator.allocate(20, 32, &queue2);
 }

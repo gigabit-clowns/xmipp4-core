@@ -7,7 +7,7 @@
 #include <core/hardware/caching_memory_allocator/caching_memory_allocator.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_device_executor.hpp"
 #include "../mock/mock_memory_resource.hpp"
 #include "../mock/mock_memory_heap.hpp"
 
@@ -30,8 +30,8 @@ TEST_CASE( "adding queues to a caching_buffer_sentinel should store them" )
 		request_size_step
 	);
 
-	mock_device_queue queue1;
-	mock_device_queue queue2;
+	mock_device_executor queue1;
+	mock_device_executor queue2;
 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
@@ -70,7 +70,7 @@ TEST_CASE( "recording the allocation queue to a caching_buffer_sentinel should n
 		request_size_step
 	);
 
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
@@ -103,7 +103,7 @@ TEST_CASE( "repeatedly adding the same queue to a caching_buffer_sentinel should
 		request_size_step
 	);
 
-	mock_device_queue queue;
+	mock_device_executor queue;
 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
@@ -141,8 +141,8 @@ TEST_CASE( "adding a queue with the exclusive flag to a caching_buffer_sentinel 
 		request_size_step
 	);
 
-	mock_device_queue queue1;
-	mock_device_queue queue2;
+	mock_device_executor queue1;
+	mock_device_executor queue2;
 
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())

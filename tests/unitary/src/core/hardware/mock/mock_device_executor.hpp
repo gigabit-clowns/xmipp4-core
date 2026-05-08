@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/device_executor.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -11,8 +11,8 @@ namespace xmipp4
 namespace hardware
 {
 
-class mock_device_queue final
-	: public device_queue
+class mock_device_executor final
+	: public device_executor
 {
 public:
 	MAKE_MOCK0(wait_until_completed, void(), const override);

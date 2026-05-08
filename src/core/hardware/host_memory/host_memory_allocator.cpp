@@ -3,7 +3,7 @@
 #include "host_memory_allocator.hpp"
 
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/device_executor.hpp>
 #include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
@@ -29,7 +29,7 @@ std::size_t host_memory_allocator::get_max_alignment() const noexcept
 std::shared_ptr<buffer> host_memory_allocator::allocate(
 	std::size_t size, 
 	std::size_t alignment, 
-	device_queue *queue
+	device_executor *queue
 )
 {
 	if (queue)

@@ -15,7 +15,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
+class device_executor;
 
 
 
@@ -99,9 +99,9 @@ public:
 	const buffer_sentinel* get_sentinel() const noexcept;
 
 	/**
-	 * @brief Acknowledge that this buffer is being used in a device_queue.
+	 * @brief Acknowledge that this buffer is being used in a device_executor.
 	 * 
-	 * Due to the asynchronous nature of the device_queue-s, the buffer may
+	 * Due to the asynchronous nature of the device_executor-s, the buffer may
 	 * be needed after its destruction on the application code. By default,
 	 * protections against this race condition only exist with the queue used
 	 * to allocate this buffer (if any). When using this buffer in additional 
@@ -124,7 +124,7 @@ public:
 	 * 
 	 */
 	XMIPP4_CORE_API 
-	void record_queue(device_queue &queue, bool exclusive=false) const;
+	void record_queue(device_executor &queue, bool exclusive=false) const;
 
 private:
 	void *m_host_pointer;

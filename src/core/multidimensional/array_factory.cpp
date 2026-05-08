@@ -7,7 +7,7 @@
 #include <xmipp4/core/multidimensional/operations/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/device_executor.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/binary/bit.hpp>

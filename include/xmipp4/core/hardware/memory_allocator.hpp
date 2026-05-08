@@ -12,7 +12,7 @@ namespace hardware
 {
 
 class buffer;
-class device_queue;
+class device_executor;
 class memory_resource;
 
 /**
@@ -57,7 +57,7 @@ public:
 	 * @param size Size in bytes.
 	 * @param alignment Alignment in bytes. Must be a power of two and smaller
 	 * or equal than the value returned by get_max_alignment().
-	 * @param queue Optional device_queue where the allocation is dispatched.
+	 * @param queue Optional device_executor where the allocation is dispatched.
 	 * If provided, the allocation may be asynchronous with respect to the
 	 * host. The queue must be associated to the same device as the memory
 	 * resource targeted by this allocator. When not provided, the allocation
@@ -69,7 +69,7 @@ public:
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_queue *queue
+		device_executor *queue
 	) = 0;
 }; 
 

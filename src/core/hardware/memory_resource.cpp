@@ -25,15 +25,19 @@ bool is_device_accessible(
 	device &device
 ) noexcept
 {
-	XMIPP4_CONST_CONSTEXPR 
-	auto affinity = memory_resource_affinity::device;
+	if (!is_device_accessible(resource.get_kind()))
+	{
+		return false;
+	}
 
-	return 
-		&device.get_memory_resource(affinity) == &resource ||
-		(
-			resource.get_target_device() == &device && 
-			is_device_accessible(resource.get_kind())
-		);
+	if (resource.get_target_device() == &device)
+	{
+		return true;
+	}
+
+	// Add more heuristics
+
+	return false;
 }
 
 } // namespace hardware

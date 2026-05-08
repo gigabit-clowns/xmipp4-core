@@ -12,8 +12,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class memory_heap;
-class memory_transfer;
+class memory_allocator;
 class device;
 
 /**
@@ -55,27 +54,12 @@ public:
 	memory_resource_kind get_kind() const noexcept = 0;
 
 	/**
-	 * @brief Get the maximum alignment parameter allowed for the heap.
+	 * @brief Create a allocator for this resource.
 	 * 
-	 * @return std::size_t The maximum alignment.
+	 * @return std::shared_ptr<memory_allocator> The memory allocator.
 	 */
-	virtual
-	std::size_t get_max_heap_alignment() const noexcept = 0;
-
-	/**
-	 * @brief Allocate a chunk of memory to serve smaller allocations.
-	 * 
-	 * @param size Minimum size requirement for the heap.
-	 * @param alignment Minimum alignment requirement for the heap's base
-	 * pointer.
-	 * 
-	 * @return std::shared_ptr<memory_heap> The newly created heap.
-	 */
-	virtual
-	std::shared_ptr<memory_heap> create_memory_heap(
-		std::size_t size, 
-		std::size_t alignment
-	) = 0;
+	virtual 
+	std::shared_ptr<memory_allocator> create_allocator() const = 0;
 }; 
 
 /**

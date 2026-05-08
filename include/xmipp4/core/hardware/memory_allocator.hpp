@@ -57,19 +57,15 @@ public:
 	 * @param size Size in bytes.
 	 * @param alignment Alignment in bytes. Must be a power of two and smaller
 	 * or equal than the value returned by get_max_alignment().
-	 * @param queue Optional device_executor where the allocation is dispatched.
-	 * If provided, the allocation may be asynchronous with respect to the
-	 * host. The queue must be associated to the same device as the memory
-	 * resource targeted by this allocator. When not provided, the allocation
-	 * is synchronous, which means that the buffer is ready to be used when this
-	 * method returns.
+	 * @param executor_hint Optional device_executor where the allocation is 
+	 * will be first used.
 	 * @return std::shared_ptr<buffer> The newly allocated buffer.
 	 */
 	virtual
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_executor *queue
+		device_executor *executor_hint = nullptr
 	) = 0;
 }; 
 

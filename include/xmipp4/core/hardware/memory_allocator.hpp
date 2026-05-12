@@ -46,8 +46,6 @@ public:
 	 * @brief Get the maximum alignment allowed for buffers.
 	 * 
 	 * @return std::size_t The maximum alignment in bytes.
-	 * @note This value may be different from the maximum alignment allowed
-	 * by the underlying memory_resource.
 	 */
 	virtual std::size_t get_max_alignment() const noexcept = 0;
 

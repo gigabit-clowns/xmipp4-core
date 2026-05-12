@@ -20,9 +20,7 @@ class memory_resource;
 /**
  * @brief Abstract representation of a device handle.
  * 
- * This class enables basic interaction functionalities with
- * a hardware device.
- * 
+ * This class enables basic interaction with a hardware device.
  */
 class XMIPP4_CORE_API device
 {

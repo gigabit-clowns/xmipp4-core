@@ -49,8 +49,8 @@ public:
 	/**
 	 * @brief Create a device executor.
 	 *
-	 * @return std::shared_ptr<device_executor> The newly created device executor.
-	 * nullptr if asynchronous execution is not supported.
+	 * @return std::shared_ptr<device_executor> The newly created device 
+	 * executor.
 	 */
 	virtual std::shared_ptr<device_executor>
 	create_executor() = 0;
@@ -59,7 +59,6 @@ public:
 	 * @brief Create an intra-device synchronization primitive.
 	 * 
 	 * @return std::shared_ptr<device_event> The newly created device event. 
-	 * nullptr if asynchronous execution is not supported.
 	 */
 	virtual std::shared_ptr<device_event>
 	create_device_event() = 0;
@@ -68,7 +67,7 @@ public:
 	 * @brief Create a device to host synchronization primitive.
 	 * 
 	 * @return std::shared_ptr<device_to_host_event> The newly created 
-	 * device_to_host_event. nullptr if asynchronous execution is not supported.
+	 * device_to_host_event.
 	 */
 	virtual std::shared_ptr<device_to_host_event>
 	create_device_to_host_event() = 0;

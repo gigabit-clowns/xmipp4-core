@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "../platform/constexpr.hpp"
-
 namespace xmipp4
 {
 namespace hardware
@@ -22,9 +20,7 @@ enum class device_type
 	fpga, ///< A Field Programmable Grid Array (FPGA)
 };
 
-XMIPP4_CONSTEXPR const char* to_string(device_type type) noexcept;
+const char* to_string(device_type type) noexcept;
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "device_type.inl"

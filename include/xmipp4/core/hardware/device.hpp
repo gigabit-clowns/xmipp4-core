@@ -50,16 +50,14 @@ public:
 	 * @return std::shared_ptr<device_executor> The newly created device 
 	 * executor.
 	 */
-	virtual std::shared_ptr<device_executor>
-	create_executor() = 0;
+	virtual std::shared_ptr<device_executor> create_executor() = 0;
 
 	/**
 	 * @brief Create an intra-device synchronization primitive.
 	 * 
 	 * @return std::shared_ptr<device_event> The newly created device event. 
 	 */
-	virtual std::shared_ptr<device_event>
-	create_device_event() = 0;
+	virtual std::shared_ptr<device_event> create_device_event() = 0;
 
 	/**
 	 * @brief Create a device to host synchronization primitive.
@@ -67,8 +65,8 @@ public:
 	 * @return std::shared_ptr<device_to_host_event> The newly created 
 	 * device_to_host_event.
 	 */
-	virtual std::shared_ptr<device_to_host_event>
-	create_device_to_host_event() = 0;
+	virtual 
+	std::shared_ptr<device_to_host_event> create_device_to_host_event() = 0;
 }; 
 
 } // namespace hardware

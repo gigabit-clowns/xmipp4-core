@@ -14,18 +14,20 @@ namespace xmipp4
 namespace hardware
 {
 
+class memory_allocator;
+
 /**
  * @brief Represents an untyped memory allocation at a given memory
  * resource.
  * 
  */
-class buffer
+class XMIPP4_CORE_API buffer
 {
 public:
-	XMIPP4_CORE_API buffer() noexcept;
+	buffer() noexcept;
 	buffer(const buffer &other) = delete;
 	buffer(buffer &&other) noexcept = delete;
-	XMIPP4_CORE_API virtual ~buffer();
+	virtual ~buffer();
 
 	buffer& operator=(const buffer &other) = delete;
 	buffer& operator=(buffer &&other) noexcept = delete;
@@ -89,6 +91,14 @@ public:
 	 * @return memory_resource& The resource where the buffer is stored.
 	 */
 	virtual const memory_resource& get_memory_resource() const noexcept = 0;
+
+	/**
+	 * @brief Get the memory allocator used for allocating this buffer.
+	 * 
+	 * @return memory_allocator& The memory allocator where this buffer was
+	 * allocated.
+	 */
+	virtual memory_allocator& get_memory_allocator() const noexcept = 0;
 };
 
 } // namespace hardware

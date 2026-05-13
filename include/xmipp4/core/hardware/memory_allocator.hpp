@@ -65,6 +65,22 @@ public:
 		std::size_t alignment, 
 		device_executor *executor_hint = nullptr
 	) = 0;
+
+	/**
+	 * @brief Acknowledge that this buffer is being used in a certain 
+	 * device_executor.
+	 * 
+	 * Due to the asynchronous nature of the device_queue-s, the buffer may
+	 * be needed after its destruction on the application code. This function
+	 * acknowledges the allocator that a particular buffer is being used at
+	 * a particular executor to defer its release until all pending tasks
+	 * have been completed.
+	 * 
+	 * @param buffer The buffer being used.
+	 * @param executor The executor where the buffer is being used.
+	 */
+	virtual
+	void record_use(const buffer &buffer, device_executor &executor) = 0;
 }; 
 
 } // namespace hardware

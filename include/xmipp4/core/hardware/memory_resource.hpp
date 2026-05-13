@@ -34,18 +34,6 @@ public:
 	memory_resource& operator=(memory_resource &&other) = delete;
 
 	/**
-	 * @brief Get a non owning pointer to the target device.
-	 * 
-	 * When the memory resource is allocated in the host memory without
-	 * targeting any device (i.e. it is host), it returns nullptr.
-	 * 
-	 * @return device* Pointer to the device. nullptr if this memory resource
-	 * does not target any device.
-	 */
-	virtual
-	device* get_target_device() const noexcept = 0;
-
-	/**
 	 * @brief Get the type of the memory resource.
 	 * 
 	 * @return memory_resource_kind The type of this memory resource.

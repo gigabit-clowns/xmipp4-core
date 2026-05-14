@@ -110,12 +110,10 @@ resolve_output_storage(
 
 	result_type result(operands.size());
 
-	auto &allocator = context.get_memory_allocator(
-		hardware::memory_resource_affinity::device
-	);
+	const auto &allocator = context.get_active_allocator();
 	auto *queue = context.get_active_queue().get();
 	const auto &properties = context.get_device_properties();
-    const auto max_alignment = allocator.get_max_alignment();
+    const auto max_alignment = allocator->get_max_alignment();
     const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
 
@@ -135,7 +133,7 @@ resolve_output_storage(
 			storage = allocate_output_operand_storage(
 				operands[i],
 				descriptors[i],
-				allocator,
+				*allocator,
 				base_alignment,
 				queue
 			);
@@ -208,7 +206,7 @@ void record_queues(
 	for (const auto &storage : storages)
 	{
 		XMIPP4_ASSERT(storage);
-		storage->record_queue(queue);
+		storage->get_memory_allocator().record_use(*storage, queue);
 	}
 }
 

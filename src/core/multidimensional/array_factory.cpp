@@ -19,7 +19,7 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-/*
+
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
@@ -78,15 +78,14 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 
 array empty(
 	array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out
 )
 {
-	auto &allocator = context.get_memory_allocator(affinity);
+	const auto &allocator = context.get_active_allocator();
 	const auto storage_requirement = compute_storage_requirement(descriptor);
 
-	auto storage = reuse_array_storage(out, storage_requirement, allocator);
+	auto storage = reuse_array_storage(out, storage_requirement, *allocator);
 	if (storage && out->get_descriptor() == descriptor)
 	{
 		return out->share(); // Trivial
@@ -95,12 +94,12 @@ array empty(
 	if (!storage)
 	{
 		const auto alignment = get_alignment_requirement(
-			allocator, 
+			*allocator, 
 			context.get_device_properties(),
 			storage_requirement
 		);
 		auto *queue = context.get_active_queue().get();
-		storage = allocator.allocate(storage_requirement, alignment, queue);
+		storage = allocator->allocate(storage_requirement, alignment, queue);
 	}
 
 	array result(std::move(storage), std::move(descriptor));
@@ -114,14 +113,12 @@ array empty(
 
 array zeros(
 	array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out
 )
 {
 	return full(
 		descriptor,
-		affinity,
 		0,
 		context,
 		out
@@ -130,14 +127,12 @@ array zeros(
 
 array ones(
 	array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out
 )
 {
 	return full(
 		descriptor,
-		affinity,
 		1,
 		context,
 		out
@@ -146,14 +141,13 @@ array ones(
 
 array full(
 	array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
 	const scalar_ref &fill_value,
 	const execution_context &context,
 	array *out
 )
 {
 	std::array<array, 1> outputs = { 
-		empty(descriptor, affinity, context, out) 
+		empty(descriptor, context, out) 
 	};
 
 	execute(
@@ -189,6 +183,6 @@ array copy(
 
 	return std::move(outputs[0]);
 }
-*/
+
 } // namespace multidimensional
 } // namespace xmipp4

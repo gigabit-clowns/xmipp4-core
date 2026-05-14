@@ -13,8 +13,8 @@ class host_memory_resource;
 class host_memory_allocator;
 
 /**
- * @brief Implementation of buffer_sentinel based on malloc/free
- * 
+ * @brief Implementation of the buffer interface to represent data in host
+ * memory.
  */
 class host_buffer final
 	: public buffer

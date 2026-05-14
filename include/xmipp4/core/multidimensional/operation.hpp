@@ -6,8 +6,6 @@
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 
-#include <xmipp4/core/hardware/memory_resource_affinity.hpp>
-
 #include <string>
 
 namespace xmipp4 

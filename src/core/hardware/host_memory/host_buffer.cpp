@@ -48,12 +48,12 @@ std::size_t host_buffer::get_size() const noexcept
 	return m_size;
 }
 
-const host_memory_resource& host_buffer::get_memory_resource() const noexcept
+const memory_resource& host_buffer::get_memory_resource() const noexcept
 {
 	return host_memory_resource::get();
 }
 
-host_memory_allocator& host_buffer::get_memory_allocator() const noexcept
+memory_allocator& host_buffer::get_memory_allocator() const noexcept
 {
 	return host_memory_allocator::get();
 }

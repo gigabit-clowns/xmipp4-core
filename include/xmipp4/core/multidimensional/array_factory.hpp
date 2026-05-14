@@ -4,7 +4,6 @@
 
 #include "array.hpp"
 #include "../scalar_ref.hpp"
-#include "../hardware/memory_resource_affinity.hpp"
 
 namespace xmipp4 
 {
@@ -18,7 +17,6 @@ namespace multidimensional
  * @brief Create an array with uninitialized contents.
  * 
  * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
  * @param context The device context to handle the allocation.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
@@ -27,7 +25,6 @@ namespace multidimensional
 XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -36,7 +33,6 @@ array empty(
  * @brief Create an array full of zeros.
  * 
  * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
  * @param context The device context to handle the allocation and dispatch.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
@@ -45,7 +41,6 @@ array empty(
 XMIPP4_CORE_API
 array zeros(
 	array_descriptor descriptor, 
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -54,7 +49,6 @@ array zeros(
  * @brief Create an array full of ones.
  * 
  * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
  * @param context The device context to handle the allocation and dispatch.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
@@ -63,7 +57,6 @@ array zeros(
 XMIPP4_CORE_API
 array ones(
 	array_descriptor descriptor, 
-	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -72,7 +65,6 @@ array ones(
  * @brief Create an array full of an arbitrary value.
  * 
  * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
  * @param fill_value The value to fill the array with.
  * @param context The device context to handle the allocation and dispatch.
  * @param out Optional array to reuse. If provided, its resources may be re-used
@@ -82,7 +74,6 @@ array ones(
 XMIPP4_CORE_API
 array full(
 	array_descriptor descriptor, 
-	hardware::memory_resource_affinity affinity,
 	const scalar_ref &fill_value,
 	const execution_context &context,
 	array *out = nullptr

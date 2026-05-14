@@ -3,7 +3,6 @@
 #pragma once
 
 #include "platform/dynamic_shared_object.h"
-#include "hardware/memory_resource_affinity.hpp"
 
 #include <memory>
 
@@ -82,20 +81,6 @@ public:
 	 */
 	XMIPP4_CORE_API
 	hardware::device& get_device() const;
-
-	/**
-	 * @brief Get the memory allocator responsible to allocate memory with 
-	 * the requested affinity.
-	 * 
-	 * @param affinity Intended usage for the allocated buffers.
-	 * @return memory_allocator& The memory allocator.
-	 * 
-	 * @note Depending on the memory architecture, some allocators may alias
-	 * each other.
-	 */
-	XMIPP4_CORE_API
-	hardware::memory_allocator& 
-	get_memory_allocator(hardware::memory_resource_affinity affinity) const;
 
 	/**
 	 * @brief Set the active queue.

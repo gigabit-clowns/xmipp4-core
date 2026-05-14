@@ -7,6 +7,7 @@
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <core/hardware/host_memory/host_memory_resource.hpp>
+#include <core/hardware/host_memory/host_memory_allocator.hpp>
 
 #include "../mock/mock_device_queue.hpp"
 
@@ -27,7 +28,7 @@ TEST_CASE( "host_buffer should allocate enough space", "[host_buffer]" )
 	std::memset(buffer.get_host_ptr(), 0, size); // Should not segfault
 }
 
-TEST_CASE( "host_buffer should return the memory resource in get_memory_resource", "[host_buffer]" )
+TEST_CASE( "host_buffer should return the host memory resource singleton in get_memory_resource", "[host_buffer]" )
 {
 	const std::size_t size = 1024;
 	const std::size_t alignment = 64;
@@ -39,27 +40,14 @@ TEST_CASE( "host_buffer should return the memory resource in get_memory_resource
 	REQUIRE( &mr1 == &mr2 );
 }
 
-TEST_CASE( "host_buffer should throw when recording queues", "[host_buffer]" )
+TEST_CASE( "host_buffer should return the host memory allocator singleton in get_memory_allocator", "[host_buffer]" )
 {
 	const std::size_t size = 1024;
 	const std::size_t alignment = 64;
+
 	host_buffer buffer(size, alignment);
+	auto &ma1 = buffer.get_memory_allocator();
+	auto &ma2 = host_memory_allocator::get();
 
-	mock_device_queue queue;
-
-	REQUIRE_THROWS_MATCHES(
-		buffer.record_queue(queue, false),
-		xmipp4::invalid_operation_error,
-		Catch::Matchers::Message(
-			"Can not call buffer::record_queue on a buffer without a sentinel"
-		)
-	);
-
-	REQUIRE_THROWS_MATCHES(
-		buffer.record_queue(queue, true),
-		xmipp4::invalid_operation_error,
-		Catch::Matchers::Message(
-			"Can not call buffer::record_queue on a buffer without a sentinel"
-		)
-	);
+	REQUIRE( &ma1 == &ma2 );
 }

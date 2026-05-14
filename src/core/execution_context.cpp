@@ -6,12 +6,9 @@
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
-#include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/multidimensional/kernel_manager.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-
-#include "hardware/memory_allocator_pool.hpp"
 
 #include <stdexcept>
 
@@ -27,10 +24,6 @@ public:
 	)
 		: m_device_properties()
 		, m_device(create_device(catalog, index, m_device_properties))
-		, m_allocator_pool(
-			*m_device, 
-			catalog.get_service_manager<hardware::memory_allocator_manager>()
-		)
 		, m_kernel_manager(
 			catalog.get_service_manager<multidimensional::kernel_manager>()
 		)
@@ -46,13 +39,6 @@ public:
 	{
 		XMIPP4_ASSERT( m_device );
 		return *m_device;
-	}
-
-	hardware::memory_allocator& get_memory_allocator(
-		hardware::memory_resource_affinity affinity
-	) const
-	{
-		return m_allocator_pool.get_memory_allocator(affinity);
 	}
 
 	std::shared_ptr<hardware::device_queue>
@@ -76,7 +62,6 @@ public:
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
-	hardware::memory_allocator_pool m_allocator_pool;
 	std::shared_ptr<hardware::device_queue> m_active_queue;
 	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
 
@@ -132,14 +117,6 @@ execution_context::get_device_properties() const
 hardware::device& execution_context::get_device() const
 {
 	return get_implementation().get_device();
-}
-
-hardware::memory_allocator& 
-execution_context::get_memory_allocator(
-	hardware::memory_resource_affinity affinity
-) const
-{
-	return get_implementation().get_memory_allocator(affinity);
 }
 
 std::shared_ptr<hardware::device_queue>

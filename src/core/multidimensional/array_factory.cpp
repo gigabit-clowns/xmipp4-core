@@ -19,7 +19,7 @@ namespace xmipp4
 {
 namespace multidimensional
 {
-
+/*
 static 
 std::size_t get_alignment_requirement(
     const hardware::memory_allocator &allocator,
@@ -189,6 +189,6 @@ array copy(
 
 	return std::move(outputs[0]);
 }
-
+*/
 } // namespace multidimensional
 } // namespace xmipp4

@@ -16,9 +16,9 @@ class mock_device final
 {
 public:
 	MAKE_MOCK1(
-		get_memory_resource, 
-		memory_resource&(memory_resource_affinity affinity), 
-		noexcept override
+		get_memory_resources,
+		void(std::vector<const memory_resource*> &resources),
+		override
 	);
 	MAKE_MOCK0(
 		create_queue,

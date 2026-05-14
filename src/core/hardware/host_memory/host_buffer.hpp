@@ -9,9 +9,6 @@ namespace xmipp4
 namespace hardware
 {
 
-class host_memory_resource;
-class host_memory_allocator;
-
 /**
  * @brief Implementation of the buffer interface to represent data in host
  * memory.
@@ -26,8 +23,8 @@ public:
 	void* get_host_ptr() noexcept override;
 	const void* get_host_ptr() const noexcept override;
 	std::size_t get_size() const noexcept override;
-	const host_memory_resource& get_memory_resource() const noexcept override;
-	host_memory_allocator& get_memory_allocator() const noexcept override;
+	const memory_resource& get_memory_resource() const noexcept override;
+	memory_allocator& get_memory_allocator() const noexcept override;
 
 private:
 	void *m_data;

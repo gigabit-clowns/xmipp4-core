@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "memory_resource.hpp"
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 #include <utility>
 #include <memory>
@@ -14,6 +13,7 @@ namespace xmipp4
 namespace hardware
 {
 
+class memory_resource;
 class memory_allocator;
 
 /**

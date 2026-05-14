@@ -17,7 +17,6 @@ enum class device_type
 	cpu, ///< CPU of the host.
 	gpu, ///< A discrete Graphics Processing Unit (GPU)
 	integrated_gpu, ///< An integrated Graphics Processing Unit (iGPU)
-	fpga, ///< A Field Programmable Grid Array (FPGA)
 };
 
 const char* to_string(device_type type) noexcept;

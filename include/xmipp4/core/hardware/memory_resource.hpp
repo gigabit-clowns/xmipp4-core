@@ -4,10 +4,11 @@
 
 #include <memory>
 
-#include "memory_resource_kind.hpp"
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
-namespace xmipp4 
+#include "memory_resource_kind.hpp"
+
+namespace xmipp4
 {
 namespace hardware
 {
@@ -16,11 +17,7 @@ class memory_allocator;
 class device;
 
 /**
- * @brief A memory_resource describes a physical memory region.
- * 
- * It can be used to create allocators for this region and query its 
- * properties and affinity to devices.
- * 
+ * @brief Abstract description of a physical memory region.
  */
 class XMIPP4_CORE_API memory_resource
 {
@@ -34,29 +31,41 @@ public:
 	memory_resource& operator=(memory_resource &&other) = delete;
 
 	/**
-	 * @brief Get the type of the memory resource.
-	 * 
-	 * @return memory_resource_kind The type of this memory resource.
+	 * @brief Get the kind of memory this resource represents.
+	 *
+	 * The returned value is constant over the lifetime of the resource and 
+	 * determines the host/device accessibility of the buffers allocated from it
+	 * (see @ref is_host_accessible and @ref is_device_accessible).
+	 *
+	 * @return Kind tag describing this resource.
 	 */
 	virtual
 	memory_resource_kind get_kind() const noexcept = 0;
 
 	/**
-	 * @brief Create a allocator for this resource.
-	 * 
-	 * @return std::shared_ptr<memory_allocator> The memory allocator.
+	 * @brief Create an allocator that produces buffers on this resource.
+	 *
+	 * Each call returns an independent allocator instance; concrete
+	 * backends are free to make those instances share state (e.g. a
+	 * common pool) or to keep them disjoint. The returned allocator
+	 * keeps a reference to this resource and must not outlive it; the
+	 * resource itself is owned by the backend and outlives every
+	 * allocator created from it.
+	 *
+	 * @return The new allocator. Never null.
 	 */
-	virtual 
+	virtual
 	std::shared_ptr<memory_allocator> create_allocator() const = 0;
-}; 
+};
 
 /**
- * @brief Get the memory_resource object representing the host memory.
- * 
- * When calling get_kind() on this object, it will return 
- * memory_resource_kind::host and get_target_device() returns nullptr.
- * 
- * @return memory_resource& 
+ * @brief Get the resource representing host memory.
+ *
+ * The returned resource has kind @ref memory_resource_kind::host. It represents
+ * plain host-addressable memory.
+ *
+ * @return Reference to the host memory resource singleton. The reference is 
+ * valid for the entire lifetime of the process.
  */
 XMIPP4_CORE_API
 const memory_resource& get_host_memory_resource() noexcept;

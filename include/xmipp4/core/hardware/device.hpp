@@ -5,7 +5,9 @@
 #include <memory>
 #include <vector>
 
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+
+#include "device_event_usage_flags.hpp"
 
 namespace xmipp4 
 {
@@ -14,13 +16,15 @@ namespace hardware
 
 class device_queue;
 class device_event;
-class device_to_host_event;
 class memory_resource;
 
 /**
- * @brief Abstract representation of a device handle.
+ * @brief Abstract representation of a hardware compute device.
  *
- * This class enables basic interaction with a hardware device.
+ * A @c device is the entry point for interacting with a backend's
+ * compute resource: it advertises the memory resources reachable from
+ * the device and acts as a factory for the per-device objects used by
+ * the rest of the framework (queues, synchronization primitives, ...).
  */
 class XMIPP4_CORE_API device
 {
@@ -34,10 +38,17 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get the memory resources known to this device.
+	 * @brief Get the memory resources reachable from this device.
 	 *
-	 * @param resources Output parameter with memory resources known to this
-	 * device. None of them will be nullptr.
+	 * Populates @p resources with pointers to every memory resource that this 
+	 * device can allocate from or interact with. The set typically includes the
+	 * device's local memory and may include host-side resources usable for 
+	 * transfers (e.g. pinned host memory). The pointed-to resources are owned 
+	 * by the backend and remain valid for as long as the device does.
+	 *
+	 * @param[out] resources Output container, cleared and filled with the 
+	 * memory resources known to this device. None of the stored pointers are 
+	 * null.
 	 */
 	virtual
 	void get_memory_resources(
@@ -45,29 +56,36 @@ public:
 	) = 0;
 
 	/**
-	 * @brief Create a device queue.
+	 * @brief Create a new command queue on this device.
 	 *
-	 * @return std::shared_ptr<device_queue> The newly created device
-	 * queue.
+	 * The returned queue is independent from any previously created queue on 
+	 * the same device, and may execute its commands concurrently with them. 
+	 * Ordering across queues may be established through @ref device_event 
+	 * objects.
+	 *
+	 * @return Shared ownership of the newly created queue. Never null.
 	 */
 	virtual std::shared_ptr<device_queue> create_queue() = 0;
 
 	/**
-	 * @brief Create an intra-device synchronization primitive.
-	 * 
-	 * @return std::shared_ptr<device_event> The newly created device event. 
+	 * @brief Create a synchronization primitive for this device.
+	 *
+	 * The returned event supports at least the operations requested in
+	 * @p usage; the backend may pick the cheapest underlying primitive that 
+	 * satisfies them, so the actually supported set (queried via
+	 * @ref device_event::get_supported_usage) may be a superset of @p usage. 
+	 * The event is initially in the signaled state.
+	 *
+	 * @param usage Capabilities that the returned event must support.
+	 * @return Shared ownership of the newly created event. Never null.
+	 *
+	 * @see device_event
+	 * @see device_event_usage_flags
 	 */
-	virtual std::shared_ptr<device_event> create_device_event() = 0;
-
-	/**
-	 * @brief Create a device to host synchronization primitive.
-	 * 
-	 * @return std::shared_ptr<device_to_host_event> The newly created 
-	 * device_to_host_event.
-	 */
-	virtual 
-	std::shared_ptr<device_to_host_event> create_device_to_host_event() = 0;
-}; 
+	virtual
+	std::shared_ptr<device_event>
+	create_device_event(device_event_usage_flags usage) = 0;
+};
 
 } // namespace hardware
 } // namespace xmipp4

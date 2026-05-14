@@ -3,6 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/hardware/device_timeline_clock.hpp>
 #include <xmipp4/core/hardware/device_event_usage_flags.hpp>
 
 namespace xmipp4
@@ -28,10 +29,10 @@ class device_queue;
  * and supersedes any previous one; subsequent waits and queries refer to the 
  * most recently recorded point. There is no need for the user to reset the 
  * event between uses; backends that require an explicit reset handle it 
- * internally. The event can only be signaled from the device used to create it, 
+ internally. The event can only be signaled from the device used to create it, 
  * even if @ref device_event_usage_flag_bits::cross_device_wait is set.
  * 
- * The set of supported operations is determined at creation time by the 
+ * The supported set of operations is determined at creation time by the 
  * @ref device_event_usage_flags passed to the factory, and can be queried 
  * via @ref get_supported_usage. Backends are free to pick the cheapest 
  * underlying primitive that satisfies the requested capabilities; the actually
@@ -53,8 +54,7 @@ public:
 	/**
 	 * @brief Get the set of operations supported by this event.
 	 */
-	virtual device_event_usage_flags
-	get_supported_usage() const noexcept = 0;
+	virtual device_event_usage_flags get_supported_usage() const noexcept = 0;
 
 	/**
 	 * @brief Record a signal on a device queue.
@@ -108,9 +108,26 @@ public:
 	 * Requires @ref device_event_usage_flag_bits::host_query.
 	 *
 	 * @return @c true if the event has been signaled, @c false otherwise.
-	 *
 	 */
 	virtual bool is_signaled() const = 0;
+
+	/**
+	 * @brief Get the time at which the most recently recorded signal point was
+	 * reached.
+	 *
+	 * Returns a time point on @ref device_timeline_clock corresponding to the
+	 * moment the queue passed the most recently recorded signal point on this
+	 * event. The value lies on the device's local timeline; see
+	 * @ref device_timeline_clock for comparison rules.
+	 *
+	 * The call blocks the calling host thread until that signal point has been
+	 * reached, in the same way @ref wait does. Callers must invoke @ref signal
+	 * at least once before querying the timestamp; the behavior of this method
+	 * on an event that has never been signaled is unspecified.
+	 *
+	 * @return Time point of the last reached signal point.
+	 */
+	virtual device_timeline_clock::time_point get_timestamp() const = 0;
 };
 
 } // namespace hardware

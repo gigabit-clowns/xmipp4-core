@@ -14,25 +14,29 @@ namespace hardware
 /**
  * @brief Capability bits describing how a device event may be used.
  *
- * Each bit represents a distinct synchronization capability that a
- * device event may support. The set of bits requested at event creation
- * lets the backend pick the cheapest underlying primitive that satisfies
- * the requested capabilities.
+ * Each bit represents a distinct synchronization capability that a device event
+ * may support. The set of bits requested at event creation lets the backend
+ * pick the cheapest underlying primitive that satisfies the requested
+ * capabilities.
  */
 enum class device_event_usage_flag_bits
 {
-	/// The event can be waited on from the host thread.
-	host_wait = binary::bit(0),
+	/// The event is used to profile execution times. The timestamp when the 
+	/// provided execution checkpoint is reached will be stored.
+	timestamp = binary::bit(0),
 
 	/// The event can be queried from the host thread.
 	host_query = binary::bit(1),
 
-	/// The event can be waited on from a device queue. On the same device
-	/// that signals it.
-	device_wait = binary::bit(2),
+	/// The event can be waited on from the host thread.
+	host_wait = binary::bit(2),
+
+	/// The event can be waited on another queue from the same device that 
+	/// signals it.
+	device_wait = binary::bit(3),
 
 	/// The event can be waited on from a queue on a different device.
-	cross_device_wait = binary::bit(3)
+	cross_device_wait = binary::bit(4)
 };
 
 /**

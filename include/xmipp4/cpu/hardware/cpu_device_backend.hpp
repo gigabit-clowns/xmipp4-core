@@ -29,7 +29,7 @@ public:
 		device_properties &desc
 	) const override;
 
-	std::shared_ptr<device> create_device(std::size_t id) override;
+	std::shared_ptr<device> create_device(std::size_t id) const override;
 
 	static bool register_at(device_manager &manager);
 }; 

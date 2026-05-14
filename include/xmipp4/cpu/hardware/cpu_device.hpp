@@ -14,7 +14,7 @@ class cpu_device_queue;
 class cpu_memory_resource;
 
 /**
- * @brief Implementation of the `device` interface to represent the CPU.
+ * @brief Implementation of the @ref device interface to represent the CPU.
  */
 class cpu_device final
 	: public device
@@ -25,14 +25,12 @@ public:
 
 	void get_memory_resources(
 		std::vector<const memory_resource*> &resources
-	) override;
+	) const override;
 
-	std::shared_ptr<device_queue> create_queue() override;
+	std::shared_ptr<device_queue> create_queue() const override;
 
-	std::shared_ptr<device_event> create_device_event() override;
-
-	std::shared_ptr<device_to_host_event> 
-	create_device_to_host_event() override;
+	std::shared_ptr<device_event> 
+	create_event(device_event_usage_flags usage) const override;
 }; 
 
 } // namespace hardware

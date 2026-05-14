@@ -84,7 +84,7 @@ public:
 	 */
 	virtual
 	std::shared_ptr<device_event>
-	create_device_event(device_event_usage_flags usage) const = 0;
+	create_event(device_event_usage_flags usage) const = 0;
 };
 
 } // namespace hardware

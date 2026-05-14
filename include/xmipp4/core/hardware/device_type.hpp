@@ -9,7 +9,6 @@ namespace hardware
 
 /**
  * @brief Device categories.
- * 
  */
 enum class device_type
 {

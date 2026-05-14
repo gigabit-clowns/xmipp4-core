@@ -9,7 +9,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_executor;
+class device_queue;
 
 /**
  * @brief Abstract class describing a device to host synchronization primitive.
@@ -41,7 +41,7 @@ public:
 	 * @param queue The queue where the event is recorded.
 	 * 
 	 */
-	virtual void signal(device_executor &queue) = 0;
+	virtual void signal(device_queue &queue) = 0;
 
 	/**
 	 * @brief Check if the last recorded event is signaled by the queue.

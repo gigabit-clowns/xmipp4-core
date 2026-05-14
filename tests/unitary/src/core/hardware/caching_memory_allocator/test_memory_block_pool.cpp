@@ -7,7 +7,7 @@
 #include <xmipp4/core/hardware/buffer_sentinel.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
-#include "../mock/mock_device_executor.hpp"
+#include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_memory_heap.hpp"
 
 #include <numeric>
@@ -23,7 +23,7 @@ TEST_CASE( "acquire in memory_block_pool should mark the block as not free", "[m
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto *block = pool.register_heap(heap, &queue);
 
 	REQUIRE( block->is_free() == true );
@@ -39,7 +39,7 @@ TEST_CASE( "release in memory_block_pool should mark the block as free", "[memor
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto *block = pool.register_heap(heap, &queue);
 
 	pool.acquire(*block);
@@ -52,10 +52,10 @@ TEST_CASE("find_suitable_block should return the best fit for the requested size
 {
 	memory_block_pool pool;
 
-	mock_device_executor queue1;
-	mock_device_executor queue2;
+	mock_device_queue queue1;
+	mock_device_queue queue2;
 
-	using param_tuple = std::tuple<std::size_t, device_executor*, bool>;
+	using param_tuple = std::tuple<std::size_t, device_queue*, bool>;
 
 	std::array<param_tuple, 6> params = {
 		param_tuple(1024, &queue1, true),
@@ -69,7 +69,7 @@ TEST_CASE("find_suitable_block should return the best fit for the requested size
 	for (const auto &param : params)
 	{
 		std::size_t size;
-		device_executor *queue;
+		device_queue *queue;
 		bool free;
 		std::tie(size, queue, free) = param;
 		
@@ -119,10 +119,10 @@ TEST_CASE("find_suitable_block should return nullptr when no block fits the requ
 {
 	memory_block_pool pool;
 
-	mock_device_executor queue1;
-	mock_device_executor queue2;
+	mock_device_queue queue1;
+	mock_device_queue queue2;
 
-	using param_tuple = std::tuple<std::size_t, device_executor*, bool>;
+	using param_tuple = std::tuple<std::size_t, device_queue*, bool>;
 
 	std::array<param_tuple, 6> params = {
 		param_tuple(512, &queue1, true),
@@ -136,7 +136,7 @@ TEST_CASE("find_suitable_block should return nullptr when no block fits the requ
 	for (const auto &param : params)
 	{
 		std::size_t size;
-		device_executor *queue;
+		device_queue *queue;
 		bool free;
 		std::tie(size, queue, free) = param;
 		
@@ -171,7 +171,7 @@ TEST_CASE("partition_block should create a valid pair of memory_blocks", "[memor
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto *block = pool.register_heap(heap, &queue);
 
 	const std::size_t first_size = 256;
@@ -243,7 +243,7 @@ TEST_CASE("register_heap should store the provided queue in the resulting block"
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
 
-	mock_device_executor queue;
+	mock_device_queue queue;
 
 	auto *block = pool.register_heap(std::move(heap), &queue);
 	REQUIRE( block->get_queue() == &queue );
@@ -280,7 +280,7 @@ TEST_CASE("consider_merging_blocks should not do anything if the block is not a 
 	memory_block_pool pool;
 	
 	const std::size_t size = 1024;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
@@ -296,7 +296,7 @@ TEST_CASE("consider_merging_blocks should not do anything if the block has occup
 	memory_block_pool pool;
 	
 	const std::size_t size = 1024;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
@@ -318,7 +318,7 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	memory_block_pool pool;
 	
 	const std::size_t size = 1024;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
@@ -342,7 +342,7 @@ TEST_CASE("consider_merging_blocks should merge when there is a free partition t
 	memory_block_pool pool;
 	
 	const std::size_t size = 1024;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);
@@ -368,7 +368,7 @@ TEST_CASE("consider_merging_blocks should merge twice when there is a free parti
 	memory_block_pool pool;
 	
 	const std::size_t size = 1024;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto heap = std::make_shared<mock_memory_heap>();
 	REQUIRE_CALL(*heap, get_size())
 		.RETURN(1024);

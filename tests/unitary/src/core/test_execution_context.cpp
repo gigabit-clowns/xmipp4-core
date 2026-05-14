@@ -12,7 +12,7 @@
 #include <xmipp4/core/service_catalog.hpp>
 
 #include "hardware/mock/mock_device.hpp"
-#include "hardware/mock/mock_device_executor.hpp"
+#include "hardware/mock/mock_device_queue.hpp"
 #include "hardware/mock/mock_device_backend.hpp"
 #include "hardware/mock/mock_memory_resource.hpp"
 #include "hardware/mock/mock_memory_allocator.hpp"
@@ -187,9 +187,9 @@ TEST_CASE( "Constructing a execution_context for a device with unified memory sh
 
 TEST_CASE( "Calling set_active queue on a execution_context should update the active queue and return the previous one", "[execution_context]" )
 {
-	auto queue1 = std::make_shared<mock_device_executor>();
-	auto queue2 = std::make_shared<mock_device_executor>();
-	auto queue3 = std::make_shared<mock_device_executor>();
+	auto queue1 = std::make_shared<mock_device_queue>();
+	auto queue2 = std::make_shared<mock_device_queue>();
+	auto queue3 = std::make_shared<mock_device_queue>();
 
 	auto context = make_test_execution_context();
 

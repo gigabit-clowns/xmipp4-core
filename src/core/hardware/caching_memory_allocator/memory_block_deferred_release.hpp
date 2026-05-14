@@ -5,7 +5,7 @@
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_to_host_event.hpp>
-#include <xmipp4/core/hardware/device_executor.hpp>
+#include <xmipp4/core/hardware/device_queue.hpp>
 
 #include "memory_block.hpp"
 
@@ -22,8 +22,8 @@ class memory_block_pool;
 
 /**
  * @brief Handles deferred deallocations to allow mixing multiple
- * device_executors.
- * 
+ * device_queues.
+ *
  */
 class memory_block_deferred_release
 {
@@ -75,7 +75,7 @@ public:
 	 */
 	void defer_release(
 		memory_block &block, 
-		span<device_executor *const> other_queues,
+		span<device_queue *const> other_queues,
 		device &device
 	);
 
@@ -98,7 +98,7 @@ private:
 	 * @brief Record an event for a queue in the list.
 	 * 
 	 */
-	void record_event(event_list &events, device_executor &queue, device &device);
+	void record_event(event_list &events, device_queue &queue, device &device);
 }; 
 
 } // namespace hardware

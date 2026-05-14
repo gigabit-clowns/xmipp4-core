@@ -10,12 +10,12 @@ namespace hardware
 {
 
 class cpu_event;
-class cpu_device_executor;
+class cpu_device_queue;
 class cpu_memory_resource;
 
 /**
  * @brief Implementation of the `device` interface to represent the CPU.
- *  
+ *
  */
 class cpu_device final
 	: public device
@@ -28,7 +28,7 @@ public:
 		std::vector<const memory_resource*> &resources
 	) override;
 
-	std::shared_ptr<device_executor> create_executor() override;
+	std::shared_ptr<device_queue> create_queue() override;
 
 	std::shared_ptr<device_event> create_device_event() override;
 

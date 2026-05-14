@@ -60,7 +60,7 @@ void memory_block_deferred_release::process_pending_free(
 
 void memory_block_deferred_release::defer_release(
 	memory_block &block, 
-	span<device_executor *const> queues,
+	span<device_queue *const> queues,
 	device &device
 )
 {
@@ -80,7 +80,7 @@ void memory_block_deferred_release::defer_release(
 
 	// Record an event for each of the queues.
 	auto& events = m_pending_free.back().second;
-	for (device_executor *queue : queues)
+	for (device_queue *queue : queues)
 	{
 		if (!queue)
 		{
@@ -119,7 +119,7 @@ void memory_block_deferred_release::pop_completed_events(
 
 void memory_block_deferred_release::record_event(
 	event_list &events, 
-	device_executor &queue, 
+	device_queue &queue, 
 	device &device
 )
 {

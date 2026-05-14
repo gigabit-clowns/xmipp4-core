@@ -9,7 +9,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_executor;
+class device_queue;
 
 /**
  * @brief Abstract class describing a device event.
@@ -39,7 +39,7 @@ public:
 	 * @param queue The queue where the event is recorded.
 	 * 
 	 */
-	virtual void signal(device_executor &queue) = 0;
+	virtual void signal(device_queue &queue) = 0;
 
 	/**
 	 * @brief Wait until the last recorded event is signaled by the queue.
@@ -47,7 +47,7 @@ public:
 	 * @param queue The queue to be blocked until the event is signaled.
 	 * 
 	 */
-	virtual void wait(device_executor &queue) const = 0;
+	virtual void wait(device_queue &queue) const = 0;
 }; 
 
 } // namespace hardware

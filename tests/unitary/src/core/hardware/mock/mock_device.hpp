@@ -21,8 +21,8 @@ public:
 		noexcept override
 	);
 	MAKE_MOCK0(
-		create_device_executor, 
-		std::shared_ptr<device_executor>(), 
+		create_queue,
+		std::shared_ptr<device_queue>(),
 		override
 	);
 	MAKE_MOCK0(

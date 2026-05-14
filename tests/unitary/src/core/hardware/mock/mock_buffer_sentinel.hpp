@@ -17,7 +17,7 @@ class mock_buffer_sentinel final
 public:
 	MAKE_MOCK2(
 		record_queue,
-		void(device_executor&, bool),
+		void(device_queue&, bool),
 		override
 	);
 };

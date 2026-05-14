@@ -22,7 +22,7 @@
 #include "mock/mock_operation.hpp"
 #include "../hardware/mock/mock_buffer_sentinel.hpp"
 #include "../hardware/mock/mock_device.hpp"
-#include "../hardware/mock/mock_device_executor.hpp"
+#include "../hardware/mock/mock_device_queue.hpp"
 #include "../hardware/mock/mock_device_backend.hpp"
 #include "../hardware/mock/mock_memory_resource.hpp"
 #include "../hardware/mock/mock_memory_allocator.hpp"
@@ -61,7 +61,7 @@ public:
 	}
 
     execution_context& 
-	setup_context(const std::shared_ptr<mock_device_executor>& queue) 
+	setup_context(const std::shared_ptr<mock_device_queue>& queue) 
 	{
         const hardware::device_index index("mock", 1234);
 
@@ -167,7 +167,7 @@ public:
         catalog.get_service_manager<kernel_manager>().register_kernel(std::move(builder));
     }
 
-    void expect_queue_records(const std::vector<std::shared_ptr<buffer>>& buffers, device_executor& queue) {
+    void expect_queue_records(const std::vector<std::shared_ptr<buffer>>& buffers, device_queue& queue) {
         for (const auto& buffer : buffers) 
 		{
             auto* sentinel = static_cast<mock_buffer_sentinel*>(buffer->get_sentinel());
@@ -185,8 +185,8 @@ public:
 
 TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly configured kernel", "[operation_execute]") {
     auto queue = GENERATE(
-		std::shared_ptr<mock_device_executor>(), 
-		std::make_shared<mock_device_executor>()
+		std::shared_ptr<mock_device_queue>(), 
+		std::make_shared<mock_device_queue>()
 	);
 
     auto& context = setup_context(queue);
@@ -255,8 +255,8 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
 
 TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-less input array is provided", "[operation_execute]") {
     auto queue = GENERATE(
-		std::shared_ptr<mock_device_executor>(), 
-		std::make_shared<mock_device_executor>()
+		std::shared_ptr<mock_device_queue>(), 
+		std::make_shared<mock_device_queue>()
 	);
     auto& context = setup_context(queue);
     allow_default_allocator_queries();

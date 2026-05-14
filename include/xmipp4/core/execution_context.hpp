@@ -18,7 +18,7 @@ namespace hardware
 class device;
 class device_index;
 class device_properties;
-class device_executor;
+class device_queue;
 class memory_allocator;
 
 } // namespace hardware
@@ -98,22 +98,22 @@ public:
 	get_memory_allocator(hardware::memory_resource_affinity affinity) const;
 
 	/**
-	 * @brief Set the active executor.
+	 * @brief Set the active queue.
 	 *
-	 * @param executor The executor to be set as active.
-	 * @return std::shared_ptr<device_executor> The previous active executor.
+	 * @param queue The queue to be set as active.
+	 * @return std::shared_ptr<device_queue> The previous active queue.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<hardware::device_executor>
-	set_active_executor(std::shared_ptr<hardware::device_executor> executor);
+	std::shared_ptr<hardware::device_queue>
+	set_active_queue(std::shared_ptr<hardware::device_queue> queue);
 
 	/**
-	 * @brief Get the active executor.
+	 * @brief Get the active queue.
 	 *
-	 * @return const std::shared_ptr<device_executor>& The active executor.
+	 * @return const std::shared_ptr<device_queue>& The active queue.
 	 */
 	XMIPP4_CORE_API
-	const std::shared_ptr<hardware::device_executor>& get_active_executor() const;
+	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
 
 	/**
 	 * @brief Get a reference to the kernel manager.

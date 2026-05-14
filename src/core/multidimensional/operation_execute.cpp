@@ -53,7 +53,7 @@ allocate_output_operand_storage(
 	const array_descriptor &descriptor,
 	hardware::memory_allocator &allocator,
 	std::size_t base_alignment,
-	hardware::device_executor *queue
+	hardware::device_queue *queue
 )
 {
 	const auto size = compute_storage_requirement(descriptor);
@@ -202,7 +202,7 @@ create_signatures(
 template <typename Ptr>
 void record_queues(
 	span<Ptr> storages,
-	hardware::device_executor &queue
+	hardware::device_queue &queue
 )
 {		
 	for (const auto &storage : storages)

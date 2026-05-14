@@ -19,7 +19,7 @@ namespace hardware
 
 /**
  * @brief Keeps track of a set of memory_block-s that can belong to multiple
- * device_executor-s and memory_heap-s
+ * device_queue-s and memory_heap-s
  * 
  */
 class memory_block_pool
@@ -53,7 +53,7 @@ public:
 	 * @brief Find a candidate block.
 	 * 
 	 * If found, the returned block will be at least of the requested size
-	 * and with the requested device_executor.
+	 * and with the requested device_queue.
 	 * 
 	 * @param size Minimum size of the block.
 	 * @param queue Queue of the requested block.
@@ -63,7 +63,7 @@ public:
 	 */
 	memory_block* find_suitable_block(
 		std::size_t size,
-		const device_executor *queue 
+		const device_queue *queue 
 	);
 
 	/**
@@ -92,7 +92,7 @@ public:
 	 */
 	memory_block* register_heap(
 		std::shared_ptr<memory_heap> heap, 
-		const device_executor *queue
+		const device_queue *queue
 	);
 
 	/**

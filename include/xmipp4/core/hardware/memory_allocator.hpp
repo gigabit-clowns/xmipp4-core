@@ -12,7 +12,7 @@ namespace hardware
 {
 
 class buffer;
-class device_executor;
+class device_queue;
 class memory_resource;
 
 /**
@@ -55,32 +55,33 @@ public:
 	 * @param size Size in bytes.
 	 * @param alignment Alignment in bytes. Must be a power of two and smaller
 	 * or equal than the value returned by get_max_alignment().
-	 * @param executor_hint Optional device_executor where the allocation is 
-	 * will be first used.
+	 * @param queue_hint Optional device_queue where the allocation is will be 
+	 * first used.
 	 * @return std::shared_ptr<buffer> The newly allocated buffer.
 	 */
 	virtual
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_executor *executor_hint = nullptr
+		device_queue *queue_hint = nullptr
 	) = 0;
 
 	/**
-	 * @brief Acknowledge that this buffer is being used in a certain 
-	 * device_executor.
+	 * @brief Acknowledge that a buffer is being used in a certain 
+	 * device_queue.
 	 * 
 	 * Due to the asynchronous nature of the device_queue-s, the buffer may
 	 * be needed after its destruction on the application code. This function
 	 * acknowledges the allocator that a particular buffer is being used at
-	 * a particular executor to defer its release until all pending tasks
-	 * have been completed.
+	 * a queue in order to defer its release until all pending tasks have been 
+	 * completed.
 	 * 
-	 * @param buffer The buffer being used.
-	 * @param executor The executor where the buffer is being used.
+	 * @param buffer The buffer being used. Must be have been allocated by 
+	 * this allocator.
+	 * @param queue The queue where the buffer is being used.
 	 */
 	virtual
-	void record_use(const buffer &buffer, device_executor &executor) = 0;
+	void record_use(const buffer &buffer, device_queue &queue) = 0;
 }; 
 
 } // namespace hardware

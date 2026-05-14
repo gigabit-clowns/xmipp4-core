@@ -18,7 +18,7 @@ namespace hardware
 {
 
 class memory_block;
-class device_executor;
+class device_queue;
 class caching_memory_allocator;
 
 class caching_buffer_sentinel final
@@ -31,13 +31,13 @@ public:
 	);
 	~caching_buffer_sentinel() override;
 
-	span<device_executor *const> get_queues() const noexcept;
+	span<device_queue *const> get_queues() const noexcept;
 
-	void record_queue(device_executor &queue, bool exclusive) override;
+	void record_queue(device_queue &queue, bool exclusive) override;
 
 private:
 	using queue_set_type = boost::container::small_flat_set<
-		device_executor*, 
+		device_queue*, 
 		XMIPP4_SMALL_QUEUE_COUNT
 	>;
 

@@ -58,7 +58,7 @@ void memory_block_pool::release(memory_block &block) noexcept
 
 memory_block* memory_block_pool::find_suitable_block(
 	std::size_t size,
-	const device_executor *queue 
+	const device_queue *queue 
 )
 {
 	// Assuming that the blocks are ordered according to their queue reference
@@ -113,7 +113,7 @@ memory_block_pool::partition_block(
 
 memory_block* memory_block_pool::register_heap(
 	std::shared_ptr<memory_heap> heap, 
-	const device_executor *queue
+	const device_queue *queue
 )
 {
 	auto block = std::make_unique<memory_block>(

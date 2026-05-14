@@ -9,7 +9,7 @@
 #include <core/hardware/caching_memory_allocator/memory_block_pool.hpp>
 
 #include "../mock/mock_device.hpp"
-#include "../mock/mock_device_executor.hpp"
+#include "../mock/mock_device_queue.hpp"
 #include "../mock/mock_device_to_host_event.hpp"
 #include "../mock/mock_memory_heap.hpp"
 
@@ -51,7 +51,7 @@ TEST_CASE( "deferring a release in memory_block_deferred_release with a null que
 
 	memory_block_deferred_release defer;
 
-	const std::array<device_executor*, 1> queues = {
+	const std::array<device_queue*, 1> queues = {
 		nullptr
 	};
 	REQUIRE_THROWS_MATCHES(
@@ -71,8 +71,8 @@ TEST_CASE( "deferring a release in memory_block_deferred_release should create a
 	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
-	mock_device_executor queue1;
-	mock_device_executor queue2;
+	mock_device_queue queue1;
+	mock_device_queue queue2;
 	auto event1 = std::make_shared<mock_device_to_host_event>();
 	auto event2 = std::make_shared<mock_device_to_host_event>();
 	trompeloeil::sequence seq;
@@ -80,18 +80,18 @@ TEST_CASE( "deferring a release in memory_block_deferred_release should create a
 	REQUIRE_CALL(device, create_device_to_host_event())
 		.IN_SEQUENCE(seq)
 		.RETURN(event1);
-	REQUIRE_CALL(*event1, signal(ANY(device_executor&)))
+	REQUIRE_CALL(*event1, signal(ANY(device_queue&)))
 		.LR_WITH(&_1 == &queue1)
 		.IN_SEQUENCE(seq);
 	REQUIRE_CALL(device, create_device_to_host_event())
 		.IN_SEQUENCE(seq)
 		.RETURN(event2);
-	REQUIRE_CALL(*event2, signal(ANY(device_executor&)))
+	REQUIRE_CALL(*event2, signal(ANY(device_queue&)))
 		.LR_WITH(&_1 == &queue2)
 		.IN_SEQUENCE(seq);
 
 	memory_block_deferred_release defer;    
-	const std::array<device_executor*, 2> queues = {
+	const std::array<device_queue*, 2> queues = {
 		&queue1,
 		&queue2
 	};
@@ -110,8 +110,8 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 	pool.acquire(*block);
 
 	mock_device device;
-	mock_device_executor queue1;
-	mock_device_executor queue2;
+	mock_device_queue queue1;
+	mock_device_queue queue2;
 	auto event1 = std::make_shared<mock_device_to_host_event>();
 	auto event2 = std::make_shared<mock_device_to_host_event>();
 
@@ -123,17 +123,17 @@ TEST_CASE( "processing pending frees in memory_block_deferred release should mar
 		REQUIRE_CALL(device, create_device_to_host_event())
 			.IN_SEQUENCE(seq)
 			.RETURN(event1);
-		REQUIRE_CALL(*event1, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event1, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue1)
 			.IN_SEQUENCE(seq);
 		REQUIRE_CALL(device, create_device_to_host_event())
 			.IN_SEQUENCE(seq)
 			.RETURN(event2);
-		REQUIRE_CALL(*event2, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event2, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue2)
 			.IN_SEQUENCE(seq);
 
-		const std::array<device_executor*, 2> queues = {
+		const std::array<device_queue*, 2> queues = {
 			&queue1,
 			&queue2
 		};
@@ -186,8 +186,8 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
 	pool.acquire(*block);
 
 	mock_device device;
-	mock_device_executor queue1;
-	mock_device_executor queue2;
+	mock_device_queue queue1;
+	mock_device_queue queue2;
 	auto event1 = std::make_shared<mock_device_to_host_event>();
 	auto event2 = std::make_shared<mock_device_to_host_event>();
 
@@ -199,17 +199,17 @@ TEST_CASE( "waiting pending frees in memory_block_deferred release should wait f
 		REQUIRE_CALL(device, create_device_to_host_event())
 			.IN_SEQUENCE(seq)
 			.RETURN(event1);
-		REQUIRE_CALL(*event1, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event1, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue1)
 			.IN_SEQUENCE(seq);
 		REQUIRE_CALL(device, create_device_to_host_event())
 			.IN_SEQUENCE(seq)
 			.RETURN(event2);
-		REQUIRE_CALL(*event2, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event2, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue2)
 			.IN_SEQUENCE(seq);
 
-		const std::array<device_executor*, 2> queues = {
+		const std::array<device_queue*, 2> queues = {
 			&queue1,
 			&queue2
 		};
@@ -234,11 +234,11 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 	auto *block = pool.register_heap(std::move(heap), nullptr);
 
 	mock_device device;
-	mock_device_executor queue;
+	mock_device_queue queue;
 	auto event = std::make_shared<mock_device_to_host_event>();
 
 	memory_block_deferred_release defer;
-	const std::array<device_executor*, 1> queues = { &queue };
+	const std::array<device_queue*, 1> queues = { &queue };
 
 	pool.acquire(*block);
 	{
@@ -247,7 +247,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 		REQUIRE_CALL(device, create_device_to_host_event())
 			.IN_SEQUENCE(seq)
 			.RETURN(event);
-		REQUIRE_CALL(*event, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue)
 			.IN_SEQUENCE(seq);
 
@@ -267,7 +267,7 @@ TEST_CASE( "repeated use cycle of memory_block_deferred release should reuse its
 	{
 		trompeloeil::sequence seq;
 
-		REQUIRE_CALL(*event, signal(ANY(device_executor&)))
+		REQUIRE_CALL(*event, signal(ANY(device_queue&)))
 			.LR_WITH(&_1 == &queue)
 			.IN_SEQUENCE(seq);
 

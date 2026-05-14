@@ -12,14 +12,14 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_executor;
+class device_queue;
 class device_event;
 class device_to_host_event;
 class memory_resource;
 
 /**
  * @brief Abstract representation of a device handle.
- * 
+ *
  * This class enables basic interaction with a hardware device.
  */
 class XMIPP4_CORE_API device
@@ -35,22 +35,22 @@ public:
 
 	/**
 	 * @brief Get the memory resources known to this device.
-	 * 
-	 * @param resources Output parameter with memory resources known to this 
+	 *
+	 * @param resources Output parameter with memory resources known to this
 	 * device. None of them will be nullptr.
 	 */
-	virtual 
+	virtual
 	void get_memory_resources(
 		std::vector<const memory_resource*> &resources
 	) = 0;
 
 	/**
-	 * @brief Create a device executor.
+	 * @brief Create a device queue.
 	 *
-	 * @return std::shared_ptr<device_executor> The newly created device 
-	 * executor.
+	 * @return std::shared_ptr<device_queue> The newly created device
+	 * queue.
 	 */
-	virtual std::shared_ptr<device_executor> create_executor() = 0;
+	virtual std::shared_ptr<device_queue> create_queue() = 0;
 
 	/**
 	 * @brief Create an intra-device synchronization primitive.

@@ -14,7 +14,7 @@ namespace hardware
 {
 
 class buffer;
-class device_executor;
+class device_queue;
 	
 } // namespace hardware
 
@@ -54,7 +54,7 @@ public:
 	virtual void execute(
 		span<const std::shared_ptr<hardware::buffer>> output_operands,
 		span<const std::shared_ptr<const hardware::buffer>> input_operands,
-		hardware::device_executor *queue
+		hardware::device_queue *queue
 	) const = 0;
 };
 

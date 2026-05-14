@@ -25,7 +25,7 @@ std::int64_t sample_now_ns() noexcept
 } // namespace
 
 cpu_timestamped_device_event::cpu_timestamped_device_event() noexcept
-	: m_timestamp_ns(0)
+	: m_last_timestamp_ns(0)
 {
 }
 
@@ -42,7 +42,7 @@ cpu_timestamped_device_event::get_supported_usage() const noexcept
 
 void cpu_timestamped_device_event::signal(device_queue &)
 {
-	m_timestamp_ns.store(sample_now_ns(), std::memory_order_release);
+	m_last_timestamp_ns.store(sample_now_ns(), std::memory_order_release);
 }
 
 void cpu_timestamped_device_event::wait(device_queue &) const
@@ -67,7 +67,7 @@ cpu_timestamped_device_event::get_timestamp() const
 {
 	return device_timeline_clock::time_point(
 		device_timeline_clock::duration(
-			m_timestamp_ns.load(std::memory_order_acquire)
+			m_last_timestamp_ns.load(std::memory_order_acquire)
 		)
 	);
 }

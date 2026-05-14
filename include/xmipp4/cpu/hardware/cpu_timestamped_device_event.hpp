@@ -44,7 +44,7 @@ public:
 	device_timeline_clock::time_point get_timestamp() const override;
 
 private:
-	std::atomic<std::int64_t> m_timestamp_ns;
+	std::atomic<std::int64_t> m_last_timestamp_ns;
 };
 
 } // namespace hardware

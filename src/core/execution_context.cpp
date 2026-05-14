@@ -54,6 +54,21 @@ public:
 		return m_active_queue;
 	}
 
+	std::shared_ptr<hardware::memory_allocator>
+	set_active_allocator(
+		std::shared_ptr<hardware::memory_allocator> allocator
+	) noexcept
+	{
+		std::swap(allocator, m_active_allocator);
+		return allocator;
+	}
+
+	const std::shared_ptr<hardware::memory_allocator>&
+	get_active_allocator() const noexcept
+	{
+		return m_active_allocator;
+	}
+
 	const multidimensional::kernel_manager& get_kernel_manager() const noexcept
 	{
 		return m_kernel_manager;
@@ -63,6 +78,7 @@ private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	std::shared_ptr<hardware::device_queue> m_active_queue;
+	std::shared_ptr<hardware::memory_allocator> m_active_allocator;
 	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
 
 	static std::shared_ptr<hardware::device> create_device(
@@ -131,6 +147,20 @@ const std::shared_ptr<hardware::device_queue>&
 execution_context::get_active_queue() const
 {
 	return get_implementation().get_active_queue();
+}
+
+std::shared_ptr<hardware::memory_allocator>
+execution_context::set_active_allocator(
+	std::shared_ptr<hardware::memory_allocator> allocator
+)
+{
+	return get_implementation().set_active_allocator(std::move(allocator));
+}
+
+const std::shared_ptr<hardware::memory_allocator>& 
+execution_context::get_active_allocator() const
+{
+	return get_implementation().get_active_allocator();
 }
 
 const multidimensional::kernel_manager& 

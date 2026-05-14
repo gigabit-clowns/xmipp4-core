@@ -101,6 +101,25 @@ public:
 	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
 
 	/**
+	 * @brief Set the active memory allocator.
+	 *
+	 * @param allocator The allocator to be set as active.
+	 * @return std::shared_ptr<memory_allocator> The previous active allocator.
+	 */
+	XMIPP4_CORE_API
+	std::shared_ptr<hardware::memory_allocator>
+	set_active_allocator(std::shared_ptr<hardware::memory_allocator> allocator);
+
+	/**
+	 * @brief Get the active allocator.
+	 *
+	 * @return const std::shared_ptr<device_allocator>& The active allocator.
+	 */
+	XMIPP4_CORE_API
+	const std::shared_ptr<hardware::memory_allocator>& 
+	get_active_allocator() const;
+
+	/**
 	 * @brief Get a reference to the kernel manager.
 	 * 
 	 * @return const kernel_manager& The kernel manager. 

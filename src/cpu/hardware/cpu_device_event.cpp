@@ -12,11 +12,11 @@ namespace hardware
 device_event_usage_flags
 cpu_device_event::get_supported_usage() const noexcept
 {
-	device_event_usage_flags result;
-	result |= device_event_usage_flag_bits::host_query;
-	result |= device_event_usage_flag_bits::host_wait;
-	result |= device_event_usage_flag_bits::device_wait;
-	return result;
+	return {
+		device_event_usage_flag_bits::host_query,
+		device_event_usage_flag_bits::host_wait,
+		device_event_usage_flag_bits::device_wait
+	};
 }
 
 void cpu_device_event::signal(device_queue &)

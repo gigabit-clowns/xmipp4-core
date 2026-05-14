@@ -53,7 +53,7 @@ public:
 	virtual
 	void get_memory_resources(
 		std::vector<const memory_resource*> &resources
-	) = 0;
+	) const = 0;
 
 	/**
 	 * @brief Create a new command queue on this device.
@@ -65,7 +65,7 @@ public:
 	 *
 	 * @return Shared ownership of the newly created queue. Never null.
 	 */
-	virtual std::shared_ptr<device_queue> create_queue() = 0;
+	virtual std::shared_ptr<device_queue> create_queue() const = 0;
 
 	/**
 	 * @brief Create a synchronization primitive for this device.
@@ -84,7 +84,7 @@ public:
 	 */
 	virtual
 	std::shared_ptr<device_event>
-	create_device_event(device_event_usage_flags usage) = 0;
+	create_device_event(device_event_usage_flags usage) const = 0;
 };
 
 } // namespace hardware

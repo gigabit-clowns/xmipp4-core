@@ -28,7 +28,8 @@ class device_queue;
  * and supersedes any previous one; subsequent waits and queries refer to the 
  * most recently recorded point. There is no need for the user to reset the 
  * event between uses; backends that require an explicit reset handle it 
- * internally.
+ * internally. The event can only be signaled from the device used to create it, 
+ * even if @ref device_event_usage_flag_bits::cross_device_wait is set.
  * 
  * The set of supported operations is determined at creation time by the 
  * @ref device_event_usage_flags passed to the factory, and can be queried 
@@ -58,28 +59,27 @@ public:
 	/**
 	 * @brief Record a signal on a device queue.
 	 *
-	 * Schedules the event to transition to the signaled state once the
-	 * queue reaches the current point in its execution timeline. Any
-	 * previously recorded signal point on this event is superseded.
+	 * Schedules the event to transition to the signaled state once the queue 
+	 * reaches the current point in its execution timeline. Any previously 
+	 * recorded signal point on this event is superseded.
 	 *
 	 * Always supported, regardless of @ref get_supported_usage.
 	 *
-	 * @param queue The queue on which the signal is recorded.
+	 * @param queue The queue on which the signal is recorded. Must belong to
+	 * the same device used for creating this event.
 	 */
 	virtual void signal(device_queue &queue) = 0;
 
 	/**
 	 * @brief Make a device queue wait until the event is signaled.
 	 *
-	 * Schedules @p queue so that subsequent commands submitted to it
-	 * are deferred until the most recently recorded signal point on
-	 * this event has been reached. The call itself does not block the
-	 * host thread.
+	 * Schedules @p queue so that subsequent commands submitted to it are 
+	 * deferred until the most recently recorded signal point on this event has
+	 * been reached. The call itself does not block the host thread.
 	 *
-	 * Requires @ref device_event_usage_flag_bits::device_wait. The
-	 * @p queue may belong to a different device than the one that
-	 * recorded the signal only if
-	 * @ref device_event_usage_flag_bits::cross_device_wait is also
+	 * Requires @ref device_event_usage_flag_bits::device_wait. The @p queue may
+	 * belong to a different device than the one that recorded the signal only 
+	 * if @ref device_event_usage_flag_bits::cross_device_wait is also 
 	 * supported.
 	 *
 	 * @param queue The queue that will defer its work until the event
@@ -90,10 +90,9 @@ public:
 	/**
 	 * @brief Block the calling thread until the event is signaled.
 	 *
-	 * Suspends the host thread until the most recently recorded signal
-	 * point on this event has been reached. Returns immediately if no
-	 * signal has been recorded yet, since the initial state of the
-	 * event is signaled.
+	 * Suspends the host thread until the most recently recorded signal point on
+	 * this event has been reached. Returns immediately if no signal has been
+	 * recorded yet, since the initial state of the event is signaled.
 	 *
 	 * Requires @ref device_event_usage_flag_bits::host_wait.
 	 */
@@ -102,14 +101,13 @@ public:
 	/**
 	 * @brief Non-blocking query of the event's state.
 	 *
-	 * Reports whether the most recently recorded signal point has been
-	 * reached by the queue, without blocking the calling thread. An
-	 * event with no recorded signal is reported as signaled.
+	 * Reports whether the most recently recorded signal point has been reached
+	 * by the queue, without blocking the calling thread. An event with no
+	 * recorded signal is reported as signaled.
 	 *
 	 * Requires @ref device_event_usage_flag_bits::host_query.
 	 *
-	 * @return @c true if the event has been signaled, @c false
-	 * otherwise.
+	 * @return @c true if the event has been signaled, @c false otherwise.
 	 *
 	 */
 	virtual bool is_signaled() const = 0;

@@ -14,7 +14,6 @@ class device_manager;
 /**
  * @brief Implementation of the `device_backend` interface to retrieve the 
  * CPU device.
- * 
  */
 class cpu_device_backend final
 	: public device_backend

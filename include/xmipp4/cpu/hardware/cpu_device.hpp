@@ -15,7 +15,6 @@ class cpu_memory_resource;
 
 /**
  * @brief Implementation of the `device` interface to represent the CPU.
- *
  */
 class cpu_device final
 	: public device

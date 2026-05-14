@@ -27,7 +27,7 @@ std::shared_ptr<device_queue> cpu_device::create_queue() const
 std::shared_ptr<device_event> 
 cpu_device::create_event(device_event_usage_flags usage) const
 {
-	if (!usage.contains(device_event_usage_flag_bits::timestamp))
+	if (usage.contains(device_event_usage_flag_bits::timestamp))
 	{
 		return std::make_shared<cpu_timestamped_device_event>();
 	}

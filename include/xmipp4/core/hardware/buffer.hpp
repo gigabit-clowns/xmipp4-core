@@ -57,28 +57,6 @@ public:
 	virtual const void* get_host_ptr() const noexcept = 0;
 
 	/**
-	 * @brief Get a device opaque handle to the data.
-	 * 
-	 * This method only returns a dereferenceable (non-null) pointer if the data
-	 * is accessible by the device, i.e., if the kind of the undelying memory 
-	 * resource is one of device_local, device_mapped, unified or managed.
-	 * @return void* Opaque pointer to the data. nullptr if the buffer is not
-	 * device accessible.
-	 */
-	virtual void* get_device_handle() noexcept = 0;
-
-	/**
-	 * @brief Get a device opaque handle to the data.
-	 * 
-	 * This method only returns a dereferenceable (non-null) pointer if the data
-	 * is accessible by the device, i.e., if the kind of the undelying memory 
-	 * resource is one of device_local, device_mapped, unified or managed.
-	 * @return const void* Opaque pointer to the data. nullptr if the buffer is 
-	 * not device accessible.
-	 */
-	virtual const void* get_device_handle() const noexcept = 0;
-
-	/**
 	 * @brief Get the size in bytes for this buffer.
 	 * 
 	 * @return std::size_t Size in bytes.

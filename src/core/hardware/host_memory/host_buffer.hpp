@@ -9,6 +9,9 @@ namespace xmipp4
 namespace hardware
 {
 
+class host_memory_resource;
+class host_memory_allocator;
+
 /**
  * @brief Implementation of buffer_sentinel based on malloc/free
  * 
@@ -22,10 +25,9 @@ public:
 
 	void* get_host_ptr() noexcept override;
 	const void* get_host_ptr() const noexcept override;
-	void* get_device_handle() noexcept override;
-	const void* get_device_handle() const noexcept override;
 	std::size_t get_size() const noexcept override;
-	const memory_resource& get_memory_resource() const noexcept override;
+	const host_memory_resource& get_memory_resource() const noexcept override;
+	host_memory_allocator& get_memory_allocator() const noexcept override;
 
 private:
 	void *m_data;

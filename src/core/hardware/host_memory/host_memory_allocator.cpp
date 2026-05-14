@@ -6,6 +6,7 @@
 #include <xmipp4/core/hardware/device_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/system/host.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
 #include "host_memory_resource.hpp"
 #include "host_buffer.hpp"
@@ -16,6 +17,8 @@ namespace xmipp4
 {
 namespace hardware
 {
+
+std::shared_ptr<host_memory_allocator> host_memory_allocator::m_instance;
 
 const memory_resource& 
 host_memory_allocator::get_memory_resource() const noexcept
@@ -44,6 +47,22 @@ void host_memory_allocator::record_use(
 )
 {
 	queue.wait_until_completed(); // Synchronous behavior.
+}
+
+host_memory_allocator& host_memory_allocator::get()
+{
+	return *(create());
+}
+
+const std::shared_ptr<host_memory_allocator>& host_memory_allocator::create()
+{
+	if (!m_instance)
+	{
+		m_instance = std::make_shared<host_memory_allocator>();
+	}
+
+	XMIPP4_ASSERT(m_instance);
+	return m_instance;
 }
 
 } // namespace hardware

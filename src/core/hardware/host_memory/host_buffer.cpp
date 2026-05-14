@@ -5,6 +5,7 @@
 #include <xmipp4/core/memory/aligned_alloc.hpp>
 
 #include "host_memory_resource.hpp"
+#include "host_memory_allocator.hpp"
 
 #include <stdexcept>
 
@@ -42,24 +43,19 @@ const void* host_buffer::get_host_ptr() const noexcept
 	return m_data;
 }
 
-void* host_buffer::get_device_handle() noexcept
-{
-	return nullptr;
-}
-
-const void* host_buffer::get_device_handle() const noexcept
-{
-	return nullptr;
-}
-
 std::size_t host_buffer::get_size() const noexcept
 {
 	return m_size;
 }
 
-const memory_resource& host_buffer::get_memory_resource() const noexcept
+const host_memory_resource& host_buffer::get_memory_resource() const noexcept
 {
-	return get_host_memory_resource();
+	return host_memory_resource::get();
+}
+
+host_memory_allocator& host_buffer::get_memory_allocator() const noexcept
+{
+	return host_memory_allocator::get();
 }
 
 } // namespace hardware

@@ -12,14 +12,8 @@ namespace hardware
 
 const host_memory_resource host_memory_resource::m_instance;
 
-host_memory_resource::host_memory_resource()
-{
-}
-
-device* host_memory_resource::get_target_device() const noexcept
-{
-	return nullptr;
-}
+host_memory_resource::host_memory_resource() noexcept = default;
+host_memory_resource::~host_memory_resource() = default;
 
 memory_resource_kind host_memory_resource::get_kind() const noexcept
 {
@@ -28,7 +22,7 @@ memory_resource_kind host_memory_resource::get_kind() const noexcept
 
 std::shared_ptr<memory_allocator> host_memory_resource::create_allocator() const
 {
-	return std::make_shared<host_memory_allocator>();
+	return host_memory_allocator::create();
 }
 
 const host_memory_resource& host_memory_resource::get() noexcept

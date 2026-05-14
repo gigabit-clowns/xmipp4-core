@@ -19,7 +19,6 @@ class memory_allocator;
 /**
  * @brief Represents an untyped memory allocation at a given memory
  * resource.
- * 
  */
 class XMIPP4_CORE_API buffer
 {

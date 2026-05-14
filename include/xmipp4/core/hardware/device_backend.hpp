@@ -36,7 +36,7 @@ public:
 	device_backend& operator=(device_backend &&other) = delete;
 
 	/**
-	 * @brief Enumerate available in devices within this backend.
+	 * @brief Enumerate available devices for this backend.
 	 * 
 	 * @param ids IDs of the devices. 
 	 * @note The IDs are only unique within each backend.

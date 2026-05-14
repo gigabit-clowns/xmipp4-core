@@ -38,5 +38,13 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
 	return std::make_shared<host_buffer>(size, alignment);
 }
 
+void host_memory_allocator::record_use(
+	const buffer& /*buffer*/, 
+	device_queue &queue
+)
+{
+	queue.wait_until_completed(); // Synchronous behavior.
+}
+
 } // namespace hardware
 } // namespace xmipp4

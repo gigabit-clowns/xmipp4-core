@@ -33,6 +33,8 @@ public:
 		std::size_t alignment, 
 		device_queue *queue
 	) override;
+
+	void record_use(const buffer &buffer, device_queue &queue) override;
 };
 
 } // namespace hardware

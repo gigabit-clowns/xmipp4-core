@@ -2,7 +2,7 @@
 
 #include <xmipp4/cpu/hardware/cpu_device_event.hpp>
 
-#include <xmipp4/core/platform/constexpr.hpp>
+#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 namespace xmipp4
 {
@@ -44,11 +44,11 @@ bool cpu_device_event::is_signaled() const
 
 device_timeline_clock::time_point cpu_device_event::get_timestamp() const
 {
-	// Precondition violation: device_event_usage_flag_bits::timestamp is
-	// not advertised by this class, so callers must not invoke this method.
-	// Returning a default-constructed time point keeps the override
-	// well-formed without claiming a meaningful value.
-	return device_timeline_clock::time_point();
+	throw invalid_operation_error(
+		"cpu_device_event does not support timestamp queries; "
+		"create the event with device_event_usage_flag_bits::timestamp "
+		"to obtain a cpu_timestamped_device_event instead."
+	);
 }
 
 } // namespace hardware

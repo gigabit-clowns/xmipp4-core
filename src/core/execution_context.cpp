@@ -41,14 +41,14 @@ public:
 		return *m_device;
 	}
 
-	std::shared_ptr<hardware::device_queue>
-	set_active_queue(std::shared_ptr<hardware::device_queue> queue) noexcept
+	std::shared_ptr<hardware::command_queue>
+	set_active_queue(std::shared_ptr<hardware::command_queue> queue) noexcept
 	{
 		std::swap(queue, m_active_queue);
 		return queue;
 	}
 
-	const std::shared_ptr<hardware::device_queue>&
+	const std::shared_ptr<hardware::command_queue>&
 	get_active_queue() const noexcept
 	{
 		return m_active_queue;
@@ -77,7 +77,7 @@ public:
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
-	std::shared_ptr<hardware::device_queue> m_active_queue;
+	std::shared_ptr<hardware::command_queue> m_active_queue;
 	std::shared_ptr<hardware::memory_allocator> m_active_allocator;
 	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
 
@@ -135,15 +135,15 @@ hardware::device& execution_context::get_device() const
 	return get_implementation().get_device();
 }
 
-std::shared_ptr<hardware::device_queue>
+std::shared_ptr<hardware::command_queue>
 execution_context::set_active_queue(
-	std::shared_ptr<hardware::device_queue> queue
+	std::shared_ptr<hardware::command_queue> queue
 )
 {
 	return get_implementation().set_active_queue(std::move(queue));
 }
 
-const std::shared_ptr<hardware::device_queue>&
+const std::shared_ptr<hardware::command_queue>&
 execution_context::get_active_queue() const
 {
 	return get_implementation().get_active_queue();

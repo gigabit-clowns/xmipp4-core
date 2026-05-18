@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cpu/hardware/cpu_timestamped_device_event.hpp>
+#include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
 
 #include <xmipp4/core/platform/constexpr.hpp>
 
@@ -24,46 +24,46 @@ std::int64_t sample_now_ns() noexcept
 
 } // namespace
 
-cpu_timestamped_device_event::cpu_timestamped_device_event() noexcept
+cpu_timestamped_event::cpu_timestamped_event() noexcept
 	: m_last_timestamp_ns(0)
 {
 }
 
-device_event_usage_flags
-cpu_timestamped_device_event::get_supported_usage() const noexcept
+event_usage_flags
+cpu_timestamped_event::get_supported_usage() const noexcept
 {
 	return {
-		device_event_usage_flag_bits::timestamp,
-		device_event_usage_flag_bits::host_query,
-		device_event_usage_flag_bits::host_wait,
-		device_event_usage_flag_bits::device_wait
+		event_usage_flag_bits::timestamp,
+		event_usage_flag_bits::host_query,
+		event_usage_flag_bits::host_wait,
+		event_usage_flag_bits::device_wait
 	};
 }
 
-void cpu_timestamped_device_event::signal(device_queue &)
+void cpu_timestamped_event::signal(command_queue &)
 {
 	m_last_timestamp_ns.store(sample_now_ns(), std::memory_order_release);
 }
 
-void cpu_timestamped_device_event::wait(device_queue &) const
+void cpu_timestamped_event::wait(command_queue &) const
 {
-	// No-op: cpu_device_queue work is synchronous, so any recorded
+	// No-op: cpu_command_queue work is synchronous, so any recorded
 	// signal point has already been reached by the time control returns
 	// from signal().
 }
 
-void cpu_timestamped_device_event::wait() const
+void cpu_timestamped_event::wait() const
 {
-	// No-op for the same reason as wait(device_queue&).
+	// No-op for the same reason as wait(command_queue&).
 }
 
-bool cpu_timestamped_device_event::is_signaled() const
+bool cpu_timestamped_event::is_signaled() const
 {
 	return true;
 }
 
 device_timeline_clock::time_point
-cpu_timestamped_device_event::get_timestamp() const
+cpu_timestamped_event::get_timestamp() const
 {
 	return device_timeline_clock::time_point(
 		device_timeline_clock::duration(

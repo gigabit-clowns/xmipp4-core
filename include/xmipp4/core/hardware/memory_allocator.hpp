@@ -12,7 +12,7 @@ namespace hardware
 {
 
 class buffer;
-class device_queue;
+class command_queue;
 class memory_resource;
 
 /**
@@ -87,7 +87,7 @@ public:
 	std::shared_ptr<buffer> allocate(
 		std::size_t size,
 		std::size_t alignment,
-		device_queue *queue_hint = nullptr
+		command_queue *queue_hint = nullptr
 	) = 0;
 
 	/**
@@ -110,7 +110,7 @@ public:
 	 * @param queue Queue on which the buffer is being used.
 	 */
 	virtual
-	void record_use(const buffer &buffer, device_queue &queue) = 0;
+	void record_use(const buffer &buffer, command_queue &queue) = 0;
 };
 
 } // namespace hardware

@@ -3,7 +3,7 @@
 #include "host_memory_allocator.hpp"
 
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/core/system/host.hpp>
 #include <xmipp4/core/platform/assert.hpp>
@@ -34,7 +34,7 @@ std::size_t host_memory_allocator::get_max_alignment() const noexcept
 std::shared_ptr<buffer> host_memory_allocator::allocate(
 	std::size_t size, 
 	std::size_t alignment, 
-	device_queue* /*queue_hint*/
+	command_queue* /*queue_hint*/
 )
 {
 	size = memory::align_ceil(size, alignment);
@@ -43,7 +43,7 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
 
 void host_memory_allocator::record_use(
 	const buffer& /*buffer*/, 
-	device_queue &queue
+	command_queue &queue
 )
 {
 	queue.wait_until_completed(); // Synchronous behavior.

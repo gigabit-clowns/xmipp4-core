@@ -7,15 +7,15 @@
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
-#include "device_event_usage_flags.hpp"
+#include "event_usage_flags.hpp"
 
 namespace xmipp4 
 {
 namespace hardware
 {
 
-class device_queue;
-class device_event;
+class command_queue;
+class event;
 class memory_resource;
 
 /**
@@ -60,12 +60,12 @@ public:
 	 *
 	 * The returned queue is independent from any previously created queue on 
 	 * the same device, and may execute its commands concurrently with them. 
-	 * Ordering across queues may be established through @ref device_event 
+	 * Ordering across queues may be established through @ref event 
 	 * objects.
 	 *
 	 * @return Shared ownership of the newly created queue. Never null.
 	 */
-	virtual std::shared_ptr<device_queue> create_queue() const = 0;
+	virtual std::shared_ptr<command_queue> create_command_queue() const = 0;
 
 	/**
 	 * @brief Create a synchronization primitive for this device.
@@ -73,18 +73,17 @@ public:
 	 * The returned event supports at least the operations requested in
 	 * @p usage; the backend may pick the cheapest underlying primitive that 
 	 * satisfies them, so the actually supported set (queried via
-	 * @ref device_event::get_supported_usage) may be a superset of @p usage. 
+	 * @ref event::get_supported_usage) may be a superset of @p usage. 
 	 * The event is initially in the signaled state.
 	 *
 	 * @param usage Capabilities that the returned event must support.
 	 * @return Shared ownership of the newly created event. Never null.
 	 *
-	 * @see device_event
-	 * @see device_event_usage_flags
+	 * @see event
+	 * @see event_usage_flags
 	 */
 	virtual
-	std::shared_ptr<device_event>
-	create_event(device_event_usage_flags usage) const = 0;
+	std::shared_ptr<event> create_event(event_usage_flags usage) const = 0;
 };
 
 } // namespace hardware

@@ -17,7 +17,7 @@ namespace hardware
 class device;
 class device_index;
 class device_properties;
-class device_queue;
+class command_queue;
 class memory_allocator;
 
 } // namespace hardware
@@ -86,19 +86,19 @@ public:
 	 * @brief Set the active queue.
 	 *
 	 * @param queue The queue to be set as active.
-	 * @return std::shared_ptr<device_queue> The previous active queue.
+	 * @return std::shared_ptr<command_queue> The previous active queue.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<hardware::device_queue>
-	set_active_queue(std::shared_ptr<hardware::device_queue> queue);
+	std::shared_ptr<hardware::command_queue>
+	set_active_queue(std::shared_ptr<hardware::command_queue> queue);
 
 	/**
 	 * @brief Get the active queue.
 	 *
-	 * @return const std::shared_ptr<device_queue>& The active queue.
+	 * @return const std::shared_ptr<command_queue>& The active queue.
 	 */
 	XMIPP4_CORE_API
-	const std::shared_ptr<hardware::device_queue>& get_active_queue() const;
+	const std::shared_ptr<hardware::command_queue>& get_active_queue() const;
 
 	/**
 	 * @brief Set the active memory allocator.

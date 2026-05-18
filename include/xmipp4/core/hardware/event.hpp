@@ -4,19 +4,19 @@
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 #include <xmipp4/core/hardware/device_timeline_clock.hpp>
-#include <xmipp4/core/hardware/device_event_usage_flags.hpp>
+#include <xmipp4/core/hardware/event_usage_flags.hpp>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-class device_queue;
+class command_queue;
 
 /**
  * @brief Abstract synchronization primitive between queues and the host.
  *
- * A @c device_event marks a point in a device queue's execution timeline that
+ * An @c event marks a point in a command queue's execution timeline that
  * can later be waited on or queried, either by another queue (possibly on a 
  * different device) or by the host thread. 
  *
@@ -28,36 +28,36 @@ class device_queue;
  * Each call defines a new target point in the corresponding queue's timeline 
  * and supersedes any previous one; subsequent waits and queries refer to the 
  * most recently recorded point. There is no need for the user to reset the 
- * event between uses; backends that require an explicit reset handle it 
- internally. The event can only be signaled from the device used to create it, 
- * even if @ref device_event_usage_flag_bits::cross_device_wait is set.
+ * event between uses; backends that require an explicit reset handle it
+ * internally. The event can only be signaled from the device used to create it,
+ * even if @ref event_usage_flag_bits::cross_device_wait is set.
  * 
  * The supported set of operations is determined at creation time by the 
- * @ref device_event_usage_flags passed to the factory, and can be queried 
+ * @ref event_usage_flags passed to the factory, and can be queried 
  * via @ref get_supported_usage. Backends are free to pick the cheapest 
  * underlying primitive that satisfies the requested capabilities; the actually
  * supported set may be a superset of the requested one. Invoking an operation 
  * whose capability bit is not advertised by @ref get_supported_usage is a 
  * precondition violation and yields undefined behavior.
  */
-class XMIPP4_CORE_API device_event
+class XMIPP4_CORE_API event
 {
 public:
-	device_event() noexcept;
-	device_event(const device_event &other) = delete;
-	device_event(device_event &&other) = delete;
-	virtual ~device_event();
+	event() noexcept;
+	event(const event &other) = delete;
+	event(event &&other) = delete;
+	virtual ~event();
 
-	device_event& operator=(const device_event &other) = delete;
-	device_event& operator=(device_event &&other) = delete;
+	event& operator=(const event &other) = delete;
+	event& operator=(event &&other) = delete;
 
 	/**
 	 * @brief Get the set of operations supported by this event.
 	 */
-	virtual device_event_usage_flags get_supported_usage() const noexcept = 0;
+	virtual event_usage_flags get_supported_usage() const noexcept = 0;
 
 	/**
-	 * @brief Record a signal on a device queue.
+	 * @brief Record a signal on a command queue.
 	 *
 	 * Schedules the event to transition to the signaled state once the queue 
 	 * reaches the current point in its execution timeline. Any previously 
@@ -68,24 +68,24 @@ public:
 	 * @param queue The queue on which the signal is recorded. Must belong to
 	 * the same device used for creating this event.
 	 */
-	virtual void signal(device_queue &queue) = 0;
+	virtual void signal(command_queue &queue) = 0;
 
 	/**
-	 * @brief Make a device queue wait until the event is signaled.
+	 * @brief Make a command queue wait until the event is signaled.
 	 *
 	 * Schedules @p queue so that subsequent commands submitted to it are 
 	 * deferred until the most recently recorded signal point on this event has
 	 * been reached. The call itself does not block the host thread.
 	 *
-	 * Requires @ref device_event_usage_flag_bits::device_wait. The @p queue may
+	 * Requires @ref event_usage_flag_bits::device_wait. The @p queue may
 	 * belong to a different device than the one that recorded the signal only 
-	 * if @ref device_event_usage_flag_bits::cross_device_wait is also 
+	 * if @ref event_usage_flag_bits::cross_device_wait is also 
 	 * supported.
 	 *
 	 * @param queue The queue that will defer its work until the event
 	 * is signaled.
 	 */
-	virtual void wait(device_queue &queue) const = 0;
+	virtual void wait(command_queue &queue) const = 0;
 
 	/**
 	 * @brief Block the calling thread until the event is signaled.
@@ -94,7 +94,7 @@ public:
 	 * this event has been reached. Returns immediately if no signal has been
 	 * recorded yet, since the initial state of the event is signaled.
 	 *
-	 * Requires @ref device_event_usage_flag_bits::host_wait.
+	 * Requires @ref event_usage_flag_bits::host_wait.
 	 */
 	virtual void wait() const = 0;
 
@@ -105,7 +105,7 @@ public:
 	 * by the queue, without blocking the calling thread. An event with no
 	 * recorded signal is reported as signaled.
 	 *
-	 * Requires @ref device_event_usage_flag_bits::host_query.
+	 * Requires @ref event_usage_flag_bits::host_query.
 	 *
 	 * @return @c true if the event has been signaled, @c false otherwise.
 	 */

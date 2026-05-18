@@ -3,9 +3,9 @@
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
-#include <xmipp4/cpu/hardware/cpu_device_queue.hpp>
-#include <xmipp4/cpu/hardware/cpu_device_event.hpp>
-#include <xmipp4/cpu/hardware/cpu_timestamped_device_event.hpp>
+#include <xmipp4/cpu/hardware/cpu_command_queue.hpp>
+#include <xmipp4/cpu/hardware/cpu_event.hpp>
+#include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
 
 namespace xmipp4
 {
@@ -19,20 +19,20 @@ void cpu_device::get_memory_resources(
 	resources = { &get_host_memory_resource() };
 }
 
-std::shared_ptr<device_queue> cpu_device::create_queue() const
+std::shared_ptr<command_queue> cpu_device::create_command_queue() const
 {
-	return std::make_shared<cpu_device_queue>();
+	return std::make_shared<cpu_command_queue>();
 }
 
-std::shared_ptr<device_event> 
-cpu_device::create_event(device_event_usage_flags usage) const
+std::shared_ptr<event> 
+cpu_device::create_event(event_usage_flags usage) const
 {
-	if (usage.contains(device_event_usage_flag_bits::timestamp))
+	if (usage.contains(event_usage_flag_bits::timestamp))
 	{
-		return std::make_shared<cpu_timestamped_device_event>();
+		return std::make_shared<cpu_timestamped_event>();
 	}
 	
-	return std::make_shared<cpu_device_event>();
+	return std::make_shared<cpu_event>();
 }
 
 } // namespace hardware

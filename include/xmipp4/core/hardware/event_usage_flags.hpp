@@ -12,14 +12,14 @@ namespace hardware
 {
 
 /**
- * @brief Capability bits describing how a device event may be used.
+ * @brief Capability bits describing how an event may be used.
  *
- * Each bit represents a distinct synchronization capability that a device event
+ * Each bit represents a distinct synchronization capability that an event
  * may support. The set of bits requested at event creation lets the backend
  * pick the cheapest underlying primitive that satisfies the requested
  * capabilities.
  */
-enum class device_event_usage_flag_bits
+enum class event_usage_flag_bits
 {
 	/// The event is used to profile execution times. The timestamp when the 
 	/// provided execution checkpoint is reached will be stored.
@@ -40,9 +40,9 @@ enum class device_event_usage_flag_bits
 };
 
 /**
- * @brief Set of @ref device_event_usage_flag_bits.
+ * @brief Set of @ref event_usage_flag_bits.
  */
-using device_event_usage_flags = binary::flagset<device_event_usage_flag_bits>;
+using event_usage_flags = binary::flagset<event_usage_flag_bits>;
 
 } // namespace hardware
 } // namespace xmipp4

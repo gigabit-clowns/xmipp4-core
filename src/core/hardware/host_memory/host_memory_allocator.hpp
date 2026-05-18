@@ -27,10 +27,10 @@ public:
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_queue *queue
+		command_queue *queue
 	) override;
 
-	void record_use(const buffer &buffer, device_queue &queue) override;
+	void record_use(const buffer &buffer, command_queue &queue) override;
 
 	static host_memory_allocator& get();
 	static const std::shared_ptr<host_memory_allocator>& create();

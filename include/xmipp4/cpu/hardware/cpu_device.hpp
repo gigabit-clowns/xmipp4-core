@@ -10,7 +10,7 @@ namespace hardware
 {
 
 class cpu_event;
-class cpu_device_queue;
+class cpu_command_queue;
 class cpu_memory_resource;
 
 /**
@@ -27,10 +27,10 @@ public:
 		std::vector<const memory_resource*> &resources
 	) const override;
 
-	std::shared_ptr<device_queue> create_queue() const override;
+	std::shared_ptr<command_queue> create_command_queue() const override;
 
-	std::shared_ptr<device_event> 
-	create_event(device_event_usage_flags usage) const override;
+	std::shared_ptr<event> 
+	create_event(event_usage_flags usage) const override;
 }; 
 
 } // namespace hardware

@@ -12,22 +12,22 @@ namespace hardware
 /**
  * @brief Abstract command queue belonging to a @ref device.
  *
- * A @c device_queue represents an in-order stream of commands submitted
+ * A @c command_queue represents an in-order stream of commands submitted
  * to a device (kernel launches, memory transfers, event signals, ...).
  * Commands submitted to the same queue execute in submission order;
  * commands in different queues may execute concurrently and need
- * @ref device_event objects to express ordering between them.
+ * @ref event objects to express ordering between them.
  */
-class XMIPP4_CORE_API device_queue
+class XMIPP4_CORE_API command_queue
 {
 public:
-	device_queue() noexcept;
-	device_queue(const device_queue &other) = delete;
-	device_queue(device_queue &&other) = delete;
-	virtual ~device_queue();
+	command_queue() noexcept;
+	command_queue(const command_queue &other) = delete;
+	command_queue(command_queue &&other) = delete;
+	virtual ~command_queue();
 
-	device_queue& operator=(const device_queue &other) = delete;
-	device_queue& operator=(device_queue &&other) = delete;
+	command_queue& operator=(const command_queue &other) = delete;
+	command_queue& operator=(command_queue &&other) = delete;
 
 	/**
 	 * @brief Block the calling thread until the queue is idle.
@@ -37,7 +37,7 @@ public:
 	 * call returns are not awaited, so the queue may again become non-idle as
 	 * soon as new work is submitted.
 	 *
-	 * Equivalent in spirit to @ref device_event::wait on an event signaled at 
+	 * Equivalent in spirit to @ref event::wait on an event signaled at 
 	 * the most recent submission point, but cheaper when no event is required 
 	 * afterwards.
 	 */

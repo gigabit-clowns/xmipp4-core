@@ -11,7 +11,6 @@ namespace hardware
 
 /**
  * @brief Describes the nature of a memory resource.
- * 
  */
 enum class memory_resource_kind
 {

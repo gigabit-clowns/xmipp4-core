@@ -22,7 +22,8 @@ class memory_resource;
  * the underlying backend.
  *
  * The allocator is also in charge of tracking the asynchronous use of the 
- * buffers it produces: when a buffer's shared ownership is dropped while device * work referencing it is still in flight, the allocator defers the actual 
+ * buffers it produces: when a buffer's shared ownership is dropped while device 
+ * work referencing it is still in flight, the allocator defers the actual 
  * release until that work has completed.
  */
 class XMIPP4_CORE_API memory_allocator

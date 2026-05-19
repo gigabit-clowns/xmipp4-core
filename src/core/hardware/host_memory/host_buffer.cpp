@@ -3,6 +3,7 @@
 #include "host_buffer.hpp"
 
 #include <xmipp4/core/memory/aligned_alloc.hpp>
+#include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
 #include "host_memory_allocator.hpp"
@@ -18,10 +19,13 @@ host_buffer::host_buffer(
 	std::size_t size, 
 	std::size_t alignment
 )
-	: m_data(memory::aligned_alloc(size, alignment))
-	, m_size(size)
+	: m_data(nullptr)
+	, m_size(0UL)
 {
-	if (size > 0 && m_data == nullptr)
+	m_size = memory::align_ceil(size, alignment);
+	m_data = memory::aligned_alloc(m_size, alignment);
+
+	if (m_size > 0 && m_data == nullptr)
 	{
 		throw std::bad_alloc();
 	}

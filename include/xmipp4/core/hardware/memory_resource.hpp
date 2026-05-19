@@ -45,12 +45,11 @@ public:
 	/**
 	 * @brief Create an allocator that produces buffers on this resource.
 	 *
-	 * Each call returns an independent allocator instance; concrete
-	 * backends are free to make those instances share state (e.g. a
-	 * common pool) or to keep them disjoint. The returned allocator
-	 * keeps a reference to this resource and must not outlive it; the
-	 * resource itself is owned by the backend and outlives every
-	 * allocator created from it.
+	 * Each call returns an independent allocator instance; concrete backends 
+	 * are free to make those instances share state (e.g. a common pool) or to 
+	 * keep them disjoint. The returned allocator keeps a reference to this 
+	 * resource and must not outlive it; the resource itself is owned by the 
+	 * backend and outlives every allocator created from it.
 	 *
 	 * @return The new allocator. Never null.
 	 */

@@ -19,6 +19,15 @@ class memory_allocator;
 /**
  * @brief Represents an untyped memory allocation at a given memory
  * resource.
+ *
+ * A buffer is the framework-level handle to a contiguous block of memory
+ * obtained from a @ref memory_allocator. It carries no type information
+ * of its own Their lifetime drives the lifetime of the underlying allocation;
+ * when a buffer is destroyed, the allocator reclaims the memory.
+ *
+ * Whether the memory is reachable from the host depends on the kind of
+ * the @ref memory_resource that backs the buffer. Use @ref get_host_ptr
+ * to query host accessibility before dereferencing.
  */
 class XMIPP4_CORE_API buffer
 {
@@ -33,47 +42,66 @@ public:
 
 	/**
 	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, host, unified or managed.
-	 * 
-	 * @return void* Pointer to the data. nullptr if the buffer is not
-	 * host accessible.
+	 *
+	 * This method only returns a non-null pointer if the data is
+	 * directly addressable by the host, i.e. when the kind of the
+	 * underlying @ref memory_resource is one of: @c device_mapped,
+	 * @c host_staging, @c host, @c unified or @c managed. For pure
+	 * device-only resources the buffer must be transferred to a
+	 * host-accessible buffer first.
+	 *
+	 * The returned pointer is valid for as long as this @c buffer
+	 * instance is alive and is aligned to the alignment requested at
+	 * allocation time. Reads or writes through it may need to be
+	 * preceded by appropriate synchronization with any in-flight
+	 * device-side work that uses the same buffer.
+	 *
+	 * @return void* Pointer to the start of the buffer's data, or
+	 * @c nullptr if the buffer is not host accessible.
 	 */
 	virtual void* get_host_ptr() noexcept = 0;
 
 	/**
 	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, host, unified or managed.
-	 * 
-	 * @return const void* Pointer to the data. nullptr if the buffer is not
-	 * host accessible.
+	 *
+	 * Const overload of @ref get_host_ptr(); see that method for the
+	 * conditions under which a non-null pointer is returned and the
+	 * lifetime/synchronization guarantees that apply.
+	 *
+	 * @return const void* Pointer to the start of the buffer's data, or
+	 * @c nullptr if the buffer is not host accessible.
 	 */
 	virtual const void* get_host_ptr() const noexcept = 0;
 
 	/**
 	 * @brief Get the size in bytes for this buffer.
-	 * 
+	 *
+	 * The size may be larger then the requested in 
+	 * @ref memory_allocator::allocate to satisfy alignment requirements.
+	 *
 	 * @return std::size_t Size in bytes.
 	 */
 	virtual std::size_t get_size() const noexcept = 0;
 
 	/**
-	 * @brief Get the memory_resource where this buffer is stored. 
-	 * 
-	 * @return memory_resource& The resource where the buffer is stored.
+	 * @brief Get the memory resource where this buffer is stored.
+	 *
+	 * @return const memory_resource& The resource backing the buffer.
+	 * The reference is owned by the framework and remains valid at
+	 * least for the lifetime of this @c buffer.
 	 */
 	virtual const memory_resource& get_memory_resource() const noexcept = 0;
 
 	/**
 	 * @brief Get the memory allocator used for allocating this buffer.
-	 * 
-	 * @return memory_allocator& The memory allocator where this buffer was
-	 * allocated.
+	 *
+	 * The returned allocator can be used to allocate additional buffers
+	 * on the same @ref memory_resource without having to look it up
+	 * again.
+	 *
+	 * @return memory_allocator& The memory allocator that produced this
+	 * buffer. The reference is owned by the framework and remains valid
+	 * at least for the lifetime of this @c buffer.
 	 */
 	virtual memory_allocator& get_memory_allocator() const noexcept = 0;
 };

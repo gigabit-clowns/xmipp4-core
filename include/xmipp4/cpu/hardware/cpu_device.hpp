@@ -29,9 +29,12 @@ public:
 
 	std::shared_ptr<command_queue> create_command_queue() const override;
 
-	std::shared_ptr<event> 
+	std::shared_ptr<event>
 	create_event(event_usage_flags usage) const override;
-}; 
+
+	duration_type 
+	elapsed_time(const event &start, const event &stop) const override;
+};
 
 } // namespace hardware
 } // namespace xmipp4

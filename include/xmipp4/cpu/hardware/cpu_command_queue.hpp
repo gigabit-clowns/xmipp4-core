@@ -27,6 +27,15 @@ public:
 
 	void wait_until_completed() const override;
 	bool is_idle() const override;
+
+	void signal(event &event) override;
+	void wait(const event &event) override;
+
+	void submit(
+		const command &command,
+		span<const std::shared_ptr<buffer>> output_operands,
+		span<const std::shared_ptr<const buffer>> input_operands
+	) override;
 };
 
 } // namespace hardware

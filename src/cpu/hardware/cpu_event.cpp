@@ -2,8 +2,6 @@
 
 #include <xmipp4/cpu/hardware/cpu_event.hpp>
 
-#include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-
 namespace xmipp4
 {
 namespace hardware
@@ -19,36 +17,16 @@ cpu_event::get_supported_usage() const noexcept
 	};
 }
 
-void cpu_event::signal(command_queue &)
-{
-	// No state to update: cpu_command_queue work is synchronous, so the
-	// signal point is reached the moment this call returns.
-}
-
-void cpu_event::wait(command_queue &) const
+void cpu_event::wait() const
 {
 	// No-op: cpu_command_queue work is synchronous, so any recorded
 	// signal point has already been reached by the time control returns
-	// from signal().
-}
-
-void cpu_event::wait() const
-{
-	// No-op for the same reason as wait(command_queue&).
+	// from command_queue::signal.
 }
 
 bool cpu_event::is_signaled() const
 {
 	return true;
-}
-
-device_timeline_clock::time_point cpu_event::get_timestamp() const
-{
-	throw invalid_operation_error(
-		"cpu_event does not support timestamp queries; "
-		"create the event with event_usage_flag_bits::timestamp "
-		"to obtain a cpu_timestamped_event instead."
-	);
 }
 
 } // namespace hardware

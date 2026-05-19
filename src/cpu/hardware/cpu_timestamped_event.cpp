@@ -2,8 +2,6 @@
 
 #include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
 
-#include <xmipp4/core/platform/constexpr.hpp>
-
 #include <chrono>
 
 namespace xmipp4
@@ -40,21 +38,11 @@ cpu_timestamped_event::get_supported_usage() const noexcept
 	};
 }
 
-void cpu_timestamped_event::signal(command_queue &)
-{
-	m_last_timestamp_ns.store(sample_now_ns(), std::memory_order_release);
-}
-
-void cpu_timestamped_event::wait(command_queue &) const
+void cpu_timestamped_event::wait() const
 {
 	// No-op: cpu_command_queue work is synchronous, so any recorded
 	// signal point has already been reached by the time control returns
-	// from signal().
-}
-
-void cpu_timestamped_event::wait() const
-{
-	// No-op for the same reason as wait(command_queue&).
+	// from command_queue::signal.
 }
 
 bool cpu_timestamped_event::is_signaled() const
@@ -62,14 +50,14 @@ bool cpu_timestamped_event::is_signaled() const
 	return true;
 }
 
-device_timeline_clock::time_point
-cpu_timestamped_event::get_timestamp() const
+void cpu_timestamped_event::record_timestamp() noexcept
 {
-	return device_timeline_clock::time_point(
-		device_timeline_clock::duration(
-			m_last_timestamp_ns.load(std::memory_order_acquire)
-		)
-	);
+	m_last_timestamp_ns.store(sample_now_ns(), std::memory_order_release);
+}
+
+std::int64_t cpu_timestamped_event::get_timestamp_ns() const noexcept
+{
+	return m_last_timestamp_ns.load(std::memory_order_acquire);
 }
 
 } // namespace hardware

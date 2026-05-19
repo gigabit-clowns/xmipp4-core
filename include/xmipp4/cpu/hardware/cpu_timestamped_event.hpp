@@ -6,7 +6,6 @@
 #include <cstdint>
 
 #include <xmipp4/core/hardware/event.hpp>
-#include <xmipp4/core/hardware/device_timeline_clock.hpp>
 
 namespace xmipp4
 {
@@ -16,11 +15,11 @@ namespace hardware
 /**
  * @brief CPU implementation of @ref event with timestamp tracking.
  *
- * Behaves like @ref cpu_event, but additionally records the time at
- * which each signal is observed and exposes it through @ref get_timestamp.
- * Pays the cost of one atomic store per @ref signal and one atomic load per
- * @ref get_timestamp; prefer @ref cpu_event when
- * @ref event_usage_flag_bits::timestamp is not required.
+ * Behaves like @ref cpu_event, but additionally records the time at which
+ * each signal is observed so that @ref cpu_device::elapsed_time can compute
+ * intervals between two such events. Pays the cost of one atomic store per
+ * recorded signal and one atomic load per timestamp read; prefer
+ * @ref cpu_event when @ref event_usage_flag_bits::timestamp is not required.
  *
  * Supports @ref event_usage_flag_bits::timestamp,
  * @ref event_usage_flag_bits::host_query,
@@ -37,11 +36,25 @@ public:
 
 	event_usage_flags get_supported_usage() const noexcept override;
 
-	void signal(command_queue &queue) override;
-	void wait(command_queue &queue) const override;
 	void wait() const override;
 	bool is_signaled() const override;
-	device_timeline_clock::time_point get_timestamp() const override;
+
+	/**
+	 * @brief Record the current host time as the last signal point.
+	 *
+	 * Called by @ref cpu_command_queue::signal at the moment the queue
+	 * passes the recorded signal point. Not part of the abstract @ref event
+	 * interface.
+	 */
+	void record_timestamp() noexcept;
+
+	/**
+	 * @brief Read the last recorded signal time, in nanoseconds since the
+	 * @c std::chrono::steady_clock epoch.
+	 *
+	 * Returns zero if no signal has been recorded yet.
+	 */
+	std::int64_t get_timestamp_ns() const noexcept;
 
 private:
 	std::atomic<std::int64_t> m_last_timestamp_ns;

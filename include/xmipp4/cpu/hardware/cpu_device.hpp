@@ -16,13 +16,10 @@ class cpu_memory_resource;
 /**
  * @brief Implementation of the @ref device interface to represent the CPU.
  */
-class cpu_device final
+class XMIPP4_CORE_API cpu_device final
 	: public device
 {
 public:
-	cpu_device() = default;
-	~cpu_device() override = default;
-
 	void get_memory_resources(
 		std::vector<const memory_resource*> &resources
 	) const override;

@@ -13,7 +13,7 @@ namespace hardware
 /**
  * @brief CPU base class for executable commands.
  */
-class cpu_command
+class XMIPP4_CORE_API cpu_command
 	: public command
 {
 public:

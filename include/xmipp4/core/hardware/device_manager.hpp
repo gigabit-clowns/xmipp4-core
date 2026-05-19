@@ -20,7 +20,6 @@ class device;
 
 /**
  * @brief Centralize multiple device_backends.
- * 
  */
 class device_manager final
 	: public named_service_manager

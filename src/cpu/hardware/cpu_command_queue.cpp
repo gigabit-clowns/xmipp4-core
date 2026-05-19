@@ -70,7 +70,7 @@ boost::container::small_vector<const void*, N> get_input_pointers(
 
 void cpu_command_queue::wait_until_completed() const
 {
-	// No thread pool wired in yet; the queue holds no in-flight work.
+	// No-op, synchronous execution.
 }
 
 bool cpu_command_queue::is_idle() const
@@ -80,20 +80,15 @@ bool cpu_command_queue::is_idle() const
 
 void cpu_command_queue::signal(event &event)
 {
-	// cpu_command_queue work is synchronous, so the signal point is reached
-	// the moment this call returns. Only timestamped events need to record
-	// the host clock here; plain cpu_event has no state to update.
 	if (auto *timestamped = dynamic_cast<cpu_timestamped_event*>(&event))
 	{
 		timestamped->record_timestamp();
 	}
 }
 
-void cpu_command_queue::wait(const event &)
+void cpu_command_queue::wait(const event&)
 {
-	// No-op: cpu_command_queue work is synchronous, so any recorded signal
-	// point has already been reached by the time control returns from
-	// signal().
+	// No-op, synchronous execution.
 }
 
 void cpu_command_queue::submit(

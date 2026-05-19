@@ -40,19 +40,11 @@ device::duration_type cpu_device::elapsed_time(
 	const event &start, const event &stop
 ) const
 {
-	const auto *start_ts = dynamic_cast<const cpu_timestamped_event*>(&start);
-	const auto *stop_ts  = dynamic_cast<const cpu_timestamped_event*>(&stop);
-	if (start_ts == nullptr || stop_ts == nullptr)
-	{
-		throw invalid_operation_error(
-			"cpu_device::elapsed_time: both events must have been created "
-			"with event_usage_flag_bits::timestamp."
-		);
-	}
-
-	return duration_type(
-		stop_ts->get_timestamp_ns() - start_ts->get_timestamp_ns()
-	);
+	const auto start_ts = 
+		dynamic_cast<const cpu_timestamped_event&>(start).get_timestamp_ns();
+	const auto stop_ts = 
+		dynamic_cast<const cpu_timestamped_event&>(stop).get_timestamp_ns();
+	return duration_type(stop_ts - start_ts);
 }
 
 } // namespace hardware

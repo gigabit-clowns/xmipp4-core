@@ -22,10 +22,10 @@ class memory_resource;
 /**
  * @brief Abstract representation of a hardware compute device.
  *
- * A @c device is the entry point for interacting with a backend's
- * compute resource: it advertises the memory resources reachable from
- * the device and acts as a factory for the per-device objects used by
- * the rest of the framework (queues, synchronization primitives, ...).
+ * A @c device is the entry point for interacting with a backend's compute
+ * resource: it advertises the memory resources reachable from the device and
+ * acts as a factory for the per-device objects used by the rest of the
+ * framework (queues, synchronization primitives, ...).
  */
 class XMIPP4_CORE_API device
 {
@@ -63,10 +63,9 @@ public:
 	 *
 	 * The returned queue is independent from any previously created queue on 
 	 * the same device, and may execute its commands concurrently with them. 
-	 * Ordering across queues may be established through @ref event 
-	 * objects.
+	 * Ordering across queues may be established through @ref event objects.
 	 *
-	 * @return Shared ownership of the newly created queue. Never null.
+	 * @return Newly created queue. Never null.
 	 */
 	virtual std::shared_ptr<command_queue> create_command_queue() const = 0;
 
@@ -77,10 +76,11 @@ public:
 	 * @p usage; the backend may pick the cheapest underlying primitive that 
 	 * satisfies them, so the actually supported set (queried via
 	 * @ref event::get_supported_usage) may be a superset of @p usage. 
-	 * The event is initially in the signaled state.
+	 * The event is initially in the signaled state (waiting on it returns 
+	 * immediately).
 	 *
 	 * @param usage Capabilities that the returned event must support.
-	 * @return Shared ownership of the newly created event. Never null.
+	 * @return Newly created event. Never null.
 	 *
 	 * @see event
 	 * @see event_usage_flags

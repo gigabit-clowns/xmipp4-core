@@ -63,7 +63,7 @@ public:
 	 * this event has been reached. Returns immediately if no signal has been
 	 * recorded yet, since the initial state of the event is signaled.
 	 *
-	 * Requires @ref event_usage_flag_bits::host_wait.
+	 * @note Requires @ref event_usage_flag_bits::host_wait.
 	 */
 	virtual void wait() const = 0;
 
@@ -74,7 +74,7 @@ public:
 	 * by the queue, without blocking the calling thread. An event with no
 	 * recorded signal is reported as signaled.
 	 *
-	 * Requires @ref event_usage_flag_bits::host_query.
+	 * @note Requires @ref event_usage_flag_bits::host_query.
 	 *
 	 * @return @c true if the event has been signaled, @c false otherwise.
 	 */

@@ -12,7 +12,7 @@ namespace hardware
 class device_manager;
 
 /**
- * @brief Implementation of the `device_backend` interface to retrieve the 
+ * @brief Implementation of the @ref device_backend interface to retrieve the 
  * CPU device.
  */
 class cpu_device_backend final

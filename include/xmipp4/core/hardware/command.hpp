@@ -12,11 +12,9 @@ namespace hardware
 /**
  * @brief Abstract representation of an executable command.
  *
- * A @c command is a passive, inmutable, backend-specific descriptor of work to 
+ * A @c command is a passive and backend-specific descriptor of work to 
  * be executed on a device. Execution is driven by @ref command_queue::submit,
- * which records the command on a queue together with its operands. The
- * read-write and read-only operand descriptors fixed at construction
- * determine the layout that @ref command_queue::submit expects.
+ * which records the command on a queue together with its operands. 
  *
  * Each concrete command instance is bound to the device it was created for
  * and may only be submitted to queues belonging to that device.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
+#include "cpu_timestamped_event.hpp"
 
 #include <chrono>
 
@@ -22,13 +22,7 @@ std::int64_t sample_now_ns() noexcept
 
 } // namespace
 
-cpu_timestamped_event::cpu_timestamped_event() noexcept
-	: m_last_timestamp_ns(0)
-{
-}
-
-event_usage_flags
-cpu_timestamped_event::get_supported_usage() const noexcept
+event_usage_flags cpu_timestamped_event::get_supported_usage() const noexcept
 {
 	return {
 		event_usage_flag_bits::timestamp,
@@ -40,9 +34,7 @@ cpu_timestamped_event::get_supported_usage() const noexcept
 
 void cpu_timestamped_event::wait() const
 {
-	// No-op: cpu_command_queue work is synchronous, so any recorded
-	// signal point has already been reached by the time control returns
-	// from command_queue::signal.
+	// No-op
 }
 
 bool cpu_timestamped_event::is_signaled() const

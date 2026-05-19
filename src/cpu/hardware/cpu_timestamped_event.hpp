@@ -24,16 +24,12 @@ namespace hardware
  * Supports @ref event_usage_flag_bits::timestamp,
  * @ref event_usage_flag_bits::host_query,
  * @ref event_usage_flag_bits::host_wait and
- * @ref event_usage_flag_bits::device_wait. Cross-backend
- * @ref event_usage_flag_bits::cross_device_wait is not supported.
+ * @ref event_usage_flag_bits::device_wait.
  */
 class cpu_timestamped_event final
 	: public event
 {
 public:
-	cpu_timestamped_event() noexcept;
-	~cpu_timestamped_event() override = default;
-
 	event_usage_flags get_supported_usage() const noexcept override;
 
 	void wait() const override;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cpu/hardware/cpu_device_backend.hpp>
+#include "cpu_device_backend.hpp"
 
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 

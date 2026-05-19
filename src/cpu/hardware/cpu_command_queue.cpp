@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cpu/hardware/cpu_command_queue.hpp>
+#include "cpu_command_queue.hpp"
+
+#include "cpu_timestamped_event.hpp"
 
 #include <xmipp4/cpu/hardware/cpu_command.hpp>
-#include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 

@@ -2,11 +2,12 @@
 
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 
+#include "cpu_command_queue.hpp"
+#include "cpu_event.hpp"
+#include "cpu_timestamped_event.hpp"
+
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-#include <xmipp4/cpu/hardware/cpu_command_queue.hpp>
-#include <xmipp4/cpu/hardware/cpu_event.hpp>
-#include <xmipp4/cpu/hardware/cpu_timestamped_event.hpp>
 
 namespace xmipp4
 {

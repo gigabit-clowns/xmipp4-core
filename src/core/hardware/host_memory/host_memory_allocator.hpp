@@ -30,8 +30,6 @@ public:
 		command_queue *queue
 	) override;
 
-	void record_use(const buffer &buffer, command_queue &queue) override;
-
 	static host_memory_allocator& get();
 	static const std::shared_ptr<host_memory_allocator>& create();
 

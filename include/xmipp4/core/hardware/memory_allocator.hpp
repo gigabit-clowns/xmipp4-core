@@ -89,28 +89,6 @@ public:
 		std::size_t alignment,
 		command_queue *queue_hint = nullptr
 	) = 0;
-
-	/**
-	 * @brief Record that a buffer is in use on a queue.
-	 *
-	 * Notifies the allocator that work referencing @p buffer has been submitted
-	 * to @p queue up to the current point in the queue's timeline. When the 
-	 * buffer goes out of scope, the allocator postpones the physical release 
-	 * until every such recorded use has completed, preventing the underlying 
-	 * storage from being reused while device work still depends on it.
-	 *
-	 * Calls are cumulative: invoking @ref record_use multiple times on the same
-	 * buffer, with the same or different queues, extends the set of completions
-	 * the allocator must observe before releasing the buffer. Calls referring 
-	 * to commands already completed are harmless no-ops.
-	 *
-	 * @param buffer Buffer being used. Must have been produced by this
-	 * allocator; passing a buffer produced by a different allocator
-	 * yields undefined behavior.
-	 * @param queue Queue on which the buffer is being used.
-	 */
-	virtual
-	void record_use(const buffer &buffer, command_queue &queue) = 0;
 };
 
 } // namespace hardware

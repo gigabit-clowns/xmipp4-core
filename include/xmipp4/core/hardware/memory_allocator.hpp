@@ -22,11 +22,8 @@ class memory_resource;
  * the underlying backend.
  *
  * The allocator is also in charge of tracking the asynchronous use of the 
- * buffers it produces: when a buffer's shared ownership is dropped while device
- * work referencing it is still in flight, the allocator defers the actual 
- * release until that work has completed. Callers announce such use through 
- * @ref record_use; this is the only mechanism the public API exposes for buffer
- * lifetime synchronization. 
+ * buffers it produces: when a buffer's shared ownership is dropped while device * work referencing it is still in flight, the allocator defers the actual 
+ * release until that work has completed.
  */
 class XMIPP4_CORE_API memory_allocator
 {
@@ -71,11 +68,7 @@ public:
 	 * @param queue_hint Optional non-owning pointer to the queue on
 	 * which the buffer is expected to be first used. Backends with
 	 * per-device or per-queue allocation pools may use it to pick a
-	 * cheaper pool. The hint does not establish a use record: callers
-	 * still need to invoke @ref record_use before submitting work that
-	 * references the buffer. Using the buffer on a queue other than the one 
-	 * provided without additional synchronization may lead to undefined 
-	 * behavior.
+	 * cheaper pool.
 	 * @return The newly allocated buffer. Never null.
 	 *
 	 * @throws std::bad_alloc (or a backend-specific exception derived

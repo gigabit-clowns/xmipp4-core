@@ -36,7 +36,7 @@ public:
 	 * 
 	 * This method only returns a pointer if the data is accessible by the 
 	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
+	 * device_mapped, host_staging, host, unified or managed.
 	 * 
 	 * @return void* Pointer to the data. nullptr if the buffer is not
 	 * host accessible.
@@ -48,7 +48,7 @@ public:
 	 * 
 	 * This method only returns a pointer if the data is accessible by the 
 	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
+	 * device_mapped, host_staging, host, unified or managed.
 	 * 
 	 * @return const void* Pointer to the data. nullptr if the buffer is not
 	 * host accessible.

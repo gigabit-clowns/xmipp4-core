@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <chrono>
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -29,6 +30,8 @@ class memory_resource;
 class XMIPP4_CORE_API device
 {
 public:
+	using duration_type = std::chrono::nanoseconds;
+
 	device() noexcept;
 	device(const device &other) = delete;
 	device(device &&other) = delete;
@@ -84,6 +87,37 @@ public:
 	 */
 	virtual
 	std::shared_ptr<event> create_event(event_usage_flags usage) const = 0;
+
+	/**
+	 * @brief Measure the time elapsed between two event signal points.
+	 *
+	 * Returns the duration from the most recently recorded signal point on
+	 * @p start to the most recently recorded signal point on @p stop, as
+	 * observed on this device's execution timeline. The result is signed: if
+	 * @p stop was reached before @p start the returned duration is negative.
+	 *
+	 * The call blocks the calling host thread until both signal points have
+	 * been reached, in the same way @ref event::wait does.
+	 *
+	 * Both events must belong to this device and must have been created with
+	 * @ref event_usage_flag_bits::timestamp. Both must have been signaled at
+	 * least once before this method is invoked; the behavior on an event that
+	 * has never been signaled is unspecified. Passing an event that belongs
+	 * to a different device is a precondition violation.
+	 *
+	 * The resolution of the returned duration is backend-dependent and is
+	 * typically coarser than the nanosecond representation suggests.
+	 *
+	 * @param start Event marking the beginning of the measured interval.
+	 * @param stop  Event marking the end of the measured interval.
+	 * @return Signed duration from @p start to @p stop on this device's
+	 * timeline.
+	 *
+	 * @see event
+	 * @see event_usage_flag_bits::timestamp
+	 */
+	virtual
+	duration_type elapsed_time(const event& start, const event& stop) const = 0;
 };
 
 } // namespace hardware

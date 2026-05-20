@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -11,24 +11,22 @@ namespace xmipp4
 namespace hardware
 {
 
-class mock_memory_allocator final
-	: public memory_allocator
+class mock_buffer final
+	: public buffer
 {
 public:
+	MAKE_MOCK0(get_host_ptr, void*(), noexcept override);
+	MAKE_CONST_MOCK0(get_host_ptr, const void*(), noexcept override);
+	MAKE_CONST_MOCK0(get_size, std::size_t(), noexcept override);
 	MAKE_CONST_MOCK0(
 		get_memory_resource,
 		const memory_resource&(),
 		noexcept override
 	);
 	MAKE_CONST_MOCK0(
-		get_max_alignment,
-		std::size_t(),
+		get_memory_allocator,
+		memory_allocator&(),
 		noexcept override
-	);
-	MAKE_MOCK3(
-		allocate,
-		std::shared_ptr<buffer>(std::size_t, std::size_t, command_queue*),
-		override
 	);
 };
 

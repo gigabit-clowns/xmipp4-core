@@ -20,10 +20,11 @@ class memory_allocator;
  * @brief Represents an untyped memory allocation at a given memory
  * resource.
  *
- * A buffer is the framework-level handle to a contiguous block of memory
- * obtained from a @ref memory_allocator. It carries no type information
- * of its own Their lifetime drives the lifetime of the underlying allocation;
- * when a buffer is destroyed, the allocator reclaims the memory.
+ * A buffer is a handle to a contiguous block of memory. It carries no type 
+ * information of its own Their lifetime drives the lifetime of the underlying 
+ * allocation; when a buffer is destroyed, and all pending work on 
+ * command_queues finishes, the allocator reclaims the memory block referenced
+ * by the buffer.
  *
  * Whether the memory is reachable from the host depends on the kind of
  * the @ref memory_resource that backs the buffer. Use @ref get_host_ptr

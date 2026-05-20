@@ -74,9 +74,9 @@ public:
 	 * by the queue, without blocking the calling thread. An event with no
 	 * recorded signal is reported as signaled.
 	 *
-	 * @note Requires @ref event_usage_flag_bits::host_query.
-	 *
 	 * @return @c true if the event has been signaled, @c false otherwise.
+	 * 
+	 * @note Requires @ref event_usage_flag_bits::host_query.
 	 */
 	virtual bool is_signaled() const = 0;
 };

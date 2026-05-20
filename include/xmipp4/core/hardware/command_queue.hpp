@@ -85,8 +85,8 @@ public:
 	 * been reached. The call itself does not block the host thread.
 	 *
 	 * Requires @ref event_usage_flag_bits::device_wait on @p event. This
-	 * queue may belong to a different device than the one that recorded the
-	 * signal only if @ref event_usage_flag_bits::cross_device_wait is also
+	 * queue may belong to a different device than the one that created the
+	 * event only if @ref event_usage_flag_bits::cross_device_wait is also
 	 * supported by @p event.
 	 *
 	 * @param event The event whose signal point this queue will wait for

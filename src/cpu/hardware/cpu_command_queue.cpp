@@ -2,8 +2,6 @@
 
 #include "cpu_command_queue.hpp"
 
-#include "cpu_timestamped_event.hpp"
-
 #include <xmipp4/cpu/hardware/cpu_command.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
@@ -79,12 +77,9 @@ bool cpu_command_queue::is_idle() const
 	return true;
 }
 
-void cpu_command_queue::signal(event &event)
+void cpu_command_queue::signal(event &/*event*/)
 {
-	if (auto *timestamped = dynamic_cast<cpu_timestamped_event*>(&event))
-	{
-		timestamped->record_timestamp();
-	}
+	// No-op, synchronous execution.
 }
 
 void cpu_command_queue::wait(const event&)

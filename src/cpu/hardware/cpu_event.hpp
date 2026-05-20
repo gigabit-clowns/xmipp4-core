@@ -10,14 +10,11 @@ namespace hardware
 {
 
 /**
- * @brief CPU implementation of @ref event without timestamp tracking.
+ * @brief CPU implementation of @ref event.
  *
  * Supports @ref event_usage_flag_bits::host_query,
  * @ref event_usage_flag_bits::host_wait and
  * @ref event_usage_flag_bits::device_wait.
- *
- * Use @ref cpu_timestamped_event when
- * @ref event_usage_flag_bits::timestamp is required.
  */
 class cpu_event
 	: public event

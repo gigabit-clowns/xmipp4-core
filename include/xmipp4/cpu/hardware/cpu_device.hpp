@@ -28,9 +28,6 @@ public:
 
 	std::shared_ptr<event>
 	create_event(event_usage_flags usage) const override;
-
-	duration_type 
-	elapsed_time(const event &start, const event &stop) const override;
 };
 
 } // namespace hardware

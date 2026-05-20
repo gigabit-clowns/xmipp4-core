@@ -21,22 +21,18 @@ namespace hardware
  */
 enum class event_usage_flag_bits
 {
-	/// The event is used to profile execution times. The timestamp when the 
-	/// provided execution checkpoint is reached will be stored.
-	timestamp = binary::bit(0),
-
 	/// The event can be queried from the host thread.
-	host_query = binary::bit(1),
+	host_query = binary::bit(0),
 
 	/// The event can be waited on from the host thread.
-	host_wait = binary::bit(2),
+	host_wait = binary::bit(1),
 
-	/// The event can be waited on another queue from the same device that 
+	/// The event can be waited on another queue from the same device that
 	/// signals it.
-	device_wait = binary::bit(3),
+	device_wait = binary::bit(2),
 
 	/// The event can be waited on from a queue on a different device.
-	cross_device_wait = binary::bit(4)
+	cross_device_wait = binary::bit(3)
 };
 
 /**

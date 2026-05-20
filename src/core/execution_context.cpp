@@ -24,6 +24,7 @@ public:
 	)
 		: m_device_properties()
 		, m_device(create_device(catalog, index, m_device_properties))
+		, m_active_queue(m_device->create_command_queue())
 		, m_kernel_manager(
 			catalog.get_service_manager<multidimensional::kernel_manager>()
 		)

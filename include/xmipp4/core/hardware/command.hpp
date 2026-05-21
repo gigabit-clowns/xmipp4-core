@@ -44,7 +44,7 @@ public:
 	 * @ref command_queue::submit; backends use it as workspace and may write
 	 * to or read from it arbitrarily for the duration of the command. Its
 	 * contents are undefined on entry and on completion, and the buffer may
-	 * be reused across unrealted operations as long as it satisfies the size
+	 * be reused across unrelated operations as long as it satisfies the size
 	 * requirement.
 	 *
 	 * A return value of @c 0 indicates that the command needs no scratch

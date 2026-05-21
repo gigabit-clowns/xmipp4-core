@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <typeindex>
 
 namespace xmipp4
 {
@@ -16,11 +17,12 @@ namespace multidimensional
 /**
  * @brief Abstract base for keys stored in an operation_command_cache.
  *
- * Keys carry their own hashing and equality so the cache can store
- * heterogeneous key types in a single container. Builders may use the
- * provided typed_operation_command_cache_key wrapper for any key type that
- * is hashable through std::hash and equality-comparable, or subclass this
- * interface directly when finer control is required.
+ * The cache partitions its entries by the dynamic type of the key, so each
+ * subclass only needs to define hashing and equality among instances of
+ * itself. Builders may use the provided typed_operation_command_cache_key
+ * wrapper for any key type that is hashable through std::hash and
+ * equality-comparable, or subclass this interface directly when finer
+ * control is required.
  */
 class operation_command_cache_key
 {
@@ -51,12 +53,13 @@ public:
 	/**
 	 * @brief Equality against another key.
 	 *
-	 * Implementations must return false when the other key has a different
-	 * dynamic type.
+	 * The cache guarantees that this method is only invoked with keys of
+	 * the same dynamic type. Implementations may rely on that precondition
+	 * and skip any runtime type check.
 	 *
 	 * @param other The key to compare against.
 	 * @return true Both keys refer to the same entry.
-	 * @return false The keys differ in type or in value.
+	 * @return false The keys differ in value.
 	 */
 	virtual bool
 	equals(const operation_command_cache_key &other) const noexcept = 0;
@@ -105,12 +108,14 @@ private:
  *
  * The cache behaves as a typed key/value bag: each builder defines its own
  * key type and stores its own backend-specific resources (FFT plans,
- * compiled kernels, ...). Entries belonging to different key types live in 
- * disjoint name spaces, so unrelated builders cannot collide even if their key 
- * layouts coincide.
+ * compiled kernels, ...). Entries are partitioned by the static type of
+ * the key, so unrelated builders never collide even if their key layouts
+ * happen to coincide.
  *
  * The cache holds at most a fixed number of entries set at construction;
  * once that bound is reached, inserting a new entry evicts the oldest one.
+ * Eviction order is shared across all key types: a hot inner bucket may
+ * evict entries from a cold one.
  */
 class operation_command_cache
 {
@@ -175,11 +180,13 @@ private:
 
 	XMIPP4_CORE_API
 	std::shared_ptr<void> touch_erased(
+		std::type_index type,
 		const operation_command_cache_key &key
 	);
 
 	XMIPP4_CORE_API
 	void store_erased(
+		std::type_index type,
 		std::unique_ptr<operation_command_cache_key> key,
 		std::shared_ptr<void> value
 	);

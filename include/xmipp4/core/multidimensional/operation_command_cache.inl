@@ -29,14 +29,10 @@ typed_operation_command_cache_key<K>::equals(
 	const operation_command_cache_key &other
 ) const noexcept
 {
-	const auto *typed =
-		dynamic_cast<const typed_operation_command_cache_key*>(&other);
-	if (!typed)
-	{
-		return false;
-	}
-
-	return typed->m_key == m_key;
+	// Precondition: the cache guarantees that @p other has the same
+	// dynamic type as *this, so a static_cast is sound.
+	return static_cast<const typed_operation_command_cache_key&>(other)
+		.m_key == m_key;
 }
 
 template <typename K>
@@ -51,7 +47,9 @@ inline std::shared_ptr<V>
 operation_command_cache::touch(const K &key)
 {
 	const typed_operation_command_cache_key<K> wrapped(key);
-	return std::static_pointer_cast<V>(touch_erased(wrapped));
+	return std::static_pointer_cast<V>(
+		touch_erased(typeid(K), wrapped)
+	);
 }
 
 template <typename K, typename V>
@@ -60,6 +58,7 @@ operation_command_cache::store(K &&key, std::shared_ptr<V> value)
 {
 	using key_type = typename std::decay<K>::type;
 	store_erased(
+		typeid(key_type),
 		std::make_unique<typed_operation_command_cache_key<key_type>>(
 			std::forward<K>(key)
 		),

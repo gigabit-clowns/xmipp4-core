@@ -29,30 +29,42 @@ public:
 		return m_capacity;
 	}
 
-	std::shared_ptr<void> touch(const operation_command_cache_key &key)
+	std::shared_ptr<void> touch(
+		std::type_index type,
+		const operation_command_cache_key &key
+	)
 	{
-		const auto ite = m_index.find(&key);
-		if (ite == m_index.end())
+		const auto outer_ite = m_outer_index.find(type);
+		if (outer_ite == m_outer_index.end())
 		{
 			return nullptr;
 		}
 
-		promote(ite->second);
-		return ite->second->second;
+		const auto &inner = outer_ite->second;
+		const auto inner_ite = inner.find(&key);
+		if (inner_ite == inner.end())
+		{
+			return nullptr;
+		}
+
+		promote(inner_ite->second);
+		return inner_ite->second->value;
 	}
 
 	void store(
+		std::type_index type,
 		std::unique_ptr<operation_command_cache_key> key,
 		std::shared_ptr<void> value
 	)
 	{
 		XMIPP4_ASSERT(key);
 
-		const auto ite = m_index.find(key.get());
-		if (ite != m_index.end())
+		auto &inner = m_outer_index[type];
+		const auto inner_ite = inner.find(key.get());
+		if (inner_ite != inner.end())
 		{
-			ite->second->second = std::move(value);
-			promote(ite->second);
+			inner_ite->second->value = std::move(value);
+			promote(inner_ite->second);
 			return;
 		}
 
@@ -61,17 +73,19 @@ public:
 			evict_oldest();
 		}
 
-		m_entries.push_front(entry_type(std::move(key), std::move(value)));
-		m_index.emplace(
-			m_entries.front().first.get(), m_entries.begin()
+		m_entries.push_front(
+			entry_type{type, std::move(key), std::move(value)}
 		);
+		inner.emplace(m_entries.front().key.get(), m_entries.begin());
 	}
 
 private:
-	using entry_type = std::pair<
-		std::unique_ptr<operation_command_cache_key>,
-		std::shared_ptr<void>
-	>;
+	struct entry_type
+	{
+		std::type_index type;
+		std::unique_ptr<operation_command_cache_key> key;
+		std::shared_ptr<void> value;
+	};
 
 	struct key_ptr_hash_type
 	{
@@ -98,29 +112,40 @@ private:
 	};
 
 	using entry_list_type = std::list<entry_type>;
-	using index_map_type = std::unordered_map<
+	using inner_index_type = std::unordered_map<
 		const operation_command_cache_key*,
 		entry_list_type::iterator,
 		key_ptr_hash_type,
 		key_ptr_equal_type
 	>;
+	using outer_index_type = std::unordered_map<
+		std::type_index,
+		inner_index_type
+	>;
 
 	std::size_t m_capacity;
 	entry_list_type m_entries;
-	index_map_type m_index;
+	outer_index_type m_outer_index;
 
 	void evict_oldest()
 	{
 		XMIPP4_ASSERT(!m_entries.empty());
 		const auto victim = std::prev(m_entries.end());
-		m_index.erase(victim->first.get());
+		const auto outer_ite = m_outer_index.find(victim->type);
+		XMIPP4_ASSERT(outer_ite != m_outer_index.end());
+		outer_ite->second.erase(victim->key.get());
 		m_entries.erase(victim);
+
+		if (outer_ite->second.empty())
+		{
+			m_outer_index.erase(outer_ite);
+		}
 	}
 
 	void promote(entry_list_type::iterator ite)
 	{
 		m_entries.splice(m_entries.begin(), m_entries, ite);
-	};
+	}
 };
 
 operation_command_cache::operation_command_cache(
@@ -140,18 +165,20 @@ std::size_t operation_command_cache::get_capacity() const noexcept
 
 std::shared_ptr<void>
 operation_command_cache::touch_erased(
+	std::type_index type,
 	const operation_command_cache_key &key
 )
 {
-	return m_implementation->touch(key);
+	return m_implementation->touch(type, key);
 }
 
 void operation_command_cache::store_erased(
+	std::type_index type,
 	std::unique_ptr<operation_command_cache_key> key,
 	std::shared_ptr<void> value
 )
 {
-	m_implementation->store(std::move(key), std::move(value));
+	m_implementation->store(type, std::move(key), std::move(value));
 }
 
 } // namespace multidimensional

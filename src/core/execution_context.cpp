@@ -7,6 +7,8 @@
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/hardware/memory_resource.hpp>
+#include <xmipp4/core/hardware/memory_resource_kind.hpp>
 #include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
@@ -25,9 +27,7 @@ public:
 		: m_device_properties()
 		, m_device(create_device(catalog, index, m_device_properties))
 		, m_active_queue(m_device->create_command_queue())
-		, m_operation_command_manager(
-			catalog.get_service_manager<multidimensional::operation_command_manager>()
-		)
+		, m_active_allocator(create_allocator(*m_device))
 	{
 	}
 
@@ -70,18 +70,11 @@ public:
 		return m_active_allocator;
 	}
 
-	const multidimensional::operation_command_manager& 
-	get_operation_command_manager() const noexcept
-	{
-		return m_operation_command_manager;
-	}
-
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	std::shared_ptr<hardware::command_queue> m_active_queue;
 	std::shared_ptr<hardware::memory_allocator> m_active_allocator;
-	std::reference_wrapper<const multidimensional::operation_command_manager> m_operation_command_manager;
 
 	static std::shared_ptr<hardware::device> create_device(
 		service_catalog &catalog, 
@@ -102,6 +95,56 @@ private:
 		auto device = dev_manager.create_device(index);
 		XMIPP4_ASSERT( device );
 		return device;
+	}
+	
+	static int memory_resource_preference(
+		hardware::memory_resource_kind kind
+	) noexcept
+	{
+		switch (kind)
+		{
+		case hardware::memory_resource_kind::device_local: 
+			return 4;
+		case hardware::memory_resource_kind::unified:       
+			return 3;
+		case hardware::memory_resource_kind::managed:
+			return 2;
+		case hardware::memory_resource_kind::device_mapped: 
+			return 1;
+		default:
+			return 0;
+		}
+	}
+
+	static std::shared_ptr<hardware::memory_allocator>
+	create_allocator(const hardware::device &dev)
+	{
+		std::vector<const hardware::memory_resource*> resources;
+		dev.get_memory_resources(resources);
+
+		const hardware::memory_resource *best = nullptr;
+		int best_score = 0;
+		for (const auto *resource : resources)
+		{
+			XMIPP4_ASSERT( resource );
+			const int score =
+				memory_resource_preference(resource->get_kind());
+			if (score > best_score)
+			{
+				best_score = score;
+				best = resource;
+			}
+		}
+
+		if (!best)
+		{
+			throw std::invalid_argument(
+				"Selected device does not expose any device-accessible "
+				"memory resource"
+			);
+		}
+
+		return best->create_allocator();
 	}
 };
 
@@ -163,12 +206,6 @@ const std::shared_ptr<hardware::memory_allocator>&
 execution_context::get_active_allocator() const
 {
 	return get_implementation().get_active_allocator();
-}
-
-const multidimensional::operation_command_manager&
-execution_context::get_operation_command_manager() const
-{
-	return get_implementation().get_operation_command_manager();
 }
 
 execution_context::implementation& execution_context::get_implementation()

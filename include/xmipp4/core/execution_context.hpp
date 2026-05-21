@@ -119,15 +119,6 @@ public:
 	const std::shared_ptr<hardware::memory_allocator>& 
 	get_active_allocator() const;
 
-	/**
-	 * @brief Get a reference to the operation command manager.
-	 *
-	 * @return const operation_command_manager& The operation command manager.
-	 */
-	XMIPP4_CORE_API
-	const multidimensional::operation_command_manager& 
-	get_operation_command_manager() const;
-
 private:
 	class implementation;
 	std::unique_ptr<implementation> m_implementation;

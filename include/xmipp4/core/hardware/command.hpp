@@ -35,32 +35,43 @@ public:
 	command& operator=(command &&other) = delete;
 
 	/**
-	 * @brief Get the minimum scratch buffer size required to submit this
-	 * command.
+	 * @brief Query the scratch buffer requirement for submitting this command.
 	 *
-	 * Reports the amount of transient device-accessible memory, in bytes,
-	 * that the command needs in order to execute. The caller must provide a
-	 * scratch buffer of at least this size to
-	 * @ref command_queue::submit; backends use it as workspace and may write
-	 * to or read from it arbitrarily for the duration of the command. Its
-	 * contents are undefined on entry and on completion, and the buffer may
-	 * be reused across unrelated operations as long as it satisfies the size
-	 * requirement.
+	 * Reports the transient device-accessible workspace that the command
+	 * needs in order to execute. The caller must provide a scratch buffer
+	 * satisfying both the size and the alignment reported here when calling
+	 * @ref command_queue::submit; backends use the buffer as workspace and
+	 * may write to or read from it arbitrarily for the duration of the
+	 * command. Its contents are undefined on entry and on completion, and
+	 * the buffer may be reused across unrelated operations as long as it
+	 * satisfies the size and alignment requirements.
 	 *
-	 * A return value of @c 0 indicates that the command needs no scratch
-	 * memory; in that case the @c scratch argument of
-	 * @ref command_queue::submit may be @c nullptr. The base
-	 * implementation returns @c 0; concrete commands that require workspace
-	 * must override this method.
+	 * When this method returns @c false, the command requires no scratch
+	 * memory: @p size and @p alignment are left untouched and the @c scratch
+	 * argument of @ref command_queue::submit may be @c nullptr. When it
+	 * returns @c true, @p size is set to the minimum required size in bytes
+	 * (always non-zero) and @p alignment is set to the minimum required
+	 * alignment in bytes (always a power of two, at least @c 1). The base
+	 * implementation returns @c false; concrete commands that require
+	 * workspace must override this method.
 	 *
-	 * The value reported here is a property of the command instance and must
-	 * not change over its lifetime, so callers can query it once and size
-	 * their scratch buffers accordingly before submission.
+	 * The values reported here are a property of the command instance and
+	 * must not change over its lifetime, so callers can query them once and
+	 * size and align their scratch buffers accordingly before submission.
 	 *
-	 * @return Minimum size, in bytes, of the scratch buffer that must be
-	 * supplied at submission time, or @c 0 if none is required.
+	 * @param[out] size Minimum scratch size in bytes. Written only when the 
+	 * function returns @c true.
+	 * @param[out] alignment Minimum scratch alignment in bytes, a power of
+	 * two. Written only when the function returns @c true.
+	 * @return @c true if the command requires a scratch buffer (and
+	 * @p size / @p alignment have been written); @c false if no scratch is
+	 * required.
 	 */
-	virtual std::size_t get_required_scratch_size() const noexcept;
+	virtual 
+	bool get_scratch_requirement(
+		std::size_t &size, 
+		std::size_t &alignment
+	) const noexcept;
 };
 
 } // namespace hardware

@@ -51,24 +51,26 @@ public:
 	 * the same device as this queue.
 	 *
 	 * @p scratch supplies transient workspace that the command may use
-	 * during execution. Its required size is queried from
-	 * @ref command::get_required_scratch_size: when that value is @c 0,
-	 * @p scratch may be @c nullptr (or any buffer); when it is non-zero,
-	 * @p scratch must be non-null and its @ref buffer::get_size must be
-	 * greater than or equal to the reported value. The buffer must remain
-	 * valid until the command has completed; the queue holds a reference
-	 * for that duration. Its contents are undefined on entry and on
-	 * completion, so callers must not store data in it across submissions
-	 * and may reuse the same scratch buffer for multiple commands as long
-	 * as their executions do not overlap. The scratch buffer must be
-	 * allocated on, and accessible to, the same device as this queue.
+	 * during execution. Its size and alignment requirements are queried
+	 * from @ref command::get_scratch_requirement: when that query returns
+	 * @c false, @p scratch may be @c nullptr (or any buffer); when it
+	 * returns @c true, @p scratch must be non-null, its @ref buffer::get_size
+	 * must be greater than or equal to the reported size, and its base
+	 * address must be aligned to at least the reported alignment. The buffer
+	 * must remain valid until the command has completed; the queue holds a
+	 * reference for that duration. Its contents are undefined on entry and
+	 * on completion, so callers must not store data in it across submissions
+	 * and may reuse the same scratch buffer for multiple commands as long as
+	 * their executions do not overlap. The scratch buffer must be allocated
+	 * on, and accessible to, the same device as this queue.
 	 *
 	 * @param command The command to execute.
 	 * @param output_operands Operands the command may write to.
 	 * @param input_operands  Operands the command may only read from.
 	 * @param scratch Transient workspace for the command. May be
-	 * @c nullptr only when @ref command::get_required_scratch_size returns 
-	 * @c 0; otherwise must be a buffer of at least that many bytes.
+	 * @c nullptr only when @ref command::get_scratch_requirement returns
+	 * @c false; otherwise must be a buffer satisfying the reported size and
+	 * alignment.
 	 */
 	virtual void submit(
 		const command &command,

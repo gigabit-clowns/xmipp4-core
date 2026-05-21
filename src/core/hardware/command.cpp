@@ -10,9 +10,12 @@ namespace hardware
 command::command() noexcept = default;
 command::~command() = default;
 
-std::size_t command::get_required_scratch_size() const noexcept
+bool command::get_scratch_requirement(
+	std::size_t& /*size*/,
+	std::size_t& /*alignment*/
+) const noexcept
 {
-	return 0UL;
+	return false;
 }
 
 } // namespace hardware

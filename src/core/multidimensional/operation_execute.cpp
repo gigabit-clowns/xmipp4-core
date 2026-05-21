@@ -13,6 +13,8 @@
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
+#include <xmipp4/core/hardware/command.hpp>
 
 #include <core/logger.hpp>
 #include <core/config.hpp>
@@ -53,7 +55,7 @@ allocate_output_operand_storage(
 	const array_descriptor &descriptor,
 	hardware::memory_allocator &allocator,
 	std::size_t base_alignment,
-	hardware::command_queue *queue
+	hardware::command_queue &queue
 )
 {
 	const auto size = compute_storage_requirement(descriptor);
@@ -61,7 +63,7 @@ allocate_output_operand_storage(
 		base_alignment,
 		binary::bit_ceil(size)
 	);
-	auto storage = allocator.allocate(size, alignment, queue);
+	auto storage = allocator.allocate(size, alignment, &queue);
 	operand = array(storage, descriptor);
 	return storage;
 }
@@ -97,7 +99,9 @@ resolve_output_storage(
 	span<array> operands,
 	span<const array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/,
-	const execution_context &context
+	hardware::memory_allocator &allocator,
+	hardware::command_queue &queue,
+	const hardware::device_properties &properties
 )
 {
 	using result_type = boost::container::small_vector<
@@ -110,10 +114,7 @@ resolve_output_storage(
 
 	result_type result(operands.size());
 
-	const auto &allocator = context.get_active_allocator();
-	auto *queue = context.get_active_queue().get();
-	const auto &properties = context.get_device_properties();
-    const auto max_alignment = allocator->get_max_alignment();
+    const auto max_alignment = allocator.get_max_alignment();
     const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
 
@@ -133,7 +134,7 @@ resolve_output_storage(
 			storage = allocate_output_operand_storage(
 				operands[i],
 				descriptors[i],
-				*allocator,
+				allocator,
 				base_alignment,
 				queue
 			);
@@ -197,6 +198,24 @@ create_signatures(
 	return result;
 }
 
+std::shared_ptr<hardware::buffer> allocate_scratch(
+	const hardware::command &cmd,
+	hardware::memory_allocator &allocator,
+	hardware::command_queue &queue
+)
+{
+	std::shared_ptr<hardware::buffer> result;
+
+	std::size_t size;
+	std::size_t alignment;
+	if (cmd.get_scratch_requirement(size, alignment))
+	{
+		result = allocator.allocate(size, alignment, &queue);
+	}
+
+	return result;
+}
+
 } // anonymous namespace
 
 
@@ -215,6 +234,9 @@ void execute(
 
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
+	const auto& queue = context.get_active_queue();
+	const auto& allocator = context.get_active_allocator();
+	const auto& properties = context.get_device_properties();
 
 	auto output_descriptors = 
 		extract_descriptors(output_operands, small_output_size_tag());
@@ -230,7 +252,9 @@ void execute(
 		output_operands, 
 		make_span(output_descriptors.data(), n_outputs),
 		small_output_size_tag(),
-		context
+		*allocator,
+		*queue,
+		properties
 	);
 	auto input_storages = resolve_input_storage(
 		input_operands, 
@@ -246,19 +270,19 @@ void execute(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	const auto &operation_command_manager = context.get_operation_command_manager();
-	auto command = operation_command_manager.build(
+	operation_command_manager command_manager; // TODO obtain
+	const auto command = command_manager.build(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs)
 	);
 
-	const auto& queue = context.get_active_queue();
-
+	const auto scratch = allocate_scratch(*command, *allocator, *queue);
 	queue->submit(
 		*command,
 		make_span(output_storages.data(), n_outputs),
-		make_span(input_storages.data(), n_inputs)
+		make_span(input_storages.data(), n_inputs),
+		scratch
 	);
 }
 

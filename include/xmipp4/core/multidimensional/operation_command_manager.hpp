@@ -14,7 +14,7 @@ namespace xmipp4
 namespace hardware
 {
 
-class device;
+class command;
 
 } // namespace hardware
 

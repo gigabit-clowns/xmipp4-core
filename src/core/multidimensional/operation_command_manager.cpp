@@ -6,7 +6,8 @@
 #include <xmipp4/core/multidimensional/operation_command_builder.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
-#include "../find_most_suitable_backend.hpp"
+
+#include <core/find_most_suitable_backend.hpp>
 
 #include <vector>
 #include <unordered_map>

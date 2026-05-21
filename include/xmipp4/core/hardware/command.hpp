@@ -42,9 +42,7 @@ public:
 	 * satisfying both the size and the alignment reported here when calling
 	 * @ref command_queue::submit; backends use the buffer as workspace and
 	 * may write to or read from it arbitrarily for the duration of the
-	 * command. Its contents are undefined on entry and on completion, and
-	 * the buffer may be reused across unrelated operations as long as it
-	 * satisfies the size and alignment requirements.
+	 * command. Its contents are undefined on entry and on completion.
 	 *
 	 * When this method returns @c false, the command requires no scratch
 	 * memory: @p size and @p alignment are left untouched and the @c scratch

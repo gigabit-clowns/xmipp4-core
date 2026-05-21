@@ -69,7 +69,8 @@ public:
 	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures
+		span<const array_signature> input_signatures,
+		operation_command_cache *cache
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
@@ -86,7 +87,9 @@ public:
 			);
 		}
 
-		return builder->build(operation, output_signatures, input_signatures);
+		return builder->build(
+			operation, output_signatures, input_signatures, cache
+		);
 	}
 
 private:
@@ -117,17 +120,19 @@ bool operation_command_manager::register_builder(
 	return create_if_null().register_builder(std::move(builder));
 }
 
-std::shared_ptr<hardware::command> 
+std::shared_ptr<hardware::command>
 operation_command_manager::build(
 	const operation &operation,
 	span<const array_signature> output_signatures,
-	span<const array_signature> input_signatures
+	span<const array_signature> input_signatures,
+	operation_command_cache *cache
 ) const
 {
 	return get_implementation().build(
 		operation,
 		output_signatures,
-		input_signatures
+		input_signatures,
+		cache
 	);
 }
 

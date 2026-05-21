@@ -24,6 +24,7 @@ namespace multidimensional
 
 class operation;
 class array_signature;
+class operation_command_cache;
 
 /**
  * @brief Abstract representation of a factory class for operation commands
@@ -83,14 +84,19 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the
 	 * operation.
-	 * @return std::shared_ptr<hardware::command> The executable command suited 
+	 * @param cache Optional cache for backend-private resources. When not
+	 * null, the builder may consult and update it to reuse expensive
+	 * resources (FFT plans, compiled kernels, workspaces, ...) across
+	 * builds. Implementations are free to ignore it.
+	 * @return std::shared_ptr<hardware::command> The executable command suited
 	 * for the requested operation and signature.
 	 */
-	virtual 
+	virtual
 	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures
+		span<const array_signature> input_signatures,
+		operation_command_cache *cache
 	) const = 0;
 };
 

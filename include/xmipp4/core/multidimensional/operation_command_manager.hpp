@@ -24,6 +24,7 @@ namespace multidimensional
 class operation;
 class array_signature;
 class operation_command_builder;
+class operation_command_cache;
 
 /**
  * @brief Centralizes all known instances of operation command builders.
@@ -71,14 +72,17 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the
 	 * operation.
-	 * @return std::shared_ptr<hardware::command> The executable command suited 
+	 * @param cache Optional cache for backend-private resources, forwarded
+	 * to the selected builder.
+	 * @return std::shared_ptr<hardware::command> The executable command suited
 	 * for the requested operation and signature.
 	 */
 	XMIPP4_CORE_API
 	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures
+		span<const array_signature> input_signatures,
+		operation_command_cache *cache = nullptr
 	) const;
 
 private:

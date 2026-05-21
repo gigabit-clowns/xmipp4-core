@@ -15,32 +15,33 @@ namespace xmipp4
 namespace hardware
 {
 
-class device;
+class command;
 
 } // namespace hardware
 
 namespace multidimensional
 {
 
-class kernel;
 class operation;
 class array_signature;
 
 /**
- * @brief Abstract representation of a factory class for kernels
+ * @brief Abstract representation of a factory class for operation commands
  */
-class kernel_builder
+class operation_command_builder
 {
 public:
 	XMIPP4_CORE_API
-	kernel_builder() noexcept;
-	kernel_builder(const kernel_builder &other) = default;
-	kernel_builder(kernel_builder &&other) = default;
+	operation_command_builder() noexcept;
+	operation_command_builder(const operation_command_builder &other) = default;
+	operation_command_builder(operation_command_builder &&other) = default;
 	XMIPP4_CORE_API
-	virtual ~kernel_builder();
+	virtual ~operation_command_builder();
 
-	kernel_builder& operator=(const kernel_builder &other) = default;
-	kernel_builder& operator=(kernel_builder &&other) = default;
+	operation_command_builder& 
+	operator=(const operation_command_builder &other) = default;
+	operation_command_builder& 
+	operator=(operation_command_builder &&other) = default;
 
 	/**
 	 * @brief Get the operation identifier for which this builder is 
@@ -70,22 +71,23 @@ public:
 	) const = 0;
 
 	/**
-	 * @brief Build an executable kernel for a given launch configuration.
-	 * 
+	 * @brief Build an executable operation command for a given launch 
+	 * configuration.
+	 *
 	 * This method may not be called if get_suitability() returns
 	 * backend_priority::unsupported.
-	 * 
+	 *
 	 * @param operation The operation. Its ID must be equal to the ID returned
 	 * by get_operation_id.
-	 * @param output_signatures The output array signatures involved in the 
+	 * @param output_signatures The output array signatures involved in the
 	 * operation.
-	 * @param input_signatures The output array signatures involved in the 
+	 * @param input_signatures The output array signatures involved in the
 	 * operation.
-	 * @return std::shared_ptr<kernel> The executable kernel suited for the
-	 * requested launch parameters.
+	 * @return std::shared_ptr<hardware::command> The executable command suited 
+	 * for the requested operation and signature.
 	 */
 	virtual 
-	std::shared_ptr<kernel> build(
+	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures

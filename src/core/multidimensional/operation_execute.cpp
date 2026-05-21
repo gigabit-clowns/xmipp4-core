@@ -7,8 +7,8 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/multidimensional/kernel.hpp>
-#include <xmipp4/core/multidimensional/kernel_manager.hpp>
+#include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -197,19 +197,6 @@ create_signatures(
 	return result;
 }
 
-template <typename Ptr>
-void record_queues(
-	span<Ptr> storages,
-	hardware::command_queue &queue
-)
-{		
-	for (const auto &storage : storages)
-	{
-		XMIPP4_ASSERT(storage);
-		storage->get_memory_allocator().record_use(*storage, queue);
-	}
-}
-
 } // anonymous namespace
 
 
@@ -259,8 +246,8 @@ void execute(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	const auto &kernel_manager = context.get_kernel_manager();
-	auto kernel = kernel_manager.build_kernel(
+	const auto &operation_command_manager = context.get_operation_command_manager();
+	auto command = operation_command_manager.build_operation_command(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs)
@@ -268,17 +255,11 @@ void execute(
 
 	const auto& queue = context.get_active_queue();
 
-	kernel->execute(
-		make_span(output_storages.data(), n_outputs), 
-		make_span(input_storages.data(), n_inputs), 
-		queue.get()
+	queue->submit(
+		*command,
+		make_span(output_storages.data(), n_outputs),
+		make_span(input_storages.data(), n_inputs)
 	);
-
-	if (queue)
-	{
-		record_queues(make_span(output_storages.data(), n_outputs), *queue);
-		record_queues(make_span(input_storages.data(), n_inputs), *queue);
-	}
 }
 
 } // namespace multidimensional

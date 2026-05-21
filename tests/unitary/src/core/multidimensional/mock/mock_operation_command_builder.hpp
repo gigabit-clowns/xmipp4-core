@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/operation_command_builder.hpp>
 
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 
@@ -13,8 +13,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class mock_kernel_builder
-	: public kernel_builder
+class mock_operation_command_builder
+	: public operation_command_builder
 {
 public:
 	MAKE_CONST_MOCK0(

@@ -12,13 +12,13 @@
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_factory.hpp>
-#include <xmipp4/core/multidimensional/kernel_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/memory_allocator_manager.hpp>
 
-#include "mock/mock_kernel.hpp"
-#include "mock/mock_kernel_builder.hpp"
+#include "../hardware/mock/mock_command.hpp"
+#include "mock/mock_operation_command_builder.hpp"
 #include "mock/mock_operation.hpp"
 #include "../hardware/mock/mock_buffer_sentinel.hpp"
 #include "../hardware/mock/mock_device.hpp"
@@ -47,7 +47,7 @@ public:
     std::shared_ptr<mock_memory_allocator> device_allocator;
     std::shared_ptr<mock_memory_allocator> host_allocator;
     mock_operation operation;
-    std::shared_ptr<mock_kernel> kernel;
+    std::shared_ptr<hardware::mock_command> kernel;
     std::unique_ptr<execution_context> context;
     std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
 
@@ -56,7 +56,7 @@ public:
 		, device(std::make_shared<mock_device>())
 		, device_allocator(std::make_shared<mock_memory_allocator>())
 		, host_allocator(std::make_shared<mock_memory_allocator>())
-		, kernel(std::make_shared<mock_kernel>())
+		, kernel(std::make_shared<hardware::mock_command>())
 	{
 	}
 
@@ -161,10 +161,10 @@ public:
 		);
     }
 
-    void register_kernel_builder(std::unique_ptr<mock_kernel_builder> builder) 
+    void register_operation_command_builder(std::unique_ptr<mock_operation_command_builder> builder)
 	{
         REQUIRE_CALL(*builder, get_operation_id()).LR_RETURN(operation.get_id());
-        catalog.get_service_manager<kernel_manager>().register_kernel(std::move(builder));
+        catalog.get_service_manager<operation_command_manager>().register_operation_command(std::move(builder));
     }
 
     void expect_queue_records(const std::vector<std::shared_ptr<buffer>>& buffers, device_queue& queue) {
@@ -215,7 +215,7 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
     }
 
 
-    auto kernel_builder = std::make_unique<mock_kernel_builder>();
+    auto kernel_builder = std::make_unique<mock_operation_command_builder>();
     const array_signature signature(descriptor, &device_resource);
 
     REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
@@ -230,7 +230,7 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
         .WITH(_3.size() == 3 && _3[0] == signature && _3[1] == signature && _3[2] == signature)
         .LR_RETURN(kernel);
 
-    register_kernel_builder(std::move(kernel_builder));
+    register_operation_command_builder(std::move(kernel_builder));
 
     REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
         .WITH(_1.size() == 2)
@@ -239,9 +239,9 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly c
         .SIDE_EFFECT(_1[0] = descriptor)
         .SIDE_EFFECT(_1[1] = descriptor);
 
-    REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, queue.get()))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3 && _2[0] == input_buffers[0] && _2[1] == input_buffers[1] && _2[2] == input_buffers[2]);
+    REQUIRE_CALL(*queue, submit(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+        .WITH(_2.size() == 2)
+        .WITH(_3.size() == 3 && _3[0] == input_buffers[0] && _3[1] == input_buffers[1] && _3[2] == input_buffers[2]);
 
     if(queue) 
 	{
@@ -270,7 +270,7 @@ TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-
     const auto output_buffers = create_device_buffers(2, descriptor);
     auto output_arrays = create_device_arrays<array>(output_buffers, descriptor);
 
-    register_kernel_builder(std::make_unique<mock_kernel_builder>());
+    register_operation_command_builder(std::make_unique<mock_operation_command_builder>());
 
     REQUIRE_CALL(operation, sanitize_operands(trompeloeil::_, trompeloeil::_))
         .WITH(_1.size() == 2 && _1[0] == descriptor && _1[1] == descriptor)

@@ -25,7 +25,7 @@ class memory_allocator;
 namespace multidimensional
 {
 
-class kernel_manager;
+class operation_command_manager;
 
 } // namespace multidimensional
 
@@ -120,12 +120,13 @@ public:
 	get_active_allocator() const;
 
 	/**
-	 * @brief Get a reference to the kernel manager.
-	 * 
-	 * @return const kernel_manager& The kernel manager. 
+	 * @brief Get a reference to the operation command manager.
+	 *
+	 * @return const operation_command_manager& The operation command manager.
 	 */
 	XMIPP4_CORE_API
-	const multidimensional::kernel_manager& get_kernel_manager() const;
+	const multidimensional::operation_command_manager& 
+	get_operation_command_manager() const;
 
 private:
 	class implementation;

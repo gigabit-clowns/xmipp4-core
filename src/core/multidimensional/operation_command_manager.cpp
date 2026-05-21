@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/kernel_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-#include <xmipp4/core/multidimensional/kernel_builder.hpp>
+#include <xmipp4/core/multidimensional/operation_command_builder.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 #include "../find_most_suitable_backend.hpp"
@@ -16,10 +16,12 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class kernel_manager::implementation
+class operation_command_manager::implementation
 {
 public:
-	bool register_kernel(std::unique_ptr<kernel_builder> builder)
+	bool register_operation_command(
+		std::unique_ptr<operation_command_builder> builder
+	)
 	{
 		XMIPP4_ASSERT(builder);
 		const auto &op_id = builder->get_operation_id();
@@ -27,7 +29,7 @@ public:
 		return true;
 	}
 
-	kernel_builder* get_most_suitable_builder(
+	operation_command_builder* get_most_suitable_builder(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures
@@ -63,14 +65,14 @@ public:
 		return ite2->get();
 	}
 
-	std::shared_ptr<kernel> build_kernel(
+	std::shared_ptr<hardware::command> build_operation_command(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
-			operation, 
+			operation,
 			output_signatures,
 			input_signatures
 		);
@@ -78,8 +80,8 @@ public:
 		if (!builder)
 		{
 			throw invalid_operation_error(
-				"Could not find a suitable kernel builder for the requested "
-				"operation"
+				"Could not find a suitable operation command builder for the "
+				"requested operation"
 			);
 		}
 
@@ -89,43 +91,47 @@ public:
 private:
 	std::unordered_map<
 		operation_id, 
-		std::vector<std::unique_ptr<kernel_builder>>
+		std::vector<std::unique_ptr<operation_command_builder>>
 	> m_builders;
 
 };
 
-kernel_manager::kernel_manager() noexcept = default;
-kernel_manager::~kernel_manager() = default;
+operation_command_manager::operation_command_manager() noexcept = default;
+operation_command_manager::~operation_command_manager() = default;
 
-void kernel_manager::register_builtin_backends()
+void operation_command_manager::register_builtin_backends()
 {
 	// Add operations here.
 }
 
-bool kernel_manager::register_kernel(std::unique_ptr<kernel_builder> builder)
+bool operation_command_manager::register_operation_command(
+	std::unique_ptr<operation_command_builder> builder
+)
 {
 	if (!builder)
 	{
 		return false;
 	}
 
-	return create_if_null().register_kernel(std::move(builder));
+	return create_if_null().register_operation_command(std::move(builder));
 }
 
-std::shared_ptr<kernel> kernel_manager::build_kernel(
+std::shared_ptr<hardware::command> 
+operation_command_manager::build_operation_command(
 	const operation &operation,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures
 ) const
 {
-	return get_implementation().build_kernel(
-		operation, 
-		output_signatures, 
+	return get_implementation().build_operation_command(
+		operation,
+		output_signatures,
 		input_signatures
 	);
 }
 
-kernel_manager::implementation& kernel_manager::create_if_null()
+operation_command_manager::implementation& 
+operation_command_manager::create_if_null()
 {
 	if (!m_implementation)
 	{
@@ -135,8 +141,8 @@ kernel_manager::implementation& kernel_manager::create_if_null()
 	return *m_implementation;
 }
 
-const kernel_manager::implementation& 
-kernel_manager::get_implementation() const noexcept
+const operation_command_manager::implementation& 
+operation_command_manager::get_implementation() const noexcept
 {
 	static const implementation empty_implementation;
 	return m_implementation ? *m_implementation : empty_implementation;

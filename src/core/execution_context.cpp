@@ -7,7 +7,7 @@
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/multidimensional/kernel_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include <stdexcept>
@@ -25,8 +25,8 @@ public:
 		: m_device_properties()
 		, m_device(create_device(catalog, index, m_device_properties))
 		, m_active_queue(m_device->create_command_queue())
-		, m_kernel_manager(
-			catalog.get_service_manager<multidimensional::kernel_manager>()
+		, m_operation_command_manager(
+			catalog.get_service_manager<multidimensional::operation_command_manager>()
 		)
 	{
 	}
@@ -70,9 +70,10 @@ public:
 		return m_active_allocator;
 	}
 
-	const multidimensional::kernel_manager& get_kernel_manager() const noexcept
+	const multidimensional::operation_command_manager& 
+	get_operation_command_manager() const noexcept
 	{
-		return m_kernel_manager;
+		return m_operation_command_manager;
 	}
 
 private:
@@ -80,7 +81,7 @@ private:
 	std::shared_ptr<hardware::device> m_device;
 	std::shared_ptr<hardware::command_queue> m_active_queue;
 	std::shared_ptr<hardware::memory_allocator> m_active_allocator;
-	std::reference_wrapper<const multidimensional::kernel_manager> m_kernel_manager;
+	std::reference_wrapper<const multidimensional::operation_command_manager> m_operation_command_manager;
 
 	static std::shared_ptr<hardware::device> create_device(
 		service_catalog &catalog, 
@@ -164,10 +165,10 @@ execution_context::get_active_allocator() const
 	return get_implementation().get_active_allocator();
 }
 
-const multidimensional::kernel_manager& 
-execution_context::get_kernel_manager() const
+const multidimensional::operation_command_manager&
+execution_context::get_operation_command_manager() const
 {
-	return get_implementation().get_kernel_manager();
+	return get_implementation().get_operation_command_manager();
 }
 
 execution_context::implementation& execution_context::get_implementation()

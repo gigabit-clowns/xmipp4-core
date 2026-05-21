@@ -20,7 +20,7 @@ namespace multidimensional
 class operation_command_manager::implementation
 {
 public:
-	bool register_operation_command(
+	bool register_builder(
 		std::unique_ptr<operation_command_builder> builder
 	)
 	{
@@ -66,7 +66,7 @@ public:
 		return ite2->get();
 	}
 
-	std::shared_ptr<hardware::command> build_operation_command(
+	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures
@@ -105,7 +105,7 @@ void operation_command_manager::register_builtin_backends()
 	// Add operations here.
 }
 
-bool operation_command_manager::register_operation_command(
+bool operation_command_manager::register_builder(
 	std::unique_ptr<operation_command_builder> builder
 )
 {
@@ -114,17 +114,17 @@ bool operation_command_manager::register_operation_command(
 		return false;
 	}
 
-	return create_if_null().register_operation_command(std::move(builder));
+	return create_if_null().register_builder(std::move(builder));
 }
 
 std::shared_ptr<hardware::command> 
-operation_command_manager::build_operation_command(
+operation_command_manager::build(
 	const operation &operation,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures
 ) const
 {
-	return get_implementation().build_operation_command(
+	return get_implementation().build(
 		operation,
 		output_signatures,
 		input_signatures

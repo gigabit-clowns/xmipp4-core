@@ -58,7 +58,7 @@ public:
 	 * @return false The operation command builder could not be registered.
 	 */
 	XMIPP4_CORE_API
-	bool register_operation_command(
+	bool register_builder(
 		std::unique_ptr<operation_command_builder> builder
 	);
 
@@ -75,7 +75,7 @@ public:
 	 * for the requested operation and signature.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<hardware::command> build_operation_command(
+	std::shared_ptr<hardware::command> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures

@@ -247,7 +247,7 @@ void execute(
 	);
 
 	const auto &operation_command_manager = context.get_operation_command_manager();
-	auto command = operation_command_manager.build_operation_command(
+	auto command = operation_command_manager.build(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs)

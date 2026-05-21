@@ -164,7 +164,7 @@ public:
     void register_operation_command_builder(std::unique_ptr<mock_operation_command_builder> builder)
 	{
         REQUIRE_CALL(*builder, get_operation_id()).LR_RETURN(operation.get_id());
-        catalog.get_service_manager<operation_command_manager>().register_operation_command(std::move(builder));
+        catalog.get_service_manager<operation_command_manager>().register_builder(std::move(builder));
     }
 
     void expect_queue_records(const std::vector<std::shared_ptr<buffer>>& buffers, device_queue& queue) {

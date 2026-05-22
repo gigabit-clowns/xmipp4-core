@@ -3,43 +3,38 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/core/multidimensional/operation_command_cache.hpp>
+#include <xmipp4/core/multidimensional/typed_operation_command_cache_key.hpp>
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
-TEST_CASE(
-	"typed_operation_command_cache_key forwards to std::hash",
-	"[operation_command_cache]"
-)
+namespace
 {
-	const typed_operation_command_cache_key<int> key(42);
-	CHECK(key.hash() == std::hash<int>{}(42));
+
+using int_key = typed_operation_command_cache_key<int>;
+using long_key = typed_operation_command_cache_key<long>;
+using string_key = typed_operation_command_cache_key<std::string>;
+
+std::unique_ptr<int_key> make_int_key(int v)
+{
+	return std::make_unique<int_key>(v);
 }
 
-TEST_CASE(
-	"typed_operation_command_cache_key exposes the wrapped value",
-	"[operation_command_cache]"
-)
+std::unique_ptr<long_key> make_long_key(long v)
 {
-	const typed_operation_command_cache_key<std::string> key("plan-1024");
-	CHECK(key.get_key() == "plan-1024");
+	return std::make_unique<long_key>(v);
 }
 
-TEST_CASE(
-	"typed_operation_command_cache_key equates same-typed keys by value",
-	"[operation_command_cache]"
-)
+std::unique_ptr<string_key> make_string_key(std::string v)
 {
-	const typed_operation_command_cache_key<int> a(7);
-	const typed_operation_command_cache_key<int> b(7);
-	const typed_operation_command_cache_key<int> c(8);
-
-	CHECK(a.equals(b));
-	CHECK_FALSE(a.equals(c));
+	return std::make_unique<string_key>(std::move(v));
 }
+
+} // namespace
 
 TEST_CASE(
 	"operation_command_cache reports the capacity it was built with",
@@ -56,7 +51,8 @@ TEST_CASE(
 )
 {
 	operation_command_cache cache(4);
-	CHECK(cache.touch<int>(42) == nullptr);
+	const int_key probe(42);
+	CHECK(cache.touch(probe) == nullptr);
 }
 
 TEST_CASE(
@@ -67,9 +63,10 @@ TEST_CASE(
 	operation_command_cache cache(4);
 	const auto value = std::make_shared<int>(123);
 
-	cache.store(42, value);
+	cache.store(make_int_key(42), value);
 
-	CHECK(cache.touch<int>(42) == value);
+	const int_key probe(42);
+	CHECK(cache.touch(probe) == value);
 }
 
 TEST_CASE(
@@ -82,10 +79,11 @@ TEST_CASE(
 	const auto first = std::make_shared<int>(1);
 	const auto second = std::make_shared<int>(2);
 
-	cache.store(42, first);
-	cache.store(42, second);
+	cache.store(make_int_key(42), first);
+	cache.store(make_int_key(42), second);
 
-	CHECK(cache.touch<int>(42) == second);
+	const int_key probe(42);
+	CHECK(cache.touch(probe) == second);
 }
 
 TEST_CASE(
@@ -99,11 +97,13 @@ TEST_CASE(
 	const auto value_long = std::make_shared<int>(2);
 
 	// Same numeric value, different key types.
-	cache.store(int{42}, value_int);
-	cache.store(long{42}, value_long);
+	cache.store(make_int_key(42), value_int);
+	cache.store(make_long_key(42), value_long);
 
-	CHECK(cache.touch<int>(int{42}) == value_int);
-	CHECK(cache.touch<int>(long{42}) == value_long);
+	const int_key int_probe(42);
+	const long_key long_probe(42);
+	CHECK(cache.touch(int_probe) == value_int);
+	CHECK(cache.touch(long_probe) == value_long);
 }
 
 TEST_CASE(
@@ -117,13 +117,16 @@ TEST_CASE(
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
 
-	cache.store(1, v1);
-	cache.store(2, v2);
-	cache.store(3, v3);
+	cache.store(make_int_key(1), v1);
+	cache.store(make_int_key(2), v2);
+	cache.store(make_int_key(3), v3);
 
-	CHECK(cache.touch<int>(1) == nullptr);
-	CHECK(cache.touch<int>(2) == v2);
-	CHECK(cache.touch<int>(3) == v3);
+	const int_key probe1(1);
+	const int_key probe2(2);
+	const int_key probe3(3);
+	CHECK(cache.touch(probe1) == nullptr);
+	CHECK(cache.touch(probe2) == v2);
+	CHECK(cache.touch(probe3) == v3);
 }
 
 TEST_CASE(
@@ -136,14 +139,19 @@ TEST_CASE(
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
 
-	cache.store(1, v1);
-	cache.store(2, v2);
-	REQUIRE(cache.touch<int>(1) == v1); // Touch promotes key 1.
-	cache.store(3, v3);                 // Should evict key 2, not key 1.
+	cache.store(make_int_key(1), v1);
+	cache.store(make_int_key(2), v2);
 
-	CHECK(cache.touch<int>(1) == v1);
-	CHECK(cache.touch<int>(2) == nullptr);
-	CHECK(cache.touch<int>(3) == v3);
+	const int_key probe1(1);
+	REQUIRE(cache.touch(probe1) == v1); // Touch promotes key 1.
+
+	cache.store(make_int_key(3), v3);   // Should evict key 2, not key 1.
+
+	const int_key probe2(2);
+	const int_key probe3(3);
+	CHECK(cache.touch(probe1) == v1);
+	CHECK(cache.touch(probe2) == nullptr);
+	CHECK(cache.touch(probe3) == v3);
 }
 
 TEST_CASE(
@@ -156,11 +164,41 @@ TEST_CASE(
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
 
-	cache.store(int{1}, v1);
-	cache.store(long{2}, v2);
-	cache.store(std::string("three"), v3);
+	cache.store(make_int_key(1), v1);
+	cache.store(make_long_key(2), v2);
+	cache.store(make_string_key("three"), v3);
 
-	CHECK(cache.touch<int>(int{1}) == nullptr);
-	CHECK(cache.touch<int>(long{2}) == v2);
-	CHECK(cache.touch<int>(std::string("three")) == v3);
+	const int_key int_probe(1);
+	const long_key long_probe(2);
+	const string_key string_probe("three");
+	CHECK(cache.touch(int_probe) == nullptr);
+	CHECK(cache.touch(long_probe) == v2);
+	CHECK(cache.touch(string_probe) == v3);
+}
+
+TEST_CASE(
+	"operation_command_cache::store throws when given a null key",
+	"[operation_command_cache]"
+)
+{
+	operation_command_cache cache(4);
+	const auto value = std::make_shared<int>(1);
+
+	REQUIRE_THROWS_AS(
+		cache.store(nullptr, value),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"operation_command_cache::store throws when given a null value",
+	"[operation_command_cache]"
+)
+{
+	operation_command_cache cache(4);
+
+	REQUIRE_THROWS_AS(
+		cache.store(make_int_key(1), nullptr),
+		std::invalid_argument
+	);
 }

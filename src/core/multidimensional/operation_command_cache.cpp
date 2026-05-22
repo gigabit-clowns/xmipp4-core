@@ -3,8 +3,10 @@
 #include <xmipp4/core/multidimensional/operation_command_cache.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
+#include <core/logger.hpp>
 
 #include <list>
+#include <stdexcept>
 #include <unordered_map>
 #include <utility>
 
@@ -29,11 +31,9 @@ public:
 		return m_capacity;
 	}
 
-	std::shared_ptr<void> touch(
-		std::type_index type,
-		const operation_command_cache_key &key
-	)
+	std::shared_ptr<void> touch(const operation_command_cache_key &key)
 	{
+		const std::type_index type = typeid(key);
 		const auto outer_ite = m_outer_index.find(type);
 		if (outer_ite == m_outer_index.end())
 		{
@@ -52,13 +52,14 @@ public:
 	}
 
 	void store(
-		std::type_index type,
-		std::unique_ptr<operation_command_cache_key> key,
+		std::unique_ptr<const operation_command_cache_key> key,
 		std::shared_ptr<void> value
 	)
 	{
 		XMIPP4_ASSERT(key);
+		XMIPP4_ASSERT(value);
 
+		const std::type_index type = typeid(key);
 		auto &inner = m_outer_index[type];
 		const auto inner_ite = inner.find(key.get());
 		if (inner_ite != inner.end())
@@ -70,6 +71,10 @@ public:
 
 		if (m_entries.size() >= m_capacity)
 		{
+			XMIPP4_LOG_DEBUG(
+				"operation_command_cache::store: at capacity, evicting "
+				"least recently used entry"
+			);
 			evict_oldest();
 		}
 
@@ -83,7 +88,7 @@ private:
 	struct entry_type
 	{
 		std::type_index type;
-		std::unique_ptr<operation_command_cache_key> key;
+		std::unique_ptr<const operation_command_cache_key> key;
 		std::shared_ptr<void> value;
 	};
 
@@ -112,20 +117,19 @@ private:
 	};
 
 	using entry_list_type = std::list<entry_type>;
-	using inner_index_type = std::unordered_map<
-		const operation_command_cache_key*,
-		entry_list_type::iterator,
-		key_ptr_hash_type,
-		key_ptr_equal_type
-	>;
-	using outer_index_type = std::unordered_map<
+	using index_type = std::unordered_map<
 		std::type_index,
-		inner_index_type
+		std::unordered_map<
+			const operation_command_cache_key*,
+			entry_list_type::iterator,
+			key_ptr_hash_type,
+			key_ptr_equal_type
+		>
 	>;
 
 	std::size_t m_capacity;
 	entry_list_type m_entries;
-	outer_index_type m_outer_index;
+	index_type m_outer_index;
 
 	void evict_oldest()
 	{
@@ -160,25 +164,45 @@ operation_command_cache::~operation_command_cache() = default;
 
 std::size_t operation_command_cache::get_capacity() const noexcept
 {
-	return m_implementation->get_capacity();
+	return m_implementation ? m_implementation->get_capacity() : 0UL;
 }
 
 std::shared_ptr<void>
-operation_command_cache::touch_erased(
-	std::type_index type,
-	const operation_command_cache_key &key
-)
+operation_command_cache::touch(const operation_command_cache_key &key)
 {
-	return m_implementation->touch(type, key);
+	return m_implementation ? m_implementation->touch(key) : nullptr;
 }
 
-void operation_command_cache::store_erased(
-	std::type_index type,
-	std::unique_ptr<operation_command_cache_key> key,
+void operation_command_cache::store(
+	std::unique_ptr<const operation_command_cache_key> key,
 	std::shared_ptr<void> value
 )
 {
-	m_implementation->store(type, std::move(key), std::move(value));
+	if (!key)
+	{
+		throw std::invalid_argument(
+			"operation_command_cache::store: key must not be null"
+		);
+	}
+
+	if (!value)
+	{
+		throw std::invalid_argument(
+			"operation_command_cache::store: value must not be null"
+		);
+	}
+
+	if (m_implementation)
+	{
+		m_implementation->store(std::move(key), std::move(value));
+	}
+	else
+	{
+		XMIPP4_LOG_WARN(
+			"operation_command_cache::store: dropping entry because the "
+			"cache has no backing implementation"
+		);
+	}
 }
 
 } // namespace multidimensional

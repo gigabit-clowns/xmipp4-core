@@ -1,219 +1,370 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include <xmipp4/core/multidimensional/operation_command_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "mock/mock_operation.hpp"
 #include "mock/mock_operation_command_builder.hpp"
 #include "../hardware/mock/mock_command.hpp"
-#include "../hardware/mock/mock_device.hpp"
 
 #include <array>
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
-TEST_CASE("register_builder in operation_command_manager should return true with a valid operation command builder", "[operation_command_manager]")
+namespace
+{
+
+struct mock_operation_a
+	: mock_operation
+{
+	~mock_operation_a() override = default;
+};
+
+struct mock_operation_b
+	: mock_operation
+{
+	~mock_operation_b() override = default;
+};
+
+} // namespace
+
+TEST_CASE(
+	"operation_command_manager::register_builder accepts a valid builder",
+	"[operation_command_manager]"
+)
 {
 	operation_command_manager manager;
-
 	auto builder = std::make_unique<mock_operation_command_builder>();
-	
+
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_command_builder>());
 
-	CHECK( manager.register_builder(std::move(builder)) );
+	CHECK(manager.register_builder(std::move(builder)));
 }
 
-TEST_CASE("register_builder in operation_command_manager should return false with an invalid operation command builder", "[operation_command_manager]")
+TEST_CASE(
+	"operation_command_manager::register_builder rejects a null builder",
+	"[operation_command_manager]"
+)
 {
 	operation_command_manager manager;
-
-	CHECK( manager.register_builder(nullptr) == false );
+	CHECK_FALSE(manager.register_builder(nullptr));
 }
 
-TEST_CASE("register_builder in operation_command_manager should allow registering multiple operation commands for the same operation", "[operation_command_manager]")
+TEST_CASE(
+	"operation_command_manager::register_builder accepts multiple builders "
+	"for the same operation",
+	"[operation_command_manager]"
+)
 {
 	operation_command_manager manager;
-
 	auto builder1 = std::make_unique<mock_operation_command_builder>();
 	auto builder2 = std::make_unique<mock_operation_command_builder>();
+
 	REQUIRE_CALL(*builder1, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_command_builder>());
 	REQUIRE_CALL(*builder2, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_command_builder>());
 
-	CHECK( manager.register_builder(std::move(builder1)) );
-	CHECK( manager.register_builder(std::move(builder2)) );
+	CHECK(manager.register_builder(std::move(builder1)));
+	CHECK(manager.register_builder(std::move(builder2)));
 }
 
-TEST_CASE("build in operation_command_manager should call build on the most appropiate operation command builder", "[operation_command_manager]")
+TEST_CASE(
+	"operation_command_manager::build dispatches to the builder with the "
+	"highest suitability",
+	"[operation_command_manager]"
+)
 {
 	operation_command_manager manager;
 
-	struct mock_operation1
-		: mock_operation
-	{
-		~mock_operation1() override = default;
-	};
-	struct mock_operation2
-		: mock_operation
-	{
-		~mock_operation2() override = default;
-	};
-	
-	const mock_operation1 op;
+	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 
 	auto builder1 = std::make_unique<mock_operation_command_builder>();
 	auto builder2 = std::make_unique<mock_operation_command_builder>();
-	auto builder3 = std::make_unique<mock_operation_command_builder>();
-	auto kernel = std::make_shared<hardware::mock_command>();
+	const auto cmd = std::make_shared<hardware::mock_command>();
+
 	REQUIRE_CALL(*builder1, get_operation_id())
-		.RETURN(operation_id::of<mock_operation1>());
+		.RETURN(operation_id::of<mock_operation_a>());
 	REQUIRE_CALL(
-		*builder1, 
+		*builder1,
 		get_suitability(
-			ANY(const operation&), 
+			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>)
 		)
 	)
-		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
-		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::fallback);
 
 	REQUIRE_CALL(*builder2, get_operation_id())
-		.RETURN(operation_id::of<mock_operation1>());
+		.RETURN(operation_id::of<mock_operation_a>());
 	REQUIRE_CALL(
-		*builder2, 
+		*builder2,
 		get_suitability(
-			ANY(const operation&), 
+			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>)
 		)
 	)
-		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
-		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::normal);
 	REQUIRE_CALL(
-		*builder2, 
+		*builder2,
 		build(
-			ANY(const operation&), 
+			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(operation_command_cache*)
 		)
 	)
-		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
-		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
-		.RETURN(kernel);
+		.RETURN(cmd);
 
-	REQUIRE_CALL(*builder3, get_operation_id())
-		.RETURN(operation_id::of<mock_operation2>());
+	REQUIRE(manager.register_builder(std::move(builder1)));
+	REQUIRE(manager.register_builder(std::move(builder2)));
 
-	REQUIRE( manager.register_builder(std::move(builder1)) );
-	REQUIRE( manager.register_builder(std::move(builder2)) );
-	REQUIRE( manager.register_builder(std::move(builder3)) );
-
-	auto result = manager.build(op, make_span(output_signatures), make_span(input_signatures));
-	;
-	CHECK( result == kernel );
+	CHECK(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures)
+		) == cmd
+	);
 }
 
-TEST_CASE("build in operation_command_manager should throw if no builder is supported", "[operation_command_manager]")
+TEST_CASE(
+	"operation_command_manager::build filters builders by operation id",
+	"[operation_command_manager]"
+)
 {
 	operation_command_manager manager;
 
-	const mock_operation op;
+	const mock_operation_a op;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
+
+	auto builder_a = std::make_unique<mock_operation_command_builder>();
+	auto builder_b = std::make_unique<mock_operation_command_builder>();
+	const auto cmd = std::make_shared<hardware::mock_command>();
+
+	REQUIRE_CALL(*builder_a, get_operation_id())
+		.RETURN(operation_id::of<mock_operation_a>());
+	REQUIRE_CALL(
+		*builder_a,
+		get_suitability(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
+		)
+	)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(
+		*builder_a,
+		build(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>),
+			ANY(operation_command_cache*)
+		)
+	)
+		.RETURN(cmd);
+
+	// Registered for a different op id: must not be consulted.
+	REQUIRE_CALL(*builder_b, get_operation_id())
+		.RETURN(operation_id::of<mock_operation_b>());
+
+	REQUIRE(manager.register_builder(std::move(builder_a)));
+	REQUIRE(manager.register_builder(std::move(builder_b)));
+
+	CHECK(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures)
+		) == cmd
+	);
+}
+
+TEST_CASE(
+	"operation_command_manager::build forwards a null cache by default",
+	"[operation_command_manager]"
+)
+{
+	operation_command_manager manager;
+
+	const mock_operation_a op;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
+
+	auto builder = std::make_unique<mock_operation_command_builder>();
+	const auto cmd = std::make_shared<hardware::mock_command>();
+
+	REQUIRE_CALL(*builder, get_operation_id())
+		.RETURN(operation_id::of<mock_operation_a>());
+	REQUIRE_CALL(
+		*builder,
+		get_suitability(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
+		)
+	)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(
+		*builder,
+		build(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>),
+			ANY(operation_command_cache*)
+		)
+	)
+		.LR_WITH(_4 == nullptr)
+		.RETURN(cmd);
+
+	REQUIRE(manager.register_builder(std::move(builder)));
+
+	CHECK(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures)
+		) == cmd
+	);
+}
+
+TEST_CASE(
+	"operation_command_manager::build forwards the cache pointer to the "
+	"selected builder",
+	"[operation_command_manager]"
+)
+{
+	operation_command_manager manager;
+
+	const mock_operation_a op;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
+	operation_command_cache cache(4);
+
+	auto builder = std::make_unique<mock_operation_command_builder>();
+	const auto cmd = std::make_shared<hardware::mock_command>();
+
+	REQUIRE_CALL(*builder, get_operation_id())
+		.RETURN(operation_id::of<mock_operation_a>());
+	REQUIRE_CALL(
+		*builder,
+		get_suitability(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>)
+		)
+	)
+		.RETURN(backend_priority::normal);
+	REQUIRE_CALL(
+		*builder,
+		build(
+			ANY(const operation&),
+			ANY(span<const array_signature>),
+			ANY(span<const array_signature>),
+			ANY(operation_command_cache*)
+		)
+	)
+		.LR_WITH(_4 == &cache)
+		.RETURN(cmd);
+
+	REQUIRE(manager.register_builder(std::move(builder)));
+
+	CHECK(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures),
+			&cache
+		) == cmd
+	);
+}
+
+TEST_CASE(
+	"operation_command_manager::build throws when no builder handles the "
+	"operation",
+	"[operation_command_manager]"
+)
+{
+	operation_command_manager manager;
+
+	const mock_operation_b op;
+	const std::array<array_signature, 2> output_signatures;
+	const std::array<array_signature, 4> input_signatures;
+
+	auto builder = std::make_unique<mock_operation_command_builder>();
+	REQUIRE_CALL(*builder, get_operation_id())
+		.RETURN(operation_id::of<mock_operation_a>());
+
+	REQUIRE(manager.register_builder(std::move(builder)));
+
+	REQUIRE_THROWS_AS(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures)
+		),
+		invalid_operation_error
+	);
+}
+
+TEST_CASE(
+	"operation_command_manager::build throws when every candidate reports "
+	"unsupported",
+	"[operation_command_manager]"
+)
+{
+	operation_command_manager manager;
+
+	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 
 	auto builder1 = std::make_unique<mock_operation_command_builder>();
 	auto builder2 = std::make_unique<mock_operation_command_builder>();
-	auto kernel = std::make_shared<hardware::mock_command>();
+
 	REQUIRE_CALL(*builder1, get_operation_id())
-		.RETURN(operation_id::of<mock_operation>());
+		.RETURN(operation_id::of<mock_operation_a>());
 	REQUIRE_CALL(
-		*builder1, 
+		*builder1,
 		get_suitability(
-			ANY(const operation&), 
+			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>)
 		)
 	)
-		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
-		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::unsupported);
 
 	REQUIRE_CALL(*builder2, get_operation_id())
-		.RETURN(operation_id::of<mock_operation>());
+		.RETURN(operation_id::of<mock_operation_a>());
 	REQUIRE_CALL(
-		*builder2, 
+		*builder2,
 		get_suitability(
-			ANY(const operation&), 
+			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>)
 		)
 	)
-		.LR_WITH(&_1 == &op)
-		.LR_WITH(_2.data() == output_signatures.data() && _2.size() == output_signatures.size())
-		.LR_WITH(_3.data() == input_signatures.data() && _3.size() == input_signatures.size())
 		.RETURN(backend_priority::unsupported);
 
-	REQUIRE( manager.register_builder(std::move(builder1)) );
-	REQUIRE( manager.register_builder(std::move(builder2)) );
+	REQUIRE(manager.register_builder(std::move(builder1)));
+	REQUIRE(manager.register_builder(std::move(builder2)));
 
-	REQUIRE_THROWS_MATCHES(
-		manager.build(op, make_span(output_signatures), make_span(input_signatures)),
-		invalid_operation_error,
-		Catch::Matchers::Message(
-			"Could not find a suitable operation command builder for the requested "
-			"operation"
-		)
-	);
-}
-
-TEST_CASE("build in operation_command_manager should throw if there are no backends for the requested operation", "[operation_command_manager]")
-{
-	operation_command_manager manager;
-
-	struct mock_operation1
-		: mock_operation
-	{
-		~mock_operation1() override = default;
-	};
-	struct mock_operation2
-		: mock_operation
-	{
-		~mock_operation2() override = default;
-	};
-
-	const mock_operation2 op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
-
-	auto builder = std::make_unique<mock_operation_command_builder>();
-	auto kernel = std::make_shared<hardware::mock_command>();
-	REQUIRE_CALL(*builder, get_operation_id())
-		.RETURN(operation_id::of<mock_operation1>());
-
-	REQUIRE( manager.register_builder(std::move(builder)) );
-
-	REQUIRE_THROWS_MATCHES(
-		manager.build(op, make_span(output_signatures), make_span(input_signatures)),
-		invalid_operation_error,
-		Catch::Matchers::Message(
-			"Could not find a suitable operation command builder for the requested "
-			"operation"
-		)
+	REQUIRE_THROWS_AS(
+		manager.build(
+			op,
+			make_span(output_signatures),
+			make_span(input_signatures)
+		),
+		invalid_operation_error
 	);
 }

@@ -25,8 +25,6 @@ void execute(
 	span<array> output_operands,
 	span<const array_view> input_operands,
 	const execution_context &context,
-	const operation_command_manager &command_manager,
-	operation_command_cache *cache = nullptr
 );
 
 } // namespace multidimensional

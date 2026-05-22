@@ -16,13 +16,6 @@ namespace multidimensional
 
 /**
  * @brief Abstract base for keys stored in an operation_command_cache.
- *
- * The cache partitions its entries by the dynamic type of the key, so each
- * subclass only needs to define hashing and equality among instances of
- * itself. Builders may use the provided typed_operation_command_cache_key
- * wrapper for any key type that is hashable through std::hash and
- * equality-comparable, or subclass this interface directly when finer
- * control is required.
  */
 class operation_command_cache_key
 {
@@ -53,16 +46,16 @@ public:
 	/**
 	 * @brief Equality against another key.
 	 *
-	 * The cache guarantees that this method is only invoked with keys of
-	 * the same dynamic type. Implementations may rely on that precondition
-	 * and skip any runtime type check.
+	 * The cache guarantees that this method is only invoked with keys of the
+	 * same type. Implementations may rely on that precondition and skip any 
+	 * runtime type check.
 	 *
 	 * @param other The key to compare against.
 	 * @return true Both keys refer to the same entry.
 	 * @return false The keys differ in value.
 	 */
-	virtual bool
-	equals(const operation_command_cache_key &other) const noexcept = 0;
+	virtual 
+	bool equals(const operation_command_cache_key &other) const noexcept = 0;
 };
 
 /**
@@ -70,7 +63,7 @@ public:
  * equality comparison.
  *
  * @tparam K The wrapped key type. Must be hashable through std::hash,
- * equality-comparable, and copy-constructible.
+ * equality-comparable, and move and copy-constructible.
  */
 template <typename K>
 class typed_operation_command_cache_key final

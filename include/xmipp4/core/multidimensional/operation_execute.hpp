@@ -16,21 +16,17 @@ namespace multidimensional
 class array;
 class array_view;
 class operation;
+class operation_command_manager;
+class operation_command_cache;
 
-/**
- * @brief Execute a operation.
- * 
- * @param operation The operation to be executed.
- * @param output_operands The output operands. 
- * @param input_operands The input operands.
- * @param context The execution context used for dispatching.
- */
 XMIPP4_CORE_API
 void execute(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array_view> input_operands,
-	const execution_context &context
+	const execution_context &context,
+	const operation_command_manager &command_manager,
+	operation_command_cache *cache = nullptr
 );
 
 } // namespace multidimensional

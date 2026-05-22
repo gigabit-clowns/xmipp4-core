@@ -9,7 +9,6 @@
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/hardware/command.hpp>
 #include <xmipp4/core/multidimensional/operation_command_manager.hpp>
-#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -225,7 +224,9 @@ void execute(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array_view> input_operands,
-	const execution_context &context
+	const execution_context &context,
+	const operation_command_manager &command_manager,
+	operation_command_cache *cache
 )
 {
 	using small_output_size_tag = 
@@ -271,15 +272,14 @@ void execute(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	operation_command_cache command_cache(1024); // TODO obtain
-	operation_command_manager command_manager; // TODO obtain
 	const auto command = command_manager.build(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs),
-		&command_cache
+		cache
 	);
 
+	XMIPP4_ASSERT(command);
 	const auto scratch = allocate_scratch(*command, *allocator, *queue);
 	queue->submit(
 		*command,

@@ -27,7 +27,8 @@ public:
 	 */
 	virtual void execute(
 		span<void* const> outputs,
-		span<const void* const> inputs
+		span<const void* const> inputs,
+		void *scratch
 	) const = 0;
 };
 

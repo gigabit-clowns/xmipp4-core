@@ -63,34 +63,33 @@ boost::container::small_vector<const void*, N> get_input_pointers(
 	return result;
 }
 
+void* get_scratch_pointer(const std::shared_ptr<buffer> &scratch)
+{
+	void *ptr = nullptr;
+
+	if (scratch)
+	{
+		ptr = scratch->get_host_ptr();
+		if (ptr == nullptr)
+		{
+			throw invalid_operation_error(
+				"cpu_command_queue::submit: scratch is not host-accessible "
+				"(get_host_ptr returned nullptr)."
+			);
+		}
+	}
+	
+	return ptr;
+}
+
 } // anonymous namespace
 
-
-
-void cpu_command_queue::wait_until_completed() const
-{
-	// No-op, synchronous execution.
-}
-
-bool cpu_command_queue::is_idle() const
-{
-	return true;
-}
-
-void cpu_command_queue::signal(event &/*event*/)
-{
-	// No-op, synchronous execution.
-}
-
-void cpu_command_queue::wait(const event&)
-{
-	// No-op, synchronous execution.
-}
 
 void cpu_command_queue::submit(
 	const command &command,
 	span<const std::shared_ptr<buffer>> output_operands,
-	span<const std::shared_ptr<const buffer>> input_operands
+	span<const std::shared_ptr<const buffer>> input_operands,
+	const std::shared_ptr<buffer>& scratch
 )
 {
 	using small_output_size_tag = 
@@ -107,11 +106,33 @@ void cpu_command_queue::submit(
 		input_operands, 
 		small_input_size_tag()
 	);
+	void *scratch_ptr = get_scratch_pointer(scratch);
 
 	cpu_cmd.execute(
 		make_span(output_pointers.data(), output_pointers.size()),
-		make_span(input_pointers.data(), input_pointers.size())
+		make_span(input_pointers.data(), input_pointers.size()),
+		scratch_ptr
 	);
+}
+
+void cpu_command_queue::signal(event &/*event*/)
+{
+	// No-op, synchronous execution.
+}
+
+void cpu_command_queue::wait(const event&)
+{
+	// No-op, synchronous execution.
+}
+
+void cpu_command_queue::wait_until_completed() const
+{
+	// No-op, synchronous execution.
+}
+
+bool cpu_command_queue::is_idle() const
+{
+	return true;
 }
 
 } // namespace hardware

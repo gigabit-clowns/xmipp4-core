@@ -22,7 +22,8 @@ public:
 	void submit(
 		const command &command,
 		span<const std::shared_ptr<buffer>> output_operands,
-		span<const std::shared_ptr<const buffer>> input_operands
+		span<const std::shared_ptr<const buffer>> input_operands,
+		const std::shared_ptr<buffer>& scratch = nullptr
 	) override;
 
 	void signal(event &event) override;

@@ -10,6 +10,7 @@
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
 #include <xmipp4/core/multidimensional/operation_command_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include <stdexcept>
@@ -28,6 +29,8 @@ public:
 		, m_device(create_device(catalog, index, m_device_properties))
 		, m_active_queue(m_device->create_command_queue())
 		, m_active_allocator(create_allocator(*m_device))
+		, m_command_manager(catalog.get_service_manager<multidimensional::operation_command_manager>())
+		, m_command_cache(std::make_shared<multidimensional::operation_command_cache>(1024))
 	{
 	}
 
@@ -70,11 +73,25 @@ public:
 		return m_active_allocator;
 	}
 
+	const std::shared_ptr<multidimensional::operation_command_cache>&
+	get_operation_command_cache() const
+	{
+		return m_command_cache;
+	}
+
+	const multidimensional::operation_command_manager& 
+	get_operation_command_manager() const
+	{
+		return *m_command_manager;
+	}
+
 private:
 	hardware::device_properties m_device_properties;
 	std::shared_ptr<hardware::device> m_device;
 	std::shared_ptr<hardware::command_queue> m_active_queue;
 	std::shared_ptr<hardware::memory_allocator> m_active_allocator;
+	std::shared_ptr<const multidimensional::operation_command_manager> m_command_manager;
+	std::shared_ptr<multidimensional::operation_command_cache> m_command_cache;
 
 	static std::shared_ptr<hardware::device> create_device(
 		service_catalog &catalog, 
@@ -82,17 +99,17 @@ private:
 		hardware::device_properties &properties
 	)
 	{
-		const auto &dev_manager = 
+		const auto dev_manager = 
 			catalog.get_service_manager<hardware::device_manager>();
 
-		if(!dev_manager.get_device_properties(index, properties))
+		if(!dev_manager->get_device_properties(index, properties))
 		{
 			throw std::invalid_argument(
 				"Requested device index does not exist"
 			);
 		}
 
-		auto device = dev_manager.create_device(index);
+		auto device = dev_manager->create_device(index);
 		XMIPP4_ASSERT( device );
 		return device;
 	}

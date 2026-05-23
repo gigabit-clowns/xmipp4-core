@@ -24,7 +24,7 @@ void execute(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array_view> input_operands,
-	const execution_context &context,
+	const execution_context &context
 );
 
 } // namespace multidimensional

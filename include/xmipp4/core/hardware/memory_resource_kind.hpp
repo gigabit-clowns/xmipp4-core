@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4 
 {

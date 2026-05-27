@@ -237,8 +237,8 @@ void execute(
 	const auto& queue = context.get_active_queue();
 	const auto& allocator = context.get_active_allocator();
 	const auto& properties = context.get_device_properties();
-	const operation_command_manager command_manager; // TODO
-	operation_command_cache *cache = nullptr; // TODO
+	const auto& command_manager = context.get_operation_command_manager(); 
+	auto *cache = context.get_operation_command_cache().get();
 
 	auto output_descriptors = 
 		extract_descriptors(output_operands, small_output_size_tag());

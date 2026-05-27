@@ -82,6 +82,7 @@ public:
 	const multidimensional::operation_command_manager& 
 	get_operation_command_manager() const
 	{
+		XMIPP4_ASSERT(m_command_manager);
 		return *m_command_manager;
 	}
 
@@ -224,6 +225,20 @@ execution_context::get_active_allocator() const
 {
 	return get_implementation().get_active_allocator();
 }
+
+const std::shared_ptr<multidimensional::operation_command_cache>&
+execution_context::get_operation_command_cache() const
+{
+	return get_implementation().get_operation_command_cache();
+}
+
+const multidimensional::operation_command_manager& 
+execution_context::get_operation_command_manager() const
+{
+	return get_implementation().get_operation_command_manager();
+}
+
+
 
 execution_context::implementation& execution_context::get_implementation()
 {

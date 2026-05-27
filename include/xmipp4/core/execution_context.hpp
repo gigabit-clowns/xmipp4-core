@@ -119,6 +119,26 @@ public:
 	const std::shared_ptr<hardware::memory_allocator>& 
 	get_active_allocator() const;
 
+	/**
+	 * @brief Get the command cache.
+	 * 
+	 * @return const std::shared_ptr<multidimensional::operation_command_cache>&
+	 * The command cache. Never null.
+	 */
+	XMIPP4_CORE_API
+	const std::shared_ptr<multidimensional::operation_command_cache>&
+	get_operation_command_cache() const;
+
+	/**
+	 * @brief Get the command manager.
+	 * 
+	 * @return const multidimensional::operation_command_manager& The command
+	 * manager
+	 */
+	XMIPP4_CORE_API
+	const multidimensional::operation_command_manager& 
+	get_operation_command_manager() const;
+
 private:
 	class implementation;
 	std::unique_ptr<implementation> m_implementation;

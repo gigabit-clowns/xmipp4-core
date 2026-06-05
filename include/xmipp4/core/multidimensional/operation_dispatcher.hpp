@@ -68,9 +68,8 @@ public:
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array_view> input_operands,
+		span<const array_view> input_operands
 		/*TBD*/
-		hardware::command_queue &queue
 	) = 0;
 };
 

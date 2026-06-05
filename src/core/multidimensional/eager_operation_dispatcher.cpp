@@ -239,9 +239,8 @@ eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
-	span<const array_view> input_operands,
+	span<const array_view> input_operands
 	/*TBD*/
-	hardware::command_queue &queue
 )
 {
 	hardware::device_properties properties; // TODO

@@ -14,10 +14,9 @@ namespace multidimensional
 /**
  * @brief Abstract base for keys stored in an @ref operation_command_cache.
  */
-class operation_command_cache_key
+class XMIPP4_CORE_API operation_command_cache_key
 {
 public:
-	XMIPP4_CORE_API
 	operation_command_cache_key() noexcept;
 	operation_command_cache_key(
 		const operation_command_cache_key &other
@@ -25,7 +24,6 @@ public:
 	operation_command_cache_key(
 		operation_command_cache_key &&other
 	) = delete;
-	XMIPP4_CORE_API
 	virtual ~operation_command_cache_key();
 
 	operation_command_cache_key&

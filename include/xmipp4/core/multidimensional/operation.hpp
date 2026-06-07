@@ -3,33 +3,33 @@
 #pragma once
 
 #include "operation_id.hpp"
-#include "../platform/dynamic_shared_object.h"
-#include "../span.hpp"
+#include "operation_shape_policy.hpp"
+#include "operation_data_type_policy.hpp"
 
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+
+#include <ostream>
 #include <string>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
 
 class operation_id;
-class array_descriptor;
 
 /**
  * @brief Abstract class that describes an operation.
- * 
+ *
  * Subclasses of it may implement the specific behavior for each of the
  * operations.
  */
-class operation
+class XMIPP4_CORE_API operation
 {
 public:
-	XMIPP4_CORE_API
 	operation() noexcept;
 	operation(const operation &other) = delete;
 	operation(operation &&other) = delete;
-	XMIPP4_CORE_API
     virtual ~operation();
 
 	operation& operator=(const operation &other) = delete;
@@ -37,55 +37,65 @@ public:
 
 	/**
 	 * @brief Get an identifier that uniquely represents this operation.
-	 * 
+	 *
 	 * @return const operation_id& The operation id.
 	 */
 	operation_id get_id() const noexcept;
 
 	/**
 	 * @brief Get a human readable identifier of the operation.
-	 * 
+	 *
 	 * This representation should not encode the parameters of the operation,
 	 * i.e., it should be the same for all instances of a given operation class.
-	 * 
+	 *
 	 * @return std::string The human readable representation.
 	 */
 	virtual std::string get_name() const = 0;
 
 	/**
 	 * @brief Serialize the parameters of the operation.
-	 * 
+	 *
 	 * Obtain a string representation of the parameters of this operation. The
 	 * actual representation is implementation dependant. The only requirement
-	 * is that unequal parameters should have unequal serializations. The 
+	 * is that unequal parameters should have unequal serializations. The
 	 * serialization does not need to encode the operation_id nor the name.
-	 * 
+	 *
 	 * @return std::string String representation of the operation parameters.
 	 */
-	XMIPP4_CORE_API
 	virtual std::string serialize_parameters() const;
 
 	/**
-	 * @brief Process and validate the input output operands
+	 * @brief Get the output count of the operation.
 	 * 
-	 * This method validate and adapt operands to perform the represented 
-	 * operations. Depending on the operation type and descriptors, calling
-	 * this function may:
-	 * 
-	 * - Validate invariance in the input (e.g. inner matrix dimensions in a
-	 * matrix multiplication).
-	 * - Deduce and populate output operand's descriptors when default 
-	 * constructed ones are provided.
-	 * - Perform broadcasting in input operands.
-	 * 
-	 * @param output_descriptors The output descriptors.
-	 * @param input_descriptors The input operands.
+	 * @return std::size_t The output count.
 	 */
-	virtual void sanitize_operands(
-		span<array_descriptor> output_descriptors,
-		span<array_descriptor> input_descriptors
-	) const = 0;
+	virtual std::size_t get_output_count() const noexcept = 0;
+
+	/**
+	 * @brief Get the input count of the operation.
+	 * 
+	 * @return std::size_t The input count.
+	 */
+	virtual std::size_t get_input_count() const noexcept = 0;
+
+	/**
+	 * @brief Get the shape policy for the operation.
+	 *
+	 * @return const operation_shape_policy& The shape policy.
+	 */
+	virtual const operation_shape_policy& get_operation_shape_policy() const noexcept = 0;
+
+	/**
+	 * @brief Get the data type policy for the operation.
+	 *
+	 * @return const operation_data_type_policy& The data type policy.
+	 */
+	virtual const operation_data_type_policy& get_operation_data_type_policy() const noexcept = 0;
 };
+
+std::ostream& operator<<(std::ostream& os, const operation& op);
+
+std::string to_string(const operation& op);
 
 } // namespace multidimensional
 } // namespace xmipp4

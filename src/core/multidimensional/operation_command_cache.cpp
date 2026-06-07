@@ -59,7 +59,7 @@ public:
 		XMIPP4_ASSERT(key);
 		XMIPP4_ASSERT(value);
 
-		const std::type_index type = typeid(key);
+		const std::type_index type = typeid(*key);
 		auto &inner = m_outer_index[type];
 		const auto inner_ite = inner.find(key.get());
 		if (inner_ite != inner.end())

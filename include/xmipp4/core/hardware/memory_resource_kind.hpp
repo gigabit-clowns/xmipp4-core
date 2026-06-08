@@ -41,6 +41,36 @@ enum class memory_resource_kind
 };
 
 /**
+ * @brief Assign a numeric affinity score for host use to a memory kind.
+ *
+ * Higher values indicate memory that is more suitable for host access.
+ * Kinds that are fully host-local (e.g. @c host) receive the highest
+ * scores, while kinds that reside on the device and cannot be accessed
+ * from the host (e.g. @c device_local) receive the lowest ones.
+ *
+ * @param kind Memory resource kind to be scored.
+ * @return int Affinity score. Higher means more host-friendly. Returns
+ * @c 0 if the memory kind is not host-accessible or @p kind is invalid.
+ */
+XMIPP4_CORE_API
+int score_host_affinity(memory_resource_kind kind) noexcept;
+
+/**
+ * @brief Assign a numeric affinity score for device use to a memory kind.
+ *
+ * Higher values indicate memory that is more suitable for device access.
+ * Kinds that are fully device-local (e.g. @c device_local) receive the
+ * highest scores, while kinds that reside on the host and cannot be
+ * accessed from the device (e.g. @c host) receive the lowest ones.
+ *
+ * @param kind Memory resource kind to be scored.
+ * @return int Affinity score. Higher means more device-friendly. Returns
+ * @c 0 if the memory kind is not device-accessible or @p kind is invalid.
+ */
+XMIPP4_CORE_API
+int score_device_affinity(memory_resource_kind kind) noexcept;
+
+/**
  * @brief Check if the memory kind can be directly accessed from the host.
  * 
  * @param kind Memory resource kind to be checked.

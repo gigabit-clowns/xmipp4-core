@@ -6,7 +6,6 @@
 #include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
-#include "host_memory_allocator.hpp"
 
 #include <stdexcept>
 
@@ -55,11 +54,6 @@ std::size_t host_buffer::get_size() const noexcept
 const memory_resource& host_buffer::get_memory_resource() const noexcept
 {
 	return host_memory_resource::get();
-}
-
-memory_allocator& host_buffer::get_memory_allocator() const noexcept
-{
-	return host_memory_allocator::get();
 }
 
 } // namespace hardware

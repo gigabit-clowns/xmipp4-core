@@ -24,7 +24,6 @@ public:
 	const void* get_host_ptr() const noexcept override;
 	std::size_t get_size() const noexcept override;
 	const memory_resource& get_memory_resource() const noexcept override;
-	memory_allocator& get_memory_allocator() const noexcept override;
 
 private:
 	void *m_data;

@@ -9,7 +9,7 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/system/host.hpp>
 
-#include "../mock/mock_device_queue.hpp"
+#include "../mock/mock_command_queue.hpp"
 
 #include <sstream>
 
@@ -41,14 +41,11 @@ TEST_CASE( "host_memory_allocator should return a host accessible buffer", "[hos
 	REQUIRE( buffer->get_size() >= size );
 }
 
-TEST_CASE( "host_memory_allocator should wait the queue to complete", "[host_memory_allocator]" )
+TEST_CASE( "host_memory_allocator should ignore the queue", "[host_memory_allocator]" )
 {
 	host_memory_allocator allocator;
 
-	mock_device_queue queue;
-
-	REQUIRE_CALL(queue, wait_until_completed());
-
+	mock_command_queue queue;
 	const std::size_t size = 1024;
 	const std::size_t alignment = 64;
 	allocator.allocate(size, alignment, &queue);

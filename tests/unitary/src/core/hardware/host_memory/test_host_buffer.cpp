@@ -9,8 +9,6 @@
 #include <core/hardware/host_memory/host_memory_resource.hpp>
 #include <core/hardware/host_memory/host_memory_allocator.hpp>
 
-#include "../mock/mock_device_queue.hpp"
-
 #include <sstream>
 
 using namespace xmipp4::hardware;
@@ -38,16 +36,4 @@ TEST_CASE( "host_buffer should return the host memory resource singleton in get_
 	auto &mr2 = host_memory_resource::get();
 
 	REQUIRE( &mr1 == &mr2 );
-}
-
-TEST_CASE( "host_buffer should return the host memory allocator singleton in get_memory_allocator", "[host_buffer]" )
-{
-	const std::size_t size = 1024;
-	const std::size_t alignment = 64;
-
-	host_buffer buffer(size, alignment);
-	auto &ma1 = buffer.get_memory_allocator();
-	auto &ma2 = host_memory_allocator::get();
-
-	REQUIRE( &ma1 == &ma2 );
 }

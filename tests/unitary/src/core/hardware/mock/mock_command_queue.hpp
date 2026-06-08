@@ -15,12 +15,13 @@ class mock_command_queue final
 	: public command_queue
 {
 public:
-	MAKE_MOCK3(
+	MAKE_MOCK4(
 		submit,
 		void(
 			const command &command,
 			span<const std::shared_ptr<buffer>> output_operands,
-			span<const std::shared_ptr<const buffer>> input_operands
+			span<const std::shared_ptr<const buffer>> input_operands,
+			const std::shared_ptr<buffer>& scratch
 		),
 		override
 	);

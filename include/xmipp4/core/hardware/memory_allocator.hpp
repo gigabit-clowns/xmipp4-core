@@ -67,9 +67,10 @@ public:
 	 * @param alignment Requested alignment, in bytes. Must be a power
 	 * of two and not greater than @ref get_max_alignment.
 	 * @param queue_hint Optional non-owning pointer to the queue on
-	 * which the buffer is expected to be first used. Backends with
-	 * per-device or per-queue allocation pools may use it to pick a
-	 * cheaper pool.
+	 * which the buffer is expected to be first used. Some backends may defer 
+	 * the allocation until the current execution point is reached on this
+	 * queue. Thus, providing a queue_hint and then using the buffer on another
+	 * queue leads to undefined behavior.
 	 * @return The newly allocated buffer. Never null.
 	 *
 	 * @throws std::bad_alloc (or a backend-specific exception derived

@@ -88,23 +88,8 @@ public:
 	 * @brief Get the memory resource where this buffer is stored.
 	 *
 	 * @return const memory_resource& The resource backing the buffer.
-	 * The reference is owned by the framework and remains valid at
-	 * least for the lifetime of this @c buffer.
 	 */
 	virtual const memory_resource& get_memory_resource() const noexcept = 0;
-
-	/**
-	 * @brief Get the memory allocator used for allocating this buffer.
-	 *
-	 * The returned allocator can be used to allocate additional buffers
-	 * on the same @ref memory_resource without having to look it up
-	 * again.
-	 *
-	 * @return memory_allocator& The memory allocator that produced this
-	 * buffer. The reference is owned by the framework and remains valid
-	 * at least for the lifetime of this @c buffer.
-	 */
-	virtual memory_allocator& get_memory_allocator() const noexcept = 0;
 };
 
 } // namespace hardware

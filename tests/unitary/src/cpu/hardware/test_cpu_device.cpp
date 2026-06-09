@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 
@@ -13,24 +14,15 @@
 
 using namespace xmipp4::hardware;
 
-TEST_CASE( "cpu_device should expose a single host memory resource", "[cpu_device]" )
+TEST_CASE( "cpu_device should expose a single memory resource", "[cpu_device]" )
 {
 	cpu_device dev;
-	std::vector<const memory_resource*> resources;
-	dev.get_memory_resources(resources);
 
-	REQUIRE( resources.size() == 1 );
-	REQUIRE( resources[0] == &get_host_memory_resource() );
-}
-
-TEST_CASE( "cpu_device::get_memory_resources should overwrite the output vector", "[cpu_device]" )
-{
-	cpu_device dev;
-	std::vector<const memory_resource*> resources = { nullptr, nullptr, nullptr };
-	dev.get_memory_resources(resources);
-
-	REQUIRE( resources.size() == 1 );
-	REQUIRE( resources[0] == &get_host_memory_resource() );
+	const auto affinity = GENERATE(
+		memory_resource_affinity::host,
+		memory_resource_affinity::device
+	);
+	REQUIRE( &dev.get_memory_resource(affinity) == &get_host_memory_resource() );
 }
 
 TEST_CASE( "cpu_device should create a non-null cpu_command_queue", "[cpu_device]" )

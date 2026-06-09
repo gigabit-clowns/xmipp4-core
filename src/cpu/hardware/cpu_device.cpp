@@ -5,18 +5,17 @@
 #include "cpu_command_queue.hpp"
 #include "cpu_event.hpp"
 
-#include <xmipp4/core/hardware/memory_resource.hpp>
+#include <core/hardware/host_memory/host_memory_resource.hpp>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-void cpu_device::get_memory_resources(
-	std::vector<const memory_resource*> &resources
-) const
+const memory_resource&
+cpu_device::get_memory_resource(memory_resource_affinity /*affinity*/) const
 {
-	resources = { &get_host_memory_resource() };
+	return host_memory_resource::get();
 }
 
 std::shared_ptr<command_queue> cpu_device::create_command_queue() const

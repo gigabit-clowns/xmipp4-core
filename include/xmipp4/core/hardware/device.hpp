@@ -7,6 +7,7 @@
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
+#include "memory_resource_affinity.hpp"
 #include "event_usage_flags.hpp"
 
 namespace xmipp4 
@@ -38,22 +39,26 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get the memory resources reachable from this device.
+	 * @brief Retrieve a memory resource by its affinity.
 	 *
-	 * Populates @p resources with pointers to every memory resource that this 
-	 * device can allocate from or interact with. The set typically includes the
-	 * device's local memory and may include host-side resources usable for 
-	 * transfers (e.g. pinned host memory). The pointed-to resources are owned 
-	 * by the backend and remain valid for as long as the device does.
+	 * Returns the @c memory_resource that is best suited for the access pattern
+	 * described by @p affinity. The returned reference is valid for the
+	 * lifetime of this @c device.
 	 *
-	 * @param[out] resources Output container, cleared and filled with the 
-	 * memory resources known to this device. None of the stored pointers are 
-	 * null.
+	 * @note Depending on the backend, two distinct affinity values may resolve
+	 * to the same underlying @c memory_resource (i.e. the references may
+	 * alias).
+	 *
+	 * @param affinity The intended access pattern for which a resource is
+	 * requested.
+	 * @return A reference to the matching @c memory_resource.
+	 *
+	 * @see memory_resource_affinity
+	 * @see memory_resource
 	 */
 	virtual
-	void get_memory_resources(
-		std::vector<const memory_resource*> &resources
-	) const = 0;
+	const memory_resource&
+	get_memory_resource(memory_resource_affinity affinity) const = 0;
 
 	/**
 	 * @brief Create a new command queue on this device.

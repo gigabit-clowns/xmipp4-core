@@ -20,9 +20,8 @@ class XMIPP4_CORE_API cpu_device final
 	: public device
 {
 public:
-	void get_memory_resources(
-		std::vector<const memory_resource*> &resources
-	) const override;
+	const memory_resource& 
+	get_memory_resource(memory_resource_affinity affinity) const override;
 
 	std::shared_ptr<command_queue> create_command_queue() const override;
 

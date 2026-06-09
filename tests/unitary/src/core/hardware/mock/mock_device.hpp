@@ -16,8 +16,8 @@ class mock_device final
 {
 public:
 	MAKE_CONST_MOCK1(
-		get_memory_resources,
-		void(std::vector<const memory_resource*> &resources),
+		get_memory_resource,
+		const memory_resource&(memory_resource_affinity affinity),
 		override
 	);
 	MAKE_CONST_MOCK0(

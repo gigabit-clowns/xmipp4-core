@@ -15,7 +15,7 @@ namespace hardware
 class memory_resource;
 
 /**
- * @brief Lazy cache that maps each @ref memory_resource to its
+ * @brief Lazy cache that maps each @ref memory_resource to a corresponding
  * @ref memory_allocator.
  *
  * Allocators are created on first access and reused on subsequent accesses.

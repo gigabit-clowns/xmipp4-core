@@ -20,7 +20,7 @@ class memory_resource;
  * @brief Owns one memory_allocator per memory_resource_affinity value.
  *
  * Aggregates the allocators required to serve allocation requests on a
- * single device. Each memory_resource_affinity slot holds an independent
+ * single device. Each memory_resource_affinity slot holds a
  * shared_ptr<memory_allocator> that can be queried or replaced individually.
  *
  * The set is move-only: copy construction and copy assignment are deleted.
@@ -34,6 +34,9 @@ public:
 	 * @brief Construct by querying @p dev for its memory resources and 
 	 * selecting the best allocator for each affinity.
 	 *
+	 * Depending on the memory architecture of the device, resulting allocators
+	 * may alias each other.
+	 * 
 	 * @param dev Device whose memory resources are enumerated.
 	 *
 	 * @throws std::runtime_error if a required memory_resource_affinity

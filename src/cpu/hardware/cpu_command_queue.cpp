@@ -100,7 +100,7 @@ void cpu_command_queue::submit(
 	using small_input_size_tag = 
 		std::integral_constant<std::size_t, XMIPP4_SMALL_INPUT_OPERAND_COUNT>;
 	using small_scratch_size_tag = 
-		std::integral_constant<std::size_t, 2>;
+		std::integral_constant<std::size_t, XMIPP4_SMALL_SCRATCH_OPERAND_COUNT>;
 
 	const auto &cpu_cmd = dynamic_cast<const cpu_command&>(command);
 	const auto output_pointers = get_output_pointers(

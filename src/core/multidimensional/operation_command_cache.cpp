@@ -15,9 +15,6 @@ namespace xmipp4
 namespace multidimensional
 {
 
-operation_command_cache_key::operation_command_cache_key() noexcept = default;
-operation_command_cache_key::~operation_command_cache_key() = default;
-
 class operation_command_cache::implementation
 {
 public:

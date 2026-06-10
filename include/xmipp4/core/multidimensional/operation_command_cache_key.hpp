@@ -53,6 +53,5 @@ public:
 	bool equals(const operation_command_cache_key &other) const noexcept = 0;
 };
 
-
 } // namespace multidimensional
 } // namespace xmipp4

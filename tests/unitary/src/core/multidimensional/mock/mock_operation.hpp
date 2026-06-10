@@ -18,12 +18,19 @@ class mock_operation
 {
 public:
 	MAKE_CONST_MOCK0(get_name, std::string(), override);
-	MAKE_CONST_MOCK0(serialize_parameters, std::string(), override);
-	MAKE_CONST_MOCK2(
-		sanitize_operands, 
-		void(span<array_descriptor>, span<array_descriptor>), 
-		override
+	MAKE_CONST_MOCK0(get_output_count, std::size_t(), noexcept override);
+	MAKE_CONST_MOCK0(get_input_count, std::size_t(), noexcept override);
+	MAKE_CONST_MOCK0(
+		get_operation_shape_policy,
+		const operation_shape_policy&(),
+		noexcept override
 	);
+	MAKE_CONST_MOCK0(
+		get_operation_data_type_policy,
+		const operation_data_type_policy&(),
+		noexcept override
+	);
+
 };
 
 } // namespace multidimensional

@@ -5,7 +5,9 @@
 
 #include <xmipp4/core/communication/device_duplex_region.hpp>
 
-#include <xmipp4/core/hardware/buffer.hpp>
+#include "../hardware/mock/mock_buffer.hpp"
+
+#include <memory>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
@@ -23,18 +25,8 @@ TEST_CASE( "default constructed device_duplex_region should be empty ", "[device
 
 TEST_CASE( "constructing a device_duplex_region should store its attributes", "[device_duplex_region]" ) 
 {
-	const auto send_buffer = std::make_shared<hardware::buffer>(
-		nullptr, 
-		0,
-		hardware::get_host_memory_resource(),
-		nullptr
-	);
-	const auto receive_buffer = std::make_shared<hardware::buffer>(
-		nullptr, 
-		0,
-		hardware::get_host_memory_resource(),
-		nullptr
-	);
+	const auto send_buffer = std::make_shared<hardware::mock_buffer>();
+	const auto receive_buffer = std::make_shared<hardware::mock_buffer>();
 
 	const auto data_type = GENERATE(
 		numerical_type::int16,
@@ -63,12 +55,7 @@ TEST_CASE( "constructing a device_duplex_region should store its attributes", "[
 
 TEST_CASE( "constructing a device_duplex_region from a single buffer should create an aliasing region", "[device_duplex_region]" ) 
 {
-	const auto send_recv_buffer = std::make_shared<hardware::buffer>(
-		nullptr, 
-		0,
-		hardware::get_host_memory_resource(),
-		nullptr
-	);
+	const auto send_recv_buffer = std::make_shared<hardware::mock_buffer>();
 
 	const auto data_type = GENERATE(
 		numerical_type::int16,

@@ -63,7 +63,8 @@ boost::container::small_vector<const void*, N> get_input_pointers(
 	return result;
 }
 
- boost::container::small_vector<void*, N> get_scratch_pointers(
+template <std::size_t N>
+boost::container::small_vector<void*, N> get_scratch_pointers(
 	span<const std::shared_ptr<buffer>> buffers, 
 	std::integral_constant<std::size_t, N> /*small_size_tag*/
 )

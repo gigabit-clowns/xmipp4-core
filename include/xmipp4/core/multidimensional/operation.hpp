@@ -50,52 +50,43 @@ public:
 	 *
 	 * @return std::string The human readable representation.
 	 */
-	virtual std::string get_name() const = 0;
-
-	/**
-	 * @brief Serialize the parameters of the operation.
-	 *
-	 * Obtain a string representation of the parameters of this operation. The
-	 * actual representation is implementation dependant. The only requirement
-	 * is that unequal parameters should have unequal serializations. The
-	 * serialization does not need to encode the operation_id nor the name.
-	 *
-	 * @return std::string String representation of the operation parameters.
-	 */
-	virtual std::string serialize_parameters() const;
+	virtual 
+	std::string get_name() const = 0;
 
 	/**
 	 * @brief Get the output count of the operation.
 	 * 
 	 * @return std::size_t The output count.
 	 */
-	virtual std::size_t get_output_count() const noexcept = 0;
+	virtual 
+	std::size_t get_output_count() const noexcept = 0;
 
 	/**
 	 * @brief Get the input count of the operation.
 	 * 
 	 * @return std::size_t The input count.
 	 */
-	virtual std::size_t get_input_count() const noexcept = 0;
+	virtual 
+	std::size_t get_input_count() const noexcept = 0;
 
 	/**
 	 * @brief Get the shape policy for the operation.
 	 *
 	 * @return const operation_shape_policy& The shape policy.
 	 */
-	virtual const operation_shape_policy& get_operation_shape_policy() const noexcept = 0;
+	virtual 
+	const operation_shape_policy& 
+	get_operation_shape_policy() const noexcept = 0;
 
 	/**
 	 * @brief Get the data type policy for the operation.
 	 *
 	 * @return const operation_data_type_policy& The data type policy.
 	 */
-	virtual const operation_data_type_policy& get_operation_data_type_policy() const noexcept = 0;
+	virtual 
+	const operation_data_type_policy& 
+	get_operation_data_type_policy() const noexcept = 0;
 };
-
-std::ostream& operator<<(std::ostream& os, const operation& op);
-
-std::string to_string(const operation& op);
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -20,7 +20,7 @@ public:
 		void(
 			span<void* const> outputs,
 			span<const void* const> inputs,
-			void *scratch
+			span<void* const> scratch
 		),
 		override
 	);

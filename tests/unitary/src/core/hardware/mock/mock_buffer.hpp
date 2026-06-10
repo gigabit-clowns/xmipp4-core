@@ -23,11 +23,6 @@ public:
 		const memory_resource&(),
 		noexcept override
 	);
-	MAKE_CONST_MOCK0(
-		get_memory_allocator,
-		memory_allocator&(),
-		noexcept override
-	);
 };
 
 } // namespace hardware

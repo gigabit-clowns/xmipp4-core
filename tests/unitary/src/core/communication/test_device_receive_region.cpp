@@ -5,7 +5,9 @@
 
 #include <xmipp4/core/communication/device_receive_region.hpp>
 
-#include <xmipp4/core/hardware/buffer.hpp>
+#include "../hardware/mock/mock_buffer.hpp"
+
+#include <memory>
 
 using namespace xmipp4;
 using namespace xmipp4::communication;
@@ -21,12 +23,7 @@ TEST_CASE( "default constructed device_receive_region should be empty ", "[devic
 
 TEST_CASE( "constructing a device_receive_region should store its attributes", "[device_receive_region]" ) 
 {
-	const auto buffer = std::make_shared<hardware::buffer>(
-		nullptr, 
-		0,
-		hardware::get_host_memory_resource(),
-		nullptr
-	);
+	const auto buffer = std::make_shared<hardware::mock_buffer>();
 
 	const auto data_type = GENERATE(
 		numerical_type::int16,

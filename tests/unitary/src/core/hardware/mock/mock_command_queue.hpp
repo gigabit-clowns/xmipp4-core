@@ -4,6 +4,9 @@
 
 #include <xmipp4/core/hardware/command_queue.hpp>
 
+#include <xmipp4/core/hardware/event.hpp>
+#include <xmipp4/core/hardware/command.hpp>
+
 #include <trompeloeil.hpp>
 
 namespace xmipp4
@@ -21,7 +24,7 @@ public:
 			const command &command,
 			span<const std::shared_ptr<buffer>> output_operands,
 			span<const std::shared_ptr<const buffer>> input_operands,
-			const std::shared_ptr<buffer>& scratch
+			span<const std::shared_ptr<buffer>> scratch
 		),
 		override
 	);

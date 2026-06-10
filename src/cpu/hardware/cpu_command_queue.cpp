@@ -63,23 +63,26 @@ boost::container::small_vector<const void*, N> get_input_pointers(
 	return result;
 }
 
-void* get_scratch_pointer(const std::shared_ptr<buffer> &scratch)
+ boost::container::small_vector<void*, N> get_scratch_pointers(
+	span<const std::shared_ptr<buffer>> buffers, 
+	std::integral_constant<std::size_t, N> /*small_size_tag*/
+)
 {
-	void *ptr = nullptr;
-
-	if (scratch)
+	boost::container::small_vector<void*, N> result(buffers.size());
+	for (std::size_t i = 0; i < buffers.size(); ++i)
 	{
-		ptr = scratch->get_host_ptr();
+		auto *ptr = buffers[i]->get_host_ptr();
 		if (ptr == nullptr)
 		{
 			throw invalid_operation_error(
-				"cpu_command_queue::submit: scratch is not host-accessible "
-				"(get_host_ptr returned nullptr)."
+				"cpu_command_queue::submit: scratch operand is not "
+				"host-accessible (get_host_ptr returned nullptr)."
 			);
 		}
+		result[i] = ptr;
 	}
-	
-	return ptr;
+
+	return result;
 }
 
 } // anonymous namespace
@@ -89,13 +92,15 @@ void cpu_command_queue::submit(
 	const command &command,
 	span<const std::shared_ptr<buffer>> output_operands,
 	span<const std::shared_ptr<const buffer>> input_operands,
-	const std::shared_ptr<buffer>& scratch
+	span<const std::shared_ptr<buffer>> scratch
 )
 {
 	using small_output_size_tag = 
 		std::integral_constant<std::size_t, XMIPP4_SMALL_OUTPUT_OPERAND_COUNT>;
 	using small_input_size_tag = 
 		std::integral_constant<std::size_t, XMIPP4_SMALL_INPUT_OPERAND_COUNT>;
+	using small_scratch_size_tag = 
+		std::integral_constant<std::size_t, 2>;
 
 	const auto &cpu_cmd = dynamic_cast<const cpu_command&>(command);
 	const auto output_pointers = get_output_pointers(
@@ -106,12 +111,15 @@ void cpu_command_queue::submit(
 		input_operands, 
 		small_input_size_tag()
 	);
-	void *scratch_ptr = get_scratch_pointer(scratch);
+	const auto scratch_pointers = get_scratch_pointers(
+		scratch,
+		small_scratch_size_tag()
+	);
 
 	cpu_cmd.execute(
 		make_span(output_pointers.data(), output_pointers.size()),
 		make_span(input_pointers.data(), input_pointers.size()),
-		scratch_ptr
+		make_span(scratch_pointers.data(), scratch_pointers.size())
 	);
 }
 

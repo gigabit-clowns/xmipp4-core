@@ -50,33 +50,33 @@ public:
 	 * either span may be null. @p command must have been constructed for
 	 * the same device as this queue.
 	 *
-	 * @p scratch supplies transient workspace that the command may use
-	 * during execution. Its size and alignment requirements are queried
-	 * from @ref command::get_scratch_requirement: when that query returns
-	 * @c false, @p scratch may be @c nullptr (or any buffer); when it
-	 * returns @c true, @p scratch must be non-null, its @ref buffer::get_size
-	 * must be greater than or equal to the reported size, and its base
-	 * address must be aligned to at least the reported alignment. The buffer
-	 * must remain valid until the command has completed; the queue holds a
-	 * reference for that duration. Its contents are undefined on entry and
-	 * on completion, so callers must not store data in it across submissions
-	 * and may reuse the same scratch buffer for multiple commands as long as
-	 * their executions do not overlap. The scratch buffer must be allocated
-	 * on, and accessible to, the same device as this queue.
+	 * @p scratch supplies transient workspaces that the command may use
+	 * during execution. The requirements for scratch buffers are queried
+	 * via @ref command::get_scratch_requirements, which populates a vector
+	 * with the needed scratch buffer specifications. If the vector is empty,
+	 * the command requires no scratch buffers and @p scratch may be empty.
+	 * Otherwise, @p scratch must contain one buffer for each requirement in
+	 * the order returned. Each buffer must have a size >= the corresponding
+	 * requirement's size and alignment >= the requirement's alignment.
+	 * The buffers must remain valid until the command completes; the queue
+	 * holds references for that duration. Contents are undefined on entry and
+	 * on completion, so callers must not store persistent data in them and
+	 * may reuse the same buffers for multiple commands as long as their
+	 * executions do not overlap. All scratch buffers must be allocated on,
+	 * and accessible to, the same device as this queue.
 	 *
 	 * @param command The command to execute.
 	 * @param output_operands Operands the command may write to.
 	 * @param input_operands  Operands the command may only read from.
-	 * @param scratch Transient workspace for the command. May be
-	 * @c nullptr only when @ref command::get_scratch_requirement returns
-	 * @c false; otherwise must be a buffer satisfying the reported size and
-	 * alignment.
+	 * @param scratch Scratch buffers required by the command. The span size
+	 * must match the number of requirements returned by
+	 * @ref command::get_scratch_requirements.
 	 */
 	virtual void submit(
 		const command &command,
 		span<const std::shared_ptr<buffer>> output_operands,
 		span<const std::shared_ptr<const buffer>> input_operands,
-		const std::shared_ptr<buffer>& scratch = nullptr
+		span<const std::shared_ptr<buffer>> scratch
 	) = 0;
 
 	/**

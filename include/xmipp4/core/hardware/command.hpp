@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "command_scratch_requirement.hpp"
+
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
+#include <vector>
 #include <cstddef>
 
 namespace xmipp4
@@ -35,41 +38,27 @@ public:
 	command& operator=(command &&other) = delete;
 
 	/**
-	 * @brief Query the scratch buffer requirement for submitting this command.
+	 * @brief Queries the scratch buffer requirements for this command.
 	 *
-	 * Reports the transient device-accessible workspace that the command
-	 * needs in order to execute. The caller must provide a scratch buffer
-	 * satisfying both the size and the alignment reported here when calling
-	 * @ref command_queue::submit; backends use the buffer as workspace and
-	 * may write to or read from it arbitrarily for the duration of the
-	 * command. Its contents are undefined on entry and on completion.
+	 * Commands may require temporary (scratch) memory buffers during
+	 * execution. This method populates the provided vector with all scratch
+	 * buffer requirements for this command, allowing the caller to allocate
+	 * the necessary buffers before command submission.
 	 *
-	 * When this method returns @c false, the command requires no scratch
-	 * memory: @p size and @p alignment are left untouched and the @c scratch
-	 * argument of @ref command_queue::submit may be @c nullptr. When it
-	 * returns @c true, @p size is set to the minimum required size in bytes
-	 * (always non-zero) and @p alignment is set to the minimum required
-	 * alignment in bytes (always a power of two, at least @c 1). The base
-	 * implementation returns @c false; concrete commands that require
-	 * workspace must override this method.
+	 * If the command does not require any scratch buffers, the vector will
+	 * be empty upon return.
 	 *
-	 * The values reported here are a property of the command instance and
-	 * must not change over its lifetime, so callers can query them once and
-	 * size and align their scratch buffers accordingly before submission.
+	 * @param[out] requirements A vector to be populated with the scratch
+	 * buffer requirements for this command. The vector is cleared before being 
+	 * populated with the command's requirements.
 	 *
-	 * @param[out] size Minimum scratch size in bytes. Written only when the 
-	 * function returns @c true.
-	 * @param[out] alignment Minimum scratch alignment in bytes, a power of
-	 * two. Written only when the function returns @c true.
-	 * @return @c true if the command requires a scratch buffer (and
-	 * @p size / @p alignment have been written); @c false if no scratch is
-	 * required.
+	 * @see command_scratch_requirement for details on individual requirement 
+	 * specifications.
 	 */
-	virtual 
-	bool get_scratch_requirement(
-		std::size_t &size, 
-		std::size_t &alignment
-	) const noexcept;
+	virtual
+	void get_scratch_requirements(
+		std::vector<command_scratch_requirement> &requirements
+	) const;
 };
 
 } // namespace hardware

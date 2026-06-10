@@ -10,12 +10,11 @@ namespace hardware
 command::command() noexcept = default;
 command::~command() = default;
 
-bool command::get_scratch_requirement(
-	std::size_t& /*size*/,
-	std::size_t& /*alignment*/
-) const noexcept
+void command::get_scratch_requirements(
+	std::vector<command_scratch_requirement> &requirements
+) const
 {
-	return false;
+	requirements = {};
 }
 
 } // namespace hardware

@@ -28,16 +28,21 @@ class memory_resource;
 class device_memory_allocator_set
 {
 public:
+	/**
+	 * @brief Construct an empty set with no allocators installed.
+	 *
+	 * All affinity slots are initialized to nullptr.
+	 */
 	device_memory_allocator_set() = default;
 
 	/**
-	 * @brief Construct by querying @p dev for its memory resources and 
+	 * @brief Construct by querying @p dev for its memory resources and
 	 * selecting the best allocator for each affinity.
 	 *
 	 * Depending on the memory architecture of the device, resulting allocators
 	 * may alias each other.
 	 * 
-	 * @param dev Device whose memory resources are enumerated.
+	 * @param dev Device for which allocators are instantiated.
 	 *
 	 * @throws std::runtime_error if a required memory_resource_affinity
 	 * has no suitable resource on @p dev.

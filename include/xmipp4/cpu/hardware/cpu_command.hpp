@@ -20,15 +20,15 @@ public:
 	/**
 	 * @brief Run the command on the given host operands.
 	 *
-	 * @param outputs Host pointers to the read-write operands. 
-	 * Must not be null.
-	 * @param inputs  Host pointers to the read-only operands. 
-	 * Must not be null.
+	 * @param outputs Host pointers to the read-write operands. Must not be null.
+	 * @param inputs  Host pointers to the read-only operands. Must not be null.
+	 * @param inputs  Host pointers to the read-write workspaces. Must not be 
+	 * null.
 	 */
 	virtual void execute(
 		span<void* const> outputs,
 		span<const void* const> inputs,
-		void *scratch
+		span<void* const> scratch
 	) const = 0;
 };
 

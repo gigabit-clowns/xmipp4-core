@@ -23,7 +23,7 @@ public:
 		const command &command,
 		span<const std::shared_ptr<buffer>> output_operands,
 		span<const std::shared_ptr<const buffer>> input_operands,
-		const std::shared_ptr<buffer>& scratch = nullptr
+		span<const std::shared_ptr<buffer>> scratch
 	) override;
 
 	void signal(event &event) override;

@@ -5,9 +5,6 @@
 namespace xmipp4 
 {
 
-/**
- * @brief Centralization and management of execution related resources.
- */
 class execution_context
 {
 public:

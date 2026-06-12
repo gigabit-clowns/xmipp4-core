@@ -21,6 +21,11 @@ public:
 		override
 	);
 	MAKE_CONST_MOCK0(
+		get_default_queue,
+		std::shared_ptr<command_queue>(),
+		override
+	);
+	MAKE_CONST_MOCK0(
 		create_command_queue,
 		std::shared_ptr<command_queue>(),
 		override

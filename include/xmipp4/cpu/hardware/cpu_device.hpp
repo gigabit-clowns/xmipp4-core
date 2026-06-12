@@ -20,13 +20,21 @@ class XMIPP4_CORE_API cpu_device final
 	: public device
 {
 public:
+	cpu_device();
+	~cpu_device() override;
+
 	const memory_resource& 
 	get_memory_resource(memory_resource_affinity affinity) const override;
+
+	std::shared_ptr<command_queue> get_default_queue() const override;
 
 	std::shared_ptr<command_queue> create_command_queue() const override;
 
 	std::shared_ptr<event>
 	create_event(event_usage_flags usage) const override;
+
+private:
+	std::shared_ptr<command_queue> m_default_queue;
 };
 
 } // namespace hardware

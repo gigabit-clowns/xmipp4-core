@@ -60,16 +60,14 @@ public:
 	 * @param output_operands The output operands. May be modified in place to
 	 * receive freshly allocated storage and sanitized descriptors.
 	 * @param input_operands The input operands. Must already own storage.
-	 * @param allocator The allocator used for output and scratch storage.
-	 * @param queue The queue to which the command is submitted.
-	 * @param properties The properties of the device backing @p queue, used
-	 * for example to determine the preferred data alignment.
+	 * @param queue The queue to which the operation may be executed.
 	 */
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array_view> input_operands
+		span<const array_view> input_operands,
 		/*TBD*/
+		hardware::command_queue &queue
 	) = 0;
 };
 

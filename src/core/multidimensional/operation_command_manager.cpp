@@ -33,7 +33,8 @@ public:
 	operation_command_builder* get_most_suitable_builder(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures
+		span<const array_signature> input_signatures,
+		hardware::command_queue &queue
 	) const
 	{
 		const auto op_id = operation.get_id();
@@ -47,13 +48,14 @@ public:
 		const auto ite2 = find_most_suitable_backend(
 			available_backends.begin(),
 			available_backends.end(),
-			[&operation, &output_signatures, &input_signatures] 
+			[&operation, &output_signatures, &input_signatures, &queue] 
 			(const auto &item)
 			{
 				return item->get_suitability(
 					operation, 
 					output_signatures,
-					input_signatures
+					input_signatures,
+					queue
 				);
 			}
 		);
@@ -70,13 +72,15 @@ public:
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures,
+		hardware::command_queue &queue,
 		operation_command_cache *cache
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
 			operation,
 			output_signatures,
-			input_signatures
+			input_signatures,
+			queue
 		);
 
 		if (!builder)
@@ -88,7 +92,11 @@ public:
 		}
 
 		return builder->build(
-			operation, output_signatures, input_signatures, cache
+			operation, 
+			output_signatures, 
+			input_signatures, 
+			queue,
+			cache
 		);
 	}
 
@@ -125,6 +133,7 @@ operation_command_manager::build(
 	const operation &operation,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures,
+	hardware::command_queue &queue,
 	operation_command_cache *cache
 ) const
 {
@@ -132,6 +141,7 @@ operation_command_manager::build(
 		operation,
 		output_signatures,
 		input_signatures,
+		queue,
 		cache
 	);
 }

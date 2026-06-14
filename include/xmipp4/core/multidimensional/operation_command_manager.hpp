@@ -15,6 +15,7 @@ namespace hardware
 {
 
 class command;
+class command_queue;
 
 } // namespace hardware
 
@@ -72,6 +73,8 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the
 	 * operation.
+	 * @param command_queue The command queue where the built command is
+	 * intended to be used.
 	 * @param cache Optional cache for backend-private resources, forwarded
 	 * to the selected builder.
 	 * @return std::shared_ptr<hardware::command> The executable command suited
@@ -82,6 +85,7 @@ public:
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures,
+		hardware::command_queue &queue,
 		operation_command_cache *cache = nullptr
 	) const;
 

@@ -337,8 +337,9 @@ allocate_scratch(
 void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
-	span<const array_view> input_operands
+	span<const array_view> input_operands,
 	/*TBD*/
+	hardware::command_queue &queue
 )
 {
 	using small_output_size_tag =
@@ -461,8 +462,10 @@ void eager_operation_dispatcher::dispatch(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs),
+		queue,
 		&m_command_cache
 	);
+	XMIPP4_ASSERT( command );	
 
 	std::vector<hardware::command_scratch_requirement> scratch_requirements;
 	command->get_scratch_requirements(scratch_requirements);
@@ -471,7 +474,6 @@ void eager_operation_dispatcher::dispatch(
 		small_scratch_size_tag()
 	);
 
-	auto &queue = *static_cast<hardware::command_queue*>(nullptr);
 	queue.submit(
 		*command,
 		xmipp4::make_span(output_storages.data(), n_outputs),

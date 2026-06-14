@@ -16,6 +16,7 @@ namespace hardware
 {
 
 class command;
+class command_queue;
 
 } // namespace hardware
 
@@ -62,13 +63,16 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the 
 	 * operation.
+	 * @param command_queue The command queue where the built command is
+	 * intended to be used.
 	 * @return backend_priority The suitability of this builder for the 
 	 * requested launch configuration.
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
 		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures
+		span<const array_signature> input_signatures,
+		hardware::command_queue &queue
 	) const = 0;
 
 	/**
@@ -84,6 +88,8 @@ public:
 	 * operation.
 	 * @param input_signatures The output array signatures involved in the
 	 * operation.
+	 * @param command_queue The command queue where the built command is
+	 * intended to be used.
 	 * @param cache Optional cache for backend-private resources. When not
 	 * null, the builder may consult and update it to reuse expensive
 	 * resources (FFT plans, compiled kernels, workspaces, ...) across
@@ -96,6 +102,7 @@ public:
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures,
+		hardware::command_queue &queue,
 		operation_command_cache *cache
 	) const = 0;
 };

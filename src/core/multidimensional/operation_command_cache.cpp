@@ -60,8 +60,9 @@ public:
 		XMIPP4_ASSERT(value);
 
 		const std::lock_guard<std::mutex> lock(m_mutex);
-
-		const std::type_index type = typeid(*key);
+		
+		const auto &key_ref= *key;
+		const std::type_index type = typeid(key_ref);
 		auto &inner = m_outer_index[type];
 		const auto inner_ite = inner.find(key.get());
 		if (inner_ite != inner.end())

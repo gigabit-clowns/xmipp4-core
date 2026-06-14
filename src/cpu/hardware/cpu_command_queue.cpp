@@ -89,6 +89,8 @@ boost::container::small_vector<void*, N> get_scratch_pointers(
 } // anonymous namespace
 
 
+std::shared_ptr<cpu_command_queue> cpu_command_queue::m_instance;
+
 void cpu_command_queue::submit(
 	const command &command,
 	span<const std::shared_ptr<buffer>> output_operands,
@@ -142,6 +144,18 @@ void cpu_command_queue::wait_until_completed() const
 bool cpu_command_queue::is_idle() const
 {
 	return true;
+}
+
+std::shared_ptr<cpu_command_queue> cpu_command_queue::create()
+{
+	// As cpu_command_queue lacks any state, we can use the singleton pattern
+	if (m_instance == nullptr)
+	{
+		m_instance = std::make_shared<cpu_command_queue>();
+	}
+
+	XMIPP4_ASSERT(m_instance);
+	return m_instance;
 }
 
 } // namespace hardware

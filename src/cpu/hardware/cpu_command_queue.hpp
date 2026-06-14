@@ -31,6 +31,11 @@ public:
 
 	void wait_until_completed() const override;
 	bool is_idle() const override;
+
+	static std::shared_ptr<cpu_command_queue> create();
+
+private:
+	static std::shared_ptr<cpu_command_queue> m_instance;
 };
 
 } // namespace hardware

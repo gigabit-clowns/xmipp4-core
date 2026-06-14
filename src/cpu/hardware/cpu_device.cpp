@@ -12,10 +12,7 @@ namespace xmipp4
 namespace hardware
 {
 
-cpu_device::cpu_device()
-	: m_default_queue(std::shared_ptr<cpu_command_queue>())
-{
-}
+cpu_device::cpu_device() noexcept = default;
 
 cpu_device::~cpu_device() = default;
 
@@ -27,12 +24,12 @@ cpu_device::get_memory_resource(memory_resource_affinity /*affinity*/) const
 
 std::shared_ptr<command_queue> cpu_device::get_default_queue() const
 {
-	return std::make_shared<cpu_command_queue>();
+	return cpu_command_queue::create(); // Singleton
 }
 
 std::shared_ptr<command_queue> cpu_device::create_command_queue() const
 {
-	return std::make_shared<cpu_command_queue>();
+	return cpu_command_queue::create();
 }
 
 std::shared_ptr<event>

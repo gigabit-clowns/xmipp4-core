@@ -20,7 +20,7 @@ class XMIPP4_CORE_API cpu_device final
 	: public device
 {
 public:
-	cpu_device();
+	cpu_device() noexcept;
 	~cpu_device() override;
 
 	const memory_resource& 
@@ -32,9 +32,6 @@ public:
 
 	std::shared_ptr<event>
 	create_event(event_usage_flags usage) const override;
-
-private:
-	std::shared_ptr<command_queue> m_default_queue;
 };
 
 } // namespace hardware

@@ -30,6 +30,15 @@ namespace multidimensional
  * once that bound is reached, inserting a new entry evicts the oldest one.
  * Eviction order is shared across all key types: a hot inner bucket may
  * evict entries from a cold one.
+ *
+ * @par Thread safety
+ * Individual calls to touch() and store() are atomic and may be issued
+ * concurrently from multiple threads. The compound touch-then-store sequence
+ * a builder performs on a miss is intentionally *not* atomic as a whole:
+ * because the cache stores functionally interchangeable resources, two
+ * threads racing on the same missing key may each build the resource and
+ * store it, with one replacing the other. This wastes a build but never
+ * corrupts the cache, and either stored value is equally valid.
  */
 class operation_command_cache
 {

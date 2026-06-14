@@ -6,6 +6,7 @@
 #include <core/logger.hpp>
 
 #include <list>
+#include <mutex>
 #include <stdexcept>
 #include <unordered_map>
 #include <utility>
@@ -30,6 +31,8 @@ public:
 
 	std::shared_ptr<void> touch(const operation_command_cache_key &key)
 	{
+		const std::lock_guard<std::mutex> lock(m_mutex);
+
 		const std::type_index type = typeid(key);
 		const auto outer_ite = m_outer_index.find(type);
 		if (outer_ite == m_outer_index.end())
@@ -55,6 +58,8 @@ public:
 	{
 		XMIPP4_ASSERT(key);
 		XMIPP4_ASSERT(value);
+
+		const std::lock_guard<std::mutex> lock(m_mutex);
 
 		const std::type_index type = typeid(*key);
 		auto &inner = m_outer_index[type];
@@ -124,6 +129,7 @@ private:
 		>
 	>;
 
+	std::mutex m_mutex;
 	std::size_t m_capacity;
 	entry_list_type m_entries;
 	index_type m_outer_index;

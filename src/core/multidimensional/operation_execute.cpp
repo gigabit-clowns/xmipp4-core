@@ -36,7 +36,28 @@ void execute(
 	const execution_context &context
 )
 {
-	// TODO
+	const auto &dispatcher = context.get_dispatcher();
+	if (dispatcher == nullptr)
+	{
+		throw std::invalid_argument(
+			"execute: expected context with dereferenceable dispatcher."
+		);
+	}
+
+	const auto &queue = context.get_active_queue();
+	if (queue == nullptr)
+	{
+		throw std::invalid_argument(
+			"execute: expected context with dereferenceable active queue."
+		);
+	}
+
+	dispatcher->dispatch(
+		operation,
+		output_operands,
+		input_operands,
+		*queue
+	);
 }
 
 array execute(

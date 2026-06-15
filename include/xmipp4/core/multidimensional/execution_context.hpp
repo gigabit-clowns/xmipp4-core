@@ -2,21 +2,27 @@
 
 #pragma once
 
-#include "hardware/command_queue.hpp"
-#include "multidimensional/operation_dispatcher.hpp"
+#include "operation_dispatcher.hpp"
+
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <memory>
 
 namespace xmipp4 
+{
+namespace multidimensional
 {
 
 class execution_context
 {
 public:
 
+	XMIPP4_CORE_API
 	const std::shared_ptr<hardware::command_queue>& 
 	get_active_queue() const noexcept;
 
+	XMIPP4_CORE_API
 	const std::shared_ptr<multidimensional::operation_dispatcher> &
 	get_dispatcher() const noexcept;
 
@@ -26,4 +32,5 @@ private:
 	std::shared_ptr<multidimensional::operation_dispatcher> m_dispatcher;
 };
 
+} // namespace multidimensional
 } // namespace xmipp4

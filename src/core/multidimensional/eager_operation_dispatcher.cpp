@@ -13,11 +13,12 @@
 #include <xmipp4/core/hardware/command_scratch_requirement.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
+#include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include <core/logger.hpp>
 #include <core/config.hpp>
-#include <core/hardware/device_memory_allocator_set.hpp>
+#include <core/hardware/memory_allocator_table.hpp>
 
 #include <algorithm>
 #include <stdexcept>
@@ -129,7 +130,7 @@ allocate_output_operand_storage(
 	const array_descriptor &descriptor,
 	hardware::memory_allocator &allocator,
 	std::size_t base_alignment,
-	hardware::command_queue *queue
+	hardware::command_queue &queue
 )
 {
 	const auto size = compute_storage_requirement(descriptor);
@@ -137,7 +138,7 @@ allocate_output_operand_storage(
 		base_alignment,
 		binary::bit_ceil(size)
 	);
-	auto storage = allocator.allocate(size, alignment, queue);
+	auto storage = allocator.allocate(size, alignment, &queue);
 	operand = array(storage, descriptor);
 	return storage;
 }
@@ -172,7 +173,8 @@ boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
 resolve_output_storage(
 	span<array> operands,
 	span<const array_descriptor> descriptors,
-	/*TBD*/
+	const hardware::device_context &device_context,
+	hardware::command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -186,10 +188,11 @@ resolve_output_storage(
 
 	result_type result(operands.size());
 
-	auto &allocator = *static_cast<hardware::memory_allocator*>(nullptr); // TODO
-	auto *queue = static_cast<hardware::command_queue*>(nullptr); // TODO
-	const auto &properties = *static_cast<const hardware::device_properties*>(nullptr); // TODO
-    const auto max_alignment = allocator.get_max_alignment();
+	const auto &allocator = device_context.get_allocator(
+		hardware::memory_resource_affinity::device
+	);
+	const auto &properties = device_context.get_properties();
+    const auto max_alignment = allocator->get_max_alignment();
     const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
 
@@ -209,7 +212,7 @@ resolve_output_storage(
 			storage = allocate_output_operand_storage(
 				operands[i],
 				descriptors[i],
-				allocator,
+				*allocator,
 				base_alignment,
 				queue
 			);
@@ -305,7 +308,8 @@ template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
 allocate_scratch(
 	span<const hardware::command_scratch_requirement> requirements,
-	/*TBD*/
+	const hardware::device_context &device_context,
+	hardware::command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -313,10 +317,8 @@ allocate_scratch(
 		std::shared_ptr<hardware::buffer>,
 		N
 	>;
-	result_type result(requirements.size());
 
-	hardware::device_memory_allocator_set allocators; // TODO
-	hardware::command_queue *queue = nullptr; // TODO
+	result_type result(requirements.size());
 
     for (std::size_t i = 0; i < requirements.size(); ++i)
     {
@@ -324,8 +326,8 @@ allocate_scratch(
 		const auto size = requirement.get_size();
 		const auto alignment = requirement.get_alignment();
 		const auto affinity = requirement.get_affinity();
-		const auto &allocator = allocators.get_allocator(affinity);
-        result[i] = allocator->allocate(size, alignment, queue);
+		const auto &allocator = device_context.get_allocator(affinity);
+        result[i] = allocator->allocate(size, alignment, &queue);
     }
 
     return result;
@@ -338,7 +340,7 @@ void eager_operation_dispatcher::dispatch(
 	const operation &operation,
 	span<array> output_operands,
 	span<const array_view> input_operands,
-	/*TBD*/
+	const hardware::device_context &device_context,
 	hardware::command_queue &queue
 )
 {
@@ -442,6 +444,8 @@ void eager_operation_dispatcher::dispatch(
 	auto output_storages = resolve_output_storage(
 		output_operands,
 		make_span(output_descriptors.data(), n_outputs),
+		device_context,
+		queue,
 		small_output_size_tag()
 	);
 	auto input_storages = resolve_input_storage(
@@ -471,6 +475,8 @@ void eager_operation_dispatcher::dispatch(
 	command->get_scratch_requirements(scratch_requirements);
 	auto scratch = allocate_scratch(
 		xmipp4::make_span(scratch_requirements),
+		device_context,
+		queue,
 		small_scratch_size_tag()
 	);
 

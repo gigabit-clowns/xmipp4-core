@@ -11,6 +11,7 @@ namespace xmipp4
 namespace hardware
 {
 
+class device_context;
 class command_queue;
 
 } // namespace hardware
@@ -60,13 +61,14 @@ public:
 	 * @param output_operands The output operands. May be modified in place to
 	 * receive freshly allocated storage and sanitized descriptors.
 	 * @param input_operands The input operands. Must already own storage.
+	 * @param device_context Device resources.
 	 * @param queue The queue to which the operation may be executed.
 	 */
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,
 		span<const array_view> input_operands,
-		/*TBD*/
+		const hardware::device_context &device_context,
 		hardware::command_queue &queue
 	) = 0;
 };

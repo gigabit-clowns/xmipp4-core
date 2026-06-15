@@ -46,7 +46,7 @@ public:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array_view> input_operands,
-		/*TBD*/
+		const hardware::device_context &device_context,
 		hardware::command_queue &queue
 	) override;
 

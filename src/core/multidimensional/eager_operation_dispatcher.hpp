@@ -17,7 +17,7 @@ class operation_command_manager;
 /**
  * @brief Eager implementation of @ref operation_dispatcher.
  *
- * Each call to @ref execute immediately builds the executable command for the
+ * Each call to @ref dispatch immediately builds the executable command for the
  * requested operation and submits it to the provided queue. Backend-private
  * resources produced while building commands (compiled kernels, FFT plans,
  * ...) are kept in an internal @ref operation_command_cache so that they are

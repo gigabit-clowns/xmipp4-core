@@ -61,7 +61,7 @@ public:
 	 * @param output_operands The output operands. May be modified in place to
 	 * receive freshly allocated storage and sanitized descriptors.
 	 * @param input_operands The input operands. Must already own storage.
-	 * @param device_context Device resources.
+	 * @param device_context Device resources used for execution.
 	 * @param queue The queue to which the operation may be executed.
 	 */
 	virtual void dispatch(

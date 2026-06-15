@@ -478,6 +478,7 @@ void eager_operation_dispatcher::dispatch(
 		make_span(input_storages.data(), n_inputs)
 	);
 
+	XMIPP4_ASSERT( m_command_manager );
 	const auto command = m_command_manager->build(
 		operation,
 		xmipp4::make_span(output_signatures.data(), n_outputs),

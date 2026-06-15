@@ -12,7 +12,10 @@ namespace xmipp4
 namespace hardware
 {
 
-cpu_device::cpu_device() noexcept = default;
+cpu_device::cpu_device(device_properties properties) noexcept
+	: device(std::move(properties))
+{
+}
 
 cpu_device::~cpu_device() = default;
 

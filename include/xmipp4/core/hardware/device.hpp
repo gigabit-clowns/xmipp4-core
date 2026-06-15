@@ -7,6 +7,7 @@
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
+#include "device_properties.hpp"
 #include "memory_resource_affinity.hpp"
 #include "event_usage_flags.hpp"
 
@@ -30,13 +31,37 @@ class memory_resource;
 class XMIPP4_CORE_API device
 {
 public:
-	device() noexcept;
+	/**
+	 * @brief Construct a device from its static properties.
+	 *
+	 * The properties are supplied by the @ref device_backend that creates
+	 * the device (typically the same values it reports through
+	 * @ref device_backend::get_device_properties) and are stored for the
+	 * lifetime of the device, after which they remain immutable.
+	 *
+	 * @param[in] properties The static characteristics describing this
+	 * device. Taken by value and moved into the device.
+	 */
+	explicit device(device_properties properties) noexcept;
 	device(const device &other) = delete;
 	device(device &&other) = delete;
 	virtual ~device();
 
 	device& operator=(const device &other) = delete;
 	device& operator=(device &&other) = delete;
+
+	/**
+	 * @brief Retrieve the static properties of this device.
+	 *
+	 * Returns the @ref device_properties supplied at construction. The
+	 * referenced object lives as long as this @c device and does not
+	 * change after construction.
+	 *
+	 * @return A reference to this device's @ref device_properties.
+	 *
+	 * @see device_properties
+	 */
+	const device_properties& get_properties() const noexcept;
 
 	/**
 	 * @brief Retrieve a memory resource by its affinity.
@@ -106,6 +131,9 @@ public:
 	 */
 	virtual
 	std::shared_ptr<event> create_event(event_usage_flags usage) const = 0;
+
+private:
+	device_properties m_properties;
 };
 
 } // namespace hardware

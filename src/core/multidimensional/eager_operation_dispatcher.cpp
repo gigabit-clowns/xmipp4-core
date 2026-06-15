@@ -383,7 +383,8 @@ void eager_operation_dispatcher::dispatch(
 
 	// Deduce canonical output shapes/types from the inputs alone. This
 	// performs all input-side validation as a side effect.
-	auto output_shapes = make_empty_shapes(n_outputs, small_output_size_tag());
+	auto output_shapes = 
+		make_empty_shapes(n_outputs, small_output_size_tag());
 	auto output_data_types =
 		make_empty_data_types(n_outputs, small_output_size_tag());
 

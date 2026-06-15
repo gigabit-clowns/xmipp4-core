@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "device_memory_allocator_set.hpp"
+#include "memory_allocator_table.hpp"
 
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
@@ -13,7 +13,7 @@ namespace xmipp4
 namespace hardware
 {
 
-device_memory_allocator_set::device_memory_allocator_set(const device &dev)
+memory_allocator_table::memory_allocator_table(const device &dev)
 {
 	std::unordered_map<
 		const memory_resource*,
@@ -39,8 +39,8 @@ device_memory_allocator_set::device_memory_allocator_set(const device &dev)
 	}
 }
 
-std::shared_ptr<memory_allocator> 
-device_memory_allocator_set::set_allocator(
+std::shared_ptr<memory_allocator>
+memory_allocator_table::set_allocator(
 	memory_resource_affinity affinity,
 	std::shared_ptr<memory_allocator> allocator
 ) noexcept
@@ -50,7 +50,7 @@ device_memory_allocator_set::set_allocator(
 }
 
 const std::shared_ptr<memory_allocator>&
-device_memory_allocator_set::get_allocator(
+memory_allocator_table::get_allocator(
 	memory_resource_affinity affinity
 ) const noexcept
 {

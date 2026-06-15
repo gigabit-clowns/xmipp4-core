@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "core/hardware/device_memory_allocator_set.hpp"
+#include "core/hardware/memory_allocator_table.hpp"
 
 #include "mock/mock_device.hpp"
 #include "mock/mock_memory_allocator.hpp"
@@ -12,20 +12,20 @@ using namespace xmipp4;
 using namespace xmipp4::hardware;
 
 TEST_CASE(
-    "device_memory_allocator_set default constructor leaves all slots null",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table default constructor leaves all slots null",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     CHECK(set.get_allocator(memory_resource_affinity::host) == nullptr);
     CHECK(set.get_allocator(memory_resource_affinity::device) == nullptr);
 }
 
 TEST_CASE(
-    "device_memory_allocator_set device constructor creates one allocator "
+    "memory_allocator_table device constructor creates one allocator "
     "per distinct memory resource",
-    "[device_memory_allocator_set]"
+    "[memory_allocator_table]"
 )
 {
     auto host_allocator = std::make_shared<mock_memory_allocator>();
@@ -45,7 +45,7 @@ TEST_CASE(
     REQUIRE_CALL(dev, get_memory_resource(memory_resource_affinity::device))
         .LR_RETURN(device_resource);
 
-    device_memory_allocator_set set(dev);
+    memory_allocator_table set(dev);
 
     CHECK(set.get_allocator(memory_resource_affinity::host) == host_allocator);
     CHECK(
@@ -54,9 +54,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set device constructor shares one allocator "
+    "memory_allocator_table device constructor shares one allocator "
     "when all affinities map to the same memory resource",
-    "[device_memory_allocator_set]"
+    "[memory_allocator_table]"
 )
 {
     auto shared_allocator = std::make_shared<mock_memory_allocator>();
@@ -71,7 +71,7 @@ TEST_CASE(
     REQUIRE_CALL(dev, get_memory_resource(memory_resource_affinity::device))
         .LR_RETURN(shared_resource);
 
-    device_memory_allocator_set set(dev);
+    memory_allocator_table set(dev);
 
     CHECK(
         set.get_allocator(memory_resource_affinity::host) == shared_allocator
@@ -86,11 +86,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set set_allocator installs the new allocator",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table set_allocator installs the new allocator",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     auto allocator = std::make_shared<mock_memory_allocator>();
     set.set_allocator(memory_resource_affinity::host, allocator);
@@ -99,11 +99,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set set_allocator returns the previous allocator",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table set_allocator returns the previous allocator",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     auto first = std::make_shared<mock_memory_allocator>();
     auto second = std::make_shared<mock_memory_allocator>();
@@ -117,12 +117,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set set_allocator returns nullptr when slot "
+    "memory_allocator_table set_allocator returns nullptr when slot "
     "was empty",
-    "[device_memory_allocator_set]"
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     auto allocator = std::make_shared<mock_memory_allocator>();
     auto previous =
@@ -132,11 +132,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set set_allocator with nullptr clears the slot",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table set_allocator with nullptr clears the slot",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     auto allocator = std::make_shared<mock_memory_allocator>();
     set.set_allocator(memory_resource_affinity::host, allocator);
@@ -148,12 +148,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set set_allocator on one affinity does not "
+    "memory_allocator_table set_allocator on one affinity does not "
     "affect the other",
-    "[device_memory_allocator_set]"
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set set;
+    memory_allocator_table set;
 
     auto host_allocator = std::make_shared<mock_memory_allocator>();
     set.set_allocator(memory_resource_affinity::host, host_allocator);
@@ -162,18 +162,18 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set move constructor transfers all slots",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table move constructor transfers all slots",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set source;
+    memory_allocator_table source;
 
     auto host_allocator = std::make_shared<mock_memory_allocator>();
     auto device_allocator = std::make_shared<mock_memory_allocator>();
     source.set_allocator(memory_resource_affinity::host, host_allocator);
     source.set_allocator(memory_resource_affinity::device, device_allocator);
 
-    device_memory_allocator_set destination(std::move(source));
+    memory_allocator_table destination(std::move(source));
 
     CHECK(
         destination.get_allocator(memory_resource_affinity::host)
@@ -186,18 +186,18 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "device_memory_allocator_set move assignment transfers all slots",
-    "[device_memory_allocator_set]"
+    "memory_allocator_table move assignment transfers all slots",
+    "[memory_allocator_table]"
 )
 {
-    device_memory_allocator_set source;
+    memory_allocator_table source;
 
     auto host_allocator = std::make_shared<mock_memory_allocator>();
     auto device_allocator = std::make_shared<mock_memory_allocator>();
     source.set_allocator(memory_resource_affinity::host, host_allocator);
     source.set_allocator(memory_resource_affinity::device, device_allocator);
 
-    device_memory_allocator_set destination;
+    memory_allocator_table destination;
     destination = std::move(source);
 
     CHECK(

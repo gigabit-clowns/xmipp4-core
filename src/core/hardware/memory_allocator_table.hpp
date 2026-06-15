@@ -23,17 +23,17 @@ class memory_resource;
  * single device. Each memory_resource_affinity slot holds a
  * shared_ptr<memory_allocator> that can be queried or replaced individually.
  *
- * The set is move-only: copy construction and copy assignment are deleted.
+ * The table is move-only: copy construction and copy assignment are deleted.
  */
-class device_memory_allocator_set
+class memory_allocator_table
 {
 public:
 	/**
-	 * @brief Construct an empty set with no allocators installed.
+	 * @brief Construct an empty table with no allocators installed.
 	 *
 	 * All affinity slots are initialized to nullptr.
 	 */
-	device_memory_allocator_set() = default;
+	memory_allocator_table() = default;
 
 	/**
 	 * @brief Construct by querying @p dev for its memory resources and
@@ -47,17 +47,17 @@ public:
 	 * @throws std::runtime_error if a required memory_resource_affinity
 	 * has no suitable resource on @p dev.
 	 */
-	explicit device_memory_allocator_set(const device &dev);
-	device_memory_allocator_set(
-		const device_memory_allocator_set &other) = delete;
-	device_memory_allocator_set(
-		device_memory_allocator_set &&other) = default;
-	~device_memory_allocator_set() = default;
+	explicit memory_allocator_table(const device &dev);
+	memory_allocator_table(
+		const memory_allocator_table &other) = delete;
+	memory_allocator_table(
+		memory_allocator_table &&other) = default;
+	~memory_allocator_table() = default;
 
-	device_memory_allocator_set&
-	operator=(const device_memory_allocator_set &other) = delete;
-	device_memory_allocator_set&
-	operator=(device_memory_allocator_set &&other) = default;
+	memory_allocator_table&
+	operator=(const memory_allocator_table &other) = delete;
+	memory_allocator_table&
+	operator=(memory_allocator_table &&other) = default;
 
 	/**
 	 * @brief Replace the allocator for the given memory affinity.

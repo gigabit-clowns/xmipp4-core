@@ -45,12 +45,8 @@ public:
 	/**
 	 * @brief Create an allocator that produces buffers on this resource.
 	 *
-	 * Non-thread-safe implementations always return a new, independent
-	 * allocator instance on each call. Thread-safe implementations are
-	 * allowed to return the same shared instance across calls. The returned
-	 * allocator keeps a reference to this resource and must not outlive it;
-	 * the resource itself is owned by the backend and outlives every
-	 * allocator created from it.
+	 * Some implementations may choose to always return the same allocator
+	 * object (singleton-like).
 	 *
 	 * @return The new allocator. Never null.
 	 */

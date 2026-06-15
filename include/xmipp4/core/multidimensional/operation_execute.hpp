@@ -7,15 +7,13 @@
 
 namespace xmipp4 
 {
-
-class execution_context;
-
 namespace multidimensional
 {
 
 class array;
 class array_view;
 class operation;
+class execution_context;
 
 /**
  * @brief Execute a operation.

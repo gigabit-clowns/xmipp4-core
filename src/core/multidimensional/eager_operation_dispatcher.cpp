@@ -334,7 +334,22 @@ allocate_scratch(
 }
 } // anonymous namespace
 
-	
+eager_operation_dispatcher::eager_operation_dispatcher(
+	std::shared_ptr<const operation_command_manager> command_manager,
+	std::size_t cache_capacity
+)
+	: m_command_manager(std::move(command_manager))
+	, m_command_cache(cache_capacity)
+{
+	if (!m_command_manager)
+	{
+		throw std::invalid_argument(
+			"command_manager cannot be null"
+		);
+	}
+}
+
+eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
 	const operation &operation,

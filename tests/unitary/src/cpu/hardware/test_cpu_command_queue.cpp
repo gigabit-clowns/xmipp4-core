@@ -49,9 +49,9 @@ TEST_CASE(
 
 	REQUIRE_CALL(cmd, execute(trompeloeil::_, trompeloeil::_, trompeloeil::_))
 		.WITH(_1.size() == 2)
-		.WITH(_1[0] == &out0_data && _1[1] == &out1_data)
+		.LR_WITH(_1[0] == &out0_data && _1[1] == &out1_data)
 		.WITH(_2.size() == 2)
-		.WITH(_2[0] == &in0_data && _2[1] == &in1_data)
+		.LR_WITH(_2[0] == &in0_data && _2[1] == &in1_data)
 		.WITH(_3.empty());
 
 	const std::vector<std::shared_ptr<buffer>> outputs = { out0, out1 };
@@ -87,7 +87,7 @@ TEST_CASE(
 		.WITH(_1.empty())
 		.WITH(_2.empty())
 		.WITH(_3.size() == 2)
-		.WITH(_3[0] == &scratch0_data && _3[1] == &scratch1_data);
+		.LR_WITH(_3[0] == &scratch0_data && _3[1] == &scratch1_data);
 
 	const std::vector<std::shared_ptr<buffer>> outputs;
 	const std::vector<std::shared_ptr<const buffer>> inputs;

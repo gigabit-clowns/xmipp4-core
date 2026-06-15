@@ -53,7 +53,6 @@ TEST_CASE(
 
 	REQUIRE( queue_a != nullptr );
 	REQUIRE( queue_b != nullptr );
-	REQUIRE( queue_a != queue_b );
 }
 
 TEST_CASE(

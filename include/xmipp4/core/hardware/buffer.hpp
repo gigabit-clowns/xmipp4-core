@@ -21,14 +21,7 @@ class memory_allocator;
  * resource.
  *
  * A buffer is a handle to a contiguous block of memory. It carries no type 
- * information of its own Their lifetime drives the lifetime of the underlying 
- * allocation; when a buffer is destroyed, and all pending work on 
- * command_queues finishes, the allocator reclaims the memory block referenced
- * by the buffer.
- *
- * Whether the memory is reachable from the host depends on the kind of
- * the @ref memory_resource that backs the buffer. Use @ref get_host_ptr
- * to query host accessibility before dereferencing.
+ * information of its own.
  */
 class XMIPP4_CORE_API buffer
 {
@@ -78,7 +71,7 @@ public:
 	 * @brief Get the size in bytes for this buffer.
 	 *
 	 * The size may be larger then the requested in 
-	 * @ref memory_allocator::allocate to satisfy alignment requirements.
+	 * @ref memory_allocator::allocate.
 	 *
 	 * @return std::size_t Size in bytes.
 	 */

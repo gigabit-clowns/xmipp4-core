@@ -52,10 +52,19 @@ void execute(
 		);
 	}
 
+	const auto &device_context = context.get_device_context();
+	if (device_context == nullptr)
+	{
+		throw std::invalid_argument(
+			"execute: expected context with dereferenceable device context."
+		);
+	}
+
 	dispatcher->dispatch(
 		operation,
 		output_operands,
 		input_operands,
+		*device_context,
 		*queue
 	);
 }

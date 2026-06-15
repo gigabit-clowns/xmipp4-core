@@ -6,6 +6,7 @@
 
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -24,22 +25,24 @@ public:
 		noexcept override
 	);
 
-	MAKE_CONST_MOCK3(
+	MAKE_CONST_MOCK4(
 		get_suitability,
 		backend_priority (
 			const operation &operation,
 			span<const array_signature> output_signatures,
-			span<const array_signature> input_signatures
+			span<const array_signature> input_signatures,
+			hardware::command_queue &queue
 		),
 		override
 	);
 
-	MAKE_CONST_MOCK4(
+	MAKE_CONST_MOCK5(
 		build,
 		std::shared_ptr<hardware::command> (
 			const operation &operation,
 			span<const array_signature> output_signatures,
 			span<const array_signature> input_signatures,
+			hardware::command_queue &queue,
 			operation_command_cache *cache
 		),
 		override

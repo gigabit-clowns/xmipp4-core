@@ -10,6 +10,7 @@
 #include "mock/mock_operation.hpp"
 #include "mock/mock_operation_command_builder.hpp"
 #include "../hardware/mock/mock_command.hpp"
+#include "../hardware/mock/mock_command_queue.hpp"
 
 #include <array>
 
@@ -86,6 +87,7 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
+	hardware::mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_operation_command_builder>();
 	auto builder2 = std::make_unique<mock_operation_command_builder>();
@@ -98,7 +100,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::fallback);
@@ -110,7 +113,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -120,6 +124,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&),
 			ANY(operation_command_cache*)
 		)
 	)
@@ -132,7 +137,8 @@ TEST_CASE(
 		manager.build(
 			op,
 			make_span(output_signatures),
-			make_span(input_signatures)
+			make_span(input_signatures),
+			queue
 		) == cmd
 	);
 }
@@ -147,6 +153,7 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
+	hardware::mock_command_queue queue;
 
 	auto builder_a = std::make_unique<mock_operation_command_builder>();
 	auto builder_b = std::make_unique<mock_operation_command_builder>();
@@ -159,7 +166,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -169,6 +177,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&),
 			ANY(operation_command_cache*)
 		)
 	)
@@ -185,7 +194,8 @@ TEST_CASE(
 		manager.build(
 			op,
 			make_span(output_signatures),
-			make_span(input_signatures)
+			make_span(input_signatures),
+			queue
 		) == cmd
 	);
 }
@@ -200,6 +210,7 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
+	hardware::mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_operation_command_builder>();
 	const auto cmd = std::make_shared<hardware::mock_command>();
@@ -211,7 +222,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -221,10 +233,11 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&),
 			ANY(operation_command_cache*)
 		)
 	)
-		.LR_WITH(_4 == nullptr)
+		.LR_WITH(_5 == nullptr)
 		.RETURN(cmd);
 
 	REQUIRE(manager.register_builder(std::move(builder)));
@@ -233,7 +246,8 @@ TEST_CASE(
 		manager.build(
 			op,
 			make_span(output_signatures),
-			make_span(input_signatures)
+			make_span(input_signatures),
+			queue
 		) == cmd
 	);
 }
@@ -250,6 +264,7 @@ TEST_CASE(
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	operation_command_cache cache(4);
+	hardware::mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_operation_command_builder>();
 	const auto cmd = std::make_shared<hardware::mock_command>();
@@ -261,7 +276,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -271,10 +287,11 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&),
 			ANY(operation_command_cache*)
 		)
 	)
-		.LR_WITH(_4 == &cache)
+		.LR_WITH(_5 == &cache)
 		.RETURN(cmd);
 
 	REQUIRE(manager.register_builder(std::move(builder)));
@@ -284,6 +301,7 @@ TEST_CASE(
 			op,
 			make_span(output_signatures),
 			make_span(input_signatures),
+			queue,
 			&cache
 		) == cmd
 	);
@@ -300,6 +318,7 @@ TEST_CASE(
 	const mock_operation_b op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
+	hardware::mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_operation_command_builder>();
 	REQUIRE_CALL(*builder, get_operation_id())
@@ -311,7 +330,8 @@ TEST_CASE(
 		manager.build(
 			op,
 			make_span(output_signatures),
-			make_span(input_signatures)
+			make_span(input_signatures),
+			queue
 		),
 		invalid_operation_error
 	);
@@ -328,6 +348,7 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
+	hardware::mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_operation_command_builder>();
 	auto builder2 = std::make_unique<mock_operation_command_builder>();
@@ -339,7 +360,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::unsupported);
@@ -351,7 +373,8 @@ TEST_CASE(
 		get_suitability(
 			ANY(const operation&),
 			ANY(span<const array_signature>),
-			ANY(span<const array_signature>)
+			ANY(span<const array_signature>),
+			ANY(hardware::command_queue&)
 		)
 	)
 		.RETURN(backend_priority::unsupported);
@@ -363,7 +386,8 @@ TEST_CASE(
 		manager.build(
 			op,
 			make_span(output_signatures),
-			make_span(input_signatures)
+			make_span(input_signatures),
+			queue
 		),
 		invalid_operation_error
 	);

@@ -21,7 +21,9 @@
 #include <core/hardware/memory_allocator_table.hpp>
 
 #include <algorithm>
+#include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #include <boost/container/small_vector.hpp>
 
@@ -192,12 +194,12 @@ resolve_output_storage(
 		hardware::memory_resource_affinity::device
 	);
 	const auto &properties = device_context.get_properties();
-    const auto max_alignment = allocator->get_max_alignment();
-    const auto preferred_alignment = properties.get_optimal_data_alignment();
+	const auto max_alignment = allocator->get_max_alignment();
+	const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
 
-    for (std::size_t i = 0; i < n; ++i)
-    {
+	for (std::size_t i = 0; i < n; ++i)
+	{
 		auto storage = operands[i].share_storage();
 		if (storage)
 		{
@@ -220,9 +222,9 @@ resolve_output_storage(
 
 		XMIPP4_ASSERT(storage);
 		result[i] = std::move(storage);
-    }
+	}
 
-    return result;
+	return result;
 }
 
 template <std::size_t N>
@@ -238,19 +240,19 @@ resolve_input_storage(
 	>;
 	result_type result(operands.size());
 
-    for (std::size_t i = 0; i < operands.size(); ++i)
-    {
-        result[i] = operands[i].share_storage();
-        if (!result[i])
-        {
-            throw std::invalid_argument(
+	for (std::size_t i = 0; i < operands.size(); ++i)
+	{
+		result[i] = operands[i].share_storage();
+		if (!result[i])
+		{
+			throw std::invalid_argument(
 				"One of the input operands does not have associated storage. "
 				"Input arrays must be populated before calling execute."
 			);
-        }
-    }
+		}
+	}
 
-    return result;
+	return result;
 }
 
 template <typename Ptr, std::size_t N>
@@ -267,28 +269,28 @@ create_signatures(
 	for (std::size_t i = 0; i < n; ++i)
 	{
 		XMIPP4_ASSERT(storages[i]);
-        result[i] = array_signature(
-            std::move(descriptors[i]), // Steal descriptors
-            &(storages[i]->get_memory_resource())
-        );
+		result[i] = array_signature(
+			std::move(descriptors[i]), // Steal descriptors
+			&(storages[i]->get_memory_resource())
+		);
 	}
 
 	return result;
 }
 
 void validate_arity(
-	const operation &operation,
+	const operation &op,
 	std::size_t n_outputs,
 	std::size_t n_inputs
 )
 {
-	const auto expected_outputs = operation.get_output_count();
-	const auto expected_inputs = operation.get_input_count();
+	const auto expected_outputs = op.get_output_count();
+	const auto expected_inputs = op.get_input_count();
 
 	if (n_outputs != expected_outputs)
 	{
 		std::ostringstream oss;
-		oss << "Operation '" << operation.get_name()
+		oss << "Operation '" << op.get_name()
 			<< "' expects " << expected_outputs
 			<< " output(s), but " << n_outputs << " provided.";
 		throw std::invalid_argument(oss.str());
@@ -297,7 +299,7 @@ void validate_arity(
 	if (n_inputs != expected_inputs)
 	{
 		std::ostringstream oss;
-		oss << "Operation '" << operation.get_name()
+		oss << "Operation '" << op.get_name()
 			<< "' expects " << expected_inputs
 			<< " input(s), but " << n_inputs << " provided.";
 		throw std::invalid_argument(oss.str());
@@ -320,17 +322,17 @@ allocate_scratch(
 
 	result_type result(requirements.size());
 
-    for (std::size_t i = 0; i < requirements.size(); ++i)
-    {
+	for (std::size_t i = 0; i < requirements.size(); ++i)
+	{
 		const auto &requirement = requirements[i];
 		const auto size = requirement.get_size();
 		const auto alignment = requirement.get_alignment();
 		const auto affinity = requirement.get_affinity();
 		const auto &allocator = device_context.get_allocator(affinity);
-        result[i] = allocator->allocate(size, alignment, &queue);
-    }
+		result[i] = allocator->allocate(size, alignment, &queue);
+	}
 
-    return result;
+	return result;
 }
 } // anonymous namespace
 
@@ -352,7 +354,7 @@ eager_operation_dispatcher::eager_operation_dispatcher(
 eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
-	const operation &operation,
+	const operation &op,
 	span<array> output_operands,
 	span<const array_view> input_operands,
 	const hardware::device_context &device_context,
@@ -369,7 +371,7 @@ void eager_operation_dispatcher::dispatch(
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
 
-	validate_arity(operation, n_outputs, n_inputs);
+	validate_arity(op, n_outputs, n_inputs);
 
 	auto input_descriptors = extract_descriptors(
 		input_operands,
@@ -384,6 +386,9 @@ void eager_operation_dispatcher::dispatch(
 		small_input_size_tag()
 	);
 
+	// Outputs are treated as user-provided only when every one of them
+	// already owns storage. A partially populated set is handled as if no
+	// outputs were supplied (see the else branch below).
 	const auto outputs_initialized = std::all_of(
 		output_operands.begin(),
 		output_operands.end(),
@@ -393,12 +398,12 @@ void eager_operation_dispatcher::dispatch(
 		}
 	);
 
-	const auto &shape_policy = operation.get_operation_shape_policy();
-	const auto &data_type_policy = operation.get_operation_data_type_policy();
+	const auto &shape_policy = op.get_operation_shape_policy();
+	const auto &data_type_policy = op.get_operation_data_type_policy();
 
 	// Deduce canonical output shapes/types from the inputs alone. This
 	// performs all input-side validation as a side effect.
-	auto output_shapes = 
+	auto output_shapes =
 		make_empty_shapes(n_outputs, small_output_size_tag());
 	auto output_data_types =
 		make_empty_data_types(n_outputs, small_output_size_tag());
@@ -420,7 +425,10 @@ void eager_operation_dispatcher::dispatch(
 	if (outputs_initialized)
 	{
 		// Outputs come from the user: confirm they are admissible given
-		// the canonical ones produced above.
+		// the canonical ones produced above. The user-supplied descriptors
+		// (already held in output_descriptors) are kept as-is going
+		// forward; they may legitimately differ from the canonical ones
+		// (e.g. a wider broadcast-compatible shape, or a converted type).
 		auto user_output_shapes = extract_shapes(
 			make_span(output_descriptors.data(), n_outputs),
 			small_output_size_tag()
@@ -440,12 +448,6 @@ void eager_operation_dispatcher::dispatch(
 			make_span(output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)
 		);
-
-		// Adopt the user-supplied descriptors going forward; they may
-		// legitimately differ from the canonical ones (e.g. a wider
-		// broadcast-compatible shape, or a converted type).
-		output_shapes = std::move(user_output_shapes);
-		output_data_types = std::move(user_output_data_types);
 	}
 	else
 	{
@@ -478,15 +480,15 @@ void eager_operation_dispatcher::dispatch(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	XMIPP4_ASSERT( m_command_manager );
+	XMIPP4_ASSERT(m_command_manager);
 	const auto command = m_command_manager->build(
-		operation,
+		op,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs),
 		queue,
 		&m_command_cache
 	);
-	XMIPP4_ASSERT( command );	
+	XMIPP4_ASSERT(command);
 
 	std::vector<hardware::command_scratch_requirement> scratch_requirements;
 	command->get_scratch_requirements(scratch_requirements);

@@ -46,8 +46,7 @@ public:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array_view> input_operands,
-		const hardware::device_context &device_context,
-		hardware::command_queue &queue
+		const hardware::device_context &device_context
 	) override;
 
 private:

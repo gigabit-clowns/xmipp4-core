@@ -12,6 +12,7 @@
 #include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/hardware/command_scratch_requirement.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
@@ -193,7 +194,8 @@ resolve_output_storage(
 	const auto &allocator = device_context.get_allocator(
 		hardware::memory_resource_affinity::device
 	);
-	const auto &properties = device_context.get_properties();
+	const auto &properties = 
+		device_context.get_device_instance()->get_properties();
 	const auto max_alignment = allocator->get_max_alignment();
 	const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
@@ -357,8 +359,7 @@ void eager_operation_dispatcher::dispatch(
 	const operation &op,
 	span<array> output_operands,
 	span<const array_view> input_operands,
-	const hardware::device_context &device_context,
-	hardware::command_queue &queue
+	const hardware::device_context &device_context
 )
 {
 	using small_output_size_tag =
@@ -368,6 +369,14 @@ void eager_operation_dispatcher::dispatch(
 	using small_scratch_size_tag =
 		std::integral_constant<std::size_t, XMIPP4_SMALL_SCRATCH_OPERAND_COUNT>;
 
+	const auto &queue = device_context.get_active_queue();
+	if (!queue)
+	{
+		throw std::invalid_argument(
+			"Expected a device context with a dereferenceable active queue."
+		);
+	}
+	
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
 
@@ -463,7 +472,7 @@ void eager_operation_dispatcher::dispatch(
 		output_operands,
 		make_span(output_descriptors.data(), n_outputs),
 		device_context,
-		queue,
+		*queue,
 		small_output_size_tag()
 	);
 	auto input_storages = resolve_input_storage(
@@ -485,7 +494,7 @@ void eager_operation_dispatcher::dispatch(
 		op,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs),
-		queue,
+		*queue,
 		&m_command_cache
 	);
 	XMIPP4_ASSERT(command);
@@ -495,11 +504,11 @@ void eager_operation_dispatcher::dispatch(
 	auto scratch = allocate_scratch(
 		xmipp4::make_span(scratch_requirements),
 		device_context,
-		queue,
+		*queue,
 		small_scratch_size_tag()
 	);
 
-	queue.submit(
+	queue->submit(
 		*command,
 		xmipp4::make_span(output_storages.data(), n_outputs),
 		xmipp4::make_span(input_storages.data(), n_inputs),

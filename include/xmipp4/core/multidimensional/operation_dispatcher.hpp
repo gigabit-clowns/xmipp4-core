@@ -12,7 +12,6 @@ namespace hardware
 {
 
 class device_context;
-class command_queue;
 
 } // namespace hardware
 
@@ -68,8 +67,7 @@ public:
 		const operation &operation,
 		span<array> output_operands,
 		span<const array_view> input_operands,
-		const hardware::device_context &device_context,
-		hardware::command_queue &queue
+		const hardware::device_context &device
 	) = 0;
 };
 

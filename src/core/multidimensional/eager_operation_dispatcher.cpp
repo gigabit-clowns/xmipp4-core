@@ -281,29 +281,23 @@ create_signatures(
 }
 
 void validate_arity(
-	const operation &op,
-	std::size_t n_outputs,
-	std::size_t n_inputs
+	const operation_arity& user,
+	const operation_arity& expected
 )
 {
-	const auto expected_outputs = op.get_output_count();
-	const auto expected_inputs = op.get_input_count();
-
-	if (n_outputs != expected_outputs)
+	if (user.get_output_count() != expected.get_output_count())
 	{
 		std::ostringstream oss;
-		oss << "Operation '" << op.get_name()
-			<< "' expects " << expected_outputs
-			<< " output(s), but " << n_outputs << " provided.";
+		oss << "Expected " << expected.get_output_count()
+			<< " output(s), but " << user.get_output_count() << " provided.";
 		throw std::invalid_argument(oss.str());
 	}
 
-	if (n_inputs != expected_inputs)
+	if (user.get_input_count() != expected.get_input_count())
 	{
 		std::ostringstream oss;
-		oss << "Operation '" << op.get_name()
-			<< "' expects " << expected_inputs
-			<< " input(s), but " << n_inputs << " provided.";
+		oss << "Expected " << expected.get_input_count()
+			<< " input(s), but " << user.get_input_count() << " provided.";
 		throw std::invalid_argument(oss.str());
 	}
 }
@@ -380,7 +374,7 @@ void eager_operation_dispatcher::dispatch(
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
 
-	validate_arity(op, n_outputs, n_inputs);
+	validate_arity(operation_arity(n_outputs, n_inputs), op.get_arity());
 
 	auto input_descriptors = extract_descriptors(
 		input_operands,

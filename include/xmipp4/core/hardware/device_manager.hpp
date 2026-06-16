@@ -126,7 +126,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	std::shared_ptr<device_instance>
-	create_device(const device_index &index) const;
+	create_device_instance(const device_index &index) const;
 
 private:
 	class implementation;

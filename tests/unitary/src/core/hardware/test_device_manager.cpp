@@ -43,9 +43,6 @@ protected:
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
 
-	/**
-	 * @brief Register a backend that only reports the given name.
-	 */
 	void register_named_backend(const std::string &name)
 	{
 		auto backend = std::make_unique<mock_device_backend>();
@@ -56,11 +53,6 @@ protected:
 		manager.register_backend(std::move(backend));
 	}
 
-	/**
-	 * @brief Register a backend named @p name that creates @ref device for
-	 * @p id, wiring every call create_device performs (including the
-	 * per-affinity allocator selection done by the device_instance).
-	 */
 	void register_creating_backend(const std::string &name, std::size_t id)
 	{
 		auto backend = std::make_unique<mock_device_backend>();
@@ -201,8 +193,8 @@ TEST_CASE(
 
 TEST_CASE_METHOD(
 	device_manager_fixture,
-	"create_device in device_manager routes to the matching backend and wraps "
-	"its device in a device_instance",
+	"create_device_instance in device_manager routes to the matching backend "
+	"and wraps its device in a device_instance",
 	"[device_manager]"
 )
 {
@@ -210,7 +202,7 @@ TEST_CASE_METHOD(
 	register_named_backend("other");
 	register_creating_backend("mock", device_id);
 
-	const auto result = manager.create_device(device_index("mock", device_id));
+	const auto result = manager.create_device_instance(device_index("mock", device_id));
 
 	REQUIRE( result != nullptr );
 	CHECK( result->get_device() == device );
@@ -218,15 +210,15 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	device_manager_fixture,
-	"create_device in device_manager should throw when the backend does not "
-	"exist",
+	"create_device_instance in device_manager should throw when the backend "
+	"does not exist",
 	"[device_manager]"
 )
 {
 	register_named_backend("mock");
 
 	REQUIRE_THROWS_MATCHES(
-		manager.create_device(device_index("error", 0)),
+		manager.create_device_instance(device_index("error", 0)),
 		std::invalid_argument,
 		Catch::Matchers::Message(
 			"Requested backend does not exist"

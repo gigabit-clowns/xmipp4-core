@@ -173,14 +173,15 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	execution_context_fixture,
-	"execution_context on_device rebinds the device, keeps the dispatcher and "
-	"leaves the receiver unchanged",
+	"execution_context with_device_context replaces the device context, keeps "
+	"the dispatcher and leaves the receiver unchanged",
 	"[execution_context]"
 )
 {
 	const execution_context base(hardware::device_context(), dispatcher);
 
-	const auto derived = base.on_device(instance);
+	const auto derived =
+		base.with_device_context(hardware::device_context(instance));
 
 	CHECK( derived.get_device_context().get_device_instance() == instance );
 	CHECK( derived.get_dispatcher() == dispatcher );
@@ -188,55 +189,6 @@ TEST_CASE_METHOD(
 	// The receiver keeps its empty device context.
 	CHECK( base.get_device_context().get_device_instance() == nullptr );
 	CHECK( base.get_dispatcher() == dispatcher );
-}
-
-TEST_CASE(
-	"execution_context on_queue updates the active queue, keeps the dispatcher "
-	"and leaves the receiver unchanged",
-	"[execution_context]"
-)
-{
-	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
-	const execution_context base(hardware::device_context(), dispatcher);
-
-	const auto queue = std::make_shared<hardware::mock_command_queue>();
-	const auto derived = base.on_queue(queue);
-
-	CHECK( derived.get_device_context().get_active_queue() == queue );
-	CHECK( derived.get_dispatcher() == dispatcher );
-
-	// The receiver is not mutated.
-	CHECK( base.get_device_context().get_active_queue() == nullptr );
-}
-
-TEST_CASE(
-	"execution_context with_allocator updates the allocator slot, keeps the "
-	"dispatcher and leaves the receiver unchanged",
-	"[execution_context]"
-)
-{
-	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
-	const execution_context base(hardware::device_context(), dispatcher);
-
-	const auto allocator = std::make_shared<hardware::mock_memory_allocator>();
-	const auto derived = base.with_allocator(
-		hardware::memory_resource_affinity::host,
-		allocator
-	);
-
-	CHECK(
-		derived.get_device_context().get_allocator(
-			hardware::memory_resource_affinity::host
-		) == allocator
-	);
-	CHECK( derived.get_dispatcher() == dispatcher );
-
-	// The receiver keeps an empty slot.
-	CHECK(
-		base.get_device_context().get_allocator(
-			hardware::memory_resource_affinity::host
-		) == nullptr
-	);
 }
 
 TEST_CASE(

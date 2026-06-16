@@ -27,12 +27,12 @@ namespace multidimensional
  * describing @em how operations are turned into device work.
  *
  * Like @ref hardware::device_context, the context is a lightweight, copyable
- * value with functional-update semantics: @ref on_device, @ref on_queue,
- * @ref with_allocator and @ref with_dispatcher do not mutate the receiver, they
- * return a modified copy. This makes a context cheap to share (the device
- * context and the dispatcher are both held by shared pointer) while letting
- * callers derive scoped variants, e.g. to run a single operation on a different
- * queue without disturbing any other user of the original context.
+ * value with functional-update semantics: @ref with_device_context and
+ * @ref with_dispatcher do not mutate the receiver, they return a modified copy.
+ * This makes a context cheap to share (the device context and the dispatcher
+ * are both held by shared pointer) while letting callers derive scoped variants,
+ * e.g. to run a single operation on a different queue without disturbing any
+ * other user of the original context.
  *
  * @par Empty state
  * A default-constructed or moved-from context is @em empty: its device context
@@ -97,52 +97,21 @@ public:
 	get_dispatcher() const noexcept;
 
 	/**
-	 * @brief Derive a context bound to a different device.
+	 * @brief Derive a context with a different device context.
 	 *
-	 * Rebinds execution to a fresh @ref hardware::device_context wrapping
-	 * @p device_instance while preserving the current dispatcher.
+	 * Replaces the hardware resources describing @em where operations execute
+	 * while preserving the dispatcher. Per-use derivations such as switching
+	 * queue or overriding an allocator are expressed on the
+	 * @ref hardware::device_context itself, e.g.
+	 * `ctx.with_device_context(ctx.get_device_context().on_queue(queue));`
 	 *
-	 * @param device_instance The device instance to bind. Must not be null.
-	 * @return A copy of this context whose device context wraps
-	 * @p device_instance.
-	 * @throws std::invalid_argument if @p device_instance is null.
+	 * @param device_context The device context of the returned context.
+	 * @return A copy of this context with @p device_context as its device
+	 * context and the same dispatcher.
 	 */
 	XMIPP4_CORE_API
-	execution_context on_device(
-		std::shared_ptr<const hardware::device_instance> device_instance
-	) const;
-
-	/**
-	 * @brief Derive a context that submits onto a different queue.
-	 *
-	 * Forwards to @ref hardware::device_context::on_queue while preserving the
-	 * dispatcher.
-	 *
-	 * @param queue The active queue of the returned context. Passing null
-	 * reverts to the device's default queue. The queue must belong to the 
-	 * device held by this context.
-	 * @return A copy of this context with @p queue as its active queue.
-	 */
-	XMIPP4_CORE_API
-	execution_context on_queue(
-		std::shared_ptr<hardware::command_queue> queue
-	) const;
-
-	/**
-	 * @brief Derive a context with a different allocator for an affinity.
-	 *
-	 * Forwards to @ref hardware::device_context::with_allocator while 
-	 * preserving the dispatcher.
-	 *
-	 * @param affinity The affinity slot to update.
-	 * @param allocator The override to install, or null to revert the slot to
-	 * the instance allocator for @p affinity.
-	 * @return A copy of this context with the updated allocator slot.
-	 */
-	XMIPP4_CORE_API
-	execution_context with_allocator(
-		hardware::memory_resource_affinity affinity,
-		std::shared_ptr<hardware::memory_allocator> allocator
+	execution_context with_device_context(
+		hardware::device_context device_context
 	) const;
 
 	/**

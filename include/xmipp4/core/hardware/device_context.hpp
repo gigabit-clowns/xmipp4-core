@@ -39,10 +39,7 @@ class memory_allocator;
  * allocator that @ref get_allocator would return: at construction the slots are
  * seeded from the @ref device_instance allocators, and @ref with_allocator
  * either installs an override or, when given a null allocator, reverts the slot
- * back to the instance allocator. There is therefore no null slot to
- * special-case and no indirection on @ref get_allocator. This is correct
- * because the underlying @ref device_instance is immutable, so a seeded
- * allocator never goes stale.
+ * back to the instance allocator.
  *
  * @par Empty state
  * A default-constructed or moved-from context is @em empty: it holds no

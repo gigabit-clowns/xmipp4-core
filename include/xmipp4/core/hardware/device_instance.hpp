@@ -18,13 +18,14 @@ class memory_allocator;
 class command_queue;
 
 /**
- * @brief Immutable aggregate of device handle and related objects.
+ * @brief Immutable aggregate of a device handle and its associated objects.
  *
- * A @c device_instance bundles a @ref device handle with the static
- * @ref device_properties describing it and a set of @ref memory_allocator
- * selected for each @ref memory_resource_affinity.
- *
- * Instances are neither copyable nor movable.
+ * A @c device_instance bundles a @ref device handle with the objects needed to
+ * make it usable: the static @ref device_properties describing it, a
+ * @ref memory_allocator selected for each @ref memory_resource_affinity, and a
+ * default @ref command_queue created from the device. All of these are
+ * resolved once at construction and remain fixed for the lifetime of the
+ * instance.
  */
 class device_instance
 {

@@ -153,12 +153,14 @@ public:
 	) const;
 
 private:
-	std::shared_ptr<const device_instance> m_instance;
-	std::shared_ptr<command_queue> m_active_queue;
-	std::array<
+	using allocator_array_type = std::array<
 		std::shared_ptr<memory_allocator>,
 		static_cast<std::size_t>(memory_resource_affinity::count)
-	> m_allocators;
+	>;
+
+	std::shared_ptr<const device_instance> m_instance;
+	std::shared_ptr<command_queue> m_active_queue;
+	allocator_array_type m_allocators;
 };
 
 } // namespace hardware

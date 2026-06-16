@@ -3,6 +3,7 @@
 #include <xmipp4/core/hardware/device_instance.hpp>
 
 #include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "memory_allocator_table.hpp"
@@ -25,11 +26,13 @@ public:
 		: m_device(std::move(dev))
 		, m_properties(std::move(properties))
 		, m_allocators(*m_device)
+		, m_default_queue(m_device->create_command_queue())
 	{
 	}
 
 	const std::shared_ptr<device>& get_device() const noexcept
 	{
+		XMIPP4_ASSERT(m_device);
 		return m_device;
 	}
 
@@ -44,10 +47,17 @@ public:
 		return m_allocators.get_allocator(affinity);
 	}
 
+	const std::shared_ptr<command_queue>& get_default_queue() const noexcept
+	{
+		XMIPP4_ASSERT(m_default_queue);
+		return m_default_queue;
+	}
+
 private:
 	std::shared_ptr<device> m_device;
 	device_properties m_properties;
 	memory_allocator_table m_allocators;
+	std::shared_ptr<command_queue> m_default_queue;
 };
 
 
@@ -91,6 +101,13 @@ device_instance::get_allocator(
 {
 	XMIPP4_ASSERT(m_implementation);
 	return m_implementation->get_allocator(affinity);
+}
+
+const std::shared_ptr<command_queue>&
+device_instance::get_default_queue() const noexcept
+{
+	XMIPP4_ASSERT(m_implementation);
+	return m_implementation->get_default_queue();
 }
 
 } // namespace hardware

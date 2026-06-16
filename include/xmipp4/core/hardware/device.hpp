@@ -60,22 +60,6 @@ public:
 	get_memory_resource(memory_resource_affinity affinity) const = 0;
 
 	/**
-	 * @brief Get the default command queue for this device.
-	 *
-	 * Returns a persistent command queue associated with this device. This 
-	 * queue is created at device initialization and may be reused across the 
-	 * lifetime of the device. Multiple calls to this method return the same 
-	 * reference.
-	 *
-	 * @return A shared pointer to the default command queue. Never null.
-	 *
-	 * @see command_queue
-	 * @see create_command_queue()
-	 */
-	virtual
-	std::shared_ptr<command_queue> get_default_queue() const = 0;
-
-	/**
 	 * @brief Create a new command queue on this device.
 	 *
 	 * The returned queue is independent from any previously created queue on 

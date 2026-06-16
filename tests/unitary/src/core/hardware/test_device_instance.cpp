@@ -11,6 +11,7 @@
 #include "mock/mock_device.hpp"
 #include "mock/mock_memory_resource.hpp"
 #include "mock/mock_memory_allocator.hpp"
+#include "mock/mock_command_queue.hpp"
 
 #include <memory>
 #include <vector>
@@ -28,6 +29,7 @@ public:
 		: device(std::make_shared<mock_device>())
 		, host_allocator(std::make_shared<mock_memory_allocator>())
 		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_command_queue(std::make_shared<mock_command_queue>())
 	{
 	}
 
@@ -35,14 +37,10 @@ protected:
 	std::shared_ptr<mock_device> device;
 	std::shared_ptr<memory_allocator> host_allocator;
 	std::shared_ptr<memory_allocator> device_allocator;
+	std::shared_ptr<command_queue> default_command_queue;
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
 
-	/**
-	 * @brief Expect the per-affinity allocator selection where the host and
-	 * device affinities resolve to distinct memory resources, hence distinct
-	 * allocators.
-	 */
 	void expect_distinct_resources()
 	{
 		m_expectations.emplace_back(
@@ -67,13 +65,12 @@ protected:
 			NAMED_REQUIRE_CALL(device_resource, create_allocator())
 			.RETURN(device_allocator)
 		);
+		m_expectations.emplace_back(
+			NAMED_REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_command_queue)
+		);
 	}
 
-	/**
-	 * @brief Expect the per-affinity allocator selection where both affinities
-	 * resolve to the same memory resource, so a single allocator is created
-	 * and shared.
-	 */
 	void expect_shared_resource()
 	{
 		m_expectations.emplace_back(
@@ -93,6 +90,10 @@ protected:
 		m_expectations.emplace_back(
 			NAMED_REQUIRE_CALL(host_resource, create_allocator())
 			.RETURN(host_allocator)
+		);
+		m_expectations.emplace_back(
+			NAMED_REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_command_queue)
 		);
 	}
 
@@ -166,6 +167,18 @@ TEST_CASE_METHOD(
 		instance.get_allocator(memory_resource_affinity::host)
 		== instance.get_allocator(memory_resource_affinity::device)
 	);
+}
+
+TEST_CASE_METHOD(
+	device_instance_fixture,
+	"device_instance shares creates a default command queue",
+	"[device_instance]"
+)
+{
+	expect_distinct_resources();
+	const device_instance instance(device, device_properties{});
+
+	CHECK( instance.get_default_queue() == default_command_queue );
 }
 
 TEST_CASE(

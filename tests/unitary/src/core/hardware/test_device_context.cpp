@@ -34,10 +34,6 @@ public:
 	{
 	}
 
-	/**
-	 * @brief Build a device_instance backed by @ref device, wiring the
-	 * per-affinity allocator selection it performs at construction.
-	 */
 	std::shared_ptr<const device_instance> build_instance()
 	{
 		m_expectations.emplace_back(
@@ -62,29 +58,20 @@ public:
 			NAMED_REQUIRE_CALL(device_resource, create_allocator())
 			.RETURN(device_allocator)
 		);
+		m_expectations.emplace_back(
+			NAMED_REQUIRE_CALL(device_resource, create_allocator())
+			.RETURN(device_allocator)
+		);
+		m_expectations.emplace_back(
+			NAMED_REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_queue)
+		);
 		return std::make_shared<device_instance>(device, device_properties{});
 	}
 
-	/**
-	 * @brief Expect a single get_default_queue call returning @ref
-	 * default_queue.
-	 */
-	void expect_default_queue()
-	{
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(*device, get_default_queue())
-			.RETURN(default_queue)
-		);
-	}
-
-	/**
-	 * @brief Build a populated context. Stores the instance in @ref instance.
-	 */
 	device_context build_context()
 	{
-		instance = build_instance();
-		expect_default_queue(); // The constructor adopts the default queue.
-		return device_context(instance);
+		return device_context(build_instance());
 	}
 
 protected:
@@ -221,7 +208,6 @@ TEST_CASE_METHOD(
 	const auto on_custom = base.on_queue(other_queue);
 	REQUIRE( on_custom.get_active_queue() == other_queue );
 
-	expect_default_queue(); // on_queue(null) fetches the default again.
 	const auto reverted = on_custom.on_queue(nullptr);
 
 	CHECK( reverted.get_active_queue() == default_queue );

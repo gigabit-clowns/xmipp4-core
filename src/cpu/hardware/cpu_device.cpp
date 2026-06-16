@@ -22,11 +22,6 @@ cpu_device::get_memory_resource(memory_resource_affinity /*affinity*/) const
 	return host_memory_resource::get();
 }
 
-std::shared_ptr<command_queue> cpu_device::get_default_queue() const
-{
-	return cpu_command_queue::create(); // Singleton
-}
-
 std::shared_ptr<command_queue> cpu_device::create_command_queue() const
 {
 	return cpu_command_queue::create();

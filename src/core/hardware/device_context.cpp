@@ -23,7 +23,7 @@ device_context::device_context(std::shared_ptr<const device_instance> instance)
 		);
 	}
 
-	m_active_queue = m_instance->get_device()->get_default_queue();
+	m_active_queue = m_instance->get_default_queue();
 
 	for (std::size_t i = 0; i < m_allocators.size(); ++i)
 	{
@@ -55,7 +55,7 @@ device_context::on_queue(std::shared_ptr<command_queue> queue) const
 {
 	if (!queue && m_instance)
 	{
-		queue = m_instance->get_device()->get_default_queue();
+		queue = m_instance->get_default_queue();
 	}
 
 	auto result = *this;

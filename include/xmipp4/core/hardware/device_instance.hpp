@@ -15,16 +15,14 @@ namespace hardware
 
 class device;
 class memory_allocator;
+class command_queue;
 
 /**
- * @brief Immutable, ready-to-use aggregate of a hardware device.
+ * @brief Immutable aggregate of device handle and related objects.
  *
  * A @c device_instance bundles a @ref device handle with the static
  * @ref device_properties describing it and a set of @ref memory_allocator
- * selected for each @ref memory_resource_affinity. It is the stable, per-device
- * object the rest of the framework builds upon: it is produced by the
- * @ref device_manager and meant to be shared (held behind a @c shared_ptr) and
- * never mutated after construction.
+ * selected for each @ref memory_resource_affinity.
  *
  * Instances are neither copyable nor movable.
  */
@@ -87,6 +85,16 @@ public:
 	XMIPP4_CORE_API
 	const std::shared_ptr<memory_allocator>&
 	get_allocator(memory_resource_affinity affinity) const noexcept;
+
+	/**
+	 * @brief Retrieve the default command queue of this instance.
+	 *
+	 * @return A reference to the non-null default command queue.
+	 *
+	 * @see command_queue
+	 */
+	XMIPP4_CORE_API
+	const std::shared_ptr<command_queue>& get_default_queue() const noexcept;
 
 private:
 	class implementation;

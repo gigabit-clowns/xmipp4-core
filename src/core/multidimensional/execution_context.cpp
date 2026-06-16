@@ -2,10 +2,6 @@
 
 #include <xmipp4/core/multidimensional/execution_context.hpp>
 
-#include "eager_operation_dispatcher.hpp"
-
-#include <core/config.hpp>
-
 #include <memory>
 #include <utility>
 
@@ -15,20 +11,6 @@ namespace multidimensional
 {
 
 execution_context::execution_context() noexcept = default;
-
-execution_context::execution_context(
-	hardware::device_context device_context,
-	std::shared_ptr<const operation_command_manager> command_manager
-)
-	: execution_context(
-		std::move(device_context),
-		std::make_shared<eager_operation_dispatcher>(
-			std::move(command_manager),
-			XMIPP4_DEFAULT_OPERATION_COMMAND_CACHE_CAPACITY
-		)
-	)
-{
-}
 
 execution_context::execution_context(
 	hardware::device_context device_context,

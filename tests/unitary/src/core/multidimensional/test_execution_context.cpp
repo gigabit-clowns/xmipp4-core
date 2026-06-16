@@ -4,7 +4,6 @@
 
 #include <xmipp4/core/multidimensional/execution_context.hpp>
 
-#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device.hpp>
@@ -103,38 +102,6 @@ TEST_CASE_METHOD(
 
 	CHECK( context.get_device_context().get_device_instance() == instance );
 	CHECK( context.get_dispatcher() == dispatcher );
-}
-
-TEST_CASE_METHOD(
-	execution_context_fixture,
-	"execution_context constructor from a command manager builds a non-null "
-	"dispatcher",
-	"[execution_context]"
-)
-{
-	const hardware::device_context dev_ctx(instance);
-	const auto command_manager = std::make_shared<operation_command_manager>();
-
-	const execution_context context(dev_ctx, command_manager);
-
-	CHECK( context.get_device_context().get_device_instance() == instance );
-	CHECK( context.get_dispatcher() != nullptr );
-}
-
-TEST_CASE(
-	"execution_context constructor from a null command manager throws",
-	"[execution_context]"
-)
-{
-	const hardware::device_context empty_ctx;
-
-	CHECK_THROWS_AS(
-		execution_context(
-			empty_ctx,
-			std::shared_ptr<const operation_command_manager>()
-		),
-		std::invalid_argument
-	);
 }
 
 TEST_CASE_METHOD(

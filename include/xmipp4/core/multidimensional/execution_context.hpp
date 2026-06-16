@@ -3,7 +3,6 @@
 #pragma once
 
 #include "operation_dispatcher.hpp"
-#include "operation_command_manager.hpp"
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 #include <xmipp4/core/hardware/device_context.hpp>
@@ -52,26 +51,6 @@ public:
 	 */
 	XMIPP4_CORE_API
 	execution_context() noexcept;
-
-	/**
-	 * @brief Construct a context that dispatches eagerly through
-	 * @p command_manager.
-	 *
-	 * Wraps @p command_manager in an eager @ref operation_dispatcher that 
-	 * builds and submits the command for each operation as soon as it is
-	 * dispatched.
-	 *
-	 * @param device_context The hardware resources on which operations execute.
-	 * @param command_manager The manager queried to build the command for each
-	 * operation. Must not be null.
-	 *
-	 * @throws std::invalid_argument if @p command_manager is null.
-	 */
-	XMIPP4_CORE_API
-	execution_context(
-		hardware::device_context device_context,
-		std::shared_ptr<const operation_command_manager> command_manager
-	);
 
 	/**
 	 * @brief Construct a context with an explicit dispatcher.

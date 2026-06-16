@@ -5,6 +5,8 @@
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 
+#include <memory>
+
 namespace xmipp4
 {
 
@@ -21,6 +23,7 @@ namespace multidimensional
 class operation;
 class array;
 class array_view;
+class operation_command_manager;
 
 /**
  * @brief Abstract interface that executes operations on a set of operands.
@@ -70,6 +73,25 @@ public:
 		const hardware::device_context &device
 	) = 0;
 };
+
+/**
+ * @brief Create a dispatcher that submits operations eagerly.
+ *
+ * The returned dispatcher builds and submits the executable command for each
+ * operation as soon as it is dispatched, caching backend-private resources
+ * (compiled kernels, FFT plans, ...) so they are reused across builds with
+ * matching launch configurations.
+ *
+ * @param command_manager The manager queried to build the command for each
+ * operation. Must not be null.
+ * @return A newly created eager dispatcher.
+ *
+ * @throws std::invalid_argument if @p command_manager is null.
+ */
+XMIPP4_CORE_API
+std::shared_ptr<operation_dispatcher> make_eager_operation_dispatcher(
+	std::shared_ptr<const operation_command_manager> command_manager
+);
 
 } // namespace multidimensional
 } // namespace xmipp4

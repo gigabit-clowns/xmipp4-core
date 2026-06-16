@@ -516,5 +516,16 @@ void eager_operation_dispatcher::dispatch(
 	);
 }
 
+// Declared in operation_dispatcher.hpp.
+std::shared_ptr<operation_dispatcher> make_eager_operation_dispatcher(
+	std::shared_ptr<const operation_command_manager> command_manager
+)
+{
+	return std::make_shared<eager_operation_dispatcher>(
+		std::move(command_manager),
+		XMIPP4_DEFAULT_OPERATION_COMMAND_CACHE_CAPACITY
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

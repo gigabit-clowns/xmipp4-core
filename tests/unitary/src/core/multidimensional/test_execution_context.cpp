@@ -4,14 +4,13 @@
 
 #include <xmipp4/core/multidimensional/execution_context.hpp>
 
-#include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 #include <xmipp4/core/multidimensional/operation_command_manager.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
+#include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
-
-#include <core/multidimensional/eager_operation_dispatcher.hpp>
 
 #include "mock/mock_operation_dispatcher.hpp"
 #include "../hardware/mock/mock_device.hpp"
@@ -20,10 +19,10 @@
 #include "../hardware/mock/mock_command_queue.hpp"
 
 #include <memory>
-#include <vector>
+#include <utility>
 #include <stdexcept>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 using namespace xmipp4::multidimensional;
 
 namespace
@@ -33,51 +32,46 @@ class execution_context_fixture
 {
 public:
 	execution_context_fixture()
-		: device(std::make_shared<mock_device>())
-		, host_allocator(std::make_shared<mock_memory_allocator>())
-		, device_allocator(std::make_shared<mock_memory_allocator>())
-		, default_queue(std::make_shared<mock_command_queue>())
+		: device(std::make_shared<hardware::mock_device>())
+		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
+		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
+		, default_queue(std::make_shared<hardware::mock_command_queue>())
+		, dispatcher(std::make_shared<mock_operation_dispatcher>())
 	{
-	}
+		using hardware::memory_resource_affinity;
 
-	std::shared_ptr<const device_context> build_device_context()
-	{
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(
-				*device,
-				get_memory_resource(memory_resource_affinity::host)
-			)
-			.LR_RETURN(host_resource)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(
-				*device,
-				get_memory_resource(memory_resource_affinity::device)
-			)
-			.LR_RETURN(device_resource)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(host_resource, create_allocator())
-			.RETURN(host_allocator)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(device_resource, create_allocator())
-			.RETURN(device_allocator)
-		);
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::host)
+		)
+			.LR_RETURN(host_resource);
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::device)
+		)
+			.LR_RETURN(device_resource);
+		REQUIRE_CALL(host_resource, create_allocator())
+			.RETURN(host_allocator);
+		REQUIRE_CALL(device_resource, create_allocator())
+			.RETURN(device_allocator);
+		REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_queue);
 
-		return std::make_shared<device_context>(device);
+		instance = std::make_shared<hardware::device_instance>(
+			device,
+			hardware::device_properties()
+		);
 	}
 
 protected:
-	std::shared_ptr<mock_device> device;
-	std::shared_ptr<memory_allocator> host_allocator;
-	std::shared_ptr<memory_allocator> device_allocator;
-	mock_memory_resource host_resource;
-	mock_memory_resource device_resource;
-	std::shared_ptr<command_queue> default_queue;
-
-private:
-	std::vector<std::unique_ptr<trompeloeil::expectation>> m_expectations;
+	std::shared_ptr<hardware::mock_device> device;
+	std::shared_ptr<hardware::memory_allocator> host_allocator;
+	std::shared_ptr<hardware::memory_allocator> device_allocator;
+	hardware::mock_memory_resource host_resource;
+	hardware::mock_memory_resource device_resource;
+	std::shared_ptr<hardware::command_queue> default_queue;
+	std::shared_ptr<const hardware::device_instance> instance;
+	std::shared_ptr<mock_operation_dispatcher> dispatcher;
 };
 
 } // namespace
@@ -85,70 +79,58 @@ private:
 
 
 TEST_CASE(
-	"execution_context default constructor leaves all attributes empty",
+	"execution_context default constructor produces an empty device context "
+	"and a null dispatcher",
 	"[execution_context]"
 )
 {
 	const execution_context context;
 
-	CHECK( context.get_device_context() == nullptr );
-	CHECK( context.get_active_queue() == nullptr );
+	CHECK( context.get_device_context().get_device_instance() == nullptr );
 	CHECK( context.get_dispatcher() == nullptr );
 }
 
 TEST_CASE_METHOD(
 	execution_context_fixture,
-	"execution_context constructed with a dispatcher adopts the device's "
-	"default queue",
+	"execution_context constructor stores the provided device context and "
+	"dispatcher",
 	"[execution_context]"
 )
 {
-	const auto device_ctx = build_device_context();
-	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
+	const hardware::device_context dev_ctx(instance);
 
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
+	const execution_context context(dev_ctx, dispatcher);
 
-	const execution_context context(device_ctx, dispatcher);
-
-	CHECK( context.get_device_context() == device_ctx );
-	CHECK( context.get_active_queue() == default_queue );
+	CHECK( context.get_device_context().get_device_instance() == instance );
 	CHECK( context.get_dispatcher() == dispatcher );
 }
 
 TEST_CASE_METHOD(
 	execution_context_fixture,
-	"execution_context constructed with a command manager creates an eager "
+	"execution_context constructor from a command manager builds a non-null "
 	"dispatcher",
 	"[execution_context]"
 )
 {
-	const auto device_ctx = build_device_context();
+	const hardware::device_context dev_ctx(instance);
 	const auto command_manager = std::make_shared<operation_command_manager>();
 
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
+	const execution_context context(dev_ctx, command_manager);
 
-	const execution_context context(device_ctx, command_manager);
-
-	CHECK( context.get_device_context() == device_ctx );
-	CHECK( context.get_active_queue() == default_queue );
-	REQUIRE( context.get_dispatcher() != nullptr );
-	CHECK(
-		dynamic_cast<const eager_operation_dispatcher*>(
-			context.get_dispatcher().get()
-		) != nullptr
-	);
+	CHECK( context.get_device_context().get_device_instance() == instance );
+	CHECK( context.get_dispatcher() != nullptr );
 }
 
 TEST_CASE(
-	"execution_context constructor throws when the command manager is null",
+	"execution_context constructor from a null command manager throws",
 	"[execution_context]"
 )
 {
+	const hardware::device_context empty_ctx;
+
 	CHECK_THROWS_AS(
 		execution_context(
-			std::shared_ptr<const device_context>(),
+			empty_ctx,
 			std::shared_ptr<const operation_command_manager>()
 		),
 		std::invalid_argument
@@ -157,101 +139,155 @@ TEST_CASE(
 
 TEST_CASE_METHOD(
 	execution_context_fixture,
-	"execution_context on_device sets the device and adopts its default queue",
+	"execution_context copy shares the device context and dispatcher and "
+	"leaves the source intact",
 	"[execution_context]"
 )
 {
-	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
-	const execution_context base =
-		execution_context().with_dispatcher(dispatcher);
+	const hardware::device_context dev_ctx(instance);
+	const execution_context original(dev_ctx, dispatcher);
 
-	const auto device_ctx = build_device_context();
+	const execution_context copy(original);
 
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
+	CHECK( copy.get_device_context().get_device_instance() == instance );
+	CHECK( copy.get_dispatcher() == dispatcher );
 
-	const execution_context derived = base.on_device(device_ctx);
+	// The source is left untouched.
+	CHECK( original.get_device_context().get_device_instance() == instance );
+	CHECK( original.get_dispatcher() == dispatcher );
+}
 
-	CHECK( derived.get_device_context() == device_ctx );
-	CHECK( derived.get_active_queue() == default_queue );
+TEST_CASE_METHOD(
+	execution_context_fixture,
+	"execution_context move transfers the device context and dispatcher",
+	"[execution_context]"
+)
+{
+	const hardware::device_context dev_ctx(instance);
+	execution_context original(dev_ctx, dispatcher);
+
+	const execution_context moved(std::move(original));
+
+	CHECK( moved.get_device_context().get_device_instance() == instance );
+	CHECK( moved.get_dispatcher() == dispatcher );
+}
+
+TEST_CASE_METHOD(
+	execution_context_fixture,
+	"execution_context copy assignment replaces the target contents",
+	"[execution_context]"
+)
+{
+	const hardware::device_context dev_ctx(instance);
+	const execution_context original(dev_ctx, dispatcher);
+
+	execution_context target;
+	target = original;
+
+	CHECK( target.get_device_context().get_device_instance() == instance );
+	CHECK( target.get_dispatcher() == dispatcher );
+}
+
+TEST_CASE_METHOD(
+	execution_context_fixture,
+	"execution_context move assignment replaces the target contents",
+	"[execution_context]"
+)
+{
+	const hardware::device_context dev_ctx(instance);
+	execution_context original(dev_ctx, dispatcher);
+
+	execution_context target;
+	target = std::move(original);
+
+	CHECK( target.get_device_context().get_device_instance() == instance );
+	CHECK( target.get_dispatcher() == dispatcher );
+}
+
+TEST_CASE_METHOD(
+	execution_context_fixture,
+	"execution_context on_device rebinds the device, keeps the dispatcher and "
+	"leaves the receiver unchanged",
+	"[execution_context]"
+)
+{
+	const execution_context base(hardware::device_context(), dispatcher);
+
+	const auto derived = base.on_device(instance);
+
+	CHECK( derived.get_device_context().get_device_instance() == instance );
 	CHECK( derived.get_dispatcher() == dispatcher );
 
-	// The original context is left untouched.
-	CHECK( base.get_device_context() == nullptr );
-	CHECK( base.get_active_queue() == nullptr );
+	// The receiver keeps its empty device context.
+	CHECK( base.get_device_context().get_device_instance() == nullptr );
 	CHECK( base.get_dispatcher() == dispatcher );
 }
 
-TEST_CASE_METHOD(
-	execution_context_fixture,
-	"execution_context on_device with a null device clears the device and "
-	"queue",
+TEST_CASE(
+	"execution_context on_queue updates the active queue, keeps the dispatcher "
+	"and leaves the receiver unchanged",
 	"[execution_context]"
 )
 {
-	const auto device_ctx = build_device_context();
 	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
+	const execution_context base(hardware::device_context(), dispatcher);
 
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
-	const execution_context base(device_ctx, dispatcher);
+	const auto queue = std::make_shared<hardware::mock_command_queue>();
+	const auto derived = base.on_queue(queue);
 
-	const execution_context derived =
-		base.on_device(std::shared_ptr<const device_context>());
-
-	CHECK( derived.get_device_context() == nullptr );
-	CHECK( derived.get_active_queue() == nullptr );
-	CHECK( derived.get_dispatcher() == dispatcher );
-}
-
-TEST_CASE_METHOD(
-	execution_context_fixture,
-	"execution_context on_queue replaces the active queue and preserves the "
-	"rest",
-	"[execution_context]"
-)
-{
-	const auto device_ctx = build_device_context();
-	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
-
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
-	const execution_context base(device_ctx, dispatcher);
-
-	const std::shared_ptr<command_queue> other_queue =
-		std::make_shared<mock_command_queue>();
-	const execution_context derived = base.on_queue(other_queue);
-
-	CHECK( derived.get_device_context() == device_ctx );
-	CHECK( derived.get_active_queue() == other_queue );
+	CHECK( derived.get_device_context().get_active_queue() == queue );
 	CHECK( derived.get_dispatcher() == dispatcher );
 
-	// The original context still uses the default queue.
-	CHECK( base.get_active_queue() == default_queue );
+	// The receiver is not mutated.
+	CHECK( base.get_device_context().get_active_queue() == nullptr );
 }
 
-TEST_CASE_METHOD(
-	execution_context_fixture,
-	"execution_context with_dispatcher replaces the dispatcher and preserves "
-	"the rest",
+TEST_CASE(
+	"execution_context with_allocator updates the allocator slot, keeps the "
+	"dispatcher and leaves the receiver unchanged",
 	"[execution_context]"
 )
 {
-	const auto device_ctx = build_device_context();
 	const auto dispatcher = std::make_shared<mock_operation_dispatcher>();
+	const execution_context base(hardware::device_context(), dispatcher);
 
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(default_queue);
-	const execution_context base(device_ctx, dispatcher);
+	const auto allocator = std::make_shared<hardware::mock_memory_allocator>();
+	const auto derived = base.with_allocator(
+		hardware::memory_resource_affinity::host,
+		allocator
+	);
 
-	const auto other_dispatcher =
-		std::make_shared<mock_operation_dispatcher>();
-	const execution_context derived = base.with_dispatcher(other_dispatcher);
+	CHECK(
+		derived.get_device_context().get_allocator(
+			hardware::memory_resource_affinity::host
+		) == allocator
+	);
+	CHECK( derived.get_dispatcher() == dispatcher );
 
-	CHECK( derived.get_device_context() == device_ctx );
-	CHECK( derived.get_active_queue() == default_queue );
-	CHECK( derived.get_dispatcher() == other_dispatcher );
+	// The receiver keeps an empty slot.
+	CHECK(
+		base.get_device_context().get_allocator(
+			hardware::memory_resource_affinity::host
+		) == nullptr
+	);
+}
 
-	// The original context keeps its dispatcher.
-	CHECK( base.get_dispatcher() == dispatcher );
+TEST_CASE(
+	"execution_context with_dispatcher swaps the dispatcher, preserves the "
+	"device context and leaves the receiver unchanged",
+	"[execution_context]"
+)
+{
+	const auto first = std::make_shared<mock_operation_dispatcher>();
+	const auto second = std::make_shared<mock_operation_dispatcher>();
+	const execution_context base(hardware::device_context(), first);
+
+	const auto derived = base.with_dispatcher(second);
+
+	CHECK( derived.get_dispatcher() == second );
+	// The (empty) device context is carried over unchanged.
+	CHECK( derived.get_device_context().get_device_instance() == nullptr );
+
+	// The receiver keeps its original dispatcher.
+	CHECK( base.get_dispatcher() == first );
 }

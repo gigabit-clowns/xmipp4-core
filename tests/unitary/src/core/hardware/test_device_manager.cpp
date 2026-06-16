@@ -18,6 +18,7 @@
 #include "mock/mock_device.hpp"
 #include "mock/mock_memory_resource.hpp"
 #include "mock/mock_memory_allocator.hpp"
+#include "mock/mock_command_queue.hpp"
 
 using namespace xmipp4;
 using namespace xmipp4::hardware;
@@ -32,72 +33,78 @@ public:
 		: device(std::make_shared<mock_device>())
 		, host_allocator(std::make_shared<mock_memory_allocator>())
 		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_queue(std::make_shared<mock_command_queue>())
 	{
 	}
 
 protected:
+	using expectation_ptr = std::unique_ptr<trompeloeil::expectation>;
+
 	device_manager manager;
 	std::shared_ptr<mock_device> device;
 	std::shared_ptr<memory_allocator> host_allocator;
 	std::shared_ptr<memory_allocator> device_allocator;
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
+	std::shared_ptr<command_queue> default_queue;
 
 	void register_named_backend(const std::string &name)
 	{
 		auto backend = std::make_unique<mock_device_backend>();
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(*backend, get_name())
-			.RETURN(name)
-		);
+		REQUIRE_CALL(*backend, get_name())
+			.RETURN(name);
 		manager.register_backend(std::move(backend));
 	}
 
-	void register_creating_backend(const std::string &name, std::size_t id)
+	std::vector<expectation_ptr>
+	register_creating_backend(const std::string &name, std::size_t id)
 	{
 		auto backend = std::make_unique<mock_device_backend>();
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(*backend, get_name())
-			.RETURN(name)
-		);
-		m_expectations.emplace_back(
+		REQUIRE_CALL(*backend, get_name())
+			.RETURN(name);
+
+		std::vector<expectation_ptr> expectations;
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(*backend, create_device(id))
 			.RETURN(device)
 		);
-		m_expectations.emplace_back(
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(
 				*backend,
 				get_device_properties(id, trompeloeil::_)
 			)
 			.RETURN(true)
 		);
-		m_expectations.emplace_back(
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(
 				*device,
 				get_memory_resource(memory_resource_affinity::host)
 			)
 			.LR_RETURN(host_resource)
 		);
-		m_expectations.emplace_back(
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(
 				*device,
 				get_memory_resource(memory_resource_affinity::device)
 			)
 			.LR_RETURN(device_resource)
 		);
-		m_expectations.emplace_back(
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(host_resource, create_allocator())
 			.RETURN(host_allocator)
 		);
-		m_expectations.emplace_back(
+		expectations.push_back(
 			NAMED_REQUIRE_CALL(device_resource, create_allocator())
 			.RETURN(device_allocator)
 		);
-		manager.register_backend(std::move(backend));
-	}
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_queue)
+		);
 
-private:
-	std::vector<std::unique_ptr<trompeloeil::expectation>> m_expectations;
+		manager.register_backend(std::move(backend));
+		return expectations;
+	}
 };
 
 } // namespace
@@ -200,9 +207,12 @@ TEST_CASE_METHOD(
 {
 	const std::size_t device_id = 154433421;
 	register_named_backend("other");
-	register_creating_backend("mock", device_id);
+	// Held for the rest of the test: these are consumed by the
+	// create_device_instance call below, not by the registration above.
+	const auto expectations = register_creating_backend("mock", device_id);
 
-	const auto result = manager.create_device_instance(device_index("mock", device_id));
+	const auto result =
+		manager.create_device_instance(device_index("mock", device_id));
 
 	REQUIRE( result != nullptr );
 	CHECK( result->get_device() == device );

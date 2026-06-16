@@ -7,7 +7,6 @@
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 #include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <memory>
 
@@ -16,32 +15,31 @@ namespace xmipp4
 namespace multidimensional
 {
 
+
 /**
- * @brief Bundle of the resources required to execute an operation.
+ * @brief Pairs the hardware resources and the dispatch strategy used to run
+ * operations.
  *
- * An @c execution_context groups the three pieces that @ref execute needs to
- * carry out an operation:
- * - a @ref hardware::device_context, providing the device and its allocators;
- * - a @ref hardware::command_queue (the @em active queue), onto which the work
- *   produced by the operation is submitted;
- * - an @ref operation_dispatcher, encoding the execution strategy (e.g. eager
- *   submission) that turns the operation and its operands into device work.
+ * An @c execution_context bundles the two pieces of state that every
+ * multidimensional operation needs in order to run: a
+ * @ref hardware::device_context describing @em where the work executes (the
+ * device, its active @ref hardware::command_queue and its
+ * @ref hardware::memory_allocator slots), and an @ref operation_dispatcher
+ * describing @em how operations are turned into device work.
  *
- * The context is a lightweight, copyable value that merely holds shared
- * references to these resources; copies share the same underlying device,
- * queue and dispatcher. A default-constructed context holds none of them and
- * cannot be used to execute until it is populated.
+ * Like @ref hardware::device_context, the context is a lightweight, copyable
+ * value with functional-update semantics: @ref on_device, @ref on_queue,
+ * @ref with_allocator and @ref with_dispatcher do not mutate the receiver, they
+ * return a modified copy. This makes a context cheap to share (the device
+ * context and the dispatcher are both held by shared pointer) while letting
+ * callers derive scoped variants, e.g. to run a single operation on a different
+ * queue without disturbing any other user of the original context.
  *
- * The attributes are mutated through the @ref on_device, @ref on_queue and
- * @ref with_dispatcher methods, each of which returns a modified copy instead
- * of altering the receiver in place. This makes a context safe to share while
- * still allowing callers to derive variants that, for instance, target a
- * different queue of the same device.
- *
- * Selecting a device through @ref on_device (or the device-taking
- * constructors) also sets the active queue to that device's default queue, so
- * that the resulting context is immediately usable. The queue can afterwards
- * be overridden with @ref on_queue.
+ * @par Empty state
+ * A default-constructed or moved-from context is @em empty: its device context
+ * is empty (see @ref hardware::device_context) and its dispatcher is null.
+ * Querying it is well defined; the accessors simply return an empty device
+ * context and a null dispatcher.
  */
 class execution_context
 {
@@ -49,47 +47,42 @@ public:
 	/**
 	 * @brief Construct an empty context.
 	 *
-	 * The resulting context holds no device, no active queue and no
-	 * dispatcher. It must be populated through @ref on_device,
-	 * @ref with_dispatcher (and optionally @ref on_queue) before it can be
-	 * used to execute an operation.
+	 * The resulting context holds an empty @ref hardware::device_context and a
+	 * null dispatcher.
 	 */
 	XMIPP4_CORE_API
 	execution_context() noexcept;
 
 	/**
-	 * @brief Construct a context with an eager dispatcher.
+	 * @brief Construct a context that dispatches eagerly through
+	 * @p command_manager.
 	 *
-	 * Builds an @ref eager_operation_dispatcher backed by @p command_manager
-	 * and a command cache of the default capacity
-	 * (@c XMIPP4_DEFAULT_OPERATION_COMMAND_CACHE_CAPACITY). The active queue is
-	 * set to the default queue of @p device_context.
+	 * Wraps @p command_manager in an eager @ref operation_dispatcher that 
+	 * builds and submits the command for each operation as soon as it is
+	 * dispatched.
 	 *
-	 * @param device_context The device on which operations are executed. When
-	 * not null, its default queue becomes the active queue.
-	 * @param command_manager The manager queried by the dispatcher to build
-	 * the command for each operation. Must not be null.
+	 * @param device_context The hardware resources on which operations execute.
+	 * @param command_manager The manager queried to build the command for each
+	 * operation. Must not be null.
 	 *
-	 * @throws std::invalid_argument When @p command_manager is null.
+	 * @throws std::invalid_argument if @p command_manager is null.
 	 */
 	XMIPP4_CORE_API
 	execution_context(
-		std::shared_ptr<const hardware::device_context> device_context,
+		hardware::device_context device_context,
 		std::shared_ptr<const operation_command_manager> command_manager
 	);
 
 	/**
 	 * @brief Construct a context with an explicit dispatcher.
 	 *
-	 * The active queue is set to the default queue of @p device_context.
-	 *
-	 * @param device_context The device on which operations are executed. When
-	 * not null, its default queue becomes the active queue.
-	 * @param dispatcher The dispatcher encoding the execution strategy.
+	 * @param device_context The hardware resources on which operations execute.
+	 * @param dispatcher The dispatcher used to turn operations into device 
+	 * work.
 	 */
 	XMIPP4_CORE_API
 	execution_context(
-		std::shared_ptr<const hardware::device_context> device_context,
+		hardware::device_context device_context,
 		std::shared_ptr<multidimensional::operation_dispatcher> dispatcher
 	);
 
@@ -106,59 +99,50 @@ public:
 	execution_context& operator=(execution_context &&other) noexcept;
 
 	/**
-	 * @brief Get the device context on which operations are executed.
+	 * @brief Retrieve the device context describing where operations execute.
 	 *
-	 * @return Shared pointer to the device context, or null when none is set.
+	 * @return A reference to the wrapped device context.
 	 */
 	XMIPP4_CORE_API
-	const std::shared_ptr<const hardware::device_context>&
+	const hardware::device_context&
 	get_device_context() const noexcept;
 
 	/**
-	 * @brief Get the active queue onto which operations are submitted.
+	 * @brief Retrieve the dispatcher used to execute operations.
 	 *
-	 * @return Shared pointer to the active command queue, or null when none is
-	 * set.
-	 */
-	XMIPP4_CORE_API
-	const std::shared_ptr<hardware::command_queue>&
-	get_active_queue() const noexcept;
-
-	/**
-	 * @brief Get the dispatcher that carries out operations.
-	 *
-	 * @return Shared pointer to the dispatcher, or null when none is set.
+	 * @return A reference to the dispatcher, or to a null pointer when this
+	 * context is empty.
 	 */
 	XMIPP4_CORE_API
 	const std::shared_ptr<multidimensional::operation_dispatcher>&
 	get_dispatcher() const noexcept;
 
 	/**
-	 * @brief Make a copy of this context targeting a different device.
+	 * @brief Derive a context bound to a different device.
 	 *
-	 * The returned context shares this context's dispatcher but uses
-	 * @p device_context as its device. Its active queue is set to the default
-	 * queue of @p device_context, or to null when @p device_context is null.
-	 * This context is left unchanged.
+	 * Rebinds execution to a fresh @ref hardware::device_context wrapping
+	 * @p device_instance while preserving the current dispatcher.
 	 *
-	 * @param device_context The device to target.
-	 * @return A copy of this context with the device (and active queue)
-	 * replaced.
+	 * @param device_instance The device instance to bind. Must not be null.
+	 * @return A copy of this context whose device context wraps
+	 * @p device_instance.
+	 * @throws std::invalid_argument if @p device_instance is null.
 	 */
 	XMIPP4_CORE_API
 	execution_context on_device(
-		std::shared_ptr<const hardware::device_context> device_context
+		std::shared_ptr<const hardware::device_instance> device_instance
 	) const;
 
 	/**
-	 * @brief Make a copy of this context using a different active queue.
+	 * @brief Derive a context that submits onto a different queue.
 	 *
-	 * The returned context shares this context's device and dispatcher but
-	 * submits work onto @p queue. This context is left unchanged.
+	 * Forwards to @ref hardware::device_context::on_queue while preserving the
+	 * dispatcher.
 	 *
-	 * @param queue The active queue to use. It should belong to this context's
-	 * device.
-	 * @return A copy of this context with the active queue replaced.
+	 * @param queue The active queue of the returned context. Passing null
+	 * reverts to the device's default queue. The queue must belong to the 
+	 * device held by this context.
+	 * @return A copy of this context with @p queue as its active queue.
 	 */
 	XMIPP4_CORE_API
 	execution_context on_queue(
@@ -166,15 +150,15 @@ public:
 	) const;
 
 	/**
-	 * @brief Make a copy of this context using a different memory allocator.
+	 * @brief Derive a context with a different allocator for an affinity.
 	 *
-	 * The returned context shares this context's resources, but replaces the
-	 * allocator installed for the provided @p affinity.
+	 * Forwards to @ref hardware::device_context::with_allocator while 
+	 * preserving the dispatcher.
 	 *
-	 * @param affinity The affinity of the allocator to be installed. Must
-	 * be valid.
-	 * @param allocator The allocator to be installed.
-	 * @return A copy of this context with the allocator replaced.
+	 * @param affinity The affinity slot to update.
+	 * @param allocator The override to install, or null to revert the slot to
+	 * the instance allocator for @p affinity.
+	 * @return A copy of this context with the updated allocator slot.
 	 */
 	XMIPP4_CORE_API
 	execution_context with_allocator(
@@ -183,14 +167,11 @@ public:
 	) const;
 
 	/**
-	 * @brief Make a copy of this context using a different dispatcher.
+	 * @brief Derive a context with a different dispatcher.
 	 *
-	 * The returned context shares this context's device and active queue but
-	 * executes operations through @p dispatcher. This context is left
-	 * unchanged.
-	 *
-	 * @param dispatcher The dispatcher to use.
-	 * @return A copy of this context with the dispatcher replaced.
+	 * @param dispatcher The dispatcher of the returned context.
+	 * @return A copy of this context with @p dispatcher as its dispatcher and
+	 * the same device context.
 	 */
 	XMIPP4_CORE_API
 	execution_context with_dispatcher(
@@ -198,14 +179,7 @@ public:
 	) const;
 
 private:
-	execution_context(
-		std::shared_ptr<const hardware::device_context> device_context,
-		std::shared_ptr<hardware::command_queue> active_queue,
-		std::shared_ptr<multidimensional::operation_dispatcher> dispatcher
-	) noexcept;
-
-	std::shared_ptr<const hardware::device_context> m_device_context;
-	std::shared_ptr<hardware::command_queue> m_active_queue;
+	hardware::device_context m_device_context;
 	std::shared_ptr<multidimensional::operation_dispatcher> m_dispatcher;
 };
 

@@ -15,7 +15,6 @@
 #include "mock/mock_command_queue.hpp"
 
 #include <memory>
-#include <vector>
 #include <stdexcept>
 
 using namespace xmipp4::hardware;
@@ -32,46 +31,32 @@ public:
 		, device_allocator(std::make_shared<mock_memory_allocator>())
 		, default_queue(std::make_shared<mock_command_queue>())
 	{
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::host)
+		)
+			.LR_RETURN(host_resource);
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::device)
+		)
+			.LR_RETURN(device_resource);
+		REQUIRE_CALL(host_resource, create_allocator())
+			.RETURN(host_allocator);
+		REQUIRE_CALL(device_resource, create_allocator())
+			.RETURN(device_allocator);
+		REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_queue);
+
+		instance = std::make_shared<device_instance>(
+			device,
+			device_properties()
+		);
 	}
 
-	std::shared_ptr<const device_instance> build_instance()
+	device_context build_context() const
 	{
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(
-				*device,
-				get_memory_resource(memory_resource_affinity::host)
-			)
-			.LR_RETURN(host_resource)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(
-				*device,
-				get_memory_resource(memory_resource_affinity::device)
-			)
-			.LR_RETURN(device_resource)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(host_resource, create_allocator())
-			.RETURN(host_allocator)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(device_resource, create_allocator())
-			.RETURN(device_allocator)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(device_resource, create_allocator())
-			.RETURN(device_allocator)
-		);
-		m_expectations.emplace_back(
-			NAMED_REQUIRE_CALL(*device, create_command_queue())
-			.RETURN(default_queue)
-		);
-		return std::make_shared<device_instance>(device, device_properties{});
-	}
-
-	device_context build_context()
-	{
-		return device_context(build_instance());
+		return device_context(instance);
 	}
 
 protected:
@@ -82,9 +67,6 @@ protected:
 	mock_memory_resource device_resource;
 	std::shared_ptr<command_queue> default_queue;
 	std::shared_ptr<const device_instance> instance;
-
-private:
-	std::vector<std::unique_ptr<trompeloeil::expectation>> m_expectations;
 };
 
 } // namespace

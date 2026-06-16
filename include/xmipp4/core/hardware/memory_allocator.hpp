@@ -19,7 +19,7 @@ class memory_resource;
  * @brief Abstract allocator of @ref buffer objects on a @ref memory_resource.
  *
  * Concrete implementations are free to back themselves with anything that fits 
- * the underlying backend. Implementations are not guaranteed to be thread-safe.
+ * the underlying backend.
  *
  * The allocator is also in charge of tracking the asynchronous use of the 
  * buffers it produces: when a buffer's shared ownership is dropped while device 

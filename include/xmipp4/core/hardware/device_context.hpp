@@ -117,8 +117,9 @@ public:
 	/**
 	 * @brief Derive a context that submits onto a different queue.
 	 *
-	 * @param queue The active queue of the returned context. Passing null
-	 * sets device's default queue on the returned device_context.
+	 * @param queue The active queue of the returned context. The provided queue
+	 * must have been provided by the device held by this context. Passing null
+	 * uses device_instance's default queue on the returned device_context.
 	 * @return A copy of this context with @p queue as its active queue.
 	 */
 	XMIPP4_CORE_API
@@ -134,13 +135,12 @@ public:
 	 * The override must produce buffers reachable by the role implied by the
 	 * slot: an allocator bound to @ref memory_resource_affinity::host must be
 	 * host-accessible, and one bound to @ref memory_resource_affinity::device
-	 * must be device-accessible. Reachability beyond the kind (e.g. that a
-	 * device pool belongs to the device that will execute the work) remains the
-	 * caller's responsibility.
+	 * must be device-accessible. 
 	 *
 	 * @param affinity The affinity slot to update.
 	 * @param allocator The override to install, or null to revert to the
-	 * instance allocator.
+	 * instance allocator. Must satisfy the allocator requirements for the
+	 * slot where it is being installed.
 	 * @return A copy of this context with the updated allocator slot.
 	 */
 	XMIPP4_CORE_API

@@ -21,14 +21,13 @@ class mock_operation_dispatcher final
 	: public operation_dispatcher
 {
 public:
-	MAKE_MOCK5(
+	MAKE_MOCK4(
 		dispatch,
 		void (
 			const operation &operation,
 			span<array> output_operands,
 			span<const array_view> input_operands,
-			const hardware::device_context &device_context,
-			hardware::command_queue &queue
+			const hardware::device_context &device_context
 		),
 		override
 	);

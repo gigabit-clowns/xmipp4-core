@@ -2,193 +2,163 @@
 
 #pragma once
 
-#include <memory>
-
-#include <xmipp4/core/platform/dynamic_shared_object.h>
-
 #include "memory_resource_affinity.hpp"
-#include "event_usage_flags.hpp"
+#include "../platform/dynamic_shared_object.h"
+
+#include <array>
+#include <cstddef>
+#include <memory>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-class device;
-class device_properties;
+class device_instance;
 class command_queue;
-class event;
-class memory_resource;
 class memory_allocator;
 
 /**
- * @brief Facade bundling a @ref device with the per-device resources that the
- * framework manages on top of it.
+ * @brief Scoped, configurable view over a @ref device_instance.
  *
- * A @c device_context pairs a hardware @ref device with the memory allocators
- * built for it, exposing a single object that the rest of the framework can
- * use to allocate memory and create per-device objects (queues, events, ...)
- * without having to wire the allocators manually.
+ * A @c device_context layers the per-use, configurable state on top of the
+ * immutable @ref device_instance: the @em active @ref command_queue that work
+ * is submitted to, and the @ref memory_allocator selected for each
+ * @ref memory_resource_affinity. 
  *
- * The device-facing methods forward to the underlying @ref device, while the
- * allocator-facing methods operate on the owned allocators. The context is
- * move-only: copy construction and copy assignment are deleted.
+ * The context is a lightweight, copyable value with functional-update
+ * semantics: @ref on_queue and @ref with_allocator do not mutate the receiver,
+ * they return a modified copy. This makes a context safe to share (including
+ * across threads) while still allowing callers to derive scoped variants, e.g.
+ * to bind a special-purpose allocator for a single operation without disturbing
+ * any other user of the original context. Copies are cheap: the instance, the
+ * queue and the allocators are all shared pointers.
  *
- * A context may also be @em empty. A default-constructed context, as well as a
- * context that has been moved from, holds no device and owns no allocators.
- * Such a context is only meant to act as a placeholder until a real context is
- * move-assigned into it. Every accessor and device-facing method requires a
- * non-empty context as a precondition; emptiness can be queried through
- * @ref is_empty. Besides destruction, move-assignment and @ref is_empty,
- * invoking any method on an empty context results in undefined behavior.
+ * @par Allocator slots
+ * For a context wrapping an instance, every affinity slot always holds the
+ * allocator that @ref get_allocator would return: at construction the slots are
+ * seeded from the @ref device_instance allocators, and @ref with_allocator
+ * either installs an override or, when given a null allocator, reverts the slot
+ * back to the instance allocator. There is therefore no null slot to
+ * special-case and no indirection on @ref get_allocator. This is correct
+ * because the underlying @ref device_instance is immutable, so a seeded
+ * allocator never goes stale.
+ *
+ * @par Empty state
+ * A default-constructed or moved-from context is @em empty: it holds no
+ * instance, no queue and no allocators. Querying it is well defined; the
+ * accessors simply return null shared pointers. A populated context (one
+ * constructed from a non-null instance) never returns null from any accessor.
  */
 class device_context
 {
 public:
 	/**
-	 * @brief Construct an empty context that holds no device.
+	 * @brief Construct an empty context holding no instance.
 	 *
-	 * The resulting context is a placeholder meant to be replaced through
-	 * move-assignment before use; see @ref is_empty. Invoking any other method
-	 * on it results in undefined behavior.
+	 * Every accessor of the resulting context returns null until it is
+	 * replaced by assignment.
 	 */
-	XMIPP4_CORE_API
-	device_context() noexcept;
+	device_context() noexcept = default;
 
 	/**
-	 * @brief Construct a context for @p dev.
+	 * @brief Construct a context for @p instance.
 	 *
-	 * Builds the memory allocators by querying @p dev for its memory resources
-	 * and selecting an allocator for each affinity.
+	 * The active queue is set to the default queue of the wrapped device and
+	 * every allocator slot is seeded with the corresponding @p instance
+	 * allocator.
 	 *
-	 * @param dev Device to wrap. Must not be null.
+	 * @param instance Device instance to wrap. Must not be null.
 	 *
-	 * @throws std::invalid_argument if @p dev is null.
-	 * @throws std::runtime_error if a required memory_resource_affinity has no
-	 * suitable resource on @p dev.
+	 * @throws std::invalid_argument if @p instance is null.
 	 */
 	XMIPP4_CORE_API
-	explicit device_context(std::shared_ptr<device> dev);
-	device_context(const device_context &other) = delete;
-	XMIPP4_CORE_API
-	device_context(device_context &&other) noexcept;
-	XMIPP4_CORE_API
-	~device_context();
+	explicit device_context(std::shared_ptr<const device_instance> instance);
 
-	device_context& operator=(const device_context &other) = delete;
-	XMIPP4_CORE_API
-	device_context& operator=(device_context &&other) noexcept;
+	device_context(const device_context &other) = default;
+	device_context(device_context &&other) noexcept = default;
+	~device_context() = default;
+
+	device_context& operator=(const device_context &other) = default;
+	device_context& operator=(device_context &&other) noexcept = default;
 
 	/**
-	 * @brief Check whether this context is empty.
+	 * @brief Retrieve the wrapped device instance.
 	 *
-	 * A context is empty when it has been default-constructed or moved from,
-	 * in which case it holds no device and owns no allocators.
-	 *
-	 * @return true if the context holds no device, false otherwise.
+	 * @return A reference to the wrapped instance, or to a null pointer if
+	 * this context is empty.
 	 */
 	XMIPP4_CORE_API
-	bool is_empty() const noexcept;
+	const std::shared_ptr<const device_instance>&
+	get_device_instance() const noexcept;
 
 	/**
-	 * @brief Retrieve the wrapped device.
+	 * @brief Retrieve the active command queue.
 	 *
-	 * @pre This context must not be empty.
-	 * @return Shared pointer to the device.
+	 * Work produced through this context is submitted onto this queue.
+	 *
+	 * @return A reference to the active queue, or to a null pointer if this
+	 * context is empty.
 	 */
 	XMIPP4_CORE_API
-	const std::shared_ptr<device>& get_device() const noexcept;
+	const std::shared_ptr<command_queue>& get_active_queue() const noexcept;
 
 	/**
-	 * @brief Retrieve a memory resource by its affinity.
+	 * @brief Retrieve the allocator for the given affinity.
 	 *
-	 * Forwards to @ref device::get_memory_resource.
-	 *
-	 * @param affinity The intended access pattern for which a resource is
-	 * requested.
-	 * @pre This context must not be empty.
-	 * @return A reference to the matching @ref memory_resource.
-	 */
-	XMIPP4_CORE_API
-	const memory_resource&
-	get_memory_resource(memory_resource_affinity affinity) const;
-
-	/**
-	 * @brief Retrieve the static properties of the wrapped device.
-	 *
-	 * Forwards to @ref device::get_properties.
-	 *
-	 * @pre This context must not be empty.
-	 * @return A reference to the device's @ref device_properties.
-	 */
-	XMIPP4_CORE_API
-	const device_properties& get_properties() const noexcept;
-
-	/**
-	 * @brief Retrieve the allocator for the given memory affinity.
+	 * Returns the override installed through @ref with_allocator, or the
+	 * @ref device_instance allocator when no override is in effect.
 	 *
 	 * @param affinity The desired memory_resource_affinity (host or device).
-	 * @pre This context must not be empty.
-	 * @return Shared pointer to the corresponding memory_allocator.
+	 * @return A reference to the allocator for @p affinity, or to a null
+	 * pointer if this context is empty.
 	 */
 	XMIPP4_CORE_API
 	const std::shared_ptr<memory_allocator>&
 	get_allocator(memory_resource_affinity affinity) const noexcept;
 
 	/**
-	 * @brief Replace the allocator for the given memory affinity.
+	 * @brief Derive a context that submits onto a different queue.
 	 *
-	 * @param affinity The memory_resource_affinity slot to update.
-	 * @param allocator New allocator to install; may be nullptr to clear the
-	 * slot.
-	 * @pre This context must not be empty.
-	 * @return The allocator that was previously installed in that slot, or
-	 * nullptr if the slot was empty.
+	 * @param queue The active queue of the returned context. Passing null
+	 * sets device's default queue on the returned device_context.
+	 * @return A copy of this context with @p queue as its active queue.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<memory_allocator>
-	set_allocator(
+	device_context on_queue(std::shared_ptr<command_queue> queue) const;
+
+	/**
+	 * @brief Derive a context with a different allocator for an affinity.
+	 *
+	 * Installs @p allocator as the allocator for @p affinity. Passing a null
+	 * @p allocator reverts the slot to the @ref device_instance allocator for
+	 * @p affinity (or to null when this context is empty).
+	 *
+	 * The override must produce buffers reachable by the role implied by the
+	 * slot: an allocator bound to @ref memory_resource_affinity::host must be
+	 * host-accessible, and one bound to @ref memory_resource_affinity::device
+	 * must be device-accessible. Reachability beyond the kind (e.g. that a
+	 * device pool belongs to the device that will execute the work) remains the
+	 * caller's responsibility.
+	 *
+	 * @param affinity The affinity slot to update.
+	 * @param allocator The override to install, or null to revert to the
+	 * instance allocator.
+	 * @return A copy of this context with the updated allocator slot.
+	 */
+	XMIPP4_CORE_API
+	device_context with_allocator(
 		memory_resource_affinity affinity,
 		std::shared_ptr<memory_allocator> allocator
-	) noexcept;
-
-	/**
-	 * @brief Get the default command queue for the wrapped device.
-	 *
-	 * Forwards to @ref device::get_default_queue.
-	 *
-	 * @pre This context must not be empty.
-	 * @return A shared pointer to the default command queue. Never null.
-	 */
-	XMIPP4_CORE_API
-	std::shared_ptr<command_queue> get_default_queue() const;
-
-	/**
-	 * @brief Create a new command queue on the wrapped device.
-	 *
-	 * Forwards to @ref device::create_command_queue.
-	 *
-	 * @pre This context must not be empty.
-	 * @return Newly created queue. Never null.
-	 */
-	XMIPP4_CORE_API
-	std::shared_ptr<command_queue> create_command_queue() const;
-
-	/**
-	 * @brief Create a synchronization primitive on the wrapped device.
-	 *
-	 * Forwards to @ref device::create_event.
-	 *
-	 * @param usage Capabilities that the returned event must support.
-	 * @pre This context must not be empty.
-	 * @return Newly created event. Never null.
-	 */
-	XMIPP4_CORE_API
-	std::shared_ptr<event> create_event(event_usage_flags usage) const;
+	) const;
 
 private:
-	class implementation;
-	std::unique_ptr<implementation> m_implementation;
+	std::shared_ptr<const device_instance> m_instance;
+	std::shared_ptr<command_queue> m_active_queue;
+	std::array<
+		std::shared_ptr<memory_allocator>,
+		static_cast<std::size_t>(memory_resource_affinity::count)
+	> m_allocators;
 };
 
 } // namespace hardware

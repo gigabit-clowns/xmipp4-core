@@ -166,6 +166,23 @@ public:
 	) const;
 
 	/**
+	 * @brief Make a copy of this context using a different memory allocator.
+	 *
+	 * The returned context shares this context's resources, but replaces the
+	 * allocator installed for the provided @p affinity.
+	 *
+	 * @param affinity The affinity of the allocator to be installed. Must
+	 * be valid.
+	 * @param allocator The allocator to be installed.
+	 * @return A copy of this context with the allocator replaced.
+	 */
+	XMIPP4_CORE_API
+	execution_context with_allocator(
+		hardware::memory_resource_affinity affinity,
+		std::shared_ptr<hardware::memory_allocator> allocator
+	) const;
+
+	/**
 	 * @brief Make a copy of this context using a different dispatcher.
 	 *
 	 * The returned context shares this context's device and active queue but

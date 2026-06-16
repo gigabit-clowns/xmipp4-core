@@ -4,6 +4,7 @@
 
 #include <xmipp4/core/hardware/device_context.hpp>
 
+#include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -12,7 +13,6 @@
 #include "mock/mock_memory_resource.hpp"
 #include "mock/mock_memory_allocator.hpp"
 #include "mock/mock_command_queue.hpp"
-#include "mock/mock_event.hpp"
 
 #include <memory>
 #include <vector>
@@ -30,10 +30,15 @@ public:
 		: device(std::make_shared<mock_device>())
 		, host_allocator(std::make_shared<mock_memory_allocator>())
 		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_queue(std::make_shared<mock_command_queue>())
 	{
 	}
 
-	device_context build_context()
+	/**
+	 * @brief Build a device_instance backed by @ref device, wiring the
+	 * per-affinity allocator selection it performs at construction.
+	 */
+	std::shared_ptr<const device_instance> build_instance()
 	{
 		m_expectations.emplace_back(
 			NAMED_REQUIRE_CALL(
@@ -57,8 +62,29 @@ public:
 			NAMED_REQUIRE_CALL(device_resource, create_allocator())
 			.RETURN(device_allocator)
 		);
+		return std::make_shared<device_instance>(device, device_properties{});
+	}
 
-		return device_context(device);
+	/**
+	 * @brief Expect a single get_default_queue call returning @ref
+	 * default_queue.
+	 */
+	void expect_default_queue()
+	{
+		m_expectations.emplace_back(
+			NAMED_REQUIRE_CALL(*device, get_default_queue())
+			.RETURN(default_queue)
+		);
+	}
+
+	/**
+	 * @brief Build a populated context. Stores the instance in @ref instance.
+	 */
+	device_context build_context()
+	{
+		instance = build_instance();
+		expect_default_queue(); // The constructor adopts the default queue.
+		return device_context(instance);
 	}
 
 protected:
@@ -67,6 +93,8 @@ protected:
 	std::shared_ptr<memory_allocator> device_allocator;
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
+	std::shared_ptr<command_queue> default_queue;
+	std::shared_ptr<const device_instance> instance;
 
 private:
 	std::vector<std::unique_ptr<trompeloeil::expectation>> m_expectations;
@@ -77,35 +105,74 @@ private:
 
 
 TEST_CASE(
-	"device_context constructor should throw when given a null device",
+	"device_context constructor should throw when given a null instance",
 	"[device_context]"
 )
 {
 	CHECK_THROWS_AS(
-		device_context(std::shared_ptr<device>()),
+		device_context(std::shared_ptr<const device_instance>()),
 		std::invalid_argument
 	);
 }
 
 TEST_CASE(
-	"device_context default constructor should create an empty context",
+	"device_context default constructor should produce an empty context whose "
+	"accessors return null",
 	"[device_context]"
 )
 {
-	device_context context;
-	CHECK( context.is_empty() );
+	const device_context context;
+
+	CHECK( context.get_device_instance() == nullptr );
+	CHECK( context.get_active_queue() == nullptr );
+	CHECK( context.get_allocator(memory_resource_affinity::host) == nullptr );
+	CHECK( context.get_allocator(memory_resource_affinity::device) == nullptr );
+}
+
+TEST_CASE(
+	"device_context functional updates on an empty context do not dereference "
+	"a missing instance",
+	"[device_context]"
+)
+{
+	const device_context empty;
+
+	const auto queue = std::make_shared<mock_command_queue>();
+	const auto with_queue = empty.on_queue(queue);
+	CHECK( with_queue.get_active_queue() == queue );
+	CHECK( with_queue.get_device_instance() == nullptr );
+
+	// No instance to fall back on, so the queue stays null.
+	const auto cleared_queue = empty.on_queue(nullptr);
+	CHECK( cleared_queue.get_active_queue() == nullptr );
+
+	const auto allocator = std::make_shared<mock_memory_allocator>();
+	const auto with_alloc =
+		empty.with_allocator(memory_resource_affinity::host, allocator);
+	CHECK(
+		with_alloc.get_allocator(memory_resource_affinity::host) == allocator
+	);
+	CHECK( with_alloc.get_device_instance() == nullptr );
+
+	// No instance to revert to, so the slot stays null.
+	const auto cleared_alloc =
+		empty.with_allocator(memory_resource_affinity::host, nullptr);
+	CHECK(
+		cleared_alloc.get_allocator(memory_resource_affinity::host) == nullptr
+	);
 }
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context constructor should build an allocator for each affinity",
+	"device_context constructor should adopt the default queue and seed an "
+	"allocator for each affinity",
 	"[device_context]"
 )
 {
 	const auto context = build_context();
 
-	REQUIRE_FALSE( context.is_empty() );
-	CHECK( context.get_device() == device );
+	CHECK( context.get_device_instance() == instance );
+	CHECK( context.get_active_queue() == default_queue );
 	CHECK(
 		context.get_allocator(memory_resource_affinity::host) == host_allocator
 	);
@@ -117,162 +184,119 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context get_properties should forward to the wrapped device",
+	"device_context on_queue should replace the active queue and preserve the "
+	"rest without mutating the receiver",
 	"[device_context]"
 )
 {
-	const auto context = build_context();
+	const auto base = build_context();
 
-	CHECK( &context.get_properties() == &device->get_properties() );
+	const auto other_queue = std::make_shared<mock_command_queue>();
+	const auto derived = base.on_queue(other_queue);
+
+	CHECK( derived.get_active_queue() == other_queue );
+	CHECK( derived.get_device_instance() == instance );
+	CHECK(
+		derived.get_allocator(memory_resource_affinity::host) == host_allocator
+	);
+	CHECK(
+		derived.get_allocator(memory_resource_affinity::device)
+		== device_allocator
+	);
+
+	// The original context still uses the default queue.
+	CHECK( base.get_active_queue() == default_queue );
 }
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context get_memory_resource should forward to the wrapped device",
+	"device_context on_queue with null should revert to the device default "
+	"queue",
 	"[device_context]"
 )
 {
-	const auto context = build_context();
+	const auto base = build_context();
 
-	mock_memory_resource resource;
-	REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-		.LR_RETURN(resource);
+	const auto other_queue = std::make_shared<mock_command_queue>();
+	const auto on_custom = base.on_queue(other_queue);
+	REQUIRE( on_custom.get_active_queue() == other_queue );
+
+	expect_default_queue(); // on_queue(null) fetches the default again.
+	const auto reverted = on_custom.on_queue(nullptr);
+
+	CHECK( reverted.get_active_queue() == default_queue );
+}
+
+TEST_CASE_METHOD(
+	device_context_fixture,
+	"device_context with_allocator should override one slot and preserve the "
+	"rest without mutating the receiver",
+	"[device_context]"
+)
+{
+	const auto base = build_context();
+
+	const auto replacement = std::make_shared<mock_memory_allocator>();
+	const auto derived =
+		base.with_allocator(memory_resource_affinity::host, replacement);
 
 	CHECK(
-		&context.get_memory_resource(memory_resource_affinity::device)
-		== &resource
+		derived.get_allocator(memory_resource_affinity::host) == replacement
+	);
+	CHECK(
+		derived.get_allocator(memory_resource_affinity::device)
+		== device_allocator
+	);
+	CHECK( derived.get_device_instance() == instance );
+	CHECK( derived.get_active_queue() == default_queue );
+
+	// The original context keeps the instance allocator.
+	CHECK(
+		base.get_allocator(memory_resource_affinity::host) == host_allocator
 	);
 }
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context set_allocator should install and return the previous one",
+	"device_context with_allocator with null should revert the slot to the "
+	"instance allocator",
 	"[device_context]"
 )
 {
-	auto context = build_context();
+	const auto base = build_context();
 
-	std::shared_ptr<memory_allocator> replacement =
-		std::make_shared<mock_memory_allocator>();
-	const auto previous =
-		context.set_allocator(memory_resource_affinity::host, replacement);
+	const auto replacement = std::make_shared<mock_memory_allocator>();
+	const auto overridden =
+		base.with_allocator(memory_resource_affinity::host, replacement);
+	const auto reverted =
+		overridden.with_allocator(memory_resource_affinity::host, nullptr);
 
-	CHECK( previous == host_allocator );
 	CHECK(
-		context.get_allocator(memory_resource_affinity::host) == replacement
+		reverted.get_allocator(memory_resource_affinity::host) == host_allocator
 	);
 	CHECK(
-		context.get_allocator(memory_resource_affinity::device)
+		reverted.get_allocator(memory_resource_affinity::device)
 		== device_allocator
 	);
 }
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context set_allocator with nullptr should clear the slot",
+	"device_context copies share the underlying instance, queue and allocators",
 	"[device_context]"
 )
 {
-	auto context = build_context();
+	const auto base = build_context();
+	const auto copy = base;
 
-	const auto previous =
-		context.set_allocator(memory_resource_affinity::host, nullptr);
-
-	CHECK( previous == host_allocator );
-	CHECK( context.get_allocator(memory_resource_affinity::host) == nullptr );
-}
-
-TEST_CASE_METHOD(
-	device_context_fixture,
-	"device_context get_default_queue should forward to the wrapped device",
-	"[device_context]"
-)
-{
-	const auto context = build_context();
-
-	std::shared_ptr<command_queue> queue =
-		std::make_shared<mock_command_queue>();
-	REQUIRE_CALL(*device, get_default_queue())
-		.RETURN(queue);
-
-	CHECK( context.get_default_queue() == queue );
-}
-
-TEST_CASE_METHOD(
-	device_context_fixture,
-	"device_context create_command_queue should forward to the wrapped device",
-	"[device_context]"
-)
-{
-	const auto context = build_context();
-
-	std::shared_ptr<command_queue> queue =
-		std::make_shared<mock_command_queue>();
-	REQUIRE_CALL(*device, create_command_queue())
-		.RETURN(queue);
-
-	CHECK( context.create_command_queue() == queue );
-}
-
-TEST_CASE_METHOD(
-	device_context_fixture,
-	"device_context create_event should forward the usage to the wrapped "
-	"device",
-	"[device_context]"
-)
-{
-	const auto context = build_context();
-
-	const event_usage_flags usage = {
-		event_usage_flag_bits::host_wait,
-		event_usage_flag_bits::device_wait
-	};
-	std::shared_ptr<event> created = std::make_shared<mock_event>();
-	REQUIRE_CALL(*device, create_event(usage))
-		.RETURN(created);
-
-	CHECK( context.create_event(usage) == created );
-}
-
-TEST_CASE_METHOD(
-	device_context_fixture,
-	"device_context move constructor should transfer ownership and empty "
-	"the source",
-	"[device_context]"
-)
-{
-	auto source = build_context();
-
-	const device_context destination(std::move(source));
-
-	CHECK( source.is_empty() );
-	CHECK_FALSE( destination.is_empty() );
-	CHECK( destination.get_device() == device );
+	CHECK( copy.get_device_instance() == base.get_device_instance() );
+	CHECK( copy.get_active_queue() == base.get_active_queue() );
 	CHECK(
-		destination.get_allocator(memory_resource_affinity::host)
-		== host_allocator
+		copy.get_allocator(memory_resource_affinity::host)
+		== base.get_allocator(memory_resource_affinity::host)
 	);
-}
-
-TEST_CASE_METHOD(
-	device_context_fixture,
-	"device_context move assignment should transfer ownership and empty "
-	"the source",
-	"[device_context]"
-)
-{
-	auto source = build_context();
-
-	device_context destination;
-	REQUIRE( destination.is_empty() );
-
-	destination = std::move(source);
-
-	CHECK( source.is_empty() );
-	CHECK_FALSE( destination.is_empty() );
-	CHECK( destination.get_device() == device );
 	CHECK(
-		destination.get_allocator(memory_resource_affinity::device)
-		== device_allocator
+		copy.get_allocator(memory_resource_affinity::device)
+		== base.get_allocator(memory_resource_affinity::device)
 	);
 }

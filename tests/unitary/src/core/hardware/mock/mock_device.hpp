@@ -3,7 +3,6 @@
 #pragma once
 
 #include <xmipp4/core/hardware/device.hpp>
-#include <xmipp4/core/hardware/device_properties.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -16,10 +15,7 @@ class mock_device final
 	: public device
 {
 public:
-	explicit mock_device(device_properties properties = device_properties())
-		: device(std::move(properties))
-	{
-	}
+	mock_device() = default;
 
 	MAKE_CONST_MOCK1(
 		get_memory_resource,

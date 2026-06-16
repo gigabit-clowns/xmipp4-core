@@ -8,7 +8,6 @@
 
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/core_version.hpp>
-#include <xmipp4/core/system/host.hpp>
 
 #include <stdexcept>
 
@@ -101,14 +100,4 @@ TEST_CASE(
 
 	const auto device = backend.create_device(0);
 	REQUIRE( device != nullptr );
-
-	const auto &properties = device->get_properties();
-	REQUIRE( properties.get_name() == xmipp4::system::get_hostname() );
-	REQUIRE( properties.get_type() == device_type::cpu );
-	REQUIRE( properties.get_physical_location().empty() );
-	REQUIRE(
-		properties.get_total_memory_bytes() ==
-		xmipp4::system::get_total_system_memory()
-	);
-	REQUIRE( properties.get_optimal_data_alignment() == 64 );
 }

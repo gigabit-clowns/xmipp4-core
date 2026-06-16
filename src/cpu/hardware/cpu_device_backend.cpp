@@ -51,13 +51,12 @@ bool cpu_device_backend::get_device_properties(
 std::shared_ptr<device> 
 cpu_device_backend::create_device(std::size_t id) const
 {
-	device_properties properties;
-	if (!get_device_properties(id, properties))
+	if (id >= 1)
 	{
 		throw std::invalid_argument("Requested device id is invalid");
 	}
 
-	return std::make_shared<cpu_device>(std::move(properties));
+	return std::make_shared<cpu_device>();
 }
 
 bool cpu_device_backend::register_at(device_manager &manager)

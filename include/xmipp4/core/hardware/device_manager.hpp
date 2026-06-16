@@ -11,12 +11,13 @@
 #include <memory>
 #include <vector>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace hardware
 {
 
 class device;
+class device_instance;
 
 /**
  * @brief Centralize multiple @ref device_backend instances and route
@@ -106,19 +107,26 @@ public:
 	) const;
 
 	/**
-	 * @brief Create a device handle.
+	 * @brief Create a device instance.
 	 *
-	 * Resolves the backend named by @p index and delegates the actual
-	 * instantiation to @ref device_backend::create_device.
+	 * Resolves the backend named by @p index, delegates the actual device
+	 * instantiation to @ref device_backend::create_device and queries its
+	 * @ref device_properties, then bundles both into a @ref device_instance
+	 * (which also selects the default allocators for the device).
+	 *
+	 * Instances are not cached: each call returns a freshly created
+	 * @ref device_instance.
 	 *
 	 * @param[in] index Index identifying the target device.
-	 * @return std::shared_ptr<device> A non-null handle to the device.
-	 * @throws std::invalid_argument If no backend is registered under
-	 * the name carried by @p index. The backend may additionally throw
-	 * if the device id is invalid.
+	 * @return std::shared_ptr<device_instance> A non-null instance.
+	 * @throws std::invalid_argument If no backend is registered under the
+	 * name carried by @p index, or if the backend does not recognize the
+	 * device id. The backend may additionally throw if the device id is
+	 * invalid.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<device> create_device(const device_index &index) const;
+	std::shared_ptr<device_instance>
+	create_device(const device_index &index) const;
 
 private:
 	class implementation;

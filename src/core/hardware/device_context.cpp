@@ -2,10 +2,8 @@
 
 #include <xmipp4/core/hardware/device_context.hpp>
 
+#include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device.hpp>
-#include <xmipp4/core/platform/assert.hpp>
-
-#include "memory_allocator_table.hpp"
 
 #include <stdexcept>
 #include <utility>
@@ -15,122 +13,71 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_context::implementation
+device_context::device_context(std::shared_ptr<const device_instance> instance)
+	: m_instance(std::move(instance))
 {
-public:
-	explicit implementation(std::shared_ptr<device> dev)
-		: m_device(std::move(dev))
-		, m_allocators(*m_device)
-	{
-	}
-
-	const std::shared_ptr<device>& get_device() const noexcept
-	{
-		XMIPP4_ASSERT(m_device);
-		return m_device;
-	}
-
-	memory_allocator_table& get_allocator_table() noexcept
-	{
-		return m_allocators;
-	}
-
-	const memory_allocator_table& get_allocator_table() const noexcept
-	{
-		return m_allocators;
-	}
-
-private:
-	std::shared_ptr<device> m_device;
-	memory_allocator_table m_allocators;
-};
-
-
-
-device_context::device_context() noexcept = default;
-
-device_context::device_context(std::shared_ptr<device> dev)
-{
-	if (!dev)
+	if (!m_instance)
 	{
 		throw std::invalid_argument(
-			"Cannot construct a device_context from a null device."
+			"Cannot construct a device_context from a null device_instance."
 		);
 	}
 
-	m_implementation = std::make_unique<implementation>(std::move(dev));
+	m_active_queue = m_instance->get_device()->get_default_queue();
+
+	for (std::size_t i = 0; i < m_allocators.size(); ++i)
+	{
+		const auto affinity = static_cast<memory_resource_affinity>(i);
+		m_allocators[i] = m_instance->get_allocator(affinity);
+	}
 }
 
-device_context::device_context(device_context &&other) noexcept = default;
-
-device_context::~device_context() = default;
-
-device_context&
-device_context::operator=(device_context &&other) noexcept = default;
-
-
-
-bool device_context::is_empty() const noexcept
+const std::shared_ptr<const device_instance>&
+device_context::get_device_instance() const noexcept
 {
-	return m_implementation == nullptr;
+	return m_instance;
 }
 
-const std::shared_ptr<device>& device_context::get_device() const noexcept
+const std::shared_ptr<command_queue>&
+device_context::get_active_queue() const noexcept
 {
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device();
-}
-
-const memory_resource&
-device_context::get_memory_resource(memory_resource_affinity affinity) const
-{
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device()->get_memory_resource(affinity);
-}
-
-const device_properties& device_context::get_properties() const noexcept
-{
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device()->get_properties();
+	return m_active_queue;
 }
 
 const std::shared_ptr<memory_allocator>&
 device_context::get_allocator(memory_resource_affinity affinity) const noexcept
 {
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_allocator_table().get_allocator(affinity);
+	return m_allocators[static_cast<std::size_t>(affinity)];
 }
 
-std::shared_ptr<memory_allocator>
-device_context::set_allocator(
+device_context
+device_context::on_queue(std::shared_ptr<command_queue> queue) const
+{
+	if (!queue && m_instance)
+	{
+		queue = m_instance->get_device()->get_default_queue();
+	}
+
+	auto result = *this;
+	result.m_active_queue = std::move(queue);
+	return result;
+}
+
+device_context
+device_context::with_allocator(
 	memory_resource_affinity affinity,
 	std::shared_ptr<memory_allocator> allocator
-) noexcept
+) const
 {
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_allocator_table().set_allocator(
-		affinity, 
-		std::move(allocator)
-	);
-}
+	if (!allocator && m_instance)
+	{
+		allocator = m_instance->get_allocator(affinity);
+	}
 
-std::shared_ptr<command_queue> device_context::get_default_queue() const
-{
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device()->get_default_queue();
-}
-
-std::shared_ptr<command_queue> device_context::create_command_queue() const
-{
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device()->create_command_queue();
-}
-
-std::shared_ptr<event>
-device_context::create_event(event_usage_flags usage) const
-{
-	XMIPP4_ASSERT(m_implementation);
-	return m_implementation->get_device()->create_event(usage);
+	auto result = *this;
+	const auto index = static_cast<std::size_t>(affinity);
+	result.m_allocators[index] = std::move(allocator);
+	return result;
 }
 
 } // namespace hardware

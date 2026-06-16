@@ -19,7 +19,7 @@ TEST_CASE(
 	"[cpu_device]"
 )
 {
-	cpu_device dev(device_properties{});
+	cpu_device dev;
 
 	const auto affinity = GENERATE(
 		memory_resource_affinity::host,
@@ -35,7 +35,7 @@ TEST_CASE(
 	"[cpu_device]"
 )
 {
-	cpu_device dev(device_properties{});
+	cpu_device dev;
 	const auto queue = dev.create_command_queue();
 
 	REQUIRE( queue != nullptr );
@@ -47,7 +47,7 @@ TEST_CASE(
 	"[cpu_device]"
 )
 {
-	cpu_device dev(device_properties{});
+	cpu_device dev;
 	const auto queue_a = dev.create_command_queue();
 	const auto queue_b = dev.create_command_queue();
 
@@ -60,7 +60,7 @@ TEST_CASE(
 	"[cpu_device]"
 )
 {
-	cpu_device dev(device_properties{});
+	cpu_device dev;
 	const auto evt = dev.create_event({});
 
 	REQUIRE( evt != nullptr );
@@ -68,31 +68,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_device should expose the properties it was constructed with",
-	"[cpu_device]"
-)
-{
-	device_properties properties;
-	properties.set_name("Test CPU");
-	properties.set_type(device_type::cpu);
-	properties.set_total_memory_bytes(0xCAFE);
-	properties.set_optimal_data_alignment(64);
-
-	cpu_device dev(properties);
-
-	const auto &stored = dev.get_properties();
-	REQUIRE( stored.get_name() == "Test CPU" );
-	REQUIRE( stored.get_type() == device_type::cpu );
-	REQUIRE( stored.get_total_memory_bytes() == 0xCAFE );
-	REQUIRE( stored.get_optimal_data_alignment() == 64 );
-}
-
-TEST_CASE(
 	"cpu_device should ignore the requested event usage flags",
 	"[cpu_device]"
 )
 {
-	cpu_device dev(device_properties{});
+	cpu_device dev;
 	const auto evt = dev.create_event({
 		event_usage_flag_bits::host_query,
 		event_usage_flag_bits::host_wait,

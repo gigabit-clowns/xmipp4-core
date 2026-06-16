@@ -20,7 +20,7 @@ class XMIPP4_CORE_API cpu_device final
 	: public device
 {
 public:
-	explicit cpu_device(device_properties properties) noexcept;
+	cpu_device() noexcept;
 	~cpu_device() override;
 
 	const memory_resource& 

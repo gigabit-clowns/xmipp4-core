@@ -48,9 +48,8 @@ public:
 	 * @p canonical_output_types holds the data types the policy would
 	 * produce if the user had not pre-allocated outputs.
 	 *
-	 * @param canonical_output_types Output buffer, sized to the
-	 *        operation's output arity. Will be filled with the canonical
-	 *        data types.
+	 * @param canonical_output_types Output buffer, sized to the operation's 
+	 * output arity. Will be filled with the canonical data types.
 	 * @param input_types Data types of the input operands.
 	 */
 	virtual void deduce(

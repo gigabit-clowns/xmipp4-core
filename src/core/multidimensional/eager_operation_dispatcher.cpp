@@ -493,10 +493,8 @@ void eager_operation_dispatcher::dispatch(
 	);
 	XMIPP4_ASSERT(prog);
 
-	std::vector<hardware::program_scratch_requirement> scratch_requirements;
-	prog->get_scratch_requirements(scratch_requirements);
 	auto scratch = allocate_scratch(
-		xmipp4::make_span(scratch_requirements),
+		prog->get_scratch_requirements(),
 		device_context,
 		*queue,
 		small_scratch_size_tag()

@@ -10,11 +10,10 @@ namespace hardware
 program::program() noexcept = default;
 program::~program() = default;
 
-void program::get_scratch_requirements(
-	std::vector<program_scratch_requirement> &requirements
-) const
+span<const program_scratch_requirement>
+program::get_scratch_requirements() const
 {
-	requirements.clear();
+	return {};
 }
 
 } // namespace hardware

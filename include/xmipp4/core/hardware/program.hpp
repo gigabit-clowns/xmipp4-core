@@ -5,8 +5,8 @@
 #include "program_scratch_requirement.hpp"
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/span.hpp>
 
-#include <vector>
 #include <cstddef>
 
 namespace xmipp4
@@ -40,25 +40,21 @@ public:
 	/**
 	 * @brief Queries the scratch buffer requirements for this program.
 	 *
-	 * Programs may require temporary (scratch) memory buffers during
-	 * execution. This method populates the provided vector with all scratch
-	 * buffer requirements for this program, allowing the caller to allocate
-	 * the necessary buffers before program submission.
+	 * The program may require temporary (scratch) memory buffers for execution. 
+	 * This method returns a view over the scratch buffer requirements for this 
+	 * program, allowing the caller to allocate the necessary buffers before 
+	 * program submission. The view remains valid and stable during the lifetime
+	 * of the object.
 	 *
-	 * If the program does not require any scratch buffers, the vector will
-	 * be empty upon return.
+	 * Returns an empty span by default (no scratch required).
 	 *
-	 * @param[out] requirements A vector to be populated with the scratch
-	 * buffer requirements for this program. The vector is cleared before being
-	 * populated with the program's requirements.
+	 * @return A non-owning view of the scratch buffer requirements.
 	 *
 	 * @see program_scratch_requirement for details on individual requirement
 	 * specifications.
 	 */
 	virtual
-	void get_scratch_requirements(
-		std::vector<program_scratch_requirement> &requirements
-	) const;
+	span<const program_scratch_requirement> get_scratch_requirements() const;
 };
 
 } // namespace hardware

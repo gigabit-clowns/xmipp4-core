@@ -16,14 +16,10 @@ class test_program final : public program
 } // namespace
 
 TEST_CASE(
-	"program::get_scratch_requirements returns empty vector by default",
+	"program::get_scratch_requirements returns empty span by default",
 	"[hardware]"
 )
 {
 	test_program prog;
-
-	std::vector<program_scratch_requirement> reqs;
-	reqs.emplace_back(1, 1, memory_resource_affinity::device);
-	prog.get_scratch_requirements(reqs);
-	CHECK(reqs.empty());
+	CHECK( prog.get_scratch_requirements().empty() );
 }

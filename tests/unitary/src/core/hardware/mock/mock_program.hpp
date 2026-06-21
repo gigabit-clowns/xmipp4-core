@@ -15,9 +15,9 @@ class mock_program final
 	: public program
 {
 public:
-	MAKE_CONST_MOCK1(
+	MAKE_CONST_MOCK0(
 		get_scratch_requirements,
-		void(std::vector<program_scratch_requirement> &),
+		span<const program_scratch_requirement>(),
 		override
 	);
 };

@@ -14,9 +14,9 @@ namespace hardware
 {
 
 /**
- * @brief Describes a scratch buffer requirement for command execution.
+ * @brief Describes a scratch buffer requirement for program execution.
  *
- * A command may require scratch (temporary) memory buffers during execution.
+ * A program may require scratch (temporary) memory buffers during execution.
  * This class encapsulates a single scratch buffer requirement, specifying:
  * - The required memory size in bytes.
  * - The required memory alignment in bytes. Must be a power of two.
@@ -26,7 +26,7 @@ namespace hardware
  * be changed. Instances are typically lightweight and efficiently copied or
  * moved.
  */
-class XMIPP4_CORE_API command_scratch_requirement
+class XMIPP4_CORE_API program_scratch_requirement
 {
 public:
 	/**
@@ -40,22 +40,22 @@ public:
 	 * @note The constructor does not validate that alignment is a power of two;
 	 * callers are responsible for providing valid values.
 	 */
-	command_scratch_requirement(
+	program_scratch_requirement(
 		std::size_t size,
 		std::size_t alignment,
 		memory_resource_affinity affinity
 	) noexcept;
 
-	command_scratch_requirement(
-		const command_scratch_requirement &other
+	program_scratch_requirement(
+		const program_scratch_requirement &other
 	) = default;
-	command_scratch_requirement(command_scratch_requirement &&other) = default;
-	~command_scratch_requirement() = default;
+	program_scratch_requirement(program_scratch_requirement &&other) = default;
+	~program_scratch_requirement() = default;
 
-	command_scratch_requirement&
-	operator=(const command_scratch_requirement &other) = default;
-	command_scratch_requirement&
-	operator=(command_scratch_requirement &&other) = default;
+	program_scratch_requirement&
+	operator=(const program_scratch_requirement &other) = default;
+	program_scratch_requirement&
+	operator=(program_scratch_requirement &&other) = default;
 
 	/**
 	 * @brief Returns the required scratch buffer size in bytes.

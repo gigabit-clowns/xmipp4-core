@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "operation_command_cache_key.hpp"
+#include "operation_program_cache_key.hpp"
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -18,7 +18,7 @@ namespace multidimensional
 
 /**
  * @brief Bounded associative store for backend-private resources reused
- * across operation command builds.
+ * across operation program builds.
  *
  * The cache behaves as a typed key/value bag: each builder defines its own
  * key type and stores its own backend-specific resources (FFT plans,
@@ -40,7 +40,7 @@ namespace multidimensional
  * store it, with one replacing the other. This wastes a build but never
  * corrupts the cache, and either stored value is equally valid.
  */
-class operation_command_cache
+class operation_program_cache
 {
 public:
 	/**
@@ -50,16 +50,16 @@ public:
 	 * be greater than zero.
 	 */
 	XMIPP4_CORE_API
-	explicit operation_command_cache(std::size_t capacity) noexcept;
-	operation_command_cache(const operation_command_cache &other) = delete;
-	operation_command_cache(operation_command_cache &&other) = delete;
+	explicit operation_program_cache(std::size_t capacity) noexcept;
+	operation_program_cache(const operation_program_cache &other) = delete;
+	operation_program_cache(operation_program_cache &&other) = delete;
 	XMIPP4_CORE_API
-	~operation_command_cache();
+	~operation_program_cache();
 
-	operation_command_cache&
-	operator=(const operation_command_cache &other) = delete;
-	operation_command_cache&
-	operator=(operation_command_cache &&other) = delete;
+	operation_program_cache&
+	operator=(const operation_program_cache &other) = delete;
+	operation_program_cache&
+	operator=(operation_program_cache &&other) = delete;
 
 	/**
 	 * @brief Get the maximum number of entries this cache may hold.
@@ -83,7 +83,7 @@ public:
 	 * entry is present.
 	 */
 	XMIPP4_CORE_API
-	std::shared_ptr<void> touch(const operation_command_cache_key &key);
+	std::shared_ptr<void> touch(const operation_program_cache_key &key);
 
 	/**
 	 * @brief Store a value under the given key, replacing any existing
@@ -100,7 +100,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	void store(
-		std::unique_ptr<const operation_command_cache_key> key,
+		std::unique_ptr<const operation_program_cache_key> key,
 		std::shared_ptr<void> value
 	);
 

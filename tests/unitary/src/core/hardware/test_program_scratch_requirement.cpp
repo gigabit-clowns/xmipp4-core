@@ -3,12 +3,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/hardware/command_scratch_requirement.hpp>
+#include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 
 using namespace xmipp4::hardware;
 
 TEST_CASE(
-	"command_scratch_requirement constructor should store size, alignment, "
+	"program_scratch_requirement constructor should store size, alignment, "
 	"and affinity",
 	"[hardware]"
 )
@@ -20,7 +20,7 @@ TEST_CASE(
 		memory_resource_affinity::host
 	);
 
-	command_scratch_requirement req(size, alignment, affinity);
+	program_scratch_requirement req(size, alignment, affinity);
 
 	CHECK(req.get_size() == size);
 	CHECK(req.get_alignment() == alignment);

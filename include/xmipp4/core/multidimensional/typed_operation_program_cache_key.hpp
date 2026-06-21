@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "operation_command_cache_key.hpp"
+#include "operation_program_cache_key.hpp"
 
 #include <memory>
 #include <type_traits>
@@ -20,16 +20,16 @@ namespace multidimensional
  * equality-comparable
  */
 template <typename K>
-class typed_operation_command_cache_key final
-	: public operation_command_cache_key
+class typed_operation_program_cache_key final
+	: public operation_program_cache_key
 {
 public:
-	explicit typed_operation_command_cache_key(K key);
-	~typed_operation_command_cache_key() override = default;
+	explicit typed_operation_program_cache_key(K key);
+	~typed_operation_program_cache_key() override = default;
 
 	std::size_t hash() const noexcept override;
 	bool equals(
-		const operation_command_cache_key &other
+		const operation_program_cache_key &other
 	) const noexcept override;
 
 	const K& get_key() const noexcept;
@@ -41,4 +41,4 @@ private:
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "typed_operation_command_cache.inl"
+#include "typed_operation_program_cache.inl"

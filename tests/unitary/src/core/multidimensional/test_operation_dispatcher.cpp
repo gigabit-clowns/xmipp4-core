@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 
-#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 
 #include <memory>
 #include <stdexcept>
@@ -17,7 +17,7 @@ TEST_CASE(
 	"[operation_dispatcher]"
 )
 {
-	const auto command_manager = std::make_shared<operation_command_manager>();
+	const auto command_manager = std::make_shared<operation_program_manager>();
 
 	const auto dispatcher = make_eager_operation_dispatcher(command_manager);
 
@@ -31,7 +31,7 @@ TEST_CASE(
 {
 	CHECK_THROWS_AS(
 		make_eager_operation_dispatcher(
-			std::shared_ptr<const operation_command_manager>()
+			std::shared_ptr<const operation_program_manager>()
 		),
 		std::invalid_argument
 	);

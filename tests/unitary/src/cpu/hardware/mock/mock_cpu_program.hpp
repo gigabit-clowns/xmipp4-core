@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/cpu/hardware/cpu_command.hpp>
+#include <xmipp4/cpu/hardware/cpu_program.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -11,8 +11,8 @@ namespace xmipp4
 namespace hardware
 {
 
-class mock_cpu_command final
-	: public cpu_command
+class mock_cpu_program final
+	: public cpu_program
 {
 public:
 	MAKE_CONST_MOCK3(

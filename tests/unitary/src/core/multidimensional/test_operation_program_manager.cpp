@@ -2,14 +2,14 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
-#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
+#include <xmipp4/core/multidimensional/operation_program_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_program_cache.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
 #include "mock/mock_operation.hpp"
-#include "mock/mock_operation_command_builder.hpp"
-#include "../hardware/mock/mock_command.hpp"
+#include "mock/mock_operation_program_builder.hpp"
+#include "../hardware/mock/mock_program.hpp"
 #include "../hardware/mock/mock_command_queue.hpp"
 
 #include <array>
@@ -35,63 +35,63 @@ struct mock_operation_b
 } // namespace
 
 TEST_CASE(
-	"operation_command_manager::register_builder accepts a valid builder",
-	"[operation_command_manager]"
+	"operation_program_manager::register_builder accepts a valid builder",
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
-	auto builder = std::make_unique<mock_operation_command_builder>();
+	operation_program_manager manager;
+	auto builder = std::make_unique<mock_operation_program_builder>();
 
 	REQUIRE_CALL(*builder, get_operation_id())
-		.RETURN(operation_id::of<mock_operation_command_builder>());
+		.RETURN(operation_id::of<mock_operation_program_builder>());
 
 	CHECK(manager.register_builder(std::move(builder)));
 }
 
 TEST_CASE(
-	"operation_command_manager::register_builder rejects a null builder",
-	"[operation_command_manager]"
+	"operation_program_manager::register_builder rejects a null builder",
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 	CHECK_FALSE(manager.register_builder(nullptr));
 }
 
 TEST_CASE(
-	"operation_command_manager::register_builder accepts multiple builders "
+	"operation_program_manager::register_builder accepts multiple builders "
 	"for the same operation",
-	"[operation_command_manager]"
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
-	auto builder1 = std::make_unique<mock_operation_command_builder>();
-	auto builder2 = std::make_unique<mock_operation_command_builder>();
+	operation_program_manager manager;
+	auto builder1 = std::make_unique<mock_operation_program_builder>();
+	auto builder2 = std::make_unique<mock_operation_program_builder>();
 
 	REQUIRE_CALL(*builder1, get_operation_id())
-		.RETURN(operation_id::of<mock_operation_command_builder>());
+		.RETURN(operation_id::of<mock_operation_program_builder>());
 	REQUIRE_CALL(*builder2, get_operation_id())
-		.RETURN(operation_id::of<mock_operation_command_builder>());
+		.RETURN(operation_id::of<mock_operation_program_builder>());
 
 	CHECK(manager.register_builder(std::move(builder1)));
 	CHECK(manager.register_builder(std::move(builder2)));
 }
 
 TEST_CASE(
-	"operation_command_manager::build dispatches to the builder with the "
+	"operation_program_manager::build dispatches to the builder with the "
 	"highest suitability",
-	"[operation_command_manager]"
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
-	auto builder1 = std::make_unique<mock_operation_command_builder>();
-	auto builder2 = std::make_unique<mock_operation_command_builder>();
-	const auto cmd = std::make_shared<hardware::mock_command>();
+	auto builder1 = std::make_unique<mock_operation_program_builder>();
+	auto builder2 = std::make_unique<mock_operation_program_builder>();
+	const auto prog = std::make_shared<hardware::mock_program>();
 
 	REQUIRE_CALL(*builder1, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -125,10 +125,10 @@ TEST_CASE(
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
 			ANY(hardware::command_queue&),
-			ANY(operation_command_cache*)
+			ANY(operation_program_cache*)
 		)
 	)
-		.RETURN(cmd);
+		.RETURN(prog);
 
 	REQUIRE(manager.register_builder(std::move(builder1)));
 	REQUIRE(manager.register_builder(std::move(builder2)));
@@ -139,25 +139,25 @@ TEST_CASE(
 			make_span(output_signatures),
 			make_span(input_signatures),
 			queue
-		) == cmd
+		) == prog
 	);
 }
 
 TEST_CASE(
-	"operation_command_manager::build filters builders by operation id",
-	"[operation_command_manager]"
+	"operation_program_manager::build filters builders by operation id",
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
-	auto builder_a = std::make_unique<mock_operation_command_builder>();
-	auto builder_b = std::make_unique<mock_operation_command_builder>();
-	const auto cmd = std::make_shared<hardware::mock_command>();
+	auto builder_a = std::make_unique<mock_operation_program_builder>();
+	auto builder_b = std::make_unique<mock_operation_program_builder>();
+	const auto prog = std::make_shared<hardware::mock_program>();
 
 	REQUIRE_CALL(*builder_a, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -178,10 +178,10 @@ TEST_CASE(
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
 			ANY(hardware::command_queue&),
-			ANY(operation_command_cache*)
+			ANY(operation_program_cache*)
 		)
 	)
-		.RETURN(cmd);
+		.RETURN(prog);
 
 	// Registered for a different op id: must not be consulted.
 	REQUIRE_CALL(*builder_b, get_operation_id())
@@ -196,24 +196,24 @@ TEST_CASE(
 			make_span(output_signatures),
 			make_span(input_signatures),
 			queue
-		) == cmd
+		) == prog
 	);
 }
 
 TEST_CASE(
-	"operation_command_manager::build forwards a null cache by default",
-	"[operation_command_manager]"
+	"operation_program_manager::build forwards a null cache by default",
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
-	auto builder = std::make_unique<mock_operation_command_builder>();
-	const auto cmd = std::make_shared<hardware::mock_command>();
+	auto builder = std::make_unique<mock_operation_program_builder>();
+	const auto prog = std::make_shared<hardware::mock_program>();
 
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -234,11 +234,11 @@ TEST_CASE(
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
 			ANY(hardware::command_queue&),
-			ANY(operation_command_cache*)
+			ANY(operation_program_cache*)
 		)
 	)
 		.LR_WITH(_5 == nullptr)
-		.RETURN(cmd);
+		.RETURN(prog);
 
 	REQUIRE(manager.register_builder(std::move(builder)));
 
@@ -248,26 +248,26 @@ TEST_CASE(
 			make_span(output_signatures),
 			make_span(input_signatures),
 			queue
-		) == cmd
+		) == prog
 	);
 }
 
 TEST_CASE(
-	"operation_command_manager::build forwards the cache pointer to the "
+	"operation_program_manager::build forwards the cache pointer to the "
 	"selected builder",
-	"[operation_command_manager]"
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	hardware::mock_command_queue queue;
 
-	auto builder = std::make_unique<mock_operation_command_builder>();
-	const auto cmd = std::make_shared<hardware::mock_command>();
+	auto builder = std::make_unique<mock_operation_program_builder>();
+	const auto prog = std::make_shared<hardware::mock_program>();
 
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -288,11 +288,11 @@ TEST_CASE(
 			ANY(span<const array_signature>),
 			ANY(span<const array_signature>),
 			ANY(hardware::command_queue&),
-			ANY(operation_command_cache*)
+			ANY(operation_program_cache*)
 		)
 	)
 		.LR_WITH(_5 == &cache)
-		.RETURN(cmd);
+		.RETURN(prog);
 
 	REQUIRE(manager.register_builder(std::move(builder)));
 
@@ -303,24 +303,24 @@ TEST_CASE(
 			make_span(input_signatures),
 			queue,
 			&cache
-		) == cmd
+		) == prog
 	);
 }
 
 TEST_CASE(
-	"operation_command_manager::build throws when no builder handles the "
+	"operation_program_manager::build throws when no builder handles the "
 	"operation",
-	"[operation_command_manager]"
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_b op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
-	auto builder = std::make_unique<mock_operation_command_builder>();
+	auto builder = std::make_unique<mock_operation_program_builder>();
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
 
@@ -338,20 +338,20 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_manager::build throws when every candidate reports "
+	"operation_program_manager::build throws when every candidate reports "
 	"unsupported",
-	"[operation_command_manager]"
+	"[operation_program_manager]"
 )
 {
-	operation_command_manager manager;
+	operation_program_manager manager;
 
 	const mock_operation_a op;
 	const std::array<array_signature, 2> output_signatures;
 	const std::array<array_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
-	auto builder1 = std::make_unique<mock_operation_command_builder>();
-	auto builder2 = std::make_unique<mock_operation_command_builder>();
+	auto builder1 = std::make_unique<mock_operation_program_builder>();
+	auto builder2 = std::make_unique<mock_operation_program_builder>();
 
 	REQUIRE_CALL(*builder1, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/hardware/command_scratch_requirement.hpp>
+#include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-command_scratch_requirement::command_scratch_requirement(
+program_scratch_requirement::program_scratch_requirement(
 	std::size_t size,
 	std::size_t alignment,
 	memory_resource_affinity affinity
@@ -18,17 +18,17 @@ command_scratch_requirement::command_scratch_requirement(
 {
 }
 
-std::size_t command_scratch_requirement::get_size() const noexcept
+std::size_t program_scratch_requirement::get_size() const noexcept
 {
 	return m_size;
 }
 
-std::size_t command_scratch_requirement::get_alignment() const noexcept
+std::size_t program_scratch_requirement::get_alignment() const noexcept
 {
 	return m_alignment;
 }
 
-memory_resource_affinity command_scratch_requirement::get_affinity() const
+memory_resource_affinity program_scratch_requirement::get_affinity() const
 	noexcept
 {
 	return m_affinity;

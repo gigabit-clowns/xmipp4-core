@@ -7,10 +7,10 @@
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
-#include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/multidimensional/operation_program_manager.hpp>
+#include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
-#include <xmipp4/core/hardware/command_scratch_requirement.hpp>
+#include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -305,7 +305,7 @@ void validate_arity(
 template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
 allocate_scratch(
-	span<const hardware::command_scratch_requirement> requirements,
+	span<const hardware::program_scratch_requirement> requirements,
 	const hardware::device_context &device_context,
 	hardware::command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
@@ -333,16 +333,16 @@ allocate_scratch(
 } // anonymous namespace
 
 eager_operation_dispatcher::eager_operation_dispatcher(
-	std::shared_ptr<const operation_command_manager> command_manager,
+	std::shared_ptr<const operation_program_manager> program_manager,
 	std::size_t cache_capacity
 )
-	: m_command_manager(std::move(command_manager))
-	, m_command_cache(cache_capacity)
+	: m_program_manager(std::move(program_manager))
+	, m_program_cache(cache_capacity)
 {
-	if (!m_command_manager)
+	if (!m_program_manager)
 	{
 		throw std::invalid_argument(
-			"command_manager cannot be null"
+			"program_manager cannot be null"
 		);
 	}
 }
@@ -483,26 +483,27 @@ void eager_operation_dispatcher::dispatch(
 		make_span(input_storages.data(), n_inputs)
 	);
 
-	XMIPP4_ASSERT(m_command_manager);
-	const auto command = m_command_manager->build(
+	XMIPP4_ASSERT(m_program_manager);
+	const auto prog = m_program_manager->build(
 		op,
 		xmipp4::make_span(output_signatures.data(), n_outputs),
 		xmipp4::make_span(input_signatures.data(), n_inputs),
 		*queue,
-		&m_command_cache
+		&m_program_cache
 	);
-	XMIPP4_ASSERT(command);
+	XMIPP4_ASSERT(prog);
 
-	const auto scratch_requirements = command->get_scratch_requirements();
+	std::vector<hardware::program_scratch_requirement> scratch_requirements;
+	prog->get_scratch_requirements(scratch_requirements);
 	auto scratch = allocate_scratch(
-		scratch_requirements,
+		xmipp4::make_span(scratch_requirements),
 		device_context,
 		*queue,
 		small_scratch_size_tag()
 	);
 
 	queue->submit(
-		*command,
+		*prog,
 		xmipp4::make_span(output_storages.data(), n_outputs),
 		xmipp4::make_span(input_storages.data(), n_inputs),
 		xmipp4::make_span(scratch.data(), scratch.size())
@@ -511,12 +512,12 @@ void eager_operation_dispatcher::dispatch(
 
 // Declared in operation_dispatcher.hpp.
 std::shared_ptr<operation_dispatcher> make_eager_operation_dispatcher(
-	std::shared_ptr<const operation_command_manager> command_manager
+	std::shared_ptr<const operation_program_manager> program_manager
 )
 {
 	return std::make_shared<eager_operation_dispatcher>(
-		std::move(command_manager),
-		XMIPP4_DEFAULT_OPERATION_COMMAND_CACHE_CAPACITY
+		std::move(program_manager),
+		XMIPP4_DEFAULT_OPERATION_PROGRAM_CACHE_CAPACITY
 	);
 }
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
+#include <xmipp4/core/multidimensional/operation_program_cache.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
 #include <core/logger.hpp>
@@ -16,7 +16,7 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class operation_command_cache::implementation
+class operation_program_cache::implementation
 {
 public:
 	explicit implementation(std::size_t capacity) noexcept
@@ -29,7 +29,7 @@ public:
 		return m_capacity;
 	}
 
-	std::shared_ptr<void> touch(const operation_command_cache_key &key)
+	std::shared_ptr<void> touch(const operation_program_cache_key &key)
 	{
 		const std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -52,7 +52,7 @@ public:
 	}
 
 	void store(
-		std::unique_ptr<const operation_command_cache_key> key,
+		std::unique_ptr<const operation_program_cache_key> key,
 		std::shared_ptr<void> value
 	)
 	{
@@ -60,8 +60,8 @@ public:
 		XMIPP4_ASSERT(value);
 
 		const std::lock_guard<std::mutex> lock(m_mutex);
-		
-		const auto &key_ref= *key;
+
+		const auto &key_ref = *key;
 		const std::type_index type = typeid(key_ref);
 		auto &inner = m_outer_index[type];
 		const auto inner_ite = inner.find(key.get());
@@ -75,7 +75,7 @@ public:
 		if (m_entries.size() >= m_capacity)
 		{
 			XMIPP4_LOG_DEBUG(
-				"operation_command_cache::store: at capacity, evicting "
+				"operation_program_cache::store: at capacity, evicting "
 				"least recently used entry"
 			);
 			evict_oldest();
@@ -91,14 +91,14 @@ private:
 	struct entry_type
 	{
 		std::type_index type;
-		std::unique_ptr<const operation_command_cache_key> key;
+		std::unique_ptr<const operation_program_cache_key> key;
 		std::shared_ptr<void> value;
 	};
 
 	struct key_ptr_hash_type
 	{
 		std::size_t operator()(
-			const operation_command_cache_key *key
+			const operation_program_cache_key *key
 		) const noexcept
 		{
 			XMIPP4_ASSERT(key);
@@ -109,8 +109,8 @@ private:
 	struct key_ptr_equal_type
 	{
 		bool operator()(
-			const operation_command_cache_key *lhs,
-			const operation_command_cache_key *rhs
+			const operation_program_cache_key *lhs,
+			const operation_program_cache_key *rhs
 		) const noexcept
 		{
 			XMIPP4_ASSERT(lhs);
@@ -123,7 +123,7 @@ private:
 	using index_type = std::unordered_map<
 		std::type_index,
 		std::unordered_map<
-			const operation_command_cache_key*,
+			const operation_program_cache_key*,
 			entry_list_type::iterator,
 			key_ptr_hash_type,
 			key_ptr_equal_type
@@ -156,7 +156,7 @@ private:
 	}
 };
 
-operation_command_cache::operation_command_cache(
+operation_program_cache::operation_program_cache(
 	std::size_t capacity
 ) noexcept
 	: m_implementation(std::make_unique<implementation>(capacity))
@@ -164,35 +164,35 @@ operation_command_cache::operation_command_cache(
 	XMIPP4_ASSERT(capacity > 0);
 }
 
-operation_command_cache::~operation_command_cache() = default;
+operation_program_cache::~operation_program_cache() = default;
 
-std::size_t operation_command_cache::get_capacity() const noexcept
+std::size_t operation_program_cache::get_capacity() const noexcept
 {
 	return m_implementation ? m_implementation->get_capacity() : 0UL;
 }
 
 std::shared_ptr<void>
-operation_command_cache::touch(const operation_command_cache_key &key)
+operation_program_cache::touch(const operation_program_cache_key &key)
 {
 	return m_implementation ? m_implementation->touch(key) : nullptr;
 }
 
-void operation_command_cache::store(
-	std::unique_ptr<const operation_command_cache_key> key,
+void operation_program_cache::store(
+	std::unique_ptr<const operation_program_cache_key> key,
 	std::shared_ptr<void> value
 )
 {
 	if (!key)
 	{
 		throw std::invalid_argument(
-			"operation_command_cache::store: key must not be null"
+			"operation_program_cache::store: key must not be null"
 		);
 	}
 
 	if (!value)
 	{
 		throw std::invalid_argument(
-			"operation_command_cache::store: value must not be null"
+			"operation_program_cache::store: value must not be null"
 		);
 	}
 
@@ -203,7 +203,7 @@ void operation_command_cache::store(
 	else
 	{
 		XMIPP4_LOG_WARN(
-			"operation_command_cache::store: dropping entry because the "
+			"operation_program_cache::store: dropping entry because the "
 			"cache has no backing implementation"
 		);
 	}

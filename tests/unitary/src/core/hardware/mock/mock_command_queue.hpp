@@ -5,7 +5,7 @@
 #include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <xmipp4/core/hardware/event.hpp>
-#include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/hardware/program.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -21,7 +21,7 @@ public:
 	MAKE_MOCK4(
 		submit,
 		void(
-			const command &command,
+			const program &prog,
 			span<const std::shared_ptr<buffer>> output_operands,
 			span<const std::shared_ptr<const buffer>> input_operands,
 			span<const std::shared_ptr<buffer>> scratch

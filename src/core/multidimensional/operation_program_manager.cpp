@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operation_command_manager.hpp>
+#include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
-#include <xmipp4/core/multidimensional/operation_command_builder.hpp>
+#include <xmipp4/core/multidimensional/operation_program_builder.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 
@@ -12,16 +12,16 @@
 #include <vector>
 #include <unordered_map>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
 
-class operation_command_manager::implementation
+class operation_program_manager::implementation
 {
 public:
 	bool register_builder(
-		std::unique_ptr<operation_command_builder> builder
+		std::unique_ptr<operation_program_builder> builder
 	)
 	{
 		XMIPP4_ASSERT(builder);
@@ -30,7 +30,7 @@ public:
 		return true;
 	}
 
-	operation_command_builder* get_most_suitable_builder(
+	operation_program_builder* get_most_suitable_builder(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures,
@@ -48,11 +48,11 @@ public:
 		const auto ite2 = find_most_suitable_backend(
 			available_backends.begin(),
 			available_backends.end(),
-			[&operation, &output_signatures, &input_signatures, &queue] 
+			[&operation, &output_signatures, &input_signatures, &queue]
 			(const auto &item)
 			{
 				return item->get_suitability(
-					operation, 
+					operation,
 					output_signatures,
 					input_signatures,
 					queue
@@ -68,12 +68,12 @@ public:
 		return ite2->get();
 	}
 
-	std::shared_ptr<hardware::command> build(
+	std::shared_ptr<hardware::program> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,
 		span<const array_signature> input_signatures,
 		hardware::command_queue &queue,
-		operation_command_cache *cache
+		operation_program_cache *cache
 	) const
 	{
 		const auto *builder = get_most_suitable_builder(
@@ -86,15 +86,15 @@ public:
 		if (!builder)
 		{
 			throw invalid_operation_error(
-				"Could not find a suitable operation command builder for the "
+				"Could not find a suitable operation program builder for the "
 				"requested operation"
 			);
 		}
 
 		return builder->build(
-			operation, 
-			output_signatures, 
-			input_signatures, 
+			operation,
+			output_signatures,
+			input_signatures,
 			queue,
 			cache
 		);
@@ -102,22 +102,22 @@ public:
 
 private:
 	std::unordered_map<
-		operation_id, 
-		std::vector<std::unique_ptr<operation_command_builder>>
+		operation_id,
+		std::vector<std::unique_ptr<operation_program_builder>>
 	> m_builders;
 
 };
 
-operation_command_manager::operation_command_manager() noexcept = default;
-operation_command_manager::~operation_command_manager() = default;
+operation_program_manager::operation_program_manager() noexcept = default;
+operation_program_manager::~operation_program_manager() = default;
 
-void operation_command_manager::register_builtin_backends()
+void operation_program_manager::register_builtin_backends()
 {
 	// Add operations here.
 }
 
-bool operation_command_manager::register_builder(
-	std::unique_ptr<operation_command_builder> builder
+bool operation_program_manager::register_builder(
+	std::unique_ptr<operation_program_builder> builder
 )
 {
 	if (!builder)
@@ -128,13 +128,13 @@ bool operation_command_manager::register_builder(
 	return create_if_null().register_builder(std::move(builder));
 }
 
-std::shared_ptr<hardware::command>
-operation_command_manager::build(
+std::shared_ptr<hardware::program>
+operation_program_manager::build(
 	const operation &operation,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures,
 	hardware::command_queue &queue,
-	operation_command_cache *cache
+	operation_program_cache *cache
 ) const
 {
 	return get_implementation().build(
@@ -146,8 +146,8 @@ operation_command_manager::build(
 	);
 }
 
-operation_command_manager::implementation& 
-operation_command_manager::create_if_null()
+operation_program_manager::implementation&
+operation_program_manager::create_if_null()
 {
 	if (!m_implementation)
 	{
@@ -157,8 +157,8 @@ operation_command_manager::create_if_null()
 	return *m_implementation;
 }
 
-const operation_command_manager::implementation& 
-operation_command_manager::get_implementation() const noexcept
+const operation_program_manager::implementation&
+operation_program_manager::get_implementation() const noexcept
 {
 	static const implementation empty_implementation;
 	return m_implementation ? *m_implementation : empty_implementation;

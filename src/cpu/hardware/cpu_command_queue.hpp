@@ -20,7 +20,7 @@ public:
 	~cpu_command_queue() override = default;
 
 	void submit(
-		const command &command,
+		const program &prog,
 		span<const std::shared_ptr<buffer>> output_operands,
 		span<const std::shared_ptr<const buffer>> input_operands,
 		span<const std::shared_ptr<buffer>> scratch

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/operation_command_builder.hpp>
+#include <xmipp4/core/multidimensional/operation_program_builder.hpp>
 
 #include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <trompeloeil.hpp>
@@ -15,8 +15,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-class mock_operation_command_builder
-	: public operation_command_builder
+class mock_operation_program_builder
+	: public operation_program_builder
 {
 public:
 	MAKE_CONST_MOCK0(
@@ -38,12 +38,12 @@ public:
 
 	MAKE_CONST_MOCK5(
 		build,
-		std::shared_ptr<hardware::command> (
+		std::shared_ptr<hardware::program> (
 			const operation &operation,
 			span<const array_signature> output_signatures,
 			span<const array_signature> input_signatures,
 			hardware::command_queue &queue,
-			operation_command_cache *cache
+			operation_program_cache *cache
 		),
 		override
 	);

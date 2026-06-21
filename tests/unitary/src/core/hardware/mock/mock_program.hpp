@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/hardware/command.hpp>
+#include <xmipp4/core/hardware/program.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -11,13 +11,13 @@ namespace xmipp4
 namespace hardware
 {
 
-class mock_command final
-	: public command
+class mock_program final
+	: public program
 {
 public:
-	MAKE_CONST_MOCK0(
+	MAKE_CONST_MOCK1(
 		get_scratch_requirements,
-		span<const command_scratch_requirement>(),
+		void(std::vector<program_scratch_requirement> &),
 		override
 	);
 };

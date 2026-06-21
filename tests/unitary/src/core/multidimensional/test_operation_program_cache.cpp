@@ -2,8 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/operation_command_cache.hpp>
-#include <xmipp4/core/multidimensional/typed_operation_command_cache_key.hpp>
+#include <xmipp4/core/multidimensional/operation_program_cache.hpp>
+#include <xmipp4/core/multidimensional/typed_operation_program_cache_key.hpp>
 
 #include <memory>
 #include <stdexcept>
@@ -15,9 +15,9 @@ using namespace xmipp4::multidimensional;
 namespace
 {
 
-using int_key = typed_operation_command_cache_key<int>;
-using long_key = typed_operation_command_cache_key<long>;
-using string_key = typed_operation_command_cache_key<std::string>;
+using int_key = typed_operation_program_cache_key<int>;
+using long_key = typed_operation_program_cache_key<long>;
+using string_key = typed_operation_program_cache_key<std::string>;
 
 std::unique_ptr<int_key> make_int_key(int v)
 {
@@ -37,30 +37,30 @@ std::unique_ptr<string_key> make_string_key(std::string v)
 } // namespace
 
 TEST_CASE(
-	"operation_command_cache reports the capacity it was built with",
-	"[operation_command_cache]"
+	"operation_program_cache reports the capacity it was built with",
+	"[operation_program_cache]"
 )
 {
-	const operation_command_cache cache(4);
+	const operation_program_cache cache(4);
 	CHECK(cache.get_capacity() == 4);
 }
 
 TEST_CASE(
-	"operation_command_cache returns nullptr when touching a missing key",
-	"[operation_command_cache]"
+	"operation_program_cache returns nullptr when touching a missing key",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	const int_key probe(42);
 	CHECK(cache.touch(probe) == nullptr);
 }
 
 TEST_CASE(
-	"operation_command_cache returns the stored value on a hit",
-	"[operation_command_cache]"
+	"operation_program_cache returns the stored value on a hit",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	const auto value = std::make_shared<int>(123);
 
 	cache.store(make_int_key(42), value);
@@ -70,12 +70,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache replaces the value when the same key is stored "
+	"operation_program_cache replaces the value when the same key is stored "
 	"twice",
-	"[operation_command_cache]"
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	const auto first = std::make_shared<int>(1);
 	const auto second = std::make_shared<int>(2);
 
@@ -87,12 +87,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache keeps keys of different types in disjoint name "
+	"operation_program_cache keeps keys of different types in disjoint name "
 	"spaces",
-	"[operation_command_cache]"
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	const auto value_int = std::make_shared<int>(1);
 	const auto value_long = std::make_shared<int>(2);
 
@@ -107,12 +107,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache evicts the oldest entry when storing past "
+	"operation_program_cache evicts the oldest entry when storing past "
 	"capacity",
-	"[operation_command_cache]"
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(2);
+	operation_program_cache cache(2);
 	const auto v1 = std::make_shared<int>(1);
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
@@ -130,11 +130,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache promotes touched entries away from eviction",
-	"[operation_command_cache]"
+	"operation_program_cache promotes touched entries away from eviction",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(2);
+	operation_program_cache cache(2);
 	const auto v1 = std::make_shared<int>(1);
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
@@ -155,11 +155,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache eviction crosses key-type partitions",
-	"[operation_command_cache]"
+	"operation_program_cache eviction crosses key-type partitions",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(2);
+	operation_program_cache cache(2);
 	const auto v1 = std::make_shared<int>(1);
 	const auto v2 = std::make_shared<int>(2);
 	const auto v3 = std::make_shared<int>(3);
@@ -177,11 +177,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache::store throws when given a null key",
-	"[operation_command_cache]"
+	"operation_program_cache::store throws when given a null key",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 	const auto value = std::make_shared<int>(1);
 
 	REQUIRE_THROWS_AS(
@@ -191,11 +191,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"operation_command_cache::store throws when given a null value",
-	"[operation_command_cache]"
+	"operation_program_cache::store throws when given a null value",
+	"[operation_program_cache]"
 )
 {
-	operation_command_cache cache(4);
+	operation_program_cache cache(4);
 
 	REQUIRE_THROWS_AS(
 		cache.store(make_int_key(1), nullptr),

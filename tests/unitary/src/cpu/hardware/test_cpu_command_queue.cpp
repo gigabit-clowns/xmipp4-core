@@ -8,9 +8,9 @@
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/span.hpp>
 
-#include "mock/mock_cpu_command.hpp"
+#include "mock/mock_cpu_program.hpp"
 #include "../../core/hardware/mock/mock_buffer.hpp"
-#include "../../core/hardware/mock/mock_command.hpp"
+#include "../../core/hardware/mock/mock_program.hpp"
 #include "../../core/hardware/mock/mock_event.hpp"
 
 #include <trompeloeil.hpp>
@@ -24,13 +24,13 @@ using namespace xmipp4;
 using namespace xmipp4::hardware;
 
 TEST_CASE(
-	"cpu_command_queue::submit should forward execute to the cpu_command with "
+	"cpu_command_queue::submit should forward execute to the cpu_program with "
 	"host pointers of the operands",
 	"[cpu_command_queue]"
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	int out0_data = 0;
 	int out1_data = 0;
@@ -73,7 +73,7 @@ TEST_CASE(
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	int scratch0_data = 0;
 	int scratch1_data = 0;
@@ -107,7 +107,7 @@ TEST_CASE(
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	REQUIRE_CALL(cmd, execute(trompeloeil::_, trompeloeil::_, trompeloeil::_))
 		.WITH(_1.empty())
@@ -130,7 +130,7 @@ TEST_CASE(
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	auto out = std::make_shared<mock_buffer>();
 	REQUIRE_CALL(*out, get_host_ptr()).RETURN(nullptr);
@@ -157,7 +157,7 @@ TEST_CASE(
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	auto in = std::make_shared<mock_buffer>();
 	REQUIRE_CALL(std::as_const(*in), get_host_ptr()).RETURN(nullptr);
@@ -184,7 +184,7 @@ TEST_CASE(
 )
 {
 	cpu_command_queue queue;
-	mock_cpu_command cmd;
+	mock_cpu_program cmd;
 
 	auto scratch_buffer = std::make_shared<mock_buffer>();
 	REQUIRE_CALL(*scratch_buffer, get_host_ptr()).RETURN(nullptr);
@@ -206,12 +206,12 @@ TEST_CASE(
 
 TEST_CASE(
 	"cpu_command_queue::submit should throw std::bad_cast if the command is "
-	"not a cpu_command",
+	"not a cpu_program",
 	"[cpu_command_queue]"
 )
 {
 	cpu_command_queue queue;
-	mock_command cmd;
+	mock_program cmd;
 
 	const std::vector<std::shared_ptr<buffer>> outputs;
 	const std::vector<std::shared_ptr<const buffer>> inputs;

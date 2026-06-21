@@ -23,7 +23,7 @@ namespace multidimensional
 class operation;
 class array;
 class array_view;
-class operation_command_manager;
+class operation_program_manager;
 
 /**
  * @brief Abstract interface that executes operations on a set of operands.
@@ -31,7 +31,7 @@ class operation_command_manager;
  * A dispatcher takes the immutable description of an operation together with
  * its input and output operands and turns it into work submitted to a device.
  * It owns whatever machinery is required to select and build an executable
- * command for the operation (e.g. an operation command manager and a cache of
+ * program for the operation (e.g. an operation program manager and a cache of
  * backend-private resources), so that callers only need to provide the
  * operands and the hardware resources on which the work is to be carried out.
  *
@@ -77,20 +77,20 @@ public:
 /**
  * @brief Create a dispatcher that submits operations eagerly.
  *
- * The returned dispatcher builds and submits the executable command for each
+ * The returned dispatcher builds and submits the executable program for each
  * operation as soon as it is dispatched, caching backend-private resources
  * (compiled kernels, FFT plans, ...) so they are reused across builds with
  * matching launch configurations.
  *
- * @param command_manager The manager queried to build the command for each
+ * @param program_manager The manager queried to build the program for each
  * operation. Must not be null.
  * @return A newly created eager dispatcher.
  *
- * @throws std::invalid_argument if @p command_manager is null.
+ * @throws std::invalid_argument if @p program_manager is null.
  */
 XMIPP4_CORE_API
 std::shared_ptr<operation_dispatcher> make_eager_operation_dispatcher(
-	std::shared_ptr<const operation_command_manager> command_manager
+	std::shared_ptr<const operation_program_manager> program_manager
 );
 
 } // namespace multidimensional

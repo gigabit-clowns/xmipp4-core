@@ -4,6 +4,7 @@
 
 #include "command_scratch_requirement.hpp"
 
+#include <xmipp4/core/span.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 #include <vector>
@@ -48,17 +49,14 @@ public:
 	 * If the command does not require any scratch buffers, the vector will
 	 * be empty upon return.
 	 *
-	 * @param[out] requirements A vector to be populated with the scratch
-	 * buffer requirements for this command. The vector is cleared before being 
-	 * populated with the command's requirements.
+	 * @return A vectospan with the scratch requirements for this command.
 	 *
 	 * @see command_scratch_requirement for details on individual requirement 
 	 * specifications.
 	 */
 	virtual
-	void get_scratch_requirements(
-		std::vector<command_scratch_requirement> &requirements
-	) const;
+	span<const command_scratch_requirement> 
+	get_scratch_requirements() const noexcept;
 };
 
 } // namespace hardware

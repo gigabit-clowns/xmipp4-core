@@ -493,10 +493,9 @@ void eager_operation_dispatcher::dispatch(
 	);
 	XMIPP4_ASSERT(command);
 
-	std::vector<hardware::command_scratch_requirement> scratch_requirements;
-	command->get_scratch_requirements(scratch_requirements);
+	const auto scratch_requirements = command->get_scratch_requirements();
 	auto scratch = allocate_scratch(
-		xmipp4::make_span(scratch_requirements),
+		scratch_requirements,
 		device_context,
 		*queue,
 		small_scratch_size_tag()

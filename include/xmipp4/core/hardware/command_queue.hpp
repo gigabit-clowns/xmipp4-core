@@ -110,6 +110,10 @@ public:
 	 *
 	 * @param event The event whose signal point this queue will wait for
 	 * before executing any further submitted command.
+	 * @throws invalid_operation_error if 
+	 * @ref event_usage_flag_bits::device_wait is not present or this queue
+	 * does not belong to the queue used for create @p and 
+	 * @ref event_usage_flag_bits::coss_device_wait is not set.
 	 */
 	virtual void wait(const event &event) = 0;
 

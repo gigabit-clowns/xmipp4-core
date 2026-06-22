@@ -38,7 +38,7 @@ namespace hardware
  * underlying primitive that satisfies the requested capabilities; the actually
  * supported set may be a superset of the requested one. Invoking an operation
  * whose capability bit is not advertised by @ref get_supported_usage is a
- * precondition violation and yields undefined behavior.
+ * precondition violation and throws @ref invalid_operation_error.
  */
 class XMIPP4_CORE_API event
 {
@@ -64,6 +64,8 @@ public:
 	 * recorded yet, since the initial state of the event is signaled.
 	 *
 	 * @note Requires @ref event_usage_flag_bits::host_wait.
+	 * @throws invalid_operation_error if @ref event_usage_flag_bits::host_wait
+	 * is not present.
 	 */
 	virtual void wait() const = 0;
 
@@ -77,6 +79,8 @@ public:
 	 * @return @c true if the event has been signaled, @c false otherwise.
 	 * 
 	 * @note Requires @ref event_usage_flag_bits::host_query.
+	 * @throws invalid_operation_error if @ref event_usage_flag_bits::host_query
+	 * is not present.
 	 */
 	virtual bool is_signaled() const = 0;
 };

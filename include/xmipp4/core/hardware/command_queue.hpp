@@ -39,9 +39,10 @@ public:
 	 *
 	 * Schedules the program in @p cmd to run at the current point of
 	 * this queue's execution timeline, operating on the supplied operands.
-	 * The call returns as soon as the work has been recorded; execution
-	 * proceeds asynchronously with respect to the host thread, ordered with
-	 * respect to other programs previously submitted to the same queue.
+	 * The call returns once the work has been recorded or completed;
+	 * execution is ordered with respect to other programs previously
+	 * submitted to the same queue, and may proceed asynchronously with
+	 * respect to the host thread depending on the backend.
 	 *
 	 * @param cmd The program to execute with its associated operands and
 	 * workspaces.

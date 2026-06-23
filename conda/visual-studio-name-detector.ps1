@@ -9,11 +9,15 @@ $displayVersion = & vswhere `
     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     -property catalog_productDisplayVersion
 
-$releaseYear = & vswhere `
-    -latest `
-    -products * `
-    -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-    -property catalog_productLineVersion
+$majorVersion = [int]$displayVersion.Split('.')[0]
 
-$majorVersion = $displayVersion.Split('.')[0]
+# Map major version to release year. catalog_productLineVersion is unreliable
+# for VS 2026+ (returns the major number instead of the year).
+$yearMap = @{15 = 2017; 16 = 2019; 17 = 2022; 18 = 2026}
+$releaseYear = $yearMap[$majorVersion]
+if (-not $releaseYear) {
+    Write-Error "Unsupported Visual Studio major version: $majorVersion"
+    exit 1
+}
+
 Write-Output "Visual Studio $majorVersion $releaseYear"

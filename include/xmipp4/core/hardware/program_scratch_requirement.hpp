@@ -22,7 +22,7 @@ namespace hardware
  * - The required memory alignment in bytes. Must be a power of two.
  * - The memory affinity (where the memory should be allocated)
  *
- * This is an immutable value object—once constructed, its properties cannot
+ * This is an immutable value object. Once constructed, its properties cannot
  * be changed. Instances are typically lightweight and efficiently copied or
  * moved.
  */

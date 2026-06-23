@@ -45,6 +45,15 @@ public:
 	 * program, allowing the caller to allocate the necessary buffers before 
 	 * program submission. The view remains valid and stable during the lifetime
 	 * of the object.
+	 * 
+	 * If the returned list is empty, the program requires no scratch buffers 
+	 * and scratch does not need to be bound in execution. Otherwise, scratch 
+	 * binding in @ref command must contain one buffer for each requirement in 
+	 * the order returned. Each buffer must have a size >= the corresponding
+	 * requirement's size and alignment >= the requirement's alignment. Contents 
+	 * are undefined on entry and on completion, so callers must not store 
+	 * persistent data in them and may reuse the same buffers for multiple 
+	 * programs as long as their executions do not overlap. 
 	 *
 	 * Returns an empty span by default (no scratch required).
 	 *

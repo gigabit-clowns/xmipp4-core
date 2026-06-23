@@ -19,18 +19,9 @@ public:
 	cpu_command_queue() = default;
 	~cpu_command_queue() override = default;
 
-	void submit(
-		const program &prog,
-		span<const std::shared_ptr<buffer>> output_operands,
-		span<const std::shared_ptr<const buffer>> input_operands,
-		span<const std::shared_ptr<buffer>> scratch
-	) override;
-
+	void submit(const command &cmd) override;
 	void signal(event &event) override;
 	void wait(const event &event) override;
-
-	void wait_until_completed() const override;
-	bool is_idle() const override;
 
 	static std::shared_ptr<cpu_command_queue> create();
 

@@ -18,9 +18,9 @@ public:
 	MAKE_CONST_MOCK3(
 		execute,
 		void(
-			span<void* const> outputs,
-			span<const void* const> inputs,
-			span<void* const> scratch
+			span<const std::shared_ptr<buffer>> outputs,
+			span<const std::shared_ptr<const buffer>> inputs,
+			span<const std::shared_ptr<buffer>> scratch
 		),
 		override
 	);

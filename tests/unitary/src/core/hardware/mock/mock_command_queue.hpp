@@ -5,7 +5,7 @@
 #include <xmipp4/core/hardware/command_queue.hpp>
 
 #include <xmipp4/core/hardware/event.hpp>
-#include <xmipp4/core/hardware/program.hpp>
+#include <xmipp4/core/hardware/command.hpp>
 
 #include <trompeloeil.hpp>
 
@@ -18,20 +18,9 @@ class mock_command_queue final
 	: public command_queue
 {
 public:
-	MAKE_MOCK4(
-		submit,
-		void(
-			const program &prog,
-			span<const std::shared_ptr<buffer>> output_operands,
-			span<const std::shared_ptr<const buffer>> input_operands,
-			span<const std::shared_ptr<buffer>> scratch
-		),
-		override
-	);
+	MAKE_MOCK1(submit, void(const command &cmd), override);
 	MAKE_MOCK1(signal, void(event &event), override);
 	MAKE_MOCK1(wait, void(const event &event), override);
-	MAKE_CONST_MOCK0(wait_until_completed, void(), override);
-	MAKE_CONST_MOCK0(is_idle, bool(), override);
 };
 
 } // namespace hardware

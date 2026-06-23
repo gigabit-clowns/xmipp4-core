@@ -9,6 +9,7 @@
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 #include <xmipp4/core/hardware/program.hpp>
+#include <xmipp4/core/hardware/command.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -500,12 +501,12 @@ void eager_operation_dispatcher::dispatch(
 		small_scratch_size_tag()
 	);
 
-	queue->submit(
-		*prog,
-		xmipp4::make_span(output_storages.data(), n_outputs),
-		xmipp4::make_span(input_storages.data(), n_inputs),
-		xmipp4::make_span(scratch.data(), scratch.size())
-	);
+	const auto cmd = hardware::command(std::move(prog))
+		.bind_outputs(xmipp4::make_span(output_storages.data(), n_outputs))
+		.bind_inputs(xmipp4::make_span(input_storages.data(), n_inputs))
+		.bind_scratch(xmipp4::make_span(scratch.data(), scratch.size()));
+
+	queue->submit(cmd);
 }
 
 // Declared in operation_dispatcher.hpp.

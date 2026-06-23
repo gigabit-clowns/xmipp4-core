@@ -10,6 +10,8 @@ namespace xmipp4
 namespace hardware
 {
 
+class buffer;
+
 /**
  * @brief CPU base class for executable programs.
  */
@@ -18,17 +20,16 @@ class XMIPP4_CORE_API cpu_program
 {
 public:
 	/**
-	 * @brief Run the program on the given host operands.
-	 *
-	 * @param outputs Host pointers to the read-write operands. Must not be null.
-	 * @param inputs  Host pointers to the read-only operands. Must not be null.
-	 * @param scratch Host pointers to the read-write workspaces. Must not be
-	 * null.
+	 * @brief Immediately execute the the program.
+	 * 
+	 * @param outputs Output buffers. Neither may be null.
+	 * @param inputs Input buffers. Neither may be null.
+	 * @param scratch Workspace buffers. Neither may be null.
 	 */
 	virtual void execute(
-		span<void* const> outputs,
-		span<const void* const> inputs,
-		span<void* const> scratch
+		span<const std::shared_ptr<buffer>> outputs,
+		span<const std::shared_ptr<const buffer>> inputs,
+		span<const std::shared_ptr<buffer>> scratch
 	) const = 0;
 };
 

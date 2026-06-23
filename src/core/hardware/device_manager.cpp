@@ -101,7 +101,7 @@ bool device_manager::get_device_properties(
 std::shared_ptr<device_instance>
 device_manager::create_device_instance(const device_index& index) const
 {
-	auto *backend = get_backend(index.get_backend_name());
+	const auto *backend = get_backend(index.get_backend_name());
 	if (!backend)
 	{
 		throw std::invalid_argument("Requested backend does not exist");

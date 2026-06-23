@@ -123,8 +123,7 @@ array_descriptor resolve_output_descriptor(
 		);
 	}
 
-	const auto descriptor = output_operand.get_descriptor();
-
+	const auto &descriptor = output_operand.get_descriptor();
 	if (!descriptor.get_layout().extents_equal(make_span(canonical_shape)))
 	{
 		std::ostringstream oss;
@@ -440,7 +439,7 @@ void eager_operation_dispatcher::dispatch(
 	);
 
 	XMIPP4_ASSERT(m_program_manager);
-	const auto prog = m_program_manager->build(
+	auto prog = m_program_manager->build(
 		op,
 		make_span(output_signatures.data(), n_outputs),
 		make_span(input_signatures.data(), n_inputs),

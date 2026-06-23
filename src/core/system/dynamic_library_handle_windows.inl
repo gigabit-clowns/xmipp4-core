@@ -13,7 +13,13 @@ namespace system
 
 inline void* dynamic_library_open(const char* filename)
 {
+	DWORD prev_error_mode;
+	::SetThreadErrorMode(
+		SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX,
+		&prev_error_mode
+	);
 	const auto result = static_cast<void*>(::LoadLibrary(filename));
+	::SetThreadErrorMode(prev_error_mode, nullptr);
 	if (result == NULL)
 	{
 		throw std::system_error(

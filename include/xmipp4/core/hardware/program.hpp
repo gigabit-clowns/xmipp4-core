@@ -24,14 +24,12 @@ namespace hardware
  * Each concrete program instance is bound to the device it was created for
  * and may only be submitted to queues belonging to that device.
  */
-class program
+class XMIPP4_CORE_API program
 {
 public:
-	XMIPP4_CORE_API
 	program() noexcept;
 	program(const program &other) = delete;
 	program(program &&other) = delete;
-	XMIPP4_CORE_API
 	virtual ~program();
 
 	program& operator=(const program &other) = delete;

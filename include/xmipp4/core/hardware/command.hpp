@@ -29,12 +29,13 @@ namespace hardware
  * remain valid for the entire lifetime of the @c command and until
  * @ref command_queue::submit returns.
  */
-class XMIPP4_CORE_API command
+class command
 {
 public:
 	/**
 	 * @brief Construct a command with no program and empty operand bindings.
 	 */
+	XMIPP4_CORE_API
 	command() noexcept;
 
 	/**
@@ -47,13 +48,19 @@ public:
 	 * @param program The program to execute. May be @c nullptr, but
 	 * @ref command_queue::submit requires a non-null program.
 	 */
+	XMIPP4_CORE_API
 	explicit command(std::shared_ptr<const program> program) noexcept;
 
+	XMIPP4_CORE_API
 	command(const command &other);
+	XMIPP4_CORE_API
 	command(command &&other) noexcept;
+	XMIPP4_CORE_API
 	~command();
 
+	XMIPP4_CORE_API
 	command& operator=(const command &other);
+	XMIPP4_CORE_API
 	command& operator=(command &&other) noexcept;
 
 	/**
@@ -65,6 +72,7 @@ public:
 	 * @param outputs Span of output buffer handles. May be empty.
 	 * @return Reference to @c *this to allow method chaining.
 	 */
+	XMIPP4_CORE_API
 	command&
 	bind_outputs(span<const std::shared_ptr<buffer>> outputs) noexcept;
 
@@ -77,6 +85,7 @@ public:
 	 * @param inputs Span of input buffer handles. May be empty.
 	 * @return Reference to @c *this to allow method chaining.
 	 */
+	XMIPP4_CORE_API
 	command&
 	bind_inputs(span<const std::shared_ptr<const buffer>> inputs) noexcept;
 
@@ -94,6 +103,7 @@ public:
 	 * program has no scratch requirements.
 	 * @return Reference to @c *this to allow method chaining.
 	 */
+	XMIPP4_CORE_API
 	command&
 	bind_scratch(span<const std::shared_ptr<buffer>> scratch) noexcept;
 
@@ -102,6 +112,7 @@ public:
 	 *
 	 * @return The program, or @c nullptr if no program was set.
 	 */
+	XMIPP4_CORE_API
 	const std::shared_ptr<const program>& get_program() const noexcept;
 
 	/**
@@ -110,6 +121,7 @@ public:
 	 * @return Non-owning span of output buffer handles; empty if none were
 	 * bound.
 	 */
+	XMIPP4_CORE_API
 	span<const std::shared_ptr<buffer>> get_outputs() const noexcept;
 
 	/**
@@ -118,6 +130,7 @@ public:
 	 * @return Non-owning span of input buffer handles; empty if none were
 	 * bound.
 	 */
+	XMIPP4_CORE_API
 	span<const std::shared_ptr<const buffer>> get_inputs() const noexcept;
 
 	/**
@@ -126,6 +139,7 @@ public:
 	 * @return Non-owning span of scratch buffer handles; empty if none were
 	 * bound.
 	 */
+	XMIPP4_CORE_API
 	span<const std::shared_ptr<buffer>> get_scratch() const noexcept;
 
 private:

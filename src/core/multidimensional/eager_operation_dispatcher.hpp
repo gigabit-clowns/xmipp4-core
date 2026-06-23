@@ -33,7 +33,7 @@ public:
 	 * @param program_manager The manager queried to build the program for each
 	 * operation. Must not be null.
 	 * @param cache_capacity Maximum number of backend-private resources kept in
-	 * the internal cache. Must be greater than zero.
+	 * the internal cache.
 	 * @throws std::invalid_argument When @p program_manager is null.
 	 */
 	eager_operation_dispatcher(

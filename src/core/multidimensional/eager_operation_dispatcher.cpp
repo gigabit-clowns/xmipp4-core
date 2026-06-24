@@ -114,7 +114,7 @@ resolve_output_descriptors(
 	span<const array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
-	bool &accept,
+	bool &needs_acceptance,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -131,7 +131,7 @@ resolve_output_descriptors(
 		if (output_operand.get_storage())
 		{
 			result.push_back(output_operand.get_descriptor());
-			accept = true;
+			needs_acceptance = true;
 		}
 		else
 		{

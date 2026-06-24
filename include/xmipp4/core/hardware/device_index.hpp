@@ -5,6 +5,7 @@
 #include "../platform/constexpr.hpp"
 
 #include <string>
+#include <string_view>
 #include <ostream>
 
 namespace xmipp4 
@@ -14,41 +15,62 @@ namespace hardware
 
 /**
  * @brief Location of a device as a (backend, id) tuple.
+ *
+ * A @ref device_index is a unique identifier within a @ref device_manager of a
+ * physical device. 
  * 
+ * Default-constructed indices hold an empty backend name and a zero
+ * device id; such an index does not refer to any real device and is
+ * intended only as a placeholder before assignment or parsing.
  */
 class device_index
 {
 public:
 	/**
 	 * @brief Construct a new device index from its components.
-	 * 
-	 * @tparam Str String type.
-	 * @param backend_name Name of the backend.
-	 * @param device_id Unique ID of the device within the backend.
-	 * 
+	 *
+	 * @param backend_name Name of the backend. Must match the name
+	 * reported by the target @ref device_backend for the index to refer
+	 * to a real device.
+	 * @param device_id ID of the device within @p backend_name, as
+	 * returned by @ref device_backend::enumerate_devices.
 	 */
-	template <typename Str>
-	device_index(Str &&backend_name, std::size_t device_id);
+	device_index(const std::string &backend_name, std::size_t device_id);
 
-	device_index() = default; 
-	device_index(const device_index &other) = default; 
-	device_index(device_index &&other) = default; 
+	/**
+	 * @brief Construct a new device index from its components.
+	 *
+	 * Move overload that avoids copying @p backend_name.
+	 *
+	 * @param backend_name Name of the backend (moved from).
+	 * @param device_id ID of the device within @p backend_name, as
+	 * returned by @ref device_backend::enumerate_devices.
+	 */
+	device_index(std::string &&backend_name, std::size_t device_id);
+
+	device_index() = default;
+	device_index(const device_index &other) = default;
+	device_index(device_index &&other) = default;
 	~device_index() = default;
 
-	device_index& operator=(const device_index &other) = default; 
-	device_index& operator=(device_index &&other) = default; 
+	device_index& operator=(const device_index &other) = default;
+	device_index& operator=(device_index &&other) = default;
 
 	/**
 	 * @brief Get the name of the device backend.
-	 * 
-	 * @return const std::string& The name.
+	 *
+	 * @return const std::string& Reference to the stored backend name.
+	 * The reference is valid for the lifetime of this @ref device_index
+	 * and is invalidated by assignment to or destruction of the object.
 	 */
 	const std::string& get_backend_name() const noexcept;
 
 	/**
 	 * @brief Get the ID of the device within the backend.
-	 * 
-	 * @return std::size_t The device ID.
+	 *
+	 * @return std::size_t The backend-local device ID. The value is only
+	 * meaningful when interpreted by the backend identified by
+	 * @ref get_backend_name.
 	 */
 	std::size_t get_device_id() const noexcept;
 
@@ -66,17 +88,16 @@ bool operator<=(const device_index &lhs, const device_index &rhs) noexcept;
 bool operator>(const device_index &lhs, const device_index &rhs) noexcept;
 bool operator>=(const device_index &lhs, const device_index &rhs) noexcept;
 
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const device_index &index);
+std::ostream& operator<<(std::ostream &os, const device_index &index);
 
 /**
  * @brief Parse the device ID from a string.
- * 
+ *
  * A device ID string representation is expected to be:
  * <device_backend>:<device_id>
  * <device_backend> (assumes device_id=0)
- * 
- * @param path Appropriately formatted string with the device ID
+ *
+ * @param text Appropriately formatted string with the device ID
  * @param result Output device_index object.
  * @return true The string was parsed successfully and the result was written.
  * @return false The string was not parsed and the result was not written.
@@ -85,5 +106,3 @@ bool parse_device_index(std::string_view text, device_index &result);
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "device_index.inl"

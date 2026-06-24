@@ -5,8 +5,10 @@
 
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/hardware/buffer.hpp>
 
+#include "../hardware/mock/mock_buffer.hpp"
+
+#include <memory>
 #include <vector>
 
 using namespace xmipp4;
@@ -37,20 +39,8 @@ TEST_CASE("Constructing an array should store its attributes", "[array]")
 		std::vector<std::size_t>{20, 50}
 	);
 
-	const auto storage = GENERATE(
-		std::make_shared<hardware::buffer>(
-			nullptr, 
-			1024, 
-			hardware::get_host_memory_resource(), 
-			nullptr
-		),
-		std::make_shared<hardware::buffer>(
-			nullptr, 
-			20, 
-			hardware::get_host_memory_resource(), 
-			nullptr
-		)
-	);
+	const std::shared_ptr<hardware::mock_buffer> storage =
+		std::make_shared<hardware::mock_buffer>();
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);
@@ -73,20 +63,8 @@ TEST_CASE("Calling share on an array should return an array with the same conten
 		std::vector<std::size_t>{20, 50}
 	);
 
-	const auto storage = GENERATE(
-		std::make_shared<hardware::buffer>(
-			nullptr, 
-			1024, 
-			hardware::get_host_memory_resource(), 
-			nullptr
-		),
-		std::make_shared<hardware::buffer>(
-			nullptr, 
-			20, 
-			hardware::get_host_memory_resource(), 
-			nullptr
-		)
-	);
+	const std::shared_ptr<hardware::mock_buffer> storage =
+		std::make_shared<hardware::mock_buffer>();
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);

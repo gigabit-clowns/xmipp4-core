@@ -23,44 +23,43 @@ public:
 
 	~implementation() = default;
 
-	service_manager* get_service_manager(std::type_index type)
+	std::shared_ptr<service_manager>
+	get_service_manager(std::type_index key)
 	{
-		service_manager* result = nullptr;
-
-		const auto ite = m_interfaces.find(type);
+		const auto ite = m_interfaces.find(key);
 		if(ite != m_interfaces.end())
 		{
-			result = ite->second.get();
+			return ite->second;
 		}
 
-		return result;
+		return nullptr;
 	}
 
 	void create_service_manager(
-		std::type_index type,
-		std::unique_ptr<service_manager> manager
+		std::type_index key,
+		std::shared_ptr<service_manager> value
 	)
 	{
 		if (m_register_builtin_backends)
 		{
-			manager->register_builtin_backends();
+			value->register_builtin_backends();
 		}
 
-		m_interfaces.emplace(
-			type, std::move(manager)
-		);
+		m_interfaces.emplace(key, std::move(value));
 	}
 
 private:
 	using catalog_type = 
-		std::unordered_map<std::type_index, std::unique_ptr<service_manager>>;
+		std::unordered_map<std::type_index, std::shared_ptr<service_manager>>;
 
 	bool m_register_builtin_backends;
 	catalog_type m_interfaces;
 };
 
 service_catalog::service_catalog(bool register_builtin_backends)
-	: m_implementation(std::make_unique<implementation>(register_builtin_backends))
+	: m_implementation(
+		std::make_unique<implementation>(register_builtin_backends)
+	)
 {
 }
 
@@ -71,18 +70,18 @@ service_catalog::~service_catalog() = default;
 service_catalog& 
 service_catalog::operator=(service_catalog&& other) noexcept = default;
 
-service_manager* 
-service_catalog::get_service_manager(std::type_index type)
+std::shared_ptr<service_manager>
+service_catalog::get_service_manager(std::type_index key)
 {
-	return m_implementation->get_service_manager(type);
+	return m_implementation->get_service_manager(key);
 }
 		
 void service_catalog::create_service_manager(
-	std::type_index type,
-	std::unique_ptr<service_manager> manager
+	std::type_index key,
+	std::shared_ptr<service_manager> value
 )
 {
-	m_implementation->create_service_manager(type, std::move(manager));
+	m_implementation->create_service_manager(key, std::move(value));
 }
 
 } // namespace xmipp4

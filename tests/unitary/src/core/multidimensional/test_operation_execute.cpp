@@ -1,360 +1,163 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_exception.hpp>
-#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
-
-#include <xmipp4/core/service_catalog.hpp>
-#include <xmipp4/core/execution_context.hpp>
+#include <xmipp4/core/multidimensional/execution_context.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/array_creation.hpp>
-#include <xmipp4/core/multidimensional/kernel_manager.hpp>
-#include <xmipp4/core/hardware/device_manager.hpp>
-#include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/memory_allocator_manager.hpp>
+#include <xmipp4/core/hardware/device_context.hpp>
 
-#include "mock/mock_kernel.hpp"
-#include "mock/mock_kernel_builder.hpp"
+#include "mock/mock_operation_dispatcher.hpp"
 #include "mock/mock_operation.hpp"
-#include "mock/mock_operation_shape_policy.hpp"
-#include "mock/mock_operation_data_type_policy.hpp"
-#include "../hardware/mock/mock_buffer_sentinel.hpp"
-#include "../hardware/mock/mock_device.hpp"
-#include "../hardware/mock/mock_device_queue.hpp"
-#include "../hardware/mock/mock_device_backend.hpp"
-#include "../hardware/mock/mock_memory_resource.hpp"
-#include "../hardware/mock/mock_memory_allocator.hpp"
-#include "../hardware/mock/mock_memory_allocator_backend.hpp"
 
-
+#include <memory>
 #include <stdexcept>
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 using namespace xmipp4::multidimensional;
 
-namespace {
+namespace
+{
 
 class operation_execute_fixture
 {
 public:
-    service_catalog catalog;
-    std::shared_ptr<mock_device> device;
-    mock_memory_resource device_resource;
-    mock_memory_resource host_resource;
-    std::shared_ptr<mock_memory_allocator> device_allocator;
-    std::shared_ptr<mock_memory_allocator> host_allocator;
-    mock_operation operation;
-    mock_operation_shape_policy shape_pol;
-    mock_operation_data_type_policy data_type_pol;
-    std::shared_ptr<mock_kernel> kernel;
-    std::unique_ptr<execution_context> context;
-    std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
-
-	operation_execute_fixture()
-		: catalog(false)
-		, device(std::make_shared<mock_device>())
-		, device_allocator(std::make_shared<mock_memory_allocator>())
-		, host_allocator(std::make_shared<mock_memory_allocator>())
-		, kernel(std::make_shared<mock_kernel>())
-	{
-		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_operation_shape_policy())
-				.LR_RETURN(std::ref(shape_pol))
-		);
-		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_operation_data_type_policy())
-				.LR_RETURN(std::ref(data_type_pol))
-		);
-		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_output_count())
-				.RETURN(2)
-		);
-		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_input_count())
-				.RETURN(3)
-		);
-		expectations.push_back(
-			NAMED_ALLOW_CALL(operation, get_name())
-				.RETURN(std::string("mock_op"))
-		);
-	}
-
-    execution_context& 
-	setup_context(const std::shared_ptr<mock_device_queue>& queue) 
-	{
-        const hardware::device_index index("mock", 1234);
-
-        auto device_backend = std::make_unique<mock_device_backend>();
-        auto allocator_backend = std::make_unique<mock_memory_allocator_backend>();
-
-        REQUIRE_CALL(*device_backend, get_name())
-            .RETURN(index.get_backend_name());
-        REQUIRE_CALL(*device_backend, get_device_properties(index.get_device_id(), trompeloeil::_))
-            .LR_SIDE_EFFECT(_2.set_optimal_data_alignment(256))
-            .RETURN(true);
-        REQUIRE_CALL(*device_backend, create_device(index.get_device_id()))
-            .LR_RETURN(device);
-        
-        REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::device))
-            .LR_RETURN(device_resource);
-        REQUIRE_CALL(*device, get_memory_resource(memory_resource_affinity::host))
-            .LR_RETURN(host_resource);
-
-        REQUIRE_CALL(*allocator_backend, get_suitability(trompeloeil::_))
-            .LR_WITH(&_1 == &device_resource)
-			.RETURN(backend_priority::normal);
-        REQUIRE_CALL(*allocator_backend, create_memory_allocator(trompeloeil::_))
-            .LR_WITH(&_1 == &device_resource)
-			.LR_RETURN(device_allocator);
-            
-        REQUIRE_CALL(*allocator_backend, get_suitability(trompeloeil::_))
-            .LR_WITH(&_1 == &host_resource)
-			.RETURN(backend_priority::normal);
-        REQUIRE_CALL(*allocator_backend, create_memory_allocator(trompeloeil::_))
-            .LR_WITH(&_1 == &host_resource)
-			.LR_RETURN(host_allocator);
-
-        catalog.get_service_manager<device_manager>().register_backend(std::move(device_backend));
-        catalog.get_service_manager<memory_allocator_manager>().register_backend(std::move(allocator_backend));
-
-        context = std::make_unique<execution_context>(catalog, index);
-        context->set_active_queue(queue);
-
-        return *context;
+    operation_execute_fixture()
+        : dispatcher(std::make_shared<mock_operation_dispatcher>())
+        , context(hardware::device_context(), dispatcher)
+    {
     }
 
-    array_descriptor create_descriptor() const 
-	{
-        const std::array<std::size_t, 4> extents = {8, 64, 3, 4};
-        return array_descriptor(
-            strided_layout::make_contiguous_layout(make_span(extents)),
-            numerical_type::float32
-        );
-    }
-
-    std::vector<std::shared_ptr<buffer>> 
-	create_device_buffers(std::size_t count, const array_descriptor& descriptor) 
-	{
-        const auto size = compute_storage_requirement(descriptor);
-        std::vector<std::shared_ptr<buffer>> result;
-        result.reserve(count);
-        for (std::size_t i = 0; i < count; ++i) 
-		{
-            result.push_back(
-				std::make_shared<buffer>(
-					nullptr, 
-					size, 
-					device_resource, 
-					std::make_unique<mock_buffer_sentinel>()
-            	)
-			);
-        }
-        return result;
-    }
-
-    template<typename ArrayT>
-    std::vector<ArrayT> create_device_arrays(
-		const std::vector<std::shared_ptr<buffer>>& buffers, 
-		const array_descriptor& descriptor
-	) 
-	{
-        auto& queue = context->get_active_queue();
-        std::vector<ArrayT> result;
-        result.reserve(buffers.size());
-        for (const auto& buf : buffers) 
-		{
-            REQUIRE_CALL(*device_allocator, get_max_alignment())
-				.RETURN(256);
-            REQUIRE_CALL(*device_allocator, allocate(buf->get_size(), 256, queue.get()))
-				.RETURN(buf);
-            result.push_back(empty(descriptor, memory_resource_affinity::device, *context));
-        }
-        return result;
-    }
-
-    void allow_default_allocator_queries() 
-	{
-		expectations.push_back(
-			NAMED_ALLOW_CALL(*device_allocator, get_max_alignment())
-				.RETURN(256)
-		);
-    }
-
-    void register_kernel_builder(std::unique_ptr<mock_kernel_builder> builder) 
-	{
-        REQUIRE_CALL(*builder, get_operation_id()).LR_RETURN(operation.get_id());
-        catalog.get_service_manager<kernel_manager>().register_kernel(std::move(builder));
-    }
-
-    void expect_queue_records(const std::vector<std::shared_ptr<buffer>>& buffers, device_queue& queue) {
-        for (const auto& buffer : buffers) 
-		{
-            auto* sentinel = static_cast<mock_buffer_sentinel*>(buffer->get_sentinel());
-            expectations.push_back(
-                NAMED_REQUIRE_CALL(*sentinel, record_queue(trompeloeil::_, false))
-					.LR_WITH(&_1 == &queue)
-            );
-        }
-    }
+protected:
+    mock_operation op;
+    std::shared_ptr<mock_operation_dispatcher> dispatcher;
+    execution_context context;
 };
 
-} // anonymous namespace
+} // namespace
 
 
 
-TEST_CASE_METHOD(operation_execute_fixture, "execute should execute a properly configured kernel", "[operation_execute]") 
+TEST_CASE(
+    "execute throws std::invalid_argument when the dispatcher is null",
+    "[operation_execute]"
+)
 {
-    auto queue = GENERATE(
-		std::shared_ptr<mock_device_queue>(), 
-		std::make_shared<mock_device_queue>()
-	);
+    const execution_context ctx;
+    mock_operation op;
+    array output;
+    const array_view input;
 
-    auto& context = setup_context(queue);
-    allow_default_allocator_queries();
-    
-    const auto descriptor = create_descriptor();
-    const auto input_buffers = create_device_buffers(3, descriptor);
-    const auto input_arrays = create_device_arrays<array_view>(input_buffers, descriptor);
-    
-    const auto output_buffers = create_device_buffers(2, descriptor);
-    std::vector<array> output_arrays;
-
-    // The new pipeline always invokes deduce; accept is invoked only
-    // when the user provides pre-allocated outputs.
-    std::vector<std::size_t> descriptor_extents;
-    descriptor.get_layout().get_extents(descriptor_extents);
-    expectations.push_back(
-        NAMED_REQUIRE_CALL(shape_pol, deduce(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3)
-            .LR_SIDE_EFFECT(_1[0] = descriptor_extents)
-            .LR_SIDE_EFFECT(_1[1] = descriptor_extents)
+    CHECK_THROWS_AS(
+        execute(op, make_span(&output, 1), make_span(&input, 1), ctx),
+        std::invalid_argument
     );
-    expectations.push_back(
-        NAMED_REQUIRE_CALL(data_type_pol, deduce(trompeloeil::_, trompeloeil::_))
-            .WITH(_1.size() == 2)
-            .WITH(_2.size() == 3)
-            .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
-            .SIDE_EFFECT(_1[1] = descriptor.get_data_type())
-    );
-
-    SECTION("provided a pre-allocated output should re-use")
-	{
-        output_arrays = create_device_arrays<array>(output_buffers, descriptor);
-		expectations.push_back(
-			NAMED_REQUIRE_CALL(
-				shape_pol,
-				accept(trompeloeil::_, trompeloeil::_, trompeloeil::_)
-			)
-				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 2)
-				.WITH(_3.size() == 3)
-		);
-		expectations.push_back(
-			NAMED_REQUIRE_CALL(
-				data_type_pol,
-				accept(trompeloeil::_, trompeloeil::_, trompeloeil::_)
-			)
-				.WITH(_1.size() == 2)
-				.WITH(_2.size() == 2)
-				.WITH(_3.size() == 3)
-		);
-    }
-    SECTION("if empty output is provided it should allocate")
-	{
-        output_arrays.resize(2); // Empties
-        for (const auto& buffer : output_buffers) {
-            expectations.push_back(
-                NAMED_REQUIRE_CALL(*device_allocator, allocate(buffer->get_size(), 256, queue.get()))
-                    .RETURN(buffer)
-            );
-        }
-    }
-
-
-    auto kernel_builder = std::make_unique<mock_kernel_builder>();
-    const array_signature signature(descriptor, &device_resource);
-
-    REQUIRE_CALL(*kernel_builder, get_suitability(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-        .LR_WITH(&_1 == &operation)
-        .WITH(_2.size() == 2 && _2[0] == signature && _2[1] == signature)
-        .WITH(_3.size() == 3 && _3[0] == signature && _3[1] == signature && _3[2] == signature)
-        .RETURN(backend_priority::normal);
-
-    REQUIRE_CALL(*kernel_builder, build(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-        .LR_WITH(&_1 == &operation)
-        .WITH(_2.size() == 2 && _2[0] == signature && _2[1] == signature)
-        .WITH(_3.size() == 3 && _3[0] == signature && _3[1] == signature && _3[2] == signature)
-        .LR_RETURN(kernel);
-
-    register_kernel_builder(std::move(kernel_builder));
-
-    REQUIRE_CALL(*kernel, execute(trompeloeil::_, trompeloeil::_, queue.get()))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3 && _2[0] == input_buffers[0] && _2[1] == input_buffers[1] && _2[2] == input_buffers[2]);
-
-    if(queue) 
-	{
-        expect_queue_records(input_buffers, *queue);
-        expect_queue_records(output_buffers, *queue);
-    }
-
-    execute(operation, make_span(output_arrays), make_span(input_arrays), context);
 }
 
-
-TEST_CASE_METHOD(operation_execute_fixture, "execute should throw if an storage-less input array is provided", "[operation_execute]") 
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute forwards the output and input operand spans to the dispatcher",
+    "[operation_execute]"
+)
 {
-    auto queue = GENERATE(
-		std::shared_ptr<mock_device_queue>(), 
-		std::make_shared<mock_device_queue>()
-	);
-    auto& context = setup_context(queue);
-    allow_default_allocator_queries();
-    
-    const auto descriptor = create_descriptor();
-    const auto input_buffers = create_device_buffers(2, descriptor);
-    auto input_arrays = create_device_arrays<array_view>(input_buffers, descriptor);
-    
-    input_arrays.emplace_back(array(nullptr, descriptor));
+    array output;
+    const array_view input;
 
-    const auto output_buffers = create_device_buffers(2, descriptor);
-    auto output_arrays = create_device_arrays<array>(output_buffers, descriptor);
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .WITH(_2.size() == 1)
+        .WITH(_3.size() == 1);
 
-    register_kernel_builder(std::make_unique<mock_kernel_builder>());
+    execute(op, make_span(&output, 1), make_span(&input, 1), context);
+}
 
-    std::vector<std::size_t> descriptor_extents;
-    descriptor.get_layout().get_extents(descriptor_extents);
-    REQUIRE_CALL(shape_pol, deduce(trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3)
-        .LR_SIDE_EFFECT(_1[0] = descriptor_extents)
-        .LR_SIDE_EFFECT(_1[1] = descriptor_extents);
-    REQUIRE_CALL(data_type_pol, deduce(trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 3)
-        .SIDE_EFFECT(_1[0] = descriptor.get_data_type())
-        .SIDE_EFFECT(_1[1] = descriptor.get_data_type());
-    REQUIRE_CALL(shape_pol, accept(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 2)
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute with null out allocates a fresh output array and dispatches",
+    "[operation_execute]"
+)
+{
+    const array_view input;
+
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .WITH(_2.size() == 1)
+        .WITH(_3.size() == 1);
+
+    execute(op, make_span(&input, 1), context, nullptr);
+}
+
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute with non-null out passes that array to the dispatcher",
+    "[operation_execute]"
+)
+{
+    const array_view input;
+    array out;
+
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .LR_WITH(_2.data() == &out)
+        .WITH(_2.size() == 1)
+        .WITH(_3.size() == 1);
+
+    execute(op, make_span(&input, 1), context, &out);
+}
+
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute_unary calls dispatch with a single-element input span",
+    "[operation_execute]"
+)
+{
+    array_view input;
+
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .WITH(_2.size() == 1)
+        .WITH(_3.size() == 1);
+
+    execute_unary(op, input, context);
+}
+
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute_binary calls dispatch with a two-element input span",
+    "[operation_execute]"
+)
+{
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .WITH(_2.size() == 1)
+        .WITH(_3.size() == 2);
+
+    execute_binary(op, array_view(), array_view(), context);
+}
+
+TEST_CASE_METHOD(
+    operation_execute_fixture,
+    "execute_ternary calls dispatch with a three-element input span",
+    "[operation_execute]"
+)
+{
+    REQUIRE_CALL(
+        *dispatcher,
+        dispatch(trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_)
+    )
+        .WITH(_2.size() == 1)
         .WITH(_3.size() == 3);
-    REQUIRE_CALL(data_type_pol, accept(trompeloeil::_, trompeloeil::_, trompeloeil::_))
-        .WITH(_1.size() == 2)
-        .WITH(_2.size() == 2)
-        .WITH(_3.size() == 3);
 
-    REQUIRE_THROWS_MATCHES(
-        execute(operation, make_span(output_arrays), make_span(input_arrays), context),
-        std::invalid_argument,
-        Catch::Matchers::Message( 
-            "One of the input operands does not have associated storage. "
-            "Input arrays must be populated before calling execute."
-        )
-    );
+    execute_ternary(op, array_view(), array_view(), array_view(), context);
 }

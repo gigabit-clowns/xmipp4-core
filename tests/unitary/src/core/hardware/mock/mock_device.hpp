@@ -15,24 +15,21 @@ class mock_device final
 	: public device
 {
 public:
-	MAKE_MOCK1(
-		get_memory_resource, 
-		memory_resource&(memory_resource_affinity affinity), 
-		noexcept override
-	);
-	MAKE_MOCK0(
-		create_device_queue, 
-		std::shared_ptr<device_queue>(), 
+	mock_device() = default;
+
+	MAKE_CONST_MOCK1(
+		get_memory_resource,
+		const memory_resource&(memory_resource_affinity affinity),
 		override
 	);
-	MAKE_MOCK0(
-		create_device_event, 
-		std::shared_ptr<device_event>(), 
+	MAKE_CONST_MOCK0(
+		create_command_queue,
+		std::shared_ptr<command_queue>(),
 		override
 	);
-	MAKE_MOCK0(
-		create_device_to_host_event, 
-		std::shared_ptr<device_to_host_event>(), 
+	MAKE_CONST_MOCK1(
+		create_event,
+		std::shared_ptr<event>(event_usage_flags usage),
 		override
 	);
 };

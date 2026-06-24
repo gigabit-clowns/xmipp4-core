@@ -2,11 +2,13 @@
 
 #include <xmipp4/core/hardware/device_manager.hpp>
 
-#include <xmipp4/cpu/hardware/cpu_device_backend.hpp>
+#include <xmipp4/core/hardware/device_instance.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
-#include "../named_service_manager_implementation.hpp"
+#include <core/named_service_manager_implementation.hpp>
+#include <cpu/hardware/cpu_device_backend.hpp>
 
+#include <stdexcept>
 #include <unordered_map>
 
 namespace xmipp4
@@ -96,16 +98,28 @@ bool device_manager::get_device_properties(
 	return backend->get_device_properties(index.get_device_id(), desc);
 }
 
-std::shared_ptr<device> 
-device_manager::create_device(const device_index& index) const
+std::shared_ptr<device_instance>
+device_manager::create_device_instance(const device_index& index) const
 {
-	auto *backend = get_backend(index.get_backend_name());
+	const auto *backend = get_backend(index.get_backend_name());
 	if (!backend)
 	{
 		throw std::invalid_argument("Requested backend does not exist");
 	}
 
-	return backend->create_device(index.get_device_id());
+	const auto id = index.get_device_id();
+	auto dev = backend->create_device(id);
+
+	device_properties properties;
+	if (!backend->get_device_properties(id, properties))
+	{
+		throw std::invalid_argument("Requested device does not exist");
+	}
+
+	return std::make_shared<device_instance>(
+		std::move(dev),
+		std::move(properties)
+	);
 }
 
 void device_manager::create_implementation_if_null()

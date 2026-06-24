@@ -2,29 +2,30 @@
 
 #pragma once
 
-#include "../platform/constexpr.hpp"
-
 namespace xmipp4
 {
 namespace hardware
 {
 
 /**
- * @brief Device categories.
- * 
+ * @brief Broad classification of compute devices.
  */
 enum class device_type
 {
-	unknown = -1, ///< The device does fall into any of the following categories
-	cpu, ///< CPU of the host.
-	gpu, ///< A discrete Graphics Processing Unit (GPU)
-	integrated_gpu, ///< An integrated Graphics Processing Unit (iGPU)
-	fpga, ///< A Field Programmable Grid Array (FPGA)
+	/// Catch-all for devices that do not fit any of the following
+	/// categories.
+	unknown = -1,
+	/// CPU of the host node.
+	cpu,
+	/// A discrete Graphics Processing Unit (GPU), with its own dedicated
+	/// memory.
+	gpu,
+	/// An integrated Graphics Processing Unit (iGPU), typically sharing
+	/// memory with the host CPU.
+	integrated_gpu,
 };
 
-XMIPP4_CONSTEXPR const char* to_string(device_type type) noexcept;
+const char* to_string(device_type type) noexcept;
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "device_type.inl"

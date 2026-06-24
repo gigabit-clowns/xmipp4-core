@@ -3,6 +3,7 @@
 #include "host_buffer.hpp"
 
 #include <xmipp4/core/memory/aligned_alloc.hpp>
+#include <xmipp4/core/memory/align.hpp>
 
 #include "host_memory_resource.hpp"
 
@@ -17,14 +18,13 @@ host_buffer::host_buffer(
 	std::size_t size, 
 	std::size_t alignment
 )
-	: buffer(
-		memory::aligned_alloc(size, alignment), 
-		size, 
-		host_memory_resource::get(), 
-		nullptr
-	)
+	: m_data(nullptr)
+	, m_size(0UL)
 {
-	if (size > 0 && get_host_ptr() == nullptr)
+	m_size = memory::align_ceil(size, alignment);
+	m_data = memory::aligned_alloc(m_size, alignment);
+
+	if (m_size > 0 && m_data == nullptr)
 	{
 		throw std::bad_alloc();
 	}
@@ -33,6 +33,27 @@ host_buffer::host_buffer(
 host_buffer::~host_buffer()
 {
 	memory::aligned_free(get_host_ptr());
+}
+
+
+void* host_buffer::get_host_ptr() noexcept
+{
+	return m_data;
+}
+
+const void* host_buffer::get_host_ptr() const noexcept
+{
+	return m_data;
+}
+
+std::size_t host_buffer::get_size() const noexcept
+{
+	return m_size;
+}
+
+const memory_resource& host_buffer::get_memory_resource() const noexcept
+{
+	return host_memory_resource::get();
 }
 
 } // namespace hardware

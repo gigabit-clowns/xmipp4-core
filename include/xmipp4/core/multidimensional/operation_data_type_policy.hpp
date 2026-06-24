@@ -12,21 +12,10 @@ namespace multidimensional
 {
 
 /**
- * @brief Interface describing the deduction and admissibility of array
- * data types for an operation.
+ * @brief Strategy interface that deduces the numerical types of an operation's 
+ * output arrays from its input types.
  *
- * The contract is split in two roles:
- *
- *   * `deduce` is the single source of truth: from the input data types
- *     alone, it produces the canonical output data types that the policy
- *     would assign, and along the way performs every input-side check the
- *     policy requires.
- *   * `accept` is invoked only when the user supplies pre-allocated
- *     outputs. It decides whether those user-supplied output data types
- *     are admissible given the canonical ones produced by `deduce`. The
- *     default implementation requires equality with the canonical types;
- *     override only for policies that admit user outputs other than the
- *     canonical one (e.g. type-converting copies).
+ * @see operation_shape_policy
  */
 class XMIPP4_CORE_API operation_data_type_policy
 {
@@ -42,44 +31,22 @@ public:
 	operator=(operation_data_type_policy &&other) = delete;
 
 	/**
-	 * @brief Compute canonical output data types from the input data types.
+	 * @brief Deduce the numerical types of the output tensors.
 	 *
-	 * Performs all input-side validation along the way. After this call,
-	 * @p canonical_output_types holds the data types the policy would
-	 * produce if the user had not pre-allocated outputs.
+	 * Fills each element of @p output_types with the @ref numerical_type
+	 * that the operation would produce for the corresponding output tensor,
+	 * given the types of all input tensors in @p input_types.
 	 *
-	 * @param canonical_output_types Output buffer, sized to the
-	 *        operation's output arity. Will be filled with the canonical
-	 *        data types.
-	 * @param input_types Data types of the input operands.
+	 * @param output_types Writable span whose length equals the number of
+	 * output tensors; each entry is set to the deduced output type.
+	 * @param input_types Read-only span whose length equals the number of
+	 * input tensors; each entry holds the numerical type of the
+	 * corresponding input tensor.
 	 */
 	virtual void deduce(
-		span<numerical_type> canonical_output_types,
+		span<numerical_type> output_types,
 		span<const numerical_type> input_types
 	) const = 0;
-
-	/**
-	 * @brief Decide whether user-supplied output data types are admissible.
-	 *
-	 * Called only when the user has pre-allocated outputs. By the time
-	 * this is invoked, `deduce` has already produced
-	 * @p canonical_output_types, so input-side validation has happened.
-	 * Throws on rejection.
-	 *
-	 * The default implementation requires @p user_output_types to be
-	 * equal to @p canonical_output_types; override only for policies
-	 * that admit user outputs other than the canonical one (e.g. when the
-	 * kernel performs a type conversion).
-	 *
-	 * @param user_output_types Data types of the user-supplied outputs.
-	 * @param canonical_output_types Data types produced by `deduce`.
-	 * @param input_types Data types of the input operands.
-	 */
-	virtual void accept(
-		span<const numerical_type> user_output_types,
-		span<const numerical_type> canonical_output_types,
-		span<const numerical_type> input_types
-	) const;
 };
 
 } // namespace multidimensional

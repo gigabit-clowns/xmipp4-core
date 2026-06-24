@@ -3,8 +3,10 @@
 #include "host_memory_allocator.hpp"
 
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/device_queue.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/memory/align.hpp>
+#include <xmipp4/core/system/host.hpp>
+#include <xmipp4/core/platform/assert.hpp>
 
 #include "host_memory_resource.hpp"
 #include "host_buffer.hpp"
@@ -16,30 +18,43 @@ namespace xmipp4
 namespace hardware
 {
 
-memory_resource& host_memory_allocator::get_memory_resource() const noexcept
+std::shared_ptr<host_memory_allocator> host_memory_allocator::m_instance;
+
+const memory_resource& 
+host_memory_allocator::get_memory_resource() const noexcept
 {
 	return host_memory_resource::get();
 }
 
 std::size_t host_memory_allocator::get_max_alignment() const noexcept
 {
-    return host_memory_resource::get().get_max_heap_alignment();
+    return system::get_page_size();
 }
 
 std::shared_ptr<buffer> host_memory_allocator::allocate(
 	std::size_t size, 
 	std::size_t alignment, 
-	device_queue *queue
+	command_queue* /*queue_hint*/
 )
 {
-	if (queue)
-	{
-		// As host allocation is synchronous, we need to wait until all previous
-		queue->wait_until_completed();
-	}
-
 	size = memory::align_ceil(size, alignment);
 	return std::make_shared<host_buffer>(size, alignment);
+}
+
+host_memory_allocator& host_memory_allocator::get()
+{
+	return *(create());
+}
+
+const std::shared_ptr<host_memory_allocator>& host_memory_allocator::create()
+{
+	if (!m_instance)
+	{
+		m_instance = std::make_shared<host_memory_allocator>();
+	}
+
+	XMIPP4_ASSERT(m_instance);
+	return m_instance;
 }
 
 } // namespace hardware

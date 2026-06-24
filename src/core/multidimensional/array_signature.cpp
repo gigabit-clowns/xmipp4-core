@@ -16,7 +16,7 @@ namespace multidimensional
 namespace 
 {
 
-hardware::memory_resource* get_memory_resource(const hardware::buffer *storage)
+const hardware::memory_resource* get_memory_resource(const hardware::buffer *storage)
 {
 	if (!storage)
 	{

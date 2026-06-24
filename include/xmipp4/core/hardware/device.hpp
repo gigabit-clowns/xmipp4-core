@@ -3,27 +3,28 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 #include "memory_resource_affinity.hpp"
-#include "../platform/dynamic_shared_object.h"
+#include "event_usage_flags.hpp"
 
 namespace xmipp4 
 {
 namespace hardware
 {
 
-class device_queue;
-class device_event;
-class device_to_host_event;
+class command_queue;
+class event;
 class memory_resource;
 
 /**
- * @brief Abstract representation of a device handle.
- * 
- * This class enables basic interaction functionalities with
- * a hardware device.
- * 
+ * @brief Abstract representation of a hardware compute device.
+ *
+ * A @c device is the entry point for interacting with a backend's compute
+ * resource: it advertises the memory resources reachable from the device and
+ * acts as a factory for the per-device objects used by the rest of the
+ * framework (queues, synchronization primitives, ...).
  */
 class XMIPP4_CORE_API device
 {
@@ -37,41 +38,58 @@ public:
 	device& operator=(device &&other) = delete;
 
 	/**
-	 * @brief Get the most suitable memory resource for the intended usage.
-	 * 
-	 * @param affinity The affinity of the memory resource.
-	 * @return memory_resource& The memory resource.
+	 * @brief Retrieve a memory resource by its affinity.
+	 *
+	 * Returns the @c memory_resource that is best suited for the access pattern
+	 * described by @p affinity. The returned reference is valid for the
+	 * lifetime of this @c device.
+	 *
+	 * @note Depending on the backend, two distinct affinity values may resolve
+	 * to the same underlying @c memory_resource (i.e. the references may
+	 * alias).
+	 *
+	 * @param affinity The intended access pattern for which a resource is
+	 * requested.
+	 * @return A reference to the matching @c memory_resource.
+	 *
+	 * @see memory_resource_affinity
+	 * @see memory_resource
 	 */
-	virtual memory_resource& 
-	get_memory_resource(memory_resource_affinity affinity) = 0;
+	virtual
+	const memory_resource&
+	get_memory_resource(memory_resource_affinity affinity) const = 0;
 
 	/**
-	 * @brief Create a device queue.
-	 * 
-	 * @return std::shared_ptr<device_queue> The newly created device queue. 
-	 * nullptr if asynchronous execution is not supported.
+	 * @brief Create a new command queue on this device.
+	 *
+	 * The returned queue is independent from any previously created queue on 
+	 * the same device, including the default queue and may execute its commands
+	 * concurrently with them. Ordering across queues may be established through
+	 * @ref event objects.
+	 *
+	 * @return Newly created queue. Never null.
 	 */
-	virtual std::shared_ptr<device_queue>
-	create_device_queue() = 0;
+	virtual std::shared_ptr<command_queue> create_command_queue() const = 0;
 
 	/**
-	 * @brief Create an intra-device synchronization primitive.
-	 * 
-	 * @return std::shared_ptr<device_event> The newly created device event. 
-	 * nullptr if asynchronous execution is not supported.
+	 * @brief Create a synchronization primitive for this device.
+	 *
+	 * The returned event supports at least the operations requested in
+	 * @p usage; the backend may pick the cheapest underlying primitive that 
+	 * satisfies them, so the actually supported set (queried via
+	 * @ref event::get_supported_usage) may be a superset of @p usage. 
+	 * The event is initially in the signaled state (waiting on it returns 
+	 * immediately).
+	 *
+	 * @param usage Capabilities that the returned event must support.
+	 * @return Newly created event. Never null.
+	 *
+	 * @see event
+	 * @see event_usage_flags
 	 */
-	virtual std::shared_ptr<device_event>
-	create_device_event() = 0;
-
-	/**
-	 * @brief Create a device to host synchronization primitive.
-	 * 
-	 * @return std::shared_ptr<device_to_host_event> The newly created 
-	 * device_to_host_event. nullptr if asynchronous execution is not supported.
-	 */
-	virtual std::shared_ptr<device_to_host_event>
-	create_device_to_host_event() = 0;
-}; 
+	virtual
+	std::shared_ptr<event> create_event(event_usage_flags usage) const = 0;
+};
 
 } // namespace hardware
 } // namespace xmipp4

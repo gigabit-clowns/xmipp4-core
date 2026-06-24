@@ -12,21 +12,19 @@ namespace xmipp4
 
 template <typename T>
 inline
-typename std::enable_if<std::is_convertible<T*, service_manager*>::value, T&>::type
-service_catalog::get_service_manager()
+std::shared_ptr<T> service_catalog::get_service_manager()
 {
-	const std::type_index type(typeid(T));
+	const std::type_index key(typeid(T));
 
-	auto* result = static_cast<T*>(get_service_manager(type));
-	if(result == nullptr)
+	auto value = std::static_pointer_cast<T>(get_service_manager(key));
+	if(!value)
 	{
 		// Interface does not exist. Create it
-		auto new_interface = std::make_unique<T>();
-		result = new_interface.get();
-		create_service_manager(type, std::move(new_interface));
+		value = std::make_shared<T>();
+		create_service_manager(key, value);
 	}
 
-	return *result;
+	return value;
 }
 
 } // namespace xmipp4

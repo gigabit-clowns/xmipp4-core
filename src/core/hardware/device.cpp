@@ -8,6 +8,7 @@ namespace hardware
 {
 
 device::device() noexcept = default;
+
 device::~device() = default;
 
 } // namespace hardware

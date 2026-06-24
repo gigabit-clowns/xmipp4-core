@@ -12,9 +12,11 @@ namespace multidimensional
 {
 
 array_view::array_view() = default;
+array_view::array_view(const array_view& other) = default;
 array_view::array_view(array_view&& other) noexcept = default;
 array_view::~array_view() = default;
 array_view& array_view::operator=(array_view&& other) noexcept = default;
+array_view& array_view::operator=(const array_view& other) = default;
 
 array_view::array_view(
 	const array &other

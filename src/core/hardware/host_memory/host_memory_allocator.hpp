@@ -12,10 +12,6 @@ namespace hardware
 /**
  * @brief Implementation of memory_allocator specialized for allocating memory
  * in host.
- * 
- * Unlike the caching allocator, this allocator specializes for host memory 
- * and does not cache memory blocks, as malloc is already highly optimized.
- * 
  */
 class host_memory_allocator final
 	: public memory_allocator
@@ -24,15 +20,21 @@ public:
 	host_memory_allocator() = default;
 	~host_memory_allocator() override = default;
 
-	memory_resource& get_memory_resource() const noexcept override;
+	const memory_resource& get_memory_resource() const noexcept override;
 
 	std::size_t get_max_alignment() const noexcept override;
 
 	std::shared_ptr<buffer> allocate(
 		std::size_t size, 
 		std::size_t alignment, 
-		device_queue *queue
+		command_queue *queue
 	) override;
+
+	static host_memory_allocator& get();
+	static const std::shared_ptr<host_memory_allocator>& create();
+
+private:
+	static std::shared_ptr<host_memory_allocator> m_instance;
 };
 
 } // namespace hardware

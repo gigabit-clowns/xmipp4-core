@@ -2,32 +2,35 @@
 
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 
-#include <xmipp4/core/hardware/memory_resource.hpp>
+#include "cpu_command_queue.hpp"
+#include "cpu_event.hpp"
+
+#include <core/hardware/host_memory/host_memory_resource.hpp>
 
 namespace xmipp4
 {
 namespace hardware
 {
 
-memory_resource& cpu_device::get_memory_resource(memory_resource_affinity)
+cpu_device::cpu_device() noexcept = default;
+
+cpu_device::~cpu_device() = default;
+
+const memory_resource&
+cpu_device::get_memory_resource(memory_resource_affinity /*affinity*/) const
 {
-	return get_host_memory_resource(); // Always host.
+	return host_memory_resource::get();
 }
 
-std::shared_ptr<device_queue> cpu_device::create_device_queue()
+std::shared_ptr<command_queue> cpu_device::create_command_queue() const
 {
-	return nullptr;
+	return cpu_command_queue::create();
 }
 
-std::shared_ptr<device_event> cpu_device::create_device_event()
+std::shared_ptr<event>
+cpu_device::create_event(event_usage_flags /*usage*/) const
 {
-	return nullptr;
-}
-
-std::shared_ptr<device_to_host_event>
-cpu_device::create_device_to_host_event()
-{
-	return nullptr;
+	return std::make_shared<cpu_event>();
 }
 
 } // namespace hardware

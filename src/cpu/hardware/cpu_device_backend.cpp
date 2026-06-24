@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cpu/hardware/cpu_device_backend.hpp>
+#include "cpu_device_backend.hpp"
 
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 
@@ -49,9 +49,9 @@ bool cpu_device_backend::get_device_properties(
 }
 
 std::shared_ptr<device> 
-cpu_device_backend::create_device(std::size_t id)
+cpu_device_backend::create_device(std::size_t id) const
 {
-	if (id != 0)
+	if (id >= 1)
 	{
 		throw std::invalid_argument("Requested device id is invalid");
 	}

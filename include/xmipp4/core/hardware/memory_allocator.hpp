@@ -4,23 +4,27 @@
 
 #include <memory>
 
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace hardware
 {
 
 class buffer;
-class device_queue;
+class command_queue;
 class memory_resource;
 
 /**
- * @brief Abstract class for memory allocators.
- * 
- * Instances of memory allocators can be obtained from memory_resource-s. Their
- * purpose is to allocate buffers on the associated memory_resource.
- * 
+ * @brief Abstract allocator of @ref buffer objects on a @ref memory_resource.
+ *
+ * Concrete implementations are free to back themselves with anything that fits 
+ * the underlying backend.
+ *
+ * The allocator is also in charge of tracking the asynchronous use of the 
+ * buffers it produces: when a buffer's shared ownership is dropped while device 
+ * work referencing it is still in flight, the allocator defers the actual 
+ * release until that work has completed.
  */
 class XMIPP4_CORE_API memory_allocator
 {
@@ -34,44 +38,53 @@ public:
 	memory_allocator& operator=(memory_allocator &&other) = delete;
 
 	/**
-	 * @brief Get the associated memory_resource.
-	 * 
-	 * @return memory_resource& The memory resource where this allocator
-	 * allocates buffers.
+	 * @brief Get the memory resource backing this allocator.
+	 *
+	 * @return Reference to the backing memory resource.
 	 */
 	virtual
-	memory_resource& get_memory_resource() const noexcept = 0;
+	const memory_resource& get_memory_resource() const noexcept = 0;
 
 	/**
-	 * @brief Get the maximum alignment allowed for buffers.
-	 * 
-	 * @return std::size_t The maximum alignment in bytes.
-	 * @note This value may be different from the maximum alignment allowed
-	 * by the underlying memory_resource.
+	 * @brief Get the largest alignment this allocator can satisfy.
+	 *
+	 * The returned value is the strictest alignment that may be passed to 
+	 * @ref allocate. It is a power of two and is constant over the lifetime of
+	 * the allocator.
+	 *
+	 * @return Maximum supported alignment, in bytes.
 	 */
 	virtual std::size_t get_max_alignment() const noexcept = 0;
 
 	/**
-	 * @brief Allocate a buffer of given size and alignment.
-	 * 
-	 * @param size Size in bytes.
-	 * @param alignment Alignment in bytes. Must be a power of two and smaller
-	 * or equal than the value returned by get_max_alignment().
-	 * @param queue Optional device_queue where the allocation is dispatched.
-	 * If provided, the allocation may be asynchronous with respect to the
-	 * host. The queue must be associated to the same device as the memory
-	 * resource targeted by this allocator. When not provided, the allocation
-	 * is synchronous, which means that the buffer is ready to be used when this
-	 * method returns.
-	 * @return std::shared_ptr<buffer> The newly allocated buffer.
+	 * @brief Allocate a new buffer on the backing memory resource.
+	 *
+	 * The allocator may round @p size up to satisfy internal alignment or page
+	 * granularity constraints; the resulting buffer's @ref buffer::get_size 
+	 * may return a number greater than or equal to @p size .
+	 *
+	 * @param size Requested minimum size, in bytes. 
+	 * @param alignment Requested alignment, in bytes. Must be a power
+	 * of two and not greater than @ref get_max_alignment.
+	 * @param queue_hint Optional non-owning pointer to the queue on
+	 * which the buffer is expected to be first used. Some backends may defer 
+	 * the allocation until the current execution point is reached on this
+	 * queue. Thus, providing a queue_hint and then using the buffer on another
+	 * queue leads to undefined behavior.
+	 * @return The newly allocated buffer. Never null.
+	 *
+	 * @throws std::bad_alloc (or a backend-specific exception derived
+	 * from @c std::exception) on allocation failure.
+	 * @throws std::invalid_argument if @p alignment is not a valid
+	 * power of two within @ref get_max_alignment.
 	 */
 	virtual
 	std::shared_ptr<buffer> allocate(
-		std::size_t size, 
-		std::size_t alignment, 
-		device_queue *queue
+		std::size_t size,
+		std::size_t alignment,
+		command_queue *queue_hint = nullptr
 	) = 0;
-}; 
+};
 
 } // namespace hardware
 } // namespace xmipp4

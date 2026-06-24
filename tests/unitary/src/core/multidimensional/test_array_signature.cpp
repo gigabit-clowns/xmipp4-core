@@ -6,8 +6,11 @@
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
-#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/memory_resource.hpp>
 
+#include "../hardware/mock/mock_buffer.hpp"
+
+#include <memory>
 #include <vector>
 
 using namespace xmipp4;
@@ -133,7 +136,9 @@ TEST_CASE("from_array in array_signature should correctly construct from an arra
 	const array_descriptor descriptor(layout, data_type);
 	auto& resource = hardware::get_host_memory_resource();
 	
-	const auto storage = std::make_shared<hardware::buffer>(nullptr, 1024, resource, nullptr);
+	const auto storage = std::make_shared<hardware::mock_buffer>();
+	ALLOW_CALL(std::as_const(*storage), get_memory_resource())
+		.LR_RETURN(resource);
 
 	array arr(storage, descriptor);
 	const auto signature1 = array_signature::from_array(arr);

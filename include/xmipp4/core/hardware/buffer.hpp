@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "buffer_sentinel.hpp"
-#include "memory_resource.hpp"
-#include "../platform/dynamic_shared_object.h"
+#include <xmipp4/core/platform/dynamic_shared_object.h>
 
 #include <utility>
 #include <memory>
@@ -15,122 +13,76 @@ namespace xmipp4
 namespace hardware
 {
 
-class device_queue;
-
-
+class memory_resource;
+class memory_allocator;
 
 /**
  * @brief Represents an untyped memory allocation at a given memory
  * resource.
- * 
+ *
+ * A buffer is a handle to a contiguous block of memory. It carries no type 
+ * information of its own.
  */
-class buffer
+class XMIPP4_CORE_API buffer
 {
 public:
-	XMIPP4_CORE_API buffer(
-		void *host_pointer,
-		std::size_t size,
-		std::reference_wrapper<memory_resource> resource,
-		std::unique_ptr<buffer_sentinel> sentinel
-	);
+	buffer() noexcept;
 	buffer(const buffer &other) = delete;
 	buffer(buffer &&other) noexcept = delete;
-	XMIPP4_CORE_API virtual ~buffer();
+	virtual ~buffer();
 
 	buffer& operator=(const buffer &other) = delete;
 	buffer& operator=(buffer &&other) noexcept = delete;
 
 	/**
 	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
-	 * 
-	 * @return void* Pointer to the data. nullptr if the buffer is not
-	 * host accessible.
+	 *
+	 * This method only returns a non-null pointer if the data is
+	 * directly addressable by the host, i.e. when the kind of the
+	 * underlying @ref memory_resource is one of: @c device_mapped,
+	 * @c host_staging, @c host, @c unified or @c managed. For pure
+	 * device-only resources the buffer must be transferred to a
+	 * host-accessible buffer first.
+	 *
+	 * The returned pointer is valid for as long as this @c buffer
+	 * instance is alive and is aligned to the alignment requested at
+	 * allocation time. Reads or writes through it may need to be
+	 * preceded by appropriate synchronization with any in-flight
+	 * device-side work that uses the same buffer.
+	 *
+	 * @return void* Pointer to the start of the buffer's data, or
+	 * @c nullptr if the buffer is not host accessible.
 	 */
-	XMIPP4_CORE_API 
-	void* get_host_ptr() noexcept;
+	virtual void* get_host_ptr() noexcept = 0;
 
 	/**
 	 * @brief Get a host accessible pointer to the data.
-	 * 
-	 * This method only returns a pointer if the data is accessible by the 
-	 * host, i.e., if the kind of the underlying memory_resource is one of:
-	 * device_mapped, host_staging, unified or managed.
-	 * 
-	 * @return const void* Pointer to the data. nullptr if the buffer is not
-	 * host accessible.
+	 *
+	 * Const overload of @ref get_host_ptr(); see that method for the
+	 * conditions under which a non-null pointer is returned and the
+	 * lifetime/synchronization guarantees that apply.
+	 *
+	 * @return const void* Pointer to the start of the buffer's data, or
+	 * @c nullptr if the buffer is not host accessible.
 	 */
-	XMIPP4_CORE_API 
-	const void* get_host_ptr() const noexcept;
+	virtual const void* get_host_ptr() const noexcept = 0;
 
 	/**
 	 * @brief Get the size in bytes for this buffer.
-	 * 
+	 *
+	 * The size may be larger then the requested in 
+	 * @ref memory_allocator::allocate.
+	 *
 	 * @return std::size_t Size in bytes.
 	 */
-	XMIPP4_CORE_API 
-	std::size_t get_size() const noexcept;
+	virtual std::size_t get_size() const noexcept = 0;
 
 	/**
-	 * @brief Get the memory_resource where this buffer is stored. 
-	 * 
-	 * @return memory_resource& The resource where the buffer is stored.
+	 * @brief Get the memory resource where this buffer is stored.
+	 *
+	 * @return const memory_resource& The resource backing the buffer.
 	 */
-	XMIPP4_CORE_API 
-	memory_resource& get_memory_resource() const noexcept;
-
-	/**
-	 * @brief Get the sentinel for this buffer.
-	 * 
-	 * @return buffer_sentinel* Pointer to the sentinel.
-	 */
-	XMIPP4_CORE_API
-	buffer_sentinel* get_sentinel() noexcept;
-
-	/**
-	 * @brief Get the sentinel for this buffer.
-	 * 
-	 * @return buffer_sentinel* Pointer to the sentinel.
-	 */
-	XMIPP4_CORE_API
-	const buffer_sentinel* get_sentinel() const noexcept;
-
-	/**
-	 * @brief Acknowledge that this buffer is being used in a device_queue.
-	 * 
-	 * Due to the asynchronous nature of the device_queue-s, the buffer may
-	 * be needed after its destruction on the application code. By default,
-	 * protections against this race condition only exist with the queue used
-	 * to allocate this buffer (if any). When using this buffer in additional 
-	 * queues, this method should be called to synchronize its destruction.
-	 * 
-	 * This method should only be used if the memory resource associated to 
-	 * this buffer has a device associated to it.
-	 * 
-	 * @param queue The queue where this buffer in being used. It must have
-	 * been created from the same device as the device targeted by the 
-	 * memory_resource.
-	 * @param exclusive If true, it disregards all previous queues where it was 
-	 * being used and it synchronizes only with the new one. This is useful
-	 * if the new queue is externally synchronized such that all other accesses 
-	 * are guaranteed to have been concluded before they're completed at the 
-	 * provided queue.
-	 * 
-	 * @throws invalid_operation_error when the buffer does not support
-	 * queue execution.
-	 * 
-	 */
-	XMIPP4_CORE_API 
-	void record_queue(device_queue &queue, bool exclusive=false) const;
-
-private:
-	void *m_host_pointer;
-	std::size_t m_size;
-	std::reference_wrapper<memory_resource> m_memory_resource;
-	std::unique_ptr<buffer_sentinel> m_sentinel;
+	virtual const memory_resource& get_memory_resource() const noexcept = 0;
 };
 
 } // namespace hardware

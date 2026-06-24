@@ -2,7 +2,9 @@
 
 #include <xmipp4/core/multidimensional/operation.hpp>
 
-namespace xmipp4 
+#include <sstream>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
@@ -13,11 +15,6 @@ operation::~operation() = default;
 operation_id operation::get_id() const noexcept
 {
 	return operation_id(typeid(*this));
-}
-
-std::string operation::serialize_parameters() const
-{
-	return "";
 }
 
 } // namespace multidimensional

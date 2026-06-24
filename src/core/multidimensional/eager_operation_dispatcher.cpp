@@ -388,11 +388,11 @@ void eager_operation_dispatcher::dispatch(
 		small_output_size_tag()
 	);
 	auto output_shapes = extract_shapes(
-		make_span(output_descriptors.data(), n_inputs),
+		make_span(output_descriptors.data(), n_outputs),
 		small_input_size_tag()
 	);
 	auto output_data_types = extract_data_types(
-		make_span(output_descriptors.data(), n_inputs),
+		make_span(output_descriptors.data(), n_outputs),
 		small_input_size_tag()
 	);
 

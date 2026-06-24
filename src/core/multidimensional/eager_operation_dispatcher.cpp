@@ -114,6 +114,7 @@ resolve_output_descriptors(
 	span<const array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
+	bool &accept,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -130,6 +131,7 @@ resolve_output_descriptors(
 		if (output_operand.get_storage())
 		{
 			result.push_back(output_operand.get_descriptor());
+			accept = true;
 		}
 		else
 		{
@@ -348,12 +350,7 @@ void eager_operation_dispatcher::dispatch(
 	
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
-
-	const auto arity = op.get_arity();
-	const auto &shape_policy = op.get_operation_shape_policy();
-	const auto &data_type_policy = op.get_operation_data_type_policy();
-
-	validate_arity(operation_arity(n_outputs, n_inputs), arity);
+	validate_arity(operation_arity(n_outputs, n_inputs), op.get_arity());
 
 	auto input_descriptors = extract_input_descriptors(
 		input_operands,
@@ -368,6 +365,9 @@ void eager_operation_dispatcher::dispatch(
 		small_input_size_tag()
 	);
 
+	const auto &shape_policy = op.get_operation_shape_policy();
+	const auto &data_type_policy = op.get_operation_data_type_policy();
+
 	auto canonical_output_shapes =
 		make_empty_shapes(n_outputs, small_output_size_tag());
 	auto canonical_output_data_types =
@@ -381,31 +381,37 @@ void eager_operation_dispatcher::dispatch(
 		make_span(input_data_types.data(), n_inputs)
 	);
 
+	bool needs_acceptance = false;
 	auto output_descriptors = resolve_output_descriptors(
 		output_operands,
 		make_span(canonical_output_shapes.data(), n_outputs),
 		make_span(canonical_output_data_types.data(), n_outputs),
+		needs_acceptance,
 		small_output_size_tag()
 	);
-	auto output_shapes = extract_shapes(
-		make_span(output_descriptors.data(), n_outputs),
-		small_input_size_tag()
-	);
-	auto output_data_types = extract_data_types(
-		make_span(output_descriptors.data(), n_outputs),
-		small_input_size_tag()
-	);
 
-	shape_policy.accept(
-		make_span(output_shapes.data(), n_outputs),
-		make_span(canonical_output_shapes.data(), n_outputs),
-		make_span(input_shapes.data(), n_inputs)
-	);
-	data_type_policy.accept(
-		make_span(output_data_types.data(), n_outputs),
-		make_span(canonical_output_data_types.data(), n_outputs),
-		make_span(input_data_types.data(), n_inputs)
-	);
+	if (needs_acceptance)
+	{
+		auto output_shapes = extract_shapes(
+			make_span(output_descriptors.data(), n_outputs),
+			small_input_size_tag()
+		);
+		auto output_data_types = extract_data_types(
+			make_span(output_descriptors.data(), n_outputs),
+			small_input_size_tag()
+		);
+
+		shape_policy.accept(
+			make_span(output_shapes.data(), n_outputs),
+			make_span(canonical_output_shapes.data(), n_outputs),
+			make_span(input_shapes.data(), n_inputs)
+		);
+		data_type_policy.accept(
+			make_span(output_data_types.data(), n_outputs),
+			make_span(canonical_output_data_types.data(), n_outputs),
+			make_span(input_data_types.data(), n_inputs)
+		);
+	}
 
 	auto input_storages = extract_input_storage(
 		input_operands,

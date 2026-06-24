@@ -142,9 +142,10 @@ protected:
 		);
 	}
 
-	// Expect both policies to be queried for admissibility of the resolved
-	// outputs. The dispatcher delegates this decision to the policies, so the
-	// mocks simply accept (they do not throw) regardless of the arguments.
+	// Expect both policies to be queried for admissibility. This only happens
+	// when at least one output is pre-allocated; the dispatcher delegates the
+	// decision to the policies, so the mocks simply accept (they do not throw)
+	// regardless of the arguments.
 	void expect_policies_accept()
 	{
 		expectations.push_back(
@@ -328,12 +329,6 @@ TEST_CASE_METHOD(
 	REQUIRE_CALL(op, get_arity())
 		.RETURN(operation_arity::unary()); // Expects one output and one input.
 
-	// The dispatcher queries the policies up front, before validating arity.
-	ALLOW_CALL(op, get_operation_shape_policy())
-		.LR_RETURN(shape_policy);
-	ALLOW_CALL(op, get_operation_data_type_policy())
-		.LR_RETURN(dtype_policy);
-
 	array output;
 	const array_view input;
 
@@ -357,7 +352,6 @@ TEST_CASE_METHOD(
 )
 {
 	expect_unary_operation(shape_type{4}, numerical_type::float32);
-	expect_policies_accept(); // Reached before the missing input storage throws.
 
 	array output;           // Fresh output, storage to be resolved.
 	const array_view input; // Input without any backing storage.
@@ -464,7 +458,6 @@ TEST_CASE_METHOD(
 	);
 
 	expect_unary_operation(out_shape, out_type);
-	expect_policies_accept();
 	register_program_builder();
 	expect_program_scratch(); // No scratch required.
 
@@ -554,7 +547,6 @@ TEST_CASE_METHOD(
 	);
 
 	expect_unary_operation(shape_type{4}, numerical_type::float32);
-	expect_policies_accept();
 	register_program_builder();
 
 	const hardware::program_scratch_requirement scratch_requirement(

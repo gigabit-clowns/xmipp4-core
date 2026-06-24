@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           fetch-depth: 0
 
@@ -50,7 +50,7 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
 
       - name: Configure and build with CMake
-        uses: threeal/cmake-action@v2
+        uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
         with:
           source-dir: ${{ github.workspace }}
           build-dir: "${{ github.workspace }}/build"

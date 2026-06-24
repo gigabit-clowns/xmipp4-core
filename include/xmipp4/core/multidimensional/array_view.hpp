@@ -58,11 +58,11 @@ public:
 		std::shared_ptr<const array_implementation> implementation
 	) noexcept;
 
-	array_view(const array_view& other) = delete;
+	XMIPP4_CORE_API array_view(const array_view& other);
 	XMIPP4_CORE_API array_view(array_view&& other) noexcept;
 	XMIPP4_CORE_API ~array_view();
 
-	array_view& operator=(const array_view& other) = delete;
+	XMIPP4_CORE_API array_view& operator=(const array_view& other);
 	XMIPP4_CORE_API array_view& operator=(array_view&& other) noexcept;
 
 	/**

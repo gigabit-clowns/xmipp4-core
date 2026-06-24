@@ -142,6 +142,34 @@ protected:
 		);
 	}
 
+	// Expect both policies to be queried for admissibility. This only happens
+	// when at least one output is pre-allocated; the dispatcher delegates the
+	// decision to the policies, so the mocks simply accept (they do not throw)
+	// regardless of the arguments.
+	void expect_policies_accept()
+	{
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(
+				shape_policy,
+				accept(
+					ANY(span<const shape_type>),
+					ANY(span<const shape_type>),
+					ANY(span<const shape_type>)
+				)
+			)
+		);
+		expectations.push_back(
+			NAMED_REQUIRE_CALL(
+				dtype_policy,
+				accept(
+					ANY(span<const numerical_type>),
+					ANY(span<const numerical_type>),
+					ANY(span<const numerical_type>)
+				)
+			)
+		);
+	}
+
 	// Register a builder so that the program manager resolves @ref program for
 	// @ref op.
 	void register_program_builder()
@@ -341,36 +369,75 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	eager_operation_dispatcher_fixture,
-	"eager_operation_dispatcher dispatch throws when a pre-allocated output does "
-	"not match the deduced descriptor",
+	"eager_operation_dispatcher dispatch accepts a pre-allocated output whose "
+	"shape or data type differs from the deduced descriptor",
 	"[eager_operation_dispatcher]"
 )
 {
 	// The operation deduces a contiguous {4} float32 output. A pre-allocated
-	// output that differs in either shape or data type must be rejected.
-	shape_type bad_shape;
-	numerical_type bad_type;
-	std::tie(bad_shape, bad_type) = GENERATE(
+	// output that differs in shape or data type is forwarded to the policies'
+	// accept(), which decide its admissibility; here they admit it.
+	shape_type user_shape;
+	numerical_type user_type;
+	std::tie(user_shape, user_type) = GENERATE(
 		table<shape_type, numerical_type>({
-			{ shape_type{2}, numerical_type::float32 }, // Wrong shape.
-			{ shape_type{4}, numerical_type::float64 }, // Wrong data type.
+			{ shape_type{2}, numerical_type::float32 }, // Different shape.
+			{ shape_type{4}, numerical_type::float64 }, // Different data type.
 		})
 	);
 
 	expect_unary_operation(shape_type{4}, numerical_type::float32);
 
-	array output(make_buffer(), make_descriptor(bad_shape, bad_type));
-	const array_view input;
+	// The policies are queried with the user-supplied descriptor alongside the
+	// canonical one deduced above, and accept it.
+	expectations.push_back(
+		NAMED_REQUIRE_CALL(
+			shape_policy,
+			accept(
+				ANY(span<const shape_type>),
+				ANY(span<const shape_type>),
+				ANY(span<const shape_type>)
+			)
+		)
+			.WITH(_1.size() == 1 && _1[0] == user_shape)       // User output.
+			.WITH(_2.size() == 1 && _2[0] == shape_type{4})    // Canonical.
+	);
+	expectations.push_back(
+		NAMED_REQUIRE_CALL(
+			dtype_policy,
+			accept(
+				ANY(span<const numerical_type>),
+				ANY(span<const numerical_type>),
+				ANY(span<const numerical_type>)
+			)
+		)
+			.WITH(_1.size() == 1 && _1[0] == user_type)               // User.
+			.WITH(_2.size() == 1 && _2[0] == numerical_type::float32) // Canonical.
+	);
 
-	CHECK_THROWS_AS(
+	register_program_builder();
+	expect_program_scratch(); // No scratch required.
+
+	// The pre-allocated output already owns storage, so no allocation happens:
+	// the existing buffer is reused as-is and the command is submitted normally.
+	const auto output_buffer = make_buffer();
+	array output(output_buffer, make_descriptor(user_shape, user_type));
+
+	const array_view input =
+		make_input_with_storage(shape_type{4}, numerical_type::float32);
+	expect_command_submission(output_buffer, input.share_storage());
+
+	CHECK_NOTHROW(
 		dispatcher->dispatch(
 			op,
 			make_span(&output, 1),
 			make_span(&input, 1),
 			context
-		),
-		std::invalid_argument
+		)
 	);
+
+	// The pre-allocated storage is preserved.
+	CHECK( output.get_storage() == output_buffer.get() );
 }
 
 TEST_CASE_METHOD(
@@ -438,6 +505,7 @@ TEST_CASE_METHOD(
 	);
 
 	expect_unary_operation(out_shape, out_type);
+	expect_policies_accept();
 	register_program_builder();
 	expect_program_scratch(); // No scratch required.
 

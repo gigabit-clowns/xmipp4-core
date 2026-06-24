@@ -108,50 +108,13 @@ make_empty_data_types(
 	return boost::container::small_vector<numerical_type, N>(count);
 }
 
-array_descriptor resolve_output_descriptor(
-	std::size_t index,
-	const array &output_operand,
-	const operation_shape_policy::shape_type &canonical_shape,
-	numerical_type canonical_data_type
-)
-{
-	if (!output_operand.get_storage())
-	{
-		return array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(canonical_shape)),
-			canonical_data_type
-		);
-	}
-
-	const auto &descriptor = output_operand.get_descriptor();
-	if (!descriptor.get_layout().extents_equal(make_span(canonical_shape)))
-	{
-		std::ostringstream oss;
-		oss << "eager_operation_dispatcher::dispatch: Pre-allocated "
-			<< "output array at index " << index << " does not match the "
-			<< "expected shape";
-		throw std::invalid_argument(oss.str());
-	}
-
-	if (descriptor.get_data_type() != canonical_data_type)
-	{
-		std::ostringstream oss;
-		oss << "eager_operation_dispatcher::dispatch: Pre-allocated "
-			<< "output array at index " << index << " has data type "
-			<< to_string(descriptor.get_data_type()) << " but expected "
-			<< to_string(canonical_data_type);
-		throw std::invalid_argument(oss.str());
-	}
-
-	return descriptor;
-}
-
 template <std::size_t N>
 boost::container::small_vector<array_descriptor, N>
 resolve_output_descriptors(
 	span<const array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
+	bool &needs_acceptance,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -161,19 +124,29 @@ resolve_output_descriptors(
 
 	boost::container::small_vector<array_descriptor, N> result;
 	result.reserve(n);
-
 	for (std::size_t i = 0; i < n; ++i)
-	{
-		result.push_back(
-			resolve_output_descriptor(
-				i, 
-				output_operands[i], 
-				canonical_shapes[i], 
-				canonical_data_types[i]
-			)
-		);
+	{	
+		const auto &output_operand = output_operands[i];
+
+		if (output_operand.get_storage())
+		{
+			result.push_back(output_operand.get_descriptor());
+			needs_acceptance = true;
+		}
+		else
+		{
+			const auto &canonical_shape = canonical_shapes[i];
+			const auto canonical_data_type = canonical_data_types[i];
+			result.emplace_back(
+				strided_layout::make_contiguous_layout(
+					make_span(canonical_shape)
+				),
+				canonical_data_type
+			);
+		}
 	}
 
+	XMIPP4_ASSERT(result.size() == n);
 	return result;
 }
 
@@ -377,7 +350,6 @@ void eager_operation_dispatcher::dispatch(
 	
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
-
 	validate_arity(operation_arity(n_outputs, n_inputs), op.get_arity());
 
 	auto input_descriptors = extract_input_descriptors(
@@ -396,25 +368,50 @@ void eager_operation_dispatcher::dispatch(
 	const auto &shape_policy = op.get_operation_shape_policy();
 	const auto &data_type_policy = op.get_operation_data_type_policy();
 
-	auto output_shapes =
+	auto canonical_output_shapes =
 		make_empty_shapes(n_outputs, small_output_size_tag());
-	auto output_data_types =
+	auto canonical_output_data_types =
 		make_empty_data_types(n_outputs, small_output_size_tag());
 	shape_policy.deduce(
-		make_span(output_shapes.data(), n_outputs),
+		make_span(canonical_output_shapes.data(), n_outputs),
 		make_span(input_shapes.data(), n_inputs)
 	);
 	data_type_policy.deduce(
-		make_span(output_data_types.data(), n_outputs),
+		make_span(canonical_output_data_types.data(), n_outputs),
 		make_span(input_data_types.data(), n_inputs)
 	);
 
+	bool needs_acceptance = false;
 	auto output_descriptors = resolve_output_descriptors(
 		output_operands,
-		make_span(output_shapes.data(), n_outputs),
-		make_span(output_data_types.data(), n_outputs),
+		make_span(canonical_output_shapes.data(), n_outputs),
+		make_span(canonical_output_data_types.data(), n_outputs),
+		needs_acceptance,
 		small_output_size_tag()
 	);
+
+	if (needs_acceptance)
+	{
+		auto output_shapes = extract_shapes(
+			make_span(output_descriptors.data(), n_outputs),
+			small_input_size_tag()
+		);
+		auto output_data_types = extract_data_types(
+			make_span(output_descriptors.data(), n_outputs),
+			small_input_size_tag()
+		);
+
+		shape_policy.accept(
+			make_span(output_shapes.data(), n_outputs),
+			make_span(canonical_output_shapes.data(), n_outputs),
+			make_span(input_shapes.data(), n_inputs)
+		);
+		data_type_policy.accept(
+			make_span(output_data_types.data(), n_outputs),
+			make_span(canonical_output_data_types.data(), n_outputs),
+			make_span(input_data_types.data(), n_inputs)
+		);
+	}
 
 	auto input_storages = extract_input_storage(
 		input_operands,

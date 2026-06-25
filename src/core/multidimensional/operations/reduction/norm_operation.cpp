@@ -7,9 +7,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-std::string norm_operation::get_name() const { return "norm"; }
-std::size_t norm_operation::get_output_count() const noexcept { return 1; }
-std::size_t norm_operation::get_input_count() const noexcept { return 1; }
+std::string norm_operation::get_name() const 
+{
+    return "norm";
+}
+operation_arity norm_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -7,9 +7,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-std::string max_operation::get_name() const { return "max"; }
-std::size_t max_operation::get_output_count() const noexcept { return 1; }
-std::size_t max_operation::get_input_count() const noexcept { return 1; }
+std::string max_operation::get_name() const 
+{
+    return "max";
+}
+operation_arity max_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -10,22 +10,11 @@
 
 namespace xmipp4 
 {
-
-class execution_context;
-
 namespace multidimensional
 {
 
-/**
- * @brief Create an array with uninitialized contents.
- * 
- * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
- */
+class execution_context;
+
 XMIPP4_CORE_API
 array empty(
 	array_descriptor descriptor, 
@@ -34,16 +23,6 @@ array empty(
 	array *out = nullptr
 );
 
-/**
- * @brief Create an array full of zeros.
- * 
- * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting array filled with zeros.
- */
 XMIPP4_CORE_API
 array zeros(
 	array_descriptor descriptor, 
@@ -52,16 +31,6 @@ array zeros(
 	array *out = nullptr
 );
 
-/**
- * @brief Create an array full of ones.
- * 
- * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting array filled with ones.
- */
 XMIPP4_CORE_API
 array ones(
 	array_descriptor descriptor, 
@@ -70,17 +39,6 @@ array ones(
 	array *out = nullptr
 );
 
-/**
- * @brief Create an array full of an arbitrary value.
- * 
- * @param descriptor The descriptor for the new array.
- * @param affinity The affinity for the array's data.
- * @param fill_value The value to fill the array with.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting array filled with the specified value.
- */
 XMIPP4_CORE_API
 array full(
 	array_descriptor descriptor, 
@@ -90,16 +48,6 @@ array full(
 	array *out = nullptr
 );
 
-/**
- * @brief Create an array by copying the contents of another array.
- * 
- * @param source The array whose contents are copied.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to which contents are copied. If provided, the
- * input is broadcasted to match the shape of this array. Therefore, input
- * must be broadcastable to out's shape.
- * @return array The resulting copy of the input array.
- */
 XMIPP4_CORE_API
 array copy(
 	array_view source,
@@ -107,47 +55,8 @@ array copy(
 	array *out = nullptr
 );
 
-/**
- * @brief Create a complex array from its real and imaginary components.
- * 
- * Both input values must be floating types.
- * 
- * @param real Array with the real values.
- * @param imag Array with the imaginary values.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to which contents are copied. If provided, the
- * input is broadcasted to match the shape of this array. Therefore, input
- * must be broadcastable to out's shape.
- * @return array The resulting complex array.
- */
 XMIPP4_CORE_API
-array complex(
-	array_view real,
-	array_view imag,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
- * @brief Create a complex array from its magnitude and phase components.
- * 
- * Both input values must be floating types.
- * 
- * @param abs The magnitudes.
- * @param angle The phases.
- * @param context The device context to handle the allocation and dispatch.
- * @param out Optional array to which contents are copied. If provided, the
- * input is broadcasted to match the shape of this array. Therefore, input
- * must be broadcastable to out's shape.
- * @return array The resulting complex array.
- */
-XMIPP4_CORE_API
-array polar(
-	array_view abs,
-	array_view angle,
-	const execution_context &context,
-	array *out = nullptr
-);
+array scalar(scalar_ref value);
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -27,8 +27,10 @@ select_operation::get_operation_data_type_policy() const noexcept
     return masked_operation_data_type_policy::get();
 }
 
-std::size_t select_operation::get_output_count() const noexcept { return 1; }
-std::size_t select_operation::get_input_count() const noexcept { return 3; }
+operation_arity select_operation::get_arity() const noexcept
+{
+    return operation_arity::ternary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

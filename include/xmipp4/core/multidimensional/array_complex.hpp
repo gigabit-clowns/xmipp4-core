@@ -13,58 +13,42 @@ namespace multidimensional
 class execution_context;
 
 XMIPP4_CORE_API
-array sin(
-	array_view x,
+array complex(
+	array_view real,
+	array_view imag,
 	const execution_context &context,
 	array *out = nullptr
 );
 
 XMIPP4_CORE_API
-array cos(
-	array_view x,
+array polar(
+	array_view abs,
+	array_view angle,
 	const execution_context &context,
 	array *out = nullptr
 );
 
 XMIPP4_CORE_API
-void sincos(
-	array_view x,
-	const execution_context &context,
-	array &sin,
-	array &cos
-);
+array_view real(array_view value);
 
 XMIPP4_CORE_API
-array tan(
-	array_view x,
-	const execution_context &context,
-	array *out = nullptr
-);
+array real(array value);
 
 XMIPP4_CORE_API
-array asin(
-	array_view x,
+array_view imag(array_view value);
+
+XMIPP4_CORE_API
+array imag(array value);
+
+XMIPP4_CORE_API
+array angle(
+	array_view value,
 	const execution_context &context,
 	array *out = nullptr
 );
 
 XMIPP4_CORE_API
-array acos(
-	array_view x,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-XMIPP4_CORE_API
-array atan(
-	array_view x,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-XMIPP4_CORE_API
-array atan2(
-	array_view y,
+array conj(
 	array_view x,
 	const execution_context &context,
 	array *out = nullptr

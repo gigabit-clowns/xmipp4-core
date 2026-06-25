@@ -7,9 +7,14 @@ namespace xmipp4
 namespace multidimensional
 {
 
-std::string min_operation::get_name() const { return "min"; }
-std::size_t min_operation::get_output_count() const noexcept { return 1; }
-std::size_t min_operation::get_input_count() const noexcept { return 1; }
+std::string min_operation::get_name() const 
+{
+    return "min";
+}
+operation_arity min_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

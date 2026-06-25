@@ -22,7 +22,8 @@ class XMIPP4_CORE_API linear_algebra_operation
     : public operation
 {
 public:
-    const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
+    const operation_data_type_policy& 
+	get_operation_data_type_policy() const noexcept override;
 };
 
 } // namespace multidimensional

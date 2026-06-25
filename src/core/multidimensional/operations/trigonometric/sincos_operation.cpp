@@ -9,11 +9,13 @@ namespace multidimensional
 
 std::string sincos_operation::get_name() const
 {
-	return "sincos";
+    return "sincos";
 }
 
-std::size_t sincos_operation::get_output_count() const noexcept { return 2; }
-std::size_t sincos_operation::get_input_count() const noexcept { return 1; }
+operation_arity sincos_operation::get_arity() const noexcept
+{
+    return operation_arity(2, 1);
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

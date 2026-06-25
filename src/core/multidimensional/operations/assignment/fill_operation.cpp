@@ -24,33 +24,7 @@ fill_operation::~fill_operation() = default;
 
 std::string fill_operation::get_name() const
 {
-	return "fill";
-}
-
-std::string fill_operation::serialize_parameters() const
-{
-	const auto &fill_value = m_fill_value;
-	const auto data_type = fill_value.get_data_type();
-	const auto *type_str = to_string(data_type);
-
-	return dispatch_numerical_types(
-		[type_str, &fill_value] (auto tag)
-		{
-			using type = typename decltype(tag)::type;
-			const auto value = fill_value.get<type>();
-			const auto *value_start =
-				reinterpret_cast<const std::uint8_t*>(&value);
-			const auto *value_end = value_start + sizeof(type);
-
-			return fmt::format(
-				"{}({:02x})",
-				type_str,
-				fmt::join(value_start, value_end, "")
-			);
-		},
-		native_type_map(),
-		data_type
-	);
+    return "fill";
 }
 
 const operation_shape_policy& 
@@ -65,8 +39,10 @@ fill_operation::get_operation_data_type_policy() const noexcept
 	return homogeneous_operation_data_type_policy::get();
 }
 
-std::size_t fill_operation::get_output_count() const noexcept { return 1; }
-std::size_t fill_operation::get_input_count() const noexcept { return 0; }
+operation_arity fill_operation::get_arity() const noexcept
+{
+    return operation_arity::nullary();
+}
 
 scalar_ref fill_operation::get_fill_value() const noexcept
 {

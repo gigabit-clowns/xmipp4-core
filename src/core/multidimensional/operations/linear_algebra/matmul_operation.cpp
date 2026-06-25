@@ -14,14 +14,9 @@ std::string matmul_operation::get_name() const
     return "matmul";
 }
 
-std::size_t matmul_operation::get_output_count() const noexcept
+operation_arity matmul_operation::get_arity() const noexcept
 {
-    return 1;
-}
-
-std::size_t matmul_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 
 const operation_shape_policy& 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/operations/assignment/complex_from_polar_operation.hpp>
+#include <xmipp4/core/multidimensional/operations/complex/complex_from_polar_operation.hpp>
 
 #include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 
@@ -13,7 +13,7 @@ namespace multidimensional
 
 std::string complex_from_polar_operation::get_name() const
 {
-	return "complex_from_polar";
+    return "complex_from_polar";
 }
 
 const operation_shape_policy& 
@@ -28,10 +28,10 @@ complex_from_polar_operation::get_operation_data_type_policy() const noexcept
 	return complex_from_real_operation_data_type_policy::get();
 }
 
-std::size_t 
-complex_from_polar_operation::get_output_count() const noexcept { return 1; }
-std::size_t 
-complex_from_polar_operation::get_input_count() const noexcept { return 2; }
+operation_arity complex_from_polar_operation::get_arity() const noexcept
+{
+    return operation_arity::binary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -14,14 +14,9 @@ std::string dot_operation::get_name() const
     return "dot";
 }
 
-std::size_t dot_operation::get_output_count() const noexcept
+operation_arity dot_operation::get_arity() const noexcept
 {
-    return 1;
-}
-
-std::size_t dot_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 
 const operation_shape_policy& 

@@ -22,9 +22,9 @@ class XMIPP4_CORE_API dot_operation final
 {
 public:
     std::string get_name() const override;
-    std::size_t get_output_count() const noexcept override;
-    std::size_t get_input_count() const noexcept override;
-    const operation_shape_policy& get_operation_shape_policy() const noexcept override;
+    operation_arity get_arity() const noexcept override;
+    const operation_shape_policy& 
+	get_operation_shape_policy() const noexcept override;
 };
 
 } // namespace multidimensional

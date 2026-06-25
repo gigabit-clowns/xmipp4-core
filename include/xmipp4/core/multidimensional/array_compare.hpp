@@ -7,22 +7,11 @@
 
 namespace xmipp4 
 {
-
-class execution_context;
-
 namespace multidimensional
 {
 
-/**
- * @brief Evaluate `x < y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
+class execution_context;
+
 XMIPP4_CORE_API
 array less(
 	array_view lhs,
@@ -31,16 +20,6 @@ array less(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x <= y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
 XMIPP4_CORE_API
 array less_equal(
 	array_view lhs,
@@ -49,16 +28,6 @@ array less_equal(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x > y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
 XMIPP4_CORE_API
 array greater(
 	array_view lhs,
@@ -67,16 +36,6 @@ array greater(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x >= y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
 XMIPP4_CORE_API
 array greater_equal(
 	array_view lhs,
@@ -85,16 +44,6 @@ array greater_equal(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x == y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
 XMIPP4_CORE_API
 array equal(
 	array_view lhs,
@@ -103,16 +52,6 @@ array equal(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x != y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting comparison.
- */
 XMIPP4_CORE_API
 array inequal(
 	array_view lhs,

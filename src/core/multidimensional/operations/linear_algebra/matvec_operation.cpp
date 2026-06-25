@@ -14,14 +14,9 @@ std::string matvec_operation::get_name() const
     return "matvec";
 }
 
-std::size_t matvec_operation::get_output_count() const noexcept
+operation_arity matvec_operation::get_arity() const noexcept
 {
-    return 1;
-}
-
-std::size_t matvec_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 
 const operation_shape_policy& 

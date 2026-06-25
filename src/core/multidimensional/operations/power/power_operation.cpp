@@ -9,11 +9,13 @@ namespace multidimensional
 
 std::string power_operation::get_name() const
 {
-	return "power";
+    return "power";
 }
 
-std::size_t power_operation::get_output_count() const noexcept { return 1; }
-std::size_t power_operation::get_input_count() const noexcept { return 2; }
+operation_arity power_operation::get_arity() const noexcept
+{
+    return operation_arity::binary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

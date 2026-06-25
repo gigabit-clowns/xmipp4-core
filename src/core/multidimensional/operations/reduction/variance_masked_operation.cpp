@@ -21,13 +21,9 @@ std::string variance_masked_operation::get_name() const
 {
     return "variance_masked";
 }
-std::size_t variance_masked_operation::get_output_count() const noexcept
+operation_arity variance_masked_operation::get_arity() const noexcept
 {
-    return 1;
-}
-std::size_t variance_masked_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 std::size_t variance_masked_operation::get_degrees_of_freedom() const noexcept
 {

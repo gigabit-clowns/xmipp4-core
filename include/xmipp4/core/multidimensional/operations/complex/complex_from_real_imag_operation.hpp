@@ -11,15 +11,14 @@ namespace multidimensional
 {
 
 /**
- * @brief Base class for bitwise operations.
- *
- * `operation_shape_policy`: `elementwise_operation_shape_policy`
- * `operation_data_type_policy`: `homogeneous_integer_operation_data_type_policy`
+ * @brief Create a complex array from the real and imaginary values.
  */
-class XMIPP4_CORE_API bitwise_operation
+class XMIPP4_CORE_API complex_from_real_imag_operation final
 	: public operation
 {
 public:
+	std::string get_name() const override;
+	operation_arity get_arity() const noexcept override;
 	const operation_shape_policy& 
 	get_operation_shape_policy() const noexcept override;
 	const operation_data_type_policy& 

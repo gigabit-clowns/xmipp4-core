@@ -21,8 +21,7 @@ class XMIPP4_CORE_API atan_operation final
 {
 public:
 	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
+	operation_arity get_arity() const noexcept override;
 };
 
 } // namespace multidimensional

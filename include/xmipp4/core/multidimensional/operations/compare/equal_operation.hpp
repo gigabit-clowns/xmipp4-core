@@ -18,8 +18,6 @@ class XMIPP4_CORE_API equal_operation final
 {
 public:
 	std::string get_name() const override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
 };
 
 } // namespace multidimensional

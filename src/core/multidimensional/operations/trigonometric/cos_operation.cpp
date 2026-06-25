@@ -9,11 +9,13 @@ namespace multidimensional
 
 std::string cos_operation::get_name() const
 {
-	return "cos";
+    return "cos";
 }
 
-std::size_t cos_operation::get_output_count() const noexcept { return 1; }
-std::size_t cos_operation::get_input_count() const noexcept { return 1; }
+operation_arity cos_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

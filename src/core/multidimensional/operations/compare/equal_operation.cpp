@@ -9,11 +9,8 @@ namespace multidimensional
 
 std::string equal_operation::get_name() const
 {
-	return "equal";
+    return "equal";
 }
-
-std::size_t equal_operation::get_output_count() const noexcept { return 1; }
-std::size_t equal_operation::get_input_count() const noexcept { return 2; }
 
 } // namespace multidimensional
 } // namespace xmipp4

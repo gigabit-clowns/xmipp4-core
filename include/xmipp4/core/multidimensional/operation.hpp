@@ -81,9 +81,5 @@ public:
 	get_operation_data_type_policy() const noexcept = 0;
 };
 
-std::ostream& operator<<(std::ostream& os, const operation& op);
-
-std::string to_string(const operation& op);
-
 } // namespace multidimensional
 } // namespace xmipp4

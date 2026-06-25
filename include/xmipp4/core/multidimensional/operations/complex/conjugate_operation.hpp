@@ -11,17 +11,16 @@ namespace multidimensional
 {
 
 /**
- * @brief Create a complex array from the real and imaginary values.
+ * @brief Compute `conj(x)` for all elements.
  */
-class XMIPP4_CORE_API complex_from_real_imag_operation final
+class XMIPP4_CORE_API conjugate_operation final
 	: public operation
 {
 public:
 	std::string get_name() const override;
 	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
 	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
-	std::size_t get_output_count() const noexcept override;
-	std::size_t get_input_count() const noexcept override;
+	operation_arity get_arity() const noexcept override;
 };
 
 } // namespace multidimensional

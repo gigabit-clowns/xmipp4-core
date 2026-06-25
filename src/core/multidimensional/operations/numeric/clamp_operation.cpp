@@ -12,8 +12,10 @@ std::string clamp_operation::get_name() const
     return "clamp";
 }
 
-std::size_t clamp_operation::get_output_count() const noexcept { return 1; }
-std::size_t clamp_operation::get_input_count() const noexcept { return 3; }
+operation_arity clamp_operation::get_arity() const noexcept
+{
+    return operation_arity::ternary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

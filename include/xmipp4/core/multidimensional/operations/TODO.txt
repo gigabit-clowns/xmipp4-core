@@ -1,5 +1,6 @@
 Complex decomposition (elementwise)
 	- phase (arg) — complement complex_from_polar
+	- conj
 Scatter / gather (index-based)
 	- gather (index into array along an axis)
 	- scatter

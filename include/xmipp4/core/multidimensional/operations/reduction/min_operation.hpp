@@ -19,8 +19,7 @@ class XMIPP4_CORE_API min_operation final
 public:
     using real_reduction_operation::real_reduction_operation;
     std::string get_name() const override;
-    std::size_t get_output_count() const noexcept override;
-    std::size_t get_input_count() const noexcept override;
+    operation_arity get_arity() const noexcept override;
 };
 
 } // namespace multidimensional

@@ -9,13 +9,13 @@ namespace multidimensional
 
 std::string bitwise_negate_operation::get_name() const
 {
-	return "bitwise_negate";
+    return "bitwise_negate";
 }
 
-std::size_t 
-bitwise_negate_operation::get_output_count() const noexcept { return 1; }
-std::size_t 
-bitwise_negate_operation::get_input_count() const noexcept { return 1; }
+operation_arity bitwise_negate_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

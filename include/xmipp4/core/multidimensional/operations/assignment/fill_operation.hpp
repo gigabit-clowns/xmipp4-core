@@ -31,19 +31,15 @@ public:
 	XMIPP4_CORE_API std::string get_name() const override;
 
 	XMIPP4_CORE_API
-	std::string serialize_parameters() const override;
+	operation_arity get_arity() const noexcept override;
 
 	XMIPP4_CORE_API
-	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
+	const operation_shape_policy& 
+	get_operation_shape_policy() const noexcept override;
 
 	XMIPP4_CORE_API
-	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
-
-	XMIPP4_CORE_API
-	std::size_t get_output_count() const noexcept override;
-
-	XMIPP4_CORE_API
-	std::size_t get_input_count() const noexcept override;
+	const operation_data_type_policy& 
+	get_operation_data_type_policy() const noexcept override;
 
 	/**
 	 * @brief Get the fill value.

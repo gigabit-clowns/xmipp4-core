@@ -9,11 +9,13 @@ namespace multidimensional
 
 std::string tan_operation::get_name() const
 {
-	return "tan";
+    return "tan";
 }
 
-std::size_t tan_operation::get_output_count() const noexcept { return 1; }
-std::size_t tan_operation::get_input_count() const noexcept { return 1; }
+operation_arity tan_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

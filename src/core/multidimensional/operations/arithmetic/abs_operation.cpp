@@ -11,11 +11,13 @@ namespace multidimensional
 
 std::string abs_operation::get_name() const
 {
-	return "abs";
+    return "abs";
 }
 
-std::size_t abs_operation::get_output_count() const noexcept { return 1; }
-std::size_t abs_operation::get_input_count() const noexcept { return 1; }
+operation_arity abs_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 const operation_data_type_policy& 
 abs_operation::get_operation_data_type_policy() const noexcept

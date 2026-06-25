@@ -12,8 +12,10 @@ std::string trunc_operation::get_name() const
     return "trunc";
 }
 
-std::size_t trunc_operation::get_output_count() const noexcept { return 1; }
-std::size_t trunc_operation::get_input_count() const noexcept { return 1; }
+operation_arity trunc_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

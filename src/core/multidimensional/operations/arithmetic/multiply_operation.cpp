@@ -9,11 +9,13 @@ namespace multidimensional
 
 std::string multiply_operation::get_name() const
 {
-	return "multiply";
+    return "multiply";
 }
 
-std::size_t multiply_operation::get_output_count() const noexcept { return 1; }
-std::size_t multiply_operation::get_input_count() const noexcept { return 2; }
+operation_arity multiply_operation::get_arity() const noexcept
+{
+    return operation_arity::binary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -11,13 +11,9 @@ std::string sum_square_masked_operation::get_name() const
 {
     return "sum_square_masked";
 }
-std::size_t sum_square_masked_operation::get_output_count() const noexcept
+operation_arity sum_square_masked_operation::get_arity() const noexcept
 {
-    return 1;
-}
-std::size_t sum_square_masked_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 
 } // namespace multidimensional

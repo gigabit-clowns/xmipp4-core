@@ -7,11 +7,10 @@
 
 namespace xmipp4 
 {
-
-class execution_context;
-
 namespace multidimensional
 {
+
+class execution_context;
 
 /**
  * @brief Transfer an array from host to device memory.
@@ -20,11 +19,12 @@ namespace multidimensional
  * alias of the input array. Otherwise it behaves like `host_to_device_copy`
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @return array The transferred array.
  * 
  * @warning The returned array may alias the input array. Thus modifications
- * to it may have side-effects on the input array and vice-versa. 
+ * to it may have side-effects on the input array and vice-versa. Prefer 
+ * @ref to_device_copy if this is a concern.
  */
 XMIPP4_CORE_API
 array to_device(array &input, const execution_context &context);
@@ -36,11 +36,12 @@ array to_device(array &input, const execution_context &context);
  * alias of the input array. Otherwise it behaves like `host_to_device_copy`
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @return array The transferred array.
  * 
- * @warning The returned array may alias the input array. Thus modifications
- * to it may have side-effects on the input array and vice-versa. 
+ * @warning The returned array may alias the input array. Modifications 
+ * performed on the input array may have side effects on the output. Prefer 
+ * @ref to_device_copy if this is a concern.
  */
 XMIPP4_CORE_API
 array_view to_device(array_view input, const execution_context &context);
@@ -49,7 +50,7 @@ array_view to_device(array_view input, const execution_context &context);
  * @brief Transfer an array to device memory enforcing a copy.
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
  * @return array The transferred array.
@@ -68,11 +69,12 @@ array to_device_copy(
  * alias of the input array. Otherwise it behaves like `device_to_host_copy`
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @return array The transferred array.
  * 
  * @warning The returned array may alias the input array. Thus modifications
- * to it may have side-effects on the input array and vice-versa. 
+ * to it may have side-effects on the input array and vice-versa. Prefer 
+ * @ref to_host_copy if this is a concern. 
  */
 XMIPP4_CORE_API
 array to_host(array &input, const execution_context &context);
@@ -84,11 +86,12 @@ array to_host(array &input, const execution_context &context);
  * alias of the input array. Otherwise it behaves like `device_to_host_copy`
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @return array The transferred array.
  * 
  * @warning The returned array may alias the input array. Thus modifications
- * to it may have side-effects on the input array and vice-versa. 
+ * to it may have side-effects on the input array and vice-versa. Prefer 
+ * @ref to_host_copy if this is a concern
  */
 XMIPP4_CORE_API
 array_view to_host(array_view input, const execution_context &context);
@@ -97,7 +100,7 @@ array_view to_host(array_view input, const execution_context &context);
  * @brief Transfer an array to host accessible memory enforcing a copy.
  * 
  * @param input Array to be transferred.
- * @param context The device context to handle the allocation.
+ * @param context The execution environment.
  * @param out Optional array to reuse. If provided, its resources may be re-used
  * and it will be overwritten with the newly created array.
  * @return array The transferred array.

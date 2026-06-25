@@ -17,9 +17,14 @@ variance_operation::variance_operation(
 {
 }
 
-std::string variance_operation::get_name() const { return "variance"; }
-std::size_t variance_operation::get_output_count() const noexcept { return 1; }
-std::size_t variance_operation::get_input_count() const noexcept { return 1; }
+std::string variance_operation::get_name() const 
+{
+    return "variance";
+}
+operation_arity variance_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 std::size_t variance_operation::get_degrees_of_freedom() const noexcept
 {
     return m_ddof;

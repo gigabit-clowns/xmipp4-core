@@ -12,8 +12,10 @@ std::string floor_operation::get_name() const
     return "floor";
 }
 
-std::size_t floor_operation::get_output_count() const noexcept { return 1; }
-std::size_t floor_operation::get_input_count() const noexcept { return 1; }
+operation_arity floor_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

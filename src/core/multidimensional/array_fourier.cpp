@@ -14,60 +14,49 @@ namespace multidimensional
 
 array fft(
     array_view x,
-    span<const std::size_t> axes,
+	std::vector<std::size_t> axes,
     const execution_context &context,
     fft_normalization norm,
     array *out
 )
 {
     return execute_unary(
-        fft_c2c_operation(
-            std::vector<std::size_t>(axes.begin(), axes.end()),
-            fft_direction::forward,
-            norm
-        ),
+        fft_c2c_operation(std::move(axes), fft_direction::forward, norm),
         x, context, out
     );
 }
 
 array rfft(
     array_view x,
-    span<const std::size_t> axes,
+	std::vector<std::size_t> axes,
     const execution_context &context,
     fft_normalization norm,
     array *out
 )
 {
     return execute_unary(
-        fft_r2c_operation(
-            std::vector<std::size_t>(axes.begin(), axes.end()),
-            norm
-        ),
+        fft_r2c_operation(std::move(axes), norm),
         x, context, out
     );
 }
 
 array ifft(
     array_view x,
-    span<const std::size_t> axes,
+	std::vector<std::size_t> axes,
     const execution_context &context,
     fft_normalization norm,
     array *out
 )
 {
     return execute_unary(
-        fft_c2c_operation(
-            std::vector<std::size_t>(axes.begin(), axes.end()),
-            fft_direction::backward,
-            norm
-        ),
+        fft_c2c_operation(std::move(axes), fft_direction::backward, norm),
         x, context, out
     );
 }
 
 array irfft(
     array_view x,
-    span<const std::size_t> axes,
+	std::vector<std::size_t> axes,
     const execution_context &context,
     bool is_odd,
     fft_normalization norm,
@@ -75,11 +64,7 @@ array irfft(
 )
 {
     return execute_unary(
-        fft_c2r_operation(
-            std::vector<std::size_t>(axes.begin(), axes.end()),
-            is_odd,
-            norm
-        ),
+        fft_c2r_operation(std::move(axes), is_odd, norm),
         x, context, out
     );
 }

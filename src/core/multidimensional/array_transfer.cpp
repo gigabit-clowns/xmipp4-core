@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/array_transfer.hpp>
 
-#include <xmipp4/core/execution_context.hpp>
+#include <xmipp4/core/multidimensional/execution_context.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
@@ -59,12 +59,12 @@ array to_device(array &input, const execution_context &context)
 		);
 	}
 
-	const auto &resource = storage->get_memory_resource();
-	auto &device = context.get_device();
-	if (hardware::is_device_accessible(resource, device))
-	{
-		return input.share();
-	}
+	//const auto &resource = storage->get_memory_resource();
+	//auto &device = context.get_device();
+	//if (hardware::is_device_accessible(resource, device))
+	//{
+	//	return input.share();
+	//}
 
 	return to_device_copy(input, context);
 }
@@ -79,12 +79,12 @@ array_view to_device(array_view input, const execution_context &context)
 		);
 	}
 
-	const auto &resource = storage->get_memory_resource();
-	auto &device = context.get_device();
-	if (hardware::is_device_accessible(resource, device))
-	{
-		return input;
-	}
+	//const auto &resource = storage->get_memory_resource();
+	//auto &device = context.get_device();
+	//if (hardware::is_device_accessible(resource, device))
+	//{
+	//	return input;
+	//}
 
 	return to_device_copy(std::move(input), context);
 }
@@ -113,11 +113,11 @@ array to_host(array &input, const execution_context &context)
 		);
 	}
 
-	const auto &resource = storage->get_memory_resource();
-	if (hardware::is_host_accessible(resource.get_kind()))
-	{
-		return input.share();
-	}
+	//const auto &resource = storage->get_memory_resource();
+	//if (hardware::is_host_accessible(resource.get_kind()))
+	//{
+	//	return input.share();
+	//}
 
 	return to_host_copy(input, context);
 }
@@ -132,11 +132,11 @@ array_view to_host(array_view input, const execution_context &context)
 		);
 	}
 
-	const auto &resource = storage->get_memory_resource();
-	if (hardware::is_host_accessible(resource.get_kind()))
-	{
-		return input;
-	}
+	//const auto &resource = storage->get_memory_resource();
+	//if (hardware::is_host_accessible(resource.get_kind()))
+	//{
+	//	return input;
+	//}
 
 	return to_host_copy(std::move(input), context);
 }

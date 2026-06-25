@@ -9,13 +9,13 @@ namespace multidimensional
 
 std::string bitwise_or_operation::get_name() const
 {
-	return "bitwise_or";
+    return "bitwise_or";
 }
 
-std::size_t 
-bitwise_or_operation::get_output_count() const noexcept { return 1; }
-std::size_t 
-bitwise_or_operation::get_input_count() const noexcept { return 2; }
+operation_arity bitwise_or_operation::get_arity() const noexcept
+{
+    return operation_arity::binary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

@@ -9,13 +9,13 @@ namespace multidimensional
 
 std::string logical_or_operation::get_name() const
 {
-	return "logical_or";
+    return "logical_or";
 }
 
-std::size_t 
-logical_or_operation::get_output_count() const noexcept { return 1; }
-std::size_t 
-logical_or_operation::get_input_count() const noexcept { return 2; }
+operation_arity logical_or_operation::get_arity() const noexcept
+{
+    return operation_arity::binary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

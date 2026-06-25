@@ -20,8 +20,10 @@ class XMIPP4_CORE_API arithmetic_operation
 	: public operation
 {
 public:
-	const operation_shape_policy& get_operation_shape_policy() const noexcept override;
-	const operation_data_type_policy& get_operation_data_type_policy() const noexcept override;
+	const operation_shape_policy& 
+	get_operation_shape_policy() const noexcept override;
+	const operation_data_type_policy& 
+	get_operation_data_type_policy() const noexcept override;
 };
 
 } // namespace multidimensional

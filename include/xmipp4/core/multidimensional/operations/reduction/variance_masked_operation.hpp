@@ -24,8 +24,7 @@ public:
         bool keep_dim = false
     );
     std::string get_name() const override;
-    std::size_t get_output_count() const noexcept override;
-    std::size_t get_input_count() const noexcept override;
+    operation_arity get_arity() const noexcept override;
     std::size_t get_degrees_of_freedom() const noexcept;
 
 private:

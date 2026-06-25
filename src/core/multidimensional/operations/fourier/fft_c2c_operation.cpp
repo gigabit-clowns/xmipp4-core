@@ -24,11 +24,13 @@ fft_c2c_operation::~fft_c2c_operation() = default;
 
 std::string fft_c2c_operation::get_name() const
 {
-	return "fft_c2c";
+    return "fft_c2c";
 }
 
-std::size_t fft_c2c_operation::get_output_count() const noexcept { return 1; }
-std::size_t fft_c2c_operation::get_input_count() const noexcept { return 1; }
+operation_arity fft_c2c_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 const operation_shape_policy&
 fft_c2c_operation::get_operation_shape_policy() const noexcept

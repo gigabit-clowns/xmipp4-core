@@ -11,6 +11,10 @@ namespace xmipp4
 namespace multidimensional
 {
 
+operation_arity compare_operation::get_arity() const noexcept
+{
+	return operation_arity::binary();
+}
 const operation_shape_policy& 
 compare_operation::get_operation_shape_policy() const noexcept
 {

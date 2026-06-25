@@ -7,21 +7,11 @@
 
 namespace xmipp4 
 {
-
-class execution_context;
-
 namespace multidimensional
 {
 
-/**
- * @brief Evaluate `-x` for each element in the arrays.
- *
- * @param x Array to be negated. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting empty array.
- */
+class execution_context;
+
 XMIPP4_CORE_API
 array negate(
 	array_view x,
@@ -29,16 +19,6 @@ array negate(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `abs(x)` for each element in the arrays.
- *
- * @param x Input array. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The absolute value of the input elements. For complex types
- * this corresponds to the magnitude.
- */
 XMIPP4_CORE_API
 array abs(
 	array_view x,
@@ -46,32 +26,6 @@ array abs(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `conj(x)` for each element in the arrays.
- *
- * @param x Input array. Must have complex data type.
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The conjugate values of the input array.
- */
-XMIPP4_CORE_API
-array conj(
-	array_view x,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
- * @brief Evaluate `x + y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting addition.
- */
 XMIPP4_CORE_API
 array add(
 	array_view lhs,
@@ -80,13 +34,6 @@ array add(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `out += x` for all operands.
- * 
- * @param out Accumulator.
- * @param increment Values to be added.
- * @param context The device context to handle the allocation.
- */
 XMIPP4_CORE_API
 void add_inplace(
 	array &out,
@@ -94,16 +41,6 @@ void add_inplace(
 	const execution_context &context
 );
 
-/**
- * @brief Evaluate `x - y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The resulting subtraction.
- */
 XMIPP4_CORE_API
 array subtract(
 	array_view lhs,
@@ -112,16 +49,14 @@ array subtract(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `x * y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The result of the multiplication.
- */
+XMIPP4_CORE_API
+array subtract_inplace(
+	array_view lhs,
+	array_view rhs,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 XMIPP4_CORE_API
 array multiply(
 	array_view lhs,
@@ -130,13 +65,6 @@ array multiply(
 	array *out = nullptr
 );
 
-/**
- * @brief Evaluate `out *= x` for all operands.
- * 
- * @param out Accumulator.
- * @param increment Values to be multiplied.
- * @param context The device context to handle the allocation.
- */
 XMIPP4_CORE_API
 void multiply_inplace(
 	array &out,
@@ -144,22 +72,19 @@ void multiply_inplace(
 	const execution_context &context
 );
 
-/**
- * @brief Evaluate `x / y` for each element in the arrays.
- *
- * @param lhs Left hand side operand. 
- * @param rhs Right hand side operand. 
- * @param context The device context to handle the allocation.
- * @param out Optional array to reuse. If provided, its resources may be re-used
- * and it will be overwritten with the newly created array.
- * @return array The result of the division.
- */
 XMIPP4_CORE_API
 array divide(
 	array_view lhs,
 	array_view rhs,
 	const execution_context &context,
 	array *out = nullptr
+);
+
+XMIPP4_CORE_API
+void divide_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
 );
 
 } // namespace multidimensional

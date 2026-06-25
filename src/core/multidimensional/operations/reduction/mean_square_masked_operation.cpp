@@ -11,13 +11,9 @@ std::string mean_square_masked_operation::get_name() const
 {
     return "mean_square_masked";
 }
-std::size_t mean_square_masked_operation::get_output_count() const noexcept
+operation_arity mean_square_masked_operation::get_arity() const noexcept
 {
-    return 1;
-}
-std::size_t mean_square_masked_operation::get_input_count() const noexcept
-{
-    return 2;
+    return operation_arity::binary();
 }
 
 } // namespace multidimensional

@@ -12,8 +12,10 @@ std::string ceil_operation::get_name() const
     return "ceil";
 }
 
-std::size_t ceil_operation::get_output_count() const noexcept { return 1; }
-std::size_t ceil_operation::get_input_count() const noexcept { return 1; }
+operation_arity ceil_operation::get_arity() const noexcept
+{
+    return operation_arity::unary();
+}
 
 } // namespace multidimensional
 } // namespace xmipp4

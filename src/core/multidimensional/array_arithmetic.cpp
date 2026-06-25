@@ -4,7 +4,6 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/negate_operation.hpp>
-#include <xmipp4/core/multidimensional/operations/arithmetic/conjugate_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/abs_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/add_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/arithmetic/subtract_operation.hpp>
@@ -24,11 +23,6 @@ array negate(array_view x, const execution_context &context, array *out)
 array abs(array_view x, const execution_context &context, array *out)
 {
 	return execute_unary(abs_operation(), std::move(x), context, out);
-}
-
-array conj(array_view x, const execution_context &context, array *out)
-{
-	return execute_unary(conjugate_operation(), std::move(x), context, out);
 }
 
 array add(
@@ -78,6 +72,21 @@ array subtract(
 	);
 }
 
+void subtract_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
+)
+{
+	std::array<array_view, 2> inputs = { out, std::move(x) };
+	execute(
+		subtract_operation(), 
+		make_span(&out, 1),
+		make_span(inputs),
+		context
+	);
+}
+
 array multiply(
 	array_view lhs,
 	array_view rhs,
@@ -122,6 +131,21 @@ array divide(
 		std::move(rhs), 
 		context, 
 		out
+	);
+}
+
+void divide_inplace(
+	array &out,
+	array_view x,
+	const execution_context &context
+)
+{
+	std::array<array_view, 2> inputs = { out, std::move(x) };
+	execute(
+		divide_operation(), 
+		make_span(&out, 1),
+		make_span(inputs),
+		context
 	);
 }
 

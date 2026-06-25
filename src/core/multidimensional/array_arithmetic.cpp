@@ -42,15 +42,15 @@ array add(
 }
 
 void add_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 )
 {
-	std::array<array_view, 2> inputs = { out, std::move(x) };
+	std::array<array_view, 2> inputs = { inout, std::move(x) };
 	execute(
 		add_operation(), 
-		make_span(&out, 1),
+		make_span(&inout, 1),
 		make_span(inputs),
 		context
 	);
@@ -73,15 +73,15 @@ array subtract(
 }
 
 void subtract_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 )
 {
-	std::array<array_view, 2> inputs = { out, std::move(x) };
+	std::array<array_view, 2> inputs = { inout, std::move(x) };
 	execute(
 		subtract_operation(), 
-		make_span(&out, 1),
+		make_span(&inout, 1),
 		make_span(inputs),
 		context
 	);
@@ -104,15 +104,15 @@ array multiply(
 }
 
 void multiply_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 )
 {
-	std::array<array_view, 2> inputs = { out, std::move(x) };
+	std::array<array_view, 2> inputs = { inout, std::move(x) };
 	execute(
 		multiply_operation(), 
-		make_span(&out, 1),
+		make_span(&inout, 1),
 		make_span(inputs),
 		context
 	);
@@ -135,15 +135,15 @@ array divide(
 }
 
 void divide_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 )
 {
-	std::array<array_view, 2> inputs = { out, std::move(x) };
+	std::array<array_view, 2> inputs = { inout, std::move(x) };
 	execute(
 		divide_operation(), 
-		make_span(&out, 1),
+		make_span(&inout, 1),
 		make_span(inputs),
 		context
 	);

@@ -36,7 +36,7 @@ array add(
 
 XMIPP4_CORE_API
 void add_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 );
@@ -50,11 +50,10 @@ array subtract(
 );
 
 XMIPP4_CORE_API
-array subtract_inplace(
-	array_view lhs,
-	array_view rhs,
-	const execution_context &context,
-	array *out = nullptr
+void subtract_inplace(
+	array &inout,
+	array_view x,
+	const execution_context &context
 );
 
 XMIPP4_CORE_API
@@ -67,7 +66,7 @@ array multiply(
 
 XMIPP4_CORE_API
 void multiply_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 );
@@ -82,7 +81,7 @@ array divide(
 
 XMIPP4_CORE_API
 void divide_inplace(
-	array &out,
+	array &inout,
 	array_view x,
 	const execution_context &context
 );

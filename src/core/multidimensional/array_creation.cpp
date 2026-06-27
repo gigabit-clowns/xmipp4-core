@@ -34,7 +34,7 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 	const hardware::memory_resource &target_resource
 )
 {
-	const auto storage = donor.share_storage();
+	auto storage = donor.share_storage();
 	if (!storage)
 	{
 		return nullptr;

@@ -28,11 +28,10 @@ namespace multidimensional
 namespace
 {
 
-
 std::shared_ptr<hardware::buffer> reuse_array_storage(
 	array &donor,
 	std::size_t target_size,
-	const hardware::memory_resource& target_resource
+	const hardware::memory_resource &target_resource
 )
 {
 	const auto storage = donor.share_storage();
@@ -66,12 +65,7 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 )
 {
 	const auto &instance = device_context.get_device_instance();
-	if (!instance)
-	{
-		throw std::invalid_argument(
-			"empty: provided with an empty device context"
-		);
-	}
+	XMIPP4_ASSERT(instance);
 
 	const auto &properties = instance->get_properties();
 	const auto &queue = device_context.get_active_queue();

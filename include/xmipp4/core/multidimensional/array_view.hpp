@@ -58,6 +58,11 @@ public:
 		std::shared_ptr<const array_implementation> implementation
 	) noexcept;
 
+	XMIPP4_CORE_API array_view(
+		std::shared_ptr<const hardware::buffer> storage,
+		array_descriptor descriptor
+	);
+
 	XMIPP4_CORE_API array_view(const array_view& other);
 	XMIPP4_CORE_API array_view(array_view&& other) noexcept;
 	XMIPP4_CORE_API ~array_view();

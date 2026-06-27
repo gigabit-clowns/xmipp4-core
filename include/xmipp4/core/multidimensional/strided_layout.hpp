@@ -21,7 +21,12 @@ class strided_layout_implementation;
 
 class strided_layout
 {
-public:
+public: 
+	explicit strided_layout(
+		std::shared_ptr<const strided_layout_implementation> impl
+	) noexcept;
+	explicit strided_layout(strided_layout_implementation &&impl);
+
 	XMIPP4_CORE_API strided_layout() noexcept;
 	XMIPP4_CORE_API strided_layout(const strided_layout &other) noexcept;
 	XMIPP4_CORE_API strided_layout(strided_layout &&other) noexcept;
@@ -244,12 +249,7 @@ private:
 	// Copy-on-write implementation
 	std::shared_ptr<const strided_layout_implementation> m_implementation; 
 
-	explicit 
-	strided_layout(
-		std::shared_ptr<const strided_layout_implementation> impl
-	) noexcept;
-	explicit 
-	strided_layout(strided_layout_implementation &&impl);
+
 };
 
 XMIPP4_CORE_API

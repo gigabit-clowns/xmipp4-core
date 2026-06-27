@@ -45,6 +45,7 @@ public:
 	void get_extents(Vec &extents) const;
 	template <typename Vec>
 	void get_strides(Vec &strides) const;
+	const strided_axis_vector_type& get_axes() const noexcept;
 	std::ptrdiff_t get_offset() const noexcept;
 	std::size_t compute_storage_requirement() const noexcept;
 	std::size_t compute_element_count() const noexcept;

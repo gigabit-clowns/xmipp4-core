@@ -356,6 +356,13 @@ void strided_layout_implementation::get_strides(
 }
 
 inline
+const strided_layout_implementation::strided_axis_vector_type&
+strided_layout_implementation::get_axes() const noexcept
+{
+	return m_axes;
+}
+
+inline
 std::ptrdiff_t strided_layout_implementation::get_offset() const noexcept
 {
 	return m_offset;

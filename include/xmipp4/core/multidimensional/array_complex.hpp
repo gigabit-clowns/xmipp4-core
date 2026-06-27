@@ -29,13 +29,7 @@ array polar(
 );
 
 XMIPP4_CORE_API
-array_view real(array_view value);
-
-XMIPP4_CORE_API
 array real(array value);
-
-XMIPP4_CORE_API
-array_view imag(array_view value);
 
 XMIPP4_CORE_API
 array imag(array value);

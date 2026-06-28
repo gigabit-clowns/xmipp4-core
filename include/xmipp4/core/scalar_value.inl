@@ -28,17 +28,10 @@ scalar_value::scalar_value(const T &value) noexcept
 
 	// scalar_value relies on the defaulted copy, move and destructor to operate
 	// on the raw storage, so T must be safe to copy and destroy as raw bytes.
+	// Trivial copyability also entails trivial (byte-wise) destruction.
 	static_assert(
 		std::is_trivially_copyable<T>::value,
 		"T must be trivially copyable to be stored in a scalar_value"
-	);
-	static_assert(
-		std::is_trivially_copy_assignable<T>::value,
-		"T must be trivially copy assignable to be stored in a scalar_value"
-	);
-	static_assert(
-		std::is_trivially_destructible<T>::value,
-		"T must be trivially destructible to be stored in a scalar_value"
 	);
 
 	::new (static_cast<void*>(m_storage)) T(value);

@@ -55,5 +55,12 @@ array copy(
 	array *out = nullptr
 );
 
+XMIPP4_CORE_API
+array fill(
+	array &out,
+	const scalar_value &fill_value,
+	const execution_context &context
+);
+
 } // namespace multidimensional
 } // namespace xmipp4

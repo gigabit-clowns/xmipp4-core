@@ -190,5 +190,19 @@ array copy(array_view source, const execution_context &context, array *out)
 	return execute_unary(copy_operation(), std::move(source), context, out);
 }
 
+array fill(
+	array &out,
+	const scalar_value &fill_value,
+	const execution_context &context
+)
+{
+	execute(
+		fill_operation(fill_value),
+		make_span(&out, 1),
+		{},
+		context
+	);
+}
+
 } // namespace multidimensional
 } // namespace xmipp4

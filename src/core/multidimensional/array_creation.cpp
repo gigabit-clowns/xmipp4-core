@@ -78,7 +78,7 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 	return allocator.allocate(size, alignment, queue.get());
 }
 
-} // namespace
+} // anonymous namespace
 
 
 

@@ -187,7 +187,7 @@ array full(
 
 array copy(array_view source, const execution_context &context, array *out)
 {
-	return execute_unary(copy_operation(), std::move(source), context, out);
+	return execute_unary(copy_operation(), source, context, out);
 }
 
 void fill(

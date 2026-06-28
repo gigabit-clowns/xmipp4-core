@@ -33,11 +33,15 @@ void elementwise_operation_shape_policy::deduce(
 		);
 	}
 
-	std::fill(
-		canonical_output_shapes.begin(),
-		canonical_output_shapes.end(),
-		std::move(canonical_shape)
-	);
+	if (!canonical_output_shapes.empty())
+	{
+		std::fill(
+			canonical_output_shapes.begin(),
+			std::prev(canonical_output_shapes.end()),
+			canonical_shape
+		);
+		canonical_output_shapes.back() = std::move(canonical_shape);
+	}
 }
 
 void elementwise_operation_shape_policy::accept(

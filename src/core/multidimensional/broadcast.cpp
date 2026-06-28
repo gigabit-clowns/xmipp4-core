@@ -97,6 +97,35 @@ void broadcast_extents(
 	}
 }
 
+void broadcast_extents_accumulate(
+	std::vector<std::size_t> &result, 
+	span<const std::size_t> other
+)
+{
+	if (result.size() < other.size())
+	{
+		pad_extents(result, other.size());
+	}
+
+	// When other is shorter it is implicitly padded with leading ones, which
+	// leaves the corresponding leading axes of result untouched. Therefore the
+	// two sets of extents are aligned on their trailing axes.
+	XMIPP4_ASSERT( result.size() >= other.size() );
+	const auto padding = result.size() - other.size();
+	const auto n = other.size();
+	for (std::size_t i = 0; i < n; ++i)
+	{
+		auto tmp = other[i]; // Allow write
+		if (!broadcast_extent(result[padding+i], tmp))
+		{
+			throw broadcast_error(
+				result,
+				std::vector<std::size_t>(other.begin(), other.end())
+			);
+		}
+	}
+}
+
 bool is_broadcast_compatible(
 	span<const std::size_t> extents1,
 	span<const std::size_t> extents2

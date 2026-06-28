@@ -33,6 +33,20 @@ void broadcast_extents(
 );  
 
 /**
+ * @brief Perform an cumulative extent broadcast step
+ * 
+ * @param result The extent vector to be updated. After a successful call, the
+ * broadcast result between the previous value of result and other is stored.
+ * @param other The other set of extents.
+ * @throws std::broadcast_error when one of of the extents cannot be broadcasted.
+ */
+XMIPP4_CORE_API
+void broadcast_extents_accumulate(
+	std::vector<std::size_t> &result, 
+	span<const std::size_t> other
+);
+
+/**
  * @brief Check if two extents can be broadcasted together.
  * 
  * @param extents1 The first set of extents.

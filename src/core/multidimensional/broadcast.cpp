@@ -97,6 +97,29 @@ void broadcast_extents(
 	}
 }
 
+void broadcast_extents_accumulate(
+	std::vector<std::size_t> &result, 
+	span<const std::size_t> other
+)
+{
+	if (result.size() < other.size())
+	{
+		pad_extents(result, other.size());
+	}
+
+	for (std::size_t i = 0; i < result.size(); ++i)
+	{
+		auto tmp = other[i]; // Allow write
+		if (!broadcast_extent(result[i], tmp))
+		{
+			throw broadcast_error(
+				result, 
+				std::vector<std::size_t>(other.begin(), other.end())
+			);
+		}
+	}
+}
+
 bool is_broadcast_compatible(
 	span<const std::size_t> extents1,
 	span<const std::size_t> extents2

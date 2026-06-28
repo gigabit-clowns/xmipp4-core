@@ -78,6 +78,8 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 	return allocator.allocate(size, alignment, queue.get());
 }
 
+
+
 } // namespace
 
 array empty(
@@ -113,13 +115,20 @@ array empty(
 		storage = allocate_array_storage(size, device_context, *allocator);
 	}
 
-	if (out)
+	if (!out)
 	{
-		*out = array(std::move(storage), std::move(descriptor));
-		return out->share();
+		return array(std::move(storage), std::move(descriptor));
 	}
 
-	return array(std::move(storage), std::move(descriptor));
+	if (
+		out->get_storage() != storage.get() ||
+		out->get_descriptor() != descriptor
+	)
+	{
+		*out = array(std::move(storage), std::move(descriptor));
+	}
+
+	return out->share();
 }
 
 array zeros(

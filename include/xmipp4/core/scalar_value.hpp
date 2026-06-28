@@ -6,6 +6,7 @@
 #include "fixed_float.hpp"
 #include "memory/byte.hpp"
 
+#include <array>
 #include <complex>
 #include <cstddef>
 #include <stdexcept>
@@ -83,7 +84,7 @@ private:
 	static const std::size_t storage_size = sizeof(largest_type);
 	static const std::size_t storage_alignment = alignof(largest_type);
 
-	alignas(storage_alignment) memory::byte m_storage[storage_size];
+	alignas(storage_alignment) std::array<memory::byte, storage_size> m_storage;
 	numerical_type m_data_type;
 };
 

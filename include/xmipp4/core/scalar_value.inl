@@ -34,7 +34,7 @@ scalar_value::scalar_value(const T &value) noexcept
 		"T must be trivially copyable to be stored in a scalar_value"
 	);
 
-	::new (static_cast<void*>(m_storage)) T(value);
+	::new (static_cast<void*>(m_storage.data())) T(value);
 }
 
 template <typename T>
@@ -46,7 +46,7 @@ const T* scalar_value::get_if() const noexcept
 		return nullptr;
 	}
 
-	return reinterpret_cast<const T*>(m_storage);
+	return reinterpret_cast<const T*>(m_storage.data());
 }
 
 template <typename T>

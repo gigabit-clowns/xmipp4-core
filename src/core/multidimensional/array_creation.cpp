@@ -190,7 +190,7 @@ array copy(array_view source, const execution_context &context, array *out)
 	return execute_unary(copy_operation(), std::move(source), context, out);
 }
 
-array fill(
+void fill(
 	array &out,
 	const scalar_value &fill_value,
 	const execution_context &context

@@ -2,69 +2,55 @@
 
 #include "cpu_elementwise_outer_loop.hpp"
 
-namespace xmipp4 
+#include <tuple>
+#include <utility>
+
+namespace xmipp4
 {
 namespace multidimensional
 {
-
-template <typename InnerLoop>
-inline
-cpu_elementwise_outer_loop<InnerLoop>::cpu_elementwise_outer_loop(
-	inner_loop_type vector_handler,
-	multi_array_access_layout access_layout
-)
-	: m_vector_handler(std::move(vector_handler))
-	, m_access_layout(std::move(access_layout))
+namespace detail
 {
-}
 
-template <typename InnerLoop>
-template <typename... Pointers>
+template <typename InnerLoop, typename... Pointers, std::size_t... Is>
 inline
-void cpu_elementwise_outer_loop<InnerLoop>::operator()(
-	Pointers... pointers
-) const
-{
-	loop_impl(
-		std::make_tuple(pointers...),
-		std::make_index_sequence<sizeof...(Pointers)>()
-	);
-}
-
-template <typename InnerLoop>
-template <typename... Pointers, std::size_t... Is>
-inline
-void cpu_elementwise_outer_loop<InnerLoop>::loop_impl(
-	const std::tuple<Pointers...> &pointers, 
+void run_elementwise_outer_loop_impl(
+	InnerLoop &&inner_loop,
+	const multi_array_access_layout &layout,
+	const std::tuple<Pointers...> &pointers,
 	std::index_sequence<Is...>
-) const
+)
 {
 	multi_array_iterator ite;
-	std::size_t count;
-	if (!(count = m_access_layout.iter(ite)))
+	std::size_t count = layout.iter(ite);
+	if (count == 0)
 	{
 		return;
 	}
 
-	const auto offsets = ite.get_offsets();
+	const auto offsets = ite.get_offsets(); // Stable address
 	do
 	{
-		m_vector_handler(std::get<Is>(pointers) + offsets[Is]..., count);
-	} 
-	while ((count = m_access_layout.next(ite, count)));
+		inner_loop(std::get<Is>(pointers) + offsets[Is]..., count);
+	}
+	while ((count = layout.next(ite, count)));
 }
 
-template <typename InnerLoop>
+} // namespace detail
+
+template <typename InnerLoop, typename... Pointers>
 inline
-cpu_elementwise_outer_loop<typename std::decay<InnerLoop>::type>
-make_cpu_outer_loop(
-	InnerLoop&& vector_handler,
-	multi_array_access_layout access_layout
+void run_elementwise_outer_loop(
+	InnerLoop &&inner_loop,
+	const multi_array_access_layout &layout,
+	Pointers... pointers
 )
 {
-	return cpu_elementwise_outer_loop<typename std::decay<InnerLoop>::type>(
-		std::forward<InnerLoop>(vector_handler),
-		std::move(access_layout)
+	detail::run_elementwise_outer_loop_impl(
+		std::forward<InnerLoop>(inner_loop),
+		layout,
+		std::make_tuple(pointers...),
+		std::make_index_sequence<sizeof...(Pointers)>()
 	);
 }
 

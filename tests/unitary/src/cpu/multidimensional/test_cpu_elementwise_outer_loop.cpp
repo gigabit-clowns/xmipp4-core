@@ -11,7 +11,6 @@
 #include <cstddef>
 #include <memory>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -150,12 +149,11 @@ TEST_CASE(
 {
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
-		make_layout({5}, {{{1}, 0}})
+		make_layout({5}, {{{1}, 0}}),
+		buffer.data()
 	);
-
-	loop(buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 1 );
@@ -172,12 +170,11 @@ TEST_CASE(
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
 	// Inner extent 3 (dim 0), outer extent 4 (dim 1) with outer stride 100.
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
-		make_layout({3, 4}, {{{1, 100}, 0}})
+		make_layout({3, 4}, {{{1, 100}, 0}}),
+		buffer.data()
 	);
-
-	loop(buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 4 );
@@ -200,12 +197,11 @@ TEST_CASE(
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
 	// Extents {2, 2, 2}: dim 1 (stride 10) varies before dim 2 (stride 100).
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
-		make_layout({2, 2, 2}, {{{1, 10, 100}, 0}})
+		make_layout({2, 2, 2}, {{{1, 10, 100}, 0}}),
+		buffer.data()
 	);
-
-	loop(buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 4 );
@@ -229,7 +225,7 @@ TEST_CASE(
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
 	// Two operands sharing extents {2, 3}. The second one has a base offset.
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
 		make_layout(
 			{2, 3},
@@ -237,10 +233,10 @@ TEST_CASE(
 				{{1, 10}, 0},
 				{{1, 20}, 1000}
 			}
-		)
+		),
+		buffer.data(),
+		buffer.data()
 	);
-
-	loop(buffer.data(), buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 3 );
@@ -265,12 +261,11 @@ TEST_CASE(
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
 	// Empty extents, single operand with a base offset.
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
-		make_layout({}, {{{}, 7}})
+		make_layout({}, {{{}, 7}}),
+		buffer.data()
 	);
-
-	loop(buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 1 );
@@ -285,39 +280,29 @@ TEST_CASE(
 {
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
-	const cpu_elementwise_outer_loop<recording_inner_loop> loop(
+	run_elementwise_outer_loop(
 		recorder,
-		make_layout({0}, {{{1}, 0}})
+		make_layout({0}, {{{1}, 0}}),
+		buffer.data()
 	);
-
-	loop(buffer.data());
 
 	CHECK( recorder.calls().empty() );
 }
 
 TEST_CASE(
-	"make_cpu_outer_loop builds a working outer loop",
+	"run_elementwise_outer_loop accepts an rvalue inner loop",
 	"[cpu_elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
 	recording_inner_loop recorder;
-	// Passing an lvalue must still yield a value-typed InnerLoop (the factory
-	// decays its argument).
-	auto loop = make_cpu_outer_loop(
-		recorder,
-		make_layout({3}, {{{1}, 5}})
+	// Pass a temporary inner loop (sharing the recorder's log) to exercise the
+	// forwarding reference.
+	run_elementwise_outer_loop(
+		recording_inner_loop(recorder),
+		make_layout({3}, {{{1}, 5}}),
+		buffer.data()
 	);
-
-	static_assert(
-		std::is_same<
-			decltype(loop)::inner_loop_type,
-			recording_inner_loop
-		>::value,
-		"make_cpu_outer_loop must decay its inner loop argument"
-	);
-
-	loop(buffer.data());
 
 	const auto &calls = recorder.calls();
 	REQUIRE( calls.size() == 1 );

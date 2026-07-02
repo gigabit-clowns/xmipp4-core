@@ -15,7 +15,7 @@ template <typename F>
 XMIPP4_INLINE_CONSTEXPR
 auto dispatch_single_stride(F&& visitor, std::ptrdiff_t stride) 
 {
-    switch (stride) 
+	switch (stride) 
 	{
 	case 0: 
 		return std::forward<F>(visitor)(broadcasting_stride_tag());
@@ -23,14 +23,14 @@ auto dispatch_single_stride(F&& visitor, std::ptrdiff_t stride)
 		return std::forward<F>(visitor)(contiguous_stride_tag());
 	default: 
 		return std::forward<F>(visitor)(stride);
-    }
+	}
 }
 
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
 auto dispatch_strides(F&& visitor) 
 {
-    return std::forward<F>(visitor)();
+	return std::forward<F>(visitor)();
 }
 
 template <typename F, typename... Integers>
@@ -41,15 +41,15 @@ auto dispatch_strides(
 	Integers ...other_strides
 ) 
 {
-    return dispatch_single_stride(
+	return dispatch_single_stride(
 		[&visitor, &other_strides...](auto tag) 
 		{
 			const auto bound_visitor = [tag, &visitor](auto... other_tags) 
 			{
    				return std::forward<F>(visitor)(tag, other_tags...);
-        	};
+			};
 
-        	return dispatch_strides(
+			return dispatch_strides(
 				bound_visitor,
 				other_strides...
 			);
@@ -86,10 +86,12 @@ auto dispatch_inner_loop_strides(
 	const auto extents = layout.get_extents();
 	if (extents.empty())
 	{
-		// Zero dimensions, no stride to be obtained. Invoke the function
-		// with one element.
-		XMIPP4_CONST_CONSTEXPR std::integral_constant<std::ptrdiff_t, 0> zero;
-		return std::forward<F>(callable)(std::make_tuple(((void)Is, zero)...));
+		// Zero dimensions, no stride to be obtained. Invoke the callable with
+		// a broadcasting tag for every operand.
+		XMIPP4_CONST_CONSTEXPR broadcasting_stride_tag broadcast;
+		return std::forward<F>(callable)(
+			std::make_tuple(((void)Is, broadcast)...)
+		);
 	}
 
 	XMIPP4_CONST_CONSTEXPR std::size_t inner_index = 0;

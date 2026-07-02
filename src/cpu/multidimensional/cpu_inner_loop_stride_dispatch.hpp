@@ -37,13 +37,18 @@ struct broadcasting_stride_tag
  * The callable will be invoked with a combination of `contiguous_stride_tag`,
  * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
  * 
- * @tparam F Type of the functor to be called. Must accept a tuple of `N` 
+ * @tparam F Type of the functor to be called. Must accept a tuple of `N`
  * integers or `std::integral_constant<std::ptrdiff_t, X>`.
  * @tparam N Statically defined number of operands in the array_access_layout.
- * @param callable The functor to be invoked. 
+ * @param callable The functor to be invoked.
  * @param layout The layout to be dispatched.
  * @param n_operands Tag defining the number of operands.
  * @return auto The result of invoking the callable with the provided layout.
+ *
+ * @warning The callable is instantiated for every combination of stride tags,
+ * i.e. up to `3^N` specializations (broadcasting, contiguous or generic stride
+ * per operand). Keep the number of operands small to avoid excessive compile
+ * times and code bloat.
  */
 template <typename F, std::size_t N>
 auto dispatch_inner_loop_strides(
@@ -58,15 +63,20 @@ auto dispatch_inner_loop_strides(
  * The callable will be invoked with a combination of `contiguous_stride_tag`,
  * `broadcasting_stride_tag` and std::ptrdiff_t for each operand.
  * 
- * @tparam F Type of the functor to be called. Must accept a tuple of 
+ * @tparam F Type of the functor to be called. Must accept a tuple of
  * `sizeof...(Is)` integers or `std::integral_constant<std::ptrdiff_t, X>`.
- * @tparam Is Indices of operands at which strides are extracted from the 
+ * @tparam Is Indices of operands at which strides are extracted from the
  * layout.
- * @param callable The functor to be invoked. 
+ * @param callable The functor to be invoked.
  * @param layout The layout to be dispatched.
  * @param operand_indices Tag indicating operand indices from which strides
- * are extracted. 
+ * are extracted.
  * @return auto The result of invoking the callable with the provided layout.
+ *
+ * @warning The callable is instantiated for every combination of stride tags,
+ * i.e. up to `3^sizeof...(Is)` specializations (broadcasting, contiguous or
+ * generic stride per operand). Keep the number of operands small to avoid
+ * excessive compile times and code bloat.
  */
 template <typename F, std::size_t... Is>
 auto dispatch_inner_loop_strides(

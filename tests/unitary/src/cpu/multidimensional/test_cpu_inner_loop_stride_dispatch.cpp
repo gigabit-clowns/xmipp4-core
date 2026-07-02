@@ -19,21 +19,28 @@ using namespace xmipp4::multidimensional;
 namespace
 {
 
+// Exact tag type each stride was resolved to. `other` catches any tag outside
+// the documented vocabulary (contiguous_stride_tag, broadcasting_stride_tag,
+// std::ptrdiff_t), so a regression to a bare integral_constant is detected.
+enum class stride_kind
+{
+	contiguous,
+	broadcasting,
+	runtime,
+	other,
+};
+
 /**
  * @brief Description of a single stride tag received by the visitor.
- *
- * `is_static` is true when the stride was resolved to a compile-time tag
- * (contiguous or broadcasting) and false when it was passed as a runtime
- * std::ptrdiff_t.
  */
 struct stride_info
 {
 	std::ptrdiff_t value;
-	bool is_static;
+	stride_kind kind;
 
 	bool operator==(const stride_info &other) const noexcept
 	{
-		return value == other.value && is_static == other.is_static;
+		return value == other.value && kind == other.kind;
 	}
 };
 
@@ -42,22 +49,33 @@ std::ptrdiff_t stride_value(std::ptrdiff_t s) noexcept
 {
 	return s;
 }
-bool stride_is_static(std::ptrdiff_t) noexcept
-{
-	return false;
-}
 
-// Statically typed strides (contiguous, broadcasting or the rank-0 zero) are
-// integral_constant-like and expose a compile-time value.
+// Statically typed strides are integral_constant-like and expose a
+// compile-time value.
 template <typename T>
 std::ptrdiff_t stride_value(T) noexcept
 {
 	return T::value;
 }
-template <typename T>
-bool stride_is_static(T) noexcept
+
+// Classify by exact tag type. The non-template overloads match only the
+// documented tags; anything else falls through to the template overload.
+stride_kind stride_classify(contiguous_stride_tag) noexcept
 {
-	return true;
+	return stride_kind::contiguous;
+}
+stride_kind stride_classify(broadcasting_stride_tag) noexcept
+{
+	return stride_kind::broadcasting;
+}
+stride_kind stride_classify(std::ptrdiff_t) noexcept
+{
+	return stride_kind::runtime;
+}
+template <typename T>
+stride_kind stride_classify(T) noexcept
+{
+	return stride_kind::other;
 }
 
 /**
@@ -90,7 +108,7 @@ struct recording_visitor
 				out.push_back(
 					stride_info {
 						stride_value(std::get<Is>(strides)),
-						stride_is_static(std::get<Is>(strides))
+						stride_classify(std::get<Is>(strides))
 					}
 				),
 				0
@@ -140,7 +158,7 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 1 );
-	CHECK( result[0] == stride_info{1, true} );
+	CHECK( result[0] == stride_info{1, stride_kind::contiguous} );
 }
 
 TEST_CASE(
@@ -158,7 +176,7 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 1 );
-	CHECK( result[0] == stride_info{0, true} );
+	CHECK( result[0] == stride_info{0, stride_kind::broadcasting} );
 }
 
 TEST_CASE(
@@ -176,7 +194,7 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 1 );
-	CHECK( result[0] == stride_info{7, false} );
+	CHECK( result[0] == stride_info{7, stride_kind::runtime} );
 }
 
 TEST_CASE(
@@ -194,9 +212,9 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 3 );
-	CHECK( result[0] == stride_info{1, true} );
-	CHECK( result[1] == stride_info{0, true} );
-	CHECK( result[2] == stride_info{7, false} );
+	CHECK( result[0] == stride_info{1, stride_kind::contiguous} );
+	CHECK( result[1] == stride_info{0, stride_kind::broadcasting} );
+	CHECK( result[2] == stride_info{7, stride_kind::runtime} );
 }
 
 TEST_CASE(
@@ -218,8 +236,8 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 2 );
-	CHECK( result[0] == stride_info{1, true} );
-	CHECK( result[1] == stride_info{0, true} );
+	CHECK( result[0] == stride_info{1, stride_kind::contiguous} );
+	CHECK( result[1] == stride_info{0, stride_kind::broadcasting} );
 }
 
 TEST_CASE(
@@ -229,7 +247,7 @@ TEST_CASE(
 )
 {
 	// A layout with empty extents has no strides to inspect, so every operand
-	// collapses to a static zero stride.
+	// collapses to a broadcasting (zero-stride) tag.
 	const auto layout = make_layout({}, {});
 
 	const auto result = dispatch_inner_loop_strides(
@@ -239,8 +257,8 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 2 );
-	CHECK( result[0] == stride_info{0, true} );
-	CHECK( result[1] == stride_info{0, true} );
+	CHECK( result[0] == stride_info{0, stride_kind::broadcasting} );
+	CHECK( result[1] == stride_info{0, stride_kind::broadcasting} );
 }
 
 TEST_CASE(
@@ -259,8 +277,8 @@ TEST_CASE(
 	);
 
 	REQUIRE( result.size() == 2 );
-	CHECK( result[0] == stride_info{0, true} );
-	CHECK( result[1] == stride_info{1, true} );
+	CHECK( result[0] == stride_info{0, stride_kind::broadcasting} );
+	CHECK( result[1] == stride_info{1, stride_kind::contiguous} );
 }
 
 TEST_CASE(

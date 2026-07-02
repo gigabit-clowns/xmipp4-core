@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "cpu_elementwise_outer_loop.hpp"
+
+namespace xmipp4 
+{
+namespace multidimensional
+{
+
+template <typename InnerLoop>
+inline
+cpu_elementwise_outer_loop<InnerLoop>::cpu_elementwise_outer_loop(
+	inner_loop_type vector_handler,
+	multi_array_access_layout access_layout
+)
+	: m_vector_handler(std::move(vector_handler))
+	, m_access_layout(std::move(access_layout))
+{
+}
+
+template <typename InnerLoop>
+template <typename... Pointers>
+inline
+void cpu_elementwise_outer_loop<InnerLoop>::operator()(
+	Pointers... pointers
+) const
+{
+	loop_impl(
+		std::make_tuple(pointers...),
+		std::make_index_sequence<sizeof...(Pointers)>()
+	);
+}
+
+template <typename InnerLoop>
+template <typename... Pointers, std::size_t... Is>
+inline
+void cpu_elementwise_outer_loop<InnerLoop>::loop_impl(
+	const std::tuple<Pointers...> &pointers, 
+	std::index_sequence<Is...>
+) const
+{
+	multi_array_iterator ite;
+	std::size_t count;
+	if (!(count = m_access_layout.iter(ite)))
+	{
+		return;
+	}
+
+	const auto offsets = ite.get_offsets();
+	do
+	{
+		m_vector_handler(std::get<Is>(pointers) + offsets[Is]..., count);
+	} 
+	while ((count = m_access_layout.next(ite, count)));
+}
+
+template <typename InnerLoop>
+inline
+cpu_elementwise_outer_loop<typename std::decay<InnerLoop>::type>
+make_cpu_outer_loop(
+	InnerLoop&& vector_handler,
+	multi_array_access_layout access_layout
+)
+{
+	return cpu_elementwise_outer_loop<typename std::decay<InnerLoop>::type>(
+		std::forward<InnerLoop>(vector_handler),
+		std::move(access_layout)
+	);
+}
+
+} // namespace multidimensional
+} // namespace xmipp4

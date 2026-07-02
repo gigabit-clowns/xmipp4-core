@@ -64,14 +64,13 @@ private:
 		const std::tuple<Pointers...> &pointers, 
 		std::index_sequence<Is...>
 	) const;
-
 };
 
 /**
  * @brief Construct a `cpu_elementwise_outer_loop` by deducing its arguments.
  * 
- * @tparam InnerLoop Functor to be dispatched for 1D vectors. Must have a signature
- * accepting `(Pointers... operands, std::size_t count)`
+ * @tparam InnerLoop Functor to be dispatched for 1D vectors. Must have a 
+ * signature accepting `(Pointers... operands, std::size_t count)`
  * @return cpu_elementwise_outer_loop<InnerLoop> The newly created 
  * `cpu_elementwise_outer_loop`
  * @param vector_handler Function to be called for each 1D vector in the

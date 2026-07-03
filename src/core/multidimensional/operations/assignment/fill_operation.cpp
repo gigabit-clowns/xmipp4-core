@@ -7,9 +7,6 @@
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
-#include <fmt/format.h>
-#include <fmt/ranges.h>
-
 namespace xmipp4
 {
 namespace multidimensional

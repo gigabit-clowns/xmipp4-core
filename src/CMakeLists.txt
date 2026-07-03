@@ -40,6 +40,11 @@ if(MSVC)
 		PUBLIC
 			NOMINMAX
 	)
+	target_compile_options(
+		xmipp4-core 
+		PRIVATE 
+			/bigobj
+	)
 endif()
 
 if(MSVC)

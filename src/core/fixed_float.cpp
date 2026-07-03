@@ -36,16 +36,6 @@ float16_t::float16_t() noexcept
 {
 }
 
-float16_t::float16_t(int value) noexcept
-	: float16_t(convert_to_float16(value))
-{
-}
-
-float16_t::float16_t(double value) noexcept
-	: float16_t(convert_to_float16(value))
-{
-}
-
 float16_t::float16_t(float value) noexcept
 	: float16_t(convert_to_float16(value))
 {

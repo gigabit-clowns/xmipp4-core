@@ -20,9 +20,7 @@ class float16_t
 {
 public:
 	float16_t() noexcept;
-	float16_t(int value) noexcept;
 	float16_t(float value) noexcept;
-	float16_t(double value) noexcept;
 	float16_t(const float16_t &other) = default;
 	float16_t(float16_t &&other) = default;
 	~float16_t() = default;

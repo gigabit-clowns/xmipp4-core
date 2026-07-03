@@ -14,10 +14,12 @@ namespace xmipp4
  * a plugin.
  * 
  */
+XMIPP4_STD_BASE_DLL_INTERFACE_BEGIN
 class XMIPP4_CORE_API plugin_load_error
 	: public std::runtime_error
 {
 	using runtime_error::runtime_error;
 };
+XMIPP4_STD_BASE_DLL_INTERFACE_END
 
 } // namespace xmipp4

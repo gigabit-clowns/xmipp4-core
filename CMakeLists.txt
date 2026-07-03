@@ -11,8 +11,6 @@ project(
 
 # Declare configuration options
 option(XMIPP4_CORE_BUILD_DOC "Build documentation" OFF)
-option(XMIPP4_CORE_BUILD_SPDLOG "Build and install spdlog instead of using a pre-installed binary" ON)
-option(XMIPP4_CORE_BUILD_HALF "Build and install half instead of using a pre-installed binary" ON)
 option(XMIPP4_CORE_ENABLE_COVERAGE "Enable code coverage" OFF)
 
 # Add the CMake module path
@@ -29,18 +27,8 @@ include(fetch_boost)
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_boost(VERSION 1.89.0)
-
-if (XMIPP4_CORE_BUILD_SPDLOG)
-	fetch_spdlog(VERSION 1.15.0)
-else()
-	find_package(spdlog REQUIRED)
-endif()
-
-if (XMIPP4_CORE_BUILD_HALF)
-	fetch_half(VERSION 2.2.1)
-else()
-	find_package(half 2 REQUIRED)
-endif()
+fetch_half(VERSION 2.2.1)
+fetch_spdlog(VERSION 1.15.0)
 
 if(WIN32)
 	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)

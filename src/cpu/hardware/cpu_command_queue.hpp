@@ -24,6 +24,10 @@ public:
 	void wait(const event &event) override;
 
 	static std::shared_ptr<cpu_command_queue> create();
+	static 
+	cpu_command_queue* try_cast(command_queue &queue) noexcept;
+	static 
+	const cpu_command_queue* try_cast(const command_queue &queue) noexcept;
 
 private:
 	static std::shared_ptr<cpu_command_queue> m_instance;

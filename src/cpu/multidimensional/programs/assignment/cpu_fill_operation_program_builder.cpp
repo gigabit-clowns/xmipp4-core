@@ -12,9 +12,11 @@
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 
 #include <cpu/hardware/functor_cpu_program.hpp>
+#include <cpu/hardware/cpu_command_queue.hpp>
 #include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
 #include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
 #include <cpu/multidimensional/helpers/strided_pointer_iterator.hpp>
+#include <cpu/multidimensional/helpers/cpu_array_signature_check.hpp>
 
 #include <algorithm>
 
@@ -121,7 +123,22 @@ backend_priority cpu_fill_operation_program_builder::get_suitability(
 	hardware::command_queue &queue
 ) const
 {
-	// TODO
+	if (!cpu_check_array_signatures(output_signatures))
+	{
+		return backend_priority::unsupported;
+	}
+
+	if (!cpu_check_array_signatures(input_signatures))
+	{
+		return backend_priority::unsupported;
+	}
+
+	if (!hardware::cpu_command_queue::try_cast(queue))
+	{
+		return backend_priority::unsupported;
+	}
+
+	return backend_priority::normal;
 }
 
 std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
@@ -150,7 +167,7 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 		);
 	}
 
-	if (output_signatures.size() != fill_operation::INPUT_OPERAND_COUNT)
+	if (input_signatures.size() != fill_operation::INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
 			"cpu_fill_operation_program_builder::build: Expected no input "

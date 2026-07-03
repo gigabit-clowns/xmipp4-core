@@ -12,6 +12,7 @@
 #include "../../core/hardware/mock/mock_buffer.hpp"
 #include "../../core/hardware/mock/mock_program.hpp"
 #include "../../core/hardware/mock/mock_event.hpp"
+#include "../../core/hardware/mock/mock_command_queue.hpp"
 
 #include <memory>
 #include <typeinfo>
@@ -105,4 +106,45 @@ TEST_CASE(
 	cpu_command_queue queue;
 	mock_event event;
 	REQUIRE_NOTHROW( queue.wait(event) );
+}
+
+TEST_CASE(
+	"cpu_command_queue::try_cast returns the same object for a cpu_command_queue",
+	"[cpu_command_queue]"
+)
+{
+	cpu_command_queue queue;
+	command_queue &base = queue;
+	CHECK( cpu_command_queue::try_cast(base) == &queue );
+}
+
+TEST_CASE(
+	"cpu_command_queue::try_cast returns the singleton for the shared instance",
+	"[cpu_command_queue]"
+)
+{
+	const auto instance = cpu_command_queue::create();
+	command_queue &base = *instance;
+	CHECK( cpu_command_queue::try_cast(base) == instance.get() );
+}
+
+TEST_CASE(
+	"cpu_command_queue::try_cast returns nullptr for a foreign command_queue",
+	"[cpu_command_queue]"
+)
+{
+	mock_command_queue queue;
+	command_queue &base = queue;
+	CHECK( cpu_command_queue::try_cast(base) == nullptr );
+}
+
+TEST_CASE(
+	"cpu_command_queue::try_cast const overload preserves constness",
+	"[cpu_command_queue]"
+)
+{
+	const cpu_command_queue queue;
+	const command_queue &base = queue;
+	const cpu_command_queue *result = cpu_command_queue::try_cast(base);
+	CHECK( result == &queue );
 }

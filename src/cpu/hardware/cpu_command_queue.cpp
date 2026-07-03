@@ -55,5 +55,27 @@ std::shared_ptr<cpu_command_queue> cpu_command_queue::create()
 	return m_instance;
 }
 
+cpu_command_queue*
+cpu_command_queue::try_cast(command_queue &queue) noexcept
+{
+	if (&queue == m_instance.get())
+	{
+		return m_instance.get();
+	}
+
+	return dynamic_cast<cpu_command_queue*>(&queue);
+}
+
+const cpu_command_queue*
+cpu_command_queue::try_cast(const command_queue &queue) noexcept
+{
+	if (&queue == m_instance.get())
+	{
+		return m_instance.get();
+	}
+
+	return dynamic_cast<const cpu_command_queue*>(&queue);
+}
+
 } // namespace hardware
 } // namespace xmipp4

@@ -34,7 +34,12 @@ public:
 	using pointer = T*;
 	using difference_type = std::ptrdiff_t;
 	using stride_type = Stride;
-	using iterator_category = std::random_access_iterator_tag;
+	// Bidirectional rather than random access: this iterator deliberately
+	// omits the iterator difference operator (last - first), which is
+	// ambiguous and error prone for strided ranges. Bidirectional is the
+	// strongest category that does not require it, so standard algorithms
+	// fall back to their increment-based paths.
+	using iterator_category = std::bidirectional_iterator_tag;
 
 	/**
 	 * @brief Construct a null iterator.

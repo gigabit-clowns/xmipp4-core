@@ -28,7 +28,7 @@ TEST_CASE(
 	STATIC_REQUIRE(
 		std::is_same<
 			iterator::iterator_category,
-			std::random_access_iterator_tag
+			std::bidirectional_iterator_tag
 		>::value
 	);
 

@@ -16,7 +16,6 @@
 #include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
 #include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
 #include <cpu/multidimensional/helpers/strided_pointer_iterator.hpp>
-#include <cpu/multidimensional/helpers/cpu_array_signature_check.hpp>
 
 #include <algorithm>
 
@@ -114,31 +113,6 @@ operation_id
 cpu_fill_operation_program_builder::get_operation_id() const noexcept
 {
 	return operation_id::of<fill_operation>();
-}
-
-backend_priority cpu_fill_operation_program_builder::get_suitability(
-	const operation& /*operation*/,
-	span<const array_signature> output_signatures,
-	span<const array_signature> input_signatures,
-	hardware::command_queue &queue
-) const
-{
-	if (!cpu_check_array_signatures(output_signatures))
-	{
-		return backend_priority::unsupported;
-	}
-
-	if (!cpu_check_array_signatures(input_signatures))
-	{
-		return backend_priority::unsupported;
-	}
-
-	if (!hardware::cpu_command_queue::try_cast(queue))
-	{
-		return backend_priority::unsupported;
-	}
-
-	return backend_priority::normal;
 }
 
 std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(

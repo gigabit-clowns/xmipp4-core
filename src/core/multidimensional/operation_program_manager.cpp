@@ -8,7 +8,7 @@
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 
 #include <core/find_most_suitable_backend.hpp>
-#include <cpu/multidimensional/programs/cpu_operation_program_registrar.hpp>
+#include <cpu/multidimensional/cpu_operation_program_builder_registrar.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -114,7 +114,7 @@ operation_program_manager::~operation_program_manager() = default;
 
 void operation_program_manager::register_builtin_backends()
 {
-	register_cpu_operation_programs(*this);
+	register_cpu_operation_program_builders(*this);
 }
 
 bool operation_program_manager::register_builder(

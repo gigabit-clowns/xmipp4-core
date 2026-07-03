@@ -69,15 +69,16 @@ make_fill_program(
 	const Q &fill_value
 )
 {
+	const auto value = static_cast<T>(fill_value);
 	const auto result_inner_stride = std::get<0>(inner_strides);
 	return hardware::make_functor_cpu_program(
-		[result_inner_stride, fill_value=T(fill_value), access_layout=std::move(access_layout)]
+		[result_inner_stride, value, access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_outer_loop(
-				[result_inner_stride, &fill_value] (T *result, std::size_t count)
+				[result_inner_stride, &value] (T *result, std::size_t count)
 				{
-					fill(result, count, result_inner_stride, fill_value);
+					fill(result, count, result_inner_stride, value);
 				},
 				access_layout,
 				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)

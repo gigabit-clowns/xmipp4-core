@@ -44,7 +44,7 @@ void copy(
 	auto src_ite = make_strided_pointer_iterator(src, src_stride);
 	for (std::size_t i = 0; i < count; ++i)
 	{
-		*dst_ite = T(*src_ite);
+		*dst_ite = static_cast<T>(*src_ite);
 		++dst_ite;
 		++src_ite;
 	}
@@ -78,7 +78,7 @@ void copy(
 	std::fill_n(
 		dst,
 		count,
-		T(*src)
+		static_cast<T>(*src)
 	);
 }
 

@@ -140,7 +140,7 @@ make_copy_program(
 {
 	throw std::invalid_argument(
 		"cpu_copy_operation_program_builder: Can not convert source array's "
-		"type into destination array's type"
+		"type into destination array's type."
 	);
 }
 

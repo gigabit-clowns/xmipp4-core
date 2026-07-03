@@ -27,28 +27,6 @@ namespace multidimensional
 namespace
 {
 
-template<
-	typename T, 
-	typename Q 
->
-typename std::enable_if<std::is_constructible<T, Q>::value, T>::type
-cast_or_throw(const Q& value)
-{
-	return T(value);
-}
-
-template<
-	typename T, 
-	typename Q
->
-typename std::enable_if<!std::is_constructible<T, Q>::value, T>::type
-cast_or_throw(const Q& /*value*/)
-{
-	throw std::invalid_argument(
-		"Can not convert fill_value to destination array's type"
-	);
-}
-
 template<typename T, typename Stride>
 void fill(
 	T* destination,
@@ -80,23 +58,26 @@ void fill(
 }
 
 template <typename T, typename Q, typename Stride>
-std::shared_ptr<hardware::cpu_program> make_fill_program(
+typename std::enable_if<
+	std::is_constructible<T, Q>::value, 
+	std::shared_ptr<hardware::cpu_program>
+>::type
+make_fill_program(
 	multi_array_access_layout access_layout,
 	std::tuple<Stride> inner_strides,
 	type_tag<T> /*result_type*/,
 	const Q &fill_value
 )
 {
-	const auto value = cast_or_throw<T>(fill_value);
 	const auto result_inner_stride = std::get<0>(inner_strides);
 	return hardware::make_functor_cpu_program(
-		[result_inner_stride, value, access_layout=std::move(access_layout)]
+		[result_inner_stride, fill_value=T(fill_value), access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_outer_loop(
-				[result_inner_stride, value] (T *result, std::size_t count)
+				[result_inner_stride, &fill_value] (T *result, std::size_t count)
 				{
-					fill(result, count, result_inner_stride, value);
+					fill(result, count, result_inner_stride, fill_value);
 				},
 				access_layout,
 				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
@@ -104,6 +85,24 @@ std::shared_ptr<hardware::cpu_program> make_fill_program(
 		},
 		type_list<T>(),
 		type_list<>()
+	);
+}
+
+template <typename T, typename Q, typename Stride>
+typename std::enable_if<
+	!std::is_constructible<T, Q>::value, 
+	std::shared_ptr<hardware::cpu_program>
+>::type
+make_fill_program(
+	multi_array_access_layout /*access_layout*/,
+	std::tuple<Stride> /*inner_strides*/,
+	type_tag<T> /*result_type*/,
+	const Q& /*fill_value*/
+)
+{
+	throw std::invalid_argument(
+		"cpu_fill_operation_program_builder: Can not fill value's type into "
+		"destination array's type."
 	);
 }
 

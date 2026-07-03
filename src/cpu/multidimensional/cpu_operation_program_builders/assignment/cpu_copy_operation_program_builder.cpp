@@ -8,6 +8,7 @@
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/scalar_value.hpp>
+#include <xmipp4/core/numerical_cast.hpp>
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 
@@ -44,7 +45,7 @@ void copy(
 	auto src_ite = make_strided_pointer_iterator(src, src_stride);
 	for (std::size_t i = 0; i < count; ++i)
 	{
-		*dst_ite = static_cast<T>(*src_ite);
+		*dst_ite = numerical_cast<T>(*src_ite);
 		++dst_ite;
 		++src_ite;
 	}
@@ -78,7 +79,7 @@ void copy(
 	std::fill_n(
 		dst,
 		count,
-		static_cast<T>(*src)
+		numerical_cast<T>(*src)
 	);
 }
 

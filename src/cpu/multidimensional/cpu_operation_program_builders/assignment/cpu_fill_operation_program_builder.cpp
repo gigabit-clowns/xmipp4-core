@@ -8,6 +8,7 @@
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/scalar_value.hpp>
+#include <xmipp4/core/numerical_cast.hpp>
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 
@@ -69,7 +70,7 @@ make_fill_program(
 	const Q &fill_value
 )
 {
-	const auto value = static_cast<T>(fill_value);
+	const auto value = numerical_cast<T>(fill_value);
 	const auto result_inner_stride = std::get<0>(inner_strides);
 	return hardware::make_functor_cpu_program(
 		[result_inner_stride, value, access_layout=std::move(access_layout)]

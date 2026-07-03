@@ -14,8 +14,9 @@
 #include <cpu/hardware/functor_cpu_program.hpp>
 #include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
 #include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/strided_pointer_iterator.hpp>
 
-#include "generic/assignment.hpp"
+#include <algorithm>
 
 namespace xmipp4 
 {
@@ -24,9 +25,6 @@ namespace multidimensional
 
 namespace
 {
-
-using fill_operand_count_tag =
-	std::integral_constant<std::size_t, 1>; // TODO
 
 template<
 	typename T, 
@@ -50,6 +48,36 @@ cast_or_throw(const Q& /*value*/)
 	);
 }
 
+template<typename T, typename Stride>
+void fill(
+	T* destination,
+	std::size_t count,
+	Stride destination_stride, 
+	const T &value
+)
+{
+	std::fill_n(
+		make_strided_pointer_iterator(destination, destination_stride),
+		count,
+		value
+	);
+}
+
+template<typename T>
+void fill(
+	T* destination,
+	std::size_t count,
+	contiguous_stride_tag /*destination_stride*/, 
+	const T &value
+)
+{
+	std::fill_n(
+		destination,
+		count,
+		value
+	);
+}
+
 template <typename T, typename Q, typename Stride>
 std::shared_ptr<hardware::cpu_program> make_fill_program(
 	multi_array_access_layout access_layout,
@@ -59,14 +87,15 @@ std::shared_ptr<hardware::cpu_program> make_fill_program(
 )
 {
 	const auto value = cast_or_throw<T>(fill_value);
+	const auto result_inner_stride = std::get<0>(inner_strides);
 	return hardware::make_functor_cpu_program(
-		[inner_strides, value, access_layout=std::move(access_layout)]
+		[result_inner_stride, value, access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_outer_loop(
-				[inner_strides, value] (T *result, std::size_t count)
+				[result_inner_stride, value] (T *result, std::size_t count)
 				{
-					fill(result, count, std::get<0>(inner_strides), value);
+					fill(result, count, result_inner_stride, value);
 				},
 				access_layout,
 				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
@@ -99,8 +128,8 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 	const operation &operation,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures,
-	hardware::command_queue &queue,
-	operation_program_cache *cache
+	hardware::command_queue& /*queue*/,
+	operation_program_cache* /*cache*/
 ) const
 {
 	const auto *fill_op = 
@@ -124,8 +153,8 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 	if (output_signatures.size() != fill_operation::INPUT_OPERAND_COUNT)
 	{
 		throw std::invalid_argument(
-			"cpu_fill_operation_program_builder::build: Expected no "
-			"input signature."
+			"cpu_fill_operation_program_builder::build: Expected no input "
+			"signature."
 		);
 	}
 
@@ -159,7 +188,7 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 							);
 						},
 						access_layout,
-						fill_operand_count_tag()
+						std::integral_constant<std::size_t, 1>()
 					);
 				},
 				native_type_map(),

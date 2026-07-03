@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/inner_loop_stride_dispatch.hpp>
 
 #include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
 #include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
@@ -146,7 +146,7 @@ multi_array_access_layout make_layout(
 TEST_CASE(
 	"dispatch_inner_loop_strides resolves a unit inner stride to a contiguous "
 	"tag",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	const auto layout = make_layout({4}, {{1}});
@@ -164,7 +164,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides resolves a zero inner stride to a "
 	"broadcasting tag",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	const auto layout = make_layout({4}, {{0}});
@@ -182,7 +182,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides forwards a generic inner stride as a "
 	"runtime value",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	const auto layout = make_layout({4}, {{7}});
@@ -199,7 +199,7 @@ TEST_CASE(
 
 TEST_CASE(
 	"dispatch_inner_loop_strides resolves each operand independently",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	// Three operands with contiguous, broadcasting and generic inner strides.
@@ -220,7 +220,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides only inspects the inner-most stride of "
 	"each operand",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	// Only the stride at index 0 must be used; the outer strides are ignored.
@@ -243,7 +243,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides with a rank-0 layout invokes the callable with "
 	"broadcasting tags for every operand",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	// A layout with empty extents has no strides to inspect, so every operand
@@ -264,7 +264,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides with an index sequence selects the "
 	"requested operands in the given order",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	const auto layout = make_layout({4}, {{1}, {5}, {0}});
@@ -284,7 +284,7 @@ TEST_CASE(
 TEST_CASE(
 	"dispatch_inner_loop_strides with an empty index sequence produces an "
 	"empty tuple",
-	"[cpu_inner_loop_stride_dispatch]"
+	"[inner_loop_stride_dispatch]"
 )
 {
 	const auto layout = make_layout({4}, {{1}});

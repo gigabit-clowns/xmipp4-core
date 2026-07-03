@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cpu_elementwise_outer_loop.hpp"
+#include "elementwise_outer_loop.hpp"
 
 #include <tuple>
 #include <utility>

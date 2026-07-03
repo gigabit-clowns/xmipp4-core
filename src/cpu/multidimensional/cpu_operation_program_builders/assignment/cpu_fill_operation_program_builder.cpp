@@ -14,8 +14,9 @@
 
 #include <cpu/hardware/functor_cpu_program.hpp>
 #include <cpu/hardware/cpu_command_queue.hpp>
-#include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
-#include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/elementwise_outer_loop.hpp>
+#include <cpu/multidimensional/helpers/inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/type_and_inner_stride_dispatch.hpp>
 #include <cpu/multidimensional/helpers/strided_pointer_iterator.hpp>
 
 #include <algorithm>
@@ -66,7 +67,7 @@ typename std::enable_if<
 make_fill_program(
 	multi_array_access_layout access_layout,
 	std::tuple<Stride> inner_strides,
-	type_tag<T> /*result_type*/,
+	type_list<T> /*result_type*/,
 	const Q &fill_value
 )
 {
@@ -98,7 +99,7 @@ typename std::enable_if<
 make_fill_program(
 	multi_array_access_layout /*access_layout*/,
 	std::tuple<Stride> /*inner_strides*/,
-	type_tag<T> /*result_type*/,
+	type_list<T> /*result_type*/,
 	const Q& /*fill_value*/
 )
 {
@@ -161,33 +162,26 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
-	return xmipp4::visit(
-		[&access_layout, data_type] (auto fill_value)
+	return dispatch_types_and_inner_strides<1>(
+		[&fill_value]
+		(multi_array_access_layout layout, auto types, auto inner_strides)
 		{
-			return dispatch_numerical_types(
-				[&access_layout, &fill_value] 
-				(auto destination_type_tag)
+			return xmipp4::visit(
+				[&layout, types, &inner_strides] (auto fill_value)
 				{
-					return dispatch_inner_loop_strides(
-						[&access_layout, &fill_value, destination_type_tag] 
-						(auto inner_strides)
-						{
-							return make_fill_program(
-								std::move(access_layout),
-								inner_strides,
-								destination_type_tag,
-								fill_value
-							);
-						},
-						access_layout,
-						std::integral_constant<std::size_t, 1>()
+					return make_fill_program(
+						std::move(layout),
+						inner_strides,
+						types,
+						fill_value
 					);
+
 				},
-				native_type_map(),
-				data_type
+				fill_value
 			);
 		},
-		fill_value
+		std::move(access_layout),
+		data_type
 	);
 }
 

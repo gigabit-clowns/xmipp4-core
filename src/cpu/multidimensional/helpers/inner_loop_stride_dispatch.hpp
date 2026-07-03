@@ -88,4 +88,4 @@ auto dispatch_inner_loop_strides(
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "cpu_inner_loop_stride_dispatch.inl"
+#include "inner_loop_stride_dispatch.inl"

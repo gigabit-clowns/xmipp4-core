@@ -13,8 +13,9 @@
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 
 #include <cpu/hardware/functor_cpu_program.hpp>
-#include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
-#include <cpu/multidimensional/cpu_inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/elementwise_outer_loop.hpp>
+#include <cpu/multidimensional/helpers/inner_loop_stride_dispatch.hpp>
+#include <cpu/multidimensional/helpers/type_and_inner_stride_dispatch.hpp>
 #include <cpu/multidimensional/helpers/strided_pointer_iterator.hpp>
 
 #include <algorithm>
@@ -96,16 +97,15 @@ typename std::enable_if<
 make_copy_program(
 	multi_array_access_layout access_layout,
 	std::tuple<DstStride, SrcStride> inner_strides,
-	type_tag<T> /*dst_type*/,
-	type_tag<Q> /*src_type*/
+	type_list<T, Q> /*types*/
 )
 {
-	const auto dst_inner_stride = std::get<0>(inner_strides);
-	const auto src_inner_stride = std::get<1>(inner_strides);
 	return hardware::make_functor_cpu_program(
-		[dst_inner_stride, src_inner_stride, access_layout=std::move(access_layout)]
+		[inner_strides, access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
+			const auto dst_inner_stride = std::get<0>(inner_strides);
+			const auto src_inner_stride = std::get<1>(inner_strides);
 			run_elementwise_outer_loop(
 				[dst_inner_stride, src_inner_stride] 
 				(T *dst, const Q* src, const std::size_t count)
@@ -135,8 +135,7 @@ typename std::enable_if<
 make_copy_program(
 	multi_array_access_layout /*access_layout*/,
 	std::tuple<DstStride, SrcStride> /*inner_strides*/,
-	type_tag<T> /*dst_type*/,
-	type_tag<Q> /*src_type*/
+	type_list<T, Q> /*types*/
 )
 {
 	throw std::invalid_argument(
@@ -200,26 +199,17 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 	layout_builder.add_operand(src_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
-	return dispatch_numerical_types(
-		[&access_layout] (auto dst_type_tag, auto src_type_tag)
+	return dispatch_types_and_inner_strides<2>(
+		[] (multi_array_access_layout layout, auto types, auto inner_strides)
 		{
-			return dispatch_inner_loop_strides(
-				[&access_layout, dst_type_tag, src_type_tag] 
-				(auto inner_strides)
-				{
-					return make_copy_program(
-						std::move(access_layout),
-						inner_strides,
-						dst_type_tag,
-						src_type_tag
-					);
-				},
-				access_layout,
-				std::integral_constant<std::size_t, 2>()
+			return make_copy_program(
+				std::move(layout),
+				inner_strides,
+				types
 			);
 		},
-		native_type_map(),
-		dst_data_type, 
+		std::move(access_layout),
+		dst_data_type,
 		src_data_type
 	);
 }

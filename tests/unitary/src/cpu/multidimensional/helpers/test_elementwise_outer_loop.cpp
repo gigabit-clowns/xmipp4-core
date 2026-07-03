@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <cpu/multidimensional/cpu_elementwise_outer_loop.hpp>
+#include <cpu/multidimensional/helpers/elementwise_outer_loop.hpp>
 
 #include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
 #include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
@@ -33,7 +33,7 @@ struct outer_loop_call
  * @brief Inner-loop functor that records every invocation.
  *
  * The recorded log is held through a shared_ptr so that the copy stored inside
- * the cpu_elementwise_outer_loop shares state with the handle kept by the test.
+ * the elementwise_outer_loop shares state with the handle kept by the test.
  */
 class recording_inner_loop
 {
@@ -143,8 +143,8 @@ std::vector<std::ptrdiff_t> offsets_of(
 
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop invokes the handler once for a 1D layout",
-	"[cpu_elementwise_outer_loop]"
+	"elementwise_outer_loop invokes the handler once for a 1D layout",
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -162,9 +162,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop iterates over the outer dimension of a 2D "
+	"elementwise_outer_loop iterates over the outer dimension of a 2D "
 	"layout",
-	"[cpu_elementwise_outer_loop]"
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -190,8 +190,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop varies the innermost outer dimension fastest",
-	"[cpu_elementwise_outer_loop]"
+	"elementwise_outer_loop varies the innermost outer dimension fastest",
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -217,9 +217,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop advances each operand by its own stride and "
+	"elementwise_outer_loop advances each operand by its own stride and "
 	"base offset",
-	"[cpu_elementwise_outer_loop]"
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -253,9 +253,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop invokes the handler once with count 1 for a "
+	"elementwise_outer_loop invokes the handler once with count 1 for a "
 	"rank-0 layout",
-	"[cpu_elementwise_outer_loop]"
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -274,8 +274,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"cpu_elementwise_outer_loop does not invoke the handler for an empty axis",
-	"[cpu_elementwise_outer_loop]"
+	"elementwise_outer_loop does not invoke the handler for an empty axis",
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();
@@ -291,7 +291,7 @@ TEST_CASE(
 
 TEST_CASE(
 	"run_elementwise_outer_loop accepts an rvalue inner loop",
-	"[cpu_elementwise_outer_loop]"
+	"[elementwise_outer_loop]"
 )
 {
 	auto buffer = make_buffer();

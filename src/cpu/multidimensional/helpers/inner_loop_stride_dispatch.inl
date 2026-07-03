@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cpu_inner_loop_stride_dispatch.hpp"
+#include "inner_loop_stride_dispatch.hpp"
 
 namespace xmipp4 
 {

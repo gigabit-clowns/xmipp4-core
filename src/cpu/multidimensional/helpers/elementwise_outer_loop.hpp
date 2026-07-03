@@ -39,4 +39,4 @@ void run_elementwise_outer_loop(
 } // namespace multidimensional
 } // namespace xmipp4
 
-#include "cpu_elementwise_outer_loop.inl"
+#include "elementwise_outer_loop.inl"

@@ -77,6 +77,19 @@
 #endif
 
 /**
+ * @def XMIPP4_UNUSED
+ * @brief Indicates that a variable is intentionally declared and but unused.
+ * 
+ */
+#if XMIPP4_HAS_CPP_ATTRIBUTE(maybe_unused)
+	#define XMIPP4_UNUSED XMIPP4_CPP_ATTRIBUTE(maybe_unused)
+#elif XMIPP4_HAS_GCC_ATTRIBUTE(unused)
+	#define XMIPP4_UNUSED XMIPP4_GCC_ATTRIBUTE(unused)
+#else
+	#define XMIPP4_UNUSED
+#endif
+
+/**
  * @def XMIPP4_NODISCARD_MESSAGE(reason)
  * @brief Indicates that the return value should be used, proving a message
  * 

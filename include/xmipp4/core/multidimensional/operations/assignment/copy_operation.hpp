@@ -17,6 +17,26 @@ class XMIPP4_CORE_API copy_operation final
 	: public operation
 {
 public:
+	/**
+	 * @brief Indices for output operands.
+	 */
+	enum output_operand_indices
+	{
+		OUTPUT_OPERAND_DESTINATION,
+
+		OUTPUT_OPERAND_COUNT
+	};
+
+	/**
+	 * @brief Indices for input operands.
+	 */
+	enum input_operand_indices
+	{
+		INPUT_OPERAND_SOURCE,
+
+		INPUT_OPERAND_COUNT
+	};
+
 	std::string get_name() const override;
 	operation_arity get_arity() const noexcept override;
 	const operation_shape_policy& 

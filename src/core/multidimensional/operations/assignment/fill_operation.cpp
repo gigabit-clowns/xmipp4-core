@@ -41,7 +41,7 @@ fill_operation::get_operation_data_type_policy() const noexcept
 
 operation_arity fill_operation::get_arity() const noexcept
 {
-    return operation_arity::nullary();
+    return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
 }
 
 const scalar_value& fill_operation::get_fill_value() const noexcept

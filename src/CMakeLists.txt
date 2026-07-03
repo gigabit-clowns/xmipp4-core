@@ -86,7 +86,6 @@ target_link_libraries(
 		Boost::container # Eventually replace in C++23
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
-		fmt::fmt
 		half
 		${CMAKE_DL_LIBS}
 )

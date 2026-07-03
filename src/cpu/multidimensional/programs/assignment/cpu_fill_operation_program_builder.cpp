@@ -117,7 +117,7 @@ cpu_fill_operation_program_builder::get_operation_id() const noexcept
 }
 
 backend_priority cpu_fill_operation_program_builder::get_suitability(
-	const operation &operation,
+	const operation& /*operation*/,
 	span<const array_signature> output_signatures,
 	span<const array_signature> input_signatures,
 	hardware::command_queue &queue

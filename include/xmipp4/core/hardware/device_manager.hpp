@@ -123,7 +123,8 @@ public:
 
 private:
 	class implementation;
-	XMIPP4_STD_MEMBER_INTERFACE std::unique_ptr<implementation> m_implementation;
+	XMIPP4_STD_MEMBER_INTERFACE 
+	std::unique_ptr<implementation> m_implementation;
 
 	void create_implementation_if_null();
 }; 

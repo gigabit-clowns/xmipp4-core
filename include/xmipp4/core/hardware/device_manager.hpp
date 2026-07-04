@@ -29,25 +29,22 @@ class device_instance;
  * load time via @ref register_backend, with @ref register_builtin_backends
  * adding those that are statically linked.
  */
-class device_manager final
+class XMIPP4_CORE_API device_manager final
 	: public named_service_manager
 {
 public:
-	XMIPP4_CORE_API device_manager();
+	device_manager();
 	device_manager(const device_manager &other) = delete;
 	device_manager(device_manager &&other) noexcept = delete;
-	XMIPP4_CORE_API ~device_manager() override;
+	~device_manager() override;
 
 	device_manager& operator=(const device_manager &other) = delete;
 	device_manager& operator=(device_manager &&other) = delete;
 
-	XMIPP4_CORE_API
 	void register_builtin_backends() override;
 
-	XMIPP4_CORE_API
 	void enumerate_backends(std::vector<std::string> &names) const override;
 
-	XMIPP4_CORE_API
 	device_backend* get_backend(const std::string &name) const override;
 
 	/**
@@ -67,7 +64,6 @@ public:
 	 * @return false A name collision occurred or @p backend was null;
 	 * the manager is left unchanged.
 	 */
-	XMIPP4_CORE_API
 	bool register_backend(std::unique_ptr<device_backend> backend);
 
 	/**
@@ -82,7 +78,6 @@ public:
 	 * @param[out] indices Output list of device indices. Cleared before
 	 * being populated, so existing contents are discarded.
 	 */
-	XMIPP4_CORE_API
 	void enumerate_devices(std::vector<device_index> &indices) const;
 
 	/**
@@ -100,7 +95,6 @@ public:
 	 * @return false The backend or device referenced by @p index does
 	 * not exist; @p properties is left untouched.
 	 */
-	XMIPP4_CORE_API
 	bool get_device_properties(
 		const device_index &index,
 		device_properties &properties
@@ -124,7 +118,6 @@ public:
 	 * device id. The backend may additionally throw if the device id is
 	 * invalid.
 	 */
-	XMIPP4_CORE_API
 	std::shared_ptr<device_instance>
 	create_device_instance(const device_index &index) const;
 

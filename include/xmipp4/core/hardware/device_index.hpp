@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../platform/constexpr.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 #include <string>
 #include <string_view>
@@ -23,7 +24,7 @@ namespace hardware
  * device id; such an index does not refer to any real device and is
  * intended only as a placeholder before assignment or parsing.
  */
-class device_index
+class XMIPP4_CORE_API device_index
 {
 public:
 	/**
@@ -81,13 +82,20 @@ private:
 
 
 
+XMIPP4_CORE_API
 bool operator==(const device_index &lhs, const device_index &rhs) noexcept;
+XMIPP4_CORE_API
 bool operator!=(const device_index &lhs, const device_index &rhs) noexcept;
+XMIPP4_CORE_API
 bool operator<(const device_index &lhs, const device_index &rhs) noexcept;
+XMIPP4_CORE_API
 bool operator<=(const device_index &lhs, const device_index &rhs) noexcept;
+XMIPP4_CORE_API
 bool operator>(const device_index &lhs, const device_index &rhs) noexcept;
+XMIPP4_CORE_API
 bool operator>=(const device_index &lhs, const device_index &rhs) noexcept;
 
+XMIPP4_CORE_API
 std::ostream& operator<<(std::ostream &os, const device_index &index);
 
 /**
@@ -102,6 +110,7 @@ std::ostream& operator<<(std::ostream &os, const device_index &index);
  * @return true The string was parsed successfully and the result was written.
  * @return false The string was not parsed and the result was not written.
  */
+XMIPP4_CORE_API
 bool parse_device_index(std::string_view text, device_index &result);
 
 } // namespace hardware

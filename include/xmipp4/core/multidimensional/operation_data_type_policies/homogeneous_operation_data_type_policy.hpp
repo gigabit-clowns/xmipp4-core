@@ -22,6 +22,12 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
+	void accept(
+		span<const numerical_type> user_output_types,
+		span<const numerical_type> canonical_output_types,
+		span<const numerical_type> input_types
+	) const override;
+
 	static const homogeneous_operation_data_type_policy& get() noexcept;
 };
 

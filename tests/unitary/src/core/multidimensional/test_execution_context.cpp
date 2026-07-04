@@ -27,10 +27,10 @@ using namespace xmipp4::multidimensional;
 namespace
 {
 
-class execution_context_fixture
+class cpu_execution_contex_fixture
 {
 public:
-	execution_context_fixture()
+	cpu_execution_contex_fixture()
 		: device(std::make_shared<hardware::mock_device>())
 		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
 		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
@@ -90,7 +90,7 @@ TEST_CASE(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context constructor stores the provided device context and "
 	"dispatcher",
 	"[execution_context]"
@@ -105,7 +105,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context copy shares the device context and dispatcher and "
 	"leaves the source intact",
 	"[execution_context]"
@@ -125,7 +125,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context move transfers the device context and dispatcher",
 	"[execution_context]"
 )
@@ -140,7 +140,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context copy assignment replaces the target contents",
 	"[execution_context]"
 )
@@ -156,7 +156,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context move assignment replaces the target contents",
 	"[execution_context]"
 )
@@ -172,7 +172,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	execution_context_fixture,
+	cpu_execution_contex_fixture,
 	"execution_context with_device_context replaces the device context, keeps "
 	"the dispatcher and leaves the receiver unchanged",
 	"[execution_context]"

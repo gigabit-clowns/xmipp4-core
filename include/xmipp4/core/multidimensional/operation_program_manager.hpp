@@ -33,15 +33,13 @@ class operation_program_cache;
  * The operation program builders are cataloged by their intended operation such
  * that it allows fast retrieval.
  */
-class operation_program_manager
+class XMIPP4_CORE_API operation_program_manager
 	: public service_manager
 {
 public:
-	XMIPP4_CORE_API
 	operation_program_manager() noexcept;
 	operation_program_manager(const operation_program_manager &other) = delete;
 	operation_program_manager(operation_program_manager &&other) = delete;
-	XMIPP4_CORE_API
 	~operation_program_manager() override;
 
 	operation_program_manager&
@@ -49,7 +47,6 @@ public:
 	operation_program_manager&
 	operator=(operation_program_manager &&other) = delete;
 
-	XMIPP4_CORE_API
 	void register_builtin_backends() override;
 
 	/**
@@ -59,7 +56,6 @@ public:
 	 * @return true The operation program builder was successfully registered.
 	 * @return false The operation program builder could not be registered.
 	 */
-	XMIPP4_CORE_API
 	bool register_builder(
 		std::unique_ptr<operation_program_builder> builder
 	);
@@ -80,7 +76,6 @@ public:
 	 * @return std::shared_ptr<hardware::program> The executable program suited
 	 * for the requested operation and signature.
 	 */
-	XMIPP4_CORE_API
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
 		span<const array_signature> output_signatures,

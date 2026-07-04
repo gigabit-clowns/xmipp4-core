@@ -188,7 +188,7 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 		output_signatures[copy_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
 	const auto &src_descriptor = 
-		output_signatures[copy_operation::INPUT_OPERAND_SOURCE]
+		input_signatures[copy_operation::INPUT_OPERAND_SOURCE]
 		.get_descriptor();
 
 	const auto dst_data_type = dst_descriptor.get_data_type();

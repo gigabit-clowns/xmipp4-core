@@ -33,6 +33,20 @@ TEST_CASE("Constructing an array_descriptor should store its attributes", "[arra
 	CHECK( descriptor.get_data_type() == data_type );
 }
 
+TEST_CASE("make_contiguous_array_descriptor should wire its arguments into the descriptor", "[array_descriptor]")
+{
+	const std::vector<std::size_t> extents = {20, 30, 2, 16};
+	const auto data_type = numerical_type::float32;
+
+	const auto descriptor = make_contiguous_array_descriptor(
+		make_span(extents),
+		data_type
+	);
+
+	CHECK( descriptor.get_layout() == strided_layout::make_contiguous_layout(make_span(extents)) );
+	CHECK( descriptor.get_data_type() == data_type );
+}
+
 TEST_CASE("Computing the storage size for an array_descriptor should return the expected value", "[array_descriptor]")
 {
 	const std::vector<std::size_t> extents = {20, 30, 2, 16};

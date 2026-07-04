@@ -67,6 +67,17 @@ bool operator!=(
 	return !(lhs == rhs);
 }
 
+array_descriptor make_contiguous_array_descriptor(
+	span<const std::size_t> extents,
+	numerical_type data_type
+)
+{
+	return array_descriptor(
+		strided_layout::make_contiguous_layout(extents),
+		data_type
+	);
+}
+
 bool is_initialized(const array_descriptor &descriptor) noexcept
 {
 	return descriptor.get_data_type() != numerical_type::unknown;

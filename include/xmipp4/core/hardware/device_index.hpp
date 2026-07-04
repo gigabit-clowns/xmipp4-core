@@ -76,7 +76,7 @@ public:
 	std::size_t get_device_id() const noexcept;
 
 private:
-	std::string m_backend_name;
+	XMIPP4_STD_MEMBER_INTERFACE std::string m_backend_name;
 	std::size_t m_device_id;
 };
 

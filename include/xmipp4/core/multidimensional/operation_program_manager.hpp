@@ -86,7 +86,7 @@ public:
 
 private:
 	class implementation;
-	std::unique_ptr<implementation> m_implementation;
+	XMIPP4_STD_MEMBER_INTERFACE std::unique_ptr<implementation> m_implementation;
 
 	implementation& create_if_null();
 	const implementation& get_implementation() const noexcept;

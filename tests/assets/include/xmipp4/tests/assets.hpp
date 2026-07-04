@@ -1,16 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#pragma once
+
 #include <xmipp4/core/platform/operating_system.h>
 #include <xmipp4/core/platform/compiler.h>
 
 #include <string>
+
+#ifndef XMIPP4_TEST_ASSET_ROOT
+	#error "XMIPP4_TEST_ASSET_ROOT is not defined. Link against " \
+	       "xmipp4-test-asset-utils to consume the shared test assets."
+#endif
 
 namespace xmipp4
 {
 
 inline std::string get_asset_root()
 {
-	return "assets";
+	return XMIPP4_TEST_ASSET_ROOT;
 }
 
 inline std::string get_text_file_path()

@@ -5,7 +5,7 @@
 #include <xmipp4/core/plugin.hpp>
 #include <xmipp4/core/exceptions/plugin_load_error.hpp>
 
-#include "assets.hpp"
+#include <xmipp4/tests/assets.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>

@@ -26,11 +26,16 @@ target_include_directories(
 )
 target_link_libraries(
 	xmipp4-core-unitary-tests
-	PRIVATE 
+	PRIVATE
 		xmipp4-core
 		$<TARGET_PROPERTY:xmipp4-core,LINK_LIBRARIES>
+		xmipp4-test-asset-utils
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
+)
+add_dependencies(
+	xmipp4-core-unitary-tests
+	xmipp4-test-assets
 )
 
 if(MSVC)

@@ -33,12 +33,12 @@ target_link_libraries(
 		trompeloeil::trompeloeil
 )
 
-# HACK: Required for TROMPELOEIL_COUNT() to work with MSVC
 if(MSVC)
 	target_compile_options(
 		xmipp4-core-unitary-tests
 		PRIVATE
-			/Zc:preprocessor 
+			/Zc:preprocessor # HACK: Required for TROMPELOEIL_COUNT()
+			/bigobj # Required for test_type_and_inner_stride_dispatch.cpp
 	)
 endif()
 

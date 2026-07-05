@@ -5,6 +5,8 @@
 #include <limits>
 #include <cstdint>
 
+#include "platform/attributes.hpp"
+
 namespace xmipp4
 {
 
@@ -14,16 +16,24 @@ namespace xmipp4
  * As there is no standardized half-width float type in C/C++ use a
  * placeholder.
  */
-struct float16_t { std::uint16_t bits; };
-static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
+class float16_t 
+{
+public:
+	float16_t() noexcept;
+	float16_t(float value) noexcept;
+	float16_t(const float16_t &other) = default;
+	float16_t(float16_t &&other) = default;
+	~float16_t() = default;
 
-/**
- * @brief 16 bit "brain" floating point number representation.
- * 
- * As there is no standardized bfloat16 type in C/C++ use a placeholder.
- */
-struct bfloat16_t { std::uint16_t bits; };
-static_assert(sizeof(float16_t) == 2, "bfloat16_t should be 2 bytes long");
+	float16_t& operator=(const float16_t &other) = default;
+	float16_t& operator=(float16_t &&other) = default;
+
+	operator float() const noexcept;
+
+private:
+	XMIPP4_UNUSED std::uint16_t m_bits; 
+};
+static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
 
 /**
  * @brief 32 bit floating point number representation.

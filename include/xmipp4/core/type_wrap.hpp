@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <cstddef>
 
 namespace xmipp4

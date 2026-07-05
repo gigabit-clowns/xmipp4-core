@@ -30,7 +30,7 @@ copy_operation::get_operation_data_type_policy() const noexcept
 
 operation_arity copy_operation::get_arity() const noexcept
 {
-    return operation_arity::unary();
+    return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
 }
 
 } // namespace multidimensional

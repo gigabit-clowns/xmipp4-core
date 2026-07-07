@@ -35,15 +35,15 @@ class operation_program_builder
 public:
 	XMIPP4_CORE_API
 	operation_program_builder() noexcept;
-	operation_program_builder(const operation_program_builder &other) = default;
-	operation_program_builder(operation_program_builder &&other) = default;
+	operation_program_builder(const operation_program_builder &other) = delete;
+	operation_program_builder(operation_program_builder &&other) = delete;
 	XMIPP4_CORE_API
 	virtual ~operation_program_builder();
 
 	operation_program_builder&
-	operator=(const operation_program_builder &other) = default;
+	operator=(const operation_program_builder &other) = delete;
 	operation_program_builder&
-	operator=(operation_program_builder &&other) = default;
+	operator=(operation_program_builder &&other) = delete;
 
 	/**
 	 * @brief Get the operation identifier for which this builder is

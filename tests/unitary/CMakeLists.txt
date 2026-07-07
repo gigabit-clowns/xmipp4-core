@@ -47,5 +47,17 @@ if(MSVC)
 	)
 endif()
 
+# On Windows the plugin DLLs that some tests load (e.g. dynamic_library) depend
+# on xmipp4-core.dll. The loader resolves a plugin's imports from the test
+# executable's directory, so copy the library next to it. Unlike the
+# integration suite this executable embeds the core objects and never imports
+# the DLL itself, hence the DLL would otherwise not be present here.
+if(WIN32)
+	add_custom_command(TARGET xmipp4-core-unitary-tests
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:xmipp4-core> $<TARGET_FILE_DIR:xmipp4-core-unitary-tests>
+	)
+endif()
+
 # Discover tests
 catch_discover_tests(xmipp4-core-unitary-tests)

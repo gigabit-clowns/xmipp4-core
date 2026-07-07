@@ -15,8 +15,39 @@ namespace xmipp4
 namespace multidimensional
 {
 
-namespace
+array transfer(
+	array &input, 
+	hardware::memory_resource_affinity affinity,
+	const execution_context &context
+)
 {
+	const auto *storage = input.get_storage();
+	if (!storage)
+	{
+		throw std::invalid_argument(
+			"transfer: Expected an input with associated storage."
+		);
+	}
+
+	const auto &allocator = 
+		context.get_device_context().get_allocator(affinity);
+	if (!allocator)
+	{
+		throw std::invalid_argument(
+			"transfer: Expected a device context with an allocator for the "
+			"requested affinity."
+		);
+	}
+
+	const auto &source_resource = storage->get_memory_resource();
+	const auto &target_resource = allocator->get_memory_resource();
+	if (&source_resource == &target_resource)
+	{
+		return input.share();
+	}
+
+	return transfer_copy(input, affinity, context, nullptr);
+}
 
 array transfer_copy(
 	array_view input, 
@@ -48,47 +79,9 @@ array transfer_copy(
 	return result;
 }
 
-array transfer_alias(
-	array& input,
-	hardware::memory_resource_affinity affinity,
-	const execution_context &context
-)
-{
-	const auto *storage = input.get_storage();
-	if (!storage)
-	{
-		throw std::invalid_argument(
-			"Expected an input with associated storage."
-		);
-	}
-
-	const auto &allocator = 
-		context.get_device_context().get_allocator(affinity);
-	if (!allocator)
-	{
-		throw std::invalid_argument(
-			"Expected a device context with an allocator for the requested "
-			"affinity."
-		);
-	}
-
-	const auto &source_resource = storage->get_memory_resource();
-	const auto &target_resource = allocator->get_memory_resource();
-	if (&source_resource == &target_resource)
-	{
-		return input.share();
-	}
-
-	return transfer_copy(input, affinity, context, nullptr);
-}
-
-} // anonymous namespace
-
-
-
 array to_device(array &input, const execution_context &context)
 {
-	return transfer_alias(
+	return transfer(
 		input, 
 		hardware::memory_resource_affinity::device, 
 		context
@@ -111,7 +104,7 @@ array to_device_copy(
 
 array to_host(array &input, const execution_context &context)
 {
-	return transfer_alias(
+	return transfer(
 		input, 
 		hardware::memory_resource_affinity::host, 
 		context

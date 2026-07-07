@@ -12,14 +12,11 @@ namespace xmipp4
 /**
  * @brief Exception indicating that could not disambiguate among multiple
  * backend candidates.
- * 
  */
-XMIPP4_STD_BASE_DLL_INTERFACE_BEGIN
-class XMIPP4_CORE_API ambiguous_backend_error
-	: public std::runtime_error
+XMIPP4_STD_BASE_INTERFACE
+class XMIPP4_CORE_API ambiguous_backend_error : public std::runtime_error
 {
 	using runtime_error::runtime_error;
 };
-XMIPP4_STD_BASE_DLL_INTERFACE_END
 
 } // namespace xmipp4

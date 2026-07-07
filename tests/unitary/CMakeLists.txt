@@ -26,11 +26,16 @@ target_include_directories(
 )
 target_link_libraries(
 	xmipp4-core-unitary-tests
-	PRIVATE 
+	PRIVATE
 		xmipp4-core
 		$<TARGET_PROPERTY:xmipp4-core,LINK_LIBRARIES>
+		xmipp4-test-assets-interface
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
+)
+add_dependencies(
+	xmipp4-core-unitary-tests
+	xmipp4-test-assets
 )
 
 if(MSVC)
@@ -39,6 +44,18 @@ if(MSVC)
 		PRIVATE
 			/Zc:preprocessor # HACK: Required for TROMPELOEIL_COUNT()
 			/bigobj # Required for test_type_and_inner_stride_dispatch.cpp
+	)
+endif()
+
+# On Windows the plugin DLLs that some tests load (e.g. dynamic_library) depend
+# on xmipp4-core.dll. The loader resolves a plugin's imports from the test
+# executable's directory, so copy the library next to it. Unlike the
+# integration suite this executable embeds the core objects and never imports
+# the DLL itself, hence the DLL would otherwise not be present here.
+if(WIN32)
+	add_custom_command(TARGET xmipp4-core-unitary-tests
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:xmipp4-core> $<TARGET_FILE_DIR:xmipp4-core-unitary-tests>
 	)
 endif()
 

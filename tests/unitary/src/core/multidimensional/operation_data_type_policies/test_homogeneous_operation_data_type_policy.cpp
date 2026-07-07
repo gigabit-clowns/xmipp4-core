@@ -73,3 +73,95 @@ TEST_CASE(
         std::invalid_argument
     );
 }
+
+TEST_CASE(
+    "homogeneous_operation_data_type_policy::deduce yields unknown types for "
+    "empty inputs",
+    "[homogeneous_operation_data_type_policy]"
+)
+{
+    const auto& pol = homogeneous_operation_data_type_policy::get();
+
+    const std::vector<numerical_type> inputs;
+    std::vector<numerical_type>       outputs(2, numerical_type::float32);
+
+    pol.deduce(make_span(outputs), make_span(inputs));
+
+    // With no inputs the output type cannot be deduced from them, so it is
+    // left unknown for accept() to resolve from the user outputs.
+    CHECK( outputs[0] == numerical_type::unknown );
+    CHECK( outputs[1] == numerical_type::unknown );
+}
+
+TEST_CASE(
+    "homogeneous_operation_data_type_policy::accept adopts the user output "
+    "type when there are no inputs",
+    "[homogeneous_operation_data_type_policy]"
+)
+{
+    const auto& pol = homogeneous_operation_data_type_policy::get();
+
+    const std::vector<numerical_type> inputs;
+    const std::vector<numerical_type> canonical = {
+        numerical_type::unknown, numerical_type::unknown
+    };
+    const std::vector<numerical_type> user_outputs = {
+        numerical_type::float32, numerical_type::float32
+    };
+
+    CHECK_NOTHROW(
+        pol.accept(
+            make_span(user_outputs),
+            make_span(canonical),
+            make_span(inputs)
+        )
+    );
+}
+
+TEST_CASE(
+    "homogeneous_operation_data_type_policy::accept throws when user outputs "
+    "disagree and there are no inputs",
+    "[homogeneous_operation_data_type_policy]"
+)
+{
+    const auto& pol = homogeneous_operation_data_type_policy::get();
+
+    const std::vector<numerical_type> inputs;
+    const std::vector<numerical_type> canonical = {
+        numerical_type::unknown, numerical_type::unknown
+    };
+    const std::vector<numerical_type> user_outputs = {
+        numerical_type::float32, numerical_type::float64
+    };
+
+    CHECK_THROWS_AS(
+        pol.accept(
+            make_span(user_outputs),
+            make_span(canonical),
+            make_span(inputs)
+        ),
+        std::invalid_argument
+    );
+}
+
+TEST_CASE(
+    "homogeneous_operation_data_type_policy::accept requires user outputs to "
+    "match the canonical type when inputs are present",
+    "[homogeneous_operation_data_type_policy]"
+)
+{
+    const auto& pol = homogeneous_operation_data_type_policy::get();
+
+    const std::vector<numerical_type> inputs       = { numerical_type::float32 };
+    const std::vector<numerical_type> canonical    = { numerical_type::float32 };
+    const std::vector<numerical_type> user_outputs = { numerical_type::float64 };
+
+    CHECK_THROWS_AS(
+        pol.accept(
+            make_span(user_outputs),
+            make_span(canonical),
+            make_span(inputs)
+        ),
+        std::invalid_argument
+    );
+}

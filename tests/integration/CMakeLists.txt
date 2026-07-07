@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
-add_subdirectory(assets)
-
 # Register all source and header files
 file(
-	GLOB_RECURSE 
-	TEST_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
+	GLOB_RECURSE
+	TEST_SOURCES
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
 
@@ -14,13 +12,14 @@ file(
 add_executable(xmipp4-core-integration-tests ${TEST_SOURCES})
 target_link_libraries(
 	xmipp4-core-integration-tests
-	PRIVATE 
+	PRIVATE
 		xmipp4-core
+		xmipp4-test-assets-interface
 		Catch2::Catch2WithMain
 )
 add_dependencies(
 	xmipp4-core-integration-tests
-	xmipp4-core-integration-test-assets
+	xmipp4-test-assets
 )
 
 # On windows targets, copy the library to the test directory

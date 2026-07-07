@@ -9,5 +9,6 @@ fetch_trompeloeil(VERSION 49)
 
 include(Catch)
 
+add_subdirectory(assets)
 add_subdirectory(unitary)
 add_subdirectory(integration)

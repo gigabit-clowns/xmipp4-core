@@ -71,26 +71,46 @@
 #endif
 
 /**
- * @def XMIPP4_STD_BASE_DLL_INTERFACE_BEGIN
- * @def XMIPP4_STD_BASE_DLL_INTERFACE_END
- * @brief Silence MSVC warning C4275 around a dll-interface class that derives
- * from a standard library type (e.g. std::logic_error).
+ * @def XMIPP4_STD_BASE_INTERFACE
+ * @brief Silence MSVC warning C4275 for the class declared right after it.
  *
- * The warning fires because the standard base class is not itself marked as a
+ * C4275 fires when a dll-interface class (see @ref XMIPP4_CORE_API) derives
+ * from a standard library type (e.g. std::runtime_error) that is not itself a
  * dll-interface. This is safe as long as every module links against the same
  * dynamic C++ runtime (/MD), so the base class has a single shared definition.
- * These macros use __pragma so they can wrap a class declaration without
- * scattering #if blocks across headers, and expand to nothing on other
+ *
+ * Placed on its own line immediately before the class declaration, it
+ * suppresses the warning for that single line only (via warning(suppress)), so
+ * it needs no closing macro. The class head and its base-clause must therefore
+ * be kept together on that one line. Expands to nothing on other compilers.
+ *
+ */
+#if defined(_MSC_VER)
+	#define XMIPP4_STD_BASE_INTERFACE __pragma(warning(suppress: 4275))
+#else
+	#define XMIPP4_STD_BASE_INTERFACE
+#endif
+
+/**
+ * @def XMIPP4_STD_MEMBER_INTERFACE
+ * @brief Silence MSVC warning C4251 for the data member declared right after it.
+ *
+ * C4251 fires when a dll-interface class (see @ref XMIPP4_CORE_API) has a data
+ * member whose type is not itself a dll-interface, typically a standard library
+ * type such as the std::unique_ptr used for the pimpl idiom or an std::string.
+ * This is safe as long as every module links against the same dynamic C++
+ * runtime (/MD), so the type has a single shared definition, and the member is
+ * not manipulated across the DLL boundary (private members never are).
+ *
+ * Placed on its own line immediately before a member declaration, it suppresses
+ * the warning for that single line only (via warning(suppress)), so it needs no
+ * closing macro and leaves the warning active everywhere else as a tripwire for
+ * genuinely public non-dll-interface members. Expands to nothing on other
  * compilers.
  *
  */
 #if defined(_MSC_VER)
-	#define XMIPP4_STD_BASE_DLL_INTERFACE_BEGIN \
-		__pragma(warning(push)) \
-		__pragma(warning(disable: 4275))
-	#define XMIPP4_STD_BASE_DLL_INTERFACE_END \
-		__pragma(warning(pop))
+	#define XMIPP4_STD_MEMBER_INTERFACE __pragma(warning(suppress: 4251))
 #else
-	#define XMIPP4_STD_BASE_DLL_INTERFACE_BEGIN
-	#define XMIPP4_STD_BASE_DLL_INTERFACE_END
+	#define XMIPP4_STD_MEMBER_INTERFACE
 #endif

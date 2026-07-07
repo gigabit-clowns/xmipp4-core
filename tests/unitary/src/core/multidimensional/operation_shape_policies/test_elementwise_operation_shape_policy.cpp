@@ -55,18 +55,42 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_operation_shape_policy::deduce throws for empty inputs",
+    "elementwise_operation_shape_policy::deduce yields scalar shapes for "
+    "empty inputs",
     "[elementwise_operation_shape_policy]"
 )
 {
     const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> inputs;
-    std::vector<shape_type>       outputs(1);
+    std::vector<shape_type>       outputs(2, shape_type{7, 7});
 
-    CHECK_THROWS_AS(
-        pol.deduce(make_span(outputs), make_span(inputs)),
-        std::invalid_argument
+    pol.deduce(make_span(outputs), make_span(inputs));
+
+    // With no inputs there is nothing to broadcast from, so every canonical
+    // output is left as an empty (scalar) shape.
+    CHECK( outputs[0].empty() );
+    CHECK( outputs[1].empty() );
+}
+
+TEST_CASE(
+    "elementwise_operation_shape_policy::accept admits any user output when "
+    "the canonical shape is scalar (no inputs)",
+    "[elementwise_operation_shape_policy]"
+)
+{
+    const auto& pol = elementwise_operation_shape_policy::get();
+
+    const std::vector<shape_type> canonical    = { shape_type{} };
+    const std::vector<shape_type> inputs;
+    const std::vector<shape_type> user_outputs = { {4, 8} };
+
+    CHECK_NOTHROW(
+        pol.accept(
+            make_span(user_outputs),
+            make_span(canonical),
+            make_span(inputs)
+        )
     );
 }
 

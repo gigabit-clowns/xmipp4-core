@@ -94,6 +94,24 @@ bool operator!=(
 ) noexcept;
 
 /**
+ * @brief Create an array descriptor with a contiguous layout.
+ *
+ * The resulting descriptor holds a contiguous layout built from the given
+ * extents paired with the provided numerical type.
+ *
+ * @param extents The extents of each dimension.
+ * @param data_type The numerical type.
+ * @return array_descriptor The resulting descriptor.
+ *
+ * @see strided_layout::make_contiguous_layout
+ */
+XMIPP4_CORE_API
+array_descriptor make_contiguous_array_descriptor(
+	span<const std::size_t> extents,
+	numerical_type data_type
+);
+
+/**
  * @brief Check if the array descriptor is initialized.
  * 
  * @param descriptor The descriptor to check.

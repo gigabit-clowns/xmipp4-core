@@ -19,9 +19,12 @@ void elementwise_operation_shape_policy::deduce(
 {
 	if (input_shapes.empty())
 	{
-		throw std::invalid_argument(
-			"elementwise_operation_shape_policy requires at least one input."
+		std::fill(
+			canonical_output_shapes.begin(),
+			canonical_output_shapes.end(),
+			shape_type()
 		);
+		return;
 	}
 
 	shape_type canonical_shape = input_shapes[0];
@@ -71,9 +74,6 @@ void elementwise_operation_shape_policy::accept(
 		}
 	}
 
-	// Inputs broadcast into the canonical output shape. Therefore, if the
-	// canonical shape can be broadcasted to the user-supplied shape, all
-	// inputs can be broadcasted to it.
 	const auto valid = is_broadcastable_to(
 		make_span(canonical_output_shapes[0]),
 		make_span(reference_shape)

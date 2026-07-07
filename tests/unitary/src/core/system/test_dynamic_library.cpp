@@ -6,7 +6,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <algorithm>
 #include <sstream>
+#include <string>
 
 using namespace xmipp4;
 
@@ -35,10 +37,22 @@ TEST_CASE( "recover shared library path from symbol", "[dynamic_library]" )
 	const auto *symbol = dl.get_symbol("xmipp4_get_plugin");
 
 	// Recover path from loaded symbol
-	const auto path2 = system::dynamic_library::query_symbol_filename(symbol);
+	auto recovered = system::dynamic_library::query_symbol_filename(symbol);
 
-	// The last part of the path should coincide even if the returned
-	// path is absolute
-	REQUIRE( path2.size() >= path.size() );
-	CHECK( path2.compare(path2.size() - path.size(), path.size(), path) == 0 );
+	// query_symbol_filename returns the native absolute path of the module,
+	// so only its tail relative to the asset root is meaningful to compare.
+	// Normalize separators as it uses the platform convention (backslashes on
+	// Windows) whereas the asset root is baked in with forward slashes.
+	auto relative = path.substr(get_asset_root().size());
+	std::replace(relative.begin(), relative.end(), '\\', '/');
+	std::replace(recovered.begin(), recovered.end(), '\\', '/');
+
+	// The recovered path should end with the asset-relative path even though
+	// it is absolute.
+	REQUIRE( recovered.size() >= relative.size() );
+	CHECK(
+		recovered.compare(
+			recovered.size() - relative.size(), relative.size(), relative
+		) == 0
+	);
 }

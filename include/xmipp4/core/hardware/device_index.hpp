@@ -24,7 +24,7 @@ namespace hardware
  * device id; such an index does not refer to any real device and is
  * intended only as a placeholder before assignment or parsing.
  */
-class XMIPP4_CORE_API device_index
+class device_index
 {
 public:
 	/**
@@ -36,6 +36,7 @@ public:
 	 * @param device_id ID of the device within @p backend_name, as
 	 * returned by @ref device_backend::enumerate_devices.
 	 */
+	XMIPP4_CORE_API
 	device_index(const std::string &backend_name, std::size_t device_id);
 
 	/**
@@ -47,15 +48,22 @@ public:
 	 * @param device_id ID of the device within @p backend_name, as
 	 * returned by @ref device_backend::enumerate_devices.
 	 */
+	XMIPP4_CORE_API
 	device_index(std::string &&backend_name, std::size_t device_id);
 
-	device_index() = default;
-	device_index(const device_index &other) = default;
-	device_index(device_index &&other) = default;
-	~device_index() = default;
+	XMIPP4_CORE_API
+	device_index() noexcept;
+	XMIPP4_CORE_API
+	device_index(const device_index &other);
+	XMIPP4_CORE_API
+	device_index(device_index &&other) noexcept;
+	XMIPP4_CORE_API
+	~device_index();
 
-	device_index& operator=(const device_index &other) = default;
-	device_index& operator=(device_index &&other) = default;
+	XMIPP4_CORE_API
+	device_index& operator=(const device_index &other);
+	XMIPP4_CORE_API
+	device_index& operator=(device_index &&other) noexcept;
 
 	/**
 	 * @brief Get the name of the device backend.
@@ -64,6 +72,7 @@ public:
 	 * The reference is valid for the lifetime of this @ref device_index
 	 * and is invalidated by assignment to or destruction of the object.
 	 */
+	XMIPP4_CORE_API
 	const std::string& get_backend_name() const noexcept;
 
 	/**
@@ -73,10 +82,10 @@ public:
 	 * meaningful when interpreted by the backend identified by
 	 * @ref get_backend_name.
 	 */
+	XMIPP4_CORE_API
 	std::size_t get_device_id() const noexcept;
 
 private:
-	XMIPP4_STD_MEMBER_INTERFACE 
 	std::string m_backend_name;
 	std::size_t m_device_id;
 };

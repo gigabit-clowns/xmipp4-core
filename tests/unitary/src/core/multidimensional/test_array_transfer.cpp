@@ -1,0 +1,359 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <catch2/catch_test_macros.hpp>
+
+#include <xmipp4/core/multidimensional/array_transfer.hpp>
+
+#include <xmipp4/core/multidimensional/execution_context.hpp>
+#include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
+#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/span.hpp>
+#include <xmipp4/core/hardware/device_context.hpp>
+#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_properties.hpp>
+#include <xmipp4/core/hardware/memory_allocator.hpp>
+#include <xmipp4/core/hardware/command_queue.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/memory_resource_affinity.hpp>
+
+#include "mock/mock_operation_dispatcher.hpp"
+#include "../hardware/mock/mock_device.hpp"
+#include "../hardware/mock/mock_memory_resource.hpp"
+#include "../hardware/mock/mock_memory_allocator.hpp"
+#include "../hardware/mock/mock_command_queue.hpp"
+#include "../hardware/mock/mock_buffer.hpp"
+
+#include <cstddef>
+#include <memory>
+#include <stdexcept>
+#include <typeinfo>
+#include <vector>
+
+using namespace xmipp4;
+using namespace xmipp4::multidimensional;
+using trompeloeil::_;
+
+namespace
+{
+
+// Records the arguments seen by a mocked dispatch() call so that they can be
+// inspected after the function under test has returned. The operation type is
+// captured by value to stay valid past the operation's (temporary) lifetime.
+struct dispatch_record
+{
+	bool called = false;
+	const std::type_info *operation_type = nullptr;
+	std::size_t num_outputs = 0;
+	std::size_t num_inputs = 0;
+	const hardware::buffer *first_output_storage = nullptr;
+	const hardware::buffer *first_input_storage = nullptr;
+	const hardware::device_instance *device_instance = nullptr;
+
+	void operator()(
+		const operation &op,
+		span<array> outputs,
+		span<const array_view> inputs,
+		const hardware::device_context &device_context
+	)
+	{
+		called = true;
+		operation_type = &typeid(op);
+		num_outputs = outputs.size();
+		num_inputs = inputs.size();
+		if (!outputs.empty())
+		{
+			first_output_storage = outputs[0].get_storage();
+		}
+		if (!inputs.empty())
+		{
+			first_input_storage = inputs[0].get_storage();
+		}
+		device_instance = device_context.get_device_instance().get();
+	}
+};
+
+class array_transfer_fixture
+{
+public:
+	array_transfer_fixture()
+		: device(std::make_shared<hardware::mock_device>())
+		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
+		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
+		, default_queue(std::make_shared<hardware::mock_command_queue>())
+		, dispatcher(std::make_shared<mock_operation_dispatcher>())
+	{
+		using hardware::memory_resource_affinity;
+
+		hardware::device_properties properties;
+		properties.set_optimal_data_alignment(128);
+
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::host)
+		)
+			.LR_RETURN(host_resource);
+		REQUIRE_CALL(
+			*device,
+			get_memory_resource(memory_resource_affinity::device)
+		)
+			.LR_RETURN(device_resource);
+		REQUIRE_CALL(host_resource, create_allocator())
+			.RETURN(host_allocator);
+		REQUIRE_CALL(device_resource, create_allocator())
+			.RETURN(device_allocator);
+		REQUIRE_CALL(*device, create_command_queue())
+			.RETURN(default_queue);
+
+		instance = std::make_shared<hardware::device_instance>(
+			device,
+			std::move(properties)
+		);
+
+		context = execution_context(
+			hardware::device_context(instance),
+			dispatcher
+		);
+	}
+
+protected:
+	array_descriptor make_descriptor(
+		std::vector<std::size_t> extents = { 2, 3 },
+		numerical_type data_type = numerical_type::float32
+	) const
+	{
+		return array_descriptor(
+			strided_layout::make_contiguous_layout(make_span(extents)),
+			data_type
+		);
+	}
+
+	std::shared_ptr<hardware::mock_device> device;
+	std::shared_ptr<hardware::mock_memory_allocator> host_allocator;
+	std::shared_ptr<hardware::mock_memory_allocator> device_allocator;
+	hardware::mock_memory_resource host_resource;
+	hardware::mock_memory_resource device_resource;
+	std::shared_ptr<hardware::command_queue> default_queue;
+	std::shared_ptr<const hardware::device_instance> instance;
+	std::shared_ptr<mock_operation_dispatcher> dispatcher;
+	execution_context context;
+};
+
+} // namespace
+
+
+
+TEST_CASE(
+	"to_device throws when the input array has no associated storage",
+	"[array_transfer]"
+)
+{
+	// A default-constructed array carries no storage.
+	array input;
+
+	// The context is irrelevant here: the storage check fails first.
+	const execution_context context;
+
+	CHECK_THROWS_AS( to_device(input, context), std::invalid_argument );
+}
+
+TEST_CASE(
+	"to_device throws when the execution context has no allocator for the "
+	"requested affinity",
+	"[array_transfer]"
+)
+{
+	const std::vector<std::size_t> extents = { 2, 3 };
+	const array_descriptor descriptor(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32
+	);
+	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	array input(buffer, descriptor);
+
+	// A default-constructed context is empty: it has no allocators.
+	const execution_context context;
+
+	CHECK_THROWS_AS( to_device(input, context), std::invalid_argument );
+}
+
+TEST_CASE_METHOD(
+	array_transfer_fixture,
+	"to_device aliases the input when it already lives on the device memory "
+	"resource",
+	"[array_transfer]"
+)
+{
+	const auto descriptor = make_descriptor();
+	const auto buffer = std::make_shared<hardware::mock_buffer>();
+
+	// Both the input storage and the device allocator report the same memory
+	// resource, so the input must be aliased verbatim: no allocation and no
+	// copy dispatch are expected (an unexpected call would fail the test).
+	ALLOW_CALL(*buffer, get_memory_resource())
+		.LR_RETURN(device_resource);
+	ALLOW_CALL(*device_allocator, get_memory_resource())
+		.LR_RETURN(device_resource);
+
+	array input(buffer, descriptor);
+
+	const auto result = to_device(input, context);
+
+	CHECK( result.get_storage() == buffer.get() );
+	CHECK( result.get_descriptor() == descriptor );
+}
+
+TEST_CASE_METHOD(
+	array_transfer_fixture,
+	"to_device copies the input when it lives on a different memory resource",
+	"[array_transfer]"
+)
+{
+	const auto descriptor = make_descriptor();
+	const auto size = compute_storage_requirement(descriptor);
+	const auto source_buffer = std::make_shared<hardware::mock_buffer>();
+	const auto device_buffer = std::make_shared<hardware::mock_buffer>();
+
+	// The input lives on the host resource while the device allocator hands out
+	// device-resource storage, so aliasing is rejected and a copy is performed
+	// via a fresh allocation on the device allocator.
+	ALLOW_CALL(*source_buffer, get_memory_resource())
+		.LR_RETURN(host_resource);
+	ALLOW_CALL(*device_allocator, get_memory_resource())
+		.LR_RETURN(device_resource);
+	ALLOW_CALL(*device_allocator, get_max_alignment())
+		.RETURN(std::size_t(256));
+	REQUIRE_CALL(
+		*device_allocator,
+		allocate(size, _, default_queue.get())
+	)
+		.RETURN(device_buffer);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	array input(source_buffer, descriptor);
+
+	const auto result = to_device(input, context);
+
+	CHECK( result.get_storage() == device_buffer.get() );
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(copy_operation) );
+	CHECK( record.num_outputs == 1 );
+	CHECK( record.num_inputs == 1 );
+	CHECK( record.first_output_storage == device_buffer.get() );
+	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.device_instance == instance.get() );
+}
+
+TEST_CASE_METHOD(
+	array_transfer_fixture,
+	"to_host aliases the input when it already lives on the host memory "
+	"resource",
+	"[array_transfer]"
+)
+{
+	const auto descriptor = make_descriptor();
+	const auto buffer = std::make_shared<hardware::mock_buffer>();
+
+	// Input storage and host allocator share the memory resource: alias only.
+	ALLOW_CALL(*buffer, get_memory_resource())
+		.LR_RETURN(host_resource);
+	ALLOW_CALL(*host_allocator, get_memory_resource())
+		.LR_RETURN(host_resource);
+
+	array input(buffer, descriptor);
+
+	const auto result = to_host(input, context);
+
+	CHECK( result.get_storage() == buffer.get() );
+	CHECK( result.get_descriptor() == descriptor );
+}
+
+TEST_CASE_METHOD(
+	array_transfer_fixture,
+	"to_device_copy allocates on the device allocator and dispatches a "
+	"copy_operation with the input as the single source",
+	"[array_transfer]"
+)
+{
+	const auto descriptor = make_descriptor();
+	const auto size = compute_storage_requirement(descriptor);
+	const auto source_buffer = std::make_shared<hardware::mock_buffer>();
+	const auto device_buffer = std::make_shared<hardware::mock_buffer>();
+
+	// A forced copy always allocates fresh device storage; only the device
+	// allocator is expected to be used.
+	ALLOW_CALL(*device_allocator, get_max_alignment())
+		.RETURN(std::size_t(256));
+	REQUIRE_CALL(
+		*device_allocator,
+		allocate(size, _, default_queue.get())
+	)
+		.RETURN(device_buffer);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	array source(source_buffer, descriptor);
+
+	const auto result = to_device_copy(source.share(), context);
+
+	CHECK( result.get_storage() == device_buffer.get() );
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(copy_operation) );
+	CHECK( record.num_outputs == 1 );
+	CHECK( record.num_inputs == 1 );
+	CHECK( record.first_output_storage == device_buffer.get() );
+	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.device_instance == instance.get() );
+}
+
+TEST_CASE_METHOD(
+	array_transfer_fixture,
+	"to_host_copy allocates on the host allocator and dispatches a "
+	"copy_operation with the input as the single source",
+	"[array_transfer]"
+)
+{
+	const auto descriptor = make_descriptor();
+	const auto size = compute_storage_requirement(descriptor);
+	const auto source_buffer = std::make_shared<hardware::mock_buffer>();
+	const auto host_buffer = std::make_shared<hardware::mock_buffer>();
+
+	// A forced copy always allocates fresh host storage; only the host
+	// allocator is expected to be used.
+	ALLOW_CALL(*host_allocator, get_max_alignment())
+		.RETURN(std::size_t(256));
+	REQUIRE_CALL(
+		*host_allocator,
+		allocate(size, _, default_queue.get())
+	)
+		.RETURN(host_buffer);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	array source(source_buffer, descriptor);
+
+	const auto result = to_host_copy(source.share(), context);
+
+	CHECK( result.get_storage() == host_buffer.get() );
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(copy_operation) );
+	CHECK( record.num_outputs == 1 );
+	CHECK( record.num_inputs == 1 );
+	CHECK( record.first_output_storage == host_buffer.get() );
+	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.device_instance == instance.get() );
+}

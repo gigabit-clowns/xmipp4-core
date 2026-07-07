@@ -29,7 +29,7 @@ target_link_libraries(
 	PRIVATE
 		xmipp4-core
 		$<TARGET_PROPERTY:xmipp4-core,LINK_LIBRARIES>
-		xmipp4-test-asset-utils
+		xmipp4-test-assets-interface
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
 )

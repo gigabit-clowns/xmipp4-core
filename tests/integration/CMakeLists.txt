@@ -14,7 +14,7 @@ target_link_libraries(
 	xmipp4-core-integration-tests
 	PRIVATE
 		xmipp4-core
-		xmipp4-test-asset-utils
+		xmipp4-test-assets-interface
 		Catch2::Catch2WithMain
 )
 add_dependencies(

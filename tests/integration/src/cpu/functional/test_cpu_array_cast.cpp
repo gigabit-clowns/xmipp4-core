@@ -2,10 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/array_cast.hpp>
+#include <xmipp4/core/functional/array_cast.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
-#include <xmipp4/core/multidimensional/array_creation.hpp>
+#include <xmipp4/core/functional/array_creation.hpp>
 #include <xmipp4/core/execution/context.hpp>
 #include <xmipp4/core/execution/program_manager.hpp>
 #include <xmipp4/core/execution/dispatcher.hpp>
@@ -27,7 +27,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::multidimensional;
 using namespace xmipp4::execution;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;

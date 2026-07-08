@@ -14,7 +14,7 @@ class context;
 
 } // namespace execution
 
-namespace multidimensional
+namespace ndarray
 {
 
 /**
@@ -56,5 +56,5 @@ ndarray::array cast_copy(
 	ndarray::array *out = nullptr
 );
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

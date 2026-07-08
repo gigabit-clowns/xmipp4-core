@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_transfer.hpp>
+#include <xmipp4/core/functional/array_transfer.hpp>
 
 #include <xmipp4/core/execution/context.hpp>
 #include <xmipp4/core/execution/execute.hpp>
-#include <xmipp4/core/multidimensional/array_creation.hpp>
+#include <xmipp4/core/functional/array_creation.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
-namespace multidimensional
+namespace ndarray
 {
 
 ndarray::array transfer(
@@ -133,5 +133,5 @@ ndarray::array to_host_copy(
 	);
 }
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

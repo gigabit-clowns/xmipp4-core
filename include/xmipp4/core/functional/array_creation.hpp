@@ -17,7 +17,7 @@ class context;
 
 } // namespace execution
 
-namespace multidimensional
+namespace ndarray
 {
 
 /**
@@ -124,5 +124,5 @@ void fill(
 	const execution::context &context
 );
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

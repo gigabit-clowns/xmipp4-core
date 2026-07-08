@@ -16,7 +16,7 @@ class context;
 
 } // namespace execution
 
-namespace multidimensional
+namespace ndarray
 {
 
 /**
@@ -103,7 +103,7 @@ ndarray::array to_device_copy(
 /**
  * @brief Transfer an array to host accessible memory.
  * 
- * If the array is already gost-accessible, this operation returns an
+ * If the array is already host-accessible, this operation returns an
  * alias of the input array. Otherwise it behaves like `to_host_copy`
  * 
  * @param input Array to be transferred.
@@ -136,5 +136,5 @@ ndarray::array to_host_copy(
 	ndarray::array *out = nullptr
 );
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

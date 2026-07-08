@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/multidimensional/array_cast.hpp>
+#include <xmipp4/core/functional/array_cast.hpp>
 
 #include <xmipp4/core/execution/context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
@@ -34,7 +34,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::multidimensional;
 using namespace xmipp4::execution;
 using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;

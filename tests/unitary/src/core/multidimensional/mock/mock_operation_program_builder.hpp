@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/operation_program_builder.hpp>
 
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
 
@@ -29,8 +29,8 @@ public:
 		get_suitability,
 		backend_priority (
 			const operation &operation,
-			span<const array_signature> output_signatures,
-			span<const array_signature> input_signatures,
+			span<const ndarray::array_signature> output_signatures,
+			span<const ndarray::array_signature> input_signatures,
 			hardware::command_queue &queue
 		),
 		override
@@ -40,8 +40,8 @@ public:
 		build,
 		std::shared_ptr<hardware::program> (
 			const operation &operation,
-			span<const array_signature> output_signatures,
-			span<const array_signature> input_signatures,
+			span<const ndarray::array_signature> output_signatures,
+			span<const ndarray::array_signature> input_signatures,
 			hardware::command_queue &queue,
 			operation_program_cache *cache
 		),

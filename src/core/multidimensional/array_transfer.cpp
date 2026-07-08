@@ -5,7 +5,7 @@
 #include <xmipp4/core/multidimensional/execution_context.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/array_creation.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -15,8 +15,8 @@ namespace xmipp4
 namespace multidimensional
 {
 
-array transfer(
-	array &input, 
+ndarray::array transfer(
+	ndarray::array &input,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context
 )
@@ -49,11 +49,11 @@ array transfer(
 	return transfer_copy(input, affinity, context, nullptr);
 }
 
-array transfer_copy(
-	array_view input, 
+ndarray::array transfer_copy(
+	ndarray::array_view input,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	const auto &input_descriptor = input.get_descriptor();
@@ -61,8 +61,8 @@ array transfer_copy(
 	std::vector<std::size_t> input_extents;
 	input_descriptor.get_layout().get_extents(input_extents);
 
-	array result = empty(
-		array_descriptor(
+	ndarray::array result = empty(
+		ndarray::array_descriptor(
 			layout::strided_layout::make_contiguous_layout(
 				make_span(input_extents)
 			),
@@ -81,19 +81,22 @@ array transfer_copy(
 	return result;
 }
 
-array to_device(array &input, const execution_context &context)
+ndarray::array to_device(
+	ndarray::array &input,
+	const execution_context &context
+)
 {
 	return transfer(
-		input, 
-		hardware::memory_resource_affinity::device, 
+		input,
+		hardware::memory_resource_affinity::device,
 		context
 	);
 }
 
-array to_device_copy(
-	array_view input, 
+ndarray::array to_device_copy(
+	ndarray::array_view input,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	return transfer_copy(
@@ -104,19 +107,22 @@ array to_device_copy(
 	);
 }
 
-array to_host(array &input, const execution_context &context)
+ndarray::array to_host(
+	ndarray::array &input,
+	const execution_context &context
+)
 {
 	return transfer(
-		input, 
-		hardware::memory_resource_affinity::host, 
+		input,
+		hardware::memory_resource_affinity::host,
 		context
 	);
 }
 
-array to_host_copy(
-	array_view input, 
+ndarray::array to_host_copy(
+	ndarray::array_view input,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	return transfer_copy(

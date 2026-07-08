@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "array.hpp"
-#include "array_view.hpp"
+#include "../ndarray/array.hpp"
+#include "../ndarray/array_view.hpp"
 
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
@@ -31,8 +31,8 @@ class execution_context;
  * @ref transfer_copy if this is a concern.
  */
 XMIPP4_CORE_API
-array transfer(
-	array &input,
+ndarray::array transfer(
+	ndarray::array &input,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context
 );
@@ -52,11 +52,11 @@ array transfer(
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-array transfer_copy(
-	array_view input,
+ndarray::array transfer_copy(
+	ndarray::array_view input,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -74,7 +74,10 @@ array transfer_copy(
  * @ref to_device_copy if this is a concern.
  */
 XMIPP4_CORE_API
-array to_device(array &input, const execution_context &context);
+ndarray::array to_device(
+	ndarray::array &input,
+	const execution_context &context
+);
 
 /**
  * @brief Transfer an array to device memory enforcing a copy.
@@ -86,10 +89,10 @@ array to_device(array &input, const execution_context &context);
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-array to_device_copy(
-	array_view input, 
+ndarray::array to_device_copy(
+	ndarray::array_view input,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -107,7 +110,10 @@ array to_device_copy(
  * @ref to_host_copy if this is a concern. 
  */
 XMIPP4_CORE_API
-array to_host(array &input, const execution_context &context);
+ndarray::array to_host(
+	ndarray::array &input,
+	const execution_context &context
+);
 
 /**
  * @brief Transfer an array to host accessible memory enforcing a copy.
@@ -119,10 +125,10 @@ array to_host(array &input, const execution_context &context);
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-array to_host_copy(
-	array_view input, 
+ndarray::array to_host_copy(
+	ndarray::array_view input,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 } // namespace multidimensional

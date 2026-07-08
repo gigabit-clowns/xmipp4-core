@@ -9,7 +9,7 @@
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 class array;
@@ -157,5 +157,5 @@ private:
 	const hardware::memory_resource* m_memory_region;
 };
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

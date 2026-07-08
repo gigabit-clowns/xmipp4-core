@@ -3,11 +3,11 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <core/multidimensional/array_implementation.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
+#include <core/ndarray/array_implementation.hpp>
 
 #include "../hardware/mock/mock_buffer.hpp"
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array_view should have no storage", "[array_view]")

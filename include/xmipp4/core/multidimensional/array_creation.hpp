@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "array.hpp"
-#include "array_view.hpp"
+#include "../ndarray/array.hpp"
+#include "../ndarray/array_view.hpp"
 
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
@@ -26,11 +26,11 @@ class execution_context;
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-array empty(
-	array_descriptor descriptor,
+ndarray::array empty(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -44,11 +44,11 @@ array empty(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-array zeros(
-	array_descriptor descriptor,
+ndarray::array zeros(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -62,11 +62,11 @@ array zeros(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-array ones(
-	array_descriptor descriptor,
+ndarray::array ones(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -81,12 +81,12 @@ array ones(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-array full(
-	array_descriptor descriptor,
+ndarray::array full(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const scalar_value &fill_value,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -98,10 +98,10 @@ array full(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-array copy(
-	array_view source,
+ndarray::array copy(
+	ndarray::array_view source,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -114,7 +114,7 @@ array copy(
  */
 XMIPP4_CORE_API
 void fill(
-	array &out,
+	ndarray::array &out,
 	const scalar_value &fill_value,
 	const execution_context &context
 );

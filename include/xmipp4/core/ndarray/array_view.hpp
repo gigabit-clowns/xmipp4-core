@@ -15,7 +15,7 @@ class buffer;
 
 } // namespace hardware
 
-namespace multidimensional
+namespace ndarray
 {
 
 class array;
@@ -102,5 +102,5 @@ private:
 	std::shared_ptr<const array_implementation> m_implementation;
 };
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

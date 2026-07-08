@@ -4,9 +4,9 @@
 
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/numerical_type.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_shape_policy.hpp>
@@ -31,8 +31,8 @@ namespace multidimensional
 
 void execute(
 	const operation &operation,
-	span<array> output_operands,
-	span<const array_view> input_operands,
+	span<ndarray::array> output_operands,
+	span<const ndarray::array_view> input_operands,
 	const execution_context &context
 )
 {
@@ -53,11 +53,11 @@ void execute(
 	);
 }
 
-array execute(
+ndarray::array execute(
 	const operation &operation,
-	span<const array_view> input_operands,
+	span<const ndarray::array_view> input_operands,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	if (out)
@@ -73,7 +73,7 @@ array execute(
 	}
 	else
 	{
-		array output_operand;
+		ndarray::array output_operand;
 		execute(
 			operation,
 			make_span(&output_operand, 1),
@@ -84,11 +84,11 @@ array execute(
 	}
 }
 
-array execute_unary(
+ndarray::array execute_unary(
 	const operation &operation,
-	const array_view &input,
+	const ndarray::array_view &input,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	return execute(
@@ -99,15 +99,15 @@ array execute_unary(
 	);
 }
 
-array execute_binary(
+ndarray::array execute_binary(
 	const operation &operation,
-	array_view first_input,
-	array_view second_input,
+	ndarray::array_view first_input,
+	ndarray::array_view second_input,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
-	std::array<array_view, 2> inputs = {
+	std::array<ndarray::array_view, 2> inputs = {
 		std::move(first_input),
 		std::move(second_input)
 	};
@@ -119,16 +119,16 @@ array execute_binary(
 	);
 }
 
-array execute_ternary(
+ndarray::array execute_ternary(
 	const operation &operation,
-	array_view first_input,
-	array_view second_input,
-	array_view third_input,
+	ndarray::array_view first_input,
+	ndarray::array_view second_input,
+	ndarray::array_view third_input,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
-	std::array<array_view, 3> inputs = {
+	std::array<ndarray::array_view, 3> inputs = {
 		std::move(first_input),
 		std::move(second_input),
 		std::move(third_input)

@@ -8,7 +8,7 @@
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 /**
@@ -134,17 +134,17 @@ bool is_initialized(const array_descriptor &descriptor) noexcept;
 XMIPP4_CORE_API
 std::size_t compute_storage_requirement(const array_descriptor &descriptor);
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4
 
 namespace std
 {
 
 template<>
-struct hash<xmipp4::multidimensional::array_descriptor>
+struct hash<xmipp4::ndarray::array_descriptor>
 {
 	std::size_t operator()(
-		const xmipp4::multidimensional::array_descriptor &descriptor
+		const xmipp4::ndarray::array_descriptor &descriptor
 	) const noexcept
 	{
 		return descriptor.hash();

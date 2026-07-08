@@ -16,7 +16,7 @@ namespace hardware
 class buffer;
 
 } // namespace hardware
-namespace multidimensional
+namespace ndarray
 {
 
 class array_implementation;
@@ -122,5 +122,5 @@ private:
 	) noexcept;
 };
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

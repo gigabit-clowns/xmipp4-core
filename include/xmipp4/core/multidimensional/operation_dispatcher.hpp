@@ -17,12 +17,18 @@ class device_context;
 
 } // namespace hardware
 
+namespace ndarray
+{
+
+class array;
+class array_view;
+
+} // namespace ndarray
+
 namespace multidimensional
 {
 
 class operation;
-class array;
-class array_view;
 class operation_program_manager;
 
 /**
@@ -68,8 +74,8 @@ public:
 	 */
 	virtual void dispatch(
 		const operation &operation,
-		span<array> output_operands,
-		span<const array_view> input_operands,
+		span<ndarray::array> output_operands,
+		span<const ndarray::array_view> input_operands,
 		const hardware::device_context &device
 	) = 0;
 };

@@ -19,11 +19,17 @@ class command_queue;
 
 } // namespace hardware
 
+namespace ndarray
+{
+
+class array_signature;
+
+} // namespace ndarray
+
 namespace multidimensional
 {
 
 class operation;
-class array_signature;
 class operation_program_builder;
 class operation_program_cache;
 
@@ -78,8 +84,8 @@ public:
 	 */
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
+		span<const ndarray::array_signature> output_signatures,
+		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,
 		operation_program_cache *cache = nullptr
 	) const;

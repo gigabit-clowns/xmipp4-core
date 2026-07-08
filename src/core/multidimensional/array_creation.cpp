@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
@@ -29,7 +29,7 @@ namespace
 {
 
 std::shared_ptr<hardware::buffer> reuse_array_storage(
-	array &donor,
+	ndarray::array &donor,
 	std::size_t target_size,
 	const hardware::memory_resource &target_resource
 )
@@ -82,11 +82,11 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 
 
 
-array empty(
-	array_descriptor descriptor,
+ndarray::array empty(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	const auto &device_context = context.get_device_context();
@@ -117,7 +117,7 @@ array empty(
 
 	if (!out)
 	{
-		return array(std::move(storage), std::move(descriptor));
+		return ndarray::array(std::move(storage), std::move(descriptor));
 	}
 
 	if (
@@ -125,17 +125,17 @@ array empty(
 		out->get_descriptor() != descriptor
 	)
 	{
-		*out = array(std::move(storage), std::move(descriptor));
+		*out = ndarray::array(std::move(storage), std::move(descriptor));
 	}
 
 	return out->share();
 }
 
-array zeros(
-	array_descriptor descriptor,
+ndarray::array zeros(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	return full(
@@ -147,11 +147,11 @@ array zeros(
 	);
 }
 
-array ones(
-	array_descriptor descriptor,
+ndarray::array ones(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
 	return full(
@@ -163,15 +163,15 @@ array ones(
 	);
 }
 
-array full(
-	array_descriptor descriptor,
+ndarray::array full(
+	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const scalar_value &fill_value,
 	const execution_context &context,
-	array *out
+	ndarray::array *out
 )
 {
-	std::array<array, 1> outputs = { 
+	std::array<ndarray::array, 1> outputs = {
 		empty(descriptor, affinity, context, out) 
 	};
 
@@ -185,13 +185,17 @@ array full(
 	return std::move(outputs[0]);
 }
 
-array copy(array_view source, const execution_context &context, array *out)
+ndarray::array copy(
+	ndarray::array_view source,
+	const execution_context &context,
+	ndarray::array *out
+)
 {
 	return execute_unary(copy_operation(), source, context, out);
 }
 
 void fill(
-	array &out,
+	ndarray::array &out,
 	const scalar_value &fill_value,
 	const execution_context &context
 )

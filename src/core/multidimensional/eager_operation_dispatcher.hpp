@@ -44,8 +44,8 @@ public:
 
 	void dispatch(
 		const operation &operation,
-		span<array> output_operands,
-		span<const array_view> input_operands,
+		span<ndarray::array> output_operands,
+		span<const ndarray::array_view> input_operands,
 		const hardware::device_context &device_context
 	) override;
 

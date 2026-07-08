@@ -9,7 +9,7 @@
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/numerical_type.hpp>
@@ -25,6 +25,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace

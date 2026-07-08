@@ -5,7 +5,7 @@
 #include <cpu/multidimensional/cpu_operation_program_builder.hpp>
 #include <cpu/hardware/cpu_command_queue.hpp>
 
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
@@ -22,6 +22,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace

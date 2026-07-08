@@ -3,10 +3,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 
 using namespace xmipp4;
-using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array_descriptor should have an empty layout and unknown numerical type", "[array_descriptor]")

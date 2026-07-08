@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "array.hpp"
-#include "array_view.hpp"
+#include "../ndarray/array.hpp"
+#include "../ndarray/array_view.hpp"
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace multidimensional
 {
@@ -25,8 +25,8 @@ class execution_context;
  * @return array The array cast to the target type.
  */
 XMIPP4_CORE_API
-array cast(
-	array& input,
+ndarray::array cast(
+	ndarray::array& input,
 	numerical_type target_type,
 	const execution_context &context
 );
@@ -44,11 +44,11 @@ array cast(
  * @return array The newly created array cast to the target type.
  */
 XMIPP4_CORE_API
-array cast_copy(
-	array_view input,
+ndarray::array cast_copy(
+	ndarray::array_view input,
 	numerical_type target_type,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 } // namespace multidimensional

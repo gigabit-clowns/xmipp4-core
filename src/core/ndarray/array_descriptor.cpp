@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 
 #include <boost/functional/hash.hpp>
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 array_descriptor::array_descriptor() noexcept
@@ -90,5 +90,5 @@ std::size_t compute_storage_requirement(const array_descriptor &descriptor)
 	return layout.compute_storage_requirement() * get_size(data_type);
 }
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

@@ -5,13 +5,19 @@
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
 
-namespace xmipp4 
+namespace xmipp4
 {
-namespace multidimensional
+namespace ndarray
 {
 
 class array;
 class array_view;
+
+} // namespace ndarray
+
+namespace multidimensional
+{
+
 class operation;
 class execution_context;
 
@@ -26,8 +32,8 @@ class execution_context;
 XMIPP4_CORE_API
 void execute(
 	const operation &operation,
-	span<array> output_operands,
-	span<const array_view> input_operands,
+	span<ndarray::array> output_operands,
+	span<const ndarray::array_view> input_operands,
 	const execution_context &context
 );
 
@@ -40,11 +46,11 @@ void execute(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-array execute(
+ndarray::array execute(
 	const operation &operation,
-	span<const array_view> input_operands,
+	span<const ndarray::array_view> input_operands,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -56,11 +62,11 @@ array execute(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-array execute_unary(
+ndarray::array execute_unary(
 	const operation &operation,
-	const array_view &input,
+	const ndarray::array_view &input,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -73,12 +79,12 @@ array execute_unary(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-array execute_binary(
+ndarray::array execute_binary(
 	const operation &operation,
-	array_view first_input,
-	array_view second_input,
+	ndarray::array_view first_input,
+	ndarray::array_view second_input,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 /**
@@ -92,13 +98,13 @@ array execute_binary(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-array execute_ternary(
+ndarray::array execute_ternary(
 	const operation &operation,
-	array_view first_input,
-	array_view second_input,
-	array_view third_input,
+	ndarray::array_view first_input,
+	ndarray::array_view second_input,
+	ndarray::array_view third_input,
 	const execution_context &context,
-	array *out = nullptr
+	ndarray::array *out = nullptr
 );
 
 } // namespace multidimensional

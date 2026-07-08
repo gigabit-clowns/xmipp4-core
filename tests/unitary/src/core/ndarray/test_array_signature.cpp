@@ -3,9 +3,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
 #include "../hardware/mock/mock_buffer.hpp"
@@ -14,7 +14,7 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array_signature should have empty descriptor and null memory resource", "[array_signature]")

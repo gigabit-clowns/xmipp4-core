@@ -3,9 +3,9 @@
 #include "eager_operation_dispatcher.hpp"
 
 #include <xmipp4/core/binary/bit.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 #include <xmipp4/core/hardware/program.hpp>
@@ -38,13 +38,13 @@ namespace
 {
 
 template <std::size_t N>
-boost::container::small_vector<array_descriptor, N>
+boost::container::small_vector<ndarray::array_descriptor, N>
 extract_input_descriptors(
-	span<const array_view> input_operands,
+	span<const ndarray::array_view> input_operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
-	boost::container::small_vector<array_descriptor, N> result;
+	boost::container::small_vector<ndarray::array_descriptor, N> result;
 	result.reserve(input_operands.size());
 	for (const auto &input_operand : input_operands)
 	{
@@ -55,7 +55,7 @@ extract_input_descriptors(
 template <std::size_t N>
 boost::container::small_vector<numerical_type, N>
 extract_data_types(
-	span<const array_descriptor> descriptors,
+	span<const ndarray::array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -71,7 +71,7 @@ extract_data_types(
 template <std::size_t N>
 boost::container::small_vector<operation_shape_policy::shape_type, N>
 extract_shapes(
-	span<const array_descriptor> descriptors,
+	span<const ndarray::array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -109,9 +109,9 @@ make_empty_data_types(
 }
 
 template <std::size_t N>
-boost::container::small_vector<array_descriptor, N>
+boost::container::small_vector<ndarray::array_descriptor, N>
 resolve_output_descriptors(
-	span<const array> output_operands,
+	span<const ndarray::array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
 	bool &needs_acceptance,
@@ -122,7 +122,7 @@ resolve_output_descriptors(
 	XMIPP4_ASSERT(canonical_shapes.size() == n);
 	XMIPP4_ASSERT(canonical_data_types.size() == n);
 
-	boost::container::small_vector<array_descriptor, N> result;
+	boost::container::small_vector<ndarray::array_descriptor, N> result;
 	result.reserve(n);
 	for (std::size_t i = 0; i < n; ++i)
 	{	
@@ -153,8 +153,8 @@ resolve_output_descriptors(
 template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
 resolve_output_storage(
-	span<array> output_operands,
-	span<const array_descriptor> descriptors,
+	span<ndarray::array> output_operands,
+	span<const ndarray::array_descriptor> descriptors,
 	const hardware::device_context &device_context,
 	hardware::command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
@@ -194,7 +194,7 @@ resolve_output_storage(
 				binary::bit_ceil(size)
 			);
 			storage = allocator->allocate(size, alignment, &queue);
-			output_operand = array(storage, descriptor); // Store in output.
+			output_operand = ndarray::array(storage, descriptor); // Store in output.
 		}
 
 		XMIPP4_ASSERT(storage);
@@ -208,7 +208,7 @@ resolve_output_storage(
 template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<const hardware::buffer>, N>
 extract_input_storage(
-	span<const array_view> operands,
+	span<const ndarray::array_view> operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -235,20 +235,20 @@ extract_input_storage(
 }
 
 template <typename Ptr, std::size_t N>
-boost::container::small_vector<array_signature, N>
+boost::container::small_vector<ndarray::array_signature, N>
 create_signatures(
-	boost::container::small_vector<array_descriptor, N> &&descriptors,
+	boost::container::small_vector<ndarray::array_descriptor, N> &&descriptors,
 	span<Ptr> storages
 )
 {
 	const auto n = descriptors.size();
 	XMIPP4_ASSERT(n == storages.size());
 
-	boost::container::small_vector<array_signature, N> result(n);
+	boost::container::small_vector<ndarray::array_signature, N> result(n);
 	for (std::size_t i = 0; i < n; ++i)
 	{
 		XMIPP4_ASSERT(storages[i]);
-		result[i] = array_signature(
+		result[i] = ndarray::array_signature(
 			std::move(descriptors[i]), // Steal descriptors
 			&(storages[i]->get_memory_resource())
 		);
@@ -328,8 +328,8 @@ eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
 	const operation &op,
-	span<array> output_operands,
-	span<const array_view> input_operands,
+	span<ndarray::array> output_operands,
+	span<const ndarray::array_view> input_operands,
 	const hardware::device_context &device_context
 )
 {

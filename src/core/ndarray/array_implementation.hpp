@@ -3,13 +3,13 @@
 #pragma once
 
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 
 #include <memory>
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 class array_implementation
@@ -41,7 +41,7 @@ private:
 
 };
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4
 
 #include "array_implementation.inl"

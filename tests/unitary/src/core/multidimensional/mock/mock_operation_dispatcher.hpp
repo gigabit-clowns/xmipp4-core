@@ -5,8 +5,8 @@
 #include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 
 #include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
 
@@ -25,8 +25,8 @@ public:
 		dispatch,
 		void (
 			const operation &operation,
-			span<array> output_operands,
-			span<const array_view> input_operands,
+			span<ndarray::array> output_operands,
+			span<const ndarray::array_view> input_operands,
 			const hardware::device_context &device_context
 		),
 		override

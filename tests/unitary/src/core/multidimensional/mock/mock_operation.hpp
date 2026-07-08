@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/operation.hpp>
 
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 
 #include <trompeloeil.hpp>
 

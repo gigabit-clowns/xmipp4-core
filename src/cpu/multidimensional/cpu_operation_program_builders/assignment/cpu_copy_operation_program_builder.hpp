@@ -20,8 +20,8 @@ public:
 
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
+		span<const ndarray::array_signature> output_signatures,
+		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,
 		operation_program_cache *cache
 	) const override;

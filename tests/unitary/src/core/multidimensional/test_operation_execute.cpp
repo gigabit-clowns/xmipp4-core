@@ -4,8 +4,8 @@
 
 #include <xmipp4/core/multidimensional/operation_execute.hpp>
 #include <xmipp4/core/multidimensional/execution_context.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 
 #include "mock/mock_operation_dispatcher.hpp"
@@ -16,6 +16,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 
 namespace
 {

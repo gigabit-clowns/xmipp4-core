@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 
-#include <xmipp4/core/multidimensional/array.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
 
 #include "array_implementation.hpp"
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 array_view::array_view() = default;
@@ -63,5 +63,5 @@ array_view array_view::share() const noexcept
 	return array_view(m_implementation);
 }
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

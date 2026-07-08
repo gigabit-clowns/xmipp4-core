@@ -20,11 +20,17 @@ class command_queue;
 
 } // namespace hardware
 
+namespace ndarray
+{
+
+class array_signature;
+
+} // namespace ndarray
+
 namespace multidimensional
 {
 
 class operation;
-class array_signature;
 class operation_program_cache;
 
 /**
@@ -70,8 +76,8 @@ public:
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
-		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
+		span<const ndarray::array_signature> output_signatures,
+		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue
 	) const = 0;
 
@@ -100,8 +106,8 @@ public:
 	virtual
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const array_signature> output_signatures,
-		span<const array_signature> input_signatures,
+		span<const ndarray::array_signature> output_signatures,
+		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,
 		operation_program_cache *cache
 	) const = 0;

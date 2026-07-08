@@ -7,12 +7,12 @@
 
 #include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 #include <xmipp4/core/multidimensional/operation_program_cache.hpp>
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/multidimensional/operation_arity.hpp>
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
-#include <xmipp4/core/multidimensional/array_descriptor.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/backend_priority.hpp>
@@ -47,6 +47,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace

@@ -16,6 +16,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::ndarray;
 
 namespace
 {

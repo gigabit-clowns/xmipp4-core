@@ -4,7 +4,7 @@
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 inline
@@ -36,5 +36,5 @@ array_implementation::share_storage() const noexcept
 	return m_storage;
 }
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4

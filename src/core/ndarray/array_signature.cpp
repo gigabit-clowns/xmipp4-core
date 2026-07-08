@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/multidimensional/array_signature.hpp>
+#include <xmipp4/core/ndarray/array_signature.hpp>
 
-#include <xmipp4/core/multidimensional/array.hpp>
-#include <xmipp4/core/multidimensional/array_view.hpp>
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include <boost/functional/hash.hpp>
 
 namespace xmipp4 
 {
-namespace multidimensional
+namespace ndarray
 {
 
 namespace 
@@ -139,24 +139,24 @@ void array_signature::set_memory_resource(
 	m_memory_region = resource;
 }
 
-array_signature 
+array_signature
 array_signature::from_array(const array &a) noexcept
 {
 	return array_signature(
 		a.get_descriptor(),
-		multidimensional::get_memory_resource(a.get_storage())
+		ndarray::get_memory_resource(a.get_storage())
 	);
 }
 
-array_signature 
+array_signature
 array_signature::from_array(const array_view &a) noexcept
 {
 	return array_signature(
 		a.get_descriptor(),
-		multidimensional::get_memory_resource(a.get_storage())
+		ndarray::get_memory_resource(a.get_storage())
 	);
 }
 
-} // namespace multidimensional
+} // namespace ndarray
 } // namespace xmipp4
 

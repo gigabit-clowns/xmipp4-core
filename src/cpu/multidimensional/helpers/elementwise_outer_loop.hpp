@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/multi_array_iterator.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
+#include <xmipp4/core/layout/access_iterator.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <cstddef>
@@ -32,7 +32,7 @@ namespace multidimensional
 template <typename InnerLoop, typename... Pointers>
 void run_elementwise_outer_loop(
 	InnerLoop &&inner_loop,
-	const multi_array_access_layout &layout,
+	const layout::access_layout &layout,
 	Pointers... pointers
 );
 

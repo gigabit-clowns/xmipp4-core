@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/multidimensional/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 
-#include <xmipp4/core/multidimensional/broadcast.hpp>
+#include <xmipp4/core/layout/broadcast.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <stdexcept>
@@ -30,7 +30,7 @@ void elementwise_operation_shape_policy::deduce(
 	shape_type canonical_shape = input_shapes[0];
 	for (std::size_t i = 1; i < input_shapes.size(); ++i)
 	{
-		broadcast_extents_accumulate(
+		layout::broadcast_extents_accumulate(
 			canonical_shape,
 			make_span(input_shapes[i])
 		);
@@ -74,7 +74,7 @@ void elementwise_operation_shape_policy::accept(
 		}
 	}
 
-	const auto valid = is_broadcastable_to(
+	const auto valid = layout::is_broadcastable_to(
 		make_span(canonical_output_shapes[0]),
 		make_span(reference_shape)
 	);

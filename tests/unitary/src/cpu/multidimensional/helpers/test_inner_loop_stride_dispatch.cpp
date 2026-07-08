@@ -4,8 +4,8 @@
 
 #include <cpu/multidimensional/helpers/inner_loop_stride_dispatch.hpp>
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
+#include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>
@@ -15,6 +15,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {
@@ -125,12 +126,12 @@ struct recording_visitor
  * verbatim and their order (hence the inner-most stride at index 0) is
  * predictable.
  */
-multi_array_access_layout make_layout(
+access_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<std::vector<std::ptrdiff_t>> &operand_strides
 )
 {
-	multi_array_access_layout_builder builder;
+	access_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &strides : operand_strides)
 	{

@@ -138,7 +138,7 @@ resolve_output_descriptors(
 			const auto &canonical_shape = canonical_shapes[i];
 			const auto canonical_data_type = canonical_data_types[i];
 			result.emplace_back(
-				strided_layout::make_contiguous_layout(
+				layout::strided_layout::make_contiguous_layout(
 					make_span(canonical_shape)
 				),
 				canonical_data_type

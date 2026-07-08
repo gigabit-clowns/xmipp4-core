@@ -47,7 +47,9 @@ array cast_copy(
 
 	array result = empty(
 		array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(input_extents)),
+			layout::strided_layout::make_contiguous_layout(
+				make_span(input_extents)
+			),
 			target_type
 		),
 		hardware::memory_resource_affinity::device,

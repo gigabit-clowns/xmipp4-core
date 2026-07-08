@@ -8,7 +8,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
@@ -38,6 +38,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 using trompeloeil::_;
 
 namespace

@@ -53,7 +53,7 @@ array_signature::array_signature(
 }
 
 array_signature::array_signature(
-	const strided_layout& layout,
+	const layout::strided_layout& layout,
 	numerical_type data_type,
 	const hardware::memory_resource* resource
 ) noexcept
@@ -63,7 +63,7 @@ array_signature::array_signature(
 }
 
 array_signature::array_signature(
-	strided_layout&& layout,
+	layout::strided_layout&& layout,
 	numerical_type data_type,
 	const hardware::memory_resource* resource
 ) noexcept
@@ -104,7 +104,7 @@ std::size_t array_signature::array_signature::hash() const noexcept
 	return seed;
 }
 
-const strided_layout& array_signature::get_layout() const noexcept
+const layout::strided_layout& array_signature::get_layout() const noexcept
 {
 	return m_descriptor.get_layout();
 }

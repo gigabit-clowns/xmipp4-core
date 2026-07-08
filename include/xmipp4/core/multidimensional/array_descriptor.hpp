@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "strided_layout.hpp"
+#include "../layout/strided_layout.hpp"
 #include "../numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -38,7 +38,10 @@ public:
 	 * @param data_type The numerical type.
 	 */
 	XMIPP4_CORE_API
-	array_descriptor(strided_layout layout, numerical_type data_type) noexcept;
+	array_descriptor(
+		layout::strided_layout layout,
+		numerical_type data_type
+	) noexcept;
 
 	XMIPP4_CORE_API
 	array_descriptor(const array_descriptor &other);
@@ -66,7 +69,7 @@ public:
 	 * @return const strided_layout& The layout.
 	 */
 	XMIPP4_CORE_API
-	const strided_layout& get_layout() const noexcept;
+	const layout::strided_layout& get_layout() const noexcept;
 
 	/**
 	 * @brief Get the data type of the array.
@@ -77,7 +80,7 @@ public:
 	numerical_type get_data_type() const noexcept;
 
 private:
-	strided_layout m_layout;
+	layout::strided_layout m_layout;
 	numerical_type m_data_type;
 };
 

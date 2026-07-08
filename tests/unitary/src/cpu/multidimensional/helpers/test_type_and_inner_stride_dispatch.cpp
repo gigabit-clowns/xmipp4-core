@@ -4,8 +4,8 @@
 
 #include <cpu/multidimensional/helpers/type_and_inner_stride_dispatch.hpp>
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
+#include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/type_wrap.hpp>
 #include <xmipp4/core/span.hpp>
@@ -19,6 +19,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {
@@ -35,7 +36,7 @@ struct observations
 	bool types_match = false;
 	std::size_t number_of_strides = 0;
 	bool first_stride_contiguous = false;
-	const multi_array_access_layout_implementation *layout_impl = nullptr;
+	const access_layout_implementation *layout_impl = nullptr;
 };
 
 /**
@@ -54,7 +55,7 @@ struct probe
 
 	template <typename... Ts, typename... Strides>
 	observations operator()(
-		multi_array_access_layout layout,
+		access_layout layout,
 		type_list<Ts...>,
 		std::tuple<Strides...> /*inner_strides*/
 	) const
@@ -88,12 +89,12 @@ private:
  * @brief Build a layout with the given iteration extents and one operand per
  * stride vector, keeping the strides verbatim.
  */
-multi_array_access_layout make_layout(
+access_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<std::vector<std::ptrdiff_t>> &operand_strides
 )
 {
-	multi_array_access_layout_builder builder;
+	access_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &strides : operand_strides)
 	{

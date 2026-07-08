@@ -4,8 +4,8 @@
 
 #include <cpu/multidimensional/helpers/elementwise_outer_loop.hpp>
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
-#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
+#include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>
@@ -16,6 +16,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {
@@ -99,12 +100,12 @@ struct operand_spec
  * Optimizations are disabled so that the axis order (dim 0 being the inner
  * loop) and the strides are preserved verbatim.
  */
-multi_array_access_layout make_layout(
+access_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<operand_spec> &operands
 )
 {
-	multi_array_access_layout_builder builder;
+	access_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &operand : operands)
 	{

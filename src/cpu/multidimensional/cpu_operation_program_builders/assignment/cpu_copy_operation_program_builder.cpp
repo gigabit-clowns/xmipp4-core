@@ -3,7 +3,7 @@
 #include "cpu_copy_operation_program_builder.hpp"
 
 #include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
-#include <xmipp4/core/multidimensional/multi_array_access_layout_builder.hpp>
+#include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
@@ -95,7 +95,7 @@ typename std::enable_if<
 	std::shared_ptr<hardware::cpu_program>
 >::type
 make_copy_program(
-	multi_array_access_layout access_layout,
+	layout::access_layout access_layout,
 	std::tuple<DstStride, SrcStride> inner_strides,
 	type_list<T, Q> /*types*/
 )
@@ -133,7 +133,7 @@ typename std::enable_if<
 	std::shared_ptr<hardware::cpu_program>
 >::type
 make_copy_program(
-	multi_array_access_layout /*access_layout*/,
+	layout::access_layout /*access_layout*/,
 	std::tuple<DstStride, SrcStride> /*inner_strides*/,
 	type_list<T, Q> /*types*/
 )
@@ -194,13 +194,13 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 	const auto dst_data_type = dst_descriptor.get_data_type();
 	const auto src_data_type = src_descriptor.get_data_type();
 
-	multi_array_access_layout_builder layout_builder;
+	layout::access_layout_builder layout_builder;
 	layout_builder.add_operand(dst_descriptor.get_layout());
 	layout_builder.add_operand(src_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
 	return dispatch_types_and_inner_strides<2>(
-		[] (multi_array_access_layout layout, auto types, auto inner_strides)
+		[] (layout::access_layout layout, auto types, auto inner_strides)
 		{
 			return make_copy_program(
 				std::move(layout),

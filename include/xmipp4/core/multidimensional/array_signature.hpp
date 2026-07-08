@@ -46,14 +46,14 @@ public:
 
 	XMIPP4_CORE_API
 	array_signature(
-		const strided_layout& layout,
+		const layout::strided_layout& layout,
 		numerical_type data_type,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
 
 	XMIPP4_CORE_API
 	array_signature(
-		strided_layout&& layout,
+		layout::strided_layout&& layout,
 		numerical_type data_type,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
@@ -90,7 +90,7 @@ public:
 	 * @return const strided_layout& The layout.
 	 */
 	XMIPP4_CORE_API
-	const strided_layout& get_layout() const noexcept;
+	const layout::strided_layout& get_layout() const noexcept;
 
 	/**
 	 * @brief Get the data type of the elements.

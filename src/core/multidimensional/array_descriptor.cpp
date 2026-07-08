@@ -15,7 +15,7 @@ array_descriptor::array_descriptor() noexcept
 }
 
 array_descriptor::array_descriptor(
-	strided_layout layout, 
+	layout::strided_layout layout,
 	numerical_type data_type
 ) noexcept
 	: m_layout(std::move(layout))
@@ -39,7 +39,7 @@ std::size_t array_descriptor::hash() const noexcept
 	return seed;
 }
 
-const strided_layout& array_descriptor::get_layout() const noexcept
+const layout::strided_layout& array_descriptor::get_layout() const noexcept
 {
 	return m_layout;
 }
@@ -73,7 +73,7 @@ array_descriptor make_contiguous_array_descriptor(
 )
 {
 	return array_descriptor(
-		strided_layout::make_contiguous_layout(extents),
+		layout::strided_layout::make_contiguous_layout(extents),
 		data_type
 	);
 }

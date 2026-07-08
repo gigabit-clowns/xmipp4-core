@@ -7,7 +7,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_shape_policy.hpp>
 #include <xmipp4/core/multidimensional/operation_data_type_policy.hpp>

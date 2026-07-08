@@ -13,7 +13,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/backend_priority.hpp>
 
@@ -47,6 +47,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {

@@ -63,7 +63,9 @@ array transfer_copy(
 
 	array result = empty(
 		array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(input_extents)),
+			layout::strided_layout::make_contiguous_layout(
+				make_span(input_extents)
+			),
 			input_descriptor.get_data_type()
 		),
 		affinity,

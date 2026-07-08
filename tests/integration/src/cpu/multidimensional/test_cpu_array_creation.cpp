@@ -11,7 +11,7 @@
 #include <xmipp4/core/multidimensional/array.hpp>
 #include <xmipp4/core/multidimensional/array_view.hpp>
 #include <xmipp4/core/multidimensional/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
 #include <xmipp4/core/hardware/device_index.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
@@ -26,6 +26,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {

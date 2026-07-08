@@ -16,6 +16,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array_view should have no storage", "[array_view]")
 {

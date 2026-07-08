@@ -6,7 +6,7 @@
 #include <cpu/hardware/cpu_command_queue.hpp>
 
 #include <xmipp4/core/multidimensional/array_signature.hpp>
-#include <xmipp4/core/multidimensional/strided_layout.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/multidimensional/operation_id.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
 #include <xmipp4/core/backend_priority.hpp>
@@ -22,6 +22,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 namespace
 {

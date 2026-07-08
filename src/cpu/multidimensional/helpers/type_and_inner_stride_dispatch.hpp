@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
 
 #include <cstddef>
 
@@ -45,7 +45,7 @@ namespace multidimensional
 template <std::size_t NOperands, typename F, typename... DataTypes>
 auto dispatch_types_and_inner_strides(
 	F &&callable,
-	multi_array_access_layout access_layout,
+	layout::access_layout access_layout,
 	DataTypes... data_types
 );
 

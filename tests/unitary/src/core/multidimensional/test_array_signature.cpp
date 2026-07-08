@@ -15,6 +15,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array_signature should have empty descriptor and null memory resource", "[array_signature]")
 {

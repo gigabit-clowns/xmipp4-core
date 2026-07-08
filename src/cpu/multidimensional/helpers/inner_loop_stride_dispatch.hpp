@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/multidimensional/multi_array_access_layout.hpp>
+#include <xmipp4/core/layout/access_layout.hpp>
 
 #include <type_traits>
 #include <cstddef>
@@ -53,7 +53,7 @@ struct broadcasting_stride_tag
 template <typename F, std::size_t N>
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const multi_array_access_layout &layout, 
+	const layout::access_layout &layout,
 	std::integral_constant<std::size_t, N> n_operands
 );
 
@@ -81,7 +81,7 @@ auto dispatch_inner_loop_strides(
 template <typename F, std::size_t... Is>
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const multi_array_access_layout &layout, 
+	const layout::access_layout &layout,
 	std::index_sequence<Is...> operand_indices
 );
 

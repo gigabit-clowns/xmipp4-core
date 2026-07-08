@@ -16,12 +16,12 @@ template <typename InnerLoop, typename... Pointers, std::size_t... Is>
 inline
 void run_elementwise_outer_loop_impl(
 	InnerLoop &&inner_loop,
-	const multi_array_access_layout &layout,
+	const layout::access_layout &layout,
 	const std::tuple<Pointers...> &pointers,
 	std::index_sequence<Is...>
 )
 {
-	multi_array_iterator ite;
+	layout::access_iterator ite;
 	std::size_t count = layout.iter(ite);
 	if (count == 0)
 	{
@@ -42,7 +42,7 @@ template <typename InnerLoop, typename... Pointers>
 inline
 void run_elementwise_outer_loop(
 	InnerLoop &&inner_loop,
-	const multi_array_access_layout &layout,
+	const layout::access_layout &layout,
 	Pointers... pointers
 )
 {

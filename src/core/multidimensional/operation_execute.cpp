@@ -8,9 +8,9 @@
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/operation_shape_policy.hpp>
-#include <xmipp4/core/multidimensional/operation_data_type_policy.hpp>
+#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/operations/data_type_policy.hpp>
 #include <xmipp4/core/multidimensional/execution_context.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -30,7 +30,7 @@ namespace multidimensional
 {
 
 void execute(
-	const operation &operation,
+	const operations::operation &operation,
 	span<ndarray::array> output_operands,
 	span<const ndarray::array_view> input_operands,
 	const execution_context &context
@@ -54,7 +54,7 @@ void execute(
 }
 
 ndarray::array execute(
-	const operation &operation,
+	const operations::operation &operation,
 	span<const ndarray::array_view> input_operands,
 	const execution_context &context,
 	ndarray::array *out
@@ -85,7 +85,7 @@ ndarray::array execute(
 }
 
 ndarray::array execute_unary(
-	const operation &operation,
+	const operations::operation &operation,
 	const ndarray::array_view &input,
 	const execution_context &context,
 	ndarray::array *out
@@ -100,7 +100,7 @@ ndarray::array execute_unary(
 }
 
 ndarray::array execute_binary(
-	const operation &operation,
+	const operations::operation &operation,
 	ndarray::array_view first_input,
 	ndarray::array_view second_input,
 	const execution_context &context,
@@ -120,7 +120,7 @@ ndarray::array execute_binary(
 }
 
 ndarray::array execute_ternary(
-	const operation &operation,
+	const operations::operation &operation,
 	ndarray::array_view first_input,
 	ndarray::array_view second_input,
 	ndarray::array_view third_input,

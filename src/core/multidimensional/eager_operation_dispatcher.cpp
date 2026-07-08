@@ -6,7 +6,7 @@
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
-#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/operations/operation.hpp>
 #include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 #include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/hardware/command.hpp>
@@ -69,17 +69,18 @@ extract_data_types(
 }
 
 template <std::size_t N>
-boost::container::small_vector<operation_shape_policy::shape_type, N>
+boost::container::small_vector<operations::shape_policy::shape_type, N>
 extract_shapes(
 	span<const ndarray::array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
-	boost::container::small_vector<operation_shape_policy::shape_type, N> result;
+	boost::container::small_vector<operations::shape_policy::shape_type, N>
+		result;
 	result.reserve(descriptors.size());
 	for (const auto &d : descriptors)
 	{
-		operation_shape_policy::shape_type shape;
+		operations::shape_policy::shape_type shape;
 		d.get_layout().get_extents(shape);
 		result.push_back(std::move(shape));
 	}
@@ -87,14 +88,14 @@ extract_shapes(
 }
 
 template <std::size_t N>
-boost::container::small_vector<operation_shape_policy::shape_type, N>
+boost::container::small_vector<operations::shape_policy::shape_type, N>
 make_empty_shapes(
 	std::size_t count,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
 	return boost::container::small_vector<
-		operation_shape_policy::shape_type, N
+		operations::shape_policy::shape_type, N
 	>(count);
 }
 
@@ -112,7 +113,7 @@ template <std::size_t N>
 boost::container::small_vector<ndarray::array_descriptor, N>
 resolve_output_descriptors(
 	span<const ndarray::array> output_operands,
-	span<const operation_shape_policy::shape_type> canonical_shapes,
+	span<const operations::shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
 	bool &needs_acceptance,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
@@ -258,8 +259,8 @@ create_signatures(
 }
 
 void validate_arity(
-	const operation_arity& user,
-	const operation_arity& expected
+	const operations::operation_arity& user,
+	const operations::operation_arity& expected
 )
 {
 	if (user.get_output_count() != expected.get_output_count())
@@ -327,7 +328,7 @@ eager_operation_dispatcher::eager_operation_dispatcher(
 eager_operation_dispatcher::~eager_operation_dispatcher() = default;
 
 void eager_operation_dispatcher::dispatch(
-	const operation &op,
+	const operations::operation &op,
 	span<ndarray::array> output_operands,
 	span<const ndarray::array_view> input_operands,
 	const hardware::device_context &device_context
@@ -350,7 +351,10 @@ void eager_operation_dispatcher::dispatch(
 	
 	const auto n_outputs = output_operands.size();
 	const auto n_inputs = input_operands.size();
-	validate_arity(operation_arity(n_outputs, n_inputs), op.get_arity());
+	validate_arity(
+		operations::operation_arity(n_outputs, n_inputs),
+		op.get_arity()
+	);
 
 	auto input_descriptors = extract_input_descriptors(
 		input_operands,

@@ -8,8 +8,8 @@
 #include <xmipp4/core/multidimensional/operation_program_manager.hpp>
 #include <xmipp4/core/multidimensional/operation_program_cache.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
-#include <xmipp4/core/multidimensional/operation_id.hpp>
-#include <xmipp4/core/multidimensional/operation_arity.hpp>
+#include <xmipp4/core/operations/operation_id.hpp>
+#include <xmipp4/core/operations/operation_arity.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
@@ -27,9 +27,9 @@
 #include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 
-#include "mock/mock_operation.hpp"
-#include "mock/mock_operation_shape_policy.hpp"
-#include "mock/mock_operation_data_type_policy.hpp"
+#include "../operations/mock/mock_operation.hpp"
+#include "../operations/mock/mock_operation_shape_policy.hpp"
+#include "../operations/mock/mock_operation_data_type_policy.hpp"
 #include "mock/mock_operation_program_builder.hpp"
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_memory_resource.hpp"
@@ -47,13 +47,14 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace
 {
 
-using shape_type = operation_shape_policy::shape_type;
+using shape_type = shape_policy::shape_type;
 
 array_descriptor make_descriptor(const shape_type &shape, numerical_type type)
 {

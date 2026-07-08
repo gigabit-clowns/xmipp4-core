@@ -2,7 +2,7 @@
 
 #include "cpu_copy_operation_program_builder.hpp"
 
-#include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
+#include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
@@ -113,8 +113,12 @@ make_copy_program(
 					copy(dst, src, count, dst_inner_stride, src_inner_stride);
 				},
 				access_layout,
-				std::get<copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
-				std::get<copy_operation::INPUT_OPERAND_SOURCE>(inputs)
+				std::get<
+					operations::copy_operation::OUTPUT_OPERAND_DESTINATION
+				>(outputs),
+				std::get<
+					operations::copy_operation::INPUT_OPERAND_SOURCE
+				>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -146,21 +150,21 @@ make_copy_program(
 
 } // anonymous namespace
 
-operation_id 
+operations::operation_id
 cpu_copy_operation_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<copy_operation>();
+	return operations::operation_id::of<operations::copy_operation>();
 }
 
 std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
-	const operation &operation,
+	const operations::operation &operation,
 	span<const ndarray::array_signature> output_signatures,
 	span<const ndarray::array_signature> input_signatures,
 	hardware::command_queue& /*queue*/,
 	operation_program_cache* /*cache*/
 ) const
 {
-	if (!dynamic_cast<const copy_operation*>(&operation))
+	if (!dynamic_cast<const operations::copy_operation*>(&operation))
 	{
 		throw std::invalid_argument(
 			"cpu_copy_operation_program_builder::build: Expected operation to "
@@ -168,7 +172,10 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 		);
 	}
 
-	if (output_signatures.size() != copy_operation::OUTPUT_OPERAND_COUNT)
+	if (
+		output_signatures.size() !=
+		operations::copy_operation::OUTPUT_OPERAND_COUNT
+	)
 	{
 		throw std::invalid_argument(
 			"cpu_copy_operation_program_builder::build: Expected exactly 1 "
@@ -176,7 +183,10 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 		);
 	}
 
-	if (input_signatures.size() != copy_operation::INPUT_OPERAND_COUNT)
+	if (
+		input_signatures.size() !=
+		operations::copy_operation::INPUT_OPERAND_COUNT
+	)
 	{
 		throw std::invalid_argument(
 			"cpu_copy_operation_program_builder::build: Expected exactly 1 "
@@ -184,11 +194,11 @@ std::shared_ptr<hardware::program> cpu_copy_operation_program_builder::build(
 		);
 	}
 
-	const auto &dst_descriptor = 
-		output_signatures[copy_operation::OUTPUT_OPERAND_DESTINATION]
+	const auto &dst_descriptor =
+		output_signatures[operations::copy_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
-	const auto &src_descriptor = 
-		input_signatures[copy_operation::INPUT_OPERAND_SOURCE]
+	const auto &src_descriptor =
+		input_signatures[operations::copy_operation::INPUT_OPERAND_SOURCE]
 		.get_descriptor();
 
 	const auto dst_data_type = dst_descriptor.get_data_type();

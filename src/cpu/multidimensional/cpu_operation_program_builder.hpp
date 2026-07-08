@@ -14,7 +14,7 @@ class cpu_operation_program_builder
 {
 public:
 	backend_priority get_suitability(
-		const operation &operation,
+		const operations::operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue

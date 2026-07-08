@@ -4,8 +4,8 @@
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/multidimensional/operation_program_builder.hpp>
-#include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/operation_id.hpp>
+#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/operations/operation_id.hpp>
 
 #include <core/find_most_suitable_backend.hpp>
 #include <cpu/multidimensional/cpu_operation_program_builder_registrar.hpp>
@@ -32,7 +32,7 @@ public:
 	}
 
 	operation_program_builder* get_most_suitable_builder(
-		const operation &operation,
+		const operations::operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue
@@ -70,7 +70,7 @@ public:
 	}
 
 	std::shared_ptr<hardware::program> build(
-		const operation &operation,
+		const operations::operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,
@@ -103,7 +103,7 @@ public:
 
 private:
 	std::unordered_map<
-		operation_id,
+		operations::operation_id,
 		std::vector<std::unique_ptr<operation_program_builder>>
 	> m_builders;
 
@@ -131,7 +131,7 @@ bool operation_program_manager::register_builder(
 
 std::shared_ptr<hardware::program>
 operation_program_manager::build(
-	const operation &operation,
+	const operations::operation &operation,
 	span<const ndarray::array_signature> output_signatures,
 	span<const ndarray::array_signature> input_signatures,
 	hardware::command_queue &queue,

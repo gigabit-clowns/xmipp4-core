@@ -2,7 +2,7 @@
 
 #include "cpu_fill_operation_program_builder.hpp"
 
-#include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
+#include <xmipp4/core/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
@@ -83,7 +83,9 @@ make_fill_program(
 					fill(result, count, result_inner_stride, value);
 				},
 				access_layout,
-				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
+				std::get<
+					operations::fill_operation::OUTPUT_OPERAND_DESTINATION
+				>(outputs)
 			);
 		},
 		type_list<T>(),
@@ -111,22 +113,22 @@ make_fill_program(
 
 } // anonymous namespace
 
-operation_id 
+operations::operation_id
 cpu_fill_operation_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<fill_operation>();
+	return operations::operation_id::of<operations::fill_operation>();
 }
 
 std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
-	const operation &operation,
+	const operations::operation &operation,
 	span<const ndarray::array_signature> output_signatures,
 	span<const ndarray::array_signature> input_signatures,
 	hardware::command_queue& /*queue*/,
 	operation_program_cache* /*cache*/
 ) const
 {
-	const auto *fill_op = 
-		dynamic_cast<const fill_operation*>(&operation);
+	const auto *fill_op =
+		dynamic_cast<const operations::fill_operation*>(&operation);
 	if (fill_op == nullptr)
 	{
 		throw std::invalid_argument(
@@ -135,7 +137,10 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 		);
 	}
 
-	if (output_signatures.size() != fill_operation::OUTPUT_OPERAND_COUNT)
+	if (
+		output_signatures.size() !=
+		operations::fill_operation::OUTPUT_OPERAND_COUNT
+	)
 	{
 		throw std::invalid_argument(
 			"cpu_fill_operation_program_builder::build: Expected exactly 1 "
@@ -143,7 +148,10 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 		);
 	}
 
-	if (input_signatures.size() != fill_operation::INPUT_OPERAND_COUNT)
+	if (
+		input_signatures.size() !=
+		operations::fill_operation::INPUT_OPERAND_COUNT
+	)
 	{
 		throw std::invalid_argument(
 			"cpu_fill_operation_program_builder::build: Expected no input "
@@ -151,8 +159,8 @@ std::shared_ptr<hardware::program> cpu_fill_operation_program_builder::build(
 		);
 	}
 
-	const auto &destination_descriptor = 
-		output_signatures[fill_operation::OUTPUT_OPERAND_DESTINATION]
+	const auto &destination_descriptor =
+		output_signatures[operations::fill_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
 
 	const auto data_type = destination_descriptor.get_data_type();

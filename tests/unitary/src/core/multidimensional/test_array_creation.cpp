@@ -9,9 +9,9 @@
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/operation.hpp>
-#include <xmipp4/core/multidimensional/operations/assignment/fill_operation.hpp>
-#include <xmipp4/core/multidimensional/operations/assignment/copy_operation.hpp>
+#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/operations/assignment/fill_operation.hpp>
+#include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/span.hpp>
@@ -38,6 +38,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 using trompeloeil::_;

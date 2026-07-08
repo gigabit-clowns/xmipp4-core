@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/operation_dispatcher.hpp>
 
-#include <xmipp4/core/multidimensional/operation.hpp>
+#include <xmipp4/core/operations/operation.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
@@ -24,7 +24,7 @@ public:
 	MAKE_MOCK4(
 		dispatch,
 		void (
-			const operation &operation,
+			const operations::operation &operation,
 			span<ndarray::array> output_operands,
 			span<const ndarray::array_view> input_operands,
 			const hardware::device_context &device_context

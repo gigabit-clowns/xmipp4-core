@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#pragma once
+
+#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+
+namespace xmipp4
+{
+namespace operations
+{
+
+/**
+ * @brief Shape policy for elementwise operations.
+ *
+ * This policy allows broadcast compatibility of input operands.
+ */
+class XMIPP4_CORE_API elementwise_shape_policy final
+	: public shape_policy
+{
+public:
+	void deduce(
+		span<shape_type> canonical_output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
+
+	void accept(
+		span<const shape_type> user_output_shapes,
+		span<const shape_type> canonical_output_shapes,
+		span<const shape_type> input_shapes
+	) const override;
+
+	static const elementwise_shape_policy& get() noexcept;
+};
+
+} // namespace operations
+} // namespace xmipp4
+

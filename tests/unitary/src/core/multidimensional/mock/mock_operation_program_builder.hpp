@@ -21,14 +21,14 @@ class mock_operation_program_builder
 public:
 	MAKE_CONST_MOCK0(
 		get_operation_id,
-		operation_id (),
+		operations::operation_id (),
 		noexcept override
 	);
 
 	MAKE_CONST_MOCK4(
 		get_suitability,
 		backend_priority (
-			const operation &operation,
+			const operations::operation &operation,
 			span<const ndarray::array_signature> output_signatures,
 			span<const ndarray::array_signature> input_signatures,
 			hardware::command_queue &queue
@@ -39,7 +39,7 @@ public:
 	MAKE_CONST_MOCK5(
 		build,
 		std::shared_ptr<hardware::program> (
-			const operation &operation,
+			const operations::operation &operation,
 			span<const ndarray::array_signature> output_signatures,
 			span<const ndarray::array_signature> input_signatures,
 			hardware::command_queue &queue,

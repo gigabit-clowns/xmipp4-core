@@ -7,13 +7,13 @@
 
 #include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/multidimensional/operation_id.hpp>
+#include <xmipp4/core/operations/operation_id.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
 #include <xmipp4/core/backend_priority.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
-#include "../../core/multidimensional/mock/mock_operation.hpp"
+#include "../../core/operations/mock/mock_operation.hpp"
 #include "../../core/hardware/mock/mock_memory_resource.hpp"
 #include "../../core/hardware/mock/mock_command_queue.hpp"
 
@@ -22,6 +22,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 

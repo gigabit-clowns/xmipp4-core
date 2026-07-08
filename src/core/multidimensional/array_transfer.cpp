@@ -2,8 +2,8 @@
 
 #include <xmipp4/core/multidimensional/array_transfer.hpp>
 
-#include <xmipp4/core/multidimensional/execution_context.hpp>
-#include <xmipp4/core/multidimensional/operation_execute.hpp>
+#include <xmipp4/core/execution/context.hpp>
+#include <xmipp4/core/execution/execute.hpp>
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
@@ -18,7 +18,7 @@ namespace multidimensional
 ndarray::array transfer(
 	ndarray::array &input,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context
+	const execution::context &context
 )
 {
 	const auto *storage = input.get_storage();
@@ -52,7 +52,7 @@ ndarray::array transfer(
 ndarray::array transfer_copy(
 	ndarray::array_view input,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out
 )
 {
@@ -83,7 +83,7 @@ ndarray::array transfer_copy(
 
 ndarray::array to_device(
 	ndarray::array &input,
-	const execution_context &context
+	const execution::context &context
 )
 {
 	return transfer(
@@ -95,7 +95,7 @@ ndarray::array to_device(
 
 ndarray::array to_device_copy(
 	ndarray::array_view input,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out
 )
 {
@@ -109,7 +109,7 @@ ndarray::array to_device_copy(
 
 ndarray::array to_host(
 	ndarray::array &input,
-	const execution_context &context
+	const execution::context &context
 )
 {
 	return transfer(
@@ -121,7 +121,7 @@ ndarray::array to_host(
 
 ndarray::array to_host_copy(
 	ndarray::array_view input,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out
 )
 {

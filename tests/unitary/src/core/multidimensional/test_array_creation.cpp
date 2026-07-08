@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 
-#include <xmipp4/core/multidimensional/execution_context.hpp>
+#include <xmipp4/core/execution/context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
@@ -23,7 +23,7 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
-#include "mock/mock_operation_dispatcher.hpp"
+#include "../execution/mock/mock_operation_dispatcher.hpp"
 #include "../hardware/mock/mock_device.hpp"
 #include "../hardware/mock/mock_memory_resource.hpp"
 #include "../hardware/mock/mock_memory_allocator.hpp"
@@ -38,6 +38,7 @@
 
 using namespace xmipp4;
 using namespace xmipp4::multidimensional;
+using namespace xmipp4::execution;
 using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
@@ -126,7 +127,7 @@ public:
 			std::move(properties)
 		);
 
-		context = execution_context(
+		context = execution::context(
 			hardware::device_context(instance),
 			dispatcher
 		);
@@ -152,7 +153,7 @@ protected:
 	std::shared_ptr<hardware::command_queue> default_queue;
 	std::shared_ptr<const hardware::device_instance> instance;
 	std::shared_ptr<mock_operation_dispatcher> dispatcher;
-	execution_context context;
+	execution::context context;
 };
 
 } // namespace
@@ -172,7 +173,7 @@ TEST_CASE(
 	);
 
 	// A default-constructed context is empty: it has no allocators.
-	const execution_context context;
+	const execution::context context;
 
 	CHECK_THROWS_AS(
 		empty(

@@ -7,10 +7,15 @@
 
 namespace xmipp4
 {
-namespace multidimensional
+namespace execution
 {
 
-class execution_context;
+class context;
+
+} // namespace execution
+
+namespace multidimensional
+{
 
 /**
  * @brief Cast an array to a given numerical type.
@@ -28,7 +33,7 @@ XMIPP4_CORE_API
 ndarray::array cast(
 	ndarray::array& input,
 	numerical_type target_type,
-	const execution_context &context
+	const execution::context &context
 );
 
 /**
@@ -47,7 +52,7 @@ XMIPP4_CORE_API
 ndarray::array cast_copy(
 	ndarray::array_view input,
 	numerical_type target_type,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 

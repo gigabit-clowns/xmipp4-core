@@ -8,12 +8,17 @@
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
-namespace multidimensional
+namespace execution
 {
 
-class execution_context;
+class context;
+
+} // namespace execution
+
+namespace multidimensional
+{
 
 /**
  * @brief Create an array without initializing its elements.
@@ -29,7 +34,7 @@ XMIPP4_CORE_API
 ndarray::array empty(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -47,7 +52,7 @@ XMIPP4_CORE_API
 ndarray::array zeros(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -65,7 +70,7 @@ XMIPP4_CORE_API
 ndarray::array ones(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -85,7 +90,7 @@ ndarray::array full(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const scalar_value &fill_value,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -100,7 +105,7 @@ ndarray::array full(
 XMIPP4_CORE_API
 ndarray::array copy(
 	ndarray::array_view source,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -116,7 +121,7 @@ XMIPP4_CORE_API
 void fill(
 	ndarray::array &out,
 	const scalar_value &fill_value,
-	const execution_context &context
+	const execution::context &context
 );
 
 } // namespace multidimensional

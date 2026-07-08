@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/multidimensional/array_creation.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/core/multidimensional/operation_execute.hpp>
+#include <xmipp4/core/execution/execute.hpp>
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
@@ -16,7 +16,7 @@ namespace multidimensional
 ndarray::array cast(
 	ndarray::array &input,
 	numerical_type target_type,
-	const execution_context &context
+	const execution::context &context
 )
 {
 	const auto source_type = input.get_descriptor().get_data_type();
@@ -36,7 +36,7 @@ ndarray::array cast(
 ndarray::array cast_copy(
 	ndarray::array_view input,
 	numerical_type target_type,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out
 )
 {

@@ -7,12 +7,17 @@
 
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
-namespace xmipp4 
+namespace xmipp4
 {
-namespace multidimensional
+namespace execution
 {
 
-class execution_context;
+class context;
+
+} // namespace execution
+
+namespace multidimensional
+{
 
 /**
  * @brief Transfer an array to memory with the requested affinity.
@@ -34,7 +39,7 @@ XMIPP4_CORE_API
 ndarray::array transfer(
 	ndarray::array &input,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context
+	const execution::context &context
 );
 
 /**
@@ -55,7 +60,7 @@ XMIPP4_CORE_API
 ndarray::array transfer_copy(
 	ndarray::array_view input,
 	hardware::memory_resource_affinity affinity,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -76,7 +81,7 @@ ndarray::array transfer_copy(
 XMIPP4_CORE_API
 ndarray::array to_device(
 	ndarray::array &input,
-	const execution_context &context
+	const execution::context &context
 );
 
 /**
@@ -91,7 +96,7 @@ ndarray::array to_device(
 XMIPP4_CORE_API
 ndarray::array to_device_copy(
 	ndarray::array_view input,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -112,7 +117,7 @@ ndarray::array to_device_copy(
 XMIPP4_CORE_API
 ndarray::array to_host(
 	ndarray::array &input,
-	const execution_context &context
+	const execution::context &context
 );
 
 /**
@@ -127,7 +132,7 @@ ndarray::array to_host(
 XMIPP4_CORE_API
 ndarray::array to_host_copy(
 	ndarray::array_view input,
-	const execution_context &context,
+	const execution::context &context,
 	ndarray::array *out = nullptr
 );
 

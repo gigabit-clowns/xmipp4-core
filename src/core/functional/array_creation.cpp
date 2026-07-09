@@ -5,8 +5,8 @@
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/operations/assignment/fill_operation.hpp>
-#include <xmipp4/core/execution/execute.hpp>
-#include <xmipp4/core/execution/context.hpp>
+#include <xmipp4/core/dispatch/execute.hpp>
+#include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/device_instance.hpp>
@@ -85,7 +85,7 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 ndarray::array empty(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out
 )
 {
@@ -134,7 +134,7 @@ ndarray::array empty(
 ndarray::array zeros(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out
 )
 {
@@ -150,7 +150,7 @@ ndarray::array zeros(
 ndarray::array ones(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out
 )
 {
@@ -167,7 +167,7 @@ ndarray::array full(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const scalar_value &fill_value,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out
 )
 {
@@ -187,7 +187,7 @@ ndarray::array full(
 
 ndarray::array copy(
 	ndarray::array_view source,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out
 )
 {
@@ -197,7 +197,7 @@ ndarray::array copy(
 void fill(
 	ndarray::array &out,
 	const scalar_value &fill_value,
-	const execution::context &context
+	const dispatch::execution_context &context
 )
 {
 	execute(

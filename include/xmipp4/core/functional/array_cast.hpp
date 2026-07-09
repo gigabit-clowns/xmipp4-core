@@ -7,12 +7,12 @@
 
 namespace xmipp4
 {
-namespace execution
+namespace dispatch
 {
 
-class context;
+class execution_context;
 
-} // namespace execution
+} // namespace dispatch
 
 namespace ndarray
 {
@@ -33,7 +33,7 @@ XMIPP4_CORE_API
 ndarray::array cast(
 	ndarray::array& input,
 	numerical_type target_type,
-	const execution::context &context
+	const dispatch::execution_context &context
 );
 
 /**
@@ -52,7 +52,7 @@ XMIPP4_CORE_API
 ndarray::array cast_copy(
 	ndarray::array_view input,
 	numerical_type target_type,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 

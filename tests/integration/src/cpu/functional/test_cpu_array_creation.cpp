@@ -5,9 +5,9 @@
 #include <xmipp4/core/functional/array_creation.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
-#include <xmipp4/core/execution/context.hpp>
-#include <xmipp4/core/execution/program_manager.hpp>
-#include <xmipp4/core/execution/dispatcher.hpp>
+#include <xmipp4/core/dispatch/execution_context.hpp>
+#include <xmipp4/core/dispatch/program_manager.hpp>
+#include <xmipp4/core/dispatch/dispatcher.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
@@ -25,17 +25,17 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::execution;
+using namespace xmipp4::dispatch;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace
 {
 
-class cpu_context_fixture
+class cpu_execution_context_fixture
 {
 public:
-	cpu_context_fixture()
+	cpu_execution_context_fixture()
 	{
 		const auto device_manager =
 			catalog.get_service_manager<hardware::device_manager>();
@@ -43,8 +43,8 @@ public:
 			hardware::device_index("cpu", 0)
 		);
 		const auto program_manager =
-			catalog.get_service_manager<execution::program_manager>();
-		context = execution::context(
+			catalog.get_service_manager<dispatch::program_manager>();
+		context = dispatch::execution_context(
 			hardware::device_context(instance),
 			make_eager_dispatcher(program_manager)
 		);
@@ -76,7 +76,7 @@ protected:
 	}
 
 	service_catalog catalog;
-	execution::context context;
+	dispatch::execution_context context;
 };
 
 } // namespace
@@ -84,7 +84,7 @@ protected:
 
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"empty produces a host-accessible array carrying the requested descriptor",
 	"[array_creation][cpu]"
 )
@@ -107,7 +107,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"zeros sets every element of a host array to zero",
 	"[array_creation][cpu]"
 )
@@ -130,7 +130,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"ones sets every element of a host array to one",
 	"[array_creation][cpu]"
 )
@@ -153,7 +153,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"full sets every element of a host array to the requested value",
 	"[array_creation][cpu]"
 )
@@ -175,7 +175,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"fill overwrites the contents of an existing host array",
 	"[array_creation][cpu]"
 )
@@ -199,7 +199,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	cpu_context_fixture,
+	cpu_execution_context_fixture,
 	"copy duplicates the source contents into independent storage",
 	"[array_creation][cpu]"
 )

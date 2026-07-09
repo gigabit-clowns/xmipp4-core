@@ -10,12 +10,12 @@
 
 namespace xmipp4
 {
-namespace execution
+namespace dispatch
 {
 
-class context;
+class execution_context;
 
-} // namespace execution
+} // namespace dispatch
 
 namespace ndarray
 {
@@ -34,7 +34,7 @@ XMIPP4_CORE_API
 ndarray::array empty(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -52,7 +52,7 @@ XMIPP4_CORE_API
 ndarray::array zeros(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -70,7 +70,7 @@ XMIPP4_CORE_API
 ndarray::array ones(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -90,7 +90,7 @@ ndarray::array full(
 	ndarray::array_descriptor descriptor,
 	hardware::memory_resource_affinity affinity,
 	const scalar_value &fill_value,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -105,7 +105,7 @@ ndarray::array full(
 XMIPP4_CORE_API
 ndarray::array copy(
 	ndarray::array_view source,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -121,7 +121,7 @@ XMIPP4_CORE_API
 void fill(
 	ndarray::array &out,
 	const scalar_value &fill_value,
-	const execution::context &context
+	const dispatch::execution_context &context
 );
 
 } // namespace ndarray

@@ -9,12 +9,12 @@
 
 namespace xmipp4
 {
-namespace execution
+namespace dispatch
 {
 
-class context;
+class execution_context;
 
-} // namespace execution
+} // namespace dispatch
 
 namespace ndarray
 {
@@ -39,7 +39,7 @@ XMIPP4_CORE_API
 ndarray::array transfer(
 	ndarray::array &input,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context
+	const dispatch::execution_context &context
 );
 
 /**
@@ -60,7 +60,7 @@ XMIPP4_CORE_API
 ndarray::array transfer_copy(
 	ndarray::array_view input,
 	hardware::memory_resource_affinity affinity,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -81,7 +81,7 @@ ndarray::array transfer_copy(
 XMIPP4_CORE_API
 ndarray::array to_device(
 	ndarray::array &input,
-	const execution::context &context
+	const dispatch::execution_context &context
 );
 
 /**
@@ -96,7 +96,7 @@ ndarray::array to_device(
 XMIPP4_CORE_API
 ndarray::array to_device_copy(
 	ndarray::array_view input,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 
@@ -117,7 +117,7 @@ ndarray::array to_device_copy(
 XMIPP4_CORE_API
 ndarray::array to_host(
 	ndarray::array &input,
-	const execution::context &context
+	const dispatch::execution_context &context
 );
 
 /**
@@ -132,7 +132,7 @@ ndarray::array to_host(
 XMIPP4_CORE_API
 ndarray::array to_host_copy(
 	ndarray::array_view input,
-	const execution::context &context,
+	const dispatch::execution_context &context,
 	ndarray::array *out = nullptr
 );
 

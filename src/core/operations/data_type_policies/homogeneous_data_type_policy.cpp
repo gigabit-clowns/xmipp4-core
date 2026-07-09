@@ -54,7 +54,7 @@ void homogeneous_data_type_policy::accept(
 
 	// The inputs already fixed the canonical type; require the user outputs to
 	// match it exactly, as the base policy does.
-	data_type_policy::accept(
+	dispatch::operation_data_type_policy::accept(
 		user_output_types,
 		canonical_output_types,
 		input_types

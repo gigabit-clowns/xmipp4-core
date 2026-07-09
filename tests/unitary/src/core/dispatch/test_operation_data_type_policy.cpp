@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/data_type_policy.hpp>
+#include <xmipp4/core/dispatch/operation_data_type_policy.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
@@ -10,12 +10,12 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
 namespace
 {
 
-class stub_data_type_policy : public data_type_policy
+class stub_data_type_policy : public operation_data_type_policy
 {
 public:
 	void deduce(
@@ -27,8 +27,8 @@ public:
 } // namespace
 
 TEST_CASE(
-	"data_type_policy::accept should succeed with zero outputs",
-	"[data_type_policy]"
+	"operation_data_type_policy::accept should succeed with zero outputs",
+	"[operation_data_type_policy]"
 )
 {
 	const stub_data_type_policy policy;
@@ -36,9 +36,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"data_type_policy::accept should succeed when single user"
+	"operation_data_type_policy::accept should succeed when single user"
 	" type equals canonical",
-	"[data_type_policy]"
+	"[operation_data_type_policy]"
 )
 {
 	const stub_data_type_policy policy;
@@ -50,9 +50,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"data_type_policy::accept should succeed when all user types"
+	"operation_data_type_policy::accept should succeed when all user types"
 	" equal canonical",
-	"[data_type_policy]"
+	"[operation_data_type_policy]"
 )
 {
 	const stub_data_type_policy policy;
@@ -68,9 +68,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"data_type_policy::accept should throw when user type at"
+	"operation_data_type_policy::accept should throw when user type at"
 	" index 0 differs from canonical",
-	"[data_type_policy]"
+	"[operation_data_type_policy]"
 )
 {
 	const stub_data_type_policy policy;
@@ -89,9 +89,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"data_type_policy::accept should throw when user type at a"
+	"operation_data_type_policy::accept should throw when user type at a"
 	" later index differs from canonical",
-	"[data_type_policy]"
+	"[operation_data_type_policy]"
 )
 {
 	const stub_data_type_policy policy;

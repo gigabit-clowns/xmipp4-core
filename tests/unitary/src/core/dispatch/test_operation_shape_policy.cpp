@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/dispatch/operation_shape_policy.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
@@ -10,17 +10,17 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
-using shape_type = shape_policy::shape_type;
+using shape_type = operation_shape_policy::shape_type;
 
 namespace
 {
 
-class stub_shape_policy : public shape_policy
+class stub_shape_policy : public operation_shape_policy
 {
 public:
-	using shape_type = shape_policy::shape_type;
+	using shape_type = operation_shape_policy::shape_type;
 
 	void deduce(
 		span<shape_type> /*canonical_output_shapes*/,
@@ -31,8 +31,8 @@ public:
 } // namespace
 
 TEST_CASE(
-	"shape_policy::accept should succeed with zero outputs",
-	"[shape_policy]"
+	"operation_shape_policy::accept should succeed with zero outputs",
+	"[operation_shape_policy]"
 )
 {
 	const stub_shape_policy policy;
@@ -40,9 +40,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"shape_policy::accept should succeed when single user"
+	"operation_shape_policy::accept should succeed when single user"
 	" shape equals canonical",
-	"[shape_policy]"
+	"[operation_shape_policy]"
 )
 {
 	const stub_shape_policy policy;
@@ -54,9 +54,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"shape_policy::accept should succeed when all user shapes"
+	"operation_shape_policy::accept should succeed when all user shapes"
 	" equal canonical",
-	"[shape_policy]"
+	"[operation_shape_policy]"
 )
 {
 	const stub_shape_policy policy;
@@ -68,9 +68,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"shape_policy::accept should throw when user shape at"
+	"operation_shape_policy::accept should throw when user shape at"
 	" index 0 differs from canonical",
-	"[shape_policy]"
+	"[operation_shape_policy]"
 )
 {
 	const stub_shape_policy policy;
@@ -89,9 +89,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"shape_policy::accept should throw when user shape at a"
+	"operation_shape_policy::accept should throw when user shape at a"
 	" later index differs from canonical",
-	"[shape_policy]"
+	"[operation_shape_policy]"
 )
 {
 	const stub_shape_policy policy;

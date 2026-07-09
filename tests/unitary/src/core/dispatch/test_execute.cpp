@@ -9,14 +9,13 @@
 #include <xmipp4/core/hardware/device_context.hpp>
 
 #include "mock/mock_dispatcher.hpp"
-#include "../operations/mock/mock_operation.hpp"
+#include "mock/mock_operation.hpp"
 
 #include <memory>
 #include <stdexcept>
 
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
-using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 
 namespace

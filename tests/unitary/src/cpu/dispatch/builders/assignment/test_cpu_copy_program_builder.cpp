@@ -11,11 +11,11 @@
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/ndarray/array_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/operations/operation_id.hpp>
+#include <xmipp4/core/dispatch/operation_id.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
-#include "../../../../core/operations/mock/mock_operation.hpp"
+#include "../../../../core/dispatch/mock/mock_operation.hpp"
 
 #include <complex>
 #include <cstdint>

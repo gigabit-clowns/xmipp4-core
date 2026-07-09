@@ -9,7 +9,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
@@ -29,20 +29,20 @@ namespace operations
  *     override only for policies that admit broader-but-compatible user
  *     outputs.
  */
-class XMIPP4_CORE_API shape_policy
+class XMIPP4_CORE_API operation_shape_policy
 {
 public:
 	using shape_type = std::vector<std::size_t>;
 
-	shape_policy() noexcept;
-	shape_policy(const shape_policy &other) = delete;
-	shape_policy(shape_policy &&other) = delete;
-	virtual ~shape_policy();
+	operation_shape_policy() noexcept;
+	operation_shape_policy(const operation_shape_policy &other) = delete;
+	operation_shape_policy(operation_shape_policy &&other) = delete;
+	virtual ~operation_shape_policy();
 
-	shape_policy&
-	operator=(const shape_policy &other) = delete;
-	shape_policy&
-	operator=(shape_policy &&other) = delete;
+	operation_shape_policy&
+	operator=(const operation_shape_policy &other) = delete;
+	operation_shape_policy&
+	operator=(operation_shape_policy &&other) = delete;
 
 	/**
 	 * @brief Compute canonical output shapes from the input shapes.
@@ -51,7 +51,7 @@ public:
 	 * @p canonical_output_shapes holds the shapes the policy would produce
 	 * if the user had not pre-allocated outputs.
 	 *
-	 * @param canonical_output_shapes Output buffer, sized to the operation's 
+	 * @param canonical_output_shapes Output buffer, sized to the operation's
 	 * output arity. Will be filled with the canonical shapes.
 	 * @param input_shapes Shapes of the input operands.
 	 */
@@ -83,5 +83,5 @@ public:
 	) const;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

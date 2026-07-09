@@ -4,8 +4,8 @@
 
 #include "operation_id.hpp"
 #include "operation_arity.hpp"
-#include "shape_policy.hpp"
-#include "data_type_policy.hpp"
+#include "operation_shape_policy.hpp"
+#include "operation_data_type_policy.hpp"
 
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -14,7 +14,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 class operation_id;
@@ -51,35 +51,35 @@ public:
 	 *
 	 * @return std::string The human readable representation.
 	 */
-	virtual 
+	virtual
 	std::string get_name() const = 0;
 
 	/**
 	 * @brief Get the input and output count of the operation.
-	 * 
+	 *
 	 * @return operation_arity The input and output count.
 	 */
-	virtual 
+	virtual
 	operation_arity get_arity() const noexcept = 0;
 
 	/**
 	 * @brief Get the shape policy for the operation.
 	 *
-	 * @return const shape_policy& The shape policy.
+	 * @return const operation_shape_policy& The shape policy.
 	 */
 	virtual
-	const shape_policy&
+	const operation_shape_policy&
 	get_operation_shape_policy() const noexcept = 0;
 
 	/**
 	 * @brief Get the data type policy for the operation.
 	 *
-	 * @return const data_type_policy& The data type policy.
+	 * @return const operation_data_type_policy& The data type policy.
 	 */
 	virtual
-	const data_type_policy&
+	const operation_data_type_policy&
 	get_operation_data_type_policy() const noexcept = 0;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/dispatch/operation_shape_policy.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -9,13 +9,13 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
-shape_policy::shape_policy() noexcept = default;
-shape_policy::~shape_policy() = default;
+operation_shape_policy::operation_shape_policy() noexcept = default;
+operation_shape_policy::~operation_shape_policy() = default;
 
-void shape_policy::accept(
+void operation_shape_policy::accept(
 	span<const shape_type> user_output_shapes,
 	span<const shape_type> canonical_output_shapes,
 	span<const shape_type> /*input_shapes*/
@@ -35,5 +35,5 @@ void shape_policy::accept(
 	}
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

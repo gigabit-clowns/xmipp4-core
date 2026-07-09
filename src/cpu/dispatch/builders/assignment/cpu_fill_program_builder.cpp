@@ -113,14 +113,14 @@ make_fill_program(
 
 } // anonymous namespace
 
-operations::operation_id
+operation_id
 cpu_fill_program_builder::get_operation_id() const noexcept
 {
-	return operations::operation_id::of<operations::fill_operation>();
+	return operation_id::of<operations::fill_operation>();
 }
 
 std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
-	const operations::operation &operation,
+	const operation &operation,
 	span<const ndarray::array_signature> output_signatures,
 	span<const ndarray::array_signature> input_signatures,
 	hardware::command_queue& /*queue*/,

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -15,7 +15,7 @@ namespace operations
  * @brief Fill an array with a constant value.
  */
 class fill_operation final
-	: public operation
+	: public dispatch::operation
 {
 public:
 	/**
@@ -50,14 +50,14 @@ public:
 	XMIPP4_CORE_API std::string get_name() const override;
 
 	XMIPP4_CORE_API
-	operation_arity get_arity() const noexcept override;
+	dispatch::operation_arity get_arity() const noexcept override;
 
 	XMIPP4_CORE_API
-	const shape_policy&
+	const dispatch::operation_shape_policy&
 	get_operation_shape_policy() const noexcept override;
 
 	XMIPP4_CORE_API
-	const data_type_policy&
+	const dispatch::operation_data_type_policy&
 	get_operation_data_type_policy() const noexcept override;
 
 	/**

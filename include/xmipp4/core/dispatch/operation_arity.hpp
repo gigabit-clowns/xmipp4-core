@@ -8,7 +8,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
@@ -119,5 +119,5 @@ bool operator!=(
 	const operation_arity &rhs
 ) noexcept;
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

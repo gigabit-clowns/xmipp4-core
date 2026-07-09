@@ -2,20 +2,20 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/dispatch/operation_shape_policy.hpp>
 
 #include <trompeloeil.hpp>
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 class mock_operation_shape_policy
-	: public shape_policy
+	: public operation_shape_policy
 {
 public:
-	using shape_type = shape_policy::shape_type;
+	using shape_type = operation_shape_policy::shape_type;
 
 	MAKE_CONST_MOCK2(
 		deduce,
@@ -36,5 +36,5 @@ public:
 	);
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

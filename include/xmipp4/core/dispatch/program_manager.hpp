@@ -26,16 +26,10 @@ class array_signature;
 
 } // namespace ndarray
 
-namespace operations
-{
-
-class operation;
-
-} // namespace operations
-
 namespace dispatch
 {
 
+class operation;
 class program_builder;
 class program_cache;
 
@@ -89,7 +83,7 @@ public:
 	 * for the requested operation and signature.
 	 */
 	std::shared_ptr<hardware::program> build(
-		const operations::operation &operation,
+		const operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,

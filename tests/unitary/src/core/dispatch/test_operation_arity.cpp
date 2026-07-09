@@ -2,10 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/operations/operation_arity.hpp>
+#include <xmipp4/core/dispatch/operation_arity.hpp>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
 TEST_CASE("Default constructed operation_arity should have no outputs and no inputs", "[operation_arity]")
 {

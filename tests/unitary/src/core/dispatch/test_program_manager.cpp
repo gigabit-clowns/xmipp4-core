@@ -7,7 +7,7 @@
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 
-#include "../operations/mock/mock_operation.hpp"
+#include "mock/mock_operation.hpp"
 #include "mock/mock_program_builder.hpp"
 #include "../hardware/mock/mock_program.hpp"
 #include "../hardware/mock/mock_command_queue.hpp"
@@ -16,7 +16,6 @@
 
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
-using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 
 namespace

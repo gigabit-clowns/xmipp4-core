@@ -25,16 +25,10 @@ class array_view;
 
 } // namespace ndarray
 
-namespace operations
-{
-
-class operation;
-
-} // namespace operations
-
 namespace dispatch
 {
 
+class operation;
 class program_manager;
 
 /**
@@ -79,7 +73,7 @@ public:
 	 * @param queue The queue to which the operation may be executed.
 	 */
 	virtual void dispatch(
-		const operations::operation &operation,
+		const operation &operation,
 		span<ndarray::array> output_operands,
 		span<const ndarray::array_view> input_operands,
 		const hardware::device_context &device

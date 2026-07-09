@@ -8,7 +8,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
@@ -28,18 +28,20 @@ namespace operations
  *     override only for policies that admit user outputs other than the
  *     canonical one (e.g. type-converting copies).
  */
-class XMIPP4_CORE_API data_type_policy
+class XMIPP4_CORE_API operation_data_type_policy
 {
 public:
-	data_type_policy() noexcept;
-	data_type_policy(const data_type_policy &other) = delete;
-	data_type_policy(data_type_policy &&other) = delete;
-	virtual ~data_type_policy();
+	operation_data_type_policy() noexcept;
+	operation_data_type_policy(
+		const operation_data_type_policy &other
+	) = delete;
+	operation_data_type_policy(operation_data_type_policy &&other) = delete;
+	virtual ~operation_data_type_policy();
 
-	data_type_policy&
-	operator=(const data_type_policy &other) = delete;
-	data_type_policy&
-	operator=(data_type_policy &&other) = delete;
+	operation_data_type_policy&
+	operator=(const operation_data_type_policy &other) = delete;
+	operation_data_type_policy&
+	operator=(operation_data_type_policy &&other) = delete;
 
 	/**
 	 * @brief Compute canonical output data types from the input data types.
@@ -48,7 +50,7 @@ public:
 	 * @p canonical_output_types holds the data types the policy would
 	 * produce if the user had not pre-allocated outputs.
 	 *
-	 * @param canonical_output_types Output buffer, sized to the operation's 
+	 * @param canonical_output_types Output buffer, sized to the operation's
 	 * output arity. Will be filled with the canonical data types.
 	 * @param input_types Data types of the input operands.
 	 */
@@ -81,5 +83,5 @@ public:
 	) const;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

@@ -16,10 +16,10 @@ public:
 	cpu_fill_program_builder() noexcept = default;
 	~cpu_fill_program_builder() override = default;
 
-	operations::operation_id get_operation_id() const noexcept override;
+	operation_id get_operation_id() const noexcept override;
 
 	std::shared_ptr<hardware::program> build(
-		const operations::operation &operation,
+		const operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,

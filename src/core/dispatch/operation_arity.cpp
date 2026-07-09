@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/operation_arity.hpp>
+#include <xmipp4/core/dispatch/operation_arity.hpp>
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 operation_arity::operation_arity() noexcept
@@ -69,5 +69,5 @@ bool operator!=(
 	return !(lhs == rhs);
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

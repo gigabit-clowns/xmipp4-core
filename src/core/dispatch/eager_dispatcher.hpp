@@ -43,7 +43,7 @@ public:
 	~eager_dispatcher() override;
 
 	void dispatch(
-		const operations::operation &operation,
+		const operation &operation,
 		span<ndarray::array> output_operands,
 		span<const ndarray::array_view> input_operands,
 		const hardware::device_context &device_context

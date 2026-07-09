@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/data_type_policy.hpp>
+#include <xmipp4/core/dispatch/operation_data_type_policy.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -9,13 +9,13 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
-data_type_policy::data_type_policy() noexcept = default;
-data_type_policy::~data_type_policy() = default;
+operation_data_type_policy::operation_data_type_policy() noexcept = default;
+operation_data_type_policy::~operation_data_type_policy() = default;
 
-void data_type_policy::accept(
+void operation_data_type_policy::accept(
 	span<const numerical_type> user_output_types,
 	span<const numerical_type> canonical_output_types,
 	span<const numerical_type> /*input_types*/
@@ -37,5 +37,5 @@ void data_type_policy::accept(
 	}
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

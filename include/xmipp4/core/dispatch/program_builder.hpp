@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/operation_id.hpp>
+#include "operation_id.hpp"
 
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
@@ -28,16 +28,10 @@ class array_signature;
 
 } // namespace ndarray
 
-namespace operations
-{
-
-class operation;
-
-} // namespace operations
-
 namespace dispatch
 {
 
+class operation;
 class program_cache;
 
 /**
@@ -64,7 +58,7 @@ public:
 	 *
 	 * @return operation_id The operation ID.
 	 */
-	virtual operations::operation_id get_operation_id() const noexcept = 0;
+	virtual operation_id get_operation_id() const noexcept = 0;
 
 	/**
 	 * @brief Get the suitability of this builder for a given launch
@@ -82,7 +76,7 @@ public:
 	 * requested launch configuration.
 	 */
 	virtual backend_priority get_suitability(
-		const operations::operation &operation,
+		const operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue
@@ -112,7 +106,7 @@ public:
 	 */
 	virtual
 	std::shared_ptr<hardware::program> build(
-		const operations::operation &operation,
+		const operation &operation,
 		span<const ndarray::array_signature> output_signatures,
 		span<const ndarray::array_signature> input_signatures,
 		hardware::command_queue &queue,

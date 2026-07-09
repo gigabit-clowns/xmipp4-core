@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/data_type_policy.hpp>
+#include <xmipp4/core/dispatch/operation_data_type_policy.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4
@@ -14,7 +14,7 @@ namespace operations
  * @brief Data type policy requiring all operand types to be the same.
  */
 class XMIPP4_CORE_API homogeneous_data_type_policy final
-	: public data_type_policy
+	: public dispatch::operation_data_type_policy
 {
 public:
 	void deduce(

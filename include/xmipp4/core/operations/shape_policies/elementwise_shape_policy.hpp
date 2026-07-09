@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/shape_policy.hpp>
+#include <xmipp4/core/dispatch/operation_shape_policy.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4
@@ -16,7 +16,7 @@ namespace operations
  * This policy allows broadcast compatibility of input operands.
  */
 class XMIPP4_CORE_API elementwise_shape_policy final
-	: public shape_policy
+	: public dispatch::operation_shape_policy
 {
 public:
 	void deduce(

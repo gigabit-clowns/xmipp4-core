@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4
@@ -14,7 +14,7 @@ namespace operations
  * @brief Copy elements from an input array to an output array.
  */
 class XMIPP4_CORE_API copy_operation final
-	: public operation
+	: public dispatch::operation
 {
 public:
 	/**
@@ -38,10 +38,10 @@ public:
 	};
 
 	std::string get_name() const override;
-	operation_arity get_arity() const noexcept override;
-	const shape_policy&
+	dispatch::operation_arity get_arity() const noexcept override;
+	const dispatch::operation_shape_policy&
 	get_operation_shape_policy() const noexcept override;
-	const data_type_policy&
+	const dispatch::operation_data_type_policy&
 	get_operation_data_type_policy() const noexcept override;
 };
 

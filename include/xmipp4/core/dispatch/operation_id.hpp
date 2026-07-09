@@ -8,7 +8,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
@@ -42,16 +42,16 @@ private:
 	std::type_index m_id;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4
 
 namespace std
 {
 
 template<>
-struct hash<xmipp4::operations::operation_id>
+struct hash<xmipp4::dispatch::operation_id>
 {
-	using key_type = xmipp4::operations::operation_id;
+	using key_type = xmipp4::dispatch::operation_id;
 	std::size_t operator()(const key_type &k) const noexcept;
 };
 

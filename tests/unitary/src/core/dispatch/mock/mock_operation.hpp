@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/operation.hpp>
+#include <xmipp4/core/dispatch/operation.hpp>
 
 #include <trompeloeil.hpp>
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 class mock_operation
@@ -19,16 +19,16 @@ public:
 	MAKE_CONST_MOCK0(get_arity, operation_arity(), noexcept override);
 	MAKE_CONST_MOCK0(
 		get_operation_shape_policy,
-		const shape_policy&(),
+		const operation_shape_policy&(),
 		noexcept override
 	);
 	MAKE_CONST_MOCK0(
 		get_operation_data_type_policy,
-		const data_type_policy&(),
+		const operation_data_type_policy&(),
 		noexcept override
 	);
 
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

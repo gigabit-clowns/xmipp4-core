@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include <xmipp4/core/operations/data_type_policy.hpp>
+#include <xmipp4/core/dispatch/operation_data_type_policy.hpp>
 
 #include <trompeloeil.hpp>
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 class mock_operation_data_type_policy
-	: public data_type_policy
+	: public operation_data_type_policy
 {
 public:
 	MAKE_CONST_MOCK2(
@@ -34,5 +34,5 @@ public:
 	);
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

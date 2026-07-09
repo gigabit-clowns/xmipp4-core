@@ -70,7 +70,7 @@ public:
 	 * The default implementation requires @p user_output_types to be
 	 * equal to @p canonical_output_types; override only for policies
 	 * that admit user outputs other than the canonical one (e.g. when the
-	 * kernel performs a type conversion).
+	 * program performs a type conversion).
 	 *
 	 * @param user_output_types Data types of the user-supplied outputs.
 	 * @param canonical_output_types Data types produced by `deduce`.

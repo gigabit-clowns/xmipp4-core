@@ -83,9 +83,7 @@ make_fill_program(
 					fill(result, count, result_inner_stride, value);
 				},
 				access_layout,
-				std::get<
-					fill_operation::OUTPUT_OPERAND_DESTINATION
-				>(outputs)
+				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);
 		},
 		type_list<T>(),

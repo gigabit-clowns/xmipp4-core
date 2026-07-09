@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/functional/array_creation.hpp>
+#include <xmipp4/ndarray/functional/array_creation.hpp>
 
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
@@ -23,12 +23,12 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
-#include "../dispatch/mock/mock_dispatcher.hpp"
-#include "../hardware/mock/mock_device.hpp"
-#include "../hardware/mock/mock_memory_resource.hpp"
-#include "../hardware/mock/mock_memory_allocator.hpp"
-#include "../hardware/mock/mock_command_queue.hpp"
-#include "../hardware/mock/mock_buffer.hpp"
+#include "../../core/dispatch/mock/mock_dispatcher.hpp"
+#include "../../core/hardware/mock/mock_device.hpp"
+#include "../../core/hardware/mock/mock_memory_resource.hpp"
+#include "../../core/hardware/mock/mock_memory_allocator.hpp"
+#include "../../core/hardware/mock/mock_command_queue.hpp"
+#include "../../core/hardware/mock/mock_buffer.hpp"
 
 #include <cstddef>
 #include <memory>

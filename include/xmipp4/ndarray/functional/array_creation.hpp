@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "../ndarray/array.hpp"
-#include "../ndarray/array_view.hpp"
+#include <xmipp4/core/ndarray/array.hpp>
+#include <xmipp4/core/ndarray/array_view.hpp>
 
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>

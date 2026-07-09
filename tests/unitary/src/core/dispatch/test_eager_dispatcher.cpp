@@ -7,7 +7,7 @@
 
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/dispatch/program_cache.hpp>
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/dispatch/operation_id.hpp>
 #include <xmipp4/core/dispatch/operation_arity.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
@@ -186,8 +186,8 @@ protected:
 				*builder,
 				get_suitability(
 					ANY(const operation&),
-					ANY(span<const array_signature>),
-					ANY(span<const array_signature>),
+					ANY(span<const operand_signature>),
+					ANY(span<const operand_signature>),
 					ANY(hardware::command_queue&)
 				)
 			)
@@ -198,8 +198,8 @@ protected:
 				*builder,
 				build(
 					ANY(const operation&),
-					ANY(span<const array_signature>),
-					ANY(span<const array_signature>),
+					ANY(span<const operand_signature>),
+					ANY(span<const operand_signature>),
 					ANY(hardware::command_queue&),
 					ANY(program_cache*)
 				)

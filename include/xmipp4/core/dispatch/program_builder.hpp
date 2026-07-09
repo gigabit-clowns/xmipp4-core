@@ -21,17 +21,11 @@ class command_queue;
 
 } // namespace hardware
 
-namespace ndarray
-{
-
-class array_signature;
-
-} // namespace ndarray
-
 namespace dispatch
 {
 
 class operation;
+class operand_signature;
 class program_cache;
 
 /**
@@ -77,8 +71,8 @@ public:
 	 */
 	virtual backend_priority get_suitability(
 		const operation &operation,
-		span<const ndarray::array_signature> output_signatures,
-		span<const ndarray::array_signature> input_signatures,
+		span<const operand_signature> output_signatures,
+		span<const operand_signature> input_signatures,
 		hardware::command_queue &queue
 	) const = 0;
 
@@ -107,8 +101,8 @@ public:
 	virtual
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const ndarray::array_signature> output_signatures,
-		span<const ndarray::array_signature> input_signatures,
+		span<const operand_signature> output_signatures,
+		span<const operand_signature> input_signatures,
 		hardware::command_queue &queue,
 		program_cache *cache
 	) const = 0;

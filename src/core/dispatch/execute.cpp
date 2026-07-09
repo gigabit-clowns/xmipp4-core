@@ -6,7 +6,7 @@
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/dispatch/operation_shape_policy.hpp>

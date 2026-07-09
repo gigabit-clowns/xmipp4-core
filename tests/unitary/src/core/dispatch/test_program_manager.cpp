@@ -16,7 +16,6 @@
 
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
 
 namespace
 {
@@ -86,8 +85,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_a op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_program_builder>();
@@ -100,8 +99,8 @@ TEST_CASE(
 		*builder1,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -113,8 +112,8 @@ TEST_CASE(
 		*builder2,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -123,8 +122,8 @@ TEST_CASE(
 		*builder2,
 		build(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&),
 			ANY(program_cache*)
 		)
@@ -152,8 +151,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_a op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
 	auto builder_a = std::make_unique<mock_program_builder>();
@@ -166,8 +165,8 @@ TEST_CASE(
 		*builder_a,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -176,8 +175,8 @@ TEST_CASE(
 		*builder_a,
 		build(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&),
 			ANY(program_cache*)
 		)
@@ -209,8 +208,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_a op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_program_builder>();
@@ -222,8 +221,8 @@ TEST_CASE(
 		*builder,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -232,8 +231,8 @@ TEST_CASE(
 		*builder,
 		build(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&),
 			ANY(program_cache*)
 		)
@@ -262,8 +261,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_a op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	program_cache cache(4);
 	hardware::mock_command_queue queue;
 
@@ -276,8 +275,8 @@ TEST_CASE(
 		*builder,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -286,8 +285,8 @@ TEST_CASE(
 		*builder,
 		build(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&),
 			ANY(program_cache*)
 		)
@@ -317,8 +316,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_b op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_program_builder>();
@@ -347,8 +346,8 @@ TEST_CASE(
 	program_manager manager;
 
 	const mock_operation_a op;
-	const std::array<array_signature, 2> output_signatures;
-	const std::array<array_signature, 4> input_signatures;
+	const std::array<operand_signature, 2> output_signatures;
+	const std::array<operand_signature, 4> input_signatures;
 	hardware::mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_program_builder>();
@@ -360,8 +359,8 @@ TEST_CASE(
 		*builder1,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)
@@ -373,8 +372,8 @@ TEST_CASE(
 		*builder2,
 		get_suitability(
 			ANY(const operation&),
-			ANY(span<const array_signature>),
-			ANY(span<const array_signature>),
+			ANY(span<const operand_signature>),
+			ANY(span<const operand_signature>),
 			ANY(hardware::command_queue&)
 		)
 	)

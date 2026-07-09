@@ -5,7 +5,7 @@
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/scalar_value.hpp>
 #include <xmipp4/core/numerical_cast.hpp>
@@ -158,8 +158,8 @@ cpu_copy_program_builder::get_operation_id() const noexcept
 
 std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 	const operation &operation,
-	span<const ndarray::array_signature> output_signatures,
-	span<const ndarray::array_signature> input_signatures,
+	span<const operand_signature> output_signatures,
+	span<const operand_signature> input_signatures,
 	hardware::command_queue& /*queue*/,
 	program_cache* /*cache*/
 ) const

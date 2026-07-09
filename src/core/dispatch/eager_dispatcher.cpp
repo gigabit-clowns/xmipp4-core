@@ -5,7 +5,7 @@
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/hardware/program.hpp>
@@ -236,7 +236,7 @@ extract_input_storage(
 }
 
 template <typename Ptr, std::size_t N>
-boost::container::small_vector<ndarray::array_signature, N>
+boost::container::small_vector<operand_signature, N>
 create_signatures(
 	boost::container::small_vector<ndarray::array_descriptor, N> &&descriptors,
 	span<Ptr> storages
@@ -245,11 +245,11 @@ create_signatures(
 	const auto n = descriptors.size();
 	XMIPP4_ASSERT(n == storages.size());
 
-	boost::container::small_vector<ndarray::array_signature, N> result(n);
+	boost::container::small_vector<operand_signature, N> result(n);
 	for (std::size_t i = 0; i < n; ++i)
 	{
 		XMIPP4_ASSERT(storages[i]);
-		result[i] = ndarray::array_signature(
+		result[i] = operand_signature(
 			std::move(descriptors[i]), // Steal descriptors
 			&(storages[i]->get_memory_resource())
 		);

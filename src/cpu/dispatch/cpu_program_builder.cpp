@@ -2,7 +2,7 @@
 
 #include "cpu_program_builder.hpp"
 
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <cpu/hardware/cpu_command_queue.hpp>
 
@@ -16,7 +16,7 @@ namespace dispatch
 namespace
 {
 
-bool check_host_access(const ndarray::array_signature &signature) noexcept
+bool check_host_access(const operand_signature &signature) noexcept
 {
 	const auto *resource = signature.get_memory_resource();
 	if (!resource)
@@ -33,7 +33,7 @@ bool check_host_access(const ndarray::array_signature &signature) noexcept
 }
 
 bool check_array_signatures(
-	span<const ndarray::array_signature> signatures
+	span<const operand_signature> signatures
 ) noexcept
 {
 	return std::all_of(signatures.begin(), signatures.end(), check_host_access);
@@ -45,8 +45,8 @@ bool check_array_signatures(
 
 backend_priority cpu_program_builder::get_suitability(
 	const operation& /*operation*/,
-	span<const ndarray::array_signature> output_signatures,
-	span<const ndarray::array_signature> input_signatures,
+	span<const operand_signature> output_signatures,
+	span<const operand_signature> input_signatures,
 	hardware::command_queue &queue
 ) const
 {

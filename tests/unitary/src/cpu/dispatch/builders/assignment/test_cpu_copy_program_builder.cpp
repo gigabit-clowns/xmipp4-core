@@ -9,7 +9,7 @@
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/operations/assignment/copy_operation.hpp>
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation_id.hpp>
 #include <xmipp4/core/numerical_type.hpp>
@@ -26,25 +26,24 @@
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
 using namespace xmipp4::operations;
-using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace
 {
 
-array_signature make_contiguous_signature(
+operand_signature make_contiguous_signature(
 	std::initializer_list<std::size_t> extents,
 	numerical_type type
 )
 {
 	const std::vector<std::size_t> ext(extents);
-	return array_signature(
+	return operand_signature(
 		strided_layout::make_contiguous_layout(make_span(ext)),
 		type
 	);
 }
 
-array_signature make_strided_signature(
+operand_signature make_strided_signature(
 	std::initializer_list<std::size_t> extents,
 	std::initializer_list<std::ptrdiff_t> strides,
 	numerical_type type
@@ -52,7 +51,7 @@ array_signature make_strided_signature(
 {
 	const std::vector<std::size_t> ext(extents);
 	const std::vector<std::ptrdiff_t> str(strides);
-	return array_signature(
+	return operand_signature(
 		strided_layout::make_custom_layout(make_span(ext), make_span(str)),
 		type
 	);
@@ -65,8 +64,8 @@ public:
 	// program interface that exposes execute().
 	std::shared_ptr<hardware::cpu_program> build_program(
 		const operation &op,
-		const std::vector<array_signature> &outputs,
-		const std::vector<array_signature> &inputs
+		const std::vector<operand_signature> &outputs,
+		const std::vector<operand_signature> &inputs
 	)
 	{
 		auto program = builder.build(
@@ -132,10 +131,10 @@ TEST_CASE_METHOD(
 {
 	const mock_operation operation;
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
 
@@ -161,8 +160,8 @@ TEST_CASE_METHOD(
 	const copy_operation operation;
 
 	// No output signatures where exactly one is expected.
-	const std::vector<array_signature> outputs;
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> outputs;
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
 
@@ -187,11 +186,11 @@ TEST_CASE_METHOD(
 {
 	const copy_operation operation;
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
 	// No input signatures where exactly one is expected.
-	const std::vector<array_signature> inputs;
+	const std::vector<operand_signature> inputs;
 
 	CHECK_THROWS_AS(
 		builder.build(
@@ -214,10 +213,10 @@ TEST_CASE_METHOD(
 {
 	const copy_operation operation;
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
 
@@ -254,10 +253,10 @@ TEST_CASE_METHOD(
 
 	// The source is int32 while the destination is float32, so each element
 	// must be converted while copying.
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({4}, numerical_type::int32)
 	};
 
@@ -293,10 +292,10 @@ TEST_CASE_METHOD(
 	const copy_operation operation;
 
 	// Destination writes to elements 0, 2 and 4 of a 5-element buffer.
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_strided_signature({3}, {2}, numerical_type::float32)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({3}, numerical_type::float32)
 	};
 
@@ -338,10 +337,10 @@ TEST_CASE_METHOD(
 	const copy_operation operation;
 
 	// A complex source can not be narrowed into a real destination.
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_contiguous_signature({4}, numerical_type::float32)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_contiguous_signature({4}, numerical_type::complex_float32)
 	};
 

@@ -5,7 +5,7 @@
 #include <cpu/dispatch/cpu_program_builder.hpp>
 #include <cpu/hardware/cpu_command_queue.hpp>
 
-#include <xmipp4/core/ndarray/array_signature.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation_id.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
@@ -22,7 +22,6 @@
 
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 
 namespace
@@ -46,8 +45,8 @@ public:
 
 	std::shared_ptr<hardware::program> build(
 		const operation & /*operation*/,
-		span<const array_signature> /*output_signatures*/,
-		span<const array_signature> /*input_signatures*/,
+		span<const operand_signature> /*output_signatures*/,
+		span<const operand_signature> /*input_signatures*/,
 		hardware::command_queue & /*queue*/,
 		program_cache * /*cache*/
 	) const override
@@ -56,9 +55,9 @@ public:
 	}
 };
 
-array_signature make_signature(const hardware::memory_resource *resource)
+operand_signature make_signature(const hardware::memory_resource *resource)
 {
-	return array_signature(
+	return operand_signature(
 		strided_layout(),
 		numerical_type::float32,
 		resource
@@ -82,10 +81,10 @@ TEST_CASE(
 	ALLOW_CALL(host_resource, get_kind())
 		.RETURN(hardware::memory_resource_kind::host);
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_signature(&host_resource)
 	};
 
@@ -119,11 +118,11 @@ TEST_CASE(
 
 	// The second output resides on device-local memory, so the whole set is
 	// rejected even though the first one is host accessible.
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource),
 		make_signature(&device_resource)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_signature(&host_resource)
 	};
 
@@ -155,10 +154,10 @@ TEST_CASE(
 	ALLOW_CALL(device_resource, get_kind())
 		.RETURN(hardware::memory_resource_kind::device_local);
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_signature(&device_resource)
 	};
 
@@ -184,10 +183,10 @@ TEST_CASE(
 	const mock_operation operation;
 
 	// A null memory resource cannot be host accessible.
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_signature(nullptr)
 	};
-	const std::vector<array_signature> inputs;
+	const std::vector<operand_signature> inputs;
 
 	hardware::cpu_command_queue queue;
 
@@ -214,10 +213,10 @@ TEST_CASE(
 	ALLOW_CALL(host_resource, get_kind())
 		.RETURN(hardware::memory_resource_kind::host);
 
-	const std::vector<array_signature> outputs {
+	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
 	};
-	const std::vector<array_signature> inputs {
+	const std::vector<operand_signature> inputs {
 		make_signature(&host_resource)
 	};
 
@@ -244,8 +243,8 @@ TEST_CASE(
 	const mock_operation operation;
 
 	// With no signatures to reject, only the queue kind decides suitability.
-	const std::vector<array_signature> outputs;
-	const std::vector<array_signature> inputs;
+	const std::vector<operand_signature> outputs;
+	const std::vector<operand_signature> inputs;
 
 	hardware::cpu_command_queue queue;
 

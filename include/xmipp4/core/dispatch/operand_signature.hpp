@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "array_descriptor.hpp"
+#include "../ndarray/array_descriptor.hpp"
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
-namespace xmipp4 
+namespace xmipp4
 {
 namespace ndarray
 {
@@ -15,70 +15,75 @@ namespace ndarray
 class array;
 class array_view;
 
+} // namespace ndarray
+
+namespace dispatch
+{
+
 /**
- * @brief Logical representation of an array properties.
- * 
+ * @brief Logical representation of an operand's properties.
+ *
  * This class contains the memory representation of the array data
- * (`array_descriptor`) and its placement in memory (pointer to a
+ * (`ndarray::array_descriptor`) and its placement in memory (pointer to a
  * `hardware::memory_resource`)
- * 
- * @see array
- * @see array_descriptor
+ *
+ * @see ndarray::array
+ * @see ndarray::array_descriptor
  * @see hardware::memory_resource
  */
-class array_signature
+class operand_signature
 {
 public:
 	XMIPP4_CORE_API
-	array_signature() noexcept;
+	operand_signature() noexcept;
 
 	XMIPP4_CORE_API
-	explicit array_signature(
-		const array_descriptor &descriptor,
+	explicit operand_signature(
+		const ndarray::array_descriptor &descriptor,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
 
 	XMIPP4_CORE_API
-	explicit array_signature(
-		array_descriptor &&descriptor,
+	explicit operand_signature(
+		ndarray::array_descriptor &&descriptor,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
 
 	XMIPP4_CORE_API
-	array_signature(
+	operand_signature(
 		const layout::strided_layout& layout,
 		numerical_type data_type,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
 
 	XMIPP4_CORE_API
-	array_signature(
+	operand_signature(
 		layout::strided_layout&& layout,
 		numerical_type data_type,
 		const hardware::memory_resource* resource = nullptr
 	) noexcept;
 
 	XMIPP4_CORE_API
-	array_signature(const array_signature &other);
+	operand_signature(const operand_signature &other);
 	XMIPP4_CORE_API
-	array_signature(array_signature &&other) noexcept;
+	operand_signature(operand_signature &&other) noexcept;
 	XMIPP4_CORE_API
-	~array_signature();
+	~operand_signature();
 
 	XMIPP4_CORE_API
-	array_signature& operator=(const array_signature &other);
+	operand_signature& operator=(const operand_signature &other);
 	XMIPP4_CORE_API
-	array_signature& operator=(array_signature &&other) noexcept;
+	operand_signature& operator=(operand_signature &&other) noexcept;
 
 	XMIPP4_CORE_API
-	bool operator==(const array_signature &other) const noexcept;
+	bool operator==(const operand_signature &other) const noexcept;
 
 	XMIPP4_CORE_API
-	bool operator!=(const array_signature &other) const noexcept;
+	bool operator!=(const operand_signature &other) const noexcept;
 
 	/**
 	 * @brief Get the hash value for this object.
-	 * 
+	 *
 	 * @return The hash value.
 	 */
 	XMIPP4_CORE_API
@@ -86,7 +91,7 @@ public:
 
 	/**
 	 * @brief Get the in memory layout of the data.
-	 * 
+	 *
 	 * @return const strided_layout& The layout.
 	 */
 	XMIPP4_CORE_API
@@ -94,7 +99,7 @@ public:
 
 	/**
 	 * @brief Get the data type of the elements.
-	 * 
+	 *
 	 * @return numerical_type The data type.
 	 */
 	XMIPP4_CORE_API
@@ -102,23 +107,25 @@ public:
 
 	/**
 	 * @brief Get the array descriptor.
-	 * 
+	 *
 	 * @return const array_descriptor& The array descriptor.
 	 */
 	XMIPP4_CORE_API
-	const array_descriptor& get_descriptor() const noexcept;
+	const ndarray::array_descriptor& get_descriptor() const noexcept;
 
 	/**
 	 * @brief Set the array descriptor.
-	 * 
+	 *
 	 * @param descriptor The new array descriptor.
 	 */
 	XMIPP4_CORE_API
-	void set_descriptor(const array_descriptor &descriptor) noexcept;
+	void set_descriptor(
+		const ndarray::array_descriptor &descriptor
+	) noexcept;
 
 	/**
 	 * @brief Get the memory resource.
-	 * 
+	 *
 	 * @return const hardware::memory_resource* The memory resource.
 	 */
 	XMIPP4_CORE_API
@@ -126,7 +133,7 @@ public:
 
 	/**
 	 * @brief Set the memory resource.
-	 * 
+	 *
 	 * @param resource The new memory resource.
 	 */
 	XMIPP4_CORE_API
@@ -135,27 +142,28 @@ public:
 	) noexcept;
 
 	/**
-	 * @brief Construct an array signature from an existing array.
-	 * 
+	 * @brief Construct an operand signature from an existing array.
+	 *
 	 * @param a The array from which the signature is deduced.
-	 * @return array_signature The newly constructed array signature.
+	 * @return operand_signature The newly constructed operand signature.
 	 */
 	XMIPP4_CORE_API
-	static array_signature from_array(const array &a) noexcept;
+	static operand_signature from_array(const ndarray::array &a) noexcept;
 
 	/**
-	 * @brief Construct an array signature from an existing array_view.
-	 * 
+	 * @brief Construct an operand signature from an existing array_view.
+	 *
 	 * @param a The array from which the signature is deduced.
-	 * @return array_signature The newly constructed array signature.
+	 * @return operand_signature The newly constructed operand signature.
 	 */
 	XMIPP4_CORE_API
-	static array_signature from_array(const array_view &a) noexcept;
+	static operand_signature
+	from_array(const ndarray::array_view &a) noexcept;
 
 private:
-	array_descriptor m_descriptor;
+	ndarray::array_descriptor m_descriptor;
 	const hardware::memory_resource* m_memory_region;
 };
 
-} // namespace ndarray
+} // namespace dispatch
 } // namespace xmipp4

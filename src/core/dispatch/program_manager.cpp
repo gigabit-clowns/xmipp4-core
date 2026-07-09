@@ -33,8 +33,8 @@ public:
 
 	program_builder* get_most_suitable_builder(
 		const operation &operation,
-		span<const ndarray::array_signature> output_signatures,
-		span<const ndarray::array_signature> input_signatures,
+		span<const operand_signature> output_signatures,
+		span<const operand_signature> input_signatures,
 		hardware::command_queue &queue
 	) const
 	{
@@ -71,8 +71,8 @@ public:
 
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const ndarray::array_signature> output_signatures,
-		span<const ndarray::array_signature> input_signatures,
+		span<const operand_signature> output_signatures,
+		span<const operand_signature> input_signatures,
 		hardware::command_queue &queue,
 		program_cache *cache
 	) const
@@ -132,8 +132,8 @@ bool program_manager::register_builder(
 std::shared_ptr<hardware::program>
 program_manager::build(
 	const operation &operation,
-	span<const ndarray::array_signature> output_signatures,
-	span<const ndarray::array_signature> input_signatures,
+	span<const operand_signature> output_signatures,
+	span<const operand_signature> input_signatures,
 	hardware::command_queue &queue,
 	program_cache *cache
 ) const

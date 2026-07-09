@@ -19,17 +19,11 @@ class command_queue;
 
 } // namespace hardware
 
-namespace ndarray
-{
-
-class array_signature;
-
-} // namespace ndarray
-
 namespace dispatch
 {
 
 class operation;
+class operand_signature;
 class program_builder;
 class program_cache;
 
@@ -84,8 +78,8 @@ public:
 	 */
 	std::shared_ptr<hardware::program> build(
 		const operation &operation,
-		span<const ndarray::array_signature> output_signatures,
-		span<const ndarray::array_signature> input_signatures,
+		span<const operand_signature> output_signatures,
+		span<const operand_signature> input_signatures,
 		hardware::command_queue &queue,
 		program_cache *cache = nullptr
 	) const;

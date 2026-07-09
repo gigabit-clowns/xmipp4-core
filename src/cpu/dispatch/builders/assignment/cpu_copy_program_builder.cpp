@@ -113,7 +113,7 @@ make_copy_program(
 					copy(dst, src, count, dst_inner_stride, src_inner_stride);
 				},
 				access_layout,
-				std::get<opy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
+				std::get<copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
 				std::get<copy_operation::INPUT_OPERAND_SOURCE>(inputs)
 			);
 		},

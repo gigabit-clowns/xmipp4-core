@@ -10,7 +10,7 @@
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
@@ -36,7 +36,6 @@
 
 using namespace xmipp4;
 using namespace xmipp4::dispatch;
-using namespace xmipp4::operations;
 using namespace xmipp4::ndarray;
 using namespace xmipp4::layout;
 using trompeloeil::_;

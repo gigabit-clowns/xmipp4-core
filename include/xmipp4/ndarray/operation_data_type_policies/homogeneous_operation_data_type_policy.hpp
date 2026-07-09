@@ -7,15 +7,14 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
- * @brief Data type policy allowing converting an input type into an
- * output type.
+ * @brief Data type policy requiring all operand types to be the same.
  */
-class XMIPP4_CORE_API copy_data_type_policy final
-	: public dispatch::operation_data_type_policy
+class XMIPP4_CORE_API homogeneous_operation_data_type_policy final
+	: public operation_data_type_policy
 {
 public:
 	void deduce(
@@ -29,8 +28,8 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	static const copy_data_type_policy& get() noexcept;
+	static const homogeneous_operation_data_type_policy& get() noexcept;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

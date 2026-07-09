@@ -3,8 +3,8 @@
 #include <xmipp4/core/functional/array_creation.hpp>
 
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/core/operations/assignment/copy_operation.hpp>
-#include <xmipp4/core/operations/assignment/fill_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/dispatch/execute.hpp>
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
@@ -176,7 +176,7 @@ ndarray::array full(
 	};
 
 	execute(
-		operations::fill_operation(fill_value),
+		dispatch::fill_operation(fill_value),
 		make_span(outputs),
 		{},
 		context
@@ -191,7 +191,7 @@ ndarray::array copy(
 	ndarray::array *out
 )
 {
-	return execute_unary(operations::copy_operation(), source, context, out);
+	return execute_unary(dispatch::copy_operation(), source, context, out);
 }
 
 void fill(
@@ -201,7 +201,7 @@ void fill(
 )
 {
 	execute(
-		operations::fill_operation(fill_value),
+		dispatch::fill_operation(fill_value),
 		make_span(&out, 1),
 		{},
 		context

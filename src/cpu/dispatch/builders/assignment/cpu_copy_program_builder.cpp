@@ -2,7 +2,7 @@
 
 #include "cpu_copy_program_builder.hpp"
 
-#include <xmipp4/core/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -114,10 +114,10 @@ make_copy_program(
 				},
 				access_layout,
 				std::get<
-					operations::copy_operation::OUTPUT_OPERAND_DESTINATION
+					copy_operation::OUTPUT_OPERAND_DESTINATION
 				>(outputs),
 				std::get<
-					operations::copy_operation::INPUT_OPERAND_SOURCE
+					copy_operation::INPUT_OPERAND_SOURCE
 				>(inputs)
 			);
 		},
@@ -153,7 +153,7 @@ make_copy_program(
 operation_id
 cpu_copy_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<operations::copy_operation>();
+	return operation_id::of<copy_operation>();
 }
 
 std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
@@ -164,7 +164,7 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 	program_cache* /*cache*/
 ) const
 {
-	if (!dynamic_cast<const operations::copy_operation*>(&operation))
+	if (!dynamic_cast<const copy_operation*>(&operation))
 	{
 		throw std::invalid_argument(
 			"cpu_copy_program_builder::build: Expected operation to "
@@ -174,7 +174,7 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 
 	if (
 		output_signatures.size() !=
-		operations::copy_operation::OUTPUT_OPERAND_COUNT
+		copy_operation::OUTPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -185,7 +185,7 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 
 	if (
 		input_signatures.size() !=
-		operations::copy_operation::INPUT_OPERAND_COUNT
+		copy_operation::INPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -195,10 +195,10 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 	}
 
 	const auto &dst_descriptor =
-		output_signatures[operations::copy_operation::OUTPUT_OPERAND_DESTINATION]
+		output_signatures[copy_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
 	const auto &src_descriptor =
-		input_signatures[operations::copy_operation::INPUT_OPERAND_SOURCE]
+		input_signatures[copy_operation::INPUT_OPERAND_SOURCE]
 		.get_descriptor();
 
 	const auto dst_data_type = dst_descriptor.get_data_type();

@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <core/operations/data_type_policies/copy_data_type_policy.hpp>
+#include <ndarray/operation_data_type_policies/copy_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
@@ -11,24 +11,24 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
 TEST_CASE(
-    "copy_data_type_policy::get returns a singleton",
-    "[copy_data_type_policy]"
+    "copy_operation_data_type_policy::get returns a singleton",
+    "[copy_operation_data_type_policy]"
 )
 {
-    CHECK( &copy_data_type_policy::get() ==
-           &copy_data_type_policy::get() );
+    CHECK( &copy_operation_data_type_policy::get() ==
+           &copy_operation_data_type_policy::get() );
 }
 
 TEST_CASE(
-    "copy_data_type_policy::deduce propagates the input type "
+    "copy_operation_data_type_policy::deduce propagates the input type "
     "to the output",
-    "[copy_data_type_policy]"
+    "[copy_operation_data_type_policy]"
 )
 {
-    const auto& pol = copy_data_type_policy::get();
+    const auto& pol = copy_operation_data_type_policy::get();
     auto t = GENERATE(
         numerical_type::boolean,
         numerical_type::int32,
@@ -43,11 +43,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "copy_data_type_policy::deduce throws for unknown input type",
-    "[copy_data_type_policy]"
+    "copy_operation_data_type_policy::deduce throws for unknown input type",
+    "[copy_operation_data_type_policy]"
 )
 {
-    const auto& pol = copy_data_type_policy::get();
+    const auto& pol = copy_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs  = { numerical_type::unknown };
     std::vector<numerical_type>       outputs = { numerical_type::unknown };
@@ -59,12 +59,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "copy_data_type_policy::accept allows any valid user output "
+    "copy_operation_data_type_policy::accept allows any valid user output "
     "type regardless of the canonical type",
-    "[copy_data_type_policy]"
+    "[copy_operation_data_type_policy]"
 )
 {
-    const auto& pol = copy_data_type_policy::get();
+    const auto& pol = copy_operation_data_type_policy::get();
     auto t = GENERATE(
         numerical_type::boolean,
         numerical_type::int32,
@@ -83,11 +83,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "copy_data_type_policy::accept throws for unknown user output",
-    "[copy_data_type_policy]"
+    "copy_operation_data_type_policy::accept throws for unknown user output",
+    "[copy_operation_data_type_policy]"
 )
 {
-    const auto& pol = copy_data_type_policy::get();
+    const auto& pol = copy_operation_data_type_policy::get();
 
     const std::vector<numerical_type> user_out = { numerical_type::unknown };
     const std::vector<numerical_type> canonical = { numerical_type::float32 };

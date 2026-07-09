@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/shape_policies/elementwise_shape_policy.hpp>
+#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 
 #include <xmipp4/core/layout/broadcast.hpp>
 #include <xmipp4/core/platform/assert.hpp>
@@ -9,10 +9,10 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
-void elementwise_shape_policy::deduce(
+void elementwise_operation_shape_policy::deduce(
 	span<shape_type> canonical_output_shapes,
 	span<const shape_type> input_shapes
 ) const
@@ -47,7 +47,7 @@ void elementwise_shape_policy::deduce(
 	}
 }
 
-void elementwise_shape_policy::accept(
+void elementwise_operation_shape_policy::accept(
 	span<const shape_type> user_output_shapes,
 	span<const shape_type> canonical_output_shapes,
 	span<const shape_type> /*input_shapes*/
@@ -68,7 +68,7 @@ void elementwise_shape_policy::accept(
 		if (user_output_shapes[i] != reference_shape)
 		{
 			throw std::invalid_argument(
-				"elementwise_shape_policy requires all outputs to "
+				"elementwise_operation_shape_policy requires all outputs to "
 				"have the same shape."
 			);
 		}
@@ -81,18 +81,18 @@ void elementwise_shape_policy::accept(
 	if (!valid)
 	{
 		throw std::invalid_argument(
-			"elementwise_shape_policy requires the user-supplied "
+			"elementwise_operation_shape_policy requires the user-supplied "
 			"output shape to be broadcast-compatible with the inputs."
 		);
 	}
 }
 
-const elementwise_shape_policy&
-elementwise_shape_policy::get() noexcept
+const elementwise_operation_shape_policy&
+elementwise_operation_shape_policy::get() noexcept
 {
-	static const elementwise_shape_policy instance;
+	static const elementwise_operation_shape_policy instance;
 	return instance;
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

@@ -2,33 +2,33 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/operations/shape_policies/elementwise_shape_policy.hpp>
+#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <stdexcept>
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
 using shape_type = std::vector<std::size_t>;
 
 TEST_CASE(
-    "elementwise_shape_policy::get returns a singleton",
-    "[elementwise_shape_policy]"
+    "elementwise_operation_shape_policy::get returns a singleton",
+    "[elementwise_operation_shape_policy]"
 )
 {
-    CHECK( &elementwise_shape_policy::get() ==
-           &elementwise_shape_policy::get() );
+    CHECK( &elementwise_operation_shape_policy::get() ==
+           &elementwise_operation_shape_policy::get() );
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::deduce fills all outputs with "
+    "elementwise_operation_shape_policy::deduce fills all outputs with "
     "the broadcast shape of all inputs",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> inputs = { {1, 8}, {4, 1} };
     std::vector<shape_type> outputs(2);
@@ -40,11 +40,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::deduce works with a single input",
-    "[elementwise_shape_policy]"
+    "elementwise_operation_shape_policy::deduce works with a single input",
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> inputs  = { {3, 5} };
     std::vector<shape_type>       outputs(1);
@@ -55,12 +55,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::deduce yields scalar shapes for "
+    "elementwise_operation_shape_policy::deduce yields scalar shapes for "
     "empty inputs",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> inputs;
     std::vector<shape_type>       outputs(2, shape_type{7, 7});
@@ -74,12 +74,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::accept admits any user output when "
+    "elementwise_operation_shape_policy::accept admits any user output when "
     "the canonical shape is scalar (no inputs)",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> canonical    = { shape_type{} };
     const std::vector<shape_type> inputs;
@@ -95,12 +95,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::accept does not throw when all user "
+    "elementwise_operation_shape_policy::accept does not throw when all user "
     "outputs can be broadcasted to the canonical shape",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> canonical    = { {1, 8}, {1, 8} };
     const std::vector<shape_type> inputs       = { {1, 8} };
@@ -116,12 +116,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::accept throws when user outputs "
+    "elementwise_operation_shape_policy::accept throws when user outputs "
     "have different shapes",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> canonical    = { {4, 8} };
     const std::vector<shape_type> inputs       = { {4, 8} };
@@ -135,12 +135,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "elementwise_shape_policy::accept throws when canonical shape "
+    "elementwise_operation_shape_policy::accept throws when canonical shape "
     "is not broadcast-compatible with the user output",
-    "[elementwise_shape_policy]"
+    "[elementwise_operation_shape_policy]"
 )
 {
-    const auto& pol = elementwise_shape_policy::get();
+    const auto& pol = elementwise_operation_shape_policy::get();
 
     const std::vector<shape_type> canonical    = { {4, 8} };
     const std::vector<shape_type> inputs       = { {4, 8} };

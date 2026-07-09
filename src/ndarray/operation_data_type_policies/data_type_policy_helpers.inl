@@ -9,7 +9,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 XMIPP4_NORETURN
@@ -115,5 +115,5 @@ inline void fill(span<numerical_type> types, numerical_type value)
 	std::fill(types.begin(), types.end(), value);
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

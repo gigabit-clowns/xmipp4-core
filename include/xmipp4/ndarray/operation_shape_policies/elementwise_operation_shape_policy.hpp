@@ -7,7 +7,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
@@ -15,8 +15,8 @@ namespace operations
  *
  * This policy allows broadcast compatibility of input operands.
  */
-class XMIPP4_CORE_API elementwise_shape_policy final
-	: public dispatch::operation_shape_policy
+class XMIPP4_CORE_API elementwise_operation_shape_policy final
+	: public operation_shape_policy
 {
 public:
 	void deduce(
@@ -30,9 +30,9 @@ public:
 		span<const shape_type> input_shapes
 	) const override;
 
-	static const elementwise_shape_policy& get() noexcept;
+	static const elementwise_operation_shape_policy& get() noexcept;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4
 

@@ -9,7 +9,7 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 XMIPP4_NORETURN
@@ -51,7 +51,7 @@ void require_exact(
 
 void fill(span<numerical_type> types, numerical_type value);
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4
 
 #include "data_type_policy_helpers.inl"

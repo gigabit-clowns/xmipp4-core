@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/operations/assignment/fill_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
 
-#include <xmipp4/core/operations/shape_policies/elementwise_shape_policy.hpp>
-#include <xmipp4/core/operations/data_type_policies/homogeneous_data_type_policy.hpp>
+#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 fill_operation::fill_operation(const scalar_value &fill_value) noexcept
@@ -24,21 +24,21 @@ std::string fill_operation::get_name() const
     return "fill";
 }
 
-const dispatch::operation_shape_policy&
+const operation_shape_policy&
 fill_operation::get_operation_shape_policy() const noexcept
 {
-	return elementwise_shape_policy::get();
+	return elementwise_operation_shape_policy::get();
 }
 
-const dispatch::operation_data_type_policy&
+const operation_data_type_policy&
 fill_operation::get_operation_data_type_policy() const noexcept
 {
-	return homogeneous_data_type_policy::get();
+	return homogeneous_operation_data_type_policy::get();
 }
 
-dispatch::operation_arity fill_operation::get_arity() const noexcept
+operation_arity fill_operation::get_arity() const noexcept
 {
-    return dispatch::operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
+    return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
 }
 
 const scalar_value& fill_operation::get_fill_value() const noexcept
@@ -46,5 +46,5 @@ const scalar_value& fill_operation::get_fill_value() const noexcept
 	return m_fill_value;
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

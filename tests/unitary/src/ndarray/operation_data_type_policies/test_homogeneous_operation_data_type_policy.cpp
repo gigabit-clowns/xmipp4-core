@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/operations/data_type_policies/homogeneous_data_type_policy.hpp>
+#include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical_type.hpp>
 
@@ -10,24 +10,24 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::operations;
+using namespace xmipp4::dispatch;
 
 TEST_CASE(
-    "homogeneous_data_type_policy::get returns a singleton",
-    "[homogeneous_data_type_policy]"
+    "homogeneous_operation_data_type_policy::get returns a singleton",
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    CHECK( &homogeneous_data_type_policy::get() ==
-           &homogeneous_data_type_policy::get() );
+    CHECK( &homogeneous_operation_data_type_policy::get() ==
+           &homogeneous_operation_data_type_policy::get() );
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::deduce fills all outputs "
+    "homogeneous_operation_data_type_policy::deduce fills all outputs "
     "with the common input type",
-    "[homogeneous_data_type_policy]"
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs = {
         numerical_type::float32, numerical_type::float32
@@ -41,11 +41,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::deduce throws when inputs differ",
-    "[homogeneous_data_type_policy]"
+    "homogeneous_operation_data_type_policy::deduce throws when inputs differ",
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs = {
         numerical_type::float32, numerical_type::float64
@@ -59,11 +59,11 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::deduce throws for unknown type",
-    "[homogeneous_data_type_policy]"
+    "homogeneous_operation_data_type_policy::deduce throws for unknown type",
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs  = { numerical_type::unknown };
     std::vector<numerical_type>       outputs = { numerical_type::unknown };
@@ -75,12 +75,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::deduce yields unknown types for "
+    "homogeneous_operation_data_type_policy::deduce yields unknown types for "
     "empty inputs",
-    "[homogeneous_data_type_policy]"
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs;
     std::vector<numerical_type>       outputs(2, numerical_type::float32);
@@ -94,12 +94,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::accept adopts the user output "
+    "homogeneous_operation_data_type_policy::accept adopts the user output "
     "type when there are no inputs",
-    "[homogeneous_data_type_policy]"
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs;
     const std::vector<numerical_type> canonical = {
@@ -119,12 +119,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::accept throws when user outputs "
+    "homogeneous_operation_data_type_policy::accept throws when user outputs "
     "disagree and there are no inputs",
-    "[homogeneous_data_type_policy]"
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs;
     const std::vector<numerical_type> canonical = {
@@ -145,12 +145,12 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "homogeneous_data_type_policy::accept requires user outputs to "
+    "homogeneous_operation_data_type_policy::accept requires user outputs to "
     "match the canonical type when inputs are present",
-    "[homogeneous_data_type_policy]"
+    "[homogeneous_operation_data_type_policy]"
 )
 {
-    const auto& pol = homogeneous_data_type_policy::get();
+    const auto& pol = homogeneous_operation_data_type_policy::get();
 
     const std::vector<numerical_type> inputs       = { numerical_type::float32 };
     const std::vector<numerical_type> canonical    = { numerical_type::float32 };

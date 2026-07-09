@@ -2,7 +2,7 @@
 
 #include "cpu_fill_program_builder.hpp"
 
-#include <xmipp4/core/operations/assignment/fill_operation.hpp>
+#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -84,7 +84,7 @@ make_fill_program(
 				},
 				access_layout,
 				std::get<
-					operations::fill_operation::OUTPUT_OPERAND_DESTINATION
+					fill_operation::OUTPUT_OPERAND_DESTINATION
 				>(outputs)
 			);
 		},
@@ -116,7 +116,7 @@ make_fill_program(
 operation_id
 cpu_fill_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<operations::fill_operation>();
+	return operation_id::of<fill_operation>();
 }
 
 std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
@@ -128,7 +128,7 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 ) const
 {
 	const auto *fill_op =
-		dynamic_cast<const operations::fill_operation*>(&operation);
+		dynamic_cast<const fill_operation*>(&operation);
 	if (fill_op == nullptr)
 	{
 		throw std::invalid_argument(
@@ -139,7 +139,7 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 
 	if (
 		output_signatures.size() !=
-		operations::fill_operation::OUTPUT_OPERAND_COUNT
+		fill_operation::OUTPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -150,7 +150,7 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 
 	if (
 		input_signatures.size() !=
-		operations::fill_operation::INPUT_OPERAND_COUNT
+		fill_operation::INPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -160,7 +160,7 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 	}
 
 	const auto &destination_descriptor =
-		output_signatures[operations::fill_operation::OUTPUT_OPERAND_DESTINATION]
+		output_signatures[fill_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
 
 	const auto data_type = destination_descriptor.get_data_type();

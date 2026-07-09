@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "copy_data_type_policy.hpp"
+#include "copy_operation_data_type_policy.hpp"
 
 #include "data_type_policy_helpers.hpp"
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
-void copy_data_type_policy::deduce(
+void copy_operation_data_type_policy::deduce(
 	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
@@ -19,12 +19,12 @@ void copy_data_type_policy::deduce(
 
 	require_valid(
 		input_types[0],
-		"copy_data_type_policy::deduce"
+		"copy_operation_data_type_policy::deduce"
 	);
 	canonical_output_types[0] = input_types[0];
 }
 
-void copy_data_type_policy::accept(
+void copy_operation_data_type_policy::accept(
 	span<const numerical_type> user_output_types,
 	span<const numerical_type> /*canonical_output_types*/,
 	span<const numerical_type> /*input_types*/
@@ -34,16 +34,16 @@ void copy_data_type_policy::accept(
 
 	require_valid(
 		user_output_types[0],
-		"copy_data_type_policy::accept"
+		"copy_operation_data_type_policy::accept"
 	);
 }
 
-const copy_data_type_policy& 
-copy_data_type_policy::get() noexcept
+const copy_operation_data_type_policy&
+copy_operation_data_type_policy::get() noexcept
 {
-	static const copy_data_type_policy instance;
+	static const copy_operation_data_type_policy instance;
 	return instance;
 }
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

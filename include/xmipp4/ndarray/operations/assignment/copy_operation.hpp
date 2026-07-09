@@ -7,14 +7,14 @@
 
 namespace xmipp4
 {
-namespace operations
+namespace dispatch
 {
 
 /**
  * @brief Copy elements from an input array to an output array.
  */
 class XMIPP4_CORE_API copy_operation final
-	: public dispatch::operation
+	: public operation
 {
 public:
 	/**
@@ -38,12 +38,12 @@ public:
 	};
 
 	std::string get_name() const override;
-	dispatch::operation_arity get_arity() const noexcept override;
-	const dispatch::operation_shape_policy&
+	operation_arity get_arity() const noexcept override;
+	const operation_shape_policy&
 	get_operation_shape_policy() const noexcept override;
-	const dispatch::operation_data_type_policy&
+	const operation_data_type_policy&
 	get_operation_data_type_policy() const noexcept override;
 };
 
-} // namespace operations
+} // namespace dispatch
 } // namespace xmipp4

@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/functional/array_cast.hpp>
+#include <xmipp4/functional/cast.hpp>
 
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>

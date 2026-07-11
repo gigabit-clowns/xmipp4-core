@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/functional/array_creation.hpp>
+#include <xmipp4/functional/creation.hpp>
 
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/ops/assignment/copy_operation.hpp>

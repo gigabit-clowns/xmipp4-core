@@ -2,10 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/functional/array_transfer.hpp>
+#include <xmipp4/functional/transfer.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
-#include <xmipp4/functional/array_creation.hpp>
+#include <xmipp4/functional/creation.hpp>
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/dispatch/dispatcher.hpp>

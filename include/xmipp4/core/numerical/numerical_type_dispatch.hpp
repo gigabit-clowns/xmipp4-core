@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../meta/type_wrap.hpp"
+#include "../meta/type_tag.hpp"
 #include "numerical_type.hpp"
 #include "fixed_float.hpp"
 #include "../platform/constexpr.hpp"

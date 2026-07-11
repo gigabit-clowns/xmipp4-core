@@ -9,20 +9,6 @@ namespace xmipp4
 {
 
 /**
- * @brief Helper class to pass type information to a function.
- * 
- * Eventually to be replaced with `std::type_identity` in C++20.
- * 
- * @tparam T Type passed.
- */
-template <typename T>
-class type_tag
-{
-public:
-	using type = T; ///< The type passed as the template argument.
-};
-
-/**
  * @brief Helper class to pass a heterogeneous sequence of types to a function.
  * 
  * This class offers similar functionality to `std::tuple`, but explicitly

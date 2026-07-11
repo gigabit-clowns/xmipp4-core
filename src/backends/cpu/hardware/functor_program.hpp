@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/meta/type_wrap.hpp>
+#include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
 

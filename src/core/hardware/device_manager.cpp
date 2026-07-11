@@ -6,7 +6,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <core/named_service_manager_implementation.hpp>
-#include <cpu/hardware/cpu_device_backend.hpp>
+#include <backends/cpu/hardware/device_backend.hpp>
 
 #include <stdexcept>
 #include <unordered_map>
@@ -43,7 +43,7 @@ device_manager::~device_manager() = default;
 
 void device_manager::register_builtin_backends()
 {
-	cpu_device_backend::register_at(*this);
+	cpu::device_backend::register_at(*this);
 }
 
 bool device_manager::register_backend(std::unique_ptr<device_backend> backend)

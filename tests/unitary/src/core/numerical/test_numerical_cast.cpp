@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/numerical/numerical_cast.hpp>
 
-#include <xmipp4/core/numerical/fixed_float.hpp>
+#include <xmipp4/core/numerical/fixed_width_float.hpp>
 
 #include <complex>
 #include <type_traits>

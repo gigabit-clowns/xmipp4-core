@@ -4,7 +4,7 @@
 
 #include "../meta/type_tag.hpp"
 #include "numerical_type.hpp"
-#include "fixed_float.hpp"
+#include "fixed_width_float.hpp"
 #include "../platform/constexpr.hpp"
 
 #include <complex>

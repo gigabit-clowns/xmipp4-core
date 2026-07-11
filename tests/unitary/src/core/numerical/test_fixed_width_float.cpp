@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/numerical/fixed_float.hpp>
+#include <xmipp4/core/numerical/fixed_width_float.hpp>
 
 using namespace xmipp4;
 

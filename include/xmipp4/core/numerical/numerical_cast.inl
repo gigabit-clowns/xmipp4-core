@@ -2,7 +2,7 @@
 
 #include "numerical_cast.hpp"
 
-#include "fixed_float.hpp"
+#include "fixed_width_float.hpp"
 
 namespace xmipp4
 {

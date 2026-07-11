@@ -4,7 +4,7 @@
 
 #include "numerical_type_dispatch.hpp"
 
-#include "fixed_float.hpp"
+#include "fixed_width_float.hpp"
 
 #include <complex>
 #include <stdexcept>

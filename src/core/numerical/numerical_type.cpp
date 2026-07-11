@@ -3,7 +3,7 @@
 #include <xmipp4/core/numerical/numerical_type.hpp>
 
 #include <xmipp4/core/platform/enum_helpers.hpp>
-#include <xmipp4/core/numerical/fixed_float.hpp>
+#include <xmipp4/core/numerical/fixed_width_float.hpp>
 
 #include "numerical_type_promotion_lattice.hpp"
 

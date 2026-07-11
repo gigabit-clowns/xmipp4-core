@@ -2,9 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/ndarray/functional/array_creation.hpp>
+#include <xmipp4/functional/array_transfer.hpp>
 
 #include <xmipp4/core/service_catalog.hpp>
+#include <xmipp4/functional/array_creation.hpp>
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/dispatch/dispatcher.hpp>
@@ -81,123 +82,76 @@ protected:
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"empty produces a host-accessible array carrying the requested descriptor",
-	"[array_creation][cpu]"
+	"transfer to device aliases the input on CPU because host and device "
+	"resources coincide",
+	"[array_transfer][cpu]"
 )
 {
 	const auto descriptor = make_descriptor({ 2, 3 });
 
-	const auto result = empty(
+	auto source = full(
 		descriptor,
 		memory_resource_affinity::host,
+		scalar_value(2.0f),
+		context
+	);
+
+	const auto result = transfer(
+		source,
+		memory_resource_affinity::device,
 		context
 	);
 
 	CHECK( result.get_descriptor() == descriptor );
 
-	// The storage must exist and be reachable from the host, even though its
-	// contents are left uninitialized.
-	const auto *storage = result.get_storage();
-	REQUIRE( storage != nullptr );
-	CHECK( storage->get_host_ptr() != nullptr );
-}
-
-TEST_CASE_METHOD(
-	cpu_execution_context_fixture,
-	"zeros sets every element of a host array to zero",
-	"[array_creation][cpu]"
-)
-{
-	const auto descriptor = make_descriptor({ 2, 3 });
-
-	const auto result = zeros(
-		descriptor,
-		memory_resource_affinity::host,
-		context
-	);
-
-	CHECK( result.get_descriptor() == descriptor );
+	// On CPU the device resource aliases the host resource, so no copy is made:
+	// the result shares the source storage.
+	CHECK( result.get_storage() == source.get_storage() );
 
 	const auto values = read_host<float>(result, 6);
 	for (const auto value : values)
 	{
-		CHECK( value == 0.0f );
+		CHECK( value == 2.0f );
 	}
 }
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"ones sets every element of a host array to one",
-	"[array_creation][cpu]"
+	"transfer to host aliases the input on CPU",
+	"[array_transfer][cpu]"
 )
 {
 	const auto descriptor = make_descriptor({ 2, 3 });
 
-	const auto result = ones(
+	auto source = full(
 		descriptor,
+		memory_resource_affinity::host,
+		scalar_value(5.0f),
+		context
+	);
+
+	const auto result = transfer(
+		source,
 		memory_resource_affinity::host,
 		context
 	);
 
 	CHECK( result.get_descriptor() == descriptor );
 
+	// The source already lives on host-accessible memory, so it is aliased.
+	CHECK( result.get_storage() == source.get_storage() );
+
 	const auto values = read_host<float>(result, 6);
 	for (const auto value : values)
 	{
-		CHECK( value == 1.0f );
+		CHECK( value == 5.0f );
 	}
 }
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"full sets every element of a host array to the requested value",
-	"[array_creation][cpu]"
-)
-{
-	const auto descriptor = make_descriptor({ 4 });
-
-	const auto result = full(
-		descriptor,
-		memory_resource_affinity::host,
-		scalar_value(3.5f),
-		context
-	);
-
-	const auto values = read_host<float>(result, 4);
-	for (const auto value : values)
-	{
-		CHECK( value == 3.5f );
-	}
-}
-
-TEST_CASE_METHOD(
-	cpu_execution_context_fixture,
-	"fill overwrites the contents of an existing host array",
-	"[array_creation][cpu]"
-)
-{
-	const auto descriptor = make_descriptor({ 5 });
-
-	// Start from zeros so a successful fill is unambiguous.
-	auto result = zeros(
-		descriptor,
-		memory_resource_affinity::host,
-		context
-	);
-
-	fill(result, scalar_value(7.0f), context);
-
-	const auto values = read_host<float>(result, 5);
-	for (const auto value : values)
-	{
-		CHECK( value == 7.0f );
-	}
-}
-
-TEST_CASE_METHOD(
-	cpu_execution_context_fixture,
-	"copy duplicates the source contents into independent storage",
-	"[array_creation][cpu]"
+	"transfer_copy duplicates the source into independent storage on CPU",
+	"[array_transfer][cpu]"
 )
 {
 	const auto descriptor = make_descriptor({ 2, 3 });
@@ -205,20 +159,125 @@ TEST_CASE_METHOD(
 	const auto source = full(
 		descriptor,
 		memory_resource_affinity::host,
-		scalar_value(2.0f),
+		scalar_value(3.0f),
 		context
 	);
 
-	const auto result = copy(source, context);
+	const auto result = transfer_copy(
+		source,
+		memory_resource_affinity::device,
+		context
+	);
 
 	CHECK( result.get_descriptor() == descriptor );
 
-	// The copy owns a distinct buffer from the source.
+	// A forced copy always owns a distinct buffer from the source, even though
+	// the CPU host and device resources coincide.
 	CHECK( result.get_storage() != source.get_storage() );
 
 	const auto values = read_host<float>(result, 6);
 	for (const auto value : values)
 	{
-		CHECK( value == 2.0f );
+		CHECK( value == 3.0f );
+	}
+}
+
+TEST_CASE_METHOD(
+	cpu_execution_context_fixture,
+	"transfer_copy reuses the storage of the provided output array on CPU",
+	"[array_transfer][cpu]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+
+	const auto source = full(
+		descriptor,
+		memory_resource_affinity::host,
+		scalar_value(6.0f),
+		context
+	);
+
+	// Pre-allocate a compatible output; its storage should be reused.
+	auto out = zeros(
+		descriptor,
+		memory_resource_affinity::host,
+		context
+	);
+	const auto *out_storage = out.get_storage();
+
+	const auto result = transfer_copy(
+		source,
+		memory_resource_affinity::host,
+		context,
+		&out
+	);
+
+	CHECK( result.get_storage() == out_storage );
+	CHECK( result.get_storage() != source.get_storage() );
+
+	const auto values = read_host<float>(result, 6);
+	for (const auto value : values)
+	{
+		CHECK( value == 6.0f );
+	}
+}
+
+TEST_CASE_METHOD(
+	cpu_execution_context_fixture,
+	"to_device and to_host alias the input on CPU",
+	"[array_transfer][cpu]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+
+	auto source = full(
+		descriptor,
+		memory_resource_affinity::host,
+		scalar_value(1.5f),
+		context
+	);
+
+	const auto on_device = to_device(source, context);
+	CHECK( on_device.get_storage() == source.get_storage() );
+
+	const auto on_host = to_host(source, context);
+	CHECK( on_host.get_storage() == source.get_storage() );
+
+	const auto values = read_host<float>(on_device, 6);
+	for (const auto value : values)
+	{
+		CHECK( value == 1.5f );
+	}
+}
+
+TEST_CASE_METHOD(
+	cpu_execution_context_fixture,
+	"to_device_copy and to_host_copy duplicate into independent storage on CPU",
+	"[array_transfer][cpu]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+
+	const auto source = full(
+		descriptor,
+		memory_resource_affinity::host,
+		scalar_value(4.0f),
+		context
+	);
+
+	const auto on_device = to_device_copy(source, context);
+	CHECK( on_device.get_storage() != source.get_storage() );
+
+	const auto on_host = to_host_copy(source, context);
+	CHECK( on_host.get_storage() != source.get_storage() );
+	CHECK( on_host.get_storage() != on_device.get_storage() );
+
+	for (const auto value : read_host<float>(on_device, 6))
+	{
+		CHECK( value == 4.0f );
+	}
+	for (const auto value : read_host<float>(on_host, 6))
+	{
+		CHECK( value == 4.0f );
 	}
 }

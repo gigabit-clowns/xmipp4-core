@@ -108,8 +108,12 @@ install(
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
-	DIRECTORY ${PROJECT_SOURCE_DIR}/include/ 
+	DIRECTORY ${PROJECT_SOURCE_DIR}/include/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	FILES_MATCHING
+		PATTERN "*.h"
+		PATTERN "*.hpp"
+		PATTERN "*.inl"
 )
 
 # Create and install CMake config files

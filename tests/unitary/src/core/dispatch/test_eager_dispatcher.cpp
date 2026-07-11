@@ -18,7 +18,7 @@
 #include <xmipp4/core/backend_priority.hpp>
 
 #include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -92,11 +92,11 @@ public:
 		device_properties properties;
 		properties.set_optimal_data_alignment(64);
 
-		instance = std::make_shared<device_instance>(
+		session = std::make_shared<device_session>(
 			device,
 			std::move(properties)
 		);
-		context = device_context(instance);
+		context = device_context(session);
 
 		eager_dispatcher = make_eager_dispatcher(manager);
 
@@ -269,7 +269,7 @@ protected:
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
 	std::shared_ptr<command_queue> default_queue;
-	std::shared_ptr<const device_instance> instance;
+	std::shared_ptr<const device_session> session;
 	device_context context;
 	std::shared_ptr<program_manager> manager;
 	std::shared_ptr<dispatcher> eager_dispatcher;

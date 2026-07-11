@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/hardware/device_manager.hpp>
 
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <core/named_service_manager_implementation.hpp>
@@ -96,8 +96,8 @@ bool device_manager::get_device_properties(
 	return backend->get_device_properties(index.get_device_id(), desc);
 }
 
-std::shared_ptr<device_instance>
-device_manager::create_device_instance(const device_index& index) const
+std::shared_ptr<device_session>
+device_manager::create_device_session(const device_index& index) const
 {
 	const auto *backend = get_backend(index.get_backend_name());
 	if (!backend)
@@ -114,7 +114,7 @@ device_manager::create_device_instance(const device_index& index) const
 		throw std::invalid_argument("Requested device does not exist");
 	}
 
-	return std::make_shared<device_instance>(
+	return std::make_shared<device_session>(
 		std::move(dev),
 		std::move(properties)
 	);

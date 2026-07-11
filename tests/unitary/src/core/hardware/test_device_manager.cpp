@@ -6,7 +6,7 @@
 #include <xmipp4/core/hardware/device_manager.hpp>
 
 #include <xmipp4/core/hardware/device.hpp>
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/version.hpp>
 
@@ -198,19 +198,19 @@ TEST_CASE(
 
 TEST_CASE_METHOD(
 	device_manager_fixture,
-	"create_device_instance in device_manager routes to the matching backend "
-	"and wraps its device in a device_instance",
+	"create_device_session in device_manager routes to the matching backend "
+	"and wraps its device in a device_session",
 	"[device_manager]"
 )
 {
 	const std::size_t device_id = 154433421;
 	register_named_backend("other");
 	// Held for the rest of the test: these are consumed by the
-	// create_device_instance call below, not by the registration above.
+	// create_device_session call below, not by the registration above.
 	const auto expectations = register_creating_backend("mock", device_id);
 
 	const auto result =
-		manager.create_device_instance(device_index("mock", device_id));
+		manager.create_device_session(device_index("mock", device_id));
 
 	REQUIRE( result != nullptr );
 	CHECK( result->get_device() == device );
@@ -218,7 +218,7 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	device_manager_fixture,
-	"create_device_instance in device_manager should throw when the backend "
+	"create_device_session in device_manager should throw when the backend "
 	"does not exist",
 	"[device_manager]"
 )
@@ -226,7 +226,7 @@ TEST_CASE_METHOD(
 	register_named_backend("mock");
 
 	REQUIRE_THROWS_MATCHES(
-		manager.create_device_instance(device_index("error", 0)),
+		manager.create_device_session(device_index("error", 0)),
 		std::invalid_argument,
 		Catch::Matchers::Message(
 			"Requested backend does not exist"

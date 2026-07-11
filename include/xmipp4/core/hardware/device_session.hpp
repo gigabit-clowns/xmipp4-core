@@ -18,18 +18,18 @@ class command_queue;
 /**
  * @brief Immutable aggregate of a device handle and its associated objects.
  *
- * A @c device_instance bundles a @ref device handle with the objects needed to
+ * A @c device_session bundles a @ref device handle with the objects needed to
  * make it usable: the static @ref device_properties describing it, a
  * @ref memory_allocator selected for each @ref memory_resource_affinity, and a
  * default @ref command_queue created from the device. All of these are
  * resolved once at construction and remain fixed for the lifetime of the
- * instance.
+ * session.
  */
-class device_instance
+class device_session
 {
 public:
 	/**
-	 * @brief Construct an instance wrapping @p dev.
+	 * @brief Construct an session wrapping @p dev.
 	 *
 	 * Stores @p dev and @p properties and builds the allocator for each
 	 * @ref memory_resource_affinity by querying @p dev for the matching
@@ -37,24 +37,24 @@ public:
 	 *
 	 * @param dev Device to wrap. Must not be null.
 	 * @param properties Static properties describing @p dev. Taken by value
-	 * and moved into the instance.
+	 * and moved into the session.
 	 *
 	 * @throws std::invalid_argument if @p dev is null.
 	 * @throws std::runtime_error if a required @ref memory_resource_affinity
 	 * has no suitable resource on @p dev.
 	 */
 	XMIPP4_CORE_API
-	device_instance(
+	device_session(
 		std::shared_ptr<device> dev,
 		device_properties properties
 	);
-	device_instance(const device_instance &other) = delete;
-	device_instance(device_instance &&other) = delete;
+	device_session(const device_session &other) = delete;
+	device_session(device_session &&other) = delete;
 	XMIPP4_CORE_API
-	~device_instance();
+	~device_session();
 
-	device_instance& operator=(const device_instance &other) = delete;
-	device_instance& operator=(device_instance &&other) = delete;
+	device_session& operator=(const device_session &other) = delete;
+	device_session& operator=(device_session &&other) = delete;
 
 	/**
 	 * @brief Retrieve the wrapped device handle.
@@ -76,7 +76,7 @@ public:
 	 * @brief Retrieve the allocator for the given affinity.
 	 *
 	 * The returned allocator is the one selected at construction for
-	 * @p affinity and lives as long as this @c device_instance.
+	 * @p affinity and lives as long as this @c device_session.
 	 *
 	 * @param affinity The desired memory_resource_affinity (host or device).
 	 * @return A reference to the non-null allocator for @p affinity.
@@ -86,7 +86,7 @@ public:
 	get_allocator(memory_resource_affinity affinity) const noexcept;
 
 	/**
-	 * @brief Retrieve the default command queue of this instance.
+	 * @brief Retrieve the default command queue of this session.
 	 *
 	 * @return A reference to the non-null default command queue.
 	 *

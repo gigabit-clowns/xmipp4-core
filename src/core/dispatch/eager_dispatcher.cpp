@@ -13,7 +13,7 @@
 #include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
@@ -170,11 +170,11 @@ resolve_output_storage(
 	result_type result;
 	result.reserve(n);
 
-	const auto &instance = device_context.get_device_instance();
+	const auto &session = device_context.get_device_session();
 	const auto &allocator = device_context.get_allocator(
 		memory_resource_affinity::device
 	);
-	const auto &properties = instance->get_properties();
+	const auto &properties = session->get_properties();
 	const auto max_alignment = allocator->get_max_alignment();
 	const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);

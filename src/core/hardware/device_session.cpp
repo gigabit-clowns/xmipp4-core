@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
@@ -14,7 +14,7 @@
 namespace xmipp4
 {
 
-class device_instance::implementation
+class device_session::implementation
 {
 public:
 	implementation(
@@ -59,7 +59,7 @@ private:
 };
 
 
-device_instance::device_instance(
+device_session::device_session(
 	std::shared_ptr<device> dev,
 	device_properties properties
 )
@@ -67,7 +67,7 @@ device_instance::device_instance(
 	if (!dev)
 	{
 		throw std::invalid_argument(
-			"Cannot construct a device_instance from a null device."
+			"Cannot construct a device_session from a null device."
 		);
 	}
 
@@ -77,22 +77,22 @@ device_instance::device_instance(
 	);
 }
 
-device_instance::~device_instance() = default;
+device_session::~device_session() = default;
 
-const std::shared_ptr<device>& device_instance::get_device() const noexcept
+const std::shared_ptr<device>& device_session::get_device() const noexcept
 {
 	XMIPP4_ASSERT(m_implementation);
 	return m_implementation->get_device();
 }
 
-const device_properties& device_instance::get_properties() const noexcept
+const device_properties& device_session::get_properties() const noexcept
 {
 	XMIPP4_ASSERT(m_implementation);
 	return m_implementation->get_properties();
 }
 
 const std::shared_ptr<memory_allocator>&
-device_instance::get_allocator(
+device_session::get_allocator(
 	memory_resource_affinity affinity
 ) const noexcept
 {
@@ -101,7 +101,7 @@ device_instance::get_allocator(
 }
 
 const std::shared_ptr<command_queue>&
-device_instance::get_default_queue() const noexcept
+device_session::get_default_queue() const noexcept
 {
 	XMIPP4_ASSERT(m_implementation);
 	return m_implementation->get_default_queue();

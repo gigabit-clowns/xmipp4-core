@@ -9,7 +9,7 @@
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
@@ -62,10 +62,10 @@ std::shared_ptr<buffer> allocate_array_storage(
 	memory_allocator &allocator
 )
 {
-	const auto &instance = device_context.get_device_instance();
-	XMIPP4_ASSERT(instance);
+	const auto &session = device_context.get_device_session();
+	XMIPP4_ASSERT(session);
 
-	const auto &properties = instance->get_properties();
+	const auto &properties = session->get_properties();
 	const auto &queue = device_context.get_active_queue();
 
 	const auto max_alignment = allocator.get_max_alignment();

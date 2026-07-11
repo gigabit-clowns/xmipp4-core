@@ -16,7 +16,7 @@
 #include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
@@ -56,7 +56,7 @@ struct dispatch_record
 	std::size_t num_inputs = 0;
 	const buffer *first_output_storage = nullptr;
 	const buffer *first_input_storage = nullptr;
-	const xmipp4::device_instance *device_instance = nullptr;
+	const xmipp4::device_session *device_session = nullptr;
 
 	void operator()(
 		const operation &op,
@@ -82,7 +82,7 @@ struct dispatch_record
 		{
 			first_input_storage = inputs[0].get_storage();
 		}
-		device_instance = device_context.get_device_instance().get();
+		device_session = device_context.get_device_session().get();
 	}
 };
 
@@ -117,13 +117,13 @@ public:
 		REQUIRE_CALL(*device, create_command_queue())
 			.RETURN(default_queue);
 
-		instance = std::make_shared<device_instance>(
+		session = std::make_shared<device_session>(
 			device,
 			std::move(properties)
 		);
 
 		context = execution_context(
-			device_context(instance),
+			device_context(session),
 			dispatcher
 		);
 	}
@@ -146,7 +146,7 @@ protected:
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
 	std::shared_ptr<command_queue> default_queue;
-	std::shared_ptr<const device_instance> instance;
+	std::shared_ptr<const device_session> session;
 	std::shared_ptr<mock_dispatcher> dispatcher;
 	execution_context context;
 };
@@ -463,7 +463,7 @@ TEST_CASE_METHOD(
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 0 );
 	CHECK( record.first_output_storage == buffer.get() );
-	CHECK( record.device_instance == instance.get() );
+	CHECK( record.device_session == session.get() );
 }
 
 TEST_CASE_METHOD(
@@ -560,7 +560,7 @@ TEST_CASE_METHOD(
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 1 );
 	CHECK( record.first_input_storage == source_buffer.get() );
-	CHECK( record.device_instance == instance.get() );
+	CHECK( record.device_session == session.get() );
 }
 
 TEST_CASE_METHOD(

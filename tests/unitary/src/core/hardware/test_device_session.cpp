@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
@@ -22,10 +22,10 @@ using namespace xmipp4;
 namespace
 {
 
-class device_instance_fixture
+class device_session_fixture
 {
 public:
-	device_instance_fixture()
+	device_session_fixture()
 		: device(std::make_shared<mock_device>())
 		, host_allocator(std::make_shared<mock_memory_allocator>())
 		, device_allocator(std::make_shared<mock_memory_allocator>())
@@ -105,9 +105,9 @@ private:
 
 
 TEST_CASE_METHOD(
-	device_instance_fixture,
-	"device_instance exposes the wrapped device and its properties",
-	"[device_instance]"
+	device_session_fixture,
+	"device_session exposes the wrapped device and its properties",
+	"[device_session]"
 )
 {
 	expect_distinct_resources();
@@ -116,77 +116,77 @@ TEST_CASE_METHOD(
 	properties.set_name("Test device");
 	properties.set_type(device_type::gpu);
 
-	const device_instance instance(device, properties);
+	const device_session session(device, properties);
 
-	CHECK( instance.get_device() == device );
-	CHECK( instance.get_properties().get_name() == "Test device" );
-	CHECK( instance.get_properties().get_type() == device_type::gpu );
+	CHECK( session.get_device() == device );
+	CHECK( session.get_properties().get_name() == "Test device" );
+	CHECK( session.get_properties().get_type() == device_type::gpu );
 }
 
 TEST_CASE_METHOD(
-	device_instance_fixture,
-	"device_instance selects an allocator for each affinity",
-	"[device_instance]"
+	device_session_fixture,
+	"device_session selects an allocator for each affinity",
+	"[device_session]"
 )
 {
 	expect_distinct_resources();
 
-	const device_instance instance(device, device_properties{});
+	const device_session session(device, device_properties{});
 
 	CHECK(
-		instance.get_allocator(memory_resource_affinity::host)
+		session.get_allocator(memory_resource_affinity::host)
 		== host_allocator
 	);
 	CHECK(
-		instance.get_allocator(memory_resource_affinity::device)
+		session.get_allocator(memory_resource_affinity::device)
 		== device_allocator
 	);
 }
 
 TEST_CASE_METHOD(
-	device_instance_fixture,
-	"device_instance shares one allocator when both affinities map to the same "
+	device_session_fixture,
+	"device_session shares one allocator when both affinities map to the same "
 	"resource",
-	"[device_instance]"
+	"[device_session]"
 )
 {
 	expect_shared_resource();
 
-	const device_instance instance(device, device_properties{});
+	const device_session session(device, device_properties{});
 
 	CHECK(
-		instance.get_allocator(memory_resource_affinity::host)
+		session.get_allocator(memory_resource_affinity::host)
 		== host_allocator
 	);
 	CHECK(
-		instance.get_allocator(memory_resource_affinity::device)
+		session.get_allocator(memory_resource_affinity::device)
 		== host_allocator
 	);
 	CHECK(
-		instance.get_allocator(memory_resource_affinity::host)
-		== instance.get_allocator(memory_resource_affinity::device)
+		session.get_allocator(memory_resource_affinity::host)
+		== session.get_allocator(memory_resource_affinity::device)
 	);
 }
 
 TEST_CASE_METHOD(
-	device_instance_fixture,
-	"device_instance shares creates a default command queue",
-	"[device_instance]"
+	device_session_fixture,
+	"device_session shares creates a default command queue",
+	"[device_session]"
 )
 {
 	expect_distinct_resources();
-	const device_instance instance(device, device_properties{});
+	const device_session session(device, device_properties{});
 
-	CHECK( instance.get_default_queue() == default_command_queue );
+	CHECK( session.get_default_queue() == default_command_queue );
 }
 
 TEST_CASE(
-	"device_instance constructor throws when the device is null",
-	"[device_instance]"
+	"device_session constructor throws when the device is null",
+	"[device_session]"
 )
 {
 	CHECK_THROWS_AS(
-		device_instance(std::shared_ptr<device>(), device_properties{}),
+		device_session(std::shared_ptr<device>(), device_properties{}),
 		std::invalid_argument
 	);
 }

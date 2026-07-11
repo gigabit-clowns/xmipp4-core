@@ -5,29 +5,29 @@
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
 #include <xmipp4/core/layout/broadcast_error.hpp>
-#include <xmipp4/core/layout/access_layout.hpp>
-#include <core/layout/access_layout_implementation.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <core/layout/joint_layout_implementation.hpp>
 
 #include <algorithm>
 #include <iostream>
 
 using namespace xmipp4;
 
-TEST_CASE( "default constructing a access_layout_builder should point to a null implementation", "[access_layout_builder]" )
+TEST_CASE( "default constructing a joint_layout_builder should point to a null implementation", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 	const auto *impl = builder.get_implementation();
 	REQUIRE( impl == nullptr );
 }
 
-TEST_CASE( "setting the iteration extents in access_layout_builder should initialize the implementation", "[access_layout_builder]" )
+TEST_CASE( "setting the iteration extents in joint_layout_builder should initialize the implementation", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -38,9 +38,9 @@ TEST_CASE( "setting the iteration extents in access_layout_builder should initia
 	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "setting the iteration extents in access_layout_builder with an implementation should throw", "[access_layout_builder]" )
+TEST_CASE( "setting the iteration extents in joint_layout_builder with an implementation should throw", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -52,9 +52,9 @@ TEST_CASE( "setting the iteration extents in access_layout_builder with an imple
 	);
 }
 
-TEST_CASE( "adding the first operand access_layout_builder should initialize it", "[access_layout_builder]" )
+TEST_CASE( "adding the first operand joint_layout_builder should initialize it", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
@@ -67,9 +67,9 @@ TEST_CASE( "adding the first operand access_layout_builder should initialize it"
 	CHECK( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
-TEST_CASE( "Adding a valid operand access_layout_builder should add it", "[access_layout_builder]" )
+TEST_CASE( "Adding a valid operand joint_layout_builder should add it", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	auto layout = strided_layout::make_contiguous_layout(xmipp4::make_span(extents));
@@ -90,9 +90,9 @@ TEST_CASE( "Adding a valid operand access_layout_builder should add it", "[acces
 	CHECK( impl->get_offset(0) == offset );
 }
 
-TEST_CASE( "Adding an operand with non-broadcastable extents in access_layout_builder should throw", "[access_layout_builder]" )
+TEST_CASE( "Adding an operand with non-broadcastable extents in joint_layout_builder should throw", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents1 = {20, 6, 12, 12};
 	std::vector<std::size_t> extents2 = {20, 4, 12, 12};
@@ -109,9 +109,9 @@ TEST_CASE( "Adding an operand with non-broadcastable extents in access_layout_bu
 	);
 }
 
-TEST_CASE( "Adding an operand with a size-1 axis in access_layout_builder should broadcast it", "[access_layout_builder]" )
+TEST_CASE( "Adding an operand with a size-1 axis in joint_layout_builder should broadcast it", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(iteration_extents));
@@ -134,9 +134,9 @@ TEST_CASE( "Adding an operand with a size-1 axis in access_layout_builder should
 	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
 }
 
-TEST_CASE( "Adding an operand with fewer dimensions in access_layout_builder should pad with size-1 axes", "[access_layout_builder]" )
+TEST_CASE( "Adding an operand with fewer dimensions in joint_layout_builder should pad with size-1 axes", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(iteration_extents));
@@ -159,9 +159,9 @@ TEST_CASE( "Adding an operand with fewer dimensions in access_layout_builder sho
 	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
 }
 
-TEST_CASE( "Adding an operand with fewer dimensions and a size-1 axis in access_layout_builder should broadcast both", "[access_layout_builder]" )
+TEST_CASE( "Adding an operand with fewer dimensions and a size-1 axis in joint_layout_builder should broadcast both", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(iteration_extents));
@@ -184,9 +184,9 @@ TEST_CASE( "Adding an operand with fewer dimensions and a size-1 axis in access_
 	CHECK( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides.begin(), result_strides.end()) );
 }
 
-TEST_CASE( "Adding a broadcastable operand via strides and extents in access_layout_builder should work", "[access_layout_builder]" )
+TEST_CASE( "Adding a broadcastable operand via strides and extents in joint_layout_builder should work", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> iteration_extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(iteration_extents));
@@ -211,22 +211,22 @@ TEST_CASE( "Adding a broadcastable operand via strides and extents in access_lay
 	CHECK( impl->get_offset(0) == offset );
 }
 
-TEST_CASE("build on access_layout_builder should move the implementation", "[access_layout_builder]" )
+TEST_CASE("build on joint_layout_builder should move the implementation", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
 	const auto *impl = builder.get_implementation();
 
-	auto access_layout = builder.build();
+	auto layout = builder.build();
 	REQUIRE( builder.get_implementation() == nullptr );
-	REQUIRE( access_layout.get_implementation() == impl );
+	REQUIRE( layout.get_implementation() == impl );
 }
 
-TEST_CASE("build with enable_reordering on access_layout_builder should re-order axes such that the first operand appears in column major ordering", "[access_layout_builder]" )
+TEST_CASE("build with enable_reordering on joint_layout_builder should re-order axes such that the first operand appears in column major ordering", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -237,7 +237,7 @@ TEST_CASE("build with enable_reordering on access_layout_builder should re-order
 	const auto operand_layout2 = strided_layout::make_custom_layout(xmipp4::make_span(extents), xmipp4::make_span(strides2));
 	builder.add_operand(operand_layout2);
 
-	auto layout = builder.build(access_layout_build_flag_bits::enable_reordering);
+	auto layout = builder.build(joint_layout_build_flag_bits::enable_reordering);
 
 	const std::vector<std::size_t> expected_extents = {12, 12, 6, 20};
 	const std::vector<std::ptrdiff_t> expected_strides1 = { 1, 12, 144, 864 };
@@ -250,9 +250,9 @@ TEST_CASE("build with enable_reordering on access_layout_builder should re-order
 	REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce contiguous axes", "[access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on joint_layout_builder should coalesce contiguous axes", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -262,7 +262,7 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce
 	builder.add_operand(operand_layout);
 	builder.add_operand(operand_layout);
 
-	auto layout = builder.build(access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(joint_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 17280 };
 	const std::vector<std::ptrdiff_t> expected_strides = { 1 };
@@ -274,9 +274,9 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce phantom axes", "[access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on joint_layout_builder should coalesce phantom axes", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 1, 1, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -286,7 +286,7 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce
 	builder.add_operand(operand_layout);
 	builder.add_operand(operand_layout);
 
-	auto layout = builder.build(access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(joint_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 240 };
 	const std::vector<std::ptrdiff_t> expected_strides = { 1 };
@@ -298,9 +298,9 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should coalesce
 	REQUIRE( std::equal(expected_strides.cbegin(), expected_strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build with enable_coalescing on access_layout_builder should not coalesce non-contiguous axes", "[access_layout_builder]" )
+TEST_CASE("build with enable_coalescing on joint_layout_builder should not coalesce non-contiguous axes", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -313,7 +313,7 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should not coal
 	builder.add_operand(operand_layout1);
 	builder.add_operand(operand_layout2);
 
-	auto layout = builder.build(access_layout_build_flag_bits::enable_coalescing);
+	auto layout = builder.build(joint_layout_build_flag_bits::enable_coalescing);
 
 	const std::vector<std::size_t> expected_extents = { 20, 72, 12 };
 	const std::vector<std::ptrdiff_t> expected_strides1 = { 1, 40, 2880 };
@@ -326,9 +326,9 @@ TEST_CASE("build with enable_coalescing on access_layout_builder should not coal
 	REQUIRE( std::equal(expected_strides2.cbegin(), expected_strides2.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE("build on access_layout_builder without flags should not modify the layout", "[access_layout_builder]" )
+TEST_CASE("build on joint_layout_builder without flags should not modify the layout", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -348,9 +348,9 @@ TEST_CASE("build on access_layout_builder without flags should not modify the la
 	REQUIRE( std::equal(strides.cbegin(), strides.cend(), result_strides2.begin(), result_strides2.end()) );
 }
 
-TEST_CASE( "build with default flags on access_layout should re-order and coalesce contiguous axes", "[access_layout_builder]" )
+TEST_CASE( "build with default flags on joint_layout should re-order and coalesce contiguous axes", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -372,9 +372,9 @@ TEST_CASE( "build with default flags on access_layout should re-order and coales
 }
 
 
-TEST_CASE( "building a reduce operation in access_layout_builder should produce expected axis ordering", "[access_layout_builder]" )
+TEST_CASE( "building a reduce operation in joint_layout_builder should produce expected axis ordering", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));
@@ -413,9 +413,9 @@ TEST_CASE( "building a reduce operation in access_layout_builder should produce 
 	CHECK( std::equal(input_strides.crbegin(), input_strides.crend(), compiled_input_strides.begin(), compiled_input_strides.end()) );
 }
 
-TEST_CASE( "building a reduce operation in access_layout_builder should simplify when possible", "[access_layout_builder]" )
+TEST_CASE( "building a reduce operation in joint_layout_builder should simplify when possible", "[joint_layout_builder]" )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 
 	const std::vector<std::size_t> extents = {20, 6, 12, 12};
 	builder.set_extents(xmipp4::make_span(extents));

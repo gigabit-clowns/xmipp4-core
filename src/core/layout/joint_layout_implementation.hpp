@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "access_layout_operand.hpp"
+#include "joint_layout_operand.hpp"
 
 #include "../config.hpp"
 
@@ -18,7 +18,7 @@
 namespace xmipp4 
 {
 
-class access_layout_implementation
+class joint_layout_implementation
 {
 public:    
 	using extent_vector_type = boost::container::small_vector<
@@ -26,13 +26,13 @@ public:
 		XMIPP4_SMALL_AXIS_COUNT
 	>;
 	using operand_vector_type = boost::container::small_vector<
-		access_layout_operand, 
+		joint_layout_operand, 
 		XMIPP4_SMALL_OPERAND_COUNT
 	>;
-	using stride_vector_type = access_layout_operand::stride_vector_type;
+	using stride_vector_type = joint_layout_operand::stride_vector_type;
 
-	access_layout_implementation() = default;
-	explicit access_layout_implementation(
+	joint_layout_implementation() = default;
+	explicit joint_layout_implementation(
 		const extent_vector_type &extents
 	);
 
@@ -46,7 +46,7 @@ public:
 		std::ptrdiff_t offset
 	);
 
-	const access_layout_operand& get_operand(std::size_t index) const;
+	const joint_layout_operand& get_operand(std::size_t index) const;
 
 	void sort_axes_by_locality();
 
@@ -63,13 +63,13 @@ public:
 	std::ptrdiff_t get_offset(std::size_t operand) const;
 
 	std::size_t iter(
-		access_iterator &ite, 
+		joint_cursor &ite, 
 		std::size_t first_dim, 
 		std::size_t last_dim
 	) const;
 
 	std::size_t next(
-		access_iterator &ite, 
+		joint_cursor &ite, 
 		std::size_t n, 
 		std::size_t first_dim,
 		std::size_t last_dim
@@ -105,4 +105,4 @@ private:
 
 } // namespace xmipp4
 
-#include "access_layout_implementation.inl"
+#include "joint_layout_implementation.inl"

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/layout/access_layout.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
 
 #include <cstddef>
 
@@ -23,18 +23,18 @@ namespace cpu
  *
  * The callable is invoked as:
  * @code
- * callable(std::move(access_layout), type_list<Ts...>(), std::tuple<Strides...>())
+ * callable(std::move(layout), type_list<Ts...>(), std::tuple<Strides...>())
  * @endcode
  * where `Ts...` are the resolved native types (one per @p data_types entry,
  * `void` if a type fails to resolve) and the tuple holds one stride tag per
- * operand. @p access_layout is moved into @p callable at the innermost
+ * operand. @p layout is moved into @p callable at the innermost
  * dispatch level so the callable can sink it into the resulting program.
  *
  * @tparam NOperands Number of operands whose strides are dispatched.
  * @tparam F Type of the callable to be invoked.
  * @tparam DataTypes Pack of `numerical_type` values to resolve.
  * @param callable Functor invoked with the resolved static combination.
- * @param access_layout Layout to dispatch strides from and move into
+ * @param joint_layout Layout to dispatch strides from and move into
  * @p callable.
  * @param data_types Runtime numerical types to resolve, one per type axis.
  * @return auto The result of invoking @p callable.
@@ -45,7 +45,7 @@ namespace cpu
 template <std::size_t NOperands, typename F, typename... DataTypes>
 auto dispatch_types_and_inner_strides(
 	F &&callable,
-	access_layout access_layout,
+	joint_layout layout,
 	DataTypes... data_types
 );
 

@@ -11,41 +11,41 @@ namespace xmipp4
 {
 
 /**
- * @brief State of a multidimensional multi-array traversal.
+ * @brief Traversal state (indices and per-operand offsets) of a joint_layout.
  */
-class access_iterator
+class joint_cursor
 {
 public:
 	/**
 	 * @brief Default constructor.
 	 */
 	XMIPP4_CORE_API
-	access_iterator() noexcept;
+	joint_cursor() noexcept;
 
 	/**
-	 * @brief Construct an array iterator at its initial state.
+	 * @brief Construct a cursor at its initial state.
 	 * 
 	 * @param ndim Number of dimensions. Initial indices will correspond to 
 	 * this amount of zeros.
 	 * @param offsets The base offsets for each operand.
 	 */
 	XMIPP4_CORE_API
-	access_iterator(
+	joint_cursor(
 		std::size_t ndim,
 		std::vector<std::ptrdiff_t> offsets
 	);
 
 	XMIPP4_CORE_API
-	access_iterator(const access_iterator &other);
+	joint_cursor(const joint_cursor &other);
 	XMIPP4_CORE_API
-	access_iterator(access_iterator &&other) noexcept;
+	joint_cursor(joint_cursor &&other) noexcept;
 	XMIPP4_CORE_API
-	~access_iterator();
+	~joint_cursor();
 
 	XMIPP4_CORE_API
-	access_iterator& operator=(const access_iterator &other);
+	joint_cursor& operator=(const joint_cursor &other);
 	XMIPP4_CORE_API
-	access_iterator& operator=(access_iterator &&other) noexcept;
+	joint_cursor& operator=(joint_cursor &&other) noexcept;
 
 	/**
 	 * @brief Get the current multidimensional indices.

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "access_layout_build_flags.hpp"
-#include "access_layout.hpp"
+#include "joint_layout_build_flags.hpp"
+#include "joint_layout.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -13,7 +13,7 @@ namespace xmipp4
 {
 
 class strided_layout;
-class access_layout_implementation;
+class joint_layout_implementation;
 
 /**
  * @brief Factory class to obtain instances of array_access_layout.
@@ -21,41 +21,41 @@ class access_layout_implementation;
  * @see array_access_layout
  * 
  */
-class access_layout_builder
+class joint_layout_builder
 {
 public:
 	static XMIPP4_CONST_CONSTEXPR 
-	access_layout_build_flags default_flags = {
-		access_layout_build_flag_bits::enable_reordering,
-		access_layout_build_flag_bits::enable_coalescing
+	joint_layout_build_flags default_flags = {
+		joint_layout_build_flag_bits::enable_reordering,
+		joint_layout_build_flag_bits::enable_coalescing
 	};
 
-	XMIPP4_CORE_API access_layout_builder() noexcept;
-	access_layout_builder(
-		const access_layout_builder&
+	XMIPP4_CORE_API joint_layout_builder() noexcept;
+	joint_layout_builder(
+		const joint_layout_builder&
 	) = delete;
 	XMIPP4_CORE_API
-	access_layout_builder(
-		access_layout_builder&& other
+	joint_layout_builder(
+		joint_layout_builder&& other
 	) noexcept;
-	XMIPP4_CORE_API ~access_layout_builder();
+	XMIPP4_CORE_API ~joint_layout_builder();
 
-	access_layout_builder& 
-	operator=(const access_layout_builder&) = delete;
-	XMIPP4_CORE_API access_layout_builder& 
-	operator=(access_layout_builder&& other) noexcept;
+	joint_layout_builder& 
+	operator=(const joint_layout_builder&) = delete;
+	XMIPP4_CORE_API joint_layout_builder& 
+	operator=(joint_layout_builder&& other) noexcept;
 
 	/**
 	 * @brief Set the extents of the iteration space.
 	 * 
 	 * @param extents Extents of the iteration space.
-	 * @return access_layout_builder& A reference to *this.
+	 * @return joint_layout_builder& A reference to *this.
 	 * 
 	 * @note This method can only be called once at most for each layout 
 	 * creation and it must be called before any call to add_operand.
 	 */
 	XMIPP4_CORE_API
-	access_layout_builder& 
+	joint_layout_builder& 
 	set_extents(span<const std::size_t> extents);
 
 	/**
@@ -68,10 +68,10 @@ public:
 	 * be broadcastable to these extents.
 	 *  
 	 * @param layout Layout of the operand.
-	 * @return access_layout_builder& A reference to *this.
+	 * @return joint_layout_builder& A reference to *this.
 	 */
 	XMIPP4_CORE_API
-	access_layout_builder& 
+	joint_layout_builder& 
 	add_operand(const strided_layout &layout);
 
 	/**
@@ -86,10 +86,10 @@ public:
 	 * @param extents The extents of the operand.
 	 * @param strides The strides of the operand
 	 * @param offset The offset of the operand.
-	 * @return access_layout_builder& A reference to *this.
+	 * @return joint_layout_builder& A reference to *this.
 	 */
 	XMIPP4_CORE_API
-	access_layout_builder& 
+	joint_layout_builder& 
 	add_operand(
 		span<const std::size_t> extents,
 		span<const std::ptrdiff_t> strides,
@@ -108,24 +108,24 @@ public:
 	 * @return array_access_layout The newly built array_access_layout.
 	 */
 	XMIPP4_CORE_API
-	access_layout build(
-		access_layout_build_flags flags = default_flags
+	joint_layout build(
+		joint_layout_build_flags flags = default_flags
 	);
 
 	/**
 	 * @brief Get a pointer to the implementation.
 	 * 
-	 * @return const access_layout_implementation* Pointer to the
+	 * @return const joint_layout_implementation* Pointer to the
 	 * implementation.
 	 * 
 	 * @note This method is meant to be used for testing purposes, as the 
-	 * access_layout_implementation is not publicly available.
+	 * joint_layout_implementation is not publicly available.
 	 */
-	const access_layout_implementation* 
+	const joint_layout_implementation* 
 	get_implementation() const noexcept;
 
 private:
-	std::unique_ptr<access_layout_implementation> m_implementation;
+	std::unique_ptr<joint_layout_implementation> m_implementation;
 };
 
 } // namespace xmipp4

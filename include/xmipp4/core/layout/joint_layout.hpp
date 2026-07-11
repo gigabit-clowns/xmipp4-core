@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "access_iterator.hpp"
+#include "joint_cursor.hpp"
 #include "../span.hpp"
 #include "../platform/dynamic_shared_object.h"
 
@@ -11,22 +11,22 @@
 namespace xmipp4 
 {
 
-class access_layout_implementation;
+class joint_layout_implementation;
 
 /**
- * @brief Provides joint access semantics for array-s
+ * @brief Provides joint access semantics for multiple operands
  * 
- * This class enables jointly iterating over multiple arrays. It stores
+ * This class enables jointly iterating over multiple operands. It stores
  * extents of the iteration space, strides for each of the operands, 
  * and offset for each of the operands.
  * 
  * Instances of this object must be obtained through 
- * access_layout_builder. Once built, it is inmutable.
+ * joint_layout_builder. Once built, it is inmutable.
  * 
- * @see access_layout_builder
+ * @see joint_layout_builder
  * 
  */
-class access_layout
+class joint_layout
 {
 public:
 	/**
@@ -36,21 +36,21 @@ public:
 	static XMIPP4_CONST_CONSTEXPR std::size_t end_dim = 
 		std::numeric_limits<std::size_t>::max();
 
-	XMIPP4_CORE_API access_layout();
-	XMIPP4_CORE_API explicit access_layout(
+	XMIPP4_CORE_API joint_layout();
+	XMIPP4_CORE_API explicit joint_layout(
 		std::unique_ptr<
-			const access_layout_implementation
+			const joint_layout_implementation
 		> implementation
 	);
-	access_layout(const access_layout&) = delete;
+	joint_layout(const joint_layout&) = delete;
 	XMIPP4_CORE_API 
-	access_layout(access_layout&& other) noexcept;
-	XMIPP4_CORE_API ~access_layout();
+	joint_layout(joint_layout&& other) noexcept;
+	XMIPP4_CORE_API ~joint_layout();
 
-	access_layout& 
-	operator=(const access_layout&) = delete;
-	XMIPP4_CORE_API access_layout& 
-	operator=(access_layout&& other) noexcept;
+	joint_layout& 
+	operator=(const joint_layout&) = delete;
+	XMIPP4_CORE_API joint_layout& 
+	operator=(joint_layout&& other) noexcept;
 
 	/**
 	 * @brief Get the number of operands
@@ -99,7 +99,7 @@ public:
 	std::ptrdiff_t get_offset(std::size_t operand) const;
 
 	/**
-	 * @brief Populate an array iterator for traversing this layout.
+	 * @brief Populate a cursor for traversing this layout.
 	 * 
 	 * @param ite The iterator to be populated.
 	 * @param first_dim Index of the inner-most dimension to be iterated. Must
@@ -112,13 +112,13 @@ public:
 	 */
 	XMIPP4_CORE_API
 	std::size_t iter(
-		access_iterator &ite, 
+		joint_cursor &ite, 
 		std::size_t first_dim = 0,
 		std::size_t last_dim = end_dim
 	) const;
 
 	/**
-	 * @brief Advance an array iterator.
+	 * @brief Advance a cursor.
 	 * 
 	 * @param ite The iterator to be advanced. Must have been populated by 
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
@@ -141,7 +141,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	std::size_t next(
-		access_iterator &ite, 
+		joint_cursor &ite, 
 		std::size_t n, 
 		std::size_t first_dim = 0,
 		std::size_t last_dim = end_dim
@@ -151,18 +151,18 @@ public:
 	/**
 	 * @brief Get a pointer to the implementation.
 	 * 
-	 * @return const access_layout_implementation* Pointer to the
+	 * @return const joint_layout_implementation* Pointer to the
 	 * implementation.
 	 *
 	 * @note This method is meant to be used for testing purposes, as the
-	 * access_layout_implementation is not publicly available.
+	 * joint_layout_implementation is not publicly available.
 	 */
-	const access_layout_implementation* 
+	const joint_layout_implementation* 
 	get_implementation() const noexcept;
 
 private:
 	std::unique_ptr<
-		const access_layout_implementation
+		const joint_layout_implementation
 	> m_implementation;
 };
 

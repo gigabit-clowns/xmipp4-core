@@ -15,7 +15,7 @@
 namespace xmipp4 
 {
 
-class access_layout_operand
+class joint_layout_operand
 {
 public:
 	using stride_vector_type = boost::container::small_vector<
@@ -23,7 +23,7 @@ public:
 		XMIPP4_SMALL_AXIS_COUNT
 	>;
 
-	access_layout_operand(
+	joint_layout_operand(
 		const stride_vector_type &strides,
 		std::ptrdiff_t offset
 	);
@@ -45,4 +45,4 @@ private:
 
 } // namespace xmipp4
 
-#include "access_layout_operand.inl"
+#include "joint_layout_operand.inl"

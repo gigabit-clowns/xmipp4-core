@@ -4,8 +4,8 @@
 
 #include <backends/cpu/loops/type_and_inner_stride_dispatch.hpp>
 
-#include <xmipp4/core/layout/access_layout.hpp>
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
 #include <xmipp4/core/meta/type_wrap.hpp>
 #include <xmipp4/core/span.hpp>
@@ -35,7 +35,7 @@ struct observations
 	bool types_match = false;
 	std::size_t number_of_strides = 0;
 	bool first_stride_contiguous = false;
-	const access_layout_implementation *layout_impl = nullptr;
+	const joint_layout_implementation *layout_impl = nullptr;
 };
 
 /**
@@ -54,7 +54,7 @@ struct probe
 
 	template <typename... Ts, typename... Strides>
 	observations operator()(
-		access_layout layout,
+		joint_layout layout,
 		type_list<Ts...>,
 		std::tuple<Strides...> /*inner_strides*/
 	) const
@@ -88,12 +88,12 @@ private:
  * @brief Build a layout with the given iteration extents and one operand per
  * stride vector, keeping the strides verbatim.
  */
-access_layout make_layout(
+joint_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<std::vector<std::ptrdiff_t>> &operand_strides
 )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &strides : operand_strides)
 	{

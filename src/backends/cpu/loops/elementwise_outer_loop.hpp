@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <xmipp4/core/layout/access_layout.hpp>
-#include <xmipp4/core/layout/access_iterator.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <xmipp4/core/layout/joint_cursor.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <cstddef>
@@ -32,7 +32,7 @@ namespace cpu
 template <typename InnerLoop, typename... Pointers>
 void run_elementwise_outer_loop(
 	InnerLoop &&inner_loop,
-	const access_layout &layout,
+	const joint_layout &layout,
 	Pointers... pointers
 );
 

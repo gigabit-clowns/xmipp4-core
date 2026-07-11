@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "access_layout_implementation.hpp"
+#include "joint_layout_implementation.hpp"
 
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -19,14 +19,14 @@ namespace xmipp4
 {
 
 inline
-access_layout_implementation::
-access_layout_implementation(const extent_vector_type &extents)
+joint_layout_implementation::
+joint_layout_implementation(const extent_vector_type &extents)
 	: m_extents(extents)
 {
 }
 
 inline
-void access_layout_implementation::add_operand(
+void joint_layout_implementation::add_operand(
 	const stride_vector_type &strides,
 	std::ptrdiff_t offset
 )
@@ -39,7 +39,7 @@ void access_layout_implementation::add_operand(
 }
 
 inline
-void access_layout_implementation::add_operand(
+void joint_layout_implementation::add_operand(
 	stride_vector_type &&strides,
 	std::ptrdiff_t offset
 )
@@ -52,8 +52,8 @@ void access_layout_implementation::add_operand(
 }
 
 inline
-const access_layout_operand& 
-access_layout_implementation::get_operand(std::size_t index) const
+const joint_layout_operand& 
+joint_layout_implementation::get_operand(std::size_t index) const
 {
 	if (index >= m_operands.size())
 	{
@@ -64,7 +64,7 @@ access_layout_implementation::get_operand(std::size_t index) const
 }
 
 inline
-void access_layout_implementation::insert_largest_stride(
+void joint_layout_implementation::insert_largest_stride(
 	span<std::size_t> permutation,
 	std::size_t i
 )
@@ -91,7 +91,7 @@ void access_layout_implementation::insert_largest_stride(
 }
 
 inline
-void access_layout_implementation::sort_axes_by_locality()
+void joint_layout_implementation::sort_axes_by_locality()
 {
 	const auto n = m_extents.size();
 	if (n <= 1)
@@ -120,7 +120,7 @@ void access_layout_implementation::sort_axes_by_locality()
 }
 
 inline
-void access_layout_implementation::coalesce_contiguous_axes()
+void joint_layout_implementation::coalesce_contiguous_axes()
 {
 	const auto n = m_extents.size();
 	if (n <= 1)
@@ -146,14 +146,14 @@ void access_layout_implementation::coalesce_contiguous_axes()
 
 inline
 std::size_t 
-access_layout_implementation::get_rank() const noexcept
+joint_layout_implementation::get_rank() const noexcept
 {
 	return m_extents.size();
 }
 
 inline
 std::size_t 
-access_layout_implementation::get_number_of_operands(
+joint_layout_implementation::get_number_of_operands(
 ) const noexcept
 {
 	return m_operands.size();
@@ -161,28 +161,28 @@ access_layout_implementation::get_number_of_operands(
 
 inline
 span<const std::size_t> 
-access_layout_implementation::get_extents() const noexcept
+joint_layout_implementation::get_extents() const noexcept
 {
 	return span<const std::size_t>(m_extents.data(), m_extents.size());
 }
 
 inline
 span<const std::ptrdiff_t> 
-access_layout_implementation::get_strides(std::size_t operand) const
+joint_layout_implementation::get_strides(std::size_t operand) const
 {
 	return get_operand(operand).get_strides();
 }
 
 inline
 std::ptrdiff_t 
-access_layout_implementation::get_offset(std::size_t operand) const
+joint_layout_implementation::get_offset(std::size_t operand) const
 {
 	return get_operand(operand).get_offset();
 }
 
 inline
-std::size_t access_layout_implementation::iter(
-	access_iterator &ite,
+std::size_t joint_layout_implementation::iter(
+	joint_cursor &ite,
 	std::size_t first_dim,
 	std::size_t last_dim
 ) const
@@ -208,10 +208,10 @@ std::size_t access_layout_implementation::iter(
 		m_operands.cbegin(),
 		m_operands.cend(),
 		std::back_inserter(offsets),
-		std::mem_fn(&access_layout_operand::get_offset)
+		std::mem_fn(&joint_layout_operand::get_offset)
 	);
 
-	ite =  access_iterator(
+	ite =  joint_cursor(
 		m_extents.size(),
 		std::move(offsets)
 	);
@@ -226,8 +226,8 @@ std::size_t access_layout_implementation::iter(
 }
 
 inline
-std::size_t access_layout_implementation::next(
-	access_iterator &ite,
+std::size_t joint_layout_implementation::next(
+	joint_cursor &ite,
 	std::size_t n,
 	std::size_t first_dim,
 	std::size_t last_dim
@@ -284,7 +284,7 @@ std::size_t access_layout_implementation::next(
 }
 
 inline
-int access_layout_implementation::compare_strides(
+int joint_layout_implementation::compare_strides(
 	std::size_t i, 
 	std::size_t j
 ) noexcept
@@ -303,7 +303,7 @@ int access_layout_implementation::compare_strides(
 }
 
 inline
-void access_layout_implementation::swap_axes(
+void joint_layout_implementation::swap_axes(
 	std::size_t i, 
 	std::size_t j
 ) noexcept
@@ -316,7 +316,7 @@ void access_layout_implementation::swap_axes(
 }
 
 inline
-void access_layout_implementation::permute_axes(
+void joint_layout_implementation::permute_axes(
 	span<std::size_t> permutation
 )
 {
@@ -331,7 +331,7 @@ void access_layout_implementation::permute_axes(
 }
 
 inline
-bool access_layout_implementation::try_coalesce_axes(
+bool joint_layout_implementation::try_coalesce_axes(
 	std::size_t i, 
 	std::size_t j
 )
@@ -352,7 +352,7 @@ bool access_layout_implementation::try_coalesce_axes(
 }
 
 inline
-bool access_layout_implementation::can_coalesce_axes(
+bool joint_layout_implementation::can_coalesce_axes(
 	std::size_t i, 
 	std::size_t j
 )
@@ -379,7 +379,7 @@ bool access_layout_implementation::can_coalesce_axes(
 }
 
 inline
-void access_layout_implementation::trim_axes(std::size_t n)
+void joint_layout_implementation::trim_axes(std::size_t n)
 {
 	m_extents.resize(n);
 	for (auto &operand : m_operands)
@@ -389,7 +389,7 @@ void access_layout_implementation::trim_axes(std::size_t n)
 }
 
 inline
-void access_layout_implementation::apply_strides(
+void joint_layout_implementation::apply_strides(
 	span<std::ptrdiff_t> offsets, 
 	std::size_t position, 
 	std::ptrdiff_t multiplier

@@ -19,24 +19,24 @@ namespace cpu
 template <std::size_t NOperands, typename F, typename... DataTypes>
 auto dispatch_types_and_inner_strides(
 	F &&callable,
-	access_layout access_layout,
+	joint_layout layout,
 	DataTypes... data_types
 )
 {
 	return dispatch_numerical_types(
-		[&callable, &access_layout] (auto... type_tags)
+		[&callable, &layout] (auto... type_tags)
 		{
 			type_list<typename decltype(type_tags)::type...> types;
 			return dispatch_inner_loop_strides(
-				[&callable, &access_layout, types] (auto inner_strides)
+				[&callable, &layout, types] (auto inner_strides)
 				{
 					return callable(
-						std::move(access_layout),
+						std::move(layout),
 						types,
 						inner_strides
 					);
 				},
-				access_layout,
+				layout,
 				std::integral_constant<std::size_t, NOperands>()
 			);
 		},

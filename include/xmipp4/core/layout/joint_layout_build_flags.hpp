@@ -11,33 +11,33 @@ namespace xmipp4
 {
 
 /**
- * @brief Flags to control the behavior of the access_layout build 
+ * @brief Flags to control the behavior of the joint_layout build 
  * behavior.
  * 
  */
-enum class access_layout_build_flag_bits
+enum class joint_layout_build_flag_bits
 {
 	enable_reordering = bit(0), ///< Reorder axes by memory locality.
 	enable_coalescing = bit(1), ///< Coalesce contiguous axes.
 };
 
 /**
- * @brief Set of access_layout_build_flag_bits used to control the 
- * access_layout build behavior.
+ * @brief Set of joint_layout_build_flag_bits used to control the 
+ * joint_layout build behavior.
  * 
  */
-using access_layout_build_flags 
-	= flagset<access_layout_build_flag_bits>;
+using joint_layout_build_flags 
+	= flagset<joint_layout_build_flag_bits>;
 
 XMIPP4_CONSTEXPR 
-const char* to_string(access_layout_build_flag_bits x) noexcept;
+const char* to_string(joint_layout_build_flag_bits x) noexcept;
 
 template<typename T>
 std::basic_ostream<T>& operator<<(
 	std::basic_ostream<T>& os, 
-	access_layout_build_flag_bits x
+	joint_layout_build_flag_bits x
 );
 
 } // namespace xmipp4
 
-#include "access_layout_build_flags.inl"
+#include "joint_layout_build_flags.inl"

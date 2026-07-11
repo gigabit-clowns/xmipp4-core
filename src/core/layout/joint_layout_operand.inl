@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "access_layout_operand.hpp"
+#include "joint_layout_operand.hpp"
 
 namespace xmipp4 
 {
 
 inline
-access_layout_operand::access_layout_operand(
+joint_layout_operand::joint_layout_operand(
 	const stride_vector_type &strides,
 	std::ptrdiff_t offset
 )
@@ -17,19 +17,19 @@ access_layout_operand::access_layout_operand(
 
 inline
 span<const std::ptrdiff_t> 
-access_layout_operand::get_strides() const noexcept
+joint_layout_operand::get_strides() const noexcept
 {
 	return span<const std::ptrdiff_t>(m_strides.data(), m_strides.size());
 }
 
 inline
-std::ptrdiff_t access_layout_operand::get_offset() const noexcept
+std::ptrdiff_t joint_layout_operand::get_offset() const noexcept
 {
 	return m_offset;
 }
 
 inline
-int access_layout_operand::compare_strides(
+int joint_layout_operand::compare_strides(
 	std::size_t i, 
 	std::size_t j
 ) const noexcept
@@ -46,7 +46,7 @@ int access_layout_operand::compare_strides(
 }
 
 inline
-void access_layout_operand::swap_axes(
+void joint_layout_operand::swap_axes(
 	std::size_t i, 
 	std::size_t j
 ) noexcept
@@ -55,7 +55,7 @@ void access_layout_operand::swap_axes(
 }
 
 inline
-void access_layout_operand::trim_axes(std::size_t n)
+void joint_layout_operand::trim_axes(std::size_t n)
 {
 	m_strides.resize(n);
 }

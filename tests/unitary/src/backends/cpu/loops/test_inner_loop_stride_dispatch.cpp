@@ -4,8 +4,8 @@
 
 #include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
 
-#include <xmipp4/core/layout/access_layout.hpp>
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>
@@ -125,12 +125,12 @@ struct recording_visitor
  * verbatim and their order (hence the inner-most stride at index 0) is
  * predictable.
  */
-access_layout make_layout(
+joint_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<std::vector<std::ptrdiff_t>> &operand_strides
 )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &strides : operand_strides)
 	{

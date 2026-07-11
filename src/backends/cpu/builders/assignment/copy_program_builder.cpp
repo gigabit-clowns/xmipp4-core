@@ -3,7 +3,7 @@
 #include "copy_program_builder.hpp"
 
 #include <xmipp4/ops/assignment/copy_operation.hpp>
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
@@ -95,13 +95,13 @@ typename std::enable_if<
 	std::shared_ptr<program>
 >::type
 make_copy_program(
-	access_layout access_layout,
+	joint_layout layout,
 	std::tuple<DstStride, SrcStride> inner_strides,
 	type_list<T, Q> /*types*/
 )
 {
 	return make_functor_program(
-		[inner_strides, access_layout=std::move(access_layout)]
+		[inner_strides, layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
 			const auto dst_inner_stride = std::get<0>(inner_strides);
@@ -112,7 +112,7 @@ make_copy_program(
 				{
 					copy(dst, src, count, dst_inner_stride, src_inner_stride);
 				},
-				access_layout,
+				layout,
 				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
 				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)
 			);
@@ -133,7 +133,7 @@ typename std::enable_if<
 	std::shared_ptr<program>
 >::type
 make_copy_program(
-	access_layout /*access_layout*/,
+	joint_layout /*layout*/,
 	std::tuple<DstStride, SrcStride> /*inner_strides*/,
 	type_list<T, Q> /*types*/
 )
@@ -200,13 +200,13 @@ std::shared_ptr<xmipp4::program> copy_program_builder::build(
 	const auto dst_data_type = dst_descriptor.get_data_type();
 	const auto src_data_type = src_descriptor.get_data_type();
 
-	access_layout_builder layout_builder;
+	joint_layout_builder layout_builder;
 	layout_builder.add_operand(dst_descriptor.get_layout());
 	layout_builder.add_operand(src_descriptor.get_layout());
-	auto access_layout = layout_builder.build();
+	auto layout = layout_builder.build();
 
 	return dispatch_types_and_inner_strides<2>(
-		[] (xmipp4::access_layout layout, auto types, auto inner_strides)
+		[] (xmipp4::joint_layout layout, auto types, auto inner_strides)
 		{
 			return make_copy_program(
 				std::move(layout),
@@ -214,7 +214,7 @@ std::shared_ptr<xmipp4::program> copy_program_builder::build(
 				types
 			);
 		},
-		std::move(access_layout),
+		std::move(layout),
 		dst_data_type,
 		src_data_type
 	);

@@ -64,7 +64,7 @@ template <typename F, std::size_t N>
 inline
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const access_layout &layout,
+	const joint_layout &layout,
 	std::integral_constant<std::size_t, N>
 )
 {
@@ -79,7 +79,7 @@ template <typename F, std::size_t... Is>
 inline
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const access_layout &layout,
+	const joint_layout &layout,
 	std::index_sequence<Is...>
 )
 {

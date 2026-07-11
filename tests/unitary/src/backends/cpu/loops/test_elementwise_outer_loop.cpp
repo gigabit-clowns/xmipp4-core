@@ -4,8 +4,8 @@
 
 #include <backends/cpu/loops/elementwise_outer_loop.hpp>
 
-#include <xmipp4/core/layout/access_layout.hpp>
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>
@@ -99,12 +99,12 @@ struct operand_spec
  * Optimizations are disabled so that the axis order (dim 0 being the inner
  * loop) and the strides are preserved verbatim.
  */
-access_layout make_layout(
+joint_layout make_layout(
 	const std::vector<std::size_t> &extents,
 	const std::vector<operand_spec> &operands
 )
 {
-	access_layout_builder builder;
+	joint_layout_builder builder;
 	builder.set_extents(make_span(extents));
 	for (const auto &operand : operands)
 	{

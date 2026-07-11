@@ -3,7 +3,7 @@
 #include "fill_program_builder.hpp"
 
 #include <xmipp4/ops/assignment/fill_operation.hpp>
-#include <xmipp4/core/layout/access_layout_builder.hpp>
+#include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
@@ -65,7 +65,7 @@ typename std::enable_if<
 	std::shared_ptr<program>
 >::type
 make_fill_program(
-	access_layout access_layout,
+	joint_layout layout,
 	std::tuple<Stride> inner_strides,
 	type_list<T> /*result_type*/,
 	const Q &fill_value
@@ -74,7 +74,7 @@ make_fill_program(
 	const auto value = numerical_cast<T>(fill_value);
 	const auto result_inner_stride = std::get<0>(inner_strides);
 	return make_functor_program(
-		[result_inner_stride, value, access_layout=std::move(access_layout)]
+		[result_inner_stride, value, layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_outer_loop(
@@ -82,7 +82,7 @@ make_fill_program(
 				{
 					fill(result, count, result_inner_stride, value);
 				},
-				access_layout,
+				layout,
 				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);
 		},
@@ -97,7 +97,7 @@ typename std::enable_if<
 	std::shared_ptr<program>
 >::type
 make_fill_program(
-	access_layout /*access_layout*/,
+	joint_layout /*layout*/,
 	std::tuple<Stride> /*inner_strides*/,
 	type_list<T> /*result_type*/,
 	const Q& /*fill_value*/
@@ -164,13 +164,13 @@ std::shared_ptr<xmipp4::program> fill_program_builder::build(
 	const auto data_type = destination_descriptor.get_data_type();
 	const auto &fill_value = fill_op->get_fill_value();
 
-	access_layout_builder layout_builder;
+	joint_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
-	auto access_layout = layout_builder.build();
+	auto layout = layout_builder.build();
 
 	return dispatch_types_and_inner_strides<1>(
 		[&fill_value]
-		(xmipp4::access_layout layout, auto types, auto inner_strides)
+		(xmipp4::joint_layout layout, auto types, auto inner_strides)
 		{
 			return xmipp4::visit(
 				[&layout, types, &inner_strides] (auto fill_value)
@@ -186,7 +186,7 @@ std::shared_ptr<xmipp4::program> fill_program_builder::build(
 				fill_value
 			);
 		},
-		std::move(access_layout),
+		std::move(layout),
 		data_type
 	);
 }

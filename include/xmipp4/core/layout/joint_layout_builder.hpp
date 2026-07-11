@@ -97,7 +97,7 @@ public:
 	);
 
 	/**
-	 * @brief Build the array_access_layout from the operands contained in 
+	 * @brief Build the joint_layout from the operands contained in 
 	 * this builder.
 	 * 
 	 * The building process can apply certain optimizations to the joint
@@ -105,7 +105,7 @@ public:
 	 * 
 	 * @param flags Flags controlling the optimizations applied to the joint
 	 * layout. By default, all optimizations are enabled.
-	 * @return array_access_layout The newly built array_access_layout.
+	 * @return joint_layout The newly built joint_layout.
 	 */
 	XMIPP4_CORE_API
 	joint_layout build(

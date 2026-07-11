@@ -10,8 +10,8 @@
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
-#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ops/assignment/fill_operation.hpp>
+#include <xmipp4/ops/assignment/copy_operation.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/span.hpp>
@@ -37,6 +37,7 @@
 #include <vector>
 
 using namespace xmipp4;
+using namespace xmipp4::ops;
 using trompeloeil::_;
 
 namespace

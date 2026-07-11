@@ -8,6 +8,8 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 /**
  * @brief Fill an array with a constant value.
@@ -70,4 +72,5 @@ private:
 	scalar_value m_fill_value;
 };
 
+} // namespace ops
 } // namespace xmipp4

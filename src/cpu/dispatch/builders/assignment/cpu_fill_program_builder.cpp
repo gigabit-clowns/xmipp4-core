@@ -2,7 +2,7 @@
 
 #include "cpu_fill_program_builder.hpp"
 
-#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
+#include <xmipp4/ops/assignment/fill_operation.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -81,7 +81,7 @@ make_fill_program(
 					fill(result, count, result_inner_stride, value);
 				},
 				access_layout,
-				std::get<fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
+				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);
 		},
 		type_list<T>(),
@@ -112,7 +112,7 @@ make_fill_program(
 operation_id
 cpu_fill_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<fill_operation>();
+	return operation_id::of<ops::fill_operation>();
 }
 
 std::shared_ptr<program> cpu_fill_program_builder::build(
@@ -124,18 +124,18 @@ std::shared_ptr<program> cpu_fill_program_builder::build(
 ) const
 {
 	const auto *fill_op =
-		dynamic_cast<const fill_operation*>(&operation);
+		dynamic_cast<const ops::fill_operation*>(&operation);
 	if (fill_op == nullptr)
 	{
 		throw std::invalid_argument(
 			"cpu_fill_program_builder::build: Expected operation to "
-			"be an instance of fill_operation."
+			"be an instance of ops::fill_operation."
 		);
 	}
 
 	if (
 		output_signatures.size() !=
-		fill_operation::OUTPUT_OPERAND_COUNT
+		ops::fill_operation::OUTPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -146,7 +146,7 @@ std::shared_ptr<program> cpu_fill_program_builder::build(
 
 	if (
 		input_signatures.size() !=
-		fill_operation::INPUT_OPERAND_COUNT
+		ops::fill_operation::INPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
@@ -156,7 +156,7 @@ std::shared_ptr<program> cpu_fill_program_builder::build(
 	}
 
 	const auto &destination_descriptor =
-		output_signatures[fill_operation::OUTPUT_OPERAND_DESTINATION]
+		output_signatures[ops::fill_operation::OUTPUT_OPERAND_DESTINATION]
 		.get_descriptor();
 
 	const auto data_type = destination_descriptor.get_data_type();

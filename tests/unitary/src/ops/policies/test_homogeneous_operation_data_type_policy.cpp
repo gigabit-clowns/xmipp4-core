@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
+#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 using namespace xmipp4;
+using namespace xmipp4::ops;
 
 TEST_CASE(
     "homogeneous_operation_data_type_policy::get returns a singleton",

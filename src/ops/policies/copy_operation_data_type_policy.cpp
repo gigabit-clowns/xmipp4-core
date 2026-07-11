@@ -6,6 +6,8 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 void copy_operation_data_type_policy::deduce(
 	span<numerical_type> canonical_output_types,
@@ -43,4 +45,5 @@ copy_operation_data_type_policy::get() noexcept
 	return instance;
 }
 
+} // namespace ops
 } // namespace xmipp4

@@ -7,6 +7,8 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 /**
  * @brief Shape policy for elementwise operations.
@@ -31,5 +33,6 @@ public:
 	static const elementwise_operation_shape_policy& get() noexcept;
 };
 
+} // namespace ops
 } // namespace xmipp4
 

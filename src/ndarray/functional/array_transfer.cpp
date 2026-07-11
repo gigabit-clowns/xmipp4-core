@@ -6,7 +6,7 @@
 #include <xmipp4/core/dispatch/execute.hpp>
 #include <xmipp4/ndarray/functional/array_creation.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ops/assignment/copy_operation.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 
@@ -71,7 +71,7 @@ array transfer_copy(
 		out
 	);
 	execute(
-		copy_operation(),
+		ops::copy_operation(),
 		make_span(&result, 1),
 		make_span(&input, 1),
 		context

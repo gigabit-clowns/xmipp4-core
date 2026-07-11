@@ -7,6 +7,8 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 /**
  * @brief Copy elements from an input array to an output array.
@@ -43,4 +45,5 @@ public:
 	get_operation_data_type_policy() const noexcept override;
 };
 
+} // namespace ops
 } // namespace xmipp4

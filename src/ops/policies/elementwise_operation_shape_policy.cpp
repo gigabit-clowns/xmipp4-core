@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
 
 #include <xmipp4/core/layout/broadcast.hpp>
 #include <xmipp4/core/platform/assert.hpp>
@@ -8,6 +8,8 @@
 #include <stdexcept>
 
 namespace xmipp4
+{
+namespace ops
 {
 
 void elementwise_operation_shape_policy::deduce(
@@ -92,4 +94,5 @@ elementwise_operation_shape_policy::get() noexcept
 	return instance;
 }
 
+} // namespace ops
 } // namespace xmipp4

@@ -7,11 +7,14 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 /**
- * @brief Data type policy requiring all operand types to be the same.
+ * @brief Data type policy allowing converting an input type into an
+ * output type.
  */
-class XMIPP4_CORE_API homogeneous_operation_data_type_policy final
+class XMIPP4_CORE_API copy_operation_data_type_policy final
 	: public operation_data_type_policy
 {
 public:
@@ -26,7 +29,8 @@ public:
 		span<const numerical_type> input_types
 	) const override;
 
-	static const homogeneous_operation_data_type_policy& get() noexcept;
+	static const copy_operation_data_type_policy& get() noexcept;
 };
 
+} // namespace ops
 } // namespace xmipp4

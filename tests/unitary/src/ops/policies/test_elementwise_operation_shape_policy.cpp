@@ -2,13 +2,14 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <stdexcept>
 #include <vector>
 
 using namespace xmipp4;
+using namespace xmipp4::ops;
 
 using shape_type = std::vector<std::size_t>;
 

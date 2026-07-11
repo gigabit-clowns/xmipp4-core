@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
+#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
 
 #include <xmipp4/core/platform/assert.hpp>
 
 #include "data_type_policy_helpers.hpp"
 
 namespace xmipp4
+{
+namespace ops
 {
 
 void homogeneous_operation_data_type_policy::deduce(
@@ -66,4 +68,5 @@ homogeneous_operation_data_type_policy::get() noexcept
 	return instance;
 }
 
+} // namespace ops
 } // namespace xmipp4

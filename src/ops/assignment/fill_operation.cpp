@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/ndarray/operations/assignment/fill_operation.hpp>
+#include <xmipp4/ops/assignment/fill_operation.hpp>
 
-#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
-#include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 
 namespace xmipp4
+{
+namespace ops
 {
 
 fill_operation::fill_operation(const scalar_value &fill_value) noexcept
@@ -44,4 +46,5 @@ const scalar_value& fill_operation::get_fill_value() const noexcept
 	return m_fill_value;
 }
 
+} // namespace ops
 } // namespace xmipp4

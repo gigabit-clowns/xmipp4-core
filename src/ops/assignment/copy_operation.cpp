@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ops/assignment/copy_operation.hpp>
 
-#include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
 
-#include <ndarray/operation_data_type_policies/copy_operation_data_type_policy.hpp>
+#include <ops/policies/copy_operation_data_type_policy.hpp>
 
 namespace xmipp4
+{
+namespace ops
 {
 
 std::string copy_operation::get_name() const
@@ -31,4 +33,5 @@ operation_arity copy_operation::get_arity() const noexcept
     return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
 }
 
+} // namespace ops
 } // namespace xmipp4

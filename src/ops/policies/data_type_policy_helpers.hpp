@@ -9,6 +9,8 @@
 
 namespace xmipp4
 {
+namespace ops
+{
 
 XMIPP4_NORETURN
 void throw_mismatch(
@@ -49,6 +51,7 @@ void require_exact(
 
 void fill(span<numerical_type> types, numerical_type value);
 
+} // namespace ops
 } // namespace xmipp4
 
 #include "data_type_policy_helpers.inl"

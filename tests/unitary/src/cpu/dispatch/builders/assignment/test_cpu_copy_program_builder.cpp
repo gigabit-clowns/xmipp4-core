@@ -8,7 +8,7 @@
 
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
+#include <xmipp4/ops/assignment/copy_operation.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation_id.hpp>
@@ -24,6 +24,7 @@
 #include <vector>
 
 using namespace xmipp4;
+using namespace xmipp4::ops;
 
 namespace
 {

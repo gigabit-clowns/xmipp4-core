@@ -1,37 +1,127 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Find all source files
-file(
-	GLOB_RECURSE 
-	SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/*.cpp 
-		${CMAKE_CURRENT_SOURCE_DIR}/*.c
+# Usage requirements of the private dependencies, shared by every component
+# object library and by the final shared library.
+add_library(xmipp4-private-deps INTERFACE)
+target_link_libraries(
+	xmipp4-private-deps
+	INTERFACE
+		Threads::Threads
+		spdlog::spdlog_header_only
+		Boost::filesystem # Eventually replace by std::filesystem (C++17)
+		Boost::container # Eventually replace in C++23
+		Boost::unordered # Eventually replace in C++23
+		Boost::intrusive
+		half
+		${CMAKE_DL_LIBS}
 )
+if(WIN32)
+	target_link_libraries(
+		xmipp4-private-deps
+		INTERFACE
+			ws2_32 # Winsock
+	)
+endif()
 
-# Define the target
-add_library(xmipp4-core SHARED ${SOURCES})
+# Define one object library per component. Properties that CMake only
+# applies automatically to SHARED targets (export define, PIC, hidden
+# visibility) must be set explicitly on each object library.
+function(xmipp4_add_component NAME DIR)
+	file(
+		GLOB_RECURSE
+		SOURCES
+			${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.c
+	)
+	add_library(${NAME} OBJECT ${SOURCES})
+	set_target_properties(
+		${NAME}
+		PROPERTIES
+			POSITION_INDEPENDENT_CODE ON
+			C_VISIBILITY_PRESET hidden
+			CXX_VISIBILITY_PRESET hidden
+	)
+	target_include_directories(
+		${NAME}
+		PUBLIC
+			$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}
+	)
+	target_compile_definitions(
+		${NAME}
+		PRIVATE
+			XMIPP4_CORE_EXPORTING
+			VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
+			VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
+			VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
+	)
+
+	if(MSVC)
+		target_compile_definitions(
+			${NAME}
+			PRIVATE
+				NOMINMAX
+		)
+		target_compile_options(
+			${NAME}
+			PRIVATE
+				/bigobj
+				/W4
+				/wd4996 # getenv warning
+		)
+	else()
+		target_compile_options(
+			${NAME}
+			PRIVATE
+				-Wall
+				-Wextra
+				-Wpedantic
+		)
+	endif()
+
+	# Add coverage flags if requested
+	if(XMIPP4_CORE_ENABLE_COVERAGE)
+		if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+			target_compile_options(${NAME} PRIVATE --coverage -O0 -g)
+		elseif(MSVC)
+			target_compile_options(${NAME} PRIVATE /Z7 /Od)
+		endif()
+	endif()
+
+	target_link_libraries(
+		${NAME}
+		PRIVATE
+			xmipp4-private-deps
+	)
+endfunction()
+
+xmipp4_add_component(xmipp4-core-obj core)
+xmipp4_add_component(xmipp4-ops-obj ops)
+xmipp4_add_component(xmipp4-functional-obj functional)
+xmipp4_add_component(xmipp4-cpu-obj backends/cpu)
+# NOTE: register src/em as xmipp4-em-obj once it has sources (an empty
+# GLOB would make add_library fail).
+
+# Assemble the single shared library from the component objects
+add_library(
+	xmipp4-core
+	SHARED
+		$<TARGET_OBJECTS:xmipp4-core-obj>
+		$<TARGET_OBJECTS:xmipp4-ops-obj>
+		$<TARGET_OBJECTS:xmipp4-functional-obj>
+		$<TARGET_OBJECTS:xmipp4-cpu-obj>
+)
 set_target_properties(
 	xmipp4-core
-	PROPERTIES 
+	PROPERTIES
 		SOVERSION ${PROJECT_VERSION}
-		DEFINE_SYMBOL XMIPP4_CORE_EXPORTING
-		C_VISIBILITY_PRESET hidden
-    	CXX_VISIBILITY_PRESET hidden
 )
 target_include_directories(
 	xmipp4-core
-	PUBLIC 
+	PUBLIC
 		$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}
-)
-target_compile_definitions(
-	xmipp4-core
-	PRIVATE
-		VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-		VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-		VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 )
 
 if(MSVC)
@@ -40,37 +130,13 @@ if(MSVC)
 		PUBLIC
 			NOMINMAX
 	)
-	target_compile_options(
-		xmipp4-core 
-		PRIVATE 
-			/bigobj
-	)
-endif()
-
-if(MSVC)
-	target_compile_options(
-		xmipp4-core
-		PRIVATE 
-			/W4
-			/wd4996 # getenv warning
-	)
-else()
-	target_compile_options(
-		xmipp4-core
-		PRIVATE 
-			-Wall 
-			-Wextra 
-			-Wpedantic
-	)
 endif()
 
 # Add coverage flags if requested
 if(XMIPP4_CORE_ENABLE_COVERAGE)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-		target_compile_options(xmipp4-core PRIVATE --coverage -O0 -g)
 		target_link_options(xmipp4-core PUBLIC --coverage)
 	elseif(MSVC)
-		target_compile_options(xmipp4-core PRIVATE /Z7 /Od)
 		target_link_options(xmipp4-core PUBLIC /DEBUG)
 	endif()
 endif()
@@ -81,22 +147,8 @@ target_link_libraries(
 	PUBLIC
 		Threads::Threads
 	PRIVATE
-		spdlog::spdlog_header_only
-		Boost::filesystem # Eventually replace by std::filesystem (C++17)
-		Boost::container # Eventually replace in C++23
-		Boost::unordered # Eventually replace in C++23
-		Boost::intrusive
-		half
-		${CMAKE_DL_LIBS}
+		xmipp4-private-deps
 )
-
-if(WIN32)
-	target_link_libraries(
-		xmipp4-core
-		PRIVATE 
-			ws2_32 # Winsock
-	)
-endif()
 
 # Create the alias
 add_library(xmipp4::core ALIAS xmipp4-core)
@@ -132,7 +184,7 @@ install(
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core
 )
 install(
-	FILES 
+	FILES
 	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config.cmake
 	${CMAKE_CURRENT_BINARY_DIR}/xmipp4-core-config-version.cmake
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/xmipp4-core

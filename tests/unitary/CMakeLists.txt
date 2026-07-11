@@ -12,7 +12,10 @@ file(
 add_executable(
     xmipp4-core-unitary-tests
     ${TEST_SOURCES}
-	$<TARGET_OBJECTS:xmipp4-core>
+	$<TARGET_OBJECTS:xmipp4-core-obj>
+	$<TARGET_OBJECTS:xmipp4-ops-obj>
+	$<TARGET_OBJECTS:xmipp4-functional-obj>
+	$<TARGET_OBJECTS:xmipp4-cpu-obj>
 )
 target_compile_definitions(
 	xmipp4-core-unitary-tests

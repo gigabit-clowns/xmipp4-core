@@ -21,7 +21,6 @@
 #include "mock/mock_command_queue.hpp"
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 
 namespace
 {
@@ -108,7 +107,6 @@ protected:
 };
 
 } // namespace
-
 
 
 TEST_CASE(

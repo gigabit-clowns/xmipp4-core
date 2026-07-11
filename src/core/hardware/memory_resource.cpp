@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 memory_resource::memory_resource() noexcept = default;
 memory_resource::~memory_resource() = default;
@@ -20,5 +18,4 @@ const memory_resource& get_host_memory_resource() noexcept
 	return host_memory_resource::get();
 }
 
-} // namespace hardware
 } // namespace xmipp4

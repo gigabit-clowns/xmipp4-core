@@ -10,7 +10,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 TEST_CASE(
     "homogeneous_operation_data_type_policy::get returns a singleton",

@@ -12,8 +12,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 namespace detail
 {
@@ -99,7 +97,6 @@ inline const T* get_typed_host_ptr(
 } // namespace detail
 
 
-
 template <typename F, typename Outputs, typename Inputs, typename Scratches>
 template <typename S, typename>
 inline
@@ -124,8 +121,8 @@ functor_cpu_program<F, Outputs, Inputs, Scratches>::functor_cpu_program(
 
 template <typename F, typename Outputs, typename Inputs, typename Scratches>
 inline void functor_cpu_program<F, Outputs, Inputs, Scratches>::execute(
-	span<const std::shared_ptr<hardware::buffer>> output_operands,
-	span<const std::shared_ptr<const hardware::buffer>> input_operands,
+	span<const std::shared_ptr<buffer>> output_operands,
+	span<const std::shared_ptr<const buffer>> input_operands,
 	span<const std::shared_ptr<buffer>> scratch_operands
 ) const
 {
@@ -157,8 +154,8 @@ template <
 	std::size_t... ScratchIs
 >
 inline void functor_cpu_program<F, Outputs, Inputs, Scratches>::execute_wrapper(
-	span<const std::shared_ptr<hardware::buffer>> output_operands,
-	span<const std::shared_ptr<const hardware::buffer>> input_operands,
+	span<const std::shared_ptr<buffer>> output_operands,
+	span<const std::shared_ptr<const buffer>> input_operands,
 	span<const std::shared_ptr<buffer>> scratch_operands,
 	std::index_sequence<OutputIs...>,
 	std::index_sequence<InputIs...>,
@@ -201,7 +198,6 @@ inline void functor_cpu_program<F, Outputs, Inputs, Scratches>::execute_wrapper(
 }
 
 
-
 template <typename F, typename Outputs, typename Inputs>
 inline std::shared_ptr<cpu_program> make_functor_cpu_program(
 	F &&fun,
@@ -234,5 +230,4 @@ inline std::shared_ptr<cpu_program> make_functor_cpu_program(
 	);
 }
 
-} // namespace hardware
 } // namespace xmipp4

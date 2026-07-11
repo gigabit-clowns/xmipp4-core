@@ -9,8 +9,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief Flags to control the behavior of the access_layout build 
@@ -19,8 +17,8 @@ namespace layout
  */
 enum class access_layout_build_flag_bits
 {
-	enable_reordering = binary::bit(0), ///< Reorder axes by memory locality.
-	enable_coalescing = binary::bit(1), ///< Coalesce contiguous axes.
+	enable_reordering = bit(0), ///< Reorder axes by memory locality.
+	enable_coalescing = bit(1), ///< Coalesce contiguous axes.
 };
 
 /**
@@ -29,7 +27,7 @@ enum class access_layout_build_flag_bits
  * 
  */
 using access_layout_build_flags 
-	= binary::flagset<access_layout_build_flag_bits>;
+	= flagset<access_layout_build_flag_bits>;
 
 XMIPP4_CONSTEXPR 
 const char* to_string(access_layout_build_flag_bits x) noexcept;
@@ -40,7 +38,6 @@ std::basic_ostream<T>& operator<<(
 	access_layout_build_flag_bits x
 );
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "access_layout_build_flags.inl"

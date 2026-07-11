@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 program::program() noexcept = default;
 program::~program() = default;
@@ -16,5 +14,4 @@ program::get_scratch_requirements() const
 	return {};
 }
 
-} // namespace hardware
 } // namespace xmipp4

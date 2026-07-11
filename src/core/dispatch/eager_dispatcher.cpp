@@ -31,20 +31,18 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 namespace
 {
 
 template <std::size_t N>
-boost::container::small_vector<ndarray::array_descriptor, N>
+boost::container::small_vector<array_descriptor, N>
 extract_input_descriptors(
-	span<const ndarray::array_view> input_operands,
+	span<const array_view> input_operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
-	boost::container::small_vector<ndarray::array_descriptor, N> result;
+	boost::container::small_vector<array_descriptor, N> result;
 	result.reserve(input_operands.size());
 	for (const auto &input_operand : input_operands)
 	{
@@ -55,7 +53,7 @@ extract_input_descriptors(
 template <std::size_t N>
 boost::container::small_vector<numerical_type, N>
 extract_data_types(
-	span<const ndarray::array_descriptor> descriptors,
+	span<const array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -71,7 +69,7 @@ extract_data_types(
 template <std::size_t N>
 boost::container::small_vector<operation_shape_policy::shape_type, N>
 extract_shapes(
-	span<const ndarray::array_descriptor> descriptors,
+	span<const array_descriptor> descriptors,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -110,9 +108,9 @@ make_empty_data_types(
 }
 
 template <std::size_t N>
-boost::container::small_vector<ndarray::array_descriptor, N>
+boost::container::small_vector<array_descriptor, N>
 resolve_output_descriptors(
-	span<const ndarray::array> output_operands,
+	span<const array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
 	bool &needs_acceptance,
@@ -123,7 +121,7 @@ resolve_output_descriptors(
 	XMIPP4_ASSERT(canonical_shapes.size() == n);
 	XMIPP4_ASSERT(canonical_data_types.size() == n);
 
-	boost::container::small_vector<ndarray::array_descriptor, N> result;
+	boost::container::small_vector<array_descriptor, N> result;
 	result.reserve(n);
 	for (std::size_t i = 0; i < n; ++i)
 	{	
@@ -139,7 +137,7 @@ resolve_output_descriptors(
 			const auto &canonical_shape = canonical_shapes[i];
 			const auto canonical_data_type = canonical_data_types[i];
 			result.emplace_back(
-				layout::strided_layout::make_contiguous_layout(
+				strided_layout::make_contiguous_layout(
 					make_span(canonical_shape)
 				),
 				canonical_data_type
@@ -152,17 +150,17 @@ resolve_output_descriptors(
 }
 
 template <std::size_t N>
-boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
+boost::container::small_vector<std::shared_ptr<buffer>, N>
 resolve_output_storage(
-	span<ndarray::array> output_operands,
-	span<const ndarray::array_descriptor> descriptors,
-	const hardware::device_context &device_context,
-	hardware::command_queue &queue,
+	span<array> output_operands,
+	span<const array_descriptor> descriptors,
+	const device_context &device_context,
+	command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
 	using result_type = boost::container::small_vector<
-		std::shared_ptr<hardware::buffer>,
+		std::shared_ptr<buffer>,
 		N
 	>;
 
@@ -174,7 +172,7 @@ resolve_output_storage(
 
 	const auto &instance = device_context.get_device_instance();
 	const auto &allocator = device_context.get_allocator(
-		hardware::memory_resource_affinity::device
+		memory_resource_affinity::device
 	);
 	const auto &properties = instance->get_properties();
 	const auto max_alignment = allocator->get_max_alignment();
@@ -192,10 +190,10 @@ resolve_output_storage(
 			const auto size = compute_storage_requirement(descriptor);
 			const auto alignment = std::min(
 				base_alignment,
-				binary::bit_ceil(size)
+				bit_ceil(size)
 			);
 			storage = allocator->allocate(size, alignment, &queue);
-			output_operand = ndarray::array(storage, descriptor); // Store in output.
+			output_operand = array(storage, descriptor); // Store in output.
 		}
 
 		XMIPP4_ASSERT(storage);
@@ -207,14 +205,14 @@ resolve_output_storage(
 }
 
 template <std::size_t N>
-boost::container::small_vector<std::shared_ptr<const hardware::buffer>, N>
+boost::container::small_vector<std::shared_ptr<const buffer>, N>
 extract_input_storage(
-	span<const ndarray::array_view> operands,
+	span<const array_view> operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
 	using result_type = boost::container::small_vector<
-		std::shared_ptr<const hardware::buffer>,
+		std::shared_ptr<const buffer>,
 		N
 	>;
 	result_type result(operands.size());
@@ -238,7 +236,7 @@ extract_input_storage(
 template <typename Ptr, std::size_t N>
 boost::container::small_vector<operand_signature, N>
 create_signatures(
-	boost::container::small_vector<ndarray::array_descriptor, N> &&descriptors,
+	boost::container::small_vector<array_descriptor, N> &&descriptors,
 	span<Ptr> storages
 )
 {
@@ -281,16 +279,16 @@ void validate_arity(
 }
 
 template <std::size_t N>
-boost::container::small_vector<std::shared_ptr<hardware::buffer>, N>
+boost::container::small_vector<std::shared_ptr<buffer>, N>
 allocate_scratch(
-	span<const hardware::program_scratch_requirement> requirements,
-	const hardware::device_context &device_context,
-	hardware::command_queue &queue,
+	span<const program_scratch_requirement> requirements,
+	const device_context &device_context,
+	command_queue &queue,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
 	using result_type = boost::container::small_vector<
-		std::shared_ptr<hardware::buffer>,
+		std::shared_ptr<buffer>,
 		N
 	>;
 
@@ -329,9 +327,9 @@ eager_dispatcher::~eager_dispatcher() = default;
 
 void eager_dispatcher::dispatch(
 	const operation &op,
-	span<ndarray::array> output_operands,
-	span<const ndarray::array_view> input_operands,
-	const hardware::device_context &device_context
+	span<array> output_operands,
+	span<const array_view> input_operands,
+	const device_context &device_context
 )
 {
 	using small_output_size_tag =
@@ -456,7 +454,7 @@ void eager_dispatcher::dispatch(
 		small_scratch_size_tag()
 	);
 
-	hardware::command cmd(std::move(prog));
+	command cmd(std::move(prog));
 	cmd.bind_outputs(make_span(output_storages.data(), n_outputs));
 	cmd.bind_inputs(make_span(input_storages.data(), n_inputs));
 	cmd.bind_scratch(make_span(scratch.data(), scratch.size()));
@@ -475,5 +473,4 @@ std::shared_ptr<dispatcher> make_eager_dispatcher(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

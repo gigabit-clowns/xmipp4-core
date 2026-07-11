@@ -15,8 +15,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 std::shared_ptr<host_memory_allocator> host_memory_allocator::m_instance;
 
@@ -28,7 +26,7 @@ host_memory_allocator::get_memory_resource() const noexcept
 
 std::size_t host_memory_allocator::get_max_alignment() const noexcept
 {
-    return system::get_page_size();
+    return get_page_size();
 }
 
 std::shared_ptr<buffer> host_memory_allocator::allocate(
@@ -37,7 +35,7 @@ std::shared_ptr<buffer> host_memory_allocator::allocate(
 	command_queue* /*queue_hint*/
 )
 {
-	size = memory::align_ceil(size, alignment);
+	size = align_ceil(size, alignment);
 	return std::make_shared<host_buffer>(size, alignment);
 }
 
@@ -57,5 +55,4 @@ const std::shared_ptr<host_memory_allocator>& host_memory_allocator::create()
 	return m_instance;
 }
 
-} // namespace hardware
 } // namespace xmipp4

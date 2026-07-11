@@ -4,8 +4,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 access_iterator::access_iterator() noexcept = default;
 access_iterator::access_iterator(
@@ -50,5 +48,4 @@ span<std::ptrdiff_t> access_iterator::get_offsets() noexcept
 	return make_span(m_offsets);
 }
 
-} // namespace layout
 } // namespace xmipp4

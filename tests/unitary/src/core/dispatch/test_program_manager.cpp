@@ -15,7 +15,6 @@
 #include <array>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 namespace
 {
@@ -87,11 +86,11 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_program_builder>();
 	auto builder2 = std::make_unique<mock_program_builder>();
-	const auto prog = std::make_shared<hardware::mock_program>();
+	const auto prog = std::make_shared<mock_program>();
 
 	REQUIRE_CALL(*builder1, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -101,7 +100,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::fallback);
@@ -114,7 +113,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -124,7 +123,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&),
+			ANY(command_queue&),
 			ANY(program_cache*)
 		)
 	)
@@ -153,11 +152,11 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder_a = std::make_unique<mock_program_builder>();
 	auto builder_b = std::make_unique<mock_program_builder>();
-	const auto prog = std::make_shared<hardware::mock_program>();
+	const auto prog = std::make_shared<mock_program>();
 
 	REQUIRE_CALL(*builder_a, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -167,7 +166,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -177,7 +176,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&),
+			ANY(command_queue&),
 			ANY(program_cache*)
 		)
 	)
@@ -210,10 +209,10 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_program_builder>();
-	const auto prog = std::make_shared<hardware::mock_program>();
+	const auto prog = std::make_shared<mock_program>();
 
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -223,7 +222,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -233,7 +232,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&),
+			ANY(command_queue&),
 			ANY(program_cache*)
 		)
 	)
@@ -264,10 +263,10 @@ TEST_CASE(
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
 	program_cache cache(4);
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_program_builder>();
-	const auto prog = std::make_shared<hardware::mock_program>();
+	const auto prog = std::make_shared<mock_program>();
 
 	REQUIRE_CALL(*builder, get_operation_id())
 		.RETURN(operation_id::of<mock_operation_a>());
@@ -277,7 +276,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::normal);
@@ -287,7 +286,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&),
+			ANY(command_queue&),
 			ANY(program_cache*)
 		)
 	)
@@ -318,7 +317,7 @@ TEST_CASE(
 	const mock_operation_b op;
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder = std::make_unique<mock_program_builder>();
 	REQUIRE_CALL(*builder, get_operation_id())
@@ -348,7 +347,7 @@ TEST_CASE(
 	const mock_operation_a op;
 	const std::array<operand_signature, 2> output_signatures;
 	const std::array<operand_signature, 4> input_signatures;
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	auto builder1 = std::make_unique<mock_program_builder>();
 	auto builder2 = std::make_unique<mock_program_builder>();
@@ -361,7 +360,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::unsupported);
@@ -374,7 +373,7 @@ TEST_CASE(
 			ANY(const operation&),
 			ANY(span<const operand_signature>),
 			ANY(span<const operand_signature>),
-			ANY(hardware::command_queue&)
+			ANY(command_queue&)
 		)
 	)
 		.RETURN(backend_priority::unsupported);

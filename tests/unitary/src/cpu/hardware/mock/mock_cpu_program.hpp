@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_cpu_program final
 	: public cpu_program
@@ -26,5 +24,4 @@ public:
 	);
 };
 
-} // namespace hardware
 } // namespace xmipp4

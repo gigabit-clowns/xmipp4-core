@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace xmipp4::layout;
+using namespace xmipp4;
 
 TEST_CASE( "default constructing a access_layout_builder should point to a null implementation", "[access_layout_builder]" )
 {

@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 program_scratch_requirement::program_scratch_requirement(
 	std::size_t size,
@@ -34,5 +32,4 @@ memory_resource_affinity program_scratch_requirement::get_affinity() const
 	return m_affinity;
 }
 
-} // namespace hardware
 } // namespace xmipp4

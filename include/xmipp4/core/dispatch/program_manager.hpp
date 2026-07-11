@@ -11,16 +11,10 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class program;
 class command_queue;
 
-} // namespace hardware
-
-namespace dispatch
-{
 
 class operation;
 class operand_signature;
@@ -73,14 +67,14 @@ public:
 	 * intended to be used.
 	 * @param cache Optional cache for backend-private resources, forwarded
 	 * to the selected builder.
-	 * @return std::shared_ptr<hardware::program> The executable program suited
+	 * @return std::shared_ptr<program> The executable program suited
 	 * for the requested operation and signature.
 	 */
-	std::shared_ptr<hardware::program> build(
+	std::shared_ptr<program> build(
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue,
+		command_queue &queue,
 		program_cache *cache = nullptr
 	) const;
 
@@ -93,5 +87,4 @@ private:
 	const implementation& get_implementation() const noexcept;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

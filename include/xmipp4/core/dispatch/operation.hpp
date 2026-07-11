@@ -14,8 +14,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class operation_id;
 
@@ -81,5 +79,4 @@ public:
 	get_operation_data_type_policy() const noexcept = 0;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

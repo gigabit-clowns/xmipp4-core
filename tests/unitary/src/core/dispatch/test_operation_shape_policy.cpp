@@ -10,7 +10,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 using shape_type = operation_shape_policy::shape_type;
 

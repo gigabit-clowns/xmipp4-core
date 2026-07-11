@@ -14,8 +14,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -141,7 +139,6 @@ access_layout make_layout(
 }
 
 } // namespace
-
 
 
 TEST_CASE(

@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace layout
-{
 
 XMIPP4_INLINE_CONSTEXPR 
 strided_axis::strided_axis(std::size_t extent, std::ptrdiff_t stride) noexcept
@@ -296,5 +294,4 @@ void apply_slice(
 	detail::apply_slice(axis, offset, sanitized_slice);
 }
 
-} // namespace layout
 } // namespace xmipp4

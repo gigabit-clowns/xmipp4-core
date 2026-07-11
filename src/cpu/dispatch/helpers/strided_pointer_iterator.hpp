@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Random access iterator that bundles a pointer and a stride.
@@ -170,7 +168,6 @@ strided_pointer_iterator<T, Stride> make_strided_pointer_iterator(
 	Stride stride
 ) noexcept;
 
-} // namespace dispatch
 } // namespace xmipp4
 
 #include "strided_pointer_iterator.inl"

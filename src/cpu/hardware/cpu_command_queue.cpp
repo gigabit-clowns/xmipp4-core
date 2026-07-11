@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 std::shared_ptr<cpu_command_queue> cpu_command_queue::m_instance;
 
@@ -77,5 +75,4 @@ cpu_command_queue::try_cast(const command_queue &queue) noexcept
 	return dynamic_cast<const cpu_command_queue*>(&queue);
 }
 
-} // namespace hardware
 } // namespace xmipp4

@@ -11,7 +11,7 @@
 
 #include <sstream>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 TEST_CASE( "host_buffer should allocate enough space", "[host_buffer]" )
 {

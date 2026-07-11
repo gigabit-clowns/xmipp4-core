@@ -15,8 +15,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 inline int access_flags_to_open_flags(
 	access_flags access,
@@ -169,5 +167,4 @@ inline void memory_mapped_file_close(void* data, std::size_t size) noexcept
 	munmap(data, size);
 }
 
-} // namespace system
 } // namespace xmipp4

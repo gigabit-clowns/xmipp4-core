@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class device;
 
@@ -100,5 +98,4 @@ public:
 	virtual std::shared_ptr<device> create_device(std::size_t id) const = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Describes the operand count of an operation.
@@ -119,5 +117,4 @@ bool operator!=(
 	const operation_arity &rhs
 ) noexcept;
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief CPU implementation of @ref event.
@@ -26,5 +24,4 @@ public:
 	bool is_signaled() const override;
 };
 
-} // namespace hardware
 } // namespace xmipp4

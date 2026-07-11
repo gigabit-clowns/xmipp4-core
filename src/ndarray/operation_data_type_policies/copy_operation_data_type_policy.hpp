@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Data type policy allowing converting an input type into an
@@ -32,5 +30,4 @@ public:
 	static const copy_operation_data_type_policy& get() noexcept;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class access_layout_implementation;
 
@@ -168,5 +166,4 @@ private:
 	> m_implementation;
 };
 
-} // namespace layout
 } // namespace xmipp4

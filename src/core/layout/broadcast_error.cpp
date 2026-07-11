@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 		
 static 
 void format_extents(std::ostream &os, const std::vector<std::size_t>& extents) 
@@ -47,7 +45,6 @@ std::string build_message(
 }
 
 
-
 broadcast_error::broadcast_error(
 	std::vector<std::size_t> first_extents,
 	std::vector<std::size_t> second_extents,
@@ -71,5 +68,4 @@ broadcast_error::get_second_extents() const noexcept
 	return m_second_extents;
 }
 
-} // namespace layout
 } // namespace xmipp4

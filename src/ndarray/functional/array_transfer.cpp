@@ -12,13 +12,11 @@
 
 namespace xmipp4
 {
-namespace ndarray
-{
 
-ndarray::array transfer(
-	ndarray::array &input,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context
+array transfer(
+	array &input,
+	memory_resource_affinity affinity,
+	const execution_context &context
 )
 {
 	const auto *storage = input.get_storage();
@@ -49,11 +47,11 @@ ndarray::array transfer(
 	return transfer_copy(input, affinity, context, nullptr);
 }
 
-ndarray::array transfer_copy(
-	ndarray::array_view input,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array transfer_copy(
+	array_view input,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
 )
 {
 	const auto &input_descriptor = input.get_descriptor();
@@ -61,9 +59,9 @@ ndarray::array transfer_copy(
 	std::vector<std::size_t> input_extents;
 	input_descriptor.get_layout().get_extents(input_extents);
 
-	ndarray::array result = empty(
-		ndarray::array_descriptor(
-			layout::strided_layout::make_contiguous_layout(
+	array result = empty(
+		array_descriptor(
+			strided_layout::make_contiguous_layout(
 				make_span(input_extents)
 			),
 			input_descriptor.get_data_type()
@@ -73,7 +71,7 @@ ndarray::array transfer_copy(
 		out
 	);
 	execute(
-		dispatch::copy_operation(),
+		copy_operation(),
 		make_span(&result, 1),
 		make_span(&input, 1),
 		context
@@ -81,57 +79,56 @@ ndarray::array transfer_copy(
 	return result;
 }
 
-ndarray::array to_device(
-	ndarray::array &input,
-	const dispatch::execution_context &context
+array to_device(
+	array &input,
+	const execution_context &context
 )
 {
 	return transfer(
 		input,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		context
 	);
 }
 
-ndarray::array to_device_copy(
-	ndarray::array_view input,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array to_device_copy(
+	array_view input,
+	const execution_context &context,
+	array *out
 )
 {
 	return transfer_copy(
 		std::move(input), 
-		hardware::memory_resource_affinity::device, 
+		memory_resource_affinity::device, 
 		context, 
 		out
 	);
 }
 
-ndarray::array to_host(
-	ndarray::array &input,
-	const dispatch::execution_context &context
+array to_host(
+	array &input,
+	const execution_context &context
 )
 {
 	return transfer(
 		input,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context
 	);
 }
 
-ndarray::array to_host_copy(
-	ndarray::array_view input,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array to_host_copy(
+	array_view input,
+	const execution_context &context,
+	array *out
 )
 {
 	return transfer_copy(
 		std::move(input), 
-		hardware::memory_resource_affinity::host, 
+		memory_resource_affinity::host, 
 		context, 
 		out
 	);
 }
 
-} // namespace ndarray
 } // namespace xmipp4

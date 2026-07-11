@@ -12,8 +12,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class mock_program_builder
 	: public program_builder
@@ -31,23 +29,22 @@ public:
 			const operation &operation,
 			span<const operand_signature> output_signatures,
 			span<const operand_signature> input_signatures,
-			hardware::command_queue &queue
+			command_queue &queue
 		),
 		override
 	);
 
 	MAKE_CONST_MOCK5(
 		build,
-		std::shared_ptr<hardware::program> (
+		std::shared_ptr<program> (
 			const operation &operation,
 			span<const operand_signature> output_signatures,
 			span<const operand_signature> input_signatures,
-			hardware::command_queue &queue,
+			command_queue &queue,
 			program_cache *cache
 		),
 		override
 	);
 };
 
-} // namespace dispatch
 } // namespace xmipp4

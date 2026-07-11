@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace ndarray
-{
 
 /**
  * @brief Description of the memory representation of a multidimensional array.
@@ -39,7 +37,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	array_descriptor(
-		layout::strided_layout layout,
+		strided_layout layout,
 		numerical_type data_type
 	) noexcept;
 
@@ -69,7 +67,7 @@ public:
 	 * @return const strided_layout& The layout.
 	 */
 	XMIPP4_CORE_API
-	const layout::strided_layout& get_layout() const noexcept;
+	const strided_layout& get_layout() const noexcept;
 
 	/**
 	 * @brief Get the data type of the array.
@@ -80,7 +78,7 @@ public:
 	numerical_type get_data_type() const noexcept;
 
 private:
-	layout::strided_layout m_layout;
+	strided_layout m_layout;
 	numerical_type m_data_type;
 };
 
@@ -134,17 +132,16 @@ bool is_initialized(const array_descriptor &descriptor) noexcept;
 XMIPP4_CORE_API
 std::size_t compute_storage_requirement(const array_descriptor &descriptor);
 
-} // namespace ndarray
 } // namespace xmipp4
 
 namespace std
 {
 
 template<>
-struct hash<xmipp4::ndarray::array_descriptor>
+struct hash<xmipp4::array_descriptor>
 {
 	std::size_t operator()(
-		const xmipp4::ndarray::array_descriptor &descriptor
+		const xmipp4::array_descriptor &descriptor
 	) const noexcept
 	{
 		return descriptor.hash();

@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device;
 class memory_allocator;
@@ -102,5 +100,4 @@ private:
 	std::unique_ptr<implementation> m_implementation;
 };
 
-} // namespace hardware
 } // namespace xmipp4

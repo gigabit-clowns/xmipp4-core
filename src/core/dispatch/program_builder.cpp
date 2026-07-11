@@ -4,11 +4,8 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 program_builder::program_builder() noexcept = default;
 program_builder::~program_builder() = default;
 
-} // namespace dispatch
 } // namespace xmipp4

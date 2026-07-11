@@ -17,7 +17,7 @@
 #include <vector>
 #include <stdexcept>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 namespace
 {
@@ -102,7 +102,6 @@ private:
 };
 
 } // namespace
-
 
 
 TEST_CASE_METHOD(

@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device_properties::implementation
 {
@@ -73,7 +71,6 @@ private:
 	std::size_t m_total_memory_bytes;
 	std::size_t m_optimal_data_alignment;
 };
-
 
 
 device_properties::device_properties() noexcept = default;
@@ -174,5 +171,4 @@ device_properties::get_implementation() const noexcept
 	return m_implementation ? *m_implementation : empty;
 }
 
-} // namespace hardware
 } // namespace xmipp4

@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class cpu_event;
 class cpu_command_queue;
@@ -32,5 +30,4 @@ public:
 	create_event(event_usage_flags usage) const override;
 };
 
-} // namespace hardware
 } // namespace xmipp4

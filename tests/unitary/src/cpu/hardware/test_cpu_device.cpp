@@ -12,7 +12,7 @@
 #include <xmipp4/core/hardware/command_queue.hpp>
 #include <xmipp4/core/hardware/event.hpp>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 TEST_CASE(
 	"cpu_device should expose a single memory resource",

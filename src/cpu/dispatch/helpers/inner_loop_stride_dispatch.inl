@@ -5,8 +5,6 @@
 namespace xmipp4
 {
 
-namespace dispatch
-{
 
 namespace detail
 {
@@ -64,7 +62,7 @@ template <typename F, std::size_t N>
 inline
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	std::integral_constant<std::size_t, N>
 )
 {
@@ -79,7 +77,7 @@ template <typename F, std::size_t... Is>
 inline
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	std::index_sequence<Is...>
 )
 {
@@ -104,5 +102,4 @@ auto dispatch_inner_loop_strides(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

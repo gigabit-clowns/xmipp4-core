@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 std::string copy_operation::get_name() const
 {
@@ -33,5 +31,4 @@ operation_arity copy_operation::get_arity() const noexcept
     return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

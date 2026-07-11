@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace ndarray
-{
 
 array_view::array_view() = default;
 array_view::array_view(const array_view& other) = default;
@@ -41,7 +39,7 @@ const array_descriptor& array_view::get_descriptor() const noexcept
 		empty_descriptor;
 }
 
-const hardware::buffer* array_view::get_storage() const noexcept
+const buffer* array_view::get_storage() const noexcept
 {
 	return
 		m_implementation ? 
@@ -49,7 +47,7 @@ const hardware::buffer* array_view::get_storage() const noexcept
 		nullptr;
 }
 
-std::shared_ptr<const hardware::buffer> 
+std::shared_ptr<const buffer> 
 array_view::share_storage() const noexcept
 {
 	return
@@ -63,5 +61,4 @@ array_view array_view::share() const noexcept
 	return array_view(m_implementation);
 }
 
-} // namespace ndarray
 } // namespace xmipp4

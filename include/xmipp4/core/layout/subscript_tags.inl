@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 XMIPP4_INLINE_CONSTEXPR
 ellipsis_tag ellipsis() noexcept
@@ -59,5 +57,4 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag)
 	return os << "new_axis_tag";
 }
 
-} // namespace layout
 } // namespace xmipp4

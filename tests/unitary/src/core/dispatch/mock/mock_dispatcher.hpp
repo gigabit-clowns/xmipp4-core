@@ -14,8 +14,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class mock_dispatcher final
 	: public dispatcher
@@ -25,13 +23,12 @@ public:
 		dispatch,
 		void (
 			const operation &operation,
-			span<ndarray::array> output_operands,
-			span<const ndarray::array_view> input_operands,
-			const hardware::device_context &device_context
+			span<array> output_operands,
+			span<const array_view> input_operands,
+			const device_context &device_context
 		),
 		override
 	);
 };
 
-} // namespace dispatch
 } // namespace xmipp4

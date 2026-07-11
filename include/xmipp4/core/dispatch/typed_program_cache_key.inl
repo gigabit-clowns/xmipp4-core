@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 template <typename K>
 inline
@@ -43,5 +41,4 @@ typed_program_cache_key<K>::get_key() const noexcept
 	return m_key;
 }
 
-} // namespace dispatch
 } // namespace xmipp4

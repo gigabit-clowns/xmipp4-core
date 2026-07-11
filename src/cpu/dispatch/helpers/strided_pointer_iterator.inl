@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 template <typename T, typename Stride>
 XMIPP4_INLINE_CONSTEXPR
@@ -196,5 +194,4 @@ strided_pointer_iterator<T, Stride> make_strided_pointer_iterator(
 	return strided_pointer_iterator<T, Stride>(data, stride);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

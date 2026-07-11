@@ -12,8 +12,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::ndarray;
-using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed array should have no storage", "[array]")
 {
@@ -40,8 +38,8 @@ TEST_CASE("Constructing an array should store its attributes", "[array]")
 		std::vector<std::size_t>{20, 50}
 	);
 
-	const std::shared_ptr<hardware::mock_buffer> storage =
-		std::make_shared<hardware::mock_buffer>();
+	const std::shared_ptr<mock_buffer> storage =
+		std::make_shared<mock_buffer>();
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);
@@ -64,8 +62,8 @@ TEST_CASE("Calling share on an array should return an array with the same conten
 		std::vector<std::size_t>{20, 50}
 	);
 
-	const std::shared_ptr<hardware::mock_buffer> storage =
-		std::make_shared<hardware::mock_buffer>();
+	const std::shared_ptr<mock_buffer> storage =
+		std::make_shared<mock_buffer>();
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);

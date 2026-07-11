@@ -7,13 +7,11 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 execution_context::execution_context() noexcept = default;
 
 execution_context::execution_context(
-	hardware::device_context device_context,
+	device_context device_context,
 	std::shared_ptr<dispatcher> dispatcher
 )
 	: m_device_context(std::move(device_context))
@@ -35,7 +33,7 @@ execution_context::operator=(const execution_context &other) = default;
 execution_context&
 execution_context::operator=(execution_context &&other) noexcept = default;
 
-const hardware::device_context&
+const device_context&
 execution_context::get_device_context() const noexcept
 {
 	return m_device_context;
@@ -48,7 +46,7 @@ execution_context::get_dispatcher() const noexcept
 }
 
 execution_context execution_context::with_device_context(
-	hardware::device_context device_context
+	device_context device_context
 ) const
 {
 	return execution_context(
@@ -67,5 +65,4 @@ execution_context execution_context::with_dispatcher(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

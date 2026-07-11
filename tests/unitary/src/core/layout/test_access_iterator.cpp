@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/layout/access_iterator.hpp>
 
-using namespace xmipp4::layout;
+using namespace xmipp4;
 
 TEST_CASE( "default constructed array iterator should be empty", "[access_iterator]" )
 {

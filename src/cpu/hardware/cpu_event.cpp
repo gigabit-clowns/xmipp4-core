@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 event_usage_flags cpu_event::get_supported_usage() const noexcept
 {
@@ -26,5 +24,4 @@ bool cpu_event::is_signaled() const
 	return true;
 }
 
-} // namespace hardware
 } // namespace xmipp4

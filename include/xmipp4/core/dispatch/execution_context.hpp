@@ -11,8 +11,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 
 /**
@@ -21,12 +19,12 @@ namespace dispatch
  *
  * An @c execution_context bundles the two pieces of state that every
  * operation needs in order to run: a
- * @ref hardware::device_context describing @em where the work executes (the
- * device, its active @ref hardware::command_queue and its
- * @ref hardware::memory_allocator slots), and a @ref dispatcher
+ * @ref device_context describing @em where the work executes (the
+ * device, its active @ref command_queue and its
+ * @ref memory_allocator slots), and a @ref dispatcher
  * describing @em how operations are turned into device work.
  *
- * Like @ref hardware::device_context, the execution context is a lightweight,
+ * Like @ref device_context, the execution context is a lightweight,
  * copyable value with functional-update semantics: @ref with_device_context
  * and @ref with_dispatcher do not mutate the receiver, they return a
  * modified copy. This makes an execution context cheap to share (the device
@@ -37,7 +35,7 @@ namespace dispatch
  *
  * @par Empty state
  * A default-constructed or moved-from execution context is @em empty: its
- * device context is empty (see @ref hardware::device_context) and its
+ * device context is empty (see @ref device_context) and its
  * dispatcher is null. Querying it is well defined; the accessors simply
  * return an empty device context and a null dispatcher.
  */
@@ -48,7 +46,7 @@ public:
 	 * @brief Construct an empty execution context.
 	 *
 	 * The resulting execution context holds an empty
-	 * @ref hardware::device_context and a null dispatcher.
+	 * @ref device_context and a null dispatcher.
 	 */
 	XMIPP4_CORE_API
 	execution_context() noexcept;
@@ -62,7 +60,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	execution_context(
-		hardware::device_context device_context,
+		device_context device_context,
 		std::shared_ptr<dispatcher> dispatcher
 	);
 
@@ -84,7 +82,7 @@ public:
 	 * @return A reference to the wrapped device context.
 	 */
 	XMIPP4_CORE_API
-	const hardware::device_context&
+	const device_context&
 	get_device_context() const noexcept;
 
 	/**
@@ -103,7 +101,7 @@ public:
 	 * Replaces the hardware resources describing @em where operations execute
 	 * while preserving the dispatcher. Per-use derivations such as switching
 	 * queue or overriding an allocator are expressed on the
-	 * @ref hardware::device_context itself, e.g.
+	 * @ref device_context itself, e.g.
 	 * `ctx.with_device_context(ctx.get_device_context().on_queue(queue));`
 	 *
 	 * @param device_context The device context of the returned execution
@@ -113,7 +111,7 @@ public:
 	 */
 	XMIPP4_CORE_API
 	execution_context with_device_context(
-		hardware::device_context device_context
+		device_context device_context
 	) const;
 
 	/**
@@ -129,9 +127,8 @@ public:
 	) const;
 
 private:
-	hardware::device_context m_device_context;
+	device_context m_device_context;
 	std::shared_ptr<dispatcher> m_dispatcher;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

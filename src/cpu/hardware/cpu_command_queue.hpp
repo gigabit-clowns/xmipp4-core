@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief CPU implementation of @ref command_queue.
@@ -33,5 +31,4 @@ private:
 	static std::shared_ptr<cpu_command_queue> m_instance;
 };
 
-} // namespace hardware
 } // namespace xmipp4

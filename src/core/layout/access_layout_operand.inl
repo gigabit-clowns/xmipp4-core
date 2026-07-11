@@ -4,8 +4,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 inline
 access_layout_operand::access_layout_operand(
@@ -62,5 +60,4 @@ void access_layout_operand::trim_axes(std::size_t n)
 	m_strides.resize(n);
 }
 
-} // namespace layout
 } // namespace xmipp4

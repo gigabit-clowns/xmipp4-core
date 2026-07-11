@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class program_cache::implementation
 {
@@ -209,5 +207,4 @@ void program_cache::store(
 	}
 }
 
-} // namespace dispatch
 } // namespace xmipp4

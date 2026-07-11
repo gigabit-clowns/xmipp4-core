@@ -8,7 +8,7 @@
 #include <array>
 #include <utility>
 
-using namespace xmipp4::layout;
+using namespace xmipp4;
 
 TEST_CASE("make_contiguous_axis should create an axis of stride 1", "[strided_axis]")
 {

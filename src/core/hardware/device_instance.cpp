@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device_instance::implementation
 {
@@ -59,7 +57,6 @@ private:
 	memory_allocator_table m_allocators;
 	std::shared_ptr<command_queue> m_default_queue;
 };
-
 
 
 device_instance::device_instance(
@@ -110,5 +107,4 @@ device_instance::get_default_queue() const noexcept
 	return m_implementation->get_default_queue();
 }
 
-} // namespace hardware
 } // namespace xmipp4

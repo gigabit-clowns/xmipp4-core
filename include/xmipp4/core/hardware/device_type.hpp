@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Broad classification of compute devices.
@@ -27,5 +25,4 @@ enum class device_type
 
 const char* to_string(device_type type) noexcept;
 
-} // namespace hardware
 } // namespace xmipp4

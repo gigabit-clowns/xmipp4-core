@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace binary
-{
 
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t bit(std::size_t i) noexcept
@@ -427,5 +425,4 @@ parity(T x) noexcept
 	return detail::parity(x);
 }
 
-} // namespace binary
 } // namespace xmipp4

@@ -21,7 +21,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 
 namespace
 {
@@ -89,7 +88,6 @@ std::shared_ptr<host_buffer> make_host_buffer(std::size_t size)
 }
 
 } // namespace
-
 
 
 TEST_CASE(

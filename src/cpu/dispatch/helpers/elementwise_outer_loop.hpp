@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Apply an inner loop to every 1D vector of a multidimensional layout.
@@ -32,11 +30,10 @@ namespace dispatch
 template <typename InnerLoop, typename... Pointers>
 void run_elementwise_outer_loop(
 	InnerLoop &&inner_loop,
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	Pointers... pointers
 );
 
-} // namespace dispatch
 } // namespace xmipp4
 
 #include "elementwise_outer_loop.inl"

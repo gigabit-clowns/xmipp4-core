@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 XMIPP4_INLINE_CONSTEXPR
 dynamic_subscript::dynamic_subscript(ellipsis_tag) noexcept
@@ -111,5 +109,4 @@ auto visit(F&& func, const dynamic_subscript &subscript)
 	}
 }
 
-} // namespace layout
 } // namespace xmipp4

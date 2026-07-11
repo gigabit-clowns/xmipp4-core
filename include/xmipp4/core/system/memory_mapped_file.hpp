@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace system
-{
 
 /**
  * @brief RAII style class to memory map files
@@ -154,5 +152,4 @@ private:
  */
 XMIPP4_CORE_API void swap(memory_mapped_file& lhs, memory_mapped_file& rhs) noexcept;
 
-} //namespace system
 } //namespace xmipp4

@@ -4,11 +4,8 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 dispatcher::dispatcher() noexcept = default;
 dispatcher::~dispatcher() = default;
 
-} // namespace dispatch
 } // namespace xmipp4

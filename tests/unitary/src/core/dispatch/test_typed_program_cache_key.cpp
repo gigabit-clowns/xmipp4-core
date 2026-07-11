@@ -8,7 +8,6 @@
 #include <string>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 TEST_CASE(
 	"typed_program_cache_key forwards to std::hash",

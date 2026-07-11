@@ -9,8 +9,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class broadcast_error
 	: public std::runtime_error
@@ -32,5 +30,4 @@ private:
 	std::vector<std::size_t> m_second_extents;
 };
 
-} // namespace layout
 } // namespace xmipp4

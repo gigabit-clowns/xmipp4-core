@@ -13,16 +13,10 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class program;
 class command_queue;
 
-} // namespace hardware
-
-namespace dispatch
-{
 
 class operation;
 class operand_signature;
@@ -73,7 +67,7 @@ public:
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue
+		command_queue &queue
 	) const = 0;
 
 	/**
@@ -95,18 +89,17 @@ public:
 	 * null, the builder may consult and update it to reuse expensive
 	 * resources (FFT plans, compiled kernels, workspaces, ...) across
 	 * builds. Implementations are free to ignore it.
-	 * @return std::shared_ptr<hardware::program> The executable program suited
+	 * @return std::shared_ptr<program> The executable program suited
 	 * for the requested operation and signature.
 	 */
 	virtual
-	std::shared_ptr<hardware::program> build(
+	std::shared_ptr<program> build(
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue,
+		command_queue &queue,
 		program_cache *cache
 	) const = 0;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

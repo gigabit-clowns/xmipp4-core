@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Adapts a strongly typed functor to the @ref cpu_program interface.
@@ -118,8 +116,8 @@ public:
 	~functor_cpu_program() override = default;
 
 	void execute(
-		span<const std::shared_ptr<hardware::buffer>> output_operands,
-		span<const std::shared_ptr<const hardware::buffer>> input_operands,
+		span<const std::shared_ptr<buffer>> output_operands,
+		span<const std::shared_ptr<const buffer>> input_operands,
 		span<const std::shared_ptr<buffer>> scratch_operands
 	) const override;
 
@@ -139,8 +137,8 @@ private:
 		std::size_t... ScratchIs
 	>
 	void execute_wrapper(
-		span<const std::shared_ptr<hardware::buffer>> output_operands,
-		span<const std::shared_ptr<const hardware::buffer>> input_operands,
+		span<const std::shared_ptr<buffer>> output_operands,
+		span<const std::shared_ptr<const buffer>> input_operands,
 		span<const std::shared_ptr<buffer>> scratch_operands,
 		std::index_sequence<OutputIs...>,
 		std::index_sequence<InputIs...>,
@@ -194,7 +192,6 @@ std::shared_ptr<cpu_program> make_functor_cpu_program(
 		scratch_requirements
 );
 
-} // namespace hardware
 } // namespace xmipp4
 
 #include "functor_cpu_program.inl"

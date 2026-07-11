@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace ndarray
-{
 
 array_descriptor::array_descriptor() noexcept
 	: m_data_type(numerical_type::unknown)
@@ -15,7 +13,7 @@ array_descriptor::array_descriptor() noexcept
 }
 
 array_descriptor::array_descriptor(
-	layout::strided_layout layout,
+	strided_layout layout,
 	numerical_type data_type
 ) noexcept
 	: m_layout(std::move(layout))
@@ -39,7 +37,7 @@ std::size_t array_descriptor::hash() const noexcept
 	return seed;
 }
 
-const layout::strided_layout& array_descriptor::get_layout() const noexcept
+const strided_layout& array_descriptor::get_layout() const noexcept
 {
 	return m_layout;
 }
@@ -73,7 +71,7 @@ array_descriptor make_contiguous_array_descriptor(
 )
 {
 	return array_descriptor(
-		layout::strided_layout::make_contiguous_layout(extents),
+		strided_layout::make_contiguous_layout(extents),
 		data_type
 	);
 }
@@ -90,5 +88,4 @@ std::size_t compute_storage_requirement(const array_descriptor &descriptor)
 	return layout.compute_storage_requirement() * get_size(data_type);
 }
 
-} // namespace ndarray
 } // namespace xmipp4

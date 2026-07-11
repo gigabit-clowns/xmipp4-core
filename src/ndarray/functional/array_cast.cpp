@@ -10,13 +10,11 @@
 
 namespace xmipp4
 {
-namespace ndarray
-{
 
-ndarray::array cast(
-	ndarray::array &input,
+array cast(
+	array &input,
 	numerical_type target_type,
-	const dispatch::execution_context &context
+	const execution_context &context
 )
 {
 	const auto source_type = input.get_descriptor().get_data_type();
@@ -33,11 +31,11 @@ ndarray::array cast(
 	);
 }
 
-ndarray::array cast_copy(
-	ndarray::array_view input,
+array cast_copy(
+	array_view input,
 	numerical_type target_type,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+	const execution_context &context,
+	array *out
 )
 {
 	const auto &input_descriptor = input.get_descriptor();
@@ -45,20 +43,20 @@ ndarray::array cast_copy(
 	std::vector<std::size_t> input_extents;
 	input_descriptor.get_layout().get_extents(input_extents);
 
-	ndarray::array result = empty(
-		ndarray::array_descriptor(
-			layout::strided_layout::make_contiguous_layout(
+	array result = empty(
+		array_descriptor(
+			strided_layout::make_contiguous_layout(
 				make_span(input_extents)
 			),
 			target_type
 		),
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		context,
 		out
 	);
 
 	execute(
-		dispatch::copy_operation(),
+		copy_operation(),
 		make_span(&result, 1),
 		make_span(&input, 1),
 		context
@@ -67,5 +65,4 @@ ndarray::array cast_copy(
 	return result;
 }
 
-} // namespace ndarray
 } // namespace xmipp4

@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace system
-{
 
 /**
  * @brief Get the hostname of the machine.
@@ -37,5 +35,4 @@ std::size_t get_available_system_memory();
  */
 std::size_t get_page_size();
 
-} // namespace system
 } // namespace xmipp4

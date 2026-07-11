@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace layout
-{
 
 class mock_subscript_callable
 {
@@ -27,5 +25,4 @@ public:
 	}
 };
 
-} // namespace layout
 } // namespace xmipp4

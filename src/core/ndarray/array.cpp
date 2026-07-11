@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace ndarray
-{
 
 array::array() = default;
 array::array(array&& other) noexcept = default;
@@ -15,7 +13,7 @@ array::~array() = default;
 array& array::operator=(array&& other) noexcept = default;
 
 array::array(
-	std::shared_ptr<hardware::buffer> storage,
+	std::shared_ptr<buffer> storage,
 	array_descriptor descriptor
 )
 	: array(
@@ -43,7 +41,7 @@ const array_descriptor& array::get_descriptor() const noexcept
 		empty_descriptor;
 }
 
-hardware::buffer* array::get_storage() noexcept
+buffer* array::get_storage() noexcept
 {
 	return
 		m_implementation ? 
@@ -51,7 +49,7 @@ hardware::buffer* array::get_storage() noexcept
 		nullptr;
 }
 
-const hardware::buffer* array::get_storage() const noexcept
+const buffer* array::get_storage() const noexcept
 {
 	return
 		m_implementation ? 
@@ -59,7 +57,7 @@ const hardware::buffer* array::get_storage() const noexcept
 		nullptr;
 }
 
-std::shared_ptr<hardware::buffer> array::share_storage() noexcept
+std::shared_ptr<buffer> array::share_storage() noexcept
 {
 	return
 		m_implementation ? 
@@ -67,7 +65,7 @@ std::shared_ptr<hardware::buffer> array::share_storage() noexcept
 		nullptr;
 }
 
-std::shared_ptr<const hardware::buffer> array::share_storage() const noexcept
+std::shared_ptr<const buffer> array::share_storage() const noexcept
 {
 	return
 		m_implementation ? 
@@ -85,5 +83,4 @@ array_view array::share() const noexcept
 	return array_view(m_implementation);
 }
 
-} // namespace ndarray
 } // namespace xmipp4

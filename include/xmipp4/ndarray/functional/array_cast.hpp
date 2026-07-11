@@ -7,15 +7,9 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class execution_context;
 
-} // namespace dispatch
-
-namespace ndarray
-{
 
 /**
  * @brief Cast an array to a given numerical type.
@@ -30,10 +24,10 @@ namespace ndarray
  * @return array The array cast to the target type.
  */
 XMIPP4_CORE_API
-ndarray::array cast(
-	ndarray::array& input,
+array cast(
+	array& input,
 	numerical_type target_type,
-	const dispatch::execution_context &context
+	const execution_context &context
 );
 
 /**
@@ -49,12 +43,11 @@ ndarray::array cast(
  * @return array The newly created array cast to the target type.
  */
 XMIPP4_CORE_API
-ndarray::array cast_copy(
-	ndarray::array_view input,
+array cast_copy(
+	array_view input,
 	numerical_type target_type,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+	const execution_context &context,
+	array *out = nullptr
 );
 
-} // namespace ndarray
 } // namespace xmipp4

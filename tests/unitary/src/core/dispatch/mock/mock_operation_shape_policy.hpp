@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class mock_operation_shape_policy
 	: public operation_shape_policy
@@ -36,5 +34,4 @@ public:
 	);
 };
 
-} // namespace dispatch
 } // namespace xmipp4

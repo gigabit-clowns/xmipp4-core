@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 access_layout::access_layout() = default;
 
@@ -117,5 +115,4 @@ access_layout::get_implementation() const noexcept
 	return m_implementation.get();
 }
 
-} // namespace layout
 } // namespace xmipp4

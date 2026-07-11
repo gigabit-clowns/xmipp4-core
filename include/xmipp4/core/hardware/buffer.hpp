@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class memory_resource;
 class memory_allocator;
@@ -85,5 +83,4 @@ public:
 	virtual const memory_resource& get_memory_resource() const noexcept = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

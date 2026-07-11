@@ -14,8 +14,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class strided_layout_implementation;
 
@@ -31,7 +29,6 @@ public:
 	strided_layout& operator=(const strided_layout &other) noexcept;
 	XMIPP4_CORE_API
 	strided_layout& operator=(strided_layout &&other) noexcept;
-
 
 
 	/**
@@ -233,17 +230,16 @@ bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 XMIPP4_CORE_API
 bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 
-} // namespace layout
 } // namespace xmipp4
 
 namespace std
 {
 
 template<>
-struct hash<xmipp4::layout::strided_layout>
+struct hash<xmipp4::strided_layout>
 {
 	std::size_t operator()(
-		const xmipp4::layout::strided_layout &layout
+		const xmipp4::strided_layout &layout
 	) const noexcept
 	{
 		return layout.hash();

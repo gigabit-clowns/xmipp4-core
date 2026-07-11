@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 namespace detail
 {
 
@@ -16,12 +14,12 @@ template <typename InnerLoop, typename... Pointers, std::size_t... Is>
 inline
 void run_elementwise_outer_loop_impl(
 	InnerLoop &&inner_loop,
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	const std::tuple<Pointers...> &pointers,
 	std::index_sequence<Is...>
 )
 {
-	layout::access_iterator ite;
+	access_iterator ite;
 	std::size_t count = layout.iter(ite);
 	if (count == 0)
 	{
@@ -42,7 +40,7 @@ template <typename InnerLoop, typename... Pointers>
 inline
 void run_elementwise_outer_loop(
 	InnerLoop &&inner_loop,
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	Pointers... pointers
 )
 {
@@ -54,5 +52,4 @@ void run_elementwise_outer_loop(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 inline
 operation_id::operation_id(std::type_index id) noexcept
@@ -39,7 +37,6 @@ operation_id operation_id::of() noexcept
 	return operation_id(typeid(operation_type));
 }
 
-} // namespace dispatch
 } // namespace xmipp4
 
 namespace std
@@ -47,8 +44,8 @@ namespace std
 
 inline
 std::size_t
-hash<xmipp4::dispatch::operation_id>::operator()
-(const xmipp4::dispatch::operation_id &key) const noexcept
+hash<xmipp4::operation_id>::operator()
+(const xmipp4::operation_id &key) const noexcept
 {
 	return key.hash();
 }

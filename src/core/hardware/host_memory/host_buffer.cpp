@@ -11,8 +11,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 host_buffer::host_buffer(
 	std::size_t size, 
@@ -21,8 +19,8 @@ host_buffer::host_buffer(
 	: m_data(nullptr)
 	, m_size(0UL)
 {
-	m_size = memory::align_ceil(size, alignment);
-	m_data = memory::aligned_alloc(m_size, alignment);
+	m_size = align_ceil(size, alignment);
+	m_data = aligned_alloc(m_size, alignment);
 
 	if (m_size > 0 && m_data == nullptr)
 	{
@@ -32,7 +30,7 @@ host_buffer::host_buffer(
 
 host_buffer::~host_buffer()
 {
-	memory::aligned_free(get_host_ptr());
+	aligned_free(get_host_ptr());
 }
 
 
@@ -56,5 +54,4 @@ const memory_resource& host_buffer::get_memory_resource() const noexcept
 	return host_memory_resource::get();
 }
 
-} // namespace hardware
 } // namespace xmipp4

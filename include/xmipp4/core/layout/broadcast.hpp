@@ -9,8 +9,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class strided_layout;
 
@@ -74,5 +72,4 @@ bool is_broadcastable_to(
 	span<const std::size_t> to_extents
 ) noexcept;
 
-} // namespace layout
 } // namespace xmipp4

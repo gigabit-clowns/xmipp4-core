@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 dynamic_library::dynamic_library() noexcept
 	: m_handle(nullptr)
@@ -93,5 +91,4 @@ void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept
 	lhs.swap(rhs);
 }
 
-} // namespace system
 } // namespace xmipp4

@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 device_index::device_index() noexcept = default;
 device_index::device_index(const device_index &other) = default;
@@ -126,5 +124,4 @@ bool parse_device_index(std::string_view text, device_index &result)
 	return success;
 }
 
-} // namespace hardware
 } // namespace xmipp4

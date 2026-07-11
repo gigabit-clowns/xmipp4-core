@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class program_manager;
 
@@ -17,6 +15,5 @@ class program_manager;
  */
 void register_cpu_program_builders(program_manager &manager);
 
-} // namespace dispatch
 } // namespace xmipp4
 

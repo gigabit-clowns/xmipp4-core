@@ -21,8 +21,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -43,11 +41,11 @@ public:
 		return operation_id::of<test_cpu_program_builder>();
 	}
 
-	std::shared_ptr<hardware::program> build(
+	std::shared_ptr<program> build(
 		const operation & /*operation*/,
 		span<const operand_signature> /*output_signatures*/,
 		span<const operand_signature> /*input_signatures*/,
-		hardware::command_queue & /*queue*/,
+		command_queue & /*queue*/,
 		program_cache * /*cache*/
 	) const override
 	{
@@ -55,7 +53,7 @@ public:
 	}
 };
 
-operand_signature make_signature(const hardware::memory_resource *resource)
+operand_signature make_signature(const memory_resource *resource)
 {
 	return operand_signature(
 		strided_layout(),
@@ -67,7 +65,6 @@ operand_signature make_signature(const hardware::memory_resource *resource)
 } // namespace
 
 
-
 TEST_CASE(
 	"cpu_program_builder get_suitability returns normal when every "
 	"signature is host accessible and the queue is a CPU queue",
@@ -77,9 +74,9 @@ TEST_CASE(
 	const test_cpu_program_builder builder;
 	const mock_operation operation;
 
-	hardware::mock_memory_resource host_resource;
+	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::host);
+		.RETURN(memory_resource_kind::host);
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
@@ -88,7 +85,7 @@ TEST_CASE(
 		make_signature(&host_resource)
 	};
 
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,
@@ -109,12 +106,12 @@ TEST_CASE(
 	const test_cpu_program_builder builder;
 	const mock_operation operation;
 
-	hardware::mock_memory_resource host_resource;
+	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::host);
-	hardware::mock_memory_resource device_resource;
+		.RETURN(memory_resource_kind::host);
+	mock_memory_resource device_resource;
 	ALLOW_CALL(device_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::device_local);
+		.RETURN(memory_resource_kind::device_local);
 
 	// The second output resides on device-local memory, so the whole set is
 	// rejected even though the first one is host accessible.
@@ -126,7 +123,7 @@ TEST_CASE(
 		make_signature(&host_resource)
 	};
 
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,
@@ -147,12 +144,12 @@ TEST_CASE(
 	const test_cpu_program_builder builder;
 	const mock_operation operation;
 
-	hardware::mock_memory_resource host_resource;
+	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::host);
-	hardware::mock_memory_resource device_resource;
+		.RETURN(memory_resource_kind::host);
+	mock_memory_resource device_resource;
 	ALLOW_CALL(device_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::device_local);
+		.RETURN(memory_resource_kind::device_local);
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
@@ -161,7 +158,7 @@ TEST_CASE(
 		make_signature(&device_resource)
 	};
 
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,
@@ -188,7 +185,7 @@ TEST_CASE(
 	};
 	const std::vector<operand_signature> inputs;
 
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,
@@ -209,9 +206,9 @@ TEST_CASE(
 	const test_cpu_program_builder builder;
 	const mock_operation operation;
 
-	hardware::mock_memory_resource host_resource;
+	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
-		.RETURN(hardware::memory_resource_kind::host);
+		.RETURN(memory_resource_kind::host);
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
@@ -221,7 +218,7 @@ TEST_CASE(
 	};
 
 	// A non-CPU queue fails the try_cast even with valid signatures.
-	hardware::mock_command_queue queue;
+	mock_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,
@@ -246,7 +243,7 @@ TEST_CASE(
 	const std::vector<operand_signature> outputs;
 	const std::vector<operand_signature> inputs;
 
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 
 	const auto priority = builder.get_suitability(
 		operation,

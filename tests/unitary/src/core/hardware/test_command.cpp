@@ -12,7 +12,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 
 TEST_CASE(
     "command default constructor produces null program and empty spans",

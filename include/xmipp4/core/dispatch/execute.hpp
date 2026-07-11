@@ -7,16 +7,10 @@
 
 namespace xmipp4
 {
-namespace ndarray
-{
 
 class array;
 class array_view;
 
-} // namespace ndarray
-
-namespace dispatch
-{
 
 class operation;
 class execution_context;
@@ -32,8 +26,8 @@ class execution_context;
 XMIPP4_CORE_API
 void execute(
 	const operation &operation,
-	span<ndarray::array> output_operands,
-	span<const ndarray::array_view> input_operands,
+	span<array> output_operands,
+	span<const array_view> input_operands,
 	const execution_context &context
 );
 
@@ -46,11 +40,11 @@ void execute(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-ndarray::array execute(
+array execute(
 	const operation &operation,
-	span<const ndarray::array_view> input_operands,
+	span<const array_view> input_operands,
 	const execution_context &context,
-	ndarray::array *out = nullptr
+	array *out = nullptr
 );
 
 /**
@@ -62,11 +56,11 @@ ndarray::array execute(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-ndarray::array execute_unary(
+array execute_unary(
 	const operation &operation,
-	const ndarray::array_view &input,
+	const array_view &input,
 	const execution_context &context,
-	ndarray::array *out = nullptr
+	array *out = nullptr
 );
 
 /**
@@ -79,12 +73,12 @@ ndarray::array execute_unary(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-ndarray::array execute_binary(
+array execute_binary(
 	const operation &operation,
-	ndarray::array_view first_input,
-	ndarray::array_view second_input,
+	array_view first_input,
+	array_view second_input,
 	const execution_context &context,
-	ndarray::array *out = nullptr
+	array *out = nullptr
 );
 
 /**
@@ -98,14 +92,13 @@ ndarray::array execute_binary(
  * @param out Optional output parameter to be re-used.
  */
 XMIPP4_CORE_API
-ndarray::array execute_ternary(
+array execute_ternary(
 	const operation &operation,
-	ndarray::array_view first_input,
-	ndarray::array_view second_input,
-	ndarray::array_view third_input,
+	array_view first_input,
+	array_view second_input,
+	array_view third_input,
 	const execution_context &context,
-	ndarray::array *out = nullptr
+	array *out = nullptr
 );
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class device_manager;
 
@@ -34,5 +32,4 @@ public:
 	static bool register_at(device_manager &manager);
 }; 
 
-} // namespace hardware
 } // namespace xmipp4

@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief Class representing an slice of an array.
@@ -190,7 +188,6 @@ slice make_slice(
  */
 slice sanitize_slice(const slice &slice, std::size_t extent);
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "slice.inl"

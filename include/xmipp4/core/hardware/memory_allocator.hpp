@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class buffer;
 class command_queue;
@@ -86,5 +84,4 @@ public:
 	) = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

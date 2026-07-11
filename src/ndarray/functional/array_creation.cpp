@@ -22,16 +22,14 @@
 
 namespace xmipp4
 {
-namespace ndarray
-{
 
 namespace
 {
 
-std::shared_ptr<hardware::buffer> reuse_array_storage(
-	ndarray::array &donor,
+std::shared_ptr<buffer> reuse_array_storage(
+	array &donor,
 	std::size_t target_size,
-	const hardware::memory_resource &target_resource
+	const memory_resource &target_resource
 )
 {
 	auto storage = donor.share_storage();
@@ -58,10 +56,10 @@ std::shared_ptr<hardware::buffer> reuse_array_storage(
 	return storage;
 }
 
-std::shared_ptr<hardware::buffer> allocate_array_storage(
+std::shared_ptr<buffer> allocate_array_storage(
 	std::size_t size,
-	const hardware::device_context &device_context,
-	hardware::memory_allocator &allocator
+	const device_context &device_context,
+	memory_allocator &allocator
 )
 {
 	const auto &instance = device_context.get_device_instance();
@@ -73,7 +71,7 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 	const auto max_alignment = allocator.get_max_alignment();
 	const auto preferred_alignment = properties.get_optimal_data_alignment();
 	const auto base_alignment = std::min(max_alignment, preferred_alignment);
-	const auto alignment = std::min(base_alignment, binary::bit_ceil(size));
+	const auto alignment = std::min(base_alignment, bit_ceil(size));
 
 	return allocator.allocate(size, alignment, queue.get());
 }
@@ -81,12 +79,11 @@ std::shared_ptr<hardware::buffer> allocate_array_storage(
 } // anonymous namespace
 
 
-
-ndarray::array empty(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array empty(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
 )
 {
 	const auto &device_context = context.get_device_context();
@@ -99,7 +96,7 @@ ndarray::array empty(
 		);
 	}
 
-	std::shared_ptr<hardware::buffer> storage;
+	std::shared_ptr<buffer> storage;
 	const auto size = compute_storage_requirement(descriptor);
 	if (out)
 	{
@@ -117,7 +114,7 @@ ndarray::array empty(
 
 	if (!out)
 	{
-		return ndarray::array(std::move(storage), std::move(descriptor));
+		return array(std::move(storage), std::move(descriptor));
 	}
 
 	if (
@@ -125,17 +122,17 @@ ndarray::array empty(
 		out->get_descriptor() != descriptor
 	)
 	{
-		*out = ndarray::array(std::move(storage), std::move(descriptor));
+		*out = array(std::move(storage), std::move(descriptor));
 	}
 
 	return out->share();
 }
 
-ndarray::array zeros(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array zeros(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
 )
 {
 	return full(
@@ -147,11 +144,11 @@ ndarray::array zeros(
 	);
 }
 
-ndarray::array ones(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array ones(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out
 )
 {
 	return full(
@@ -163,20 +160,20 @@ ndarray::array ones(
 	);
 }
 
-ndarray::array full(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
+array full(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
 	const scalar_value &fill_value,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+	const execution_context &context,
+	array *out
 )
 {
-	std::array<ndarray::array, 1> outputs = {
+	std::array<array, 1> outputs = {
 		empty(descriptor, affinity, context, out) 
 	};
 
 	execute(
-		dispatch::fill_operation(fill_value),
+		fill_operation(fill_value),
 		make_span(outputs),
 		{},
 		context
@@ -185,28 +182,27 @@ ndarray::array full(
 	return std::move(outputs[0]);
 }
 
-ndarray::array copy(
-	ndarray::array_view source,
-	const dispatch::execution_context &context,
-	ndarray::array *out
+array copy(
+	array_view source,
+	const execution_context &context,
+	array *out
 )
 {
-	return execute_unary(dispatch::copy_operation(), source, context, out);
+	return execute_unary(copy_operation(), source, context, out);
 }
 
 void fill(
-	ndarray::array &out,
+	array &out,
 	const scalar_value &fill_value,
-	const dispatch::execution_context &context
+	const execution_context &context
 )
 {
 	execute(
-		dispatch::fill_operation(fill_value),
+		fill_operation(fill_value),
 		make_span(&out, 1),
 		{},
 		context
 	);
 }
 
-} // namespace ndarray
 } // namespace xmipp4

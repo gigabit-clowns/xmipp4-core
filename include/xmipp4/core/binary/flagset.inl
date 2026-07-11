@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace binary
-{
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR flagset<B>::flagset() noexcept
@@ -142,21 +140,21 @@ template<typename B>
 XMIPP4_INLINE_CONSTEXPR int 
 flagset<B>::count() const noexcept
 {
-	return binary::popcount(m_data);
+	return popcount(m_data);
 }
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR bool
 flagset<B>::parity() const noexcept
 {
-	return binary::parity(m_data);
+	return xmipp4::parity(m_data);
 }
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR bool
 flagset<B>::has_single_bit() const noexcept
 {
-	return binary::has_single_bit(m_data);
+	return xmipp4::has_single_bit(m_data);
 }
 
 template<typename B>
@@ -221,15 +219,14 @@ flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept
 	return flagset<B>(lhs.get_bits() ^ rhs.get_bits());
 }
 
-} // namespace binary
 } // namespace xmipp4
 
 template <typename B>
 XMIPP4_CONSTEXPR size_t 
-std::hash<xmipp4::binary::flagset<B>>::operator()(
-	xmipp4::binary::flagset<B> b
+std::hash<xmipp4::flagset<B>>::operator()(
+	xmipp4::flagset<B> b
 ) const noexcept
 {
-	using underlying_type = typename xmipp4::binary::flagset<B>::underlying_type;
+	using underlying_type = typename xmipp4::flagset<B>::underlying_type;
 	return static_cast<underlying_type>(b);
 }

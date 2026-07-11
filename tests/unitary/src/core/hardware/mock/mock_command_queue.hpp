@@ -11,8 +11,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_command_queue final
 	: public command_queue
@@ -23,5 +21,4 @@ public:
 	MAKE_MOCK1(wait, void(const event &event), override);
 };
 
-} // namespace hardware
 } // namespace xmipp4

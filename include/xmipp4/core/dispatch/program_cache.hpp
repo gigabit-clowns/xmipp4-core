@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Bounded associative store for backend-private resources reused
@@ -109,5 +107,4 @@ private:
 	std::unique_ptr<implementation> m_implementation;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

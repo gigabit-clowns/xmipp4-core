@@ -37,9 +37,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
-using namespace xmipp4::layout;
 using trompeloeil::_;
 
 namespace
@@ -56,15 +53,15 @@ struct dispatch_record
 	std::unique_ptr<scalar_value> fill_value;
 	std::size_t num_outputs = 0;
 	std::size_t num_inputs = 0;
-	const hardware::buffer *first_output_storage = nullptr;
-	const hardware::buffer *first_input_storage = nullptr;
-	const hardware::device_instance *device_instance = nullptr;
+	const buffer *first_output_storage = nullptr;
+	const buffer *first_input_storage = nullptr;
+	const xmipp4::device_instance *device_instance = nullptr;
 
 	void operator()(
 		const operation &op,
 		span<array> outputs,
 		span<const array_view> inputs,
-		const hardware::device_context &device_context
+		const device_context &device_context
 	)
 	{
 		called = true;
@@ -92,15 +89,14 @@ class array_creation_fixture
 {
 public:
 	array_creation_fixture()
-		: device(std::make_shared<hardware::mock_device>())
-		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, default_queue(std::make_shared<hardware::mock_command_queue>())
+		: device(std::make_shared<mock_device>())
+		, host_allocator(std::make_shared<mock_memory_allocator>())
+		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_queue(std::make_shared<mock_command_queue>())
 		, dispatcher(std::make_shared<mock_dispatcher>())
 	{
-		using hardware::memory_resource_affinity;
 
-		hardware::device_properties properties;
+		device_properties properties;
 		properties.set_optimal_data_alignment(128);
 
 		REQUIRE_CALL(
@@ -120,13 +116,13 @@ public:
 		REQUIRE_CALL(*device, create_command_queue())
 			.RETURN(default_queue);
 
-		instance = std::make_shared<hardware::device_instance>(
+		instance = std::make_shared<device_instance>(
 			device,
 			std::move(properties)
 		);
 
-		context = dispatch::execution_context(
-			hardware::device_context(instance),
+		context = execution_context(
+			device_context(instance),
 			dispatcher
 		);
 	}
@@ -143,19 +139,18 @@ protected:
 		);
 	}
 
-	std::shared_ptr<hardware::mock_device> device;
-	std::shared_ptr<hardware::mock_memory_allocator> host_allocator;
-	std::shared_ptr<hardware::mock_memory_allocator> device_allocator;
-	hardware::mock_memory_resource host_resource;
-	hardware::mock_memory_resource device_resource;
-	std::shared_ptr<hardware::command_queue> default_queue;
-	std::shared_ptr<const hardware::device_instance> instance;
+	std::shared_ptr<mock_device> device;
+	std::shared_ptr<mock_memory_allocator> host_allocator;
+	std::shared_ptr<mock_memory_allocator> device_allocator;
+	mock_memory_resource host_resource;
+	mock_memory_resource device_resource;
+	std::shared_ptr<command_queue> default_queue;
+	std::shared_ptr<const device_instance> instance;
 	std::shared_ptr<mock_dispatcher> dispatcher;
-	dispatch::execution_context context;
+	execution_context context;
 };
 
 } // namespace
-
 
 
 TEST_CASE(
@@ -171,12 +166,12 @@ TEST_CASE(
 	);
 
 	// A default-constructed context is empty: it has no allocators.
-	const dispatch::execution_context context;
+	const execution_context context;
 
 	CHECK_THROWS_AS(
 		empty(
 			descriptor,
-			hardware::memory_resource_affinity::host,
+			memory_resource_affinity::host,
 			context
 		),
 		std::invalid_argument
@@ -192,7 +187,7 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	ALLOW_CALL(*host_allocator, get_max_alignment())
 		.RETURN(std::size_t(256));
@@ -204,7 +199,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context
 	);
 
@@ -220,7 +215,7 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// Only the device allocator is expected to be used; an unexpected call on
 	// the host allocator would fail the test.
@@ -234,7 +229,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		context
 	);
 
@@ -250,7 +245,7 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// The output buffer lives on the same resource as the allocator and is
 	// large enough, so it should be reused verbatim (no allocate() call).
@@ -265,7 +260,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context,
 		&out
 	);
@@ -287,7 +282,7 @@ TEST_CASE_METHOD(
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
 	const auto stale_descriptor = make_descriptor({ 1 });
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// Same resource and large enough, so the buffer is reused, but the stale
 	// descriptor must be replaced by the requested one.
@@ -302,7 +297,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context,
 		&out
 	);
@@ -321,7 +316,7 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// A default-constructed output has no storage to reuse.
 	ALLOW_CALL(*host_allocator, get_memory_resource())
@@ -338,7 +333,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context,
 		&out
 	);
@@ -357,8 +352,8 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto stale_buffer = std::make_shared<hardware::mock_buffer>();
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto stale_buffer = std::make_shared<mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// The stale buffer lives on the device resource, while the host allocator
 	// hands out host-resource storage; reuse must be rejected.
@@ -378,7 +373,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context,
 		&out
 	);
@@ -397,8 +392,8 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto stale_buffer = std::make_shared<hardware::mock_buffer>();
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto stale_buffer = std::make_shared<mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	// The stale buffer is on the right resource but undersized; reuse must be
 	// rejected in favor of a fresh allocation.
@@ -420,7 +415,7 @@ TEST_CASE_METHOD(
 
 	const auto result = empty(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context,
 		&out
 	);
@@ -438,7 +433,7 @@ TEST_CASE_METHOD(
 {
 	const auto descriptor = make_descriptor();
 	const auto size = compute_storage_requirement(descriptor);
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	ALLOW_CALL(*host_allocator, get_max_alignment())
 		.RETURN(std::size_t(256));
@@ -454,7 +449,7 @@ TEST_CASE_METHOD(
 
 	const auto result = full(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		scalar_value(2.5f),
 		context
 	);
@@ -477,7 +472,7 @@ TEST_CASE_METHOD(
 )
 {
 	const auto descriptor = make_descriptor();
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	ALLOW_CALL(*host_allocator, get_max_alignment())
 		.RETURN(std::size_t(256));
@@ -493,7 +488,7 @@ TEST_CASE_METHOD(
 
 	const auto result = zeros(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context
 	);
 
@@ -513,7 +508,7 @@ TEST_CASE_METHOD(
 )
 {
 	const auto descriptor = make_descriptor();
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 
 	ALLOW_CALL(*host_allocator, get_max_alignment())
 		.RETURN(std::size_t(256));
@@ -529,7 +524,7 @@ TEST_CASE_METHOD(
 
 	const auto result = ones(
 		descriptor,
-		hardware::memory_resource_affinity::host,
+		memory_resource_affinity::host,
 		context
 	);
 
@@ -549,7 +544,7 @@ TEST_CASE_METHOD(
 )
 {
 	const auto descriptor = make_descriptor();
-	const auto source_buffer = std::make_shared<hardware::mock_buffer>();
+	const auto source_buffer = std::make_shared<mock_buffer>();
 	array source(source_buffer, descriptor);
 
 	dispatch_record record;
@@ -574,7 +569,7 @@ TEST_CASE_METHOD(
 )
 {
 	const auto descriptor = make_descriptor();
-	const auto buffer = std::make_shared<hardware::mock_buffer>();
+	const auto buffer = std::make_shared<mock_buffer>();
 	array target(buffer, descriptor);
 
 	dispatch_record record;

@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-using namespace xmipp4::layout;
+using namespace xmipp4;
 
 TEST_CASE( "getting extents on an default constructed access_layout should return empty ", "[access_layout]" )
 {

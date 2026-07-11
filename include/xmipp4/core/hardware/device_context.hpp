@@ -11,8 +11,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device_instance;
 class command_queue;
@@ -160,5 +158,4 @@ private:
 	allocator_array_type m_allocators;
 };
 
-} // namespace hardware
 } // namespace xmipp4

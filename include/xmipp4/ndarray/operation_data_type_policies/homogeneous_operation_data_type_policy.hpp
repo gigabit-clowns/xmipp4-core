@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Data type policy requiring all operand types to be the same.
@@ -31,5 +29,4 @@ public:
 	static const homogeneous_operation_data_type_policy& get() noexcept;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

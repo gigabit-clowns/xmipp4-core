@@ -17,7 +17,7 @@
 #include <memory>
 #include <stdexcept>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 namespace
 {
@@ -70,7 +70,6 @@ protected:
 };
 
 } // namespace
-
 
 
 TEST_CASE(

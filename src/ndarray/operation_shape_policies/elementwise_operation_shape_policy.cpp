@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 void elementwise_operation_shape_policy::deduce(
 	span<shape_type> canonical_output_shapes,
@@ -30,7 +28,7 @@ void elementwise_operation_shape_policy::deduce(
 	shape_type canonical_shape = input_shapes[0];
 	for (std::size_t i = 1; i < input_shapes.size(); ++i)
 	{
-		layout::broadcast_extents_accumulate(
+		broadcast_extents_accumulate(
 			canonical_shape,
 			make_span(input_shapes[i])
 		);
@@ -74,7 +72,7 @@ void elementwise_operation_shape_policy::accept(
 		}
 	}
 
-	const auto valid = layout::is_broadcastable_to(
+	const auto valid = is_broadcastable_to(
 		make_span(canonical_output_shapes[0]),
 		make_span(reference_shape)
 	);
@@ -94,5 +92,4 @@ elementwise_operation_shape_policy::get() noexcept
 	return instance;
 }
 
-} // namespace dispatch
 } // namespace xmipp4

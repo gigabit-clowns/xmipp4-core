@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 void copy_operation_data_type_policy::deduce(
 	span<numerical_type> canonical_output_types,
@@ -45,5 +43,4 @@ copy_operation_data_type_policy::get() noexcept
 	return instance;
 }
 
-} // namespace dispatch
 } // namespace xmipp4

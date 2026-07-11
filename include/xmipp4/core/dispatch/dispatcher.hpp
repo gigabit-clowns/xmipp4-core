@@ -10,23 +10,13 @@
 namespace xmipp4
 {
 
-namespace hardware
-{
 
 class device_context;
 
-} // namespace hardware
-
-namespace ndarray
-{
 
 class array;
 class array_view;
 
-} // namespace ndarray
-
-namespace dispatch
-{
 
 class operation;
 class program_manager;
@@ -74,9 +64,9 @@ public:
 	 */
 	virtual void dispatch(
 		const operation &operation,
-		span<ndarray::array> output_operands,
-		span<const ndarray::array_view> input_operands,
-		const hardware::device_context &device
+		span<array> output_operands,
+		span<const array_view> input_operands,
+		const device_context &device
 	) = 0;
 };
 
@@ -99,5 +89,4 @@ std::shared_ptr<dispatcher> make_eager_dispatcher(
 	std::shared_ptr<const program_manager> program_manager
 );
 
-} // namespace dispatch
 } // namespace xmipp4

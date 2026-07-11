@@ -17,8 +17,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class access_layout_implementation
 {
@@ -105,7 +103,6 @@ private:
 	) const noexcept;
 };
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "access_layout_implementation.inl"

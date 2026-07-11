@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Abstract base for keys stored in an @ref program_cache.
@@ -53,5 +51,4 @@ public:
 	bool equals(const program_cache_key &other) const noexcept = 0;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

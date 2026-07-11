@@ -7,7 +7,7 @@
 namespace xmipp4
 {
 
-static const plugin* query_plugin(const system::dynamic_library& lib)
+static const plugin* query_plugin(const dynamic_library& lib)
 {
 	using get_plugin_function_type = const plugin* (*)();
 	const std::string symbol_name = "xmipp4_get_plugin";

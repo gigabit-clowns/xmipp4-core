@@ -25,8 +25,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -62,7 +60,7 @@ class cpu_fill_program_builder_fixture
 public:
 	// Build the program for the given operation and downcast it to the CPU
 	// program interface that exposes execute().
-	std::shared_ptr<hardware::cpu_program> build_program(
+	std::shared_ptr<cpu_program> build_program(
 		const operation &op,
 		const std::vector<operand_signature> &outputs,
 		const std::vector<operand_signature> &inputs
@@ -76,22 +74,22 @@ public:
 			nullptr
 		);
 
-		auto cpu = std::dynamic_pointer_cast<hardware::cpu_program>(program);
+		auto cpu = std::dynamic_pointer_cast<cpu_program>(program);
 		REQUIRE( cpu != nullptr );
 		return cpu;
 	}
 
 	// Execute a fill program. Fill declares neither input nor scratch operands.
 	void execute(
-		const hardware::cpu_program &program,
-		std::shared_ptr<hardware::buffer> destination
+		const cpu_program &program,
+		std::shared_ptr<buffer> destination
 	)
 	{
-		const std::vector<std::shared_ptr<hardware::buffer>> outputs {
+		const std::vector<std::shared_ptr<buffer>> outputs {
 			std::move(destination)
 		};
-		const std::vector<std::shared_ptr<const hardware::buffer>> inputs;
-		const std::vector<std::shared_ptr<hardware::buffer>> scratch;
+		const std::vector<std::shared_ptr<const buffer>> inputs;
+		const std::vector<std::shared_ptr<buffer>> scratch;
 
 		program.execute(
 			make_span(outputs),
@@ -102,11 +100,10 @@ public:
 
 protected:
 	cpu_fill_program_builder builder;
-	hardware::cpu_command_queue queue;
+	cpu_command_queue queue;
 };
 
 } // namespace
-
 
 
 TEST_CASE(
@@ -216,7 +213,7 @@ TEST_CASE_METHOD(
 	const auto program = build_program(operation, outputs, inputs);
 
 	const auto destination =
-		std::make_shared<hardware::host_buffer>(4 * sizeof(float), 64);
+		std::make_shared<host_buffer>(4 * sizeof(float), 64);
 	auto *dst_ptr = static_cast<float*>(destination->get_host_ptr());
 	for (std::size_t i = 0; i < 4; ++i)
 	{
@@ -249,7 +246,7 @@ TEST_CASE_METHOD(
 	const auto program = build_program(operation, outputs, inputs);
 
 	const auto destination =
-		std::make_shared<hardware::host_buffer>(4 * sizeof(float), 64);
+		std::make_shared<host_buffer>(4 * sizeof(float), 64);
 	auto *dst_ptr = static_cast<float*>(destination->get_host_ptr());
 	for (std::size_t i = 0; i < 4; ++i)
 	{
@@ -282,7 +279,7 @@ TEST_CASE_METHOD(
 	const auto program = build_program(operation, outputs, inputs);
 
 	const auto destination =
-		std::make_shared<hardware::host_buffer>(5 * sizeof(float), 64);
+		std::make_shared<host_buffer>(5 * sizeof(float), 64);
 	auto *dst_ptr = static_cast<float*>(destination->get_host_ptr());
 	for (std::size_t i = 0; i < 5; ++i)
 	{

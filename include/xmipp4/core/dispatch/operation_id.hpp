@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Unique identification for an operation type.
@@ -42,16 +40,15 @@ private:
 	std::type_index m_id;
 };
 
-} // namespace dispatch
 } // namespace xmipp4
 
 namespace std
 {
 
 template<>
-struct hash<xmipp4::dispatch::operation_id>
+struct hash<xmipp4::operation_id>
 {
-	using key_type = xmipp4::dispatch::operation_id;
+	using key_type = xmipp4::operation_id;
 	std::size_t operator()(const key_type &k) const noexcept;
 };
 

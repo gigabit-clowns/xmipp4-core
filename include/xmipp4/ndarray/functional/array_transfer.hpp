@@ -9,15 +9,9 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class execution_context;
 
-} // namespace dispatch
-
-namespace ndarray
-{
 
 /**
  * @brief Transfer an array to memory with the requested affinity.
@@ -36,10 +30,10 @@ namespace ndarray
  * @ref transfer_copy if this is a concern.
  */
 XMIPP4_CORE_API
-ndarray::array transfer(
-	ndarray::array &input,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context
+array transfer(
+	array &input,
+	memory_resource_affinity affinity,
+	const execution_context &context
 );
 
 /**
@@ -57,11 +51,11 @@ ndarray::array transfer(
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-ndarray::array transfer_copy(
-	ndarray::array_view input,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array transfer_copy(
+	array_view input,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -79,9 +73,9 @@ ndarray::array transfer_copy(
  * @ref to_device_copy if this is a concern.
  */
 XMIPP4_CORE_API
-ndarray::array to_device(
-	ndarray::array &input,
-	const dispatch::execution_context &context
+array to_device(
+	array &input,
+	const execution_context &context
 );
 
 /**
@@ -94,10 +88,10 @@ ndarray::array to_device(
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-ndarray::array to_device_copy(
-	ndarray::array_view input,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array to_device_copy(
+	array_view input,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -115,9 +109,9 @@ ndarray::array to_device_copy(
  * @ref to_host_copy if this is a concern. 
  */
 XMIPP4_CORE_API
-ndarray::array to_host(
-	ndarray::array &input,
-	const dispatch::execution_context &context
+array to_host(
+	array &input,
+	const execution_context &context
 );
 
 /**
@@ -130,11 +124,10 @@ ndarray::array to_host(
  * @return array The transferred array.
  */
 XMIPP4_CORE_API
-ndarray::array to_host_copy(
-	ndarray::array_view input,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array to_host_copy(
+	array_view input,
+	const execution_context &context,
+	array *out = nullptr
 );
 
-} // namespace ndarray
 } // namespace xmipp4

@@ -22,7 +22,6 @@
 #include <stdexcept>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 namespace
 {
@@ -31,13 +30,12 @@ class execution_context_fixture
 {
 public:
 	execution_context_fixture()
-		: device(std::make_shared<hardware::mock_device>())
-		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, default_queue(std::make_shared<hardware::mock_command_queue>())
+		: device(std::make_shared<mock_device>())
+		, host_allocator(std::make_shared<mock_memory_allocator>())
+		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_queue(std::make_shared<mock_command_queue>())
 		, dispatcher(std::make_shared<mock_dispatcher>())
 	{
-		using hardware::memory_resource_affinity;
 
 		REQUIRE_CALL(
 			*device,
@@ -56,25 +54,24 @@ public:
 		REQUIRE_CALL(*device, create_command_queue())
 			.RETURN(default_queue);
 
-		instance = std::make_shared<hardware::device_instance>(
+		instance = std::make_shared<device_instance>(
 			device,
-			hardware::device_properties()
+			device_properties()
 		);
 	}
 
 protected:
-	std::shared_ptr<hardware::mock_device> device;
-	std::shared_ptr<hardware::memory_allocator> host_allocator;
-	std::shared_ptr<hardware::memory_allocator> device_allocator;
-	hardware::mock_memory_resource host_resource;
-	hardware::mock_memory_resource device_resource;
-	std::shared_ptr<hardware::command_queue> default_queue;
-	std::shared_ptr<const hardware::device_instance> instance;
+	std::shared_ptr<mock_device> device;
+	std::shared_ptr<memory_allocator> host_allocator;
+	std::shared_ptr<memory_allocator> device_allocator;
+	mock_memory_resource host_resource;
+	mock_memory_resource device_resource;
+	std::shared_ptr<command_queue> default_queue;
+	std::shared_ptr<const device_instance> instance;
 	std::shared_ptr<mock_dispatcher> dispatcher;
 };
 
 } // namespace
-
 
 
 TEST_CASE(
@@ -96,7 +93,7 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const hardware::device_context dev_ctx(instance);
+	const device_context dev_ctx(instance);
 
 	const execution_context context(dev_ctx, dispatcher);
 
@@ -111,7 +108,7 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const hardware::device_context dev_ctx(instance);
+	const device_context dev_ctx(instance);
 	const execution_context original(dev_ctx, dispatcher);
 
 	const execution_context copy(original);
@@ -130,7 +127,7 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const hardware::device_context dev_ctx(instance);
+	const device_context dev_ctx(instance);
 	execution_context original(dev_ctx, dispatcher);
 
 	const execution_context moved(std::move(original));
@@ -145,7 +142,7 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const hardware::device_context dev_ctx(instance);
+	const device_context dev_ctx(instance);
 	const execution_context original(dev_ctx, dispatcher);
 
 	execution_context target;
@@ -161,7 +158,7 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const hardware::device_context dev_ctx(instance);
+	const device_context dev_ctx(instance);
 	execution_context original(dev_ctx, dispatcher);
 
 	execution_context target;
@@ -178,10 +175,10 @@ TEST_CASE_METHOD(
 	"[execution_context]"
 )
 {
-	const execution_context base(hardware::device_context(), dispatcher);
+	const execution_context base(device_context(), dispatcher);
 
 	const auto derived =
-		base.with_device_context(hardware::device_context(instance));
+		base.with_device_context(device_context(instance));
 
 	CHECK( derived.get_device_context().get_device_instance() == instance );
 	CHECK( derived.get_dispatcher() == dispatcher );
@@ -199,7 +196,7 @@ TEST_CASE(
 {
 	const auto first = std::make_shared<mock_dispatcher>();
 	const auto second = std::make_shared<mock_dispatcher>();
-	const execution_context base(hardware::device_context(), first);
+	const execution_context base(device_context(), first);
 
 	const auto derived = base.with_dispatcher(second);
 

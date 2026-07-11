@@ -46,9 +46,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -67,14 +64,13 @@ class eager_dispatcher_fixture
 {
 public:
 	eager_dispatcher_fixture()
-		: device(std::make_shared<hardware::mock_device>())
-		, host_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, device_allocator(std::make_shared<hardware::mock_memory_allocator>())
-		, default_queue(std::make_shared<hardware::mock_command_queue>())
+		: device(std::make_shared<mock_device>())
+		, host_allocator(std::make_shared<mock_memory_allocator>())
+		, device_allocator(std::make_shared<mock_memory_allocator>())
+		, default_queue(std::make_shared<mock_command_queue>())
 		, manager(std::make_shared<program_manager>())
-		, program(std::make_shared<hardware::mock_program>())
+		, program(std::make_shared<mock_program>())
 	{
-		using hardware::memory_resource_affinity;
 
 		REQUIRE_CALL(
 			*device,
@@ -93,14 +89,14 @@ public:
 		REQUIRE_CALL(*device, create_command_queue())
 			.RETURN(default_queue);
 
-		hardware::device_properties properties;
+		device_properties properties;
 		properties.set_optimal_data_alignment(64);
 
-		instance = std::make_shared<hardware::device_instance>(
+		instance = std::make_shared<device_instance>(
 			device,
 			std::move(properties)
 		);
-		context = hardware::device_context(instance);
+		context = device_context(instance);
 
 		eager_dispatcher = make_eager_dispatcher(manager);
 
@@ -188,7 +184,7 @@ protected:
 					ANY(const operation&),
 					ANY(span<const operand_signature>),
 					ANY(span<const operand_signature>),
-					ANY(hardware::command_queue&)
+					ANY(command_queue&)
 				)
 			)
 				.RETURN(backend_priority::normal)
@@ -200,7 +196,7 @@ protected:
 					ANY(const operation&),
 					ANY(span<const operand_signature>),
 					ANY(span<const operand_signature>),
-					ANY(hardware::command_queue&),
+					ANY(command_queue&),
 					ANY(program_cache*)
 				)
 			)
@@ -211,7 +207,7 @@ protected:
 
 	// Make @ref program report the given scratch requirements (none by default).
 	void expect_program_scratch(
-		span<const hardware::program_scratch_requirement> requirements = {}
+		span<const program_scratch_requirement> requirements = {}
 	)
 	{
 		expectations.push_back(
@@ -221,9 +217,9 @@ protected:
 	}
 
 	// Create a tracked mock buffer that reports the device memory resource.
-	std::shared_ptr<hardware::mock_buffer> make_buffer()
+	std::shared_ptr<mock_buffer> make_buffer()
 	{
-		auto buffer = std::make_shared<hardware::mock_buffer>();
+		auto buffer = std::make_shared<mock_buffer>();
 		expectations.push_back(
 			NAMED_ALLOW_CALL(*buffer, get_memory_resource())
 				.LR_RETURN(device_resource)
@@ -245,14 +241,14 @@ protected:
 	// Expect a single command submission onto the active queue, carrying
 	// @ref program and the given output, input and scratch buffers.
 	void expect_command_submission(
-		std::shared_ptr<hardware::buffer> output_buffer,
-		std::shared_ptr<const hardware::buffer> input_storage,
-		std::shared_ptr<hardware::buffer> scratch_buffer = nullptr
+		std::shared_ptr<buffer> output_buffer,
+		std::shared_ptr<const buffer> input_storage,
+		std::shared_ptr<buffer> scratch_buffer = nullptr
 	)
 	{
-		auto &queue = static_cast<hardware::mock_command_queue&>(*default_queue);
+		auto &queue = static_cast<mock_command_queue&>(*default_queue);
 		expectations.push_back(
-			NAMED_REQUIRE_CALL(queue, submit(ANY(const hardware::command&)))
+			NAMED_REQUIRE_CALL(queue, submit(ANY(const command&)))
 				.LR_WITH(_1.get_program() == program)
 				.WITH(_1.get_outputs().size() == 1)
 				.WITH(_1.get_outputs()[0] == output_buffer)
@@ -267,17 +263,17 @@ protected:
 		);
 	}
 
-	std::shared_ptr<hardware::mock_device> device;
-	std::shared_ptr<hardware::memory_allocator> host_allocator;
-	std::shared_ptr<hardware::mock_memory_allocator> device_allocator;
-	hardware::mock_memory_resource host_resource;
-	hardware::mock_memory_resource device_resource;
-	std::shared_ptr<hardware::command_queue> default_queue;
-	std::shared_ptr<const hardware::device_instance> instance;
-	hardware::device_context context;
+	std::shared_ptr<mock_device> device;
+	std::shared_ptr<memory_allocator> host_allocator;
+	std::shared_ptr<mock_memory_allocator> device_allocator;
+	mock_memory_resource host_resource;
+	mock_memory_resource device_resource;
+	std::shared_ptr<command_queue> default_queue;
+	std::shared_ptr<const device_instance> instance;
+	device_context context;
 	std::shared_ptr<program_manager> manager;
 	std::shared_ptr<dispatcher> eager_dispatcher;
-	std::shared_ptr<hardware::mock_program> program;
+	std::shared_ptr<mock_program> program;
 
 	mock_operation op;
 	mock_operation_shape_policy shape_policy;
@@ -285,12 +281,11 @@ protected:
 
 	// Keep mock buffers alive, and hold the named expectations so that they are
 	// torn down (unlinked from their mocks) before the mocks they reference.
-	std::vector<std::shared_ptr<hardware::mock_buffer>> buffers;
+	std::vector<std::shared_ptr<mock_buffer>> buffers;
 	std::vector<std::unique_ptr<trompeloeil::expectation>> expectations;
 };
 
 } // namespace
-
 
 
 TEST_CASE(
@@ -308,7 +303,7 @@ TEST_CASE(
 	const array_view input;
 
 	// An empty device context exposes a null active queue.
-	const hardware::device_context empty_context;
+	const device_context empty_context;
 
 	CHECK_THROWS_AS(
 		dispatcher->dispatch(
@@ -470,7 +465,7 @@ TEST_CASE_METHOD(
 	const auto output_buffer = make_buffer();
 	REQUIRE_CALL(
 		*device_allocator,
-		allocate(expected_size, ANY(std::size_t), ANY(hardware::command_queue*))
+		allocate(expected_size, ANY(std::size_t), ANY(command_queue*))
 	)
 		.RETURN(output_buffer);
 
@@ -551,10 +546,10 @@ TEST_CASE_METHOD(
 	expect_unary_operation(shape_type{4}, numerical_type::float32);
 	register_program_builder();
 
-	const hardware::program_scratch_requirement scratch_requirement(
+	const program_scratch_requirement scratch_requirement(
 		scratch_size,
 		scratch_alignment,
-		hardware::memory_resource_affinity::device
+		memory_resource_affinity::device
 	);
 	expect_program_scratch(make_span(&scratch_requirement, 1));
 
@@ -567,14 +562,14 @@ TEST_CASE_METHOD(
 	const auto output_buffer = make_buffer();
 	REQUIRE_CALL(
 		*device_allocator,
-		allocate(output_size, ANY(std::size_t), ANY(hardware::command_queue*))
+		allocate(output_size, ANY(std::size_t), ANY(command_queue*))
 	)
 		.RETURN(output_buffer);
 
 	const auto scratch_buffer = make_buffer();
 	REQUIRE_CALL(
 		*device_allocator,
-		allocate(scratch_size, scratch_alignment, ANY(hardware::command_queue*))
+		allocate(scratch_size, scratch_alignment, ANY(command_queue*))
 	)
 		.RETURN(scratch_buffer);
 

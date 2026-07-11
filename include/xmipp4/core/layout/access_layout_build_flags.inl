@@ -5,8 +5,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 XMIPP4_INLINE_CONSTEXPR 
 const char* to_string(access_layout_build_flag_bits x) noexcept
@@ -35,5 +33,4 @@ std::basic_ostream<T>& operator<<(
 	return os << to_string(x);
 }
 
-} // namespace layout
 } // namespace xmipp4

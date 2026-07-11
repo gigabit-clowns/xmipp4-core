@@ -23,8 +23,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 namespace
 {
@@ -62,10 +60,10 @@ void fill(
 template <typename T, typename Q, typename Stride>
 typename std::enable_if<
 	std::is_constructible<T, Q>::value, 
-	std::shared_ptr<hardware::cpu_program>
+	std::shared_ptr<cpu_program>
 >::type
 make_fill_program(
-	layout::access_layout access_layout,
+	access_layout access_layout,
 	std::tuple<Stride> inner_strides,
 	type_list<T> /*result_type*/,
 	const Q &fill_value
@@ -73,7 +71,7 @@ make_fill_program(
 {
 	const auto value = numerical_cast<T>(fill_value);
 	const auto result_inner_stride = std::get<0>(inner_strides);
-	return hardware::make_functor_cpu_program(
+	return make_functor_cpu_program(
 		[result_inner_stride, value, access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
@@ -94,10 +92,10 @@ make_fill_program(
 template <typename T, typename Q, typename Stride>
 typename std::enable_if<
 	!std::is_constructible<T, Q>::value, 
-	std::shared_ptr<hardware::cpu_program>
+	std::shared_ptr<cpu_program>
 >::type
 make_fill_program(
-	layout::access_layout /*access_layout*/,
+	access_layout /*access_layout*/,
 	std::tuple<Stride> /*inner_strides*/,
 	type_list<T> /*result_type*/,
 	const Q& /*fill_value*/
@@ -117,11 +115,11 @@ cpu_fill_program_builder::get_operation_id() const noexcept
 	return operation_id::of<fill_operation>();
 }
 
-std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
+std::shared_ptr<program> cpu_fill_program_builder::build(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
-	hardware::command_queue& /*queue*/,
+	command_queue& /*queue*/,
 	program_cache* /*cache*/
 ) const
 {
@@ -164,13 +162,13 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 	const auto data_type = destination_descriptor.get_data_type();
 	const auto &fill_value = fill_op->get_fill_value();
 
-	layout::access_layout_builder layout_builder;
+	access_layout_builder layout_builder;
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
 	return dispatch_types_and_inner_strides<1>(
 		[&fill_value]
-		(layout::access_layout layout, auto types, auto inner_strides)
+		(xmipp4::access_layout layout, auto types, auto inner_strides)
 		{
 			return xmipp4::visit(
 				[&layout, types, &inner_strides] (auto fill_value)
@@ -191,5 +189,4 @@ std::shared_ptr<hardware::program> cpu_fill_program_builder::build(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -19,7 +19,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 
 TEST_CASE(
 	"cpu_command_queue::create() should return always the same instance",

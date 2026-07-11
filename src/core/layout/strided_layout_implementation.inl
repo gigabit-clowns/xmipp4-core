@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 template <typename ForwardIt>
 inline
@@ -239,9 +237,6 @@ private:
 		check_non_empty_axes(first_axis, last_axis, "An index");
     }
 };
-
-
-
 
 
 inline
@@ -587,7 +582,7 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 	{
 		auto &axis = axes[i];
 		const auto extent = extents[i];
-		if (!layout::broadcast_to(axis, extent))
+		if (!xmipp4::broadcast_to(axis, extent))
 		{
 			std::ostringstream oss;
 			oss << "Cannot broadcast axis of extent " << axis.get_extent()
@@ -599,5 +594,4 @@ strided_layout_implementation strided_layout_implementation::broadcast_to(
 	return strided_layout_implementation(std::move(axes), m_offset);
 }
 
-} // namespace layout
 } // namespace xmipp4

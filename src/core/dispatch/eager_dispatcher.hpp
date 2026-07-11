@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class program_manager;
 
@@ -44,9 +42,9 @@ public:
 
 	void dispatch(
 		const operation &operation,
-		span<ndarray::array> output_operands,
-		span<const ndarray::array_view> input_operands,
-		const hardware::device_context &device_context
+		span<array> output_operands,
+		span<const array_view> input_operands,
+		const device_context &device_context
 	) override;
 
 private:
@@ -54,5 +52,4 @@ private:
 	program_cache m_program_cache;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

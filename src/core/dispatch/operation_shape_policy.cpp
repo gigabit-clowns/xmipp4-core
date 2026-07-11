@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 operation_shape_policy::operation_shape_policy() noexcept = default;
 operation_shape_policy::~operation_shape_policy() = default;
@@ -35,5 +33,4 @@ void operation_shape_policy::accept(
 	}
 }
 
-} // namespace dispatch
 } // namespace xmipp4

@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 /**
  * @brief Capability bits describing how an event may be used.
@@ -22,23 +20,22 @@ namespace hardware
 enum class event_usage_flag_bits
 {
 	/// The event can be queried from the host thread.
-	host_query = binary::bit(0),
+	host_query = bit(0),
 
 	/// The event can be waited on from the host thread.
-	host_wait = binary::bit(1),
+	host_wait = bit(1),
 
 	/// The event can be waited on another queue from the same device that
 	/// signals it.
-	device_wait = binary::bit(2),
+	device_wait = bit(2),
 
 	/// The event can be waited on from a queue on a different device.
-	cross_device_wait = binary::bit(3)
+	cross_device_wait = bit(3)
 };
 
 /**
  * @brief Set of @ref event_usage_flag_bits.
  */
-using event_usage_flags = binary::flagset<event_usage_flag_bits>;
+using event_usage_flags = flagset<event_usage_flag_bits>;
 
-} // namespace hardware
 } // namespace xmipp4

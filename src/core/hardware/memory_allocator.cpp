@@ -4,11 +4,8 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 memory_allocator::memory_allocator() noexcept = default;
 memory_allocator::~memory_allocator() = default;
 
-} // namespace hardware
 } // namespace xmipp4

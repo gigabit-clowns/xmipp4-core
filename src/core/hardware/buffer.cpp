@@ -4,11 +4,8 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 buffer::buffer() noexcept = default;
 buffer::~buffer() = default;
 
-} // namespace hardware
 } // namespace xmipp4

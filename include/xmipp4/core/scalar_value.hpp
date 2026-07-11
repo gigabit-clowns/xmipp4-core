@@ -84,7 +84,7 @@ private:
 	static const std::size_t storage_size = sizeof(largest_type);
 	static const std::size_t storage_alignment = alignof(largest_type);
 
-	alignas(storage_alignment) std::array<memory::byte, storage_size> m_storage;
+	alignas(storage_alignment) std::array<byte, storage_size> m_storage;
 	numerical_type m_data_type;
 };
 

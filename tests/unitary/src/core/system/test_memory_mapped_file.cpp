@@ -60,7 +60,7 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 
 	SECTION ("Read first few bytes")
 	{
-		system::memory_mapped_file mm(
+		memory_mapped_file mm(
 			path, 
 			read_only, 
 			8,
@@ -75,10 +75,10 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 
 	SECTION ("Read the entire file")
 	{
-		system::memory_mapped_file mm(
+		memory_mapped_file mm(
 			path, 
 			read_only, 
-			system::memory_mapped_file::whole_file,
+			memory_mapped_file::whole_file,
 			false
 		);
 		
@@ -90,10 +90,10 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 
 	SECTION ("Write the entire file as copy on write")
 	{
-		system::memory_mapped_file mm(
+		memory_mapped_file mm(
 			path, 
 			read_write, 
-			system::memory_mapped_file::whole_file,
+			memory_mapped_file::whole_file,
 			true
 		);
 
@@ -111,7 +111,7 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 		mm.open(
 			path, 
 			read_only, 
-			system::memory_mapped_file::whole_file,
+			memory_mapped_file::whole_file,
 			false
 		);
 
@@ -122,10 +122,10 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 
 	SECTION ("Write the entire file")
 	{
-		system::memory_mapped_file mm(
+		memory_mapped_file mm(
 			path, 
 			read_write, 
-			system::memory_mapped_file::whole_file,
+			memory_mapped_file::whole_file,
 			false
 		);
 
@@ -143,7 +143,7 @@ TEST_CASE( "memory map a file for reading and writing", "[memory_mapped_file]" )
 		mm.open(
 			path, 
 			read_only, 
-			system::memory_mapped_file::whole_file,
+			memory_mapped_file::whole_file,
 			false
 		);
 

@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 operation_arity::operation_arity() noexcept
 	: operation_arity(0, 0)
@@ -69,5 +67,4 @@ bool operator!=(
 	return !(lhs == rhs);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

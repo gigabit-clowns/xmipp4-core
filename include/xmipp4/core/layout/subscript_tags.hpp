@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief Tag to express the consumption of an arbitrary amount 
@@ -62,7 +60,6 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag);
 XMIPP4_CONSTEXPR
 new_axis_tag new_axis() noexcept;
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "subscript_tags.inl"

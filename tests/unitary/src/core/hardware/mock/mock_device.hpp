@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_device final
 	: public device
@@ -34,5 +32,4 @@ public:
 	);
 };
 
-} // namespace hardware
 } // namespace xmipp4

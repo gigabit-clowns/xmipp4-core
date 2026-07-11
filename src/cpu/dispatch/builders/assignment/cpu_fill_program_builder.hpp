@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class cpu_fill_program_builder final
 	: public cpu_program_builder
@@ -18,14 +16,13 @@ public:
 
 	operation_id get_operation_id() const noexcept override;
 
-	std::shared_ptr<hardware::program> build(
+	std::shared_ptr<program> build(
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue,
+		command_queue &queue,
 		program_cache *cache
 	) const override;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

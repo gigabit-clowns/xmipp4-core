@@ -99,7 +99,6 @@ struct type_map_cat<type_map<Entries1...>, type_map<Entries2...>, Others...>
 };
 
 
-
 using native_boolean_entry = 
 	type_map_entry<numerical_type::boolean, bool>;
 using native_char8_entry = 
@@ -132,7 +131,6 @@ using native_complex_float32_entry =
 	type_map_entry<numerical_type::complex_float32, std::complex<xmipp4::float32_t>>;
 using native_complex_float64_entry = 
 	type_map_entry<numerical_type::complex_float64, std::complex<xmipp4::float64_t>>;
-
 
 
 using native_unsigned_integer_type_map = type_map<
@@ -176,7 +174,6 @@ using native_type_map = type_map_cat<
 	native_arithmetic_type_map,
 	type_map<native_boolean_entry, native_char8_entry>
 >::type;
-
 
 
 /**

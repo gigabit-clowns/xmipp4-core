@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 /**
  * @brief Memory map a file.
@@ -37,7 +35,6 @@ void* memory_mapped_file_open(
 void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
 
-} // namespace system
 } // namespace xmipp4
 
 #if XMIPP4_POSIX

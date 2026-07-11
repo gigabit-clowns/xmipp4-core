@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 strided_layout::strided_layout() noexcept = default;
 strided_layout::strided_layout(const strided_layout &other) noexcept = default;
@@ -32,7 +30,6 @@ strided_layout::strided_layout(strided_layout_implementation &&impl)
 	)
 {
 }
-
 
 
 std::size_t strided_layout::hash() const noexcept
@@ -237,5 +234,4 @@ bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept
 	return !(lhs == rhs);
 }
 
-} // namespace layout
 } // namespace xmipp4

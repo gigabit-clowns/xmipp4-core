@@ -26,13 +26,11 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 void execute(
 	const operation &operation,
-	span<ndarray::array> output_operands,
-	span<const ndarray::array_view> input_operands,
+	span<array> output_operands,
+	span<const array_view> input_operands,
 	const execution_context &context
 )
 {
@@ -53,11 +51,11 @@ void execute(
 	);
 }
 
-ndarray::array execute(
+array execute(
 	const operation &operation,
-	span<const ndarray::array_view> input_operands,
+	span<const array_view> input_operands,
 	const execution_context &context,
-	ndarray::array *out
+	array *out
 )
 {
 	if (out)
@@ -73,7 +71,7 @@ ndarray::array execute(
 	}
 	else
 	{
-		ndarray::array output_operand;
+		array output_operand;
 		execute(
 			operation,
 			make_span(&output_operand, 1),
@@ -84,11 +82,11 @@ ndarray::array execute(
 	}
 }
 
-ndarray::array execute_unary(
+array execute_unary(
 	const operation &operation,
-	const ndarray::array_view &input,
+	const array_view &input,
 	const execution_context &context,
-	ndarray::array *out
+	array *out
 )
 {
 	return execute(
@@ -99,15 +97,15 @@ ndarray::array execute_unary(
 	);
 }
 
-ndarray::array execute_binary(
+array execute_binary(
 	const operation &operation,
-	ndarray::array_view first_input,
-	ndarray::array_view second_input,
+	array_view first_input,
+	array_view second_input,
 	const execution_context &context,
-	ndarray::array *out
+	array *out
 )
 {
-	std::array<ndarray::array_view, 2> inputs = {
+	std::array<array_view, 2> inputs = {
 		std::move(first_input),
 		std::move(second_input)
 	};
@@ -119,16 +117,16 @@ ndarray::array execute_binary(
 	);
 }
 
-ndarray::array execute_ternary(
+array execute_ternary(
 	const operation &operation,
-	ndarray::array_view first_input,
-	ndarray::array_view second_input,
-	ndarray::array_view third_input,
+	array_view first_input,
+	array_view second_input,
+	array_view third_input,
 	const execution_context &context,
-	ndarray::array *out
+	array *out
 )
 {
-	std::array<ndarray::array_view, 3> inputs = {
+	std::array<array_view, 3> inputs = {
 		std::move(first_input),
 		std::move(second_input),
 		std::move(third_input)
@@ -141,5 +139,4 @@ ndarray::array execute_ternary(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

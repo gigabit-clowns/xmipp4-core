@@ -143,7 +143,7 @@ std::string get_default_plugin_directory()
 		reinterpret_cast<const void*>(&get_default_plugin_directory);
 
 	auto path = boost::filesystem::path(
-		system::dynamic_library::query_symbol_filename(symbol)
+		dynamic_library::query_symbol_filename(symbol)
 	);
 	if(path.empty())
 	{

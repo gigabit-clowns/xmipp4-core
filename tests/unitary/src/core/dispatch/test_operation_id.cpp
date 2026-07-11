@@ -7,7 +7,6 @@
 #include "mock/mock_operation.hpp"
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 TEST_CASE("Constructing an operation_id should store its data", "[operation_id]")
 {

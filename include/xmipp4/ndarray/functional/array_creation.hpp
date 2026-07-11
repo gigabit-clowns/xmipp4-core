@@ -10,15 +10,9 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class execution_context;
 
-} // namespace dispatch
-
-namespace ndarray
-{
 
 /**
  * @brief Create an array without initializing its elements.
@@ -31,11 +25,11 @@ namespace ndarray
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-ndarray::array empty(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array empty(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -49,11 +43,11 @@ ndarray::array empty(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-ndarray::array zeros(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array zeros(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -67,11 +61,11 @@ ndarray::array zeros(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-ndarray::array ones(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array ones(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -86,12 +80,12 @@ ndarray::array ones(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-ndarray::array full(
-	ndarray::array_descriptor descriptor,
-	hardware::memory_resource_affinity affinity,
+array full(
+	array_descriptor descriptor,
+	memory_resource_affinity affinity,
 	const scalar_value &fill_value,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -103,10 +97,10 @@ ndarray::array full(
  * @return array The newly created array.
  */
 XMIPP4_CORE_API
-ndarray::array copy(
-	ndarray::array_view source,
-	const dispatch::execution_context &context,
-	ndarray::array *out = nullptr
+array copy(
+	array_view source,
+	const execution_context &context,
+	array *out = nullptr
 );
 
 /**
@@ -119,10 +113,9 @@ ndarray::array copy(
  */
 XMIPP4_CORE_API
 void fill(
-	ndarray::array &out,
+	array &out,
 	const scalar_value &fill_value,
-	const dispatch::execution_context &context
+	const execution_context &context
 );
 
-} // namespace ndarray
 } // namespace xmipp4

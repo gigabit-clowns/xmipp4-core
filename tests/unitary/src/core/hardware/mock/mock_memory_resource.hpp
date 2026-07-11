@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_memory_resource final
 	: public memory_resource
@@ -23,5 +21,4 @@ public:
 	);
 };
 
-} // namespace hardware
 } // namespace xmipp4

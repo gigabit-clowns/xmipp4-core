@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 namespace
 {
@@ -211,5 +209,4 @@ access_layout access_layout_builder::build(
 	return access_layout(std::move(m_implementation));
 }
 
-} // namespace layout
 } // namespace xmipp4

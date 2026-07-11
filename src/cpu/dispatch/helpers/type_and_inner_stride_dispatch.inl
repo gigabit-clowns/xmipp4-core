@@ -13,13 +13,11 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 template <std::size_t NOperands, typename F, typename... DataTypes>
 auto dispatch_types_and_inner_strides(
 	F &&callable,
-	layout::access_layout access_layout,
+	access_layout access_layout,
 	DataTypes... data_types
 )
 {
@@ -45,5 +43,4 @@ auto dispatch_types_and_inner_strides(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

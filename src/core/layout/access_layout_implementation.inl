@@ -17,8 +17,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 inline
 access_layout_implementation::
@@ -406,5 +404,4 @@ void access_layout_implementation::apply_strides(
 	}
 }
 
-} // namespace layout
 } // namespace xmipp4

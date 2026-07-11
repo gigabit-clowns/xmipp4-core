@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Describes a scratch buffer requirement for program execution.
@@ -85,5 +83,4 @@ private:
 	memory_resource_affinity m_affinity;
 };
 
-} // namespace hardware
 } // namespace xmipp4

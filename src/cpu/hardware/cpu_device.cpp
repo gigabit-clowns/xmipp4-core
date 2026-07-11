@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 cpu_device::cpu_device() noexcept = default;
 
@@ -33,5 +31,4 @@ cpu_device::create_event(event_usage_flags /*usage*/) const
 	return std::make_shared<cpu_event>();
 }
 
-} // namespace hardware
 } // namespace xmipp4

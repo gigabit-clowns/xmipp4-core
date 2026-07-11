@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Compose numerical-type and inner-loop-stride dispatch for a CPU
@@ -45,11 +43,10 @@ namespace dispatch
 template <std::size_t NOperands, typename F, typename... DataTypes>
 auto dispatch_types_and_inner_strides(
 	F &&callable,
-	layout::access_layout access_layout,
+	access_layout access_layout,
 	DataTypes... data_types
 );
 
-} // namespace dispatch
 } // namespace xmipp4
 
 #include "type_and_inner_stride_dispatch.inl"

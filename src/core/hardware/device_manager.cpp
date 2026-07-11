@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device_manager::implementation
 	: public named_service_manager_implementation<device_backend>
@@ -130,5 +128,4 @@ void device_manager::create_implementation_if_null()
 	}
 }
 
-} // namespace hardware
 } // namespace xmipp4

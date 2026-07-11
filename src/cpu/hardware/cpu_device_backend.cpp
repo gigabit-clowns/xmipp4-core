@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 std::string cpu_device_backend::get_name() const
 {
@@ -37,10 +35,10 @@ bool cpu_device_backend::get_device_properties(
 
 	if (id == 0)
 	{
-		desc.set_name(system::get_hostname());
+		desc.set_name(get_hostname());
 		desc.set_type(device_type::cpu);
 		desc.set_physical_location("");
-		desc.set_total_memory_bytes(system::get_total_system_memory());
+		desc.set_total_memory_bytes(get_total_system_memory());
 		desc.set_optimal_data_alignment(64); //AVX-512
 		result = true;
 	}
@@ -64,5 +62,4 @@ bool cpu_device_backend::register_at(device_manager &manager)
 	return manager.register_backend(std::make_unique<cpu_device_backend>());
 }
 
-} // namespace hardware
 } // namespace xmipp4

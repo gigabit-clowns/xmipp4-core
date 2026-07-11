@@ -14,9 +14,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
-using namespace xmipp4::layout;
 
 TEST_CASE("Default constructed operand_signature should have empty descriptor and null memory resource", "[operand_signature]")
 {
@@ -33,7 +30,7 @@ TEST_CASE("Constructing an operand_signature with descriptor and memory resource
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
 	const array_descriptor descriptor(layout, data_type);
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	operand_signature signature(descriptor, resource);
 	CHECK( signature.get_descriptor() == descriptor );
@@ -45,7 +42,7 @@ TEST_CASE("Constructing an operand_signature with layout and data type should st
 	const std::vector<std::size_t> extents = {20, 30, 2, 16};
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	operand_signature signature(layout, data_type, resource);
 	CHECK( signature.get_layout() == layout );
@@ -59,7 +56,7 @@ TEST_CASE("Operand signatures should be equal if the descriptor and memory resou
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
 	const array_descriptor descriptor(layout, data_type);
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	const operand_signature signature1(descriptor, resource);
 	const operand_signature signature2(descriptor, resource);
@@ -75,7 +72,7 @@ TEST_CASE("Operand signatures should be unequal if descriptor or memory resource
 	const auto layout1 = strided_layout::make_contiguous_layout(make_span(extents1));
 	const auto layout2 = strided_layout::make_contiguous_layout(make_span(extents2));
 	const auto data_type = numerical_type::float32;
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	const operand_signature signature1(layout1, data_type, resource);
 	const operand_signature signature2(layout2, data_type, resource);
@@ -91,7 +88,7 @@ TEST_CASE("hash value of two equal operand signatures should be equal", "[operan
 	const std::vector<std::size_t> extents = {20, 30, 2, 16};
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	const operand_signature signature1(layout, data_type, resource);
 	const operand_signature signature2(layout, data_type, resource);
@@ -104,7 +101,7 @@ TEST_CASE("hash value of operand signatures should be different for different de
 	const std::vector<std::size_t> extents = {20, 30, 2, 16};
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	const operand_signature signature1(layout, data_type, resource);
 	const operand_signature signature2(layout, data_type, nullptr);
@@ -121,7 +118,7 @@ TEST_CASE("setters in operand_signature should update its attributes", "[operand
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
 	const array_descriptor descriptor(layout, data_type);
-	const auto* resource = &hardware::get_host_memory_resource();
+	const auto* resource = &get_host_memory_resource();
 
 	signature.set_descriptor(descriptor);
 	signature.set_memory_resource(resource);
@@ -136,9 +133,9 @@ TEST_CASE("from_array in operand_signature should correctly construct from an ar
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const auto data_type = numerical_type::float32;
 	const array_descriptor descriptor(layout, data_type);
-	auto& resource = hardware::get_host_memory_resource();
+	auto& resource = get_host_memory_resource();
 
-	const auto storage = std::make_shared<hardware::mock_buffer>();
+	const auto storage = std::make_shared<mock_buffer>();
 	ALLOW_CALL(std::as_const(*storage), get_memory_resource())
 		.LR_RETURN(resource);
 

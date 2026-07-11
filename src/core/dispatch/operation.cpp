@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 operation::operation() noexcept = default;
 operation::~operation() = default;
@@ -17,5 +15,4 @@ operation_id operation::get_id() const noexcept
 	return operation_id(typeid(*this));
 }
 
-} // namespace dispatch
 } // namespace xmipp4

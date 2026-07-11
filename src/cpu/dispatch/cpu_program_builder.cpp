@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 namespace
 {
@@ -24,7 +22,7 @@ bool check_host_access(const operand_signature &signature) noexcept
 		return false;
 	}
 
-	if (!hardware::is_host_accessible(resource->get_kind()))
+	if (!is_host_accessible(resource->get_kind()))
 	{
 		return false;
 	}
@@ -42,12 +40,11 @@ bool check_array_signatures(
 } // anonymous namespace
 
 
-
 backend_priority cpu_program_builder::get_suitability(
 	const operation& /*operation*/,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
-	hardware::command_queue &queue
+	command_queue &queue
 ) const
 {
 	if (!check_array_signatures(output_signatures))
@@ -60,7 +57,7 @@ backend_priority cpu_program_builder::get_suitability(
 		return backend_priority::unsupported;
 	}
 
-	if (!hardware::cpu_command_queue::try_cast(queue))
+	if (!cpu_command_queue::try_cast(queue))
 	{
 		return backend_priority::unsupported;
 	}
@@ -68,6 +65,5 @@ backend_priority cpu_program_builder::get_suitability(
 	return backend_priority::normal;
 }
 
-} // namespace dispatch
 } // namespace xmipp4
 

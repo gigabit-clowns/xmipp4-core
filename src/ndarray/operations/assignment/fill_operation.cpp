@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 fill_operation::fill_operation(const scalar_value &fill_value) noexcept
 	: m_fill_value(fill_value)
@@ -46,5 +44,4 @@ const scalar_value& fill_operation::get_fill_value() const noexcept
 	return m_fill_value;
 }
 
-} // namespace dispatch
 } // namespace xmipp4

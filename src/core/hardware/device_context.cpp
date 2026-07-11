@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 device_context::device_context(std::shared_ptr<const device_instance> instance)
 	: m_instance(std::move(instance))
@@ -80,5 +78,4 @@ device_context::with_allocator(
 	return result;
 }
 
-} // namespace hardware
 } // namespace xmipp4

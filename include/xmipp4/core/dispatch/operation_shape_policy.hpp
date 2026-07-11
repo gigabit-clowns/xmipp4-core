@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Interface describing the deduction and admissibility of array
@@ -83,5 +81,4 @@ public:
 	) const;
 };
 
-} // namespace dispatch
 } // namespace xmipp4

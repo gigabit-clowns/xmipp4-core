@@ -10,8 +10,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief Class describing element layout on a tensor
@@ -340,7 +338,6 @@ void apply_slice(
 	const slice &slice
 );
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "strided_axis.inl"

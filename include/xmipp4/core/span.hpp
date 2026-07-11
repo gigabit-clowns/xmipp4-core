@@ -86,7 +86,6 @@ struct span_storage<T, 0>
 } // namespace detail
 
 
-
 /**
  * @brief Represents a non-owning area of contiguous memory.
  * 
@@ -251,18 +250,18 @@ private:
 
 template <typename T>
 XMIPP4_CONSTEXPR 
-span<memory::byte> as_bytes(const span<T> &other) noexcept;
+span<byte> as_bytes(const span<T> &other) noexcept;
 
 template <typename T>
 XMIPP4_CONSTEXPR 
-span<const memory::byte> as_bytes(const span<const T> &other) noexcept;
+span<const byte> as_bytes(const span<const T> &other) noexcept;
 
 template <typename T, std::size_t N>
-XMIPP4_CONSTEXPR span<memory::byte, N*sizeof(T)> 
+XMIPP4_CONSTEXPR span<byte, N*sizeof(T)> 
 as_bytes(const span<T, N> &other) noexcept;
 
 template <typename T, std::size_t N>
-XMIPP4_CONSTEXPR span<const memory::byte, N*sizeof(T)> 
+XMIPP4_CONSTEXPR span<const byte, N*sizeof(T)> 
 as_bytes(const span<const T, N> &other) noexcept;
 
 template <typename T>

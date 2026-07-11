@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 /**
  * @brief Describes the nature of a memory resource.
@@ -92,5 +90,4 @@ bool is_host_accessible(memory_resource_kind kind) noexcept;
 XMIPP4_CORE_API
 bool is_device_accessible(memory_resource_kind kind) noexcept;
 
-} // namespace hardware
 } // namespace xmipp4

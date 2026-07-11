@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Shape policy for elementwise operations.
@@ -33,6 +31,5 @@ public:
 	static const elementwise_operation_shape_policy& get() noexcept;
 };
 
-} // namespace dispatch
 } // namespace xmipp4
 

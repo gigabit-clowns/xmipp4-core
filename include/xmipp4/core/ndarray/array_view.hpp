@@ -8,15 +8,9 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class buffer;
 
-} // namespace hardware
-
-namespace ndarray
-{
 
 class array;
 class array_descriptor;
@@ -75,19 +69,19 @@ public:
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return const hardware::buffer* The storage. nullptr if the array is not
+	 * @return const buffer* The storage. nullptr if the array is not
 	 * initialized
 	 */
-	XMIPP4_CORE_API const hardware::buffer* get_storage() const noexcept;
+	XMIPP4_CORE_API const buffer* get_storage() const noexcept;
 	
 	/**
 	 * @brief Get the storage of this array_view.
 	 * 
-	 * @return std::shared_ptr<const hardware::buffer> The storage. nullptr if 
+	 * @return std::shared_ptr<const buffer> The storage. nullptr if 
 	 * the array_view is not initialized
 	 */
 	XMIPP4_CORE_API 
-	std::shared_ptr<const hardware::buffer> share_storage() const noexcept;
+	std::shared_ptr<const buffer> share_storage() const noexcept;
 
 	/**
 	 * @brief Obtain an alias for this array.
@@ -102,5 +96,4 @@ private:
 	std::shared_ptr<const array_implementation> m_implementation;
 };
 
-} // namespace ndarray
 } // namespace xmipp4

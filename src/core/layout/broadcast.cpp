@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 namespace
 {
@@ -68,7 +66,6 @@ bool is_axis_broadcastable_to(
 }
 
 } // anonymous namespace
-
 
 
 void broadcast_extents(
@@ -178,5 +175,4 @@ bool is_broadcastable_to(
 	return true;
 }
 
-} // namespace layout
 } // namespace xmipp4

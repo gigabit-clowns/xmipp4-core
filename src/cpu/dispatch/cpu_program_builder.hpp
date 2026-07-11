@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class cpu_program_builder
 	: public program_builder
@@ -17,10 +15,9 @@ public:
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue
+		command_queue &queue
 	) const override;
 };
 
-} // namespace dispatch
 } // namespace xmipp4
 

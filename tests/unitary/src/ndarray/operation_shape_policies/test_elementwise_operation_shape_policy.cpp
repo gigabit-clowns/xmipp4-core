@@ -9,7 +9,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 using shape_type = std::vector<std::size_t>;
 

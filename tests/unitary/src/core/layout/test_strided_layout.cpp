@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <array>
 
-using namespace xmipp4::layout;
+using namespace xmipp4;
 
 template <std::size_t N>
 static 

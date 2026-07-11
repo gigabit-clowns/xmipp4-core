@@ -12,8 +12,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class strided_layout_implementation
 {
@@ -79,7 +77,6 @@ private:
 	std::ptrdiff_t m_offset;
 };
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "strided_layout_implementation.inl"

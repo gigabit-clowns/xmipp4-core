@@ -22,8 +22,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 namespace
 {
@@ -92,15 +90,15 @@ template <
 >
 typename std::enable_if<
 	std::is_constructible<T, Q>::value, 
-	std::shared_ptr<hardware::cpu_program>
+	std::shared_ptr<cpu_program>
 >::type
 make_copy_program(
-	layout::access_layout access_layout,
+	access_layout access_layout,
 	std::tuple<DstStride, SrcStride> inner_strides,
 	type_list<T, Q> /*types*/
 )
 {
-	return hardware::make_functor_cpu_program(
+	return make_functor_cpu_program(
 		[inner_strides, access_layout=std::move(access_layout)]
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
@@ -130,10 +128,10 @@ template <
 >
 typename std::enable_if<
 	!std::is_constructible<T, Q>::value, 
-	std::shared_ptr<hardware::cpu_program>
+	std::shared_ptr<cpu_program>
 >::type
 make_copy_program(
-	layout::access_layout /*access_layout*/,
+	access_layout /*access_layout*/,
 	std::tuple<DstStride, SrcStride> /*inner_strides*/,
 	type_list<T, Q> /*types*/
 )
@@ -152,11 +150,11 @@ cpu_copy_program_builder::get_operation_id() const noexcept
 	return operation_id::of<copy_operation>();
 }
 
-std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
+std::shared_ptr<program> cpu_copy_program_builder::build(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
-	hardware::command_queue& /*queue*/,
+	command_queue& /*queue*/,
 	program_cache* /*cache*/
 ) const
 {
@@ -200,13 +198,13 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 	const auto dst_data_type = dst_descriptor.get_data_type();
 	const auto src_data_type = src_descriptor.get_data_type();
 
-	layout::access_layout_builder layout_builder;
+	access_layout_builder layout_builder;
 	layout_builder.add_operand(dst_descriptor.get_layout());
 	layout_builder.add_operand(src_descriptor.get_layout());
 	auto access_layout = layout_builder.build();
 
 	return dispatch_types_and_inner_strides<2>(
-		[] (layout::access_layout layout, auto types, auto inner_strides)
+		[] (xmipp4::access_layout layout, auto types, auto inner_strides)
 		{
 			return make_copy_program(
 				std::move(layout),
@@ -220,5 +218,4 @@ std::shared_ptr<hardware::program> cpu_copy_program_builder::build(
 	);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

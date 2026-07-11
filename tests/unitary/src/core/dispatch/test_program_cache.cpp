@@ -10,7 +10,6 @@
 #include <string>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
 
 namespace
 {

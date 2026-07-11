@@ -9,8 +9,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief State of a multidimensional multi-array traversal.
@@ -98,5 +96,4 @@ private:
 	std::vector<std::ptrdiff_t> m_offsets;
 };
 
-} // namespace layout
 } // namespace xmipp4

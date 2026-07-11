@@ -15,8 +15,6 @@
 #include <stdexcept>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
 
 namespace
 {
@@ -26,7 +24,7 @@ class operation_execute_fixture
 public:
     operation_execute_fixture()
         : dispatcher(std::make_shared<mock_dispatcher>())
-        , context(hardware::device_context(), dispatcher)
+        , context(device_context(), dispatcher)
     {
     }
 
@@ -37,7 +35,6 @@ protected:
 };
 
 } // namespace
-
 
 
 TEST_CASE(

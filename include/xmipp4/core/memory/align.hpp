@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 /**
  * @brief Get the alignment of a pointer
@@ -149,7 +147,6 @@ template <typename T>
 XMIPP4_NODISCARD
 T* offset_bytes(T* address, std::ptrdiff_t count);
 
-} // namespace memory
 } // namespace xmipp4
 
 #include "align.inl"

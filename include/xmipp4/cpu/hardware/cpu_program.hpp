@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class buffer;
 
@@ -33,5 +31,4 @@ public:
 	) const = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

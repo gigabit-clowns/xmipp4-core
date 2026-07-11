@@ -10,14 +10,9 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class buffer;
 
-} // namespace hardware
-namespace ndarray
-{
 
 class array_implementation;
 
@@ -46,7 +41,7 @@ public:
 	 * @param descriptor The interpretation of the buffer memory.
 	 */
 	XMIPP4_CORE_API array(
-		std::shared_ptr<hardware::buffer> storage,
+		std::shared_ptr<buffer> storage,
 		array_descriptor descriptor
 	);
 
@@ -67,36 +62,36 @@ public:
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return hardware::buffer* The storage. nullptr if the array is not 
+	 * @return buffer* The storage. nullptr if the array is not 
 	 * initialized.
 	 */
-	XMIPP4_CORE_API hardware::buffer* get_storage() noexcept;
+	XMIPP4_CORE_API buffer* get_storage() noexcept;
 
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return const hardware::buffer* The storage. nullptr if the array is not
+	 * @return const buffer* The storage. nullptr if the array is not
 	 * initialized
 	 */
-	XMIPP4_CORE_API const hardware::buffer* get_storage() const noexcept;
+	XMIPP4_CORE_API const buffer* get_storage() const noexcept;
 	
 	/**
 	 * @brief Get a shared pointer to the storage of this array.
 	 * 
-	 * @return std::shared_ptr<hardware::buffer> The storage. nullptr if the 
+	 * @return std::shared_ptr<buffer> The storage. nullptr if the 
 	 * array is not initialized.
 	 */
 	XMIPP4_CORE_API 
-	std::shared_ptr<hardware::buffer> share_storage() noexcept;
+	std::shared_ptr<buffer> share_storage() noexcept;
 	
 	/**
 	 * @brief Get the storage of this array.
 	 * 
-	 * @return std::shared_ptr<const hardware::buffer> The storage. nullptr if 
+	 * @return std::shared_ptr<const buffer> The storage. nullptr if 
 	 * the array is not initialized
 	 */
 	XMIPP4_CORE_API 
-	std::shared_ptr<const hardware::buffer> share_storage() const noexcept;
+	std::shared_ptr<const buffer> share_storage() const noexcept;
 
 	/**
 	 * @brief Obtain an alias for this array.
@@ -122,5 +117,4 @@ private:
 	) noexcept;
 };
 
-} // namespace ndarray
 } // namespace xmipp4

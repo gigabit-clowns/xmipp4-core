@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 XMIPP4_NORETURN
 inline void throw_mismatch(
@@ -115,5 +113,4 @@ inline void fill(span<numerical_type> types, numerical_type value)
 	std::fill(types.begin(), types.end(), value);
 }
 
-} // namespace dispatch
 } // namespace xmipp4

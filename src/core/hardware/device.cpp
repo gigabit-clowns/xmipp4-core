@@ -4,12 +4,9 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 device::device() noexcept = default;
 
 device::~device() = default;
 
-} // namespace hardware
 } // namespace xmipp4

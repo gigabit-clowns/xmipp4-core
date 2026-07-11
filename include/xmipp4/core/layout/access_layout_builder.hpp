@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class strided_layout;
 class access_layout_implementation;
@@ -130,5 +128,4 @@ private:
 	std::unique_ptr<access_layout_implementation> m_implementation;
 };
 
-} // namespace layout
 } // namespace xmipp4

@@ -4,12 +4,10 @@
 
 namespace xmipp4 
 {
-namespace ndarray
-{
 
 inline
 array_implementation::array_implementation(
-	std::shared_ptr<hardware::buffer> storage,
+	std::shared_ptr<buffer> storage,
 	array_descriptor descriptor
 ) noexcept
 	: m_storage(std::move(storage))
@@ -24,17 +22,16 @@ const array_descriptor& array_implementation::get_descriptor() const noexcept
 }
 
 inline
-hardware::buffer* array_implementation::get_storage() const noexcept
+buffer* array_implementation::get_storage() const noexcept
 {
 	return m_storage.get();
 }
 
 inline
-const std::shared_ptr<hardware::buffer>& 
+const std::shared_ptr<buffer>& 
 array_implementation::share_storage() const noexcept
 {
 	return m_storage;
 }
 
-} // namespace ndarray
 } // namespace xmipp4

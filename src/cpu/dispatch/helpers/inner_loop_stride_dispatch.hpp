@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Tag representing an stride of 1.
@@ -53,7 +51,7 @@ struct broadcasting_stride_tag
 template <typename F, std::size_t N>
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	std::integral_constant<std::size_t, N> n_operands
 );
 
@@ -81,11 +79,10 @@ auto dispatch_inner_loop_strides(
 template <typename F, std::size_t... Is>
 auto dispatch_inner_loop_strides(
 	F &&callable, 
-	const layout::access_layout &layout,
+	const access_layout &layout,
 	std::index_sequence<Is...> operand_indices
 );
 
-} // namespace dispatch
 } // namespace xmipp4
 
 #include "inner_loop_stride_dispatch.inl"

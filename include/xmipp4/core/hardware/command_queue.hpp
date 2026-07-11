@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class command;
 class event;
@@ -90,5 +88,4 @@ public:
 	virtual void wait(const event &event) = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

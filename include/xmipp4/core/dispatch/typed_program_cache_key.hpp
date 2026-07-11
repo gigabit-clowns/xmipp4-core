@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 /**
  * @brief Default key wrapper for value types that model std::hash and
@@ -38,7 +36,6 @@ private:
 	K m_key;
 };
 
-} // namespace dispatch
 } // namespace xmipp4
 
 #include "typed_program_cache_key.inl"

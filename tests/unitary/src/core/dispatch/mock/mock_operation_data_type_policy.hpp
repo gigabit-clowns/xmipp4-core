@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class mock_operation_data_type_policy
 	: public operation_data_type_policy
@@ -34,5 +32,4 @@ public:
 	);
 };
 
-} // namespace dispatch
 } // namespace xmipp4

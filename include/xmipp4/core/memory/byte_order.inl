@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 XMIPP4_INLINE_CONSTEXPR byte_order 
 get_system_byte_order() noexcept
@@ -191,5 +189,4 @@ convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept
 	}
 }
 
-} // namespace memory
 } // namespace xmipp4

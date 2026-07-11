@@ -12,8 +12,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::layout;
-
 
 
 TEST_CASE(
@@ -78,7 +76,6 @@ TEST_CASE(
 		)
 	);
 }
-
 
 
 TEST_CASE(
@@ -257,7 +254,6 @@ TEST_CASE(
 }
 
 
-
 TEST_CASE(
 	"is_broadcast_compatible with equal extents should return true",
 	"[broadcast]"
@@ -319,7 +315,6 @@ TEST_CASE(
 		is_broadcast_compatible(make_span(extents2), make_span(extents1))
 	);
 }
-
 
 
 TEST_CASE(

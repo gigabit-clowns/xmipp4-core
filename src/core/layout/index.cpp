@@ -7,8 +7,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 std::size_t sanitize_index(std::ptrdiff_t index, std::size_t extent)
 {
@@ -36,5 +34,4 @@ std::size_t sanitize_index(std::ptrdiff_t index, std::size_t extent)
 	return static_cast<std::size_t>(result);
 }
 
-} // namespace layout
 } // namespace xmipp4

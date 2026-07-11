@@ -27,9 +27,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::ndarray;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -40,14 +37,14 @@ public:
 	cpu_execution_context_fixture()
 	{
 		const auto device_manager =
-			catalog.get_service_manager<hardware::device_manager>();
+			catalog.get_service_manager<xmipp4::device_manager>();
 		const auto instance = device_manager->create_device_instance(
-			hardware::device_index("cpu", 0)
+			device_index("cpu", 0)
 		);
 		const auto program_manager =
-			catalog.get_service_manager<dispatch::program_manager>();
-		context = dispatch::execution_context(
-			hardware::device_context(instance),
+			catalog.get_service_manager<xmipp4::program_manager>();
+		context = execution_context(
+			device_context(instance),
 			make_eager_dispatcher(program_manager)
 		);
 	}
@@ -78,11 +75,10 @@ protected:
 	}
 
 	service_catalog catalog;
-	dispatch::execution_context context;
+	execution_context context;
 };
 
 } // namespace
-
 
 
 TEST_CASE_METHOD(
@@ -95,7 +91,7 @@ TEST_CASE_METHOD(
 
 	auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(2.0f),
 		context
 	);
@@ -122,7 +118,7 @@ TEST_CASE_METHOD(
 
 	auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(2.5f),
 		context
 	);
@@ -150,7 +146,7 @@ TEST_CASE_METHOD(
 
 	auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(3.75f),
 		context
 	);
@@ -175,7 +171,7 @@ TEST_CASE_METHOD(
 
 	const auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(4.0f),
 		context
 	);
@@ -202,7 +198,7 @@ TEST_CASE_METHOD(
 
 	const auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(7.0f),
 		context
 	);
@@ -230,7 +226,7 @@ TEST_CASE_METHOD(
 
 	const auto source = full(
 		descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		scalar_value(5.0f),
 		context
 	);
@@ -238,7 +234,7 @@ TEST_CASE_METHOD(
 	// Pre-allocate a compatible output; its storage should be reused.
 	auto out = zeros(
 		target_descriptor,
-		hardware::memory_resource_affinity::device,
+		memory_resource_affinity::device,
 		context
 	);
 	const auto *out_storage = out.get_storage();

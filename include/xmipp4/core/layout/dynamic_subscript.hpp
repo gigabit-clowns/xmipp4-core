@@ -14,8 +14,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 
 /**
@@ -151,7 +149,6 @@ template <typename F>
 XMIPP4_CONSTEXPR
 auto visit(F&& func, const dynamic_subscript &subscript);
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "dynamic_subscript.inl"

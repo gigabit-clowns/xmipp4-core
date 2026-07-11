@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 XMIPP4_INLINE_CONSTEXPR uint8_t 
 as_uint8(byte b) noexcept
@@ -146,11 +144,10 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const byte& b)
 	return os << high << low;
 }
 
-} // namespace memory
 } // namespace xmipp4
 
 XMIPP4_INLINE_CONSTEXPR size_t 
-std::hash<xmipp4::memory::byte>::operator()(xmipp4::memory::byte b) const noexcept
+std::hash<xmipp4::byte>::operator()(xmipp4::byte b) const noexcept
 {
-	return xmipp4::memory::as_uint8(b);
+	return xmipp4::as_uint8(b);
 }

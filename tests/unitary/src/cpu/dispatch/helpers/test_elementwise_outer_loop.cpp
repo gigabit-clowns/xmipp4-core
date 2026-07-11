@@ -15,8 +15,6 @@
 #include <vector>
 
 using namespace xmipp4;
-using namespace xmipp4::dispatch;
-using namespace xmipp4::layout;
 
 namespace
 {
@@ -140,7 +138,6 @@ std::vector<std::ptrdiff_t> offsets_of(
 }
 
 } // namespace
-
 
 
 TEST_CASE(

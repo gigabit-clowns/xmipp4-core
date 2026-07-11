@@ -13,8 +13,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device;
 class device_instance;
@@ -129,5 +127,4 @@ private:
 	void create_implementation_if_null();
 }; 
 
-} // namespace hardware
 } // namespace xmipp4

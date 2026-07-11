@@ -15,8 +15,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class program_manager::implementation
 {
@@ -35,7 +33,7 @@ public:
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue
+		command_queue &queue
 	) const
 	{
 		const auto op_id = operation.get_id();
@@ -69,11 +67,11 @@ public:
 		return ite2->get();
 	}
 
-	std::shared_ptr<hardware::program> build(
+	std::shared_ptr<program> build(
 		const operation &operation,
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
-		hardware::command_queue &queue,
+		command_queue &queue,
 		program_cache *cache
 	) const
 	{
@@ -129,12 +127,12 @@ bool program_manager::register_builder(
 	return create_if_null().register_builder(std::move(builder));
 }
 
-std::shared_ptr<hardware::program>
+std::shared_ptr<program>
 program_manager::build(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
-	hardware::command_queue &queue,
+	command_queue &queue,
 	program_cache *cache
 ) const
 {
@@ -165,5 +163,4 @@ program_manager::get_implementation() const noexcept
 	return m_implementation ? *m_implementation : empty_implementation;
 }
 
-} // namespace dispatch
 } // namespace xmipp4

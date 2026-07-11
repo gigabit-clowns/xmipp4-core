@@ -14,8 +14,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 class access_layout_operand
 {
@@ -45,7 +43,6 @@ private:
 	std::ptrdiff_t m_offset;
 };
 
-} // namespace layout
 } // namespace xmipp4
 
 #include "access_layout_operand.inl"

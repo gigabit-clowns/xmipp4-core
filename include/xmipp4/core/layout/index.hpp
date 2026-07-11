@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 /**
  * @brief Ensure that the index is within bounds for a given extent.
@@ -26,5 +24,4 @@ namespace layout
 XMIPP4_CORE_API
 std::size_t sanitize_index(std::ptrdiff_t index, std::size_t extent);
 
-} // namespace layout
 } // namespace xmipp4

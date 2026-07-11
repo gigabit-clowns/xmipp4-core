@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 class mock_operation
 	: public operation
@@ -30,5 +28,4 @@ public:
 
 };
 
-} // namespace dispatch
 } // namespace xmipp4

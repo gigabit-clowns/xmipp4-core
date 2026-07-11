@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace dispatch
-{
 
 operation_data_type_policy::operation_data_type_policy() noexcept = default;
 operation_data_type_policy::~operation_data_type_policy() = default;
@@ -37,5 +35,4 @@ void operation_data_type_policy::accept(
 	}
 }
 
-} // namespace dispatch
 } // namespace xmipp4

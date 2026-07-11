@@ -4,7 +4,7 @@
 
 #include <cpu/hardware/cpu_event.hpp>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 TEST_CASE( "cpu_event should support host_query, host_wait and device_wait", "[cpu_event]" )
 {

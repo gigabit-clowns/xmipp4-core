@@ -8,8 +8,6 @@
 
 namespace xmipp4 
 {
-namespace layout
-{
 
 XMIPP4_INLINE_CONSTEXPR 
 slice::slice(start_type start, count_type count, step_type step ) noexcept
@@ -234,5 +232,4 @@ slice sanitize_slice(const slice& slice, std::size_t extent)
 	return result;
 }
 
-} // namespace layout
 } // namespace xmipp4

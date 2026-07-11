@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <backends/cpu/kernels/elementwise_outer_loop.hpp>
+#include <backends/cpu/loops/elementwise_outer_loop.hpp>
 
 #include <xmipp4/core/layout/access_layout.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>

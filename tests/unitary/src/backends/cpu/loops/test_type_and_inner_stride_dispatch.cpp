@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <backends/cpu/kernels/type_and_inner_stride_dispatch.hpp>
+#include <backends/cpu/loops/type_and_inner_stride_dispatch.hpp>
 
 #include <xmipp4/core/layout/access_layout.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>

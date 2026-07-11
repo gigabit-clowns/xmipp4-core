@@ -13,10 +13,10 @@
 #include <xmipp4/backends/cpu/program.hpp>
 
 #include <backends/cpu/hardware/functor_program.hpp>
-#include <backends/cpu/kernels/elementwise_outer_loop.hpp>
-#include <backends/cpu/kernels/inner_loop_stride_dispatch.hpp>
-#include <backends/cpu/kernels/type_and_inner_stride_dispatch.hpp>
-#include <backends/cpu/kernels/strided_pointer_iterator.hpp>
+#include <backends/cpu/loops/elementwise_outer_loop.hpp>
+#include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
+#include <backends/cpu/loops/type_and_inner_stride_dispatch.hpp>
+#include <backends/cpu/loops/strided_pointer_iterator.hpp>
 
 #include <algorithm>
 

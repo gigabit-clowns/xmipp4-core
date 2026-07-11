@@ -102,7 +102,7 @@ public:
 		);
 		context = hardware::device_context(instance);
 
-		dispatcher = make_eager_dispatcher(manager);
+		eager_dispatcher = make_eager_dispatcher(manager);
 
 		// The output alignment query is harmless for tests that never allocate.
 		expectations.push_back(
@@ -276,7 +276,7 @@ protected:
 	std::shared_ptr<const hardware::device_instance> instance;
 	hardware::device_context context;
 	std::shared_ptr<program_manager> manager;
-	std::shared_ptr<dispatcher> dispatcher;
+	std::shared_ptr<dispatcher> eager_dispatcher;
 	std::shared_ptr<hardware::mock_program> program;
 
 	mock_operation op;
@@ -336,7 +336,7 @@ TEST_CASE_METHOD(
 
 	// One output but no inputs: violates the unary arity.
 	CHECK_THROWS_AS(
-		dispatcher->dispatch(
+		eager_dispatcher->dispatch(
 			op,
 			make_span(&output, 1),
 			make_span(&input, 0),
@@ -359,7 +359,7 @@ TEST_CASE_METHOD(
 	const array_view input; // Input without any backing storage.
 
 	CHECK_THROWS_AS(
-		dispatcher->dispatch(
+		eager_dispatcher->dispatch(
 			op,
 			make_span(&output, 1),
 			make_span(&input, 1),
@@ -430,7 +430,7 @@ TEST_CASE_METHOD(
 	expect_command_submission(output_buffer, input.share_storage());
 
 	CHECK_NOTHROW(
-		dispatcher->dispatch(
+		eager_dispatcher->dispatch(
 			op,
 			make_span(&output, 1),
 			make_span(&input, 1),
@@ -478,7 +478,7 @@ TEST_CASE_METHOD(
 	expect_command_submission(output_buffer, input.share_storage());
 
 	array output;
-	dispatcher->dispatch(
+	eager_dispatcher->dispatch(
 		op,
 		make_span(&output, 1),
 		make_span(&input, 1),
@@ -520,7 +520,7 @@ TEST_CASE_METHOD(
 	const array_view input = make_input_with_storage(out_shape, out_type);
 	expect_command_submission(output_buffer, input.share_storage());
 
-	dispatcher->dispatch(
+	eager_dispatcher->dispatch(
 		op,
 		make_span(&output, 1),
 		make_span(&input, 1),
@@ -587,7 +587,7 @@ TEST_CASE_METHOD(
 	);
 
 	array output;
-	dispatcher->dispatch(
+	eager_dispatcher->dispatch(
 		op,
 		make_span(&output, 1),
 		make_span(&input, 1),

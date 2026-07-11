@@ -5,7 +5,7 @@
 #include <xmipp4/core/dispatch/execute.hpp>
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 
 #include "mock/mock_dispatcher.hpp"
@@ -45,7 +45,7 @@ TEST_CASE(
     const execution_context ctx;
     mock_operation op;
     array output;
-    const array_view input;
+    const const_array input;
 
     CHECK_THROWS_AS(
         execute(op, make_span(&output, 1), make_span(&input, 1), ctx),
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(
 )
 {
     array output;
-    const array_view input;
+    const const_array input;
 
     REQUIRE_CALL(
         *dispatcher,
@@ -78,7 +78,7 @@ TEST_CASE_METHOD(
     "[operation_execute]"
 )
 {
-    const array_view input;
+    const const_array input;
 
     REQUIRE_CALL(
         *dispatcher,
@@ -96,7 +96,7 @@ TEST_CASE_METHOD(
     "[operation_execute]"
 )
 {
-    const array_view input;
+    const const_array input;
     array out;
 
     REQUIRE_CALL(
@@ -116,7 +116,7 @@ TEST_CASE_METHOD(
     "[operation_execute]"
 )
 {
-    array_view input;
+    const_array input;
 
     REQUIRE_CALL(
         *dispatcher,
@@ -141,7 +141,7 @@ TEST_CASE_METHOD(
         .WITH(_2.size() == 1)
         .WITH(_3.size() == 2);
 
-    execute_binary(op, array_view(), array_view(), context);
+    execute_binary(op, const_array(), const_array(), context);
 }
 
 TEST_CASE_METHOD(
@@ -157,5 +157,5 @@ TEST_CASE_METHOD(
         .WITH(_2.size() == 1)
         .WITH(_3.size() == 3);
 
-    execute_ternary(op, array_view(), array_view(), array_view(), context);
+    execute_ternary(op, const_array(), const_array(), const_array(), context);
 }

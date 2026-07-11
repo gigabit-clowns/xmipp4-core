@@ -10,7 +10,7 @@
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/dispatch/dispatcher.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>

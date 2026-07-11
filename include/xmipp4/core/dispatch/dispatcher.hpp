@@ -15,7 +15,7 @@ class device_context;
 
 
 class array;
-class array_view;
+class const_array;
 
 
 class operation;
@@ -65,7 +65,7 @@ public:
 	virtual void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array_view> input_operands,
+		span<const const_array> input_operands,
 		const device_context &device
 	) = 0;
 };

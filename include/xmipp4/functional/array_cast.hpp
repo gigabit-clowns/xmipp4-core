@@ -3,7 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 
 namespace xmipp4
 {
@@ -44,7 +44,7 @@ array cast(
  */
 XMIPP4_CORE_API
 array cast_copy(
-	array_view input,
+	const_array input,
 	numerical_type target_type,
 	const execution_context &context,
 	array *out = nullptr

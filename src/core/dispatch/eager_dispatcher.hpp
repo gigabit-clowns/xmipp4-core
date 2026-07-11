@@ -43,7 +43,7 @@ public:
 	void dispatch(
 		const operation &operation,
 		span<array> output_operands,
-		span<const array_view> input_operands,
+		span<const const_array> input_operands,
 		const device_context &device_context
 	) override;
 

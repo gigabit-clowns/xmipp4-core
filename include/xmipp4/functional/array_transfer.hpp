@@ -3,7 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
@@ -52,7 +52,7 @@ array transfer(
  */
 XMIPP4_CORE_API
 array transfer_copy(
-	array_view input,
+	const_array input,
 	memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out = nullptr
@@ -89,7 +89,7 @@ array to_device(
  */
 XMIPP4_CORE_API
 array to_device_copy(
-	array_view input,
+	const_array input,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -125,7 +125,7 @@ array to_host(
  */
 XMIPP4_CORE_API
 array to_host_copy(
-	array_view input,
+	const_array input,
 	const execution_context &context,
 	array *out = nullptr
 );

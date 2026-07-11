@@ -1,0 +1,64 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <xmipp4/core/ndarray/const_array.hpp>
+
+#include <xmipp4/core/ndarray/array.hpp>
+
+#include "array_implementation.hpp"
+
+namespace xmipp4 
+{
+
+const_array::const_array() = default;
+const_array::const_array(const const_array& other) = default;
+const_array::const_array(const_array&& other) noexcept = default;
+const_array::~const_array() = default;
+const_array& const_array::operator=(const_array&& other) noexcept = default;
+const_array& const_array::operator=(const const_array& other) = default;
+
+const_array::const_array(
+	const array &other
+) noexcept
+	: const_array(other.share())
+{
+}
+
+const_array::const_array(
+	std::shared_ptr<const array_implementation> implementation
+) noexcept
+	: m_implementation(std::move(implementation))
+{
+}
+
+const array_descriptor& const_array::get_descriptor() const noexcept
+{
+	static array_descriptor empty_descriptor;
+	return
+		m_implementation ? 
+		m_implementation->get_descriptor() : 
+		empty_descriptor;
+}
+
+const buffer* const_array::get_storage() const noexcept
+{
+	return
+		m_implementation ? 
+		m_implementation->get_storage() : 
+		nullptr;
+}
+
+std::shared_ptr<const buffer> 
+const_array::share_storage() const noexcept
+{
+	return
+		m_implementation ? 
+		m_implementation->share_storage() : 
+		nullptr;
+}
+
+const_array const_array::share() const noexcept
+{
+	return const_array(m_implementation);
+}
+
+} // namespace xmipp4

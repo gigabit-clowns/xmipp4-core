@@ -5,7 +5,7 @@
 
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
 #include "../hardware/mock/mock_buffer.hpp"
@@ -127,7 +127,7 @@ TEST_CASE("setters in operand_signature should update its attributes", "[operand
 	CHECK( signature.get_memory_resource() == resource );
 }
 
-TEST_CASE("from_array in operand_signature should correctly construct from an array and array_view", "[operand_signature]")
+TEST_CASE("from_array in operand_signature should correctly construct from an array and const_array", "[operand_signature]")
 {
 	const std::vector<std::size_t> extents = {20, 30};
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
@@ -144,7 +144,7 @@ TEST_CASE("from_array in operand_signature should correctly construct from an ar
 	CHECK( signature1.get_descriptor() == descriptor );
 	CHECK( signature1.get_memory_resource() == &resource );
 
-	array_view view = arr;
+	const_array view = arr;
 	const auto signature2 = operand_signature::from_array(view);
 	CHECK( signature2.get_descriptor() == descriptor );
 	CHECK( signature2.get_memory_resource() == &resource );

@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
@@ -16,20 +16,20 @@
 
 using namespace xmipp4;
 
-TEST_CASE("Default constructed array_view should have no storage", "[array_view]")
+TEST_CASE("Default constructed const_array should have no storage", "[const_array]")
 {
-	array_view arr;
+	const_array arr;
 	CHECK( arr.get_storage() == nullptr );
 	CHECK( arr.share_storage() == nullptr );
 }
 
-TEST_CASE("Default constructed array_view should have an empty descriptor", "[array_view]")
+TEST_CASE("Default constructed const_array should have an empty descriptor", "[const_array]")
 {
-	array_view arr;
+	const_array arr;
 	CHECK( arr.get_descriptor() == array_descriptor() );
 }
 
-TEST_CASE("Constructing an array_view should store its attributes", "[array_view]")
+TEST_CASE("Constructing an const_array should store its attributes", "[const_array]")
 {
 	const auto data_type = GENERATE(
 		numerical_type::int32,
@@ -47,10 +47,10 @@ TEST_CASE("Constructing an array_view should store its attributes", "[array_view
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);
 
-	array_view view;
+	const_array view;
 	SECTION("from implementation")
 	{
-		view = array_view(
+		view = const_array(
 			std::make_shared<array_implementation>(storage, descriptor)
 		);
 	}
@@ -64,7 +64,7 @@ TEST_CASE("Constructing an array_view should store its attributes", "[array_view
 	CHECK( view.get_descriptor() == descriptor );
 }	
 
-TEST_CASE("Calling share on an array_view should return an array with the same content", "[array_view]")
+TEST_CASE("Calling share on an const_array should return an array with the same content", "[const_array]")
 {
 	const auto data_type = GENERATE(
 		numerical_type::int32,
@@ -81,7 +81,7 @@ TEST_CASE("Calling share on an array_view should return an array with the same c
 
 	const auto layout = strided_layout::make_contiguous_layout(make_span(extents));
 	const array_descriptor descriptor(layout, data_type);
-	const array_view view1(
+	const const_array view1(
 		std::make_shared<array_implementation>(storage, descriptor)
 	);
 	const auto view2 = view1.share();

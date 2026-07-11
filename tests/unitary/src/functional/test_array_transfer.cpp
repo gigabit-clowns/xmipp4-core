@@ -6,7 +6,7 @@
 
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
@@ -57,7 +57,7 @@ struct dispatch_record
 	void operator()(
 		const operation &op,
 		span<array> outputs,
-		span<const array_view> inputs,
+		span<const const_array> inputs,
 		const device_context &device_context
 	)
 	{

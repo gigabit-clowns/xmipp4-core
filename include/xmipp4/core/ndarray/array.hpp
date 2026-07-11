@@ -3,7 +3,7 @@
 #pragma once
 
 #include "array_descriptor.hpp"
-#include "array_view.hpp"
+#include "const_array.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
@@ -103,11 +103,24 @@ public:
 
 	/**
 	 * @brief Obtain a read-only alias for this array
-	 * 
-	 * @return array An array_view referencing the contents of this array.
+	 *
+	 * @return const_array A const_array referencing the contents of this
+	 * array.
 	 */
-	XMIPP4_CORE_API 
-	array_view share() const noexcept;
+	XMIPP4_CORE_API
+	const_array share() const noexcept;
+
+	/**
+	 * @brief Obtain a read-only alias for this array.
+	 *
+	 * Equivalent to the const overload of share(). The distinct name makes
+	 * the read-only result explicit when called on a mutable array.
+	 *
+	 * @return const_array A const_array referencing the contents of this
+	 * array.
+	 */
+	XMIPP4_CORE_API
+	const_array share_const() const noexcept;
 
 private:
 	std::shared_ptr<const array_implementation> m_implementation;

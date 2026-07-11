@@ -3,7 +3,7 @@
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/array_view.hpp>
+#include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include <boost/functional/hash.hpp>
@@ -152,7 +152,7 @@ operand_signature::from_array(const array &a) noexcept
 }
 
 operand_signature
-operand_signature::from_array(const array_view &a) noexcept
+operand_signature::from_array(const const_array &a) noexcept
 {
 	return operand_signature(
 		a.get_descriptor(),

@@ -19,18 +19,18 @@ class array_implementation;
 /**
  * @brief Read-only view into an array.
  * 
- * An array_view shares ownership of the implementation with another array,
+ * A const_array shares ownership of the implementation with another array,
  * but it only allows read-only semantics with it.
  * 
  * @see array
  */
-class array_view
+class const_array
 {
 public:	
 	/**
 	 * @brief Construct an uninitialized array view.
 	 */
-	XMIPP4_CORE_API array_view();
+	XMIPP4_CORE_API const_array();
 
 	/**
 	 * @brief Construct an array view from another array.
@@ -38,7 +38,7 @@ public:
 	 * @param other The array to be aliased.
 	 */
 	XMIPP4_CORE_API
-	array_view(const array &other) noexcept;
+	const_array(const array &other) noexcept;
 
 	/**
 	 * @brief Construct an array view from an implementation.
@@ -48,16 +48,16 @@ public:
 	 * @note This function is not part of the public API and shall only be
 	 * used internally or for testing purposes.
 	 */
-	explicit array_view(
+	explicit const_array(
 		std::shared_ptr<const array_implementation> implementation
 	) noexcept;
 
-	XMIPP4_CORE_API array_view(const array_view& other);
-	XMIPP4_CORE_API array_view(array_view&& other) noexcept;
-	XMIPP4_CORE_API ~array_view();
+	XMIPP4_CORE_API const_array(const const_array& other);
+	XMIPP4_CORE_API const_array(const_array&& other) noexcept;
+	XMIPP4_CORE_API ~const_array();
 
-	XMIPP4_CORE_API array_view& operator=(const array_view& other);
-	XMIPP4_CORE_API array_view& operator=(array_view&& other) noexcept;
+	XMIPP4_CORE_API const_array& operator=(const const_array& other);
+	XMIPP4_CORE_API const_array& operator=(const_array&& other) noexcept;
 
 	/**
 	 * @brief Get the descriptor of this array.
@@ -75,10 +75,10 @@ public:
 	XMIPP4_CORE_API const buffer* get_storage() const noexcept;
 	
 	/**
-	 * @brief Get the storage of this array_view.
+	 * @brief Get the storage of this const_array.
 	 * 
 	 * @return std::shared_ptr<const buffer> The storage. nullptr if 
-	 * the array_view is not initialized
+	 * the const_array is not initialized
 	 */
 	XMIPP4_CORE_API 
 	std::shared_ptr<const buffer> share_storage() const noexcept;
@@ -86,11 +86,11 @@ public:
 	/**
 	 * @brief Obtain an alias for this array.
 	 * 
-	 * @return array_view Another array_view referencing the contents of this 
+	 * @return const_array Another const_array referencing the contents of this 
 	 * array.
 	 */
 	XMIPP4_CORE_API 
-	array_view share() const noexcept;
+	const_array share() const noexcept;
 
 private:
 	std::shared_ptr<const array_implementation> m_implementation;

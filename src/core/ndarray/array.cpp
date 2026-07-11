@@ -78,9 +78,14 @@ array array::share() noexcept
 	return array(m_implementation);
 }
 
-array_view array::share() const noexcept
+const_array array::share() const noexcept
 {
-	return array_view(m_implementation);
+	return const_array(m_implementation);
+}
+
+const_array array::share_const() const noexcept
+{
+	return const_array(m_implementation);
 }
 
 } // namespace xmipp4

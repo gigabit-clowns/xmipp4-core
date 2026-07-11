@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "access_flags.hpp"
-#include "platform/enum_helpers.hpp"
+#include "../platform/enum_helpers.hpp"
 
 namespace xmipp4 
 {

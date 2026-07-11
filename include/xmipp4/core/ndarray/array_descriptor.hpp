@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../layout/strided_layout.hpp"
-#include "../numerical_type.hpp"
+#include "../numerical/numerical_type.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4 

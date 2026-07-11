@@ -10,7 +10,7 @@
 #include <xmipp4/core/dispatch/operation_id.hpp>
 #include <xmipp4/core/hardware/memory_resource_kind.hpp>
 #include <xmipp4/core/backend_priority.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include "../../core/dispatch/mock/mock_operation.hpp"

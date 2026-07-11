@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 
 #include <sstream>
 

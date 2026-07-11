@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/type_wrap.hpp>
+#include <xmipp4/core/meta/type_wrap.hpp>
 
 #include <type_traits>
 

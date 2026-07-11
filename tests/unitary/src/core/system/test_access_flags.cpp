@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/access_flags.hpp>
+#include <xmipp4/core/system/access_flags.hpp>
 
 using namespace xmipp4;
 

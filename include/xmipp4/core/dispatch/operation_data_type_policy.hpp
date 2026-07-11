@@ -3,7 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/span.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4

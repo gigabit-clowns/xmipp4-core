@@ -4,8 +4,8 @@
 
 #include "inner_loop_stride_dispatch.hpp"
 
-#include <xmipp4/core/numerical_type_dispatch.hpp>
-#include <xmipp4/core/type_wrap.hpp>
+#include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
+#include <xmipp4/core/meta/type_wrap.hpp>
 
 #include <tuple>
 #include <type_traits>

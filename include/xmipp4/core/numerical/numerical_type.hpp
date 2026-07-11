@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "platform/dynamic_shared_object.h"
+#include "../platform/dynamic_shared_object.h"
 
 #include <ostream>
 

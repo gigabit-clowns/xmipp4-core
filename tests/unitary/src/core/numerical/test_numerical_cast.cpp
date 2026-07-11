@@ -2,9 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/numerical_cast.hpp>
+#include <xmipp4/core/numerical/numerical_cast.hpp>
 
-#include <xmipp4/core/fixed_float.hpp>
+#include <xmipp4/core/numerical/fixed_float.hpp>
 
 #include <complex>
 #include <type_traits>

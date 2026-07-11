@@ -12,7 +12,7 @@
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation_id.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include "../../../../core/dispatch/mock/mock_operation.hpp"

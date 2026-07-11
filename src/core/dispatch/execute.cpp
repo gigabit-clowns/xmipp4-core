@@ -3,7 +3,7 @@
 #include <xmipp4/core/dispatch/execute.hpp>
 
 #include <xmipp4/core/binary/bit.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>

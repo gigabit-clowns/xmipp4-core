@@ -6,8 +6,8 @@
 
 #include <xmipp4/core/layout/access_layout.hpp>
 #include <xmipp4/core/layout/access_layout_builder.hpp>
-#include <xmipp4/core/numerical_type_dispatch.hpp>
-#include <xmipp4/core/type_wrap.hpp>
+#include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
+#include <xmipp4/core/meta/type_wrap.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>

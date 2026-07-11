@@ -4,7 +4,7 @@
 
 #include "../platform/dynamic_shared_object.h"
 #include "../service_manager.hpp"
-#include "../numerical_type.hpp"
+#include "../numerical/numerical_type.hpp"
 #include "../span.hpp"
 
 #include <memory>

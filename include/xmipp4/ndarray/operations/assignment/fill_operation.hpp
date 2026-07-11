@@ -3,7 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/scalar_value.hpp>
+#include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
 namespace xmipp4

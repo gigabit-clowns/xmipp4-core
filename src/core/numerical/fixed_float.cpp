@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/core/fixed_float.hpp>
+#include <xmipp4/core/numerical/fixed_float.hpp>
 
 #include <half.hpp>
 

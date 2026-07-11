@@ -14,7 +14,7 @@
 #include <xmipp4/core/ndarray/array_view.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/backend_priority.hpp>
 
 #include <xmipp4/core/hardware/device_context.hpp>

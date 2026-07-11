@@ -6,7 +6,7 @@
 
 #include "../platform/dynamic_shared_object.h"
 #include "../span.hpp"
-#include "../numerical_type.hpp"
+#include "../numerical/numerical_type.hpp"
 #include "../backend_priority.hpp"
 
 #include <memory>

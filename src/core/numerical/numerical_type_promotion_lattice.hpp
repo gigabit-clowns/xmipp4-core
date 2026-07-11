@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
 
 #include <array>

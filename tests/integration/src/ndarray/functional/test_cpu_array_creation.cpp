@@ -17,8 +17,8 @@
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
-#include <xmipp4/core/numerical_type.hpp>
-#include <xmipp4/core/scalar_value.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>

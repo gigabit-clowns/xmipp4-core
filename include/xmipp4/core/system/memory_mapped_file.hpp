@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../access_flags.hpp"
+#include "access_flags.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../platform/constexpr.hpp"
 

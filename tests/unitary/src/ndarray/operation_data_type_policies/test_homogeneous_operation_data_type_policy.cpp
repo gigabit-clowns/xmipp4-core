@@ -4,7 +4,7 @@
 
 #include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
 #include <xmipp4/core/span.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 
 #include <stdexcept>
 #include <vector>

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "type_wrap.hpp"
+#include "../meta/type_wrap.hpp"
 #include "numerical_type.hpp"
 #include "fixed_float.hpp"
-#include "platform/constexpr.hpp"
+#include "../platform/constexpr.hpp"
 
 #include <complex>
 #include <type_traits>

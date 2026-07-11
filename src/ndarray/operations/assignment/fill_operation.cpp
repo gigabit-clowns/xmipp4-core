@@ -4,8 +4,8 @@
 
 #include <xmipp4/ndarray/operation_shape_policies/elementwise_operation_shape_policy.hpp>
 #include <xmipp4/ndarray/operation_data_type_policies/homogeneous_operation_data_type_policy.hpp>
-#include <xmipp4/core/numerical_type_dispatch.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 
 namespace xmipp4
 {

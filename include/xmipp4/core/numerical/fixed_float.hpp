@@ -5,7 +5,7 @@
 #include <limits>
 #include <cstdint>
 
-#include "platform/attributes.hpp"
+#include "../platform/attributes.hpp"
 
 namespace xmipp4
 {

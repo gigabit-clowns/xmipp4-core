@@ -4,7 +4,7 @@
 
 #include "numerical_type.hpp"
 #include "fixed_float.hpp"
-#include "memory/byte.hpp"
+#include "../memory/byte.hpp"
 
 #include <array>
 #include <complex>

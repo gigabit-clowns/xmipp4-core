@@ -6,9 +6,9 @@
 #include <xmipp4/core/layout/access_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
-#include <xmipp4/core/numerical_type_dispatch.hpp>
-#include <xmipp4/core/scalar_value.hpp>
-#include <xmipp4/core/numerical_cast.hpp>
+#include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
+#include <xmipp4/core/numerical/scalar_value.hpp>
+#include <xmipp4/core/numerical/numerical_cast.hpp>
 #include <xmipp4/cpu/hardware/cpu_device.hpp>
 #include <xmipp4/cpu/hardware/cpu_program.hpp>
 

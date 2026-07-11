@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/system/memory_mapped_file.hpp>
 
-#include <xmipp4/core/access_flags.hpp>
+#include <xmipp4/core/system/access_flags.hpp>
 
 #include <fstream>
 #include <string>

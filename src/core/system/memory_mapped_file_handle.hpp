@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <xmipp4/core/access_flags.hpp>
+#include <xmipp4/core/system/access_flags.hpp>
 #include <xmipp4/core/platform/operating_system.h>
 
 namespace xmipp4

@@ -11,7 +11,7 @@
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/ndarray/operations/assignment/copy_operation.hpp>
-#include <xmipp4/core/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/device_instance.hpp>

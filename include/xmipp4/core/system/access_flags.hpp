@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "platform/constexpr.hpp"
-#include "binary/bit.hpp"
-#include "binary/flagset.hpp"
+#include "../platform/constexpr.hpp"
+#include "../binary/bit.hpp"
+#include "../binary/flagset.hpp"
 
 #include <ostream>
 

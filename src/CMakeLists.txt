@@ -66,6 +66,7 @@ function(xmipp4_add_component NAME DIR)
 		target_compile_options(
 			${NAME}
 			PRIVATE
+				/bigobj
 				/W4
 				/wd4996 # getenv warning
 		)

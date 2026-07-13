@@ -10,18 +10,9 @@ namespace xmipp4
 {
 
 const_array::const_array() = default;
-const_array::const_array(const const_array& other) = default;
 const_array::const_array(const_array&& other) noexcept = default;
 const_array::~const_array() = default;
 const_array& const_array::operator=(const_array&& other) noexcept = default;
-const_array& const_array::operator=(const const_array& other) = default;
-
-const_array::const_array(
-	const array &other
-) noexcept
-	: const_array(other.share())
-{
-}
 
 const_array::const_array(
 	std::shared_ptr<const array_implementation> implementation

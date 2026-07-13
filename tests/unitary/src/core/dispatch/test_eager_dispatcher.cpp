@@ -12,6 +12,7 @@
 #include <xmipp4/core/dispatch/operation_arity.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/const_array.hpp>
+#include <xmipp4/core/ndarray/const_array_ref.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
@@ -235,7 +236,7 @@ protected:
 	)
 	{
 		array input_array(make_buffer(), make_descriptor(shape, type));
-		return const_array(input_array);
+		return input_array.share_const();
 	}
 
 	// Expect a single command submission onto the active queue, carrying
@@ -300,7 +301,7 @@ TEST_CASE(
 
 	mock_operation op;
 	array output;
-	const const_array input;
+	const const_array_ref input;
 
 	// An empty device context exposes a null active queue.
 	const device_context empty_context;
@@ -327,7 +328,7 @@ TEST_CASE_METHOD(
 		.RETURN(operation_arity::unary()); // Expects one output and one input.
 
 	array output;
-	const const_array input;
+	const const_array_ref input;
 
 	// One output but no inputs: violates the unary arity.
 	CHECK_THROWS_AS(
@@ -351,7 +352,7 @@ TEST_CASE_METHOD(
 	expect_unary_operation(shape_type{4}, numerical_type::float32);
 
 	array output;           // Fresh output, storage to be resolved.
-	const const_array input; // Input without any backing storage.
+	const const_array_ref input; // Input without any backing storage.
 
 	CHECK_THROWS_AS(
 		eager_dispatcher->dispatch(
@@ -420,8 +421,9 @@ TEST_CASE_METHOD(
 	const auto output_buffer = make_buffer();
 	array output(output_buffer, make_descriptor(user_shape, user_type));
 
-	const const_array input =
+	const const_array input_owner =
 		make_input_with_storage(shape_type{4}, numerical_type::float32);
+	const const_array_ref input = input_owner;
 	expect_command_submission(output_buffer, input.share_storage());
 
 	CHECK_NOTHROW(
@@ -469,7 +471,8 @@ TEST_CASE_METHOD(
 	)
 		.RETURN(output_buffer);
 
-	const const_array input = make_input_with_storage(out_shape, out_type);
+	const const_array input_owner = make_input_with_storage(out_shape, out_type);
+	const const_array_ref input = input_owner;
 	expect_command_submission(output_buffer, input.share_storage());
 
 	array output;
@@ -512,7 +515,8 @@ TEST_CASE_METHOD(
 	const auto output_buffer = make_buffer();
 	array output(output_buffer, make_descriptor(out_shape, out_type));
 
-	const const_array input = make_input_with_storage(out_shape, out_type);
+	const const_array input_owner = make_input_with_storage(out_shape, out_type);
+	const const_array_ref input = input_owner;
 	expect_command_submission(output_buffer, input.share_storage());
 
 	eager_dispatcher->dispatch(
@@ -573,8 +577,9 @@ TEST_CASE_METHOD(
 	)
 		.RETURN(scratch_buffer);
 
-	const const_array input =
+	const const_array input_owner =
 		make_input_with_storage(shape_type{4}, numerical_type::float32);
+	const const_array_ref input = input_owner;
 	expect_command_submission(
 		output_buffer,
 		input.share_storage(),

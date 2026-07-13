@@ -32,7 +32,7 @@ array cast(
 }
 
 array cast_copy(
-	const_array input,
+	const_array_ref input,
 	numerical_type target_type,
 	const execution_context &context,
 	array *out

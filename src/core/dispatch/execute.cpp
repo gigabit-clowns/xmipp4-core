@@ -5,7 +5,7 @@
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
+#include <xmipp4/core/ndarray/const_array_ref.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
@@ -30,7 +30,7 @@ namespace xmipp4
 void execute(
 	const operation &operation,
 	span<array> output_operands,
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	const execution_context &context
 )
 {
@@ -53,7 +53,7 @@ void execute(
 
 array execute(
 	const operation &operation,
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	const execution_context &context,
 	array *out
 )
@@ -84,7 +84,7 @@ array execute(
 
 array execute_unary(
 	const operation &operation,
-	const const_array &input,
+	const const_array_ref &input,
 	const execution_context &context,
 	array *out
 )
@@ -99,13 +99,13 @@ array execute_unary(
 
 array execute_binary(
 	const operation &operation,
-	const_array first_input,
-	const_array second_input,
+	const_array_ref first_input,
+	const_array_ref second_input,
 	const execution_context &context,
 	array *out
 )
 {
-	std::array<const_array, 2> inputs = {
+	std::array<const_array_ref, 2> inputs = {
 		std::move(first_input),
 		std::move(second_input)
 	};
@@ -119,14 +119,14 @@ array execute_binary(
 
 array execute_ternary(
 	const operation &operation,
-	const_array first_input,
-	const_array second_input,
-	const_array third_input,
+	const_array_ref first_input,
+	const_array_ref second_input,
+	const_array_ref third_input,
 	const execution_context &context,
 	array *out
 )
 {
-	std::array<const_array, 3> inputs = {
+	std::array<const_array_ref, 3> inputs = {
 		std::move(first_input),
 		std::move(second_input),
 		std::move(third_input)

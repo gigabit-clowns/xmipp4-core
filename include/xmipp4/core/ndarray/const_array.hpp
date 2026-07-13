@@ -33,14 +33,6 @@ public:
 	XMIPP4_CORE_API const_array();
 
 	/**
-	 * @brief Construct an array view from another array.
-	 * 
-	 * @param other The array to be aliased.
-	 */
-	XMIPP4_CORE_API
-	const_array(const array &other) noexcept;
-
-	/**
 	 * @brief Construct an array view from an implementation.
 	 * 
 	 * @param implementation The implementation to be owned by this view.
@@ -52,11 +44,11 @@ public:
 		std::shared_ptr<const array_implementation> implementation
 	) noexcept;
 
-	XMIPP4_CORE_API const_array(const const_array& other);
+	const_array(const const_array& other) = delete;
 	XMIPP4_CORE_API const_array(const_array&& other) noexcept;
 	XMIPP4_CORE_API ~const_array();
 
-	XMIPP4_CORE_API const_array& operator=(const const_array& other);
+	const_array& operator=(const const_array& other) = delete;
 	XMIPP4_CORE_API const_array& operator=(const_array&& other) noexcept;
 
 	/**

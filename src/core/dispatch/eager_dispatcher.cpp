@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/binary/bit.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
+#include <xmipp4/core/ndarray/const_array_ref.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/dispatch/program_manager.hpp>
@@ -38,7 +38,7 @@ namespace
 template <std::size_t N>
 boost::container::small_vector<array_descriptor, N>
 extract_input_descriptors(
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -207,7 +207,7 @@ resolve_output_storage(
 template <std::size_t N>
 boost::container::small_vector<std::shared_ptr<const buffer>, N>
 extract_input_storage(
-	span<const const_array> operands,
+	span<const const_array_ref> operands,
 	std::integral_constant<std::size_t, N> /*small_cap_tag*/
 )
 {
@@ -328,7 +328,7 @@ eager_dispatcher::~eager_dispatcher() = default;
 void eager_dispatcher::dispatch(
 	const operation &op,
 	span<array> output_operands,
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	const device_context &device_context
 )
 {

@@ -11,7 +11,7 @@ namespace xmipp4
 {
 
 class array;
-class const_array;
+class const_array_ref;
 
 
 /**
@@ -138,21 +138,12 @@ public:
 	/**
 	 * @brief Construct an operand signature from an existing array.
 	 *
-	 * @param a The array from which the signature is deduced.
+	 * @param a Reference to the array from which the signature is
+	 * deduced.
 	 * @return operand_signature The newly constructed operand signature.
 	 */
 	XMIPP4_CORE_API
-	static operand_signature from_array(const array &a) noexcept;
-
-	/**
-	 * @brief Construct an operand signature from an existing const_array.
-	 *
-	 * @param a The array from which the signature is deduced.
-	 * @return operand_signature The newly constructed operand signature.
-	 */
-	XMIPP4_CORE_API
-	static operand_signature
-	from_array(const const_array &a) noexcept;
+	static operand_signature from_array(const_array_ref a) noexcept;
 
 private:
 	array_descriptor m_descriptor;

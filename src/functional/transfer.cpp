@@ -48,7 +48,7 @@ array transfer(
 }
 
 array transfer_copy(
-	const_array input,
+	const_array_ref input,
 	memory_resource_affinity affinity,
 	const execution_context &context,
 	array *out
@@ -92,7 +92,7 @@ array to_device(
 }
 
 array to_device_copy(
-	const_array input,
+	const_array_ref input,
 	const execution_context &context,
 	array *out
 )
@@ -118,7 +118,7 @@ array to_host(
 }
 
 array to_host_copy(
-	const_array input,
+	const_array_ref input,
 	const execution_context &context,
 	array *out
 )

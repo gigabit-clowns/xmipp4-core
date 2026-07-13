@@ -3,7 +3,7 @@
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
+#include <xmipp4/core/ndarray/const_array_ref.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 
 #include <boost/functional/hash.hpp>
@@ -143,16 +143,7 @@ void operand_signature::set_memory_resource(
 }
 
 operand_signature
-operand_signature::from_array(const array &a) noexcept
-{
-	return operand_signature(
-		a.get_descriptor(),
-		xmipp4::get_memory_resource(a.get_storage())
-	);
-}
-
-operand_signature
-operand_signature::from_array(const const_array &a) noexcept
+operand_signature::from_array(const_array_ref a) noexcept
 {
 	return operand_signature(
 		a.get_descriptor(),

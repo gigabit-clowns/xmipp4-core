@@ -61,7 +61,7 @@ struct dispatch_record
 	void operator()(
 		const operation &op,
 		span<array> outputs,
-		span<const const_array> inputs,
+		span<const const_array_ref> inputs,
 		const device_context &device_context
 	)
 	{

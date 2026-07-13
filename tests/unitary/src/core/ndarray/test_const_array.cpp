@@ -12,6 +12,7 @@
 #include "../hardware/mock/mock_buffer.hpp"
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 using namespace xmipp4;
@@ -56,7 +57,7 @@ TEST_CASE("Constructing an const_array should store its attributes", "[const_arr
 	}
 	SECTION("implicitly from another array")
 	{
-		view = array(storage, descriptor);
+		view = array(storage, descriptor).share_const();
 	}
 
 	CHECK( view.get_storage() == storage.get() );
@@ -89,3 +90,10 @@ TEST_CASE("Calling share on an const_array should return an array with the same 
 	CHECK( &view1.get_descriptor() == &view2.get_descriptor() );
 	CHECK( view1.get_storage() == view2.get_storage() );
 }	
+
+TEST_CASE("const_array should not be copyable nor implicitly convertible", "[const_array]")
+{
+	CHECK_FALSE( std::is_copy_constructible<const_array>::value );
+	CHECK_FALSE( std::is_copy_assignable<const_array>::value );
+	CHECK_FALSE( std::is_convertible<const array&, const_array>::value );
+}

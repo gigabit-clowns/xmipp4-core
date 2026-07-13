@@ -9,7 +9,7 @@ namespace xmipp4
 {
 
 class array;
-class const_array;
+class const_array_ref;
 
 
 class operation;
@@ -27,7 +27,7 @@ XMIPP4_CORE_API
 void execute(
 	const operation &operation,
 	span<array> output_operands,
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	const execution_context &context
 );
 
@@ -42,7 +42,7 @@ void execute(
 XMIPP4_CORE_API
 array execute(
 	const operation &operation,
-	span<const const_array> input_operands,
+	span<const const_array_ref> input_operands,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -58,7 +58,7 @@ array execute(
 XMIPP4_CORE_API
 array execute_unary(
 	const operation &operation,
-	const const_array &input,
+	const const_array_ref &input,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -75,8 +75,8 @@ array execute_unary(
 XMIPP4_CORE_API
 array execute_binary(
 	const operation &operation,
-	const_array first_input,
-	const_array second_input,
+	const_array_ref first_input,
+	const_array_ref second_input,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -94,9 +94,9 @@ array execute_binary(
 XMIPP4_CORE_API
 array execute_ternary(
 	const operation &operation,
-	const_array first_input,
-	const_array second_input,
-	const_array third_input,
+	const_array_ref first_input,
+	const_array_ref second_input,
+	const_array_ref third_input,
 	const execution_context &context,
 	array *out = nullptr
 );

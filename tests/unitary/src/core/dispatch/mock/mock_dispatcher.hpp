@@ -6,7 +6,7 @@
 
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
+#include <xmipp4/core/ndarray/const_array_ref.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
 #include <xmipp4/core/hardware/command_queue.hpp>
 
@@ -24,7 +24,7 @@ public:
 		void (
 			const operation &operation,
 			span<array> output_operands,
-			span<const const_array> input_operands,
+			span<const const_array_ref> input_operands,
 			const device_context &device_context
 		),
 		override

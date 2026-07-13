@@ -183,7 +183,7 @@ array full(
 }
 
 array copy(
-	const_array source,
+	const_array_ref source,
 	const execution_context &context,
 	array *out
 )

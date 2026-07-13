@@ -25,14 +25,12 @@ class program_cache;
 /**
  * @brief Abstract representation of a factory class for operation programs
  */
-class program_builder
+class XMIPP4_CORE_API program_builder
 {
 public:
-	XMIPP4_CORE_API
 	program_builder() noexcept;
 	program_builder(const program_builder &other) = delete;
 	program_builder(program_builder &&other) = delete;
-	XMIPP4_CORE_API
 	virtual ~program_builder();
 
 	program_builder&

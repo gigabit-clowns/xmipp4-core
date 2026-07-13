@@ -48,7 +48,7 @@ public:
 	 * @note This function is not part of the public API and shall only be
 	 * used internally or for testing purposes.
 	 */
-	const_array_ref(const array_implementation *implementation) noexcept;
+	explicit const_array_ref(const array_implementation *implementation) noexcept;
 
 	/**
 	 * @brief Construct a const_array_ref referencing an array.

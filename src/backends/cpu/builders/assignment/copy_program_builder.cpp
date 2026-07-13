@@ -81,6 +81,8 @@ struct copy_kernel
 	}
 };
 
+
+
 template <typename T, typename Q>
 typename std::enable_if<
 	std::is_constructible<T, Q>::value,

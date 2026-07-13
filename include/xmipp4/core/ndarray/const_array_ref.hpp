@@ -24,9 +24,9 @@ class const_array;
  * A const_array_ref refers to the contents of an array without sharing
  * its ownership and only allows read-only semantics with it. It is
  * intended to be used as a parameter type at interface boundaries where
- * ownership does not need to be extended, analogously to
- * std::string_view. The referenced array must outlive the
- * const_array_ref; do not store const_array_ref objects.
+ * ownership does not need to be extended, analogously to std::string_view. 
+ * The referenced array must outlive the const_array_ref; do not store 
+ * const_array_ref objects.
  *
  * @see const_array
  * @see array_ref

@@ -20,11 +20,28 @@ template <typename T>
 struct is_complex<std::complex<T>> : std::true_type {};
 
 /**
+ * @brief Trait detecting scalar types that convert through @c float.
+ *
+ * Satisfied by non-arithmetic value types that are convertible to and
+ * from @c float, such as @ref float16_t or half precision library types.
+ */
+template <typename T>
+struct is_float_proxy
+	: std::integral_constant<
+		bool,
+		!std::is_arithmetic<T>::value &&
+		std::is_convertible<T, float>::value &&
+		std::is_convertible<float, T>::value
+	>
+{
+};
+
+/**
  * @brief Implementation of @ref numerical_cast selected by partial
  * specialization.
  *
  * The primary template handles every pair that does not involve
- * @ref float16_t nor @c std::complex, deferring to a plain @c static_cast.
+ * a float proxy nor @c std::complex, deferring to a plain @c static_cast.
  */
 template <typename T, typename Q, typename = void>
 struct numerical_cast_helper
@@ -36,40 +53,60 @@ struct numerical_cast_helper
 };
 
 /**
- * @brief Conversion towards a scalar @ref float16_t.
+ * @brief Conversion towards a float proxy type.
  *
- * Makes the source-to-@c float step explicit before building the
- * @ref float16_t.
+ * Makes the source-to-@c float step explicit before building the proxy.
  */
-template <typename Q>
+template <typename T, typename Q>
 struct numerical_cast_helper<
-	float16_t, Q,
-	typename std::enable_if<!std::is_same<Q, float16_t>::value>::type
+	T, Q,
+	typename std::enable_if<
+		is_float_proxy<T>::value && !is_float_proxy<Q>::value
+	>::type
 >
 {
-	static float16_t cast(const Q &src) noexcept
+	static T cast(const Q &src) noexcept
 	{
-		return float16_t(static_cast<float>(src));
+		return T(static_cast<float>(src));
 	}
 };
 
 /**
- * @brief Conversion away from a scalar @ref float16_t.
+ * @brief Conversion away from a float proxy type.
  *
  * Makes the @c float-to-destination step explicit after reading the
- * @ref float16_t.
+ * proxy.
  */
-template <typename T>
+template <typename T, typename Q>
 struct numerical_cast_helper<
-	T, float16_t,
+	T, Q,
 	typename std::enable_if<
-		!std::is_same<T, float16_t>::value && !is_complex<T>::value
+		!is_float_proxy<T>::value && is_float_proxy<Q>::value &&
+		!is_complex<T>::value
 	>::type
 >
 {
-	static T cast(const float16_t &src) noexcept
+	static T cast(const Q &src) noexcept
 	{
 		return static_cast<T>(static_cast<float>(src));
+	}
+};
+
+/**
+ * @brief Conversion between two distinct float proxy types.
+ */
+template <typename T, typename Q>
+struct numerical_cast_helper<
+	T, Q,
+	typename std::enable_if<
+		is_float_proxy<T>::value && is_float_proxy<Q>::value &&
+		!std::is_same<T, Q>::value
+	>::type
+>
+{
+	static T cast(const Q &src) noexcept
+	{
+		return T(static_cast<float>(src));
 	}
 };
 

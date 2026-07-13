@@ -12,6 +12,7 @@
 #include <xmipp4/backends/cpu/device.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
 
+#include <backends/cpu/type_maps.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
@@ -191,6 +192,7 @@ std::shared_ptr<xmipp4::program> fill_program_builder::build(
 				fill_value
 			);
 		},
+		compute_type_map(),
 		data_type
 	);
 }

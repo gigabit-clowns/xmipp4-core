@@ -49,7 +49,7 @@ namespace cpu
  */
 template <typename Kernel, typename... Pointers>
 void run_elementwise_loop(
-	Kernel &&kernel,
+	const Kernel &kernel,
 	const joint_layout &layout,
 	Pointers... pointers
 );

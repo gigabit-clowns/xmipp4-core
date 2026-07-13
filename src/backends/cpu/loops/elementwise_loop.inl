@@ -24,7 +24,7 @@ template <
 >
 inline
 void invoke_elementwise_kernel(
-	Kernel &&kernel,
+	const Kernel &kernel,
 	const std::tuple<StrideTags...> &stride_tags,
 	std::index_sequence<Is...>,
 	LoopArgs... loop_args
@@ -32,7 +32,7 @@ void invoke_elementwise_kernel(
 {
 	// loop_args holds the per-vector pointers followed by the element count;
 	// the resolved stride tags are appended after them.
-	std::forward<Kernel>(kernel)(
+	kernel(
 		loop_args...,
 		std::get<Is>(stride_tags)...
 	);
@@ -43,16 +43,17 @@ void invoke_elementwise_kernel(
 template <typename Kernel, typename... Pointers>
 inline
 void run_elementwise_loop(
-	Kernel &&kernel,
+	const Kernel &kernel,
 	const joint_layout &layout,
 	Pointers... pointers
 )
 {
 	dispatch_inner_loop_strides(
-		[&] (auto stride_tags)
+		[&kernel, &layout, &pointers...] (auto stride_tags)
 		{
 			run_elementwise_outer_loop(
-				[&] (Pointers... vector_pointers, std::size_t count)
+				[&kernel, &stride_tags]
+				(Pointers... vector_pointers, std::size_t count)
 				{
 					detail::invoke_elementwise_kernel(
 						kernel,

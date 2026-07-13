@@ -14,12 +14,13 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
-#include <backends/cpu/loops/elementwise_outer_loop.hpp>
+#include <backends/cpu/loops/elementwise_loop.hpp>
 #include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
-#include <backends/cpu/loops/type_and_inner_stride_dispatch.hpp>
 #include <backends/cpu/loops/strided_pointer_iterator.hpp>
 
 #include <algorithm>
+#include <tuple>
+#include <type_traits>
 
 namespace xmipp4
 {
@@ -59,28 +60,26 @@ void fill(
 	);
 }
 
-template <typename T, typename Q, typename Stride>
+template <typename T, typename Q>
 typename std::enable_if<
-	std::is_constructible<T, Q>::value, 
+	std::is_constructible<T, Q>::value,
 	std::shared_ptr<program>
 >::type
 make_fill_program(
 	joint_layout layout,
-	std::tuple<Stride> inner_strides,
 	type_list<T> /*result_type*/,
 	const Q &fill_value
 )
 {
 	const auto value = numerical_cast<T>(fill_value);
-	const auto result_inner_stride = std::get<0>(inner_strides);
 	return make_functor_program(
-		[result_inner_stride, value, layout=std::move(layout)]
+		[value, layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
-			run_elementwise_outer_loop(
-				[result_inner_stride, &value] (T *result, std::size_t count)
+			run_elementwise_loop(
+				[&value] (T *result, std::size_t count, auto result_stride)
 				{
-					fill(result, count, result_inner_stride, value);
+					fill(result, count, result_stride, value);
 				},
 				layout,
 				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
@@ -91,14 +90,13 @@ make_fill_program(
 	);
 }
 
-template <typename T, typename Q, typename Stride>
+template <typename T, typename Q>
 typename std::enable_if<
-	!std::is_constructible<T, Q>::value, 
+	!std::is_constructible<T, Q>::value,
 	std::shared_ptr<program>
 >::type
 make_fill_program(
 	joint_layout /*layout*/,
-	std::tuple<Stride> /*inner_strides*/,
 	type_list<T> /*result_type*/,
 	const Q& /*fill_value*/
 )
@@ -168,25 +166,22 @@ std::shared_ptr<xmipp4::program> fill_program_builder::build(
 	layout_builder.add_operand(destination_descriptor.get_layout());
 	auto layout = layout_builder.build();
 
-	return dispatch_types_and_inner_strides<1>(
-		[&fill_value]
-		(xmipp4::joint_layout layout, auto types, auto inner_strides)
+	return dispatch_numerical_types(
+		[&layout, &fill_value] (auto result_type_tag)
 		{
+			using result_type = typename decltype(result_type_tag)::type;
 			return xmipp4::visit(
-				[&layout, types, &inner_strides] (auto fill_value)
+				[&layout] (auto value)
 				{
 					return make_fill_program(
 						std::move(layout),
-						inner_strides,
-						types,
-						fill_value
+						type_list<result_type>(),
+						value
 					);
-
 				},
 				fill_value
 			);
 		},
-		std::move(layout),
 		data_type
 	);
 }

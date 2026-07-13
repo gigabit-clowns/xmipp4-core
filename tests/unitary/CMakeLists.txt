@@ -46,7 +46,6 @@ if(MSVC)
 		xmipp4-core-unitary-tests
 		PRIVATE
 			/Zc:preprocessor # HACK: Required for TROMPELOEIL_COUNT()
-			/bigobj # Required for test_type_and_inner_stride_dispatch.cpp
 	)
 endif()
 

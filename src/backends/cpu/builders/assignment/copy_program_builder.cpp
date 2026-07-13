@@ -15,10 +15,11 @@
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_outer_loop.hpp>
 #include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
-#include <backends/cpu/loops/type_and_inner_stride_dispatch.hpp>
 #include <backends/cpu/loops/strided_pointer_iterator.hpp>
 
 #include <algorithm>
+#include <tuple>
+#include <type_traits>
 
 namespace xmipp4
 {
@@ -84,37 +85,48 @@ void copy(
 	);
 }
 
-template <
-	typename T, 
-	typename Q, 
-	typename DstStride, 
-	typename SrcStride
->
+template <typename T, typename Q>
 typename std::enable_if<
-	std::is_constructible<T, Q>::value, 
+	std::is_constructible<T, Q>::value,
 	std::shared_ptr<program>
 >::type
 make_copy_program(
 	joint_layout layout,
-	std::tuple<DstStride, SrcStride> inner_strides,
 	type_list<T, Q> /*types*/
 )
 {
 	return make_functor_program(
-		[inner_strides, layout=std::move(layout)]
+		[layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
-			const auto dst_inner_stride = std::get<0>(inner_strides);
-			const auto src_inner_stride = std::get<1>(inner_strides);
-			run_elementwise_outer_loop(
-				[dst_inner_stride, src_inner_stride] 
-				(T *dst, const Q* src, const std::size_t count)
+			dispatch_inner_loop_strides(
+				[&outputs, &inputs, &layout] (auto inner_strides)
 				{
-					copy(dst, src, count, dst_inner_stride, src_inner_stride);
+					const auto dst_inner_stride = std::get<0>(inner_strides);
+					const auto src_inner_stride = std::get<1>(inner_strides);
+					run_elementwise_outer_loop(
+						[dst_inner_stride, src_inner_stride]
+						(T *dst, const Q* src, const std::size_t count)
+						{
+							copy(
+								dst, 
+								src, 
+								count,
+								dst_inner_stride, 
+								src_inner_stride
+							);
+						},
+						layout,
+						std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(
+							outputs
+						),
+						std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(
+							inputs
+						)
+					);
 				},
 				layout,
-				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
-				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)
+				std::integral_constant<std::size_t, 2>()
 			);
 		},
 		type_list<T>(),
@@ -122,19 +134,13 @@ make_copy_program(
 	);
 }
 
-template <
-	typename T, 
-	typename Q, 
-	typename DstStride, 
-	typename SrcStride
->
+template <typename T, typename Q>
 typename std::enable_if<
-	!std::is_constructible<T, Q>::value, 
+	!std::is_constructible<T, Q>::value,
 	std::shared_ptr<program>
 >::type
 make_copy_program(
 	joint_layout /*layout*/,
-	std::tuple<DstStride, SrcStride> /*inner_strides*/,
 	type_list<T, Q> /*types*/
 )
 {
@@ -205,16 +211,17 @@ std::shared_ptr<xmipp4::program> copy_program_builder::build(
 	layout_builder.add_operand(src_descriptor.get_layout());
 	auto layout = layout_builder.build();
 
-	return dispatch_types_and_inner_strides<2>(
-		[] (xmipp4::joint_layout layout, auto types, auto inner_strides)
+	return dispatch_numerical_types(
+		[&layout] (auto dst_type_tag, auto src_type_tag)
 		{
+			using dst_type = typename decltype(dst_type_tag)::type;
+			using src_type = typename decltype(src_type_tag)::type;
 			return make_copy_program(
 				std::move(layout),
-				inner_strides,
-				types
+				type_list<dst_type, src_type>()
 			);
 		},
-		std::move(layout),
+		native_type_map(),
 		dst_data_type,
 		src_data_type
 	);

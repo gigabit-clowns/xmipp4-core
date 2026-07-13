@@ -14,7 +14,7 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
-#include <backends/cpu/loops/elementwise_outer_loop.hpp>
+#include <backends/cpu/loops/elementwise_loop.hpp>
 #include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
 #include <backends/cpu/loops/strided_pointer_iterator.hpp>
 
@@ -76,24 +76,13 @@ make_fill_program(
 		[value, layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
-			dispatch_inner_loop_strides(
-				[&outputs, &layout, &value] (auto inner_strides)
+			run_elementwise_loop(
+				[&value] (T *result, std::size_t count, auto result_stride)
 				{
-					const auto result_inner_stride = std::get<0>(inner_strides);
-					run_elementwise_outer_loop(
-						[result_inner_stride, &value]
-						(T *result, std::size_t count)
-						{
-							fill(result, count, result_inner_stride, value);
-						},
-						layout,
-						std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(
-							outputs
-						)
-					);
+					fill(result, count, result_stride, value);
 				},
 				layout,
-				std::integral_constant<std::size_t, 1>()
+				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);
 		},
 		type_list<T>(),

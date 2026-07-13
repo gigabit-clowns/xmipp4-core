@@ -13,7 +13,7 @@
 #include <xmipp4/backends/cpu/program.hpp>
 
 #include <backends/cpu/hardware/functor_program.hpp>
-#include <backends/cpu/loops/elementwise_outer_loop.hpp>
+#include <backends/cpu/loops/elementwise_loop.hpp>
 #include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
 #include <backends/cpu/loops/strided_pointer_iterator.hpp>
 
@@ -99,34 +99,15 @@ make_copy_program(
 		[layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
-			dispatch_inner_loop_strides(
-				[&outputs, &inputs, &layout] (auto inner_strides)
+			run_elementwise_loop(
+				[] (T *dst, const Q *src, std::size_t count,
+					auto dst_stride, auto src_stride)
 				{
-					const auto dst_inner_stride = std::get<0>(inner_strides);
-					const auto src_inner_stride = std::get<1>(inner_strides);
-					run_elementwise_outer_loop(
-						[dst_inner_stride, src_inner_stride]
-						(T *dst, const Q* src, const std::size_t count)
-						{
-							copy(
-								dst, 
-								src, 
-								count,
-								dst_inner_stride, 
-								src_inner_stride
-							);
-						},
-						layout,
-						std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(
-							outputs
-						),
-						std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(
-							inputs
-						)
-					);
+					copy(dst, src, count, dst_stride, src_stride);
 				},
 				layout,
-				std::integral_constant<std::size_t, 2>()
+				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
+				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)
 			);
 		},
 		type_list<T>(),

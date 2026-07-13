@@ -182,7 +182,6 @@ std::shared_ptr<xmipp4::program> fill_program_builder::build(
 				fill_value
 			);
 		},
-		native_type_map(),
 		data_type
 	);
 }

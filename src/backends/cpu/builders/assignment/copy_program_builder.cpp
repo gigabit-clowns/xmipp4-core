@@ -202,7 +202,6 @@ std::shared_ptr<xmipp4::program> copy_program_builder::build(
 				type_list<dst_type, src_type>()
 			);
 		},
-		native_type_map(),
 		dst_data_type,
 		src_data_type
 	);

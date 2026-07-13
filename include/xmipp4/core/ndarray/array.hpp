@@ -35,6 +35,18 @@ public:
 	XMIPP4_CORE_API array();
 
 	/**
+	 * @brief Construct an array view from an implementation.
+	 * 
+	 * @param implementation The implementation to be owned by this view.
+	 * 
+	 * @note This function is not part of the public API and shall only be
+	 * used internally or for testing purposes.
+	 */
+	explicit array(
+		std::shared_ptr<const array_implementation> implementation
+	) noexcept;
+
+	/**
 	 * @brief Construct an array from its components.
 	 * 
 	 * @param storage Buffer used to store the data contained in the array.
@@ -135,10 +147,6 @@ public:
 
 private:
 	std::shared_ptr<const array_implementation> m_implementation;
-
-	explicit array(
-		std::shared_ptr<const array_implementation> implementation
-	) noexcept;
 };
 
 } // namespace xmipp4

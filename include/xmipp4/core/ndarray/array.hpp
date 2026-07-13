@@ -122,6 +122,17 @@ public:
 	XMIPP4_CORE_API
 	const_array share_const() const noexcept;
 
+	/**
+	 * @brief Get a pointer to the implementation.
+	 *
+	 * @return const array_implementation* Pointer to the implementation.
+	 * nullptr if the array is not initialized.
+	 *
+	 * @note This method is meant to be used internally and for testing
+	 * purposes, as the array_implementation is not publicly available.
+	 */
+	const array_implementation* get_implementation() const noexcept;
+
 private:
 	std::shared_ptr<const array_implementation> m_implementation;
 

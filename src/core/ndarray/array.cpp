@@ -88,4 +88,9 @@ const_array array::share_const() const noexcept
 	return const_array(m_implementation);
 }
 
+const array_implementation* array::get_implementation() const noexcept
+{
+	return m_implementation.get();
+}
+
 } // namespace xmipp4

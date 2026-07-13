@@ -10,18 +10,28 @@
 namespace xmipp4
 {
 
+const_array_ref::const_array_ref() noexcept
+	: const_array_ref(nullptr)
+{
+}
+
+const_array_ref::const_array_ref(const array_implementation *implementation) noexcept
+	: m_implementation(implementation)
+{
+}
+
 const_array_ref::const_array_ref(const array &other) noexcept
-	: m_implementation(other.get_implementation())
+	: const_array_ref(other.get_implementation())
 {
 }
 
 const_array_ref::const_array_ref(const const_array &other) noexcept
-	: m_implementation(other.get_implementation())
+	: const_array_ref(other.get_implementation())
 {
 }
 
 const_array_ref::const_array_ref(array_ref other) noexcept
-	: m_implementation(other.get_implementation())
+	: const_array_ref(other.get_implementation())
 {
 }
 

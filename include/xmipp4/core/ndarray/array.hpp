@@ -35,9 +35,9 @@ public:
 	XMIPP4_CORE_API array();
 
 	/**
-	 * @brief Construct an array view from an implementation.
+	 * @brief Construct an array from a shared pointer to the implementation.
 	 * 
-	 * @param implementation The implementation to be owned by this view.
+	 * @param implementation The implementation to be owned by this.
 	 * 
 	 * @note This function is not part of the public API and shall only be
 	 * used internally or for testing purposes.

@@ -37,7 +37,18 @@ public:
 	/**
 	 * @brief Construct an uninitialized const_array_ref.
 	 */
-	const_array_ref() noexcept = default;
+	XMIPP4_CORE_API
+	const_array_ref() noexcept;
+
+	/**
+	 * @brief Construct a const_array_ref from an implementation pointer.
+	 * 
+	 * @param implementation The implementation referenced by this.
+	 * 
+	 * @note This function is not part of the public API and shall only be
+	 * used internally or for testing purposes.
+	 */
+	const_array_ref(const array_implementation *implementation) noexcept;
 
 	/**
 	 * @brief Construct a const_array_ref referencing an array.
@@ -109,7 +120,7 @@ public:
 	const array_implementation* get_implementation() const noexcept;
 
 private:
-	const array_implementation *m_implementation = nullptr;
+	const array_implementation *m_implementation;
 };
 
 } // namespace xmipp4

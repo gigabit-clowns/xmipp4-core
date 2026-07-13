@@ -9,8 +9,18 @@
 namespace xmipp4
 {
 
+array_ref::array_ref() noexcept
+	: array_ref(nullptr)
+{
+}
+
+array_ref::array_ref(const array_implementation *implementation) noexcept
+	: m_implementation(implementation)
+{
+}
+
 array_ref::array_ref(array &other) noexcept
-	: m_implementation(other.get_implementation())
+	: array_ref(other.get_implementation())
 {
 }
 

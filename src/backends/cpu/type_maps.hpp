@@ -20,10 +20,6 @@ namespace cpu
  * support, so the CPU backend computes half precision with
  * half_float::half. The remaining numerical types are computed with
  * their native representations.
- *
- * SIMD fast paths (e.g. Google Highway kernels on contiguous operands)
- * do not dispatch through these maps: they adapt bit-compatible element
- * types (such as hwy::float16_t) at their call boundary instead.
  */
 
 using half_float16_entry =

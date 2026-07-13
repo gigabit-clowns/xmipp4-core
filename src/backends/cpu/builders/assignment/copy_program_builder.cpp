@@ -29,61 +29,57 @@ namespace cpu
 namespace
 {
 
-template <
-	typename T, 
-	typename Q, 
-	typename DstStride, 
-	typename SrcStride
->
-void copy(
-	T* dst,
-	const Q* src,
-	std::size_t count,
-	DstStride dst_stride, 
-	SrcStride src_stride
-)
+template <typename T, typename Q>
+struct copy_kernel
 {
-	auto dst_ite = make_strided_pointer_iterator(dst, dst_stride);
-	auto src_ite = make_strided_pointer_iterator(src, src_stride);
-	for (std::size_t i = 0; i < count; ++i)
+	template <typename DstStride, typename SrcStride>
+	void operator()(
+		T* dst,
+		const Q* src,
+		std::size_t count,
+		DstStride dst_stride, 
+		SrcStride src_stride
+	) const
 	{
-		*dst_ite = numerical_cast<T>(*src_ite);
-		++dst_ite;
-		++src_ite;
+		auto dst_ite = make_strided_pointer_iterator(dst, dst_stride);
+		auto src_ite = make_strided_pointer_iterator(src, src_stride);
+		for (std::size_t i = 0; i < count; ++i)
+		{
+			*dst_ite = numerical_cast<T>(*src_ite);
+			++dst_ite;
+			++src_ite;
+		}
 	}
-}
 
-template<typename T>
-void copy(
-	T* dst,
-	const T* src,
-	std::size_t count,
-	contiguous_stride_tag /*dst_stride*/, 
-	contiguous_stride_tag /*src_stride*/
-)
-{
-	std::copy_n(
-		src,
-		count,
-		dst
-	);
-}
+	void operator()(
+		T* dst,
+		const T* src,
+		std::size_t count,
+		contiguous_stride_tag /*dst_stride*/, 
+		contiguous_stride_tag /*src_stride*/
+	) const
+	{
+		for (std::size_t i = 0; i < count; ++i)
+		{
+			dst[i] = numerical_cast<T>(src[i]);
+		}
+	}
 
-template<typename T, typename Q>
-void copy(
-	T* dst,
-	const Q* src,
-	std::size_t count,
-	contiguous_stride_tag /*dst_stride*/, 
-	broadcasting_stride_tag /*src_stride*/
-)
-{
-	std::fill_n(
-		dst,
-		count,
-		numerical_cast<T>(*src)
-	);
-}
+	void operator()(
+		T* dst,
+		const Q* src,
+		std::size_t count,
+		contiguous_stride_tag /*dst_stride*/, 
+		broadcasting_stride_tag /*src_stride*/
+	) const
+	{
+		std::fill_n(
+			dst,
+			count,
+			numerical_cast<T>(*src)
+		);
+	}
+};
 
 template <typename T, typename Q>
 typename std::enable_if<
@@ -100,11 +96,7 @@ make_copy_program(
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
 			run_elementwise_loop(
-				[] (T *dst, const Q *src, std::size_t count,
-					auto dst_stride, auto src_stride)
-				{
-					copy(dst, src, count, dst_stride, src_stride);
-				},
+				copy_kernel<T, Q>(),
 				layout,
 				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
 				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)

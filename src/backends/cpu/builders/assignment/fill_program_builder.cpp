@@ -30,35 +30,47 @@ namespace cpu
 namespace
 {
 
-template<typename T, typename Stride>
-void fill(
-	T* destination,
-	std::size_t count,
-	Stride destination_stride, 
-	const T &value
-)
+template <typename T>
+class fill_kernel
 {
-	std::fill_n(
-		make_strided_pointer_iterator(destination, destination_stride),
-		count,
-		value
-	);
-}
+public:
+	fill_kernel(T fill_value)
+		: m_fill_value(fill_value)
+	{
+	}
 
-template<typename T>
-void fill(
-	T* destination,
-	std::size_t count,
-	contiguous_stride_tag /*destination_stride*/, 
-	const T &value
-)
-{
-	std::fill_n(
-		destination,
-		count,
-		value
-	);
-}
+	template<typename Stride>
+	void operator()(
+		T* destination,
+		std::size_t count,
+		Stride destination_stride
+	) const
+	{
+		std::fill_n(
+			make_strided_pointer_iterator(destination, destination_stride),
+			count,
+			m_fill_value
+		);
+	}
+
+	void operator()(
+		T* destination,
+		std::size_t count,
+		contiguous_stride_tag /*destination_stride*/
+	) const
+	{
+		std::fill_n(
+			destination,
+			count,
+			m_fill_value
+		);
+	}
+
+private:
+	T m_fill_value;
+};
+
+
 
 template <typename T, typename Q>
 typename std::enable_if<
@@ -73,14 +85,11 @@ make_fill_program(
 {
 	const auto value = numerical_cast<T>(fill_value);
 	return make_functor_program(
-		[value, layout=std::move(layout)]
+		[kernel = fill_kernel<T>(value), layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_loop(
-				[&value] (T *result, std::size_t count, auto result_stride)
-				{
-					fill(result, count, result_stride, value);
-				},
+				kernel,
 				layout,
 				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);

@@ -4,6 +4,8 @@
 
 #include <half.hpp>
 
+#include <cstring>
+
 namespace xmipp4
 {
 
@@ -16,7 +18,11 @@ float16_t convert_to_float16(T value)
 	xmipp4::float16_t result;
 	const half_float::half h(value);
 	static_assert(sizeof(h) == sizeof(result), "Expected sizes to match");
-	std::memcpy(&result, &h, sizeof(h));
+	std::memcpy(
+		static_cast<void*>(&result),
+		static_cast<const void*>(&h),
+		sizeof(h) 
+	);
 	return result;
 }
 
@@ -25,7 +31,11 @@ T convert_from_float16(float16_t value)
 {
 	half_float::half h;
 	static_assert(sizeof(h) == sizeof(value), "Expected sizes to match");
-	std::memcpy(&h, &value, sizeof(h));
+	std::memcpy(
+		static_cast<void*>(&h),
+		static_cast<const void*>(&value),
+		sizeof(h) 
+	);
 	return static_cast<T>(h);
 }
 

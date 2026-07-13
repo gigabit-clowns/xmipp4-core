@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 inline DWORD access_flags_to_open_access(
 	access_flags access,
@@ -242,5 +240,4 @@ inline void memory_mapped_file_close(void* data, std::size_t) noexcept
 	UnmapViewOfFile(data);
 }
 
-} // namespace system
 } // namespace xmipp4

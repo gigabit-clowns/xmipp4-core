@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 const host_memory_resource host_memory_resource::m_instance;
 
@@ -30,5 +28,4 @@ const host_memory_resource& host_memory_resource::get() noexcept
 	return m_instance;
 }
 
-} // namespace hardware
 } // namespace xmipp4

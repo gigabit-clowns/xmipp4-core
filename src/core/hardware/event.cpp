@@ -4,12 +4,9 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 event::event() noexcept = default;
 event::~event() = default;
 
-} // namespace hardware
 } // namespace xmipp4
 

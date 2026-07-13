@@ -12,8 +12,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Specification of work to be executed on a @ref command_queue.
@@ -149,5 +147,4 @@ private:
 	span<const std::shared_ptr<buffer>> m_scratch;
 };
 
-} // namespace hardware
 } // namespace xmipp4

@@ -12,8 +12,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 enum class byte : uint8_t {};
 
@@ -51,13 +49,12 @@ XMIPP4_CONSTEXPR void to_hex(byte b, C &high, C &low) noexcept;
 template<typename T>
 std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const byte& b);
 
-} // namespace memory
 } // namespace xmipp4
 
 template <>
-struct std::hash<xmipp4::memory::byte>
+struct std::hash<xmipp4::byte>
 {
-	XMIPP4_CONSTEXPR size_t operator()(xmipp4::memory::byte b) const noexcept;
+	XMIPP4_CONSTEXPR size_t operator()(xmipp4::byte b) const noexcept;
 };
 
 #include "byte.inl"

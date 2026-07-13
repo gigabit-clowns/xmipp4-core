@@ -11,18 +11,16 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
-class device_instance;
+class device_session;
 class command_queue;
 class memory_allocator;
 
 /**
- * @brief Scoped, configurable view over a @ref device_instance.
+ * @brief Scoped, configurable view over a @ref device_session.
  *
  * A @c device_context layers the per-use, configurable state on top of the
- * immutable @ref device_instance: the @em active @ref command_queue that work
+ * immutable @ref device_session: the @em active @ref command_queue that work
  * is submitted to, and the @ref memory_allocator selected for each
  * @ref memory_resource_affinity. 
  *
@@ -31,27 +29,27 @@ class memory_allocator;
  * they return a modified copy. This makes a context safe to share (including
  * across threads) while still allowing callers to derive scoped variants, e.g.
  * to bind a special-purpose allocator for a single operation without disturbing
- * any other user of the original context. Copies are cheap: the instance, the
+ * any other user of the original context. Copies are cheap: the session, the
  * queue and the allocators are all shared pointers.
  *
  * @par Allocator slots
- * For a context wrapping an instance, every affinity slot always holds the
+ * For a context wrapping an session, every affinity slot always holds the
  * allocator that @ref get_allocator would return: at construction the slots are
- * seeded from the @ref device_instance allocators, and @ref with_allocator
+ * seeded from the @ref device_session allocators, and @ref with_allocator
  * either installs an override or, when given a null allocator, reverts the slot
- * back to the instance allocator.
+ * back to the session allocator.
  *
  * @par Empty state
  * A default-constructed or moved-from context is @em empty: it holds no
- * instance, no queue and no allocators. Querying it is well defined; the
+ * session, no queue and no allocators. Querying it is well defined; the
  * accessors simply return null shared pointers. A populated context (one
- * constructed from a non-null instance) never returns null from any accessor.
+ * constructed from a non-null session) never returns null from any accessor.
  */
 class device_context
 {
 public:
 	/**
-	 * @brief Construct an empty context holding no instance.
+	 * @brief Construct an empty context holding no session.
 	 *
 	 * Every accessor of the resulting context returns null until it is
 	 * replaced by assignment.
@@ -59,18 +57,18 @@ public:
 	device_context() noexcept = default;
 
 	/**
-	 * @brief Construct a context for @p instance.
+	 * @brief Construct a context for @p session.
 	 *
 	 * The active queue is set to the default queue of the wrapped device and
-	 * every allocator slot is seeded with the corresponding @p instance
+	 * every allocator slot is seeded with the corresponding @p session
 	 * allocator.
 	 *
-	 * @param instance Device instance to wrap. Must not be null.
+	 * @param session Device session to wrap. Must not be null.
 	 *
-	 * @throws std::invalid_argument if @p instance is null.
+	 * @throws std::invalid_argument if @p session is null.
 	 */
 	XMIPP4_CORE_API
-	explicit device_context(std::shared_ptr<const device_instance> instance);
+	explicit device_context(std::shared_ptr<const device_session> session);
 
 	device_context(const device_context &other) = default;
 	device_context(device_context &&other) noexcept = default;
@@ -80,14 +78,14 @@ public:
 	device_context& operator=(device_context &&other) noexcept = default;
 
 	/**
-	 * @brief Retrieve the wrapped device instance.
+	 * @brief Retrieve the wrapped device session.
 	 *
-	 * @return A reference to the wrapped instance, or to a null pointer if
+	 * @return A reference to the wrapped session, or to a null pointer if
 	 * this context is empty.
 	 */
 	XMIPP4_CORE_API
-	const std::shared_ptr<const device_instance>&
-	get_device_instance() const noexcept;
+	const std::shared_ptr<const device_session>&
+	get_device_session() const noexcept;
 
 	/**
 	 * @brief Retrieve the active command queue.
@@ -104,7 +102,7 @@ public:
 	 * @brief Retrieve the allocator for the given affinity.
 	 *
 	 * Returns the override installed through @ref with_allocator, or the
-	 * @ref device_instance allocator when no override is in effect.
+	 * @ref device_session allocator when no override is in effect.
 	 *
 	 * @param affinity The desired memory_resource_affinity (host or device).
 	 * @return A reference to the allocator for @p affinity, or to a null
@@ -119,7 +117,7 @@ public:
 	 *
 	 * @param queue The active queue of the returned context. The provided queue
 	 * must have been provided by the device held by this context. Passing null
-	 * uses device_instance's default queue on the returned device_context.
+	 * uses device_session's default queue on the returned device_context.
 	 * @return A copy of this context with @p queue as its active queue.
 	 */
 	XMIPP4_CORE_API
@@ -129,7 +127,7 @@ public:
 	 * @brief Derive a context with a different allocator for an affinity.
 	 *
 	 * Installs @p allocator as the allocator for @p affinity. Passing a null
-	 * @p allocator reverts the slot to the @ref device_instance allocator for
+	 * @p allocator reverts the slot to the @ref device_session allocator for
 	 * @p affinity (or to null when this context is empty).
 	 *
 	 * The override must produce buffers reachable by the role implied by the
@@ -139,7 +137,7 @@ public:
 	 *
 	 * @param affinity The affinity slot to update.
 	 * @param allocator The override to install, or null to revert to the
-	 * instance allocator. Must satisfy the allocator requirements for the
+	 * session allocator. Must satisfy the allocator requirements for the
 	 * slot where it is being installed.
 	 * @return A copy of this context with the updated allocator slot.
 	 */
@@ -155,10 +153,9 @@ private:
 		static_cast<std::size_t>(memory_resource_affinity::count)
 	>;
 
-	std::shared_ptr<const device_instance> m_instance;
+	std::shared_ptr<const device_session> m_session;
 	std::shared_ptr<command_queue> m_active_queue;
 	allocator_array_type m_allocators;
 };
 
-} // namespace hardware
 } // namespace xmipp4

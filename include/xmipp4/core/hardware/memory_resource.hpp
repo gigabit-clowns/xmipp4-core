@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class memory_allocator;
 class device;
@@ -66,5 +64,4 @@ public:
 XMIPP4_CORE_API
 const memory_resource& get_host_memory_resource() noexcept;
 
-} // namespace hardware
 } // namespace xmipp4

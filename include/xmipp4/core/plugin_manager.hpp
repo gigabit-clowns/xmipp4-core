@@ -72,7 +72,6 @@ private:
 };
 
 
-
 /**
  * @brief Get the default plugin directory.
  * 

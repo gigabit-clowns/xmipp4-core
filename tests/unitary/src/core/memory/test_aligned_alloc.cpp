@@ -16,9 +16,9 @@ TEST_CASE( "aligned_alloc should produce aligned allocations", "[aligned_alloc]"
 
 	for (std::size_t i = 0; i < repetitions; ++i)
 	{
-		auto *data = static_cast<char*>(memory::aligned_alloc(size, alignment));
+		auto *data = static_cast<char*>(xmipp4::aligned_alloc(size, alignment));
 		REQUIRE( data != nullptr ); // Assuming no OOM situation. 
-		REQUIRE( memory::get_alignment(data) >= alignment );
+		REQUIRE( get_alignment(data) >= alignment );
 
 		// Test that it can be written (no segfault)
 		for(std::size_t j = 0; j < size; ++j)
@@ -26,7 +26,7 @@ TEST_CASE( "aligned_alloc should produce aligned allocations", "[aligned_alloc]"
 			data[j] = 0xAA;
 		}
 
-		memory::aligned_free(data);
+		aligned_free(data);
 	}
 
 }

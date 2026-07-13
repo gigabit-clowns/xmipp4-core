@@ -70,7 +70,7 @@ public:
 	void load(const std::string& path);
 
 private:
-	system::dynamic_library m_dynamic_library;
+	dynamic_library m_dynamic_library;
 	const plugin* m_plugin;
 };
 

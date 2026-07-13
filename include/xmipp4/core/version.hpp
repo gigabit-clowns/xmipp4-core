@@ -46,11 +46,11 @@ private:
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t major_offset = minor_offset + minor_bits;
 
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t patch_mask = 
-		binary::bit_range_mask<std::uint32_t>(patch_offset, patch_offset+patch_bits);
+		bit_range_mask<std::uint32_t>(patch_offset, patch_offset+patch_bits);
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t minor_mask = 
-		binary::bit_range_mask<std::uint32_t>(minor_offset, minor_offset+minor_bits);
+		bit_range_mask<std::uint32_t>(minor_offset, minor_offset+minor_bits);
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::uint32_t major_mask = 
-		binary::bit_range_mask<std::uint32_t>(major_offset, major_offset+major_bits);
+		bit_range_mask<std::uint32_t>(major_offset, major_offset+major_bits);
 
 	std::uint32_t m_data;
 };

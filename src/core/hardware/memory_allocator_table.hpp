@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device;
 class memory_resource;
@@ -91,5 +89,4 @@ private:
 	allocator_array_type m_allocators;
 };
 
-} // namespace hardware
 } // namespace xmipp4

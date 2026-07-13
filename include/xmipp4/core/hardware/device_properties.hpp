@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Description of the static characteristics of a physical device
@@ -161,5 +159,4 @@ private:
 	const implementation& get_implementation() const noexcept;
 };
 
-} // namespace hardware
 } // namespace xmipp4

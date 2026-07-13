@@ -5,7 +5,7 @@
 
 #include <xmipp4/core/hardware/program_scratch_requirement.hpp>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 TEST_CASE(
 	"program_scratch_requirement constructor should store size, alignment, "

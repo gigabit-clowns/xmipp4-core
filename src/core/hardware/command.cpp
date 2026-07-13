@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 command::command() noexcept = default;
 
@@ -65,5 +63,4 @@ span<const std::shared_ptr<buffer>> command::get_scratch() const noexcept
 	return m_scratch;
 }
 
-} // namespace hardware
 } // namespace xmipp4

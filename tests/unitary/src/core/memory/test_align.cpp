@@ -24,8 +24,8 @@ TEST_CASE( "get_alignment returns correct alignment for address and pointer", "[
 
 	void* pointer = reinterpret_cast<void*>(address);
 
-	REQUIRE( memory::get_alignment(address) == expected_alignment );
-	REQUIRE( memory::get_alignment(pointer) == expected_alignment );
+	REQUIRE( get_alignment(address) == expected_alignment );
+	REQUIRE( get_alignment(pointer) == expected_alignment );
 }
 
 TEST_CASE( "is_aligned returns true only if the pointer is aligned to the requested boundary", "[align]" ) 
@@ -48,8 +48,8 @@ TEST_CASE( "is_aligned returns true only if the pointer is aligned to the reques
 
 	void* pointer = reinterpret_cast<void*>(address);
 
-	REQUIRE( memory::is_aligned(address, alignment) == expected );
-	REQUIRE( memory::is_aligned(pointer, alignment) == expected );
+	REQUIRE( is_aligned(address, alignment) == expected );
+	REQUIRE( is_aligned(pointer, alignment) == expected );
 }
 
 TEST_CASE( "align_floor aligns address and pointer down to nearest boundary", "[align]" ) 
@@ -72,8 +72,8 @@ TEST_CASE( "align_floor aligns address and pointer down to nearest boundary", "[
 
 	void* pointer = reinterpret_cast<void*>(address);
 
-	REQUIRE( memory::align_floor(address, alignment) == expected );
-	REQUIRE( memory::align_floor(pointer, alignment) == reinterpret_cast<void*>(expected) );
+	REQUIRE( align_floor(address, alignment) == expected );
+	REQUIRE( align_floor(pointer, alignment) == reinterpret_cast<void*>(expected) );
 }
 
 TEST_CASE( "align_ceil aligns address and pointer up to nearest boundary", "[align]" ) 
@@ -96,8 +96,8 @@ TEST_CASE( "align_ceil aligns address and pointer up to nearest boundary", "[ali
 
 	void* pointer = reinterpret_cast<void*>(address);
 
-	REQUIRE( memory::align_ceil(address, alignment) == expected );
-	REQUIRE( memory::align_ceil(pointer, alignment) == reinterpret_cast<void*>(expected) );
+	REQUIRE( align_ceil(address, alignment) == expected );
+	REQUIRE( align_ceil(pointer, alignment) == reinterpret_cast<void*>(expected) );
 }
 
 TEST_CASE( "offset_bytes computes pointer offset correctly for positive and negative values", "[align]" ) 
@@ -117,6 +117,6 @@ TEST_CASE( "offset_bytes computes pointer offset correctly for positive and nega
 	);
 
 	std::uint32_t* data = reinterpret_cast<std::uint32_t*>(base);
-	std::uint32_t* result = memory::offset_bytes(data, offset*sizeof(std::uint32_t));
+	std::uint32_t* result = offset_bytes(data, offset*sizeof(std::uint32_t));
 	REQUIRE( result == data + offset );
 }

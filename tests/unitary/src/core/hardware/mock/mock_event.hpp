@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_event final
 	: public event
@@ -24,5 +22,4 @@ public:
 	MAKE_CONST_MOCK0(is_signaled, bool(), override);
 };
 
-} // namespace hardware
 } // namespace xmipp4

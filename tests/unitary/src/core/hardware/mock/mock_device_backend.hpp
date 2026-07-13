@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_device_backend final
 	: public device_backend
@@ -22,5 +20,4 @@ public:
 	MAKE_CONST_MOCK1(create_device, std::shared_ptr<device> (std::size_t), override);
 };
 
-} // namespace hardware
 } // namespace xmipp4

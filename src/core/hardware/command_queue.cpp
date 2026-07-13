@@ -4,11 +4,8 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 command_queue::command_queue() noexcept = default;
 command_queue::~command_queue() = default;
 
-} // namespace hardware
 } // namespace xmipp4

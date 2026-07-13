@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class command_queue;
 class event;
@@ -91,5 +89,4 @@ public:
 	std::shared_ptr<event> create_event(event_usage_flags usage) const = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

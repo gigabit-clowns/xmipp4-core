@@ -22,8 +22,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 std::string get_hostname()
 {
@@ -125,5 +123,4 @@ std::size_t get_page_size()
 	#endif
 }
 
-} // namespace system
 } // namespace xmipp4

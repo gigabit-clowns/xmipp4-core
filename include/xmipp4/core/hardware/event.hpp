@@ -7,8 +7,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Abstract synchronization primitive between queues and the host.
@@ -85,5 +83,4 @@ public:
 	virtual bool is_signaled() const = 0;
 };
 
-} // namespace hardware
 } // namespace xmipp4

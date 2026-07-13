@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/hardware/program.hpp>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 namespace
 {

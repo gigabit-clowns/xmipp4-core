@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 inline void* dynamic_library_open(const char* filename)
 {
@@ -63,5 +61,4 @@ inline std::string dynamic_library_symbol_filename_lookup(const void* symbol)
 	return result;
 }
 
-} // namespace system
 } // namespace xmipp4

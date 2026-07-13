@@ -13,14 +13,12 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class device;
-class device_instance;
+class device_session;
 
 /**
- * @brief Centralize multiple @ref device_backend instances and route
+ * @brief Centralize multiple @ref device_backend sessions and route
  * device queries to the appropriate one.
  *
  * The manager owns the registered backends and exposes a unified view of
@@ -101,25 +99,25 @@ public:
 	) const;
 
 	/**
-	 * @brief Create a device instance.
+	 * @brief Create a device session.
 	 *
 	 * Resolves the backend named by @p index, delegates the actual device
 	 * instantiation to @ref device_backend::create_device and queries its
-	 * @ref device_properties, then bundles both into a @ref device_instance
+	 * @ref device_properties, then bundles both into a @ref device_session
 	 * (which also selects the default allocators for the device).
 	 *
 	 * Instances are not cached: each call returns a freshly created
-	 * @ref device_instance.
+	 * @ref device_session.
 	 *
 	 * @param[in] index Index identifying the target device.
-	 * @return std::shared_ptr<device_instance> A non-null instance.
+	 * @return std::shared_ptr<device_session> A non-null session.
 	 * @throws std::invalid_argument If no backend is registered under the
 	 * name carried by @p index, or if the backend does not recognize the
 	 * device id. The backend may additionally throw if the device id is
 	 * invalid.
 	 */
-	std::shared_ptr<device_instance>
-	create_device_instance(const device_index &index) const;
+	std::shared_ptr<device_session>
+	create_device_session(const device_index &index) const;
 
 private:
 	class implementation;
@@ -129,5 +127,4 @@ private:
 	void create_implementation_if_null();
 }; 
 
-} // namespace hardware
 } // namespace xmipp4

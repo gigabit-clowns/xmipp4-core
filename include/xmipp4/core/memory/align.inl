@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 template <typename T>
 XMIPP4_NODISCARD inline 
@@ -19,7 +17,7 @@ std::size_t get_alignment(T* address) noexcept
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
 std::size_t get_alignment(std::uintptr_t address) noexcept
 {
-	return binary::mask_trailing_zeros(address) + 1;
+	return mask_trailing_zeros(address) + 1;
 }
 
 template <typename T>
@@ -89,5 +87,4 @@ T* offset_bytes(T* address, std::ptrdiff_t count)
 	return reinterpret_cast<T*>(value);
 }
 
-} // namespace memory
 } // namespace xmipp4

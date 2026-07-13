@@ -11,8 +11,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 /**
  * @brief Location of a device as a (backend, id) tuple.
@@ -91,7 +89,6 @@ private:
 };
 
 
-
 XMIPP4_CORE_API
 bool operator==(const device_index &lhs, const device_index &rhs) noexcept;
 XMIPP4_CORE_API
@@ -123,5 +120,4 @@ std::ostream& operator<<(std::ostream &os, const device_index &index);
 XMIPP4_CORE_API
 bool parse_device_index(std::string_view text, device_index &result);
 
-} // namespace hardware
 } // namespace xmipp4

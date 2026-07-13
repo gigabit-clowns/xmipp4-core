@@ -6,7 +6,7 @@
 
 #include <array>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 TEST_CASE( "setting and getting attributes in device_properties should preserve them", "[hardware]" )
 {

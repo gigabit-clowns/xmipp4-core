@@ -4,7 +4,7 @@
 
 #include <xmipp4/core/hardware/device_context.hpp>
 
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device.hpp>
 #include <xmipp4/core/hardware/device_properties.hpp>
 #include <xmipp4/core/hardware/memory_allocator.hpp>
@@ -17,7 +17,7 @@
 #include <memory>
 #include <stdexcept>
 
-using namespace xmipp4::hardware;
+using namespace xmipp4;
 
 namespace
 {
@@ -48,7 +48,7 @@ public:
 		REQUIRE_CALL(*device, create_command_queue())
 			.RETURN(default_queue);
 
-		instance = std::make_shared<device_instance>(
+		session = std::make_shared<device_session>(
 			device,
 			device_properties()
 		);
@@ -56,7 +56,7 @@ public:
 
 	device_context build_context() const
 	{
-		return device_context(instance);
+		return device_context(session);
 	}
 
 protected:
@@ -66,20 +66,19 @@ protected:
 	mock_memory_resource host_resource;
 	mock_memory_resource device_resource;
 	std::shared_ptr<command_queue> default_queue;
-	std::shared_ptr<const device_instance> instance;
+	std::shared_ptr<const device_session> session;
 };
 
 } // namespace
 
 
-
 TEST_CASE(
-	"device_context constructor should throw when given a null instance",
+	"device_context constructor should throw when given a null session",
 	"[device_context]"
 )
 {
 	CHECK_THROWS_AS(
-		device_context(std::shared_ptr<const device_instance>()),
+		device_context(std::shared_ptr<const device_session>()),
 		std::invalid_argument
 	);
 }
@@ -92,7 +91,7 @@ TEST_CASE(
 {
 	const device_context context;
 
-	CHECK( context.get_device_instance() == nullptr );
+	CHECK( context.get_device_session() == nullptr );
 	CHECK( context.get_active_queue() == nullptr );
 	CHECK( context.get_allocator(memory_resource_affinity::host) == nullptr );
 	CHECK( context.get_allocator(memory_resource_affinity::device) == nullptr );
@@ -100,7 +99,7 @@ TEST_CASE(
 
 TEST_CASE(
 	"device_context functional updates on an empty context do not dereference "
-	"a missing instance",
+	"a missing session",
 	"[device_context]"
 )
 {
@@ -109,9 +108,9 @@ TEST_CASE(
 	const auto queue = std::make_shared<mock_command_queue>();
 	const auto with_queue = empty.on_queue(queue);
 	CHECK( with_queue.get_active_queue() == queue );
-	CHECK( with_queue.get_device_instance() == nullptr );
+	CHECK( with_queue.get_device_session() == nullptr );
 
-	// No instance to fall back on, so the queue stays null.
+	// No session to fall back on, so the queue stays null.
 	const auto cleared_queue = empty.on_queue(nullptr);
 	CHECK( cleared_queue.get_active_queue() == nullptr );
 
@@ -121,9 +120,9 @@ TEST_CASE(
 	CHECK(
 		with_alloc.get_allocator(memory_resource_affinity::host) == allocator
 	);
-	CHECK( with_alloc.get_device_instance() == nullptr );
+	CHECK( with_alloc.get_device_session() == nullptr );
 
-	// No instance to revert to, so the slot stays null.
+	// No session to revert to, so the slot stays null.
 	const auto cleared_alloc =
 		empty.with_allocator(memory_resource_affinity::host, nullptr);
 	CHECK(
@@ -140,7 +139,7 @@ TEST_CASE_METHOD(
 {
 	const auto context = build_context();
 
-	CHECK( context.get_device_instance() == instance );
+	CHECK( context.get_device_session() == session );
 	CHECK( context.get_active_queue() == default_queue );
 	CHECK(
 		context.get_allocator(memory_resource_affinity::host) == host_allocator
@@ -164,7 +163,7 @@ TEST_CASE_METHOD(
 	const auto derived = base.on_queue(other_queue);
 
 	CHECK( derived.get_active_queue() == other_queue );
-	CHECK( derived.get_device_instance() == instance );
+	CHECK( derived.get_device_session() == session );
 	CHECK(
 		derived.get_allocator(memory_resource_affinity::host) == host_allocator
 	);
@@ -215,10 +214,10 @@ TEST_CASE_METHOD(
 		derived.get_allocator(memory_resource_affinity::device)
 		== device_allocator
 	);
-	CHECK( derived.get_device_instance() == instance );
+	CHECK( derived.get_device_session() == session );
 	CHECK( derived.get_active_queue() == default_queue );
 
-	// The original context keeps the instance allocator.
+	// The original context keeps the session allocator.
 	CHECK(
 		base.get_allocator(memory_resource_affinity::host) == host_allocator
 	);
@@ -227,7 +226,7 @@ TEST_CASE_METHOD(
 TEST_CASE_METHOD(
 	device_context_fixture,
 	"device_context with_allocator with null should revert the slot to the "
-	"instance allocator",
+	"session allocator",
 	"[device_context]"
 )
 {
@@ -250,14 +249,14 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	device_context_fixture,
-	"device_context copies share the underlying instance, queue and allocators",
+	"device_context copies share the underlying session, queue and allocators",
 	"[device_context]"
 )
 {
 	const auto base = build_context();
 	const auto copy = base;
 
-	CHECK( copy.get_device_instance() == base.get_device_instance() );
+	CHECK( copy.get_device_session() == base.get_device_session() );
 	CHECK( copy.get_active_queue() == base.get_active_queue() );
 	CHECK(
 		copy.get_allocator(memory_resource_affinity::host)

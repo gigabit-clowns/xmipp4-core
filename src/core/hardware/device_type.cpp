@@ -4,8 +4,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 const char* to_string(device_type type) noexcept
 {
@@ -19,5 +17,4 @@ const char* to_string(device_type type) noexcept
 	}
 }
 
-} // namespace hardware
 } // namespace xmipp4

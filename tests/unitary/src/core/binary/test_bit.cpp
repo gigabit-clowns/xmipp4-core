@@ -26,7 +26,7 @@ TEST_CASE( "bit shifts left by 1", "[bit]" )
 		})
 	);
 
-	REQUIRE( binary::bit(input) == expected_result );
+	REQUIRE( bit(input) == expected_result );
 }
 
 TEST_CASE( "bit_range_mask fills with 1s in the provided range", "[bit]" ) 
@@ -48,7 +48,7 @@ TEST_CASE( "bit_range_mask fills with 1s in the provided range", "[bit]" )
 			})
 		);
 
-		REQUIRE( binary::bit_range_mask<std::uint8_t>(start, stop) == expected_result );
+		REQUIRE( bit_range_mask<std::uint8_t>(start, stop) == expected_result );
 	}
 
 	SECTION( "16 bits" )
@@ -66,7 +66,7 @@ TEST_CASE( "bit_range_mask fills with 1s in the provided range", "[bit]" )
 			})
 		);
 
-		REQUIRE( binary::bit_range_mask<std::uint16_t>(start, stop) == expected_result );
+		REQUIRE( bit_range_mask<std::uint16_t>(start, stop) == expected_result );
 	}
 
 	SECTION( "32 bits" )
@@ -84,7 +84,7 @@ TEST_CASE( "bit_range_mask fills with 1s in the provided range", "[bit]" )
 			})
 		);
 
-		REQUIRE( binary::bit_range_mask<std::uint32_t>(start, stop) == expected_result );
+		REQUIRE( bit_range_mask<std::uint32_t>(start, stop) == expected_result );
 	}
 }
 
@@ -108,7 +108,7 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0xFF, 0xFF}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "set bits from LSB progressively when there is a bit set elsewhere" )
@@ -120,13 +120,13 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0x0F, 0x1F}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no zeros to be set" )
 		{
 			input = std::numeric_limits<uint8_t>::max();
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == std::numeric_limits<uint8_t>::max());
 		}
 	}
@@ -149,7 +149,7 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0xFF, 0x1FF}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "set bits from LSB progressively when there is a bit set elsewhere" )
@@ -161,13 +161,13 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0x0F, 0x1F}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no zeros to be set" )
 		{
 			input = std::numeric_limits<uint32_t>::max();
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == std::numeric_limits<uint32_t>::max());
 		}
 	}
@@ -190,7 +190,7 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0xFF, 0x1FF}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "set bits from LSB progressively when there is a bit set elsewhere" )
@@ -202,13 +202,13 @@ TEST_CASE( "set_lowest_zero_inplace sets the lowest zero bit", "[bit]" )
 					{0x0F, 0x1F}
 				})
 			);
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no zeros to be set" )
 		{
 			input = std::numeric_limits<uint64_t>::max();
-			binary::set_lowest_zero_inplace(input);
+			set_lowest_zero_inplace(input);
 			REQUIRE(input == std::numeric_limits<uint64_t>::max());
 		}
 	}
@@ -233,7 +233,7 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0x80, 0x00}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "clear bits from LSB progressively when there is a bit clear elsewhere" )
@@ -247,13 +247,13 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0xC0, 0x80}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no ones to be cleared" )
 		{
 			input = 0x00;
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == 0x00);
 		}
 	}
@@ -275,7 +275,7 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0x80, 0x00}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "clear bits from LSB progressively when there is a bit clear elsewhere" )
@@ -289,13 +289,13 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0xC0, 0x80}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no ones to be cleared" )
 		{
 			input = 0x00;
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == 0x00);
 		}
 	}
@@ -317,7 +317,7 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0x80, 0x00}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "clear bits from LSB progressively when there is a bit clear elsewhere" )
@@ -331,13 +331,13 @@ TEST_CASE( "clear_lowest_one_inplace clears the lowest one bit", "[bit]" )
 					{0xC0, 0x80}
 				})
 			);
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == expected);
 		}
 		SECTION( "edge case, when there are no ones to be cleared" )
 		{
 			input = 0x00;
-			binary::clear_lowest_one_inplace(input);
+			clear_lowest_one_inplace(input);
 			REQUIRE(input == 0x00);
 		}
 	}
@@ -358,7 +358,7 @@ TEST_CASE( "mask_trailing_zeros returns mask for trailing zeros", "[bit]" )
 				{0x00, 0xFF}
 			})
 		);
-		REQUIRE(binary::mask_trailing_zeros(input) == expected);
+		REQUIRE(mask_trailing_zeros(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -373,7 +373,7 @@ TEST_CASE( "mask_trailing_zeros returns mask for trailing zeros", "[bit]" )
 				{0x00000000, 0xFFFFFFFF}
 			})
 		);
-		REQUIRE(binary::mask_trailing_zeros(input) == expected);
+		REQUIRE(mask_trailing_zeros(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -388,7 +388,7 @@ TEST_CASE( "mask_trailing_zeros returns mask for trailing zeros", "[bit]" )
 				{0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL}
 			})
 		);
-		REQUIRE(binary::mask_trailing_zeros(input) == expected);
+		REQUIRE(mask_trailing_zeros(input) == expected);
 	}
 }
 
@@ -406,7 +406,7 @@ TEST_CASE( "mask_trailing_ones returns mask for trailing ones", "[bit]" )
 				{0xFF, 0xFF}
 			})
 		);
-		REQUIRE(binary::mask_trailing_ones(input) == expected);
+		REQUIRE(mask_trailing_ones(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -420,7 +420,7 @@ TEST_CASE( "mask_trailing_ones returns mask for trailing ones", "[bit]" )
 				{0xFFFFFFFF, 0xFFFFFFFF}
 			})
 		);
-		REQUIRE(binary::mask_trailing_ones(input) == expected);
+		REQUIRE(mask_trailing_ones(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -434,7 +434,7 @@ TEST_CASE( "mask_trailing_ones returns mask for trailing ones", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL}
 			})
 		);
-		REQUIRE(binary::mask_trailing_ones(input) == expected);
+		REQUIRE(mask_trailing_ones(input) == expected);
 	}
 }
 
@@ -458,7 +458,7 @@ TEST_CASE( "rotate_right rotates bits to the right", "[bit]" )
 				{0xDE, -10,0x7B}
 			})
 		);
-		REQUIRE(binary::rotate_right(input, shift) == expected);
+		REQUIRE(rotate_right(input, shift) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -478,7 +478,7 @@ TEST_CASE( "rotate_right rotates bits to the right", "[bit]" )
 				{0xDEADBEEF, -34, 0x7AB6FBBF}
 			})
 		);
-		REQUIRE(binary::rotate_right(input, shift) == expected);
+		REQUIRE(rotate_right(input, shift) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -498,7 +498,7 @@ TEST_CASE( "rotate_right rotates bits to the right", "[bit]" )
 				{0xDEADBEEF01234567ULL, -66,  0x7AB6FBBC048D159FULL}
 			})
 		);
-		REQUIRE(binary::rotate_right(input, shift) == expected);
+		REQUIRE(rotate_right(input, shift) == expected);
 	}
 }
 
@@ -522,7 +522,7 @@ TEST_CASE( "rotate_left rotates bits to the left", "[bit]" )
 				{0xDE, -10, 0xB7}
 			})
 		);
-		REQUIRE(binary::rotate_left(input, shift) == expected);
+		REQUIRE(rotate_left(input, shift) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -542,7 +542,7 @@ TEST_CASE( "rotate_left rotates bits to the left", "[bit]" )
 				{0xDEADBEEF, -34,  0xF7AB6FBB}
 			})
 		);
-		REQUIRE(binary::rotate_left(input, shift) == expected);
+		REQUIRE(rotate_left(input, shift) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -562,7 +562,7 @@ TEST_CASE( "rotate_left rotates bits to the left", "[bit]" )
 				{0xDEADBEEF01234567ULL, -66,  0xF7AB6FBBC048D159ULL}
 			})
 		);
-		REQUIRE(binary::rotate_left(input, shift) == expected);
+		REQUIRE(rotate_left(input, shift) == expected);
 	}
 }
 
@@ -581,7 +581,7 @@ TEST_CASE( "has_single_bit checks if value has a single bit set", "[bit]" )
 			{0x80000000U, true}
 		})
 	);
-	REQUIRE(binary::has_single_bit(input) == expected);
+	REQUIRE(has_single_bit(input) == expected);
 }
 
 TEST_CASE( "bit_floor returns the largest power of two not greater than value", "[bit]" )
@@ -599,7 +599,7 @@ TEST_CASE( "bit_floor returns the largest power of two not greater than value", 
 			{0xFFFFFFFFU, 0x80000000U}
 		})
 	);
-	REQUIRE(binary::bit_floor(input) == expected);
+	REQUIRE(bit_floor(input) == expected);
 }
 
 TEST_CASE( "bit_ceil returns the smallest power of two not less than value", "[bit]" )
@@ -616,7 +616,7 @@ TEST_CASE( "bit_ceil returns the smallest power of two not less than value", "[b
 			{31U, 32U}
 		})
 	);
-	REQUIRE(binary::bit_ceil(input) == expected);
+	REQUIRE(bit_ceil(input) == expected);
 }
 
 TEST_CASE( "bit_width returns the minimum number of bits to represent value", "[bit]" )
@@ -633,7 +633,7 @@ TEST_CASE( "bit_width returns the minimum number of bits to represent value", "[
 			{31U, 5U}
 		})
 	);
-	REQUIRE(binary::bit_width(input) == expected);
+	REQUIRE(bit_width(input) == expected);
 }
 
 TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
@@ -653,7 +653,7 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 				{0xFF, 0}
 			})
 		);
-		REQUIRE(binary::count_leading_zeros(input) == expected);
+		REQUIRE(count_leading_zeros(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -670,7 +670,7 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 				{0xFFFFFFFF, 0}
 			})
 		);
-		REQUIRE(binary::count_leading_zeros(input) == expected);
+		REQUIRE(count_leading_zeros(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -687,7 +687,7 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 0}
 			})
 		);
-		REQUIRE(binary::count_leading_zeros(input) == expected);
+		REQUIRE(count_leading_zeros(input) == expected);
 	}
 }
 
@@ -709,7 +709,7 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 				{0xFF, 8}
 			})
 		);
-		REQUIRE(binary::count_leading_ones(input) == expected);
+		REQUIRE(count_leading_ones(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -727,7 +727,7 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 				{0xFFFFFFFF, 32}
 			})
 		);
-		REQUIRE(binary::count_leading_ones(input) == expected);
+		REQUIRE(count_leading_ones(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -745,7 +745,7 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 64}
 			})
 		);
-		REQUIRE(binary::count_leading_ones(input) == expected);
+		REQUIRE(count_leading_ones(input) == expected);
 	}
 }
 
@@ -767,7 +767,7 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 				{0xFF, 0}
 			})
 		);
-		REQUIRE(binary::count_trailing_zeros(input) == expected);
+		REQUIRE(count_trailing_zeros(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -784,7 +784,7 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 				{0xFFFFFFFF, 0}
 			})
 		);
-		REQUIRE(binary::count_trailing_zeros(input) == expected);
+		REQUIRE(count_trailing_zeros(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -801,7 +801,7 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 0}
 			})
 		);
-		REQUIRE(binary::count_trailing_zeros(input) == expected);
+		REQUIRE(count_trailing_zeros(input) == expected);
 	}
 }
 
@@ -823,7 +823,7 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 				{0xFF, 8}
 			})
 		);
-		REQUIRE(binary::count_trailing_ones(input) == expected);
+		REQUIRE(count_trailing_ones(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -840,7 +840,7 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 				{0xFFFFFFFF, 32}
 			})
 		);
-		REQUIRE(binary::count_trailing_ones(input) == expected);
+		REQUIRE(count_trailing_ones(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -858,7 +858,7 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 64}
 			})
 		);
-		REQUIRE(binary::count_trailing_ones(input) == expected);
+		REQUIRE(count_trailing_ones(input) == expected);
 	}
 }
 
@@ -879,7 +879,7 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 				{0xFF, 8}
 			})
 		);
-		REQUIRE(binary::popcount(input) == expected);
+		REQUIRE(popcount(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -896,7 +896,7 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 				{0xFFFFFFFF, 32}
 			})
 		);
-		REQUIRE(binary::popcount(input) == expected);
+		REQUIRE(popcount(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -913,7 +913,7 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, 64}
 			})
 		);
-		REQUIRE(binary::popcount(input) == expected);
+		REQUIRE(popcount(input) == expected);
 	}
 }
 
@@ -935,7 +935,7 @@ TEST_CASE( "parity returns true if the number of set bits is odd", "[bit]" )
 				{0xFF, false}
 			})
 		);
-		REQUIRE(binary::parity(input) == expected);
+		REQUIRE(parity(input) == expected);
 	}
 	SECTION( "32 bits" )
 	{
@@ -953,7 +953,7 @@ TEST_CASE( "parity returns true if the number of set bits is odd", "[bit]" )
 				{0xFFFFFFFF, false}
 			})
 		);
-		REQUIRE(binary::parity(input) == expected);
+		REQUIRE(parity(input) == expected);
 	}
 	SECTION( "64 bits" )
 	{
@@ -971,6 +971,6 @@ TEST_CASE( "parity returns true if the number of set bits is odd", "[bit]" )
 				{0xFFFFFFFFFFFFFFFFULL, false}
 			})
 		);
-		REQUIRE(binary::parity(input) == expected);
+		REQUIRE(parity(input) == expected);
 	}
 }

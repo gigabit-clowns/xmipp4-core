@@ -11,8 +11,6 @@
 
 namespace xmipp4
 {
-namespace binary
-{
 
 /**
  * @brief Stores a set of bits in the form of flags
@@ -310,13 +308,12 @@ template<typename B>
 XMIPP4_CONSTEXPR 
 flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
 
-} // namespace binary
 } // namespace xmipp4
 
 template <typename B>
-struct std::hash<xmipp4::binary::flagset<B>>
+struct std::hash<xmipp4::flagset<B>>
 {
-	XMIPP4_CONSTEXPR size_t operator()(xmipp4::binary::flagset<B> b) const noexcept;
+	XMIPP4_CONSTEXPR size_t operator()(xmipp4::flagset<B> b) const noexcept;
 };
 
 #include "flagset.inl"

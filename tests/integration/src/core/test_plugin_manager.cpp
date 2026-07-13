@@ -14,7 +14,6 @@
 using namespace xmipp4;
 
 
-
 TEST_CASE( "load good plugin in the plugin manager", "[plugin_manager]" ) 
 {
 	plugin_manager manager;

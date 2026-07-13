@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 enum class byte_order 
 {
@@ -51,7 +49,6 @@ XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_integral<T>::value, T&>::type
 convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept;
 
-} // namespace memory
 } // namespace xmipp4
 
 #include "byte_order.inl"

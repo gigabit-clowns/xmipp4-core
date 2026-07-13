@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 /**
  * @brief Implementation of the buffer interface to represent data in host
@@ -30,5 +28,4 @@ private:
 	std::size_t m_size;
 };
 
-} // namespace hardware
 } // namespace xmipp4

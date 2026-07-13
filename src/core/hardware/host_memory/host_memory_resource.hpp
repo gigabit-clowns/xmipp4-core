@@ -6,8 +6,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 class host_memory_resource final
 	: public memory_resource
@@ -29,5 +27,4 @@ private:
 	static const host_memory_resource m_instance;
 };
 
-} // namespace hardware
 } // namespace xmipp4

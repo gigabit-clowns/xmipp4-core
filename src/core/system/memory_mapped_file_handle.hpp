@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/access_flags.hpp>
+#include <xmipp4/core/system/access_flags.hpp>
 #include <xmipp4/core/platform/operating_system.h>
 
 namespace xmipp4
-{
-namespace system
 {
 
 /**
@@ -37,7 +35,6 @@ void* memory_mapped_file_open(
 void memory_mapped_file_close(void* data, std::size_t size) noexcept;
 
 
-} // namespace system
 } // namespace xmipp4
 
 #if XMIPP4_POSIX

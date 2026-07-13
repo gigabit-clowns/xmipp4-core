@@ -2,15 +2,13 @@
 
 #pragma once
 
-#include "../access_flags.hpp"
+#include "access_flags.hpp"
 #include "../platform/dynamic_shared_object.h"
 #include "../platform/constexpr.hpp"
 
 #include <type_traits>
 
 namespace xmipp4 
-{
-namespace system
 {
 
 /**
@@ -154,5 +152,4 @@ private:
  */
 XMIPP4_CORE_API void swap(memory_mapped_file& lhs, memory_mapped_file& rhs) noexcept;
 
-} //namespace system
 } //namespace xmipp4

@@ -17,17 +17,17 @@ using namespace xmipp4;
 
 enum class test_int32_flag_bits : int32_t
 {
-	a = binary::bit(0),
-	b = binary::bit(1),
-	c = binary::bit(2),
+	a = bit(0),
+	b = bit(1),
+	c = bit(2),
 
 	// ...
 
-	x = binary::bit(28),
-	y = binary::bit(29),
-	z = binary::bit(30),
+	x = bit(28),
+	y = bit(29),
+	z = bit(30),
 };
-using test_int32_flags = binary::flagset<test_int32_flag_bits>;
+using test_int32_flags = flagset<test_int32_flag_bits>;
 
 
 TEST_CASE( "flagset empty constructor should not have any flags", "[flagset]" ) 

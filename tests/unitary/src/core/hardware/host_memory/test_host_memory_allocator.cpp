@@ -14,12 +14,11 @@
 #include <sstream>
 
 using namespace xmipp4;
-using namespace xmipp4::hardware;
 
 TEST_CASE( "get_max_alignment in host_memory_allocator should return the page size", "[host_memory_allocator]" )
 {
 	host_memory_allocator allocator;
-	CHECK( allocator.get_max_alignment() == system::get_page_size() );
+	CHECK( allocator.get_max_alignment() == get_page_size() );
 }
 
 TEST_CASE( "get_memory_resource in host_memory_allocator should return the host memory resource", "[host_memory_allocator]" )

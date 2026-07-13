@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 /**
  * @brief RAII style class to load, query and unload
@@ -112,5 +110,4 @@ private:
  */
 XMIPP4_CORE_API void swap(dynamic_library& lhs, dynamic_library& rhs) noexcept;
 
-} // namespace system
 } // namespace xmipp4

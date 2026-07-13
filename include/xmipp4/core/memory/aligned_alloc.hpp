@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace memory
-{
 
 /**
  * @brief Allocate memory with an alignment specification.
@@ -36,5 +34,4 @@ void* aligned_alloc(std::size_t size, std::size_t alignment) noexcept;
 XMIPP4_CORE_API
 void aligned_free(void* ptr) noexcept;
 
-} // namespace memory
 } // namespace xmipp4

@@ -2,7 +2,7 @@
 
 #include <xmipp4/core/hardware/device_context.hpp>
 
-#include <xmipp4/core/hardware/device_instance.hpp>
+#include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/hardware/device.hpp>
 
 #include <stdexcept>
@@ -10,32 +10,30 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
-device_context::device_context(std::shared_ptr<const device_instance> instance)
-	: m_instance(std::move(instance))
+device_context::device_context(std::shared_ptr<const device_session> session)
+	: m_session(std::move(session))
 {
-	if (!m_instance)
+	if (!m_session)
 	{
 		throw std::invalid_argument(
-			"Cannot construct a device_context from a null device_instance."
+			"Cannot construct a device_context from a null device_session."
 		);
 	}
 
-	m_active_queue = m_instance->get_default_queue();
+	m_active_queue = m_session->get_default_queue();
 
 	for (std::size_t i = 0; i < m_allocators.size(); ++i)
 	{
 		const auto affinity = static_cast<memory_resource_affinity>(i);
-		m_allocators[i] = m_instance->get_allocator(affinity);
+		m_allocators[i] = m_session->get_allocator(affinity);
 	}
 }
 
-const std::shared_ptr<const device_instance>&
-device_context::get_device_instance() const noexcept
+const std::shared_ptr<const device_session>&
+device_context::get_device_session() const noexcept
 {
-	return m_instance;
+	return m_session;
 }
 
 const std::shared_ptr<command_queue>&
@@ -53,9 +51,9 @@ device_context::get_allocator(memory_resource_affinity affinity) const noexcept
 device_context
 device_context::on_queue(std::shared_ptr<command_queue> queue) const
 {
-	if (!queue && m_instance)
+	if (!queue && m_session)
 	{
-		queue = m_instance->get_default_queue();
+		queue = m_session->get_default_queue();
 	}
 
 	auto result = *this;
@@ -69,9 +67,9 @@ device_context::with_allocator(
 	std::shared_ptr<memory_allocator> allocator
 ) const
 {
-	if (!allocator && m_instance)
+	if (!allocator && m_session)
 	{
-		allocator = m_instance->get_allocator(affinity);
+		allocator = m_session->get_allocator(affinity);
 	}
 
 	auto result = *this;
@@ -80,5 +78,4 @@ device_context::with_allocator(
 	return result;
 }
 
-} // namespace hardware
 } // namespace xmipp4

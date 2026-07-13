@@ -8,8 +8,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 class mock_buffer final
 	: public buffer
@@ -25,5 +23,4 @@ public:
 	);
 };
 
-} // namespace hardware
 } // namespace xmipp4

@@ -10,8 +10,6 @@
 
 namespace xmipp4
 {
-namespace binary
-{
 
 /**
  * @brief Returns a std::size_t type with a single bit set at the
@@ -270,7 +268,6 @@ XMIPP4_NODISCARD XMIPP4_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
 parity(T x) noexcept;
 
-} // namespace binary
 } // namespace xmipp4
 
 #include "bit.inl"

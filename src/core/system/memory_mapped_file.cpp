@@ -6,8 +6,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 memory_mapped_file::memory_mapped_file() noexcept
 	: m_size(0UL)
@@ -112,5 +110,4 @@ void swap(memory_mapped_file& lhs, memory_mapped_file& rhs) noexcept
 	lhs.swap(rhs);
 }
 
-} // namespace system
 } // namespace xmipp4

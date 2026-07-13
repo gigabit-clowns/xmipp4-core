@@ -4,8 +4,6 @@
 
 namespace xmipp4 
 {
-namespace hardware
-{
 
 /**
  * @brief Enumeration to query memory_resource according to its intended usage.
@@ -22,5 +20,4 @@ enum class memory_resource_affinity
 	count
 };
 
-} // namespace hardware
 } // namespace xmipp4

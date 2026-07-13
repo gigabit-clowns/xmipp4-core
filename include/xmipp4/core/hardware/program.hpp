@@ -12,8 +12,6 @@
 
 namespace xmipp4
 {
-namespace hardware
-{
 
 /**
  * @brief Abstract representation of an executable program.
@@ -65,5 +63,4 @@ public:
 	span<const program_scratch_requirement> get_scratch_requirements() const;
 };
 
-} // namespace hardware
 } // namespace xmipp4

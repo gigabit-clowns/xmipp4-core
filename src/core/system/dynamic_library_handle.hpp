@@ -9,8 +9,6 @@
 
 namespace xmipp4
 {
-namespace system
-{
 
 /**
  * @brief Open a the dynamic library
@@ -45,7 +43,6 @@ void* dynamic_library_get_symbol(void* handle, const char* name) noexcept;
  */
 std::string dynamic_library_symbol_filename_lookup(const void* symbol);
 
-} // namespace system
 } // namespace xmipp4
 
 #if XMIPP4_POSIX

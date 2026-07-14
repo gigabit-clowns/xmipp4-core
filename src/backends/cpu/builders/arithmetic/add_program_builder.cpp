@@ -14,7 +14,6 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/kernels/elementwise_kernel.hpp>
 #include <backends/cpu/type_maps.hpp>
 
 #include <tuple>
@@ -38,12 +37,10 @@ std::shared_ptr<program> make_add_program(
 		(std::tuple<T*> outputs, std::tuple<const T*, const T*> inputs, std::tuple<>)
 		{
 			run_elementwise_loop(
-				make_elementwise_kernel(
-					[] (T* result, const T* x, const T* y)
-					{
-						*result = *x + *y;
-					}
-				),
+				[] (T* result, const T* x, const T* y)
+				{
+					*result = *x + *y;
+				},
 				layout,
 				std::get<ops::add_operation::OUTPUT_OPERAND_RESULT>(outputs),
 				std::get<ops::add_operation::INPUT_OPERAND_X>(inputs),

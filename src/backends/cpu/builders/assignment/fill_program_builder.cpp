@@ -16,7 +16,6 @@
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/kernels/elementwise_kernel.hpp>
 
 #include <tuple>
 #include <type_traits>
@@ -42,15 +41,12 @@ make_fill_program(
 )
 {
 	const auto value = numerical_cast<T>(fill_value);
-	auto kernel = make_elementwise_kernel(
-		[value] (T* destination) { *destination = value; }
-	);
 	return make_functor_program(
-		[kernel = std::move(kernel), layout=std::move(layout)]
+		[value, layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_loop(
-				kernel,
+				[value] (T* destination) { *destination = value; },
 				layout,
 				std::get<ops::fill_operation::OUTPUT_OPERAND_DESTINATION>(outputs)
 			);

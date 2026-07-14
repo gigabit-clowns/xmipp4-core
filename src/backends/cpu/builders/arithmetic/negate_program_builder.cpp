@@ -14,7 +14,6 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/kernels/elementwise_kernel.hpp>
 #include <backends/cpu/type_maps.hpp>
 
 #include <tuple>
@@ -38,12 +37,10 @@ std::shared_ptr<program> make_negate_program(
 		(std::tuple<T*> outputs, std::tuple<const T*> inputs, std::tuple<>)
 		{
 			run_elementwise_loop(
-				make_elementwise_kernel(
-					[] (T* result, const T* x)
-					{
-						*result = -(*x);
-					}
-				),
+				[] (T* result, const T* x)
+				{
+					*result = -(*x);
+				},
 				layout,
 				std::get<ops::negate_operation::OUTPUT_OPERAND_RESULT>(outputs),
 				std::get<ops::negate_operation::INPUT_OPERAND_X>(inputs)

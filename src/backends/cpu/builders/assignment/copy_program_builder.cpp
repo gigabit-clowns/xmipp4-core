@@ -15,7 +15,6 @@
 #include <backends/cpu/type_maps.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/kernels/elementwise_kernel.hpp>
 
 #include <tuple>
 #include <type_traits>
@@ -44,12 +43,10 @@ make_copy_program(
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
 			run_elementwise_loop(
-				make_elementwise_kernel(
-					[] (T* destination, const Q* source)
-					{
-						*destination = numerical_cast<T>(*source);
-					}
-				),
+				[] (T* destination, const Q* source)
+				{
+					*destination = numerical_cast<T>(*source);
+				},
 				layout,
 				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
 				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)

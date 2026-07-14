@@ -16,12 +16,11 @@
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
-#include <backends/cpu/loops/strided_pointer_iterator.hpp>
+#include <backends/cpu/kernels/elementwise_kernel.hpp>
 
-#include <algorithm>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace xmipp4
 {
@@ -30,48 +29,6 @@ namespace cpu
 
 namespace
 {
-
-template <typename T>
-class fill_kernel
-{
-public:
-	fill_kernel(T fill_value)
-		: m_fill_value(fill_value)
-	{
-	}
-
-	template<typename Stride>
-	void operator()(
-		T* destination,
-		std::size_t count,
-		Stride destination_stride
-	) const
-	{
-		std::fill_n(
-			make_strided_pointer_iterator(destination, destination_stride),
-			count,
-			m_fill_value
-		);
-	}
-
-	void operator()(
-		T* destination,
-		std::size_t count,
-		contiguous_stride_tag /*destination_stride*/
-	) const
-	{
-		std::fill_n(
-			destination,
-			count,
-			m_fill_value
-		);
-	}
-
-private:
-	T m_fill_value;
-};
-
-
 
 template <typename T, typename Q>
 typename std::enable_if<
@@ -85,8 +42,11 @@ make_fill_program(
 )
 {
 	const auto value = numerical_cast<T>(fill_value);
+	auto kernel = make_elementwise_kernel(
+		[value] (T* destination) { *destination = value; }
+	);
 	return make_functor_program(
-		[kernel = fill_kernel<T>(value), layout=std::move(layout)]
+		[kernel = std::move(kernel), layout=std::move(layout)]
 		(std::tuple<T*> outputs, std::tuple<>, std::tuple<>)
 		{
 			run_elementwise_loop(

@@ -94,11 +94,11 @@ struct elementwise_call
 /**
  * @brief Kernel that records every invocation.
  *
- * run_elementwise_loop invokes the kernel as
- * `(pointers..., count, stride_tags...)`, i.e. `n` operand pointers, the element
- * count, then `n` resolved stride tags. Those three groups are split apart and
- * stored for inspection. The log is held through a shared_ptr so that the copy
- * stored inside the loop shares state with the handle kept by the test.
+ * run_elementwise_loop invokes the kernel as `(pointers, strides, count)`,
+ * i.e. a tuple of `n` operand pointers, a tuple of `n` resolved strides and the
+ * element count. The two tuples are unpacked and stored for inspection. The log
+ * is held through a shared_ptr so that the copy stored inside the loop shares
+ * state with the handle kept by the test.
  */
 class recording_kernel
 {
@@ -108,21 +108,20 @@ public:
 	{
 	}
 
-	template <typename... Args>
-	void operator()(Args... args) const
+	template <typename PointerTuple, typename StrideTuple>
+	void operator()(
+		const PointerTuple &pointers,
+		const StrideTuple &strides,
+		std::size_t count
+	) const
 	{
-		// Layout of the argument pack: n pointers, 1 count, n stride tags.
-		XMIPP4_CONST_CONSTEXPR std::size_t n = (sizeof...(Args) - 1) / 2;
-		const auto packed = std::make_tuple(args...);
+		XMIPP4_CONST_CONSTEXPR std::size_t n =
+			std::tuple_size<PointerTuple>::value;
 
 		elementwise_call call;
-		collect_pointers(call.pointers, packed, std::make_index_sequence<n>());
-		call.count = static_cast<std::size_t>(std::get<n>(packed));
-		collect_strides<n + 1>(
-			call.strides,
-			packed,
-			std::make_index_sequence<n>()
-		);
+		collect_pointers(call.pointers, pointers, std::make_index_sequence<n>());
+		call.count = count;
+		collect_strides(call.strides, strides, std::make_index_sequence<n>());
 		m_calls->push_back(std::move(call));
 	}
 
@@ -137,19 +136,19 @@ private:
 	template <typename Tuple, std::size_t... Is>
 	static void collect_pointers(
 		std::vector<const int*> &out,
-		const Tuple &packed,
+		const Tuple &pointers,
 		std::index_sequence<Is...>
 	)
 	{
 		(void) std::initializer_list<int> {
-			(out.push_back(std::get<Is>(packed)), 0)...
+			(out.push_back(std::get<Is>(pointers)), 0)...
 		};
 	}
 
-	template <std::size_t Base, typename Tuple, std::size_t... Is>
+	template <typename Tuple, std::size_t... Is>
 	static void collect_strides(
 		std::vector<stride_info> &out,
-		const Tuple &packed,
+		const Tuple &strides,
 		std::index_sequence<Is...>
 	)
 	{
@@ -157,8 +156,8 @@ private:
 			(
 				out.push_back(
 					stride_info {
-						stride_value(std::get<Base + Is>(packed)),
-						stride_classify(std::get<Base + Is>(packed))
+						stride_value(std::get<Is>(strides)),
+						stride_classify(std::get<Is>(strides))
 					}
 				),
 				0

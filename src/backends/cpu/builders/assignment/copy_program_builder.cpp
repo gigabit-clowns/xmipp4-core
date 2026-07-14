@@ -15,12 +15,11 @@
 #include <backends/cpu/type_maps.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/loops/inner_loop_stride_dispatch.hpp>
-#include <backends/cpu/loops/strided_pointer_iterator.hpp>
+#include <backends/cpu/kernels/elementwise_kernel.hpp>
 
-#include <algorithm>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace xmipp4
 {
@@ -29,60 +28,6 @@ namespace cpu
 
 namespace
 {
-
-template <typename T, typename Q>
-struct copy_kernel
-{
-	template <typename DstStride, typename SrcStride>
-	void operator()(
-		T* dst,
-		const Q* src,
-		std::size_t count,
-		DstStride dst_stride, 
-		SrcStride src_stride
-	) const
-	{
-		auto dst_ite = make_strided_pointer_iterator(dst, dst_stride);
-		auto src_ite = make_strided_pointer_iterator(src, src_stride);
-		for (std::size_t i = 0; i < count; ++i)
-		{
-			*dst_ite = numerical_cast<T>(*src_ite);
-			++dst_ite;
-			++src_ite;
-		}
-	}
-
-	void operator()(
-		T* dst,
-		const T* src,
-		std::size_t count,
-		contiguous_stride_tag /*dst_stride*/, 
-		contiguous_stride_tag /*src_stride*/
-	) const
-	{
-		for (std::size_t i = 0; i < count; ++i)
-		{
-			dst[i] = numerical_cast<T>(src[i]);
-		}
-	}
-
-	void operator()(
-		T* dst,
-		const Q* src,
-		std::size_t count,
-		contiguous_stride_tag /*dst_stride*/, 
-		broadcasting_stride_tag /*src_stride*/
-	) const
-	{
-		std::fill_n(
-			dst,
-			count,
-			numerical_cast<T>(*src)
-		);
-	}
-};
-
-
 
 template <typename T, typename Q>
 typename std::enable_if<
@@ -99,7 +44,12 @@ make_copy_program(
 		(std::tuple<T*> outputs, std::tuple<const Q*> inputs, std::tuple<>)
 		{
 			run_elementwise_loop(
-				copy_kernel<T, Q>(),
+				make_elementwise_kernel(
+					[] (T* destination, const Q* source)
+					{
+						*destination = numerical_cast<T>(*source);
+					}
+				),
 				layout,
 				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
 				std::get<ops::copy_operation::INPUT_OPERAND_SOURCE>(inputs)

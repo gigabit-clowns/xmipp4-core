@@ -13,32 +13,6 @@ namespace xmipp4
 {
 namespace cpu
 {
-namespace detail
-{
-
-template <
-	typename Kernel,
-	typename... StrideTags,
-	std::size_t... Is,
-	typename... LoopArgs
->
-inline
-void invoke_elementwise_kernel(
-	const Kernel &kernel,
-	const std::tuple<StrideTags...> &stride_tags,
-	std::index_sequence<Is...>,
-	LoopArgs... loop_args
-)
-{
-	// loop_args holds the per-vector pointers followed by the element count;
-	// the resolved stride tags are appended after them.
-	kernel(
-		loop_args...,
-		std::get<Is>(stride_tags)...
-	);
-}
-
-} // namespace detail
 
 template <typename Kernel, typename... Pointers>
 inline
@@ -49,17 +23,15 @@ void run_elementwise_loop(
 )
 {
 	dispatch_inner_loop_strides(
-		[&kernel, &layout, &pointers...] (auto stride_tags)
+		[&kernel, &layout, &pointers...] (auto strides)
 		{
 			run_elementwise_outer_loop(
-				[&kernel, &stride_tags]
+				[&kernel, &strides]
 				(Pointers... vector_pointers, std::size_t count)
 				{
-					detail::invoke_elementwise_kernel(
-						kernel,
-						stride_tags,
-						std::make_index_sequence<sizeof...(Pointers)>(),
-						vector_pointers...,
+					kernel(
+						std::make_tuple(vector_pointers...),
+						strides,
 						count
 					);
 				},

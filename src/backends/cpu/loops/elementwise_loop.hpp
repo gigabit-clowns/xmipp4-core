@@ -24,16 +24,17 @@ namespace cpu
  *
  * The kernel is invoked as:
  * @code
- * kernel(pointers..., count, stride_tags...)
+ * kernel(pointers, strides, count)
  * @endcode
- * where `pointers...` are advanced to the start of the current 1D vector,
- * `count` is the number of elements in it and `stride_tags...` are the
- * statically resolved inner strides (one per operand;
- * `contiguous_stride_tag`, `broadcasting_stride_tag` or a runtime
- * `std::ptrdiff_t`), in the same operand order as @p pointers.
+ * where `pointers` is a `std::tuple` of the operand pointers advanced to the
+ * start of the current 1D vector, `strides` is a `std::tuple` of the
+ * statically resolved inner strides (one per operand, in the same operand
+ * order as `pointers`; each element is a `contiguous_stride_tag`, a
+ * `broadcasting_stride_tag` or a runtime `std::ptrdiff_t`) and `count` is the
+ * number of elements in the vector.
  *
  * @tparam Kernel Functor invoked per 1D vector. Must accept
- * `(Pointers..., std::size_t, StrideTags...)`.
+ * `(std::tuple<Pointers...>, std::tuple<Strides...>, std::size_t)`.
  * @tparam Pointers CV-qualified operand pointers, one per operand.
  * @param kernel The functor to be invoked for each 1D vector.
  * @param layout Access layout used both for stride dispatch and for iterating

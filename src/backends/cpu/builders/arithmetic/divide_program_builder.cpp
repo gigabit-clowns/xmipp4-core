@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "add_program_builder.hpp"
+#include "divide_program_builder.hpp"
 
-#include <xmipp4/ops/arithmetic/add_operation.hpp>
+#include <xmipp4/ops/arithmetic/divide_operation.hpp>
 #include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -28,7 +28,7 @@ namespace
 {
 
 template <typename T>
-std::shared_ptr<program> make_add_program(
+std::shared_ptr<program> make_divide_program(
 	joint_layout layout,
 	type_list<T> /*types*/
 )
@@ -41,13 +41,13 @@ std::shared_ptr<program> make_add_program(
 				make_elementwise_kernel(
 					[] (T* result, const T* x, const T* y)
 					{
-						*result = *x + *y;
+						*result = *x / *y;
 					}
 				),
 				layout,
-				std::get<ops::add_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::add_operation::INPUT_OPERAND_X>(inputs),
-				std::get<ops::add_operation::INPUT_OPERAND_Y>(inputs)
+				std::get<ops::divide_operation::OUTPUT_OPERAND_RESULT>(outputs),
+				std::get<ops::divide_operation::INPUT_OPERAND_X>(inputs),
+				std::get<ops::divide_operation::INPUT_OPERAND_Y>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -55,25 +55,25 @@ std::shared_ptr<program> make_add_program(
 	);
 }
 
-std::shared_ptr<program> make_add_program(
+std::shared_ptr<program> make_divide_program(
 	joint_layout /*layout*/,
 	type_list<void> /*types*/
 )
 {
 	throw std::invalid_argument(
-		"add_program_builder::build: Expected arithmetic type."
+		"divide_program_builder::build: Expected arithmetic type."
 	);
 }
 
 } // anonymous namespace
 
 operation_id
-add_program_builder::get_operation_id() const noexcept
+divide_program_builder::get_operation_id() const noexcept
 {
-	return operation_id::of<ops::add_operation>();
+	return operation_id::of<ops::divide_operation>();
 }
 
-std::shared_ptr<xmipp4::program> add_program_builder::build(
+std::shared_ptr<xmipp4::program> divide_program_builder::build(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
@@ -81,60 +81,60 @@ std::shared_ptr<xmipp4::program> add_program_builder::build(
 	program_cache* /*cache*/
 ) const
 {
-	if (!dynamic_cast<const ops::add_operation*>(&operation))
+	if (!dynamic_cast<const ops::divide_operation*>(&operation))
 	{
 		throw std::invalid_argument(
-			"add_program_builder::build: Expected operation to "
-			"be an instance of ops::add_operation."
+			"divide_program_builder::build: Expected operation to "
+			"be an instance of ops::divide_operation."
 		);
 	}
 
 	if (
 		output_signatures.size() !=
-		ops::add_operation::OUTPUT_OPERAND_COUNT
+		ops::divide_operation::OUTPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
-			"add_program_builder::build: Expected exactly 1 "
+			"divide_program_builder::build: Expected exactly 1 "
 			"output signature."
 		);
 	}
 
 	if (
 		input_signatures.size() !=
-		ops::add_operation::INPUT_OPERAND_COUNT
+		ops::divide_operation::INPUT_OPERAND_COUNT
 	)
 	{
 		throw std::invalid_argument(
-			"add_program_builder::build: Expected exactly 2 "
+			"divide_program_builder::build: Expected exactly 2 "
 			"input signatures."
 		);
 	}
 
 	const auto &result_descriptor =
-		output_signatures[ops::add_operation::OUTPUT_OPERAND_RESULT]
+		output_signatures[ops::divide_operation::OUTPUT_OPERAND_RESULT]
 		.get_descriptor();
 	const auto &x_descriptor =
-		input_signatures[ops::add_operation::INPUT_OPERAND_X]
+		input_signatures[ops::divide_operation::INPUT_OPERAND_X]
 		.get_descriptor();
 	const auto &y_descriptor =
-		input_signatures[ops::add_operation::INPUT_OPERAND_Y]
+		input_signatures[ops::divide_operation::INPUT_OPERAND_Y]
 		.get_descriptor();
 
 	const auto data_type = result_descriptor.get_data_type();
 	if (x_descriptor.get_data_type() != data_type)
 	{
 		throw std::invalid_argument(
-			"add_program_builder::build: First operand must match output data "
-			"type"
+			"divide_program_builder::build: First operand must match output "
+			"data type"
 		);
 	}
 
 	if (y_descriptor.get_data_type() != data_type)
 	{
 		throw std::invalid_argument(
-			"add_program_builder::build: Second operand must match output data "
-			"type"
+			"divide_program_builder::build: Second operand must match output "
+			"data type"
 		);
 	}
 
@@ -148,7 +148,7 @@ std::shared_ptr<xmipp4::program> add_program_builder::build(
 		[&layout] (auto type_tag)
 		{
 			using type = typename decltype(type_tag)::type;
-			return make_add_program(
+			return make_divide_program(
 				std::move(layout),
 				type_list<type>()
 			);

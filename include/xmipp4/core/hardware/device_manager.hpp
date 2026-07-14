@@ -65,7 +65,7 @@ public:
 	 *
 	 * Takes ownership of @p backend and keeps it alive for the rest of
 	 * the manager's lifetime, indexed by the name it reports through
-	 * @ref named_backend::get_name. Registration fails if another backend
+	 * @ref device_backend::get_name. Registration fails if another backend
 	 * with the same name is already registered or if @p backend is null;
 	 * on failure, ownership of @p backend remains with the caller (the
 	 * unique_ptr is not consumed) and the manager state is unchanged.

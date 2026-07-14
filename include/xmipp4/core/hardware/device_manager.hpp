@@ -5,8 +5,10 @@
 #include "device_index.hpp"
 #include "device_properties.hpp"
 #include "device_backend.hpp"
-#include "../named_service_manager.hpp"
+#include "../service_manager.hpp"
 #include "../platform/dynamic_shared_object.h"
+
+#include <string>
 
 #include <memory>
 #include <vector>
@@ -28,7 +30,7 @@ class device_session;
  * adding those that are statically linked.
  */
 class XMIPP4_CORE_API device_manager final
-	: public named_service_manager
+	: public service_manager
 {
 public:
 	device_manager();
@@ -41,9 +43,22 @@ public:
 
 	void register_builtin_backends() override;
 
-	void enumerate_backends(std::vector<std::string> &names) const override;
+	/**
+	 * @brief Enumerate the names of all registered backends.
+	 *
+	 * @param[out] names Output parameter with the names of the contained
+	 * backends. Cleared before being populated.
+	 */
+	void enumerate_backends(std::vector<std::string> &names) const;
 
-	device_backend* get_backend(const std::string &name) const override;
+	/**
+	 * @brief Get a backend contained in this manager by its name.
+	 *
+	 * @param name The name of the backend.
+	 * @return device_backend* The retrieved backend. nullptr if none is
+	 * found.
+	 */
+	device_backend* get_backend(const std::string &name) const;
 
 	/**
 	 * @brief Register a new backend.

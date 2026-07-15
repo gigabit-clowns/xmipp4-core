@@ -29,7 +29,7 @@ void abs_operation_data_type_policy::deduce(
 		"arithmetic",
 		context
 	);
-	fill(canonical_output_types, numerical_type::unknown); // TODO
+	fill(canonical_output_types, make_real(reference));
 }
 
 const abs_operation_data_type_policy& 

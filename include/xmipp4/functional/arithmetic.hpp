@@ -109,4 +109,28 @@ array divide(
 	array *out = nullptr
 );
 
+/**
+ * @brief Compute the element-wise modulo of two arrays.
+ *
+ * The inputs must be broadcast-compatible and share the same numerical
+ * type. When @p out is null, the shape and type of the result are deduced
+ * from the (broadcast) inputs.
+ *
+ * @param x The dividend array.
+ * @param y The divisor array.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise modulo x % y.
+ * 
+ * @note The modulo behaves as Python's modulo and not like C's modulo. This is,
+ * output has the same sign as the divisor.
+ */
+XMIPP4_CORE_API
+array modulo(
+	const_array_ref& x,
+	const_array_ref& y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 } // namespace xmipp4

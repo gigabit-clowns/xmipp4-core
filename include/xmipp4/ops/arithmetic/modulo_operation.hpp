@@ -13,6 +13,9 @@ namespace ops
 /**
  * @brief Compute the division modulo from two input array to into output 
  * array.
+ * 
+ * @note The modulo behaves as Python's modulo and not like C's modulo. This is,
+ * output has the same sign as the divisor.
  */
 class XMIPP4_CORE_API modulo_operation final
 	: public operation

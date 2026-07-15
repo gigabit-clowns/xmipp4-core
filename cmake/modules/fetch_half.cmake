@@ -32,7 +32,8 @@ function(fetch_half)
 	)
 
 	# Disable literals as they are not used and they are producing whitespace
-	# warnings in Clang
+	# warnings in Clang. Remove when eventually gets fixed: 
+	# https://sourceforge.net/p/half/discussion/general/thread/02d90668a5/
 	target_compile_definitions(
 		half
 		INTERFACE

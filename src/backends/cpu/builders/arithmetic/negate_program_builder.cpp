@@ -139,7 +139,11 @@ std::shared_ptr<xmipp4::program> negate_program_builder::build(
 				type_list<type>()
 			);
 		},
-		compute_arithmetic_type_map(),
+		type_map_cat<
+			native_signed_integer_type_map,
+			compute_floating_type_map,
+			native_complex_type_map
+		>::type(),
 		data_type
 	);
 }

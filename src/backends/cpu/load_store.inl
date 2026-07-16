@@ -36,7 +36,7 @@ template <typename T, typename U>
 inline void store(T *ptr, const U &value) noexcept
 {
 	XMIPP4_ASSERT(ptr);
-	*ptr = value;
+	*ptr = static_cast<T>(value);
 }
 
 inline void store(float16_t *ptr, float value) noexcept

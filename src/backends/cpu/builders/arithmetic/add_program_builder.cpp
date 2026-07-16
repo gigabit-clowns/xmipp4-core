@@ -15,7 +15,7 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/type_maps.hpp>
+#include <backends/cpu/load_store.hpp>
 
 #include <tuple>
 
@@ -40,7 +40,7 @@ std::shared_ptr<program> make_add_program(
 			run_elementwise_loop(
 				[] (T* result, const T* x, const T* y)
 				{
-					*result = *x + *y;
+					store(result, load(x) + load(y));
 				},
 				layout,
 				std::get<ops::add_operation::OUTPUT_OPERAND_RESULT>(outputs),
@@ -152,7 +152,7 @@ std::shared_ptr<xmipp4::program> add_program_builder::build(
 				type_list<type>()
 			);
 		},
-		compute_arithmetic_type_map(),
+		native_arithmetic_type_map(),
 		data_type
 	);
 }

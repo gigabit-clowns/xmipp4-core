@@ -8,14 +8,13 @@
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical/scalar_value.hpp>
-#include <xmipp4/core/numerical/numerical_cast.hpp>
 #include <xmipp4/core/platform/attributes.hpp>
 #include <xmipp4/backends/cpu/device.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
 
-#include <backends/cpu/type_maps.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
+#include <backends/cpu/load_store.hpp>
 
 #include <tuple>
 #include <type_traits>
@@ -46,7 +45,7 @@ make_copy_program(
 			run_elementwise_loop(
 				[] (T* destination, const Q* source)
 				{
-					*destination = numerical_cast<T>(*source);
+					cast(destination, source);
 				},
 				layout,
 				std::get<ops::copy_operation::OUTPUT_OPERAND_DESTINATION>(outputs),
@@ -146,7 +145,7 @@ std::shared_ptr<xmipp4::program> copy_program_builder::build(
 				type_list<dst_type, src_type>()
 			);
 		},
-		compute_type_map(),
+		native_type_map(),
 		dst_data_type,
 		src_data_type
 	);

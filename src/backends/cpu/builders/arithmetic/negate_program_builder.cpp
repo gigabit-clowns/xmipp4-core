@@ -15,7 +15,7 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/type_maps.hpp>
+#include <backends/cpu/load_store.hpp>
 
 #include <tuple>
 
@@ -40,7 +40,7 @@ std::shared_ptr<program> make_negate_program(
 			run_elementwise_loop(
 				[] (T* result, const T* x)
 				{
-					*result = -(*x);
+					store(result, -load(x));
 				},
 				layout,
 				std::get<ops::negate_operation::OUTPUT_OPERAND_RESULT>(outputs),
@@ -59,7 +59,7 @@ std::shared_ptr<program> make_negate_program(
 )
 {
 	throw std::invalid_argument(
-		"negate_program_builder::build: Expected arithmetic type."
+		"negate_program_builder::build: Expected signed arithmetic type."
 	);
 }
 
@@ -141,7 +141,7 @@ std::shared_ptr<xmipp4::program> negate_program_builder::build(
 		},
 		type_map_cat<
 			native_signed_integer_type_map,
-			compute_floating_type_map,
+			native_floating_type_map,
 			native_complex_type_map
 		>::type(),
 		data_type

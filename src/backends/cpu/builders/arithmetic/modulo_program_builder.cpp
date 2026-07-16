@@ -15,7 +15,7 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/type_maps.hpp>
+#include <backends/cpu/load_store.hpp>
 
 #include <tuple>
 #include <type_traits>
@@ -86,7 +86,7 @@ std::shared_ptr<program> make_modulo_program(
 			run_elementwise_loop(
 				[] (T* result, const T* x, const T* y)
 				{
-					*result = floor_mod(*x, *y);
+					store(result, floor_mod(load(x), load(y)));
 				},
 				layout,
 				std::get<ops::modulo_operation::OUTPUT_OPERAND_RESULT>(outputs),
@@ -198,7 +198,7 @@ std::shared_ptr<xmipp4::program> modulo_program_builder::build(
 				type_list<type>()
 			);
 		},
-		type_map_cat<native_integer_type_map, compute_floating_type_map>::type(),
+		type_map_cat<native_integer_type_map, native_floating_type_map>::type(),
 		data_type
 	);
 }

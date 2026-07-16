@@ -15,7 +15,7 @@
 
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
-#include <backends/cpu/type_maps.hpp>
+#include <backends/cpu/load_store.hpp>
 
 #include <tuple>
 #include <complex>
@@ -56,20 +56,7 @@ compute_abs(T x)
 	return static_cast<T>(abs(x));
 }
 
-/*
- * libc++'s std::abs(const std::complex<T>&) computes std::hypot(real, imag)
- * and implicitly converts the (possibly promoted) result back to T. That
- * conversion is ill-formed for half_float::half, whose from-float
- * constructor is explicit. Computing the hypot directly sidesteps
- * std::complex's abs() altogether; ADL resolves it to half_float::hypot
- * for half, which already returns a half.
- */
-template <typename T>
-inline T compute_abs(const std::complex<T> &x)
-{
-	using std::hypot;
-	return hypot(x.real(), x.imag());
-}
+
 
 template <typename T>
 std::shared_ptr<program> make_abs_program(
@@ -84,7 +71,7 @@ std::shared_ptr<program> make_abs_program(
 			run_elementwise_loop(
 				[] (T* result, const T* x)
 				{
-					*result = compute_abs(*x);
+					store(result, compute_abs(load(x)));
 				},
 				layout,
 				std::get<ops::abs_operation::OUTPUT_OPERAND_RESULT>(outputs),
@@ -113,7 +100,7 @@ std::shared_ptr<program> make_abs_program(
 			run_elementwise_loop(
 				[] (T* result, const std::complex<T>* x)
 				{
-					*result = compute_abs(*x);
+					store(result, std::abs(load(x)));
 				},
 				layout,
 				std::get<ops::abs_operation::OUTPUT_OPERAND_RESULT>(outputs),
@@ -212,7 +199,7 @@ std::shared_ptr<xmipp4::program> abs_program_builder::build(
 				type_list<type>()
 			);
 		},
-		compute_arithmetic_type_map(),
+		native_arithmetic_type_map(),
 		data_type
 	);
 }

@@ -32,7 +32,7 @@ public:
 	 */
 	enum input_operand_indices
 	{
-		INPUT_OPERAND_X,
+		INPUT_OPERAND_VALUE,
 
 		INPUT_OPERAND_COUNT
 	};

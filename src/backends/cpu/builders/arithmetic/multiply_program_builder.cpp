@@ -44,8 +44,8 @@ std::shared_ptr<program> make_multiply_program(
 				},
 				layout,
 				std::get<ops::multiply_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::multiply_operation::INPUT_OPERAND_X>(inputs),
-				std::get<ops::multiply_operation::INPUT_OPERAND_Y>(inputs)
+				std::get<ops::multiply_operation::INPUT_OPERAND_LEFT>(inputs),
+				std::get<ops::multiply_operation::INPUT_OPERAND_RIGHT>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -114,10 +114,10 @@ std::shared_ptr<xmipp4::program> multiply_program_builder::build(
 		output_signatures[ops::multiply_operation::OUTPUT_OPERAND_RESULT]
 		.get_descriptor();
 	const auto &x_descriptor =
-		input_signatures[ops::multiply_operation::INPUT_OPERAND_X]
+		input_signatures[ops::multiply_operation::INPUT_OPERAND_LEFT]
 		.get_descriptor();
 	const auto &y_descriptor =
-		input_signatures[ops::multiply_operation::INPUT_OPERAND_Y]
+		input_signatures[ops::multiply_operation::INPUT_OPERAND_RIGHT]
 		.get_descriptor();
 
 	const auto data_type = result_descriptor.get_data_type();

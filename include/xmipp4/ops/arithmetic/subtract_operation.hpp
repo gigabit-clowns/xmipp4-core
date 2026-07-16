@@ -32,8 +32,8 @@ public:
 	 */
 	enum input_operand_indices
 	{
-		INPUT_OPERAND_X,
-		INPUT_OPERAND_Y,
+		INPUT_OPERAND_LEFT,
+		INPUT_OPERAND_RIGHT,
 
 		INPUT_OPERAND_COUNT
 	};

@@ -44,7 +44,7 @@ std::shared_ptr<program> make_negate_program(
 				},
 				layout,
 				std::get<ops::negate_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::negate_operation::INPUT_OPERAND_X>(inputs)
+				std::get<ops::negate_operation::INPUT_OPERAND_VALUE>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -113,7 +113,7 @@ std::shared_ptr<xmipp4::program> negate_program_builder::build(
 		output_signatures[ops::negate_operation::OUTPUT_OPERAND_RESULT]
 		.get_descriptor();
 	const auto &x_descriptor =
-		input_signatures[ops::negate_operation::INPUT_OPERAND_X]
+		input_signatures[ops::negate_operation::INPUT_OPERAND_VALUE]
 		.get_descriptor();
 
 	const auto data_type = result_descriptor.get_data_type();

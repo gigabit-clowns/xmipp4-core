@@ -88,7 +88,7 @@ std::shared_ptr<program> make_abs_program(
 				},
 				layout,
 				std::get<ops::abs_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::abs_operation::INPUT_OPERAND_X>(inputs)
+				std::get<ops::abs_operation::INPUT_OPERAND_VALUE>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -117,7 +117,7 @@ std::shared_ptr<program> make_abs_program(
 				},
 				layout,
 				std::get<ops::abs_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::abs_operation::INPUT_OPERAND_X>(inputs)
+				std::get<ops::abs_operation::INPUT_OPERAND_VALUE>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -186,7 +186,7 @@ std::shared_ptr<xmipp4::program> abs_program_builder::build(
 		output_signatures[ops::abs_operation::OUTPUT_OPERAND_RESULT]
 		.get_descriptor();
 	const auto &x_descriptor =
-		input_signatures[ops::abs_operation::INPUT_OPERAND_X]
+		input_signatures[ops::abs_operation::INPUT_OPERAND_VALUE]
 		.get_descriptor();
 
 	const auto data_type = x_descriptor.get_data_type();

@@ -44,8 +44,8 @@ std::shared_ptr<program> make_divide_program(
 				},
 				layout,
 				std::get<ops::divide_operation::OUTPUT_OPERAND_RESULT>(outputs),
-				std::get<ops::divide_operation::INPUT_OPERAND_X>(inputs),
-				std::get<ops::divide_operation::INPUT_OPERAND_Y>(inputs)
+				std::get<ops::divide_operation::INPUT_OPERAND_DIVIDEND>(inputs),
+				std::get<ops::divide_operation::INPUT_OPERAND_DIVISOR>(inputs)
 			);
 		},
 		type_list<T>(),
@@ -114,10 +114,10 @@ std::shared_ptr<xmipp4::program> divide_program_builder::build(
 		output_signatures[ops::divide_operation::OUTPUT_OPERAND_RESULT]
 		.get_descriptor();
 	const auto &x_descriptor =
-		input_signatures[ops::divide_operation::INPUT_OPERAND_X]
+		input_signatures[ops::divide_operation::INPUT_OPERAND_DIVIDEND]
 		.get_descriptor();
 	const auto &y_descriptor =
-		input_signatures[ops::divide_operation::INPUT_OPERAND_Y]
+		input_signatures[ops::divide_operation::INPUT_OPERAND_DIVISOR]
 		.get_descriptor();
 
 	const auto data_type = result_descriptor.get_data_type();

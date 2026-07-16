@@ -53,7 +53,7 @@ inline typename std::enable_if<
 compute_abs(T x)
 {
 	using std::abs;
-	return abs(x);
+	return static_cast<T>(abs(x));
 }
 
 /*

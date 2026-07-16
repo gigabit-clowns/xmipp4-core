@@ -4,8 +4,10 @@
 
 #include <xmipp4/core/dispatch/program_manager.hpp>
 
+#include "builders/arithmetic/abs_program_builder.hpp"
 #include "builders/arithmetic/add_program_builder.hpp"
 #include "builders/arithmetic/divide_program_builder.hpp"
+#include "builders/arithmetic/modulo_program_builder.hpp"
 #include "builders/arithmetic/multiply_program_builder.hpp"
 #include "builders/arithmetic/negate_program_builder.hpp"
 #include "builders/arithmetic/subtract_program_builder.hpp"
@@ -39,6 +41,12 @@ void register_program_builders(xmipp4::program_manager &manager)
 	);
 	manager.register_builder(
 		std::make_unique<negate_program_builder>()
+	);
+	manager.register_builder(
+		std::make_unique<modulo_program_builder>()
+	);
+	manager.register_builder(
+		std::make_unique<abs_program_builder>()
 	);
 }
 

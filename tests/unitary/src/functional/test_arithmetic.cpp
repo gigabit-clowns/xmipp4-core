@@ -16,6 +16,8 @@
 #include <xmipp4/ops/arithmetic/negate_operation.hpp>
 #include <xmipp4/ops/arithmetic/multiply_operation.hpp>
 #include <xmipp4/ops/arithmetic/divide_operation.hpp>
+#include <xmipp4/ops/arithmetic/modulo_operation.hpp>
+#include <xmipp4/ops/arithmetic/abs_operation.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/hardware/device_context.hpp>
@@ -245,6 +247,35 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	array_arithmetic_fixture,
+	"subtract dispatches a subtract_operation reusing the provided output "
+	"array's storage",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto y_buffer = std::make_shared<mock_buffer>();
+	const auto out_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	array y_array(y_buffer, descriptor);
+	const_array_ref x = x_array;
+	const_array_ref y = y_array;
+	array out(out_buffer, descriptor);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = subtract(x, y, context, &out);
+
+	CHECK( result.get_storage() == out_buffer.get() );
+	CHECK( record.called );
+	CHECK( *record.operation_type == typeid(subtract_operation) );
+	CHECK( record.first_output_storage == out_buffer.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
 	"multiply dispatches a multiply_operation with both inputs in order",
 	"[array_arithmetic]"
 )
@@ -274,6 +305,35 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	array_arithmetic_fixture,
+	"multiply dispatches a multiply_operation reusing the provided output "
+	"array's storage",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto y_buffer = std::make_shared<mock_buffer>();
+	const auto out_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	array y_array(y_buffer, descriptor);
+	const_array_ref x = x_array;
+	const_array_ref y = y_array;
+	array out(out_buffer, descriptor);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = multiply(x, y, context, &out);
+
+	CHECK( result.get_storage() == out_buffer.get() );
+	CHECK( record.called );
+	CHECK( *record.operation_type == typeid(multiply_operation) );
+	CHECK( record.first_output_storage == out_buffer.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
 	"divide dispatches a divide_operation with both inputs in order",
 	"[array_arithmetic]"
 )
@@ -299,6 +359,96 @@ TEST_CASE_METHOD(
 	CHECK( record.num_inputs == 2 );
 	CHECK( record.first_input_storage == x_buffer.get() );
 	CHECK( record.second_input_storage == y_buffer.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
+	"divide dispatches a divide_operation reusing the provided output "
+	"array's storage",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto y_buffer = std::make_shared<mock_buffer>();
+	const auto out_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	array y_array(y_buffer, descriptor);
+	const_array_ref x = x_array;
+	const_array_ref y = y_array;
+	array out(out_buffer, descriptor);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = divide(x, y, context, &out);
+
+	CHECK( result.get_storage() == out_buffer.get() );
+	CHECK( record.called );
+	CHECK( *record.operation_type == typeid(divide_operation) );
+	CHECK( record.first_output_storage == out_buffer.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
+	"modulo dispatches a modulo_operation with both inputs and no "
+	"pre-allocated output when out is null",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto y_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	array y_array(y_buffer, descriptor);
+	const_array_ref x = x_array;
+	const_array_ref y = y_array;
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	modulo(x, y, context, nullptr);
+
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(modulo_operation) );
+	CHECK( record.num_outputs == 1 );
+	CHECK( record.num_inputs == 2 );
+	CHECK( record.first_output_storage == nullptr );
+	CHECK( record.first_input_storage == x_buffer.get() );
+	CHECK( record.second_input_storage == y_buffer.get() );
+	CHECK( record.device_session == session.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
+	"modulo dispatches a modulo_operation reusing the provided output "
+	"array's storage",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto y_buffer = std::make_shared<mock_buffer>();
+	const auto out_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	array y_array(y_buffer, descriptor);
+	const_array_ref x = x_array;
+	const_array_ref y = y_array;
+	array out(out_buffer, descriptor);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = modulo(x, y, context, &out);
+
+	CHECK( result.get_storage() == out_buffer.get() );
+	CHECK( record.called );
+	CHECK( *record.operation_type == typeid(modulo_operation) );
+	CHECK( record.first_output_storage == out_buffer.get() );
 }
 
 TEST_CASE_METHOD(
@@ -352,5 +502,59 @@ TEST_CASE_METHOD(
 	CHECK( result.get_storage() == out_buffer.get() );
 	CHECK( record.called );
 	CHECK( *record.operation_type == typeid(negate_operation) );
+	CHECK( record.first_output_storage == out_buffer.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
+	"abs dispatches an abs_operation with a single input and no "
+	"pre-allocated output when out is null",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	const_array_ref x = x_array;
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	abs(x, context, nullptr);
+
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(abs_operation) );
+	CHECK( record.num_outputs == 1 );
+	CHECK( record.num_inputs == 1 );
+	CHECK( record.first_output_storage == nullptr );
+	CHECK( record.first_input_storage == x_buffer.get() );
+	CHECK( record.device_session == session.get() );
+}
+
+TEST_CASE_METHOD(
+	array_arithmetic_fixture,
+	"abs dispatches an abs_operation reusing the provided output array's "
+	"storage",
+	"[array_arithmetic]"
+)
+{
+	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto x_buffer = std::make_shared<mock_buffer>();
+	const auto out_buffer = std::make_shared<mock_buffer>();
+	array x_array(x_buffer, descriptor);
+	const_array_ref x = x_array;
+	array out(out_buffer, descriptor);
+
+	dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = abs(x, context, &out);
+
+	CHECK( result.get_storage() == out_buffer.get() );
+	CHECK( record.called );
+	CHECK( *record.operation_type == typeid(abs_operation) );
 	CHECK( record.first_output_storage == out_buffer.get() );
 }

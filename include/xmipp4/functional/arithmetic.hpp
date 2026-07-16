@@ -68,6 +68,24 @@ array negate(
 );
 
 /**
+ * @brief Compute the element-wise absolute value of an array.
+ *
+ * For complex types, the output is the real equivalent of the input type
+ * (e.g. complex_float32 -> float32).
+ *
+ * @param x The array from which the absolute value is computed.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise absolute value.
+ */
+XMIPP4_CORE_API
+array abs(
+	const_array_ref& x,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
  * @brief Compute the element-wise product of two arrays.
  *
  * The inputs must be broadcast-compatible and share the same numerical

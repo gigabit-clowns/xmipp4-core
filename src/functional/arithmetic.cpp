@@ -3,6 +3,7 @@
 #include <xmipp4/functional/arithmetic.hpp>
 
 #include <xmipp4/core/dispatch/execute.hpp>
+#include <xmipp4/ops/arithmetic/abs_operation.hpp>
 #include <xmipp4/ops/arithmetic/add_operation.hpp>
 #include <xmipp4/ops/arithmetic/divide_operation.hpp>
 #include <xmipp4/ops/arithmetic/modulo_operation.hpp>
@@ -40,6 +41,15 @@ array negate(
 )
 {
 	return execute_unary(ops::negate_operation(), x, context, out);
+}
+
+array abs(
+	const_array_ref& x,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_unary(ops::abs_operation(), x, context, out);
 }
 
 array multiply(

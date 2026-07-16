@@ -53,17 +53,6 @@ std::shared_ptr<program> make_subtract_program(
 	);
 }
 
-XMIPP4_NORETURN
-std::shared_ptr<program> make_subtract_program(
-	joint_layout /*layout*/,
-	type_list<void> /*types*/
-)
-{
-	throw std::invalid_argument(
-		"subtract_program_builder::build: Expected arithmetic type."
-	);
-}
-
 } // anonymous namespace
 
 operation_id
@@ -152,7 +141,6 @@ std::shared_ptr<xmipp4::program> subtract_program_builder::build(
 				type_list<type>()
 			);
 		},
-		native_arithmetic_type_map(),
 		data_type
 	);
 }

@@ -18,6 +18,7 @@
 #include <backends/cpu/load_store.hpp>
 
 #include <tuple>
+#include <type_traits>
 
 namespace xmipp4
 {
@@ -28,7 +29,11 @@ namespace
 {
 
 template <typename T>
-std::shared_ptr<program> make_divide_program(
+typename std::enable_if<
+	!std::is_same<T, bool>::value,
+	std::shared_ptr<program>
+>::type
+make_divide_program(
 	joint_layout layout,
 	type_list<T> /*types*/
 )
@@ -53,14 +58,19 @@ std::shared_ptr<program> make_divide_program(
 	);
 }
 
+template <typename T>
 XMIPP4_NORETURN
-std::shared_ptr<program> make_divide_program(
+typename std::enable_if<
+	std::is_same<T, bool>::value,
+	std::shared_ptr<program>
+>::type
+make_divide_program(
 	joint_layout /*layout*/,
-	type_list<void> /*types*/
+	type_list<T> /*types*/
 )
 {
 	throw std::invalid_argument(
-		"divide_program_builder::build: Expected arithmetic type."
+		"divide_program_builder::build: Boolean type is not supported."
 	);
 }
 
@@ -152,7 +162,6 @@ std::shared_ptr<xmipp4::program> divide_program_builder::build(
 				type_list<type>()
 			);
 		},
-		native_arithmetic_type_map(),
 		data_type
 	);
 }

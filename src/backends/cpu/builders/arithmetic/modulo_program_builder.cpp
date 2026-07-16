@@ -28,13 +28,6 @@ namespace cpu
 namespace
 {
 
-/*
- * C's "%"/fmod() give a result with the same sign as the dividend.
- * Python's modulo gives a result with the same sign as the divisor
- * instead. The overloads below adjust the C result accordingly, split
- * by category, as unsigned types can never require an adjustment.
- */
-
 template <typename T>
 inline T to_divisor_sign(T remainder, T divisor)
 {
@@ -73,8 +66,22 @@ floor_mod(T x, T y)
 	return to_divisor_sign(fmod(x, y), y);
 }
 
+
+
 template <typename T>
-std::shared_ptr<program> make_modulo_program(
+struct is_modulable : std::integral_constant<
+	bool,
+	(std::is_integral<T>::value && !std::is_same<T, bool>::value) ||
+	std::is_floating_point<T>::value ||
+	std::is_same<T, float16_t>::value
+> {};
+
+template <typename T>
+typename std::enable_if<
+	is_modulable<T>::value,
+	std::shared_ptr<program>
+>::type
+make_modulo_program(
 	joint_layout layout,
 	type_list<T> /*types*/
 )
@@ -99,14 +106,19 @@ std::shared_ptr<program> make_modulo_program(
 	);
 }
 
+template <typename T>
 XMIPP4_NORETURN
-std::shared_ptr<program> make_modulo_program(
+typename std::enable_if<
+	!is_modulable<T>::value,
+	std::shared_ptr<program>
+>::type
+make_modulo_program(
 	joint_layout /*layout*/,
-	type_list<void> /*types*/
+	type_list<T> /*types*/
 )
 {
 	throw std::invalid_argument(
-		"modulo_program_builder::build: Expected arithmetic type."
+		"modulo_program_builder::build: Expected a real arithmetic type."
 	);
 }
 
@@ -198,7 +210,6 @@ std::shared_ptr<xmipp4::program> modulo_program_builder::build(
 				type_list<type>()
 			);
 		},
-		type_map_cat<native_integer_type_map, native_floating_type_map>::type(),
 		data_type
 	);
 }

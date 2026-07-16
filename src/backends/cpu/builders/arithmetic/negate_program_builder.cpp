@@ -18,6 +18,8 @@
 #include <backends/cpu/load_store.hpp>
 
 #include <tuple>
+#include <complex>
+#include <type_traits>
 
 namespace xmipp4
 {
@@ -27,8 +29,26 @@ namespace cpu
 namespace
 {
 
+// Negate is defined for the signed arithmetic types: signed integers
+// (including char8 where char is signed), floating point (including
+// float16_t) and complex. Unsigned integers and boolean are rejected.
 template <typename T>
-std::shared_ptr<program> make_negate_program(
+struct is_negatable : std::integral_constant<
+	bool,
+	(std::is_integral<T>::value && std::is_signed<T>::value) ||
+	std::is_floating_point<T>::value ||
+	std::is_same<T, float16_t>::value
+> {};
+
+template <typename T>
+struct is_negatable<std::complex<T>> : std::true_type {};
+
+template <typename T>
+typename std::enable_if<
+	is_negatable<T>::value,
+	std::shared_ptr<program>
+>::type
+make_negate_program(
 	joint_layout layout,
 	type_list<T> /*types*/
 )
@@ -52,10 +72,15 @@ std::shared_ptr<program> make_negate_program(
 	);
 }
 
+template <typename T>
 XMIPP4_NORETURN
-std::shared_ptr<program> make_negate_program(
+typename std::enable_if<
+	!is_negatable<T>::value,
+	std::shared_ptr<program>
+>::type
+make_negate_program(
 	joint_layout /*layout*/,
-	type_list<void> /*types*/
+	type_list<T> /*types*/
 )
 {
 	throw std::invalid_argument(
@@ -139,11 +164,6 @@ std::shared_ptr<xmipp4::program> negate_program_builder::build(
 				type_list<type>()
 			);
 		},
-		type_map_cat<
-			native_signed_integer_type_map,
-			native_floating_type_map,
-			native_complex_type_map
-		>::type(),
 		data_type
 	);
 }

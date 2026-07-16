@@ -29,12 +29,6 @@ namespace cpu
 namespace
 {
 
-/*
- * std::abs() has no overload for unsigned types and is ambiguous when
- * called with one (it would need to promote to a signed type), even
- * though the value is trivially its own absolute value.
- */
-
 template <typename T>
 inline typename std::enable_if<
 	std::is_integral<T>::value && std::is_unsigned<T>::value,
@@ -109,17 +103,6 @@ std::shared_ptr<program> make_abs_program(
 		},
 		type_list<T>(),
 		type_list<std::complex<T>>()
-	);
-}
-
-XMIPP4_NORETURN
-std::shared_ptr<program> make_abs_program(
-	joint_layout /*layout*/,
-	type_list<void> /*types*/
-)
-{
-	throw std::invalid_argument(
-		"abs_program_builder::build: Expected arithmetic type."
 	);
 }
 
@@ -199,7 +182,6 @@ std::shared_ptr<xmipp4::program> abs_program_builder::build(
 				type_list<type>()
 			);
 		},
-		native_arithmetic_type_map(),
 		data_type
 	);
 }

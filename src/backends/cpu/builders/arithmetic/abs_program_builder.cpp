@@ -55,6 +55,21 @@ compute_abs(T x)
 	return abs(x);
 }
 
+/*
+ * libc++'s std::abs(const std::complex<T>&) computes std::hypot(real, imag)
+ * and implicitly converts the (possibly promoted) result back to T. That
+ * conversion is ill-formed for half_float::half, whose from-float
+ * constructor is explicit. Computing the hypot directly sidesteps
+ * std::complex's abs() altogether; ADL resolves it to half_float::hypot
+ * for half, which already returns a half.
+ */
+template <typename T>
+inline T compute_abs(const std::complex<T> &x)
+{
+	using std::hypot;
+	return hypot(x.real(), x.imag());
+}
+
 template <typename T>
 std::shared_ptr<program> make_abs_program(
 	joint_layout layout,
@@ -97,7 +112,7 @@ std::shared_ptr<program> make_abs_program(
 			run_elementwise_loop(
 				[] (T* result, const std::complex<T>* x)
 				{
-					*result = std::abs(*x);
+					*result = compute_abs(*x);
 				},
 				layout,
 				std::get<ops::abs_operation::OUTPUT_OPERAND_RESULT>(outputs),

@@ -5,26 +5,62 @@
 #include <xmipp4/core/hardware/device_session.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
-#include <core/named_service_manager_implementation.hpp>
 #include <backends/cpu/hardware/device_backend.hpp>
 
 #include <stdexcept>
+#include <tuple>
 #include <unordered_map>
 
 namespace xmipp4
 {
 
 class device_manager::implementation
-	: public named_service_manager_implementation<device_backend>
 {
 public:
+	bool register_backend(std::unique_ptr<device_backend> backend)
+	{
+		if (!backend)
+		{
+			return false;
+		}
+
+		auto name = backend->get_name();
+		bool inserted;
+		std::tie(std::ignore, inserted) = m_backends.emplace(
+			std::move(name),
+			std::move(backend)
+		);
+
+		return inserted;
+	}
+
+	void enumerate_backends(std::vector<std::string> &names) const
+	{
+		names.clear();
+		names.reserve(m_backends.size());
+		for(const auto &item : m_backends)
+		{
+			names.emplace_back(item.first);
+		}
+	}
+
+	device_backend* get_backend(const std::string &name) const
+	{
+		const auto ite = m_backends.find(name);
+		if (ite == m_backends.end())
+		{
+			return nullptr;
+		}
+
+		return ite->second.get();
+	}
+
 	void enumerate_devices(std::vector<device_index> &indices) const
 	{
 		XMIPP4_ASSERT( indices.empty() );
 
-		const auto &backends = get_backend_map();
 		std::vector<std::size_t> ids;
-		for(const auto &item : backends)
+		for(const auto &item : m_backends)
 		{
 			const auto *backend = item.second.get();
 			XMIPP4_ASSERT(backend);
@@ -35,6 +71,9 @@ public:
 			}
 		}
 	}
+
+private:
+	std::unordered_map<std::string, std::unique_ptr<device_backend>> m_backends;
 };
 
 device_manager::device_manager() = default;

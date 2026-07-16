@@ -3,13 +3,14 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "../named_backend.hpp"
+#include "../version.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
-namespace xmipp4 
+namespace xmipp4
 {
 
 class device;
@@ -30,16 +31,29 @@ class device;
  * meant to live behind a stable pointer owned by the @ref device_manager.
  */
 class XMIPP4_CORE_API device_backend
-	: public named_backend
 {
 public:
 	device_backend() noexcept;
 	device_backend(const device_backend &other) = delete;
 	device_backend(device_backend &&other) = delete;
-	~device_backend() override;
+	virtual ~device_backend();
 
 	device_backend& operator=(const device_backend &other) = delete;
 	device_backend& operator=(device_backend &&other) = delete;
+
+	/**
+	 * @brief Get the name of the backend.
+	 *
+	 * @return std::string The name.
+	 */
+	virtual std::string get_name() const = 0;
+
+	/**
+	 * @brief Get the version of the backend.
+	 *
+	 * @return version The version.
+	 */
+	virtual version get_version() const = 0;
 
 	/**
 	 * @brief Enumerate available devices for this backend.

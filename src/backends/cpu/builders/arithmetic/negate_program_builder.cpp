@@ -9,6 +9,7 @@
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/numerical/numerical_cast.hpp>
+#include <xmipp4/core/platform/attributes.hpp>
 #include <xmipp4/backends/cpu/device.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
 
@@ -51,6 +52,7 @@ std::shared_ptr<program> make_negate_program(
 	);
 }
 
+XMIPP4_NORETURN
 std::shared_ptr<program> make_negate_program(
 	joint_layout /*layout*/,
 	type_list<void> /*types*/

@@ -9,6 +9,7 @@
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
 #include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/numerical/numerical_cast.hpp>
+#include <xmipp4/core/platform/attributes.hpp>
 #include <xmipp4/backends/cpu/device.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
 
@@ -57,6 +58,7 @@ make_fill_program(
 }
 
 template <typename T, typename Q>
+XMIPP4_NORETURN
 typename std::enable_if<
 	!std::is_constructible<T, Q>::value,
 	std::shared_ptr<program>

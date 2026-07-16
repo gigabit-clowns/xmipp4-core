@@ -25,8 +25,8 @@ class execution_context;
  */
 XMIPP4_CORE_API
 array add(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -46,8 +46,8 @@ array add(
  */
 XMIPP4_CORE_API
 array subtract(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -62,7 +62,7 @@ array subtract(
  */
 XMIPP4_CORE_API
 array negate(
-	const_array_ref& x,
+	const_array_ref x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -80,7 +80,7 @@ array negate(
  */
 XMIPP4_CORE_API
 array abs(
-	const_array_ref& x,
+	const_array_ref x,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -100,8 +100,8 @@ array abs(
  */
 XMIPP4_CORE_API
 array multiply(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -121,8 +121,8 @@ array multiply(
  */
 XMIPP4_CORE_API
 array divide(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out = nullptr
 );
@@ -145,8 +145,8 @@ array divide(
  */
 XMIPP4_CORE_API
 array modulo(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out = nullptr
 );

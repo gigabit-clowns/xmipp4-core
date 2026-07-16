@@ -15,8 +15,8 @@ namespace xmipp4
 {
 
 array add(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out
 )
@@ -25,8 +25,8 @@ array add(
 }
 
 array subtract(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out
 )
@@ -35,7 +35,7 @@ array subtract(
 }
 
 array negate(
-	const_array_ref& x,
+	const_array_ref x,
 	const execution_context &context,
 	array *out
 )
@@ -44,7 +44,7 @@ array negate(
 }
 
 array abs(
-	const_array_ref& x,
+	const_array_ref x,
 	const execution_context &context,
 	array *out
 )
@@ -53,8 +53,8 @@ array abs(
 }
 
 array multiply(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out
 )
@@ -63,8 +63,8 @@ array multiply(
 }
 
 array divide(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out
 )
@@ -73,8 +73,8 @@ array divide(
 }
 
 array modulo(
-	const_array_ref& x,
-	const_array_ref& y,
+	const_array_ref x,
+	const_array_ref y,
 	const execution_context &context,
 	array *out
 )

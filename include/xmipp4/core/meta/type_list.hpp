@@ -53,4 +53,41 @@ struct type_list_element<0, type_list<Head, Tail...>>
     using type = Head;
 };
 
+/**
+ * @brief Utility class to prepend a type to the front of a `type_list`.
+ *
+ * @tparam T Type to be prepended.
+ * @tparam List A specialization of `type_list` the type is prepended to.
+ */
+template <typename T, typename List>
+struct type_list_prepend;
+
+template <typename T, typename... Ts>
+struct type_list_prepend<T, type_list<Ts...>>
+{
+	using type = type_list<T, Ts...>;
+};
+
+/**
+ * @brief Utility class to obtain a `type_list` with a type repeated a fixed
+ * number of times.
+ *
+ * @tparam T Type to be repeated.
+ * @tparam N Number of repetitions.
+ */
+template <typename T, std::size_t N>
+struct repeated_type_list
+{
+	using type = typename type_list_prepend<
+		T,
+		typename repeated_type_list<T, N - 1>::type
+	>::type;
+};
+
+template <typename T>
+struct repeated_type_list<T, 0>
+{
+	using type = type_list<>;
+};
+
 } // namespace xmipp4

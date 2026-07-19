@@ -9,7 +9,6 @@
 
 #include <core/find_most_suitable_backend.hpp>
 #include <core/dispatch/core_program_builder_registry.hpp>
-#include <backends/cpu/program_builder_registrar.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -114,7 +113,6 @@ program_manager::~program_manager() = default;
 void program_manager::register_builtin_backends()
 {
 	get_core_program_builder_registry().register_all(*this);
-	cpu::register_program_builders(*this);
 }
 
 bool program_manager::register_builder(

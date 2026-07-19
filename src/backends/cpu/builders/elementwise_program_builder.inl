@@ -102,9 +102,9 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 	program_cache* /*cache*/
 ) const
 {
-	XMIPP4_CONST_CONSTEXPR std::size_t output_count =
+	XMIPP4_CONST_CONSTEXPR auto output_count =
 		static_cast<std::size_t>(Op::OUTPUT_OPERAND_COUNT);
-	XMIPP4_CONST_CONSTEXPR std::size_t input_count =
+	XMIPP4_CONST_CONSTEXPR auto input_count =
 		static_cast<std::size_t>(Op::INPUT_OPERAND_COUNT);
 
 	const auto *typed_operation = dynamic_cast<const Op*>(&operation);

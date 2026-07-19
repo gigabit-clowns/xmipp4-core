@@ -18,7 +18,7 @@ template <typename T>
 class fill_kernel
 {
 public:
-	fill_kernel(T value)
+	explicit fill_kernel(T value)
 		: m_value(value)
 	{
 	}

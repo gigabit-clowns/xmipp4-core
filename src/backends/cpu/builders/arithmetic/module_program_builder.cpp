@@ -20,14 +20,16 @@ struct add_kernel
 	template <typename T>
 	void operator()(T *result, const T *x, const T *y) const noexcept
 	{
-		store(result, load(x) / load(y));
+		store(result, load(x) % load(y));
 	}
 };
 
 template <typename T>
-struct divide_predicate : std::integral_constant<
+struct module_predicate : std::integral_constant<
 	bool,
-	!std::is_same<T, bool>::value
+	(std::is_integral<T>::value && !std::is_same<T, bool>::value) ||
+	std::is_floating_point<T>::value ||
+	std::is_same<T, float16_t>::value
 > {};
 
 } // anonymous namespace
@@ -36,7 +38,7 @@ XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	add,
 	ops::add_operation,
 	default_kernel_factory<add_kernel>,
-	homogeneous_type_dispatcher<divide_predicate>
+	homogeneous_type_dispatcher<module_predicate>
 );
 
 } // namespace cpu

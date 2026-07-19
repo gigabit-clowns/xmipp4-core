@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/ops/arithmetic/add_operation.hpp>
+#include <xmipp4/ops/arithmetic/divide_operation.hpp>
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
@@ -15,7 +15,7 @@ namespace cpu
 namespace
 {
 
-struct add_kernel
+struct divide_kernel
 {
 	template <typename T>
 	void operator()(T *result, const T *x, const T *y) const noexcept
@@ -33,9 +33,9 @@ struct divide_predicate : std::integral_constant<
 } // anonymous namespace
 
 XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
-	add,
-	ops::add_operation,
-	default_kernel_factory<add_kernel>,
+	divide,
+	ops::divide_operation,
+	default_kernel_factory<divide_kernel>,
 	homogeneous_type_dispatcher<divide_predicate>
 );
 

@@ -112,7 +112,7 @@ operand_signature make_float32_signature(std::size_t count)
 
 std::shared_ptr<host_buffer> make_float32_buffer(std::size_t count)
 {
-	return std::make_shared<host_buffer>(count * sizeof(float), 64);
+	return std::make_shared<host_buffer>(count * sizeof(float), alignof(float));
 }
 
 } // namespace

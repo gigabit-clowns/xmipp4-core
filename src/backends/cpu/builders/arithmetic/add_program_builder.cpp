@@ -22,6 +22,11 @@ struct add_kernel
 	{
 		store(result, load(x) + load(y));
 	}
+
+	void operator()(bool *result, const bool *x, const bool *y) const noexcept
+	{
+		store(result, load(x) || load(y));
+	}
 };
 
 } // anonymous namespace

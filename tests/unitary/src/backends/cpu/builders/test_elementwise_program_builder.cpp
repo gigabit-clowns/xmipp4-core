@@ -1,0 +1,285 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <catch2/catch_test_macros.hpp>
+
+#include <backends/cpu/builders/elementwise_program_builder.hpp>
+#include <backends/cpu/builders/default_kernel_factory.hpp>
+#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
+#include <backends/cpu/load_store.hpp>
+#include <backends/cpu/hardware/command_queue.hpp>
+
+#include <core/hardware/host_memory/host_buffer.hpp>
+
+#include <xmipp4/core/dispatch/operation.hpp>
+#include <xmipp4/core/dispatch/operation_arity.hpp>
+#include <xmipp4/core/dispatch/operand_signature.hpp>
+#include <xmipp4/backends/cpu/program.hpp>
+
+#include <xmipp4/core/hardware/buffer.hpp>
+#include <xmipp4/core/hardware/program.hpp>
+#include <xmipp4/core/layout/strided_layout.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/span.hpp>
+
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
+
+#include "../../../core/dispatch/mock/mock_operation.hpp"
+
+#include <array>
+#include <cstddef>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+using namespace xmipp4;
+using namespace xmipp4::cpu;
+
+namespace
+{
+
+// A self-contained binary elementwise operation. build() only reads the
+// operand-count enums and the operation type; the arity and policy getters
+// are provided to make the type concrete and are never invoked by the tests.
+class test_binary_operation final
+	: public operation
+{
+public:
+	enum output_operand_indices
+	{
+		OUTPUT_OPERAND_RESULT,
+
+		OUTPUT_OPERAND_COUNT
+	};
+
+	enum input_operand_indices
+	{
+		INPUT_OPERAND_LEFT,
+		INPUT_OPERAND_RIGHT,
+
+		INPUT_OPERAND_COUNT
+	};
+
+	std::string get_name() const override
+	{
+		return "test_binary";
+	}
+
+	operation_arity get_arity() const noexcept override
+	{
+		return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
+	}
+
+	const operation_shape_policy&
+	get_operation_shape_policy() const noexcept override
+	{
+		return ops::elementwise_operation_shape_policy::get();
+	}
+
+	const operation_data_type_policy&
+	get_operation_data_type_policy() const noexcept override
+	{
+		return ops::homogeneous_operation_data_type_policy::get();
+	}
+};
+
+// Per-element kernel adding the two inputs into the output.
+struct sum_kernel
+{
+	template <typename T>
+	void operator()(T *result, const T *x, const T *y) const noexcept
+	{
+		store(result, load(x) + load(y));
+	}
+};
+
+using test_builder = elementwise_program_builder<
+	test_binary_operation,
+	default_kernel_factory<sum_kernel>,
+	homogeneous_type_dispatcher<>
+>;
+
+operand_signature make_float32_signature(std::size_t count)
+{
+	const std::array<std::size_t, 1> extents { count };
+	return operand_signature(
+		strided_layout::make_contiguous_layout(make_span(extents)),
+		numerical_type::float32,
+		nullptr
+	);
+}
+
+std::shared_ptr<host_buffer> make_float32_buffer(std::size_t count)
+{
+	return std::make_shared<host_buffer>(count * sizeof(float), 64);
+}
+
+} // namespace
+
+TEST_CASE(
+	"elementwise_program_builder reports its target operation id",
+	"[elementwise_program_builder]"
+)
+{
+	const test_builder builder;
+
+	CHECK(
+		builder.get_operation_id() ==
+		operation_id::of<test_binary_operation>()
+	);
+}
+
+TEST_CASE(
+	"elementwise_program_builder builds a program applying the kernel "
+	"elementwise",
+	"[elementwise_program_builder]"
+)
+{
+	const test_builder builder;
+	const test_binary_operation operation;
+	cpu::command_queue queue;
+
+	const std::size_t count = 4;
+	const std::vector<operand_signature> outputs {
+		make_float32_signature(count)
+	};
+	const std::vector<operand_signature> inputs {
+		make_float32_signature(count),
+		make_float32_signature(count)
+	};
+
+	const auto program = builder.build(
+		operation,
+		make_span(outputs),
+		make_span(inputs),
+		queue,
+		nullptr
+	);
+	REQUIRE( program != nullptr );
+
+	const auto result_buffer = make_float32_buffer(count);
+	const auto left_buffer = make_float32_buffer(count);
+	const auto right_buffer = make_float32_buffer(count);
+
+	auto *result_ptr = static_cast<float*>(result_buffer->get_host_ptr());
+	auto *left_ptr = static_cast<float*>(left_buffer->get_host_ptr());
+	auto *right_ptr = static_cast<float*>(right_buffer->get_host_ptr());
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		left_ptr[i] = static_cast<float>(i);
+		right_ptr[i] = static_cast<float>(2 * i);
+	}
+
+	const std::vector<std::shared_ptr<buffer>> output_operands {
+		result_buffer
+	};
+	const std::vector<std::shared_ptr<const buffer>> input_operands {
+		left_buffer,
+		right_buffer
+	};
+	const std::vector<std::shared_ptr<buffer>> scratch_operands;
+
+	auto &executable = dynamic_cast<cpu::program&>(*program);
+	executable.execute(
+		make_span(output_operands),
+		make_span(input_operands),
+		make_span(scratch_operands)
+	);
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		CHECK( result_ptr[i] == static_cast<float>(3 * i) );
+	}
+}
+
+TEST_CASE(
+	"elementwise_program_builder::build throws on an unexpected operation type",
+	"[elementwise_program_builder]"
+)
+{
+	const test_builder builder;
+	const mock_operation operation;
+	cpu::command_queue queue;
+
+	const std::vector<operand_signature> outputs {
+		make_float32_signature(4)
+	};
+	const std::vector<operand_signature> inputs {
+		make_float32_signature(4),
+		make_float32_signature(4)
+	};
+
+	CHECK_THROWS_AS(
+		builder.build(
+			operation,
+			make_span(outputs),
+			make_span(inputs),
+			queue,
+			nullptr
+		),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"elementwise_program_builder::build throws on a wrong output signature "
+	"count",
+	"[elementwise_program_builder]"
+)
+{
+	const test_builder builder;
+	const test_binary_operation operation;
+	cpu::command_queue queue;
+
+	// The operation expects exactly one output.
+	const std::vector<operand_signature> outputs {
+		make_float32_signature(4),
+		make_float32_signature(4)
+	};
+	const std::vector<operand_signature> inputs {
+		make_float32_signature(4),
+		make_float32_signature(4)
+	};
+
+	CHECK_THROWS_AS(
+		builder.build(
+			operation,
+			make_span(outputs),
+			make_span(inputs),
+			queue,
+			nullptr
+		),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"elementwise_program_builder::build throws on a wrong input signature "
+	"count",
+	"[elementwise_program_builder]"
+)
+{
+	const test_builder builder;
+	const test_binary_operation operation;
+	cpu::command_queue queue;
+
+	const std::vector<operand_signature> outputs {
+		make_float32_signature(4)
+	};
+	// The operation expects exactly two inputs.
+	const std::vector<operand_signature> inputs {
+		make_float32_signature(4)
+	};
+
+	CHECK_THROWS_AS(
+		builder.build(
+			operation,
+			make_span(outputs),
+			make_span(inputs),
+			queue,
+			nullptr
+		),
+		std::invalid_argument
+	);
+}

@@ -5,7 +5,6 @@
 #include <xmipp4/core/dispatch/program_manager.hpp>
 
 #include "builders/assignment/copy_program_builder.hpp"
-#include "builders/assignment/fill_program_builder.hpp"
 
 namespace xmipp4
 {
@@ -16,9 +15,6 @@ void register_program_builders(xmipp4::program_manager &manager)
 {
 	manager.register_builder(
 		std::make_unique<copy_program_builder>()
-	);
-	manager.register_builder(
-		std::make_unique<fill_program_builder>()
 	);
 }
 

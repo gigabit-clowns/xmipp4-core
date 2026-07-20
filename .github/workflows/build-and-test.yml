@@ -76,14 +76,14 @@ jobs:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
           cl-coverage-tool: ${{ steps.install-coverage.outputs.opencppcoverage-pwsh }}
-          report-path: ${{ github.workspace }}/coverage.xml
+          report-path: ${{ github.workspace }}/coverage.lcov
 
       - name: Upload coverage report
         if: matrix.compiler.c != 'cl' && matrix.compiler.cxx != 'cl'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: coverage-report-${{ matrix.os }}-${{ matrix.compiler.c }}-${{ matrix.compiler.cxx }}
-          path: coverage.xml
+          path: coverage.lcov
 
       - name: Upload build folder (ubuntu-latest + gcc only)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

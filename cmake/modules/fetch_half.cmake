@@ -30,4 +30,13 @@ function(fetch_half)
 		INTERFACE
 			${half_INCLUDE_DIR}
 	)
+
+	# Disable literals as they are not used and they are producing whitespace
+	# warnings in Clang. Remove when eventually gets fixed: 
+	# https://sourceforge.net/p/half/discussion/general/thread/02d90668a5/
+	target_compile_definitions(
+		half
+		INTERFACE
+			HALF_ENABLE_CPP11_USER_LITERALS=0
+	)
 endfunction()

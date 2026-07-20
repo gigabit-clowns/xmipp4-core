@@ -6,11 +6,6 @@
 
 using namespace xmipp4;
 
-// All values used below are exactly representable in IEEE half precision,
-// so the round-trip through float16_t is lossless and can be checked with
-// exact equality after casting back to float. The correctness of the
-// underlying conversions is assumed (provided by half_float::half).
-
 TEST_CASE( "float16_t default constructor should produce zero", "[float16_t]" )
 {
 	float16_t x;

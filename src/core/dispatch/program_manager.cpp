@@ -8,7 +8,7 @@
 #include <xmipp4/core/dispatch/operation_id.hpp>
 
 #include <core/find_most_suitable_backend.hpp>
-#include <backends/cpu/program_builder_registrar.hpp>
+#include <core/dispatch/core_program_builder_registry.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -112,7 +112,7 @@ program_manager::~program_manager() = default;
 
 void program_manager::register_builtin_backends()
 {
-	cpu::register_program_builders(*this);
+	get_core_program_builder_registry().register_all(*this);
 }
 
 bool program_manager::register_builder(

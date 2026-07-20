@@ -106,6 +106,22 @@ private:
 template <typename Func>
 auto visit(Func &&func, const scalar_value &value);
 
+/**
+ * @brief Convert the value held by a scalar_value into a concrete type.
+ *
+ * Unlike get<T>(), which requires the requested type to match the stored one
+ * exactly, this dispatches on the stored numerical type and returns the value
+ * converted to @p T following numerical_cast's conversion rules.
+ *
+ * @tparam T Destination type. Must be one of the numerical_type native types.
+ * @param value The scalar value to convert.
+ * @return T The stored value converted to T.
+ * @throws std::bad_cast if the stored value's type can not be converted into
+ * T (e.g. a complex value into a real type).
+ */
+template <typename T>
+T scalar_value_cast(const scalar_value &value);
+
 } // namespace xmipp4
 
 #include "scalar_value.inl"

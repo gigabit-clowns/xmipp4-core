@@ -4,10 +4,14 @@
 
 #include "numerical_type_traits.hpp"
 #include "numerical_type_dispatch.hpp"
+#include "numerical_cast.hpp"
+
+#include "../platform/attributes.hpp"
 
 #include <new>
 #include <utility>
 #include <type_traits>
+#include <typeinfo>
 
 namespace xmipp4
 {
@@ -79,6 +83,41 @@ auto visit(Func &&func, const scalar_value &value)
 			return std::forward<Func>(func)(value.get<value_type>());
 		},
 		value.get_data_type()
+	);
+}
+
+namespace detail
+{
+
+template <typename T, typename Q>
+inline
+typename std::enable_if<std::is_constructible<T, Q>::value, T>::type
+scalar_value_cast_impl(const Q &value)
+{
+	return numerical_cast<T>(value);
+}
+
+template <typename T, typename Q>
+XMIPP4_NORETURN
+inline
+typename std::enable_if<!std::is_constructible<T, Q>::value, T>::type
+scalar_value_cast_impl(const Q&)
+{
+	throw std::bad_cast();
+}
+
+} // namespace detail
+
+template <typename T>
+inline
+T scalar_value_cast(const scalar_value &value)
+{
+	return visit(
+		[] (const auto &stored) -> T
+		{
+			return detail::scalar_value_cast_impl<T>(stored);
+		},
+		value
 	);
 }
 

@@ -57,12 +57,32 @@ function(xmipp4_add_component NAME DIR)
 			VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
 	)
 
+	# On Windows disable min and max macros
 	if(MSVC)
 		target_compile_definitions(
 			${NAME}
 			PRIVATE
 				NOMINMAX
 		)
+	endif()
+
+	# On Windows enable big objects
+	if(MSVC)
+		target_compile_options(
+			${NAME}
+			PRIVATE
+				/bigobj
+		)
+	elseif(MINGW)
+		target_compile_options(
+			${NAME}
+			PRIVATE
+				-Wa,-mbig-obj
+		)
+	endif()
+
+	# Enable warnings
+	if(MSVC)
 		target_compile_options(
 			${NAME}
 			PRIVATE

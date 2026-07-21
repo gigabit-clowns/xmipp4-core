@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <cstdint>
+#include <type_traits>
 
 #include "../platform/attributes.hpp"
 #include "../platform/dynamic_shared_object.h"
@@ -47,5 +48,20 @@ static_assert(sizeof(float32_t) == 4, "float32_t should be 4 bytes long");
  */
 using float64_t = double;
 static_assert(sizeof(float64_t) == 8, "float64_t should be 8 bytes long");
+
+/**
+ * @brief Determine if a type is a floating point type.
+ *
+ * Behaves like @c std::is_floating_point, but also considers
+ * @ref float16_t to be a floating point type, even though it does not
+ * provide native arithmetic support.
+ *
+ * @tparam T The type to be checked.
+ */
+template <typename T>
+struct is_floating_point : std::integral_constant<
+	bool,
+	std::is_floating_point<T>::value || std::is_same<T, float16_t>::value
+> {};
 
 } // namespace xmipp4

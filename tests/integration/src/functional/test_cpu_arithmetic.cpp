@@ -90,24 +90,6 @@ class cpu_execution_context_fixture_tmpl : public cpu_execution_context_fixture
 {
 };
 
-template <typename... Lists>
-struct type_list_cat;
-
-template <typename... Ts>
-struct type_list_cat<type_list<Ts...>>
-{
-	using type = type_list<Ts...>;
-};
-
-template <typename... As, typename... Bs, typename... Rest>
-struct type_list_cat<type_list<As...>, type_list<Bs...>, Rest...>
-	: type_list_cat<type_list<As..., Bs...>, Rest...>
-{
-};
-
-template <typename... Lists>
-using type_list_cat_t = typename type_list_cat<Lists...>::type;
-
 using signed_int_types = type_list<
 	std::int8_t, std::int16_t, std::int32_t, std::int64_t
 >;
@@ -213,12 +195,16 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"add computes the logical OR of two boolean arrays",
+	"add computes the element-wise sum of two boolean arrays",
 	"[array_arithmetic][cpu]"
 )
 {
 	const auto descriptor = make_descriptor({ 2, 3 }, numerical_type::boolean);
 
+	// bool is kept out of add_types: for booleans, sum/difference/product are
+	// implemented with ||/!=/&& instead of +/-/* to avoid a Windows compiler
+	// warning, but the result is identical elementwise, so it still tests the
+	// sum, just via a dedicated boolean-typed array.
 	auto x = full(
 		descriptor, memory_resource_affinity::device, scalar_value(false), context
 	);
@@ -330,7 +316,7 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"subtract computes the logical XOR of two boolean arrays",
+	"subtract computes the element-wise difference of two boolean arrays",
 	"[array_arithmetic][cpu]"
 )
 {
@@ -448,7 +434,7 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	cpu_execution_context_fixture,
-	"multiply computes the logical AND of two boolean arrays",
+	"multiply computes the element-wise product of two boolean arrays",
 	"[array_arithmetic][cpu]"
 )
 {

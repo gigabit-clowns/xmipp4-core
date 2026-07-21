@@ -90,4 +90,32 @@ struct repeated_type_list<T, 0>
 	using type = type_list<>;
 };
 
+/**
+ * @brief Utility class to concatenate an arbitrary number of `type_list`-s.
+ *
+ * @tparam Lists Sequence of `type_list` specializations to be concatenated.
+ */
+template <typename... Lists>
+struct type_list_cat;
+
+template <typename... Ts>
+struct type_list_cat<type_list<Ts...>>
+{
+	using type = type_list<Ts...>;
+};
+
+template <typename... As, typename... Bs, typename... Rest>
+struct type_list_cat<type_list<As...>, type_list<Bs...>, Rest...>
+	: type_list_cat<type_list<As..., Bs...>, Rest...>
+{
+};
+
+/**
+ * @brief Convenience alias for `type_list_cat<Lists...>::type`.
+ *
+ * @tparam Lists Sequence of `type_list` specializations to be concatenated.
+ */
+template <typename... Lists>
+using type_list_cat_t = typename type_list_cat<Lists...>::type;
+
 } // namespace xmipp4

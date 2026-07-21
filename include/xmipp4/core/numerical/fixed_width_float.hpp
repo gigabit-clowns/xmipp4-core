@@ -7,17 +7,18 @@
 #include <type_traits>
 
 #include "../platform/attributes.hpp"
+#include "../platform/dynamic_shared_object.h"
 
 namespace xmipp4
 {
 
 /**
  * @brief 16 bit floating point number representation.
- * 
+ *
  * As there is no standardized half-width float type in C/C++ use a
  * placeholder.
  */
-class float16_t 
+class XMIPP4_CORE_API float16_t
 {
 public:
 	float16_t() noexcept;

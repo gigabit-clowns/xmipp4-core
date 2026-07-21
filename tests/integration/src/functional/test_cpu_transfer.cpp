@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <xmipp4/functional/transfer.hpp>
 
@@ -9,6 +10,7 @@
 #include <xmipp4/core/dispatch/execution_context.hpp>
 #include <xmipp4/core/dispatch/program_manager.hpp>
 #include <xmipp4/core/dispatch/dispatcher.hpp>
+#include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/const_array.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
@@ -19,10 +21,13 @@
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/numerical/numerical_type_traits.hpp>
 #include <xmipp4/core/numerical/scalar_value.hpp>
 #include <xmipp4/core/span.hpp>
 
+#include <complex>
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 using namespace xmipp4;
@@ -76,6 +81,23 @@ protected:
 	service_catalog catalog;
 	execution_context context;
 };
+
+// TEMPLATE_LIST_TEST_CASE_METHOD requires the fixture to be a class template.
+template <typename T>
+class cpu_execution_context_fixture_tmpl : public cpu_execution_context_fixture
+{
+};
+
+using all_types = type_list_cat_t<
+	type_list<bool>,
+	type_list<char>,
+	type_list<std::int8_t, std::int16_t, std::int32_t, std::int64_t>,
+	type_list<std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t>,
+	type_list<float16_t, float32_t, float64_t>,
+	type_list<
+		std::complex<float16_t>, std::complex<float32_t>, std::complex<float64_t>
+	>
+>;
 
 } // namespace
 
@@ -148,25 +170,27 @@ TEST_CASE_METHOD(
 	}
 }
 
-TEST_CASE_METHOD(
-	cpu_execution_context_fixture,
+TEMPLATE_LIST_TEST_CASE_METHOD(
+	cpu_execution_context_fixture_tmpl,
 	"transfer_copy duplicates the source into independent storage on CPU",
-	"[array_transfer][cpu]"
+	"[array_transfer][cpu]",
+	all_types
 )
 {
-	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto descriptor =
+		this->make_descriptor({ 2, 3 }, numerical_type_of<TestType>::value);
 
 	const auto source = full(
 		descriptor,
 		memory_resource_affinity::host,
-		scalar_value(3.0f),
-		context
+		scalar_value(static_cast<TestType>(3)),
+		this->context
 	);
 
 	const auto result = transfer_copy(
 		source,
 		memory_resource_affinity::device,
-		context
+		this->context
 	);
 
 	CHECK( result.get_descriptor() == descriptor );
@@ -175,10 +199,9 @@ TEST_CASE_METHOD(
 	// the CPU host and device resources coincide.
 	CHECK( result.get_storage() != source.get_storage() );
 
-	const auto values = read_host<float>(result, 6);
-	for (const auto value : values)
+	for (const auto value : this->template read_host<TestType>(result, 6))
 	{
-		CHECK( value == 3.0f );
+		CHECK( value == static_cast<TestType>(3) );
 	}
 }
 
@@ -250,34 +273,36 @@ TEST_CASE_METHOD(
 	}
 }
 
-TEST_CASE_METHOD(
-	cpu_execution_context_fixture,
+TEMPLATE_LIST_TEST_CASE_METHOD(
+	cpu_execution_context_fixture_tmpl,
 	"to_device_copy and to_host_copy duplicate into independent storage on CPU",
-	"[array_transfer][cpu]"
+	"[array_transfer][cpu]",
+	all_types
 )
 {
-	const auto descriptor = make_descriptor({ 2, 3 });
+	const auto descriptor =
+		this->make_descriptor({ 2, 3 }, numerical_type_of<TestType>::value);
 
 	const auto source = full(
 		descriptor,
 		memory_resource_affinity::host,
-		scalar_value(4.0f),
-		context
+		scalar_value(static_cast<TestType>(4)),
+		this->context
 	);
 
-	const auto on_device = to_device_copy(source, context);
+	const auto on_device = to_device_copy(source, this->context);
 	CHECK( on_device.get_storage() != source.get_storage() );
 
-	const auto on_host = to_host_copy(source, context);
+	const auto on_host = to_host_copy(source, this->context);
 	CHECK( on_host.get_storage() != source.get_storage() );
 	CHECK( on_host.get_storage() != on_device.get_storage() );
 
-	for (const auto value : read_host<float>(on_device, 6))
+	for (const auto value : this->template read_host<TestType>(on_device, 6))
 	{
-		CHECK( value == 4.0f );
+		CHECK( value == static_cast<TestType>(4) );
 	}
-	for (const auto value : read_host<float>(on_host, 6))
+	for (const auto value : this->template read_host<TestType>(on_host, 6))
 	{
-		CHECK( value == 4.0f );
+		CHECK( value == static_cast<TestType>(4) );
 	}
 }

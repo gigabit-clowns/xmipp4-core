@@ -11,6 +11,7 @@ public:
 	implementation() noexcept
 		: m_type(device_type::unknown)
 		, m_total_memory_bytes(0)
+		, m_optimal_data_alignment(0)
 	{
 	}
 

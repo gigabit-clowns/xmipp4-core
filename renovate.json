@@ -16,8 +16,18 @@
       "description": "Security advisories bypass the 14-day delay",
       "matchUpdateTypes": ["security"],
       "minimumReleaseAge": "0 days"
+    },
+    {
+      "matchDatasources": ["custom.half"],
+      "extractVersion": "^/projects/half/files/half/(?<version>[0-9.]+)/$"
     }
   ],
+  "customDatasources": {
+    "half": {
+      "defaultRegistryUrlTemplate": "https://sourceforge.net/projects/half/files/half/",
+      "format": "html"
+    }
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -27,6 +37,13 @@
       "packageNameTemplate": "boostorg/boost",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^boost-(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["**/CMakeLists.txt"],
+      "matchStrings": ["fetch_half\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "half",
+      "datasourceTemplate": "custom.half"
     },
     {
       "customType": "regex",

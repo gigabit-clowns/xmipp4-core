@@ -28,7 +28,7 @@ include(fetch_boost)
 find_package(Threads REQUIRED)
 fetch_boost(VERSION 1.89.0)
 fetch_half(VERSION 2.2.1)
-fetch_spdlog(VERSION 1.15.0)
+fetch_spdlog(VERSION 1.17.0)
 
 if(WIN32)
 	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)

@@ -16,5 +16,43 @@
       "matchUpdateTypes": ["security"],
       "minimumReleaseAge": "0 days"
     }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^CMakeLists\\.txt$/"],
+      "matchStrings": ["fetch_boost\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "boost",
+      "packageNameTemplate": "boostorg/boost",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^boost-(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^CMakeLists\\.txt$/"],
+      "matchStrings": ["fetch_spdlog\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "spdlog",
+      "packageNameTemplate": "gabime/spdlog",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^tests/CMakeLists\\.txt$/"],
+      "matchStrings": ["fetch_catch2\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "catch2",
+      "packageNameTemplate": "catchorg/Catch2",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^tests/CMakeLists\\.txt$/"],
+      "matchStrings": ["fetch_trompeloeil\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "trompeloeil",
+      "packageNameTemplate": "rollbear/trompeloeil",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
   ]
 }

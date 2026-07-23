@@ -6,6 +6,7 @@
   ],
   "minimumReleaseAge": "14 days",
   "internalChecksFilter": "strict",
+  "ignorePresets": [":ignoreModulesAndTests"],
   "packageRules": [
     {
       "matchDepNames": ["python", "gigabit-clowns/.github"],

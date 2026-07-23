@@ -26,7 +26,7 @@ include(fetch_boost)
 
 # Find dependencies
 find_package(Threads REQUIRED)
-fetch_boost(VERSION 1.89.0)
+fetch_boost(VERSION 1.90.0)
 fetch_half(VERSION 2.2.1)
 fetch_spdlog(VERSION 1.17.0)
 

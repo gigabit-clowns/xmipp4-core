@@ -20,7 +20,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^CMakeLists\\.txt$/"],
+      "managerFilePatterns": ["**/CMakeLists.txt"],
       "matchStrings": ["fetch_boost\\(VERSION (?<currentValue>[^)]+)\\)"],
       "depNameTemplate": "boost",
       "packageNameTemplate": "boostorg/boost",
@@ -29,7 +29,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^CMakeLists\\.txt$/"],
+      "managerFilePatterns": ["**/CMakeLists.txt"],
       "matchStrings": ["fetch_spdlog\\(VERSION (?<currentValue>[^)]+)\\)"],
       "depNameTemplate": "spdlog",
       "packageNameTemplate": "gabime/spdlog",
@@ -38,7 +38,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^tests/CMakeLists\\.txt$/"],
+      "managerFilePatterns": ["**/CMakeLists.txt"],
       "matchStrings": ["fetch_catch2\\(VERSION (?<currentValue>[^)]+)\\)"],
       "depNameTemplate": "catch2",
       "packageNameTemplate": "catchorg/Catch2",
@@ -47,7 +47,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^tests/CMakeLists\\.txt$/"],
+      "managerFilePatterns": ["**/CMakeLists.txt"],
       "matchStrings": ["fetch_trompeloeil\\(VERSION (?<currentValue>[^)]+)\\)"],
       "depNameTemplate": "trompeloeil",
       "packageNameTemplate": "rollbear/trompeloeil",

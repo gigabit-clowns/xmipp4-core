@@ -31,7 +31,7 @@ jobs:
             architectures: "aarch64"
           - os: macos-latest
             architectures: "x86_64 arm64 universal2"
-          - os: windows-latest
+          - os: windows-latest # MSVC (cibuildwheel's default generator here) — see "Platform support" in README.md
             architectures: "AMD64 ARM64"
 
     runs-on: ${{ matrix.os }}

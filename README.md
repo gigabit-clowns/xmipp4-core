@@ -21,14 +21,12 @@ Core library for the xmipp4 framework
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_xmipp4-core&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_xmipp4-core)
 
 ## Platform support
-
 On Windows, the published binaries (wheels and conda packages) are built
 with MSVC. This is a hard requirement, not just the default: the C++ ABI
 (symbol mangling, vtable layout) is not compatible across compilers on
-Windows, so any code that links against xmipp4-core there — as opposed to
-only using the Python bindings — must also be built with MSVC. Linking
-against these binaries with MinGW/gcc will fail with undefined-reference
-errors on exported C++ symbols (e.g. class vtables).
+Windows, so any code that links against xmipp4-core there must also be built 
+with MSVC. Linking against these binaries with MinGW/gcc will fail with 
+undefined-reference errors on exported C++ symbols (e.g. class vtables).
 
 This only affects linking on Windows. xmipp4-core itself is still built
 and tested with gcc (via MinGW) in CI, since that only involves compiling

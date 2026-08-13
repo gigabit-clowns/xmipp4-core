@@ -4,145 +4,15 @@
 
 #include <xmipp4/functional/transfer.hpp>
 
-#include <xmipp4/core/dispatch/execution_context.hpp>
-#include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
-#include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/ops/assignment/copy_operation.hpp>
-#include <xmipp4/core/numerical/numerical_type.hpp>
-#include <xmipp4/core/span.hpp>
-#include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/device_session.hpp>
-#include <xmipp4/core/hardware/device_properties.hpp>
-#include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/command_queue.hpp>
-#include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/memory_resource_affinity.hpp>
 
-#include "../core/dispatch/mock/mock_dispatcher.hpp"
-#include "../core/hardware/mock/mock_device.hpp"
-#include "../core/hardware/mock/mock_memory_resource.hpp"
-#include "../core/hardware/mock/mock_memory_allocator.hpp"
-#include "../core/hardware/mock/mock_command_queue.hpp"
-#include "../core/hardware/mock/mock_buffer.hpp"
-
-#include <cstddef>
-#include <memory>
-#include <stdexcept>
-#include <typeinfo>
-#include <vector>
+#include "fixtures/verb_dispatch_fixture.hpp"
 
 using namespace xmipp4;
 using namespace xmipp4::ops;
 using trompeloeil::_;
-
-namespace
-{
-
-// Records the arguments seen by a mocked dispatch() call so that they can be
-// inspected after the function under test has returned. The operation type is
-// captured by value to stay valid past the operation's (temporary) lifetime.
-struct dispatch_record
-{
-	bool called = false;
-	const std::type_info *operation_type = nullptr;
-	std::size_t num_outputs = 0;
-	std::size_t num_inputs = 0;
-	const buffer *first_output_storage = nullptr;
-	const buffer *first_input_storage = nullptr;
-	const xmipp4::device_session *device_session = nullptr;
-
-	void operator()(
-		const operation &op,
-		span<array> outputs,
-		span<const const_array_ref> inputs,
-		const device_context &device_context
-	)
-	{
-		called = true;
-		operation_type = &typeid(op);
-		num_outputs = outputs.size();
-		num_inputs = inputs.size();
-		if (!outputs.empty())
-		{
-			first_output_storage = outputs[0].get_storage();
-		}
-		if (!inputs.empty())
-		{
-			first_input_storage = inputs[0].get_storage();
-		}
-		device_session = device_context.get_device_session().get();
-	}
-};
-
-class array_transfer_fixture
-{
-public:
-	array_transfer_fixture()
-		: device(std::make_shared<mock_device>())
-		, host_allocator(std::make_shared<mock_memory_allocator>())
-		, device_allocator(std::make_shared<mock_memory_allocator>())
-		, default_queue(std::make_shared<mock_command_queue>())
-		, dispatcher(std::make_shared<mock_dispatcher>())
-	{
-
-		device_properties properties;
-		properties.set_optimal_data_alignment(128);
-
-		REQUIRE_CALL(
-			*device,
-			get_memory_resource(memory_resource_affinity::host)
-		)
-			.LR_RETURN(host_resource);
-		REQUIRE_CALL(
-			*device,
-			get_memory_resource(memory_resource_affinity::device)
-		)
-			.LR_RETURN(device_resource);
-		REQUIRE_CALL(host_resource, create_allocator())
-			.RETURN(host_allocator);
-		REQUIRE_CALL(device_resource, create_allocator())
-			.RETURN(device_allocator);
-		REQUIRE_CALL(*device, create_command_queue())
-			.RETURN(default_queue);
-
-		session = std::make_shared<device_session>(
-			device,
-			std::move(properties)
-		);
-
-		context = execution_context(
-			device_context(session),
-			dispatcher
-		);
-	}
-
-protected:
-	array_descriptor make_descriptor(
-		std::vector<std::size_t> extents = { 2, 3 },
-		numerical_type data_type = numerical_type::float32
-	) const
-	{
-		return array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(extents)),
-			data_type
-		);
-	}
-
-	std::shared_ptr<mock_device> device;
-	std::shared_ptr<mock_memory_allocator> host_allocator;
-	std::shared_ptr<mock_memory_allocator> device_allocator;
-	mock_memory_resource host_resource;
-	mock_memory_resource device_resource;
-	std::shared_ptr<command_queue> default_queue;
-	std::shared_ptr<const device_session> session;
-	std::shared_ptr<mock_dispatcher> dispatcher;
-	execution_context context;
-};
-
-} // namespace
+using xmipp4::test::dispatch_record;
+using xmipp4::test::verb_dispatch_fixture;
 
 
 //
@@ -190,7 +60,7 @@ TEST_CASE(
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"transfer aliases the input when it already lives on the target memory "
 	"resource",
 	"[array_transfer]"
@@ -220,7 +90,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"transfer copies the input when it lives on a different memory resource",
 	"[array_transfer]"
 )
@@ -263,9 +133,9 @@ TEST_CASE_METHOD(
 	CHECK( *record.operation_type == typeid(copy_operation) );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 1 );
-	CHECK( record.first_output_storage == target_buffer.get() );
-	CHECK( record.first_input_storage == source_buffer.get() );
-	CHECK( record.device_session == session.get() );
+	CHECK( record.get_output_storage(0) == target_buffer.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
+	CHECK( record.session == session.get() );
 }
 
 
@@ -274,7 +144,7 @@ TEST_CASE_METHOD(
 //
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"transfer_copy allocates on the target allocator and dispatches a "
 	"copy_operation with the input as the single source",
 	"[array_transfer]"
@@ -312,13 +182,13 @@ TEST_CASE_METHOD(
 	CHECK( *record.operation_type == typeid(copy_operation) );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 1 );
-	CHECK( record.first_output_storage == target_buffer.get() );
-	CHECK( record.first_input_storage == source_buffer.get() );
-	CHECK( record.device_session == session.get() );
+	CHECK( record.get_output_storage(0) == target_buffer.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
+	CHECK( record.session == session.get() );
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"transfer_copy reuses the storage of the provided output array",
 	"[array_transfer]"
 )
@@ -355,8 +225,8 @@ TEST_CASE_METHOD(
 	CHECK( result.get_storage() == out_buffer.get() );
 	CHECK( out.get_storage() == out_buffer.get() );
 	CHECK( record.called );
-	CHECK( record.first_output_storage == out_buffer.get() );
-	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.get_output_storage(0) == out_buffer.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
 }
 
 
@@ -365,7 +235,7 @@ TEST_CASE_METHOD(
 //
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"to_device transfers using the device affinity",
 	"[array_transfer]"
 )
@@ -389,7 +259,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"to_host transfers using the host affinity",
 	"[array_transfer]"
 )
@@ -411,7 +281,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"to_device_copy allocates on the device allocator",
 	"[array_transfer]"
 )
@@ -441,11 +311,11 @@ TEST_CASE_METHOD(
 	CHECK( result.get_storage() == device_buffer.get() );
 	CHECK( record.called );
 	CHECK( *record.operation_type == typeid(copy_operation) );
-	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
 }
 
 TEST_CASE_METHOD(
-	array_transfer_fixture,
+	verb_dispatch_fixture,
 	"to_host_copy allocates on the host allocator",
 	"[array_transfer]"
 )
@@ -475,5 +345,5 @@ TEST_CASE_METHOD(
 	CHECK( result.get_storage() == host_buffer.get() );
 	CHECK( record.called );
 	CHECK( *record.operation_type == typeid(copy_operation) );
-	CHECK( record.first_input_storage == source_buffer.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
 }

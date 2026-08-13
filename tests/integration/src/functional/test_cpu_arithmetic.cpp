@@ -67,7 +67,7 @@ using abs_signed_types = type_list_cat_t<signed_int_types, float_types>;
 // whether char is signed on the platform, which is not a property an
 // operation should have.
 using negate_rejected_types = type_list_cat_t<
-	bool_types, char_types, unsigned_int_types, complex_types
+	bool_types, char_types, unsigned_int_types
 >;
 using modulo_rejected_types = type_list_cat_t<bool_types, complex_types>;
 using abs_rejected_types = type_list_cat_t<bool_types, char_types>;
@@ -745,6 +745,33 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 	for (const auto value : this->template read_host<TestType>(result, 6))
 	{
 		CHECK( value == static_cast<TestType>(-3) );
+	}
+}
+
+TEMPLATE_LIST_TEST_CASE_METHOD(
+	cpu_execution_context_fixture_tmpl,
+	"negate computes the element-wise negation of a complex array",
+	"[array_arithmetic][cpu]",
+	complex_types
+)
+{
+	using R = typename TestType::value_type;
+	const auto descriptor =
+		this->make_descriptor({ 2, 3 }, numerical_type_of<TestType>::value);
+
+	auto x = full(
+		descriptor, memory_resource_affinity::device,
+		scalar_value(TestType(3, -2)), this->context
+	);
+	const_array_ref x_ref = x;
+
+	const auto result = negate(x_ref, this->context, nullptr);
+
+	CHECK( result.get_descriptor() == descriptor );
+	for (const auto value : this->template read_host<TestType>(result, 6))
+	{
+		CHECK( static_cast<R>(value.real()) == static_cast<R>(-3) );
+		CHECK( static_cast<R>(value.imag()) == static_cast<R>(2) );
 	}
 }
 

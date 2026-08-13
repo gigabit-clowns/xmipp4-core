@@ -15,9 +15,8 @@ namespace ops
 /**
  * @brief Negate each element of the input array into the output array.
  *
- * Only types that can represent a negative value are admitted. Complex
- * types are left out, matching what the reference backend implements
- * rather than what negation is defined on.
+ * Only types that can represent a negative value are admitted, which rules
+ * out booleans, characters and unsigned integers.
  */
 XMIPP4_DECLARE_OPERATION(
 	negate,
@@ -25,9 +24,7 @@ XMIPP4_DECLARE_OPERATION(
 	XMIPP4_OPERANDS("result"),
 	XMIPP4_OPERANDS("value"),
 	elementwise_operation_shape_policy,
-	unary_homogeneous_rule<
-		domain_union<signed_integer_type_domain, floating_point_type_domain>
-	>
+	unary_homogeneous_rule<signed_arithmetic_type_domain>
 );
 
 } // namespace ops

@@ -151,4 +151,49 @@ array modulo(
 	array *out = nullptr
 );
 
+/**
+ * @brief Compute the element-wise floor division of two arrays.
+ *
+ * The inputs must be broadcast-compatible and share the same numerical
+ * type. When @p out is null, the shape and type of the result are deduced
+ * from the (broadcast) inputs.
+ *
+ * @param x The dividend array.
+ * @param y The divisor array.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise quotient, rounded down.
+ *
+ * @note The quotient is rounded towards negative infinity rather than
+ * towards zero, so that it pairs with the remainder computed by @ref
+ * modulo. Complex arrays are not accepted.
+ *
+ * @see modulo
+ */
+XMIPP4_CORE_API
+array floor_divide(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Compute the element-wise sign of an array.
+ *
+ * @param x The array whose sign is computed.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise sign.
+ *
+ * @note For complex types the result is the unit value with the same
+ * argument, x / |x|, rather than the sign of the real part.
+ */
+XMIPP4_CORE_API
+array sign(
+	const_array_ref x,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 } // namespace xmipp4

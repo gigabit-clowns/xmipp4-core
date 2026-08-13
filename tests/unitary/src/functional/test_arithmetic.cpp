@@ -7,9 +7,11 @@
 #include <xmipp4/ops/arithmetic/abs_operation.hpp>
 #include <xmipp4/ops/arithmetic/add_operation.hpp>
 #include <xmipp4/ops/arithmetic/divide_operation.hpp>
+#include <xmipp4/ops/arithmetic/floor_divide_operation.hpp>
 #include <xmipp4/ops/arithmetic/modulo_operation.hpp>
 #include <xmipp4/ops/arithmetic/multiply_operation.hpp>
 #include <xmipp4/ops/arithmetic/negate_operation.hpp>
+#include <xmipp4/ops/arithmetic/sign_operation.hpp>
 #include <xmipp4/ops/arithmetic/subtract_operation.hpp>
 
 #include "fixtures/verb_dispatch_fixture.hpp"
@@ -79,4 +81,23 @@ TEST_CASE_METHOD(
 )
 {
 	check_unary_verb<abs_operation>(abs);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"floor_divide dispatches a floor_divide_operation with both inputs in "
+	"order",
+	"[array_arithmetic]"
+)
+{
+	check_binary_verb<floor_divide_operation>(floor_divide);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"sign dispatches a sign_operation with its single input",
+	"[array_arithmetic]"
+)
+{
+	check_unary_verb<sign_operation>(sign);
 }

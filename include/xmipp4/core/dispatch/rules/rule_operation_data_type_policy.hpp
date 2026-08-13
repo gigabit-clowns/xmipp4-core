@@ -88,8 +88,11 @@ public:
 	) const override;
 
 private:
+	XMIPP4_STD_MEMBER_INTERFACE
 	span<const pivot_descriptor> m_pivots;
+	XMIPP4_STD_MEMBER_INTERFACE
 	span<const slot_descriptor> m_output_slots;
+	XMIPP4_STD_MEMBER_INTERFACE
 	span<const slot_descriptor> m_input_slots;
 
 	XMIPP4_STD_MEMBER_INTERFACE

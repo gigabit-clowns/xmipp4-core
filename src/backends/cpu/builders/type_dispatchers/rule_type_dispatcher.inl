@@ -74,13 +74,7 @@ bool rule_type_dispatcher<Rule, Support>::check_support(
 	return dispatch_numerical_types(
 		[] (auto... tags) -> bool
 		{
-			using pivot_types = type_list<typename decltype(tags)::type...>;
-
-			return rule_pivots_in_domain<
-				typename Rule::pivot_list,
-				pivot_types
-			>::value &&
-			Support<typename decltype(tags)::type...>::value;
+			return is_admissible<typename decltype(tags)::type...>::value;
 		},
 		resolution.get_pivot(PivotIndices)...
 	);
@@ -159,15 +153,12 @@ rule_type_dispatcher<Rule, Support>::dispatch_pivots(
 			// The operation's own domain gates instantiation, so a kernel
 			// never has to compile for an element type the operation
 			// does not accept.
+			using admissible = typename is_admissible<
+				typename decltype(tags)::type...
+			>::type;
+
 			return invoke_if(
-				std::integral_constant<
-					bool,
-					rule_pivots_in_domain<
-						typename Rule::pivot_list,
-						pivot_types
-					>::value &&
-					Support<typename decltype(tags)::type...>::value
-				>(),
+				admissible(),
 				std::forward<F>(factory),
 				pivot_types()
 			);

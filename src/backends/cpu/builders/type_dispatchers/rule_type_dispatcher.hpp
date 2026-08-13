@@ -6,6 +6,7 @@
 #include <xmipp4/core/dispatch/rules/operand_type_descriptor.hpp>
 #include <xmipp4/core/dispatch/rules/operand_type_resolution.hpp>
 #include <xmipp4/core/dispatch/rules/rule_operand_types.hpp>
+#include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/attributes.hpp>
 #include <xmipp4/core/span.hpp>
@@ -110,6 +111,29 @@ public:
 
 private:
 	using pivot_indices = std::make_index_sequence<Rule::pivot_count>;
+
+	/**
+	 * @brief Whether a pivot combination should be instantiated at all.
+	 *
+	 * Combines what the operation admits with what this backend can
+	 * execute. Named rather than spelled out where it is used, both because
+	 * the two callers must agree and because MSVC fails to compile the
+	 * expression when it is built inline from a generic lambda's pack.
+	 *
+	 * @tparam Pivots The candidate pivot element types.
+	 */
+	template <typename... Pivots>
+	struct is_admissible
+		: std::integral_constant<
+			bool,
+			rule_pivots_in_domain<
+				typename Rule::pivot_list,
+				type_list<Pivots...>
+			>::value &&
+			Support<Pivots...>::value
+		>
+	{
+	};
 
 	static type_rule_resolution resolve(
 		span<const numerical_type> output_types,

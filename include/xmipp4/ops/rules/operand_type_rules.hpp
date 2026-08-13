@@ -145,6 +145,100 @@ using binary_predicate_rule = operand_type_rule<
 >;
 
 /**
+ * @brief Binary operation producing two outputs of the operand type.
+ *
+ * Models operations computing two related results in one pass, such as the
+ * quotient and the remainder of a division.
+ *
+ * @tparam Domain The admissible element types.
+ */
+template <typename Domain = real_arithmetic_type_domain>
+using binary_homogeneous_pair_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_same_as<0>, slot_same_as<0>>,
+	type_list<slot_same_as<0>, slot_same_as<0>>
+>;
+
+/**
+ * @brief Unary operation taking a boolean mask alongside its operand.
+ *
+ * The mask is an operand rather than a parameter, so it takes part in the
+ * shape deduction like any other and may be broadcast against the operand
+ * it selects from.
+ *
+ * @tparam Domain The admissible element types of the masked operand.
+ */
+template <typename Domain = arithmetic_type_domain>
+using masked_unary_homogeneous_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_same_as<0>>,
+	type_list<slot_same_as<0>, slot_fixed<numerical_type::boolean>>
+>;
+
+/**
+ * @brief Binary operation taking a boolean mask alongside its operands.
+ *
+ * @tparam Domain The admissible element types of the masked operands.
+ */
+template <typename Domain = arithmetic_type_domain>
+using masked_binary_homogeneous_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_same_as<0>>,
+	type_list<
+		slot_same_as<0>,
+		slot_same_as<0>,
+		slot_fixed<numerical_type::boolean>
+	>
+>;
+
+/**
+ * @brief Selection between two operands driven by a boolean condition.
+ *
+ * The element type follows the operands being selected from and not the
+ * condition, which is why the pivot is taken from the second input rather
+ * than the first.
+ *
+ * @tparam Domain The admissible element types of the selected operands.
+ */
+template <typename Domain = any_type_domain>
+using selection_rule = operand_type_rule<
+	type_list<pivot_from_input<1, Domain>>,
+	type_list<slot_same_as<0>>,
+	type_list<
+		slot_fixed<numerical_type::boolean>,
+		slot_same_as<0>,
+		slot_same_as<0>
+	>
+>;
+
+/**
+ * @brief Binary operation whose operands have unrelated element types.
+ *
+ * Models operations combining values of two different kinds, such as
+ * scaling a floating point value by an integer power of two. The output
+ * follows the first operand.
+ *
+ * A backend dispatches the cartesian product of the two pivot domains, so
+ * such a rule costs an order of magnitude more instantiations than a single
+ * pivot one. Keep the second domain as narrow as the operation allows.
+ *
+ * @tparam FirstDomain The admissible element types of the first operand.
+ * @tparam SecondDomain The admissible element types of the second operand.
+ */
+template <
+	typename FirstDomain = floating_point_type_domain,
+	typename SecondDomain = signed_integer_type_domain
+>
+using binary_heterogeneous_rule = operand_type_rule<
+	type_list<
+		pivot_from_input<0, FirstDomain>,
+		pivot_from_input<1, SecondDomain>
+	>,
+	type_list<slot_same_as<0>>,
+	type_list<slot_same_as<0>, slot_same_as<1>>
+>;
+
+/**
  * @brief Nullary operation whose output element type is free.
  *
  * With no input to fix it, the element type is whatever the user supplied

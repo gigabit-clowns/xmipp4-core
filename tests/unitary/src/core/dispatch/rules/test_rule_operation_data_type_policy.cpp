@@ -7,8 +7,6 @@
 #include <xmipp4/core/dispatch/rules/operand_type_rule_engine.hpp>
 #include <xmipp4/ops/rules/operand_type_rules.hpp>
 
-#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
-
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -100,31 +98,36 @@ bool run_accept(
 } // anonymous namespace
 
 TEST_CASE(
-    "binary_homogeneous_rule should reproduce the homogeneous policy",
+    "binary_homogeneous_rule should require one shared element type",
     "[rule_operation_data_type_policy]"
 )
 {
-    const auto &legacy = ops::homogeneous_operation_data_type_policy::get();
     const auto &rule =
         rule_data_type_policy<ops::binary_homogeneous_rule<>>::get();
 
-    // Sweeping every operand pair is what makes this a parity statement
-    // rather than a spot check: the rule must accept and reject exactly
-    // what the policy it replaces does.
     for (const auto left : all_concrete_types())
     {
         for (const auto right : all_concrete_types())
         {
             const type_vector inputs = { left, right };
+            const auto outcome = run_deduce(rule, inputs, 1);
 
             INFO( "deduce(" << left << ", " << right << ")" );
-            CHECK( run_deduce(legacy, inputs, 1) ==
-                   run_deduce(rule, inputs, 1) );
+            if (left == right)
+            {
+                CHECK( !outcome.rejected );
+                CHECK( outcome.outputs == type_vector{ left } );
+            }
+            else
+            {
+                CHECK( outcome.rejected );
+            }
 
-            const type_vector outputs = { left };
+            // The inputs fix the output, so only the matching one is
+            // admitted.
             INFO( "accept(" << left << ")" );
-            CHECK( run_accept(legacy, outputs, inputs) ==
-                   run_accept(rule, outputs, inputs) );
+            CHECK( run_accept(rule, type_vector{ left }, inputs) ==
+                   (left != right) );
         }
     }
 }
@@ -200,27 +203,25 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "nullary_free_rule should reproduce the homogeneous policy for fill",
+    "nullary_free_rule should leave the element type to the output",
     "[rule_operation_data_type_policy]"
 )
 {
-    const auto &legacy = ops::homogeneous_operation_data_type_policy::get();
     const auto &rule =
         rule_data_type_policy<ops::nullary_free_rule<>>::get();
 
     const type_vector no_inputs;
 
-    // With no input to fix it, the element type stays undetermined.
-    CHECK( run_deduce(legacy, no_inputs, 1) == run_deduce(rule, no_inputs, 1) );
-    CHECK( run_deduce(rule, no_inputs, 1).outputs ==
-           type_vector{ numerical_type::unknown } );
+    // With no input to fix it, the element type stays undetermined until
+    // the caller supplies an output carrying one.
+    const auto outcome = run_deduce(rule, no_inputs, 1);
+    CHECK( !outcome.rejected );
+    CHECK( outcome.outputs == type_vector{ numerical_type::unknown } );
 
     for (const auto output : all_concrete_types())
     {
-        const type_vector outputs = { output };
         INFO( "accept(" << output << ")" );
-        CHECK( run_accept(legacy, outputs, no_inputs) ==
-               run_accept(rule, outputs, no_inputs) );
+        CHECK( !run_accept(rule, type_vector{ output }, no_inputs) );
     }
 }
 

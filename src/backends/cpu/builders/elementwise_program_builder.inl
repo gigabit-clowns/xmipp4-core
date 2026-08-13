@@ -11,7 +11,7 @@
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
 
-#include <backends/cpu/builders/operand_count_traits.hpp>
+#include <backends/cpu/builders/dispatcher_support_query.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
 
@@ -123,9 +123,9 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>
 ) const
 {
 	XMIPP4_CONST_CONSTEXPR auto output_count =
-		detail::operand_count_traits<Op>::output_count;
+		Op::output_operand_count;
 	XMIPP4_CONST_CONSTEXPR auto input_count =
-		detail::operand_count_traits<Op>::input_count;
+		Op::input_operand_count;
 
 	const auto base = program_builder::get_suitability(
 		operation,
@@ -175,9 +175,9 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 ) const
 {
 	XMIPP4_CONST_CONSTEXPR auto output_count =
-		detail::operand_count_traits<Op>::output_count;
+		Op::output_operand_count;
 	XMIPP4_CONST_CONSTEXPR auto input_count =
-		detail::operand_count_traits<Op>::input_count;
+		Op::input_operand_count;
 
 	const auto &typed_operation = operation_cast<Op>(operation);
 

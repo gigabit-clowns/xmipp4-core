@@ -87,6 +87,17 @@ public:
 	 */
 	const operation_descriptor& get_descriptor() const noexcept;
 
+	/**
+	 * @brief Get the identifier of @p Derived.
+	 *
+	 * Pinned to @p Derived rather than to the dynamic type, so that an
+	 * operation specialising another still dispatches to the builders of
+	 * the operation it specialises.
+	 *
+	 * @return operation_id The operation id.
+	 */
+	operation_id get_id() const noexcept override;
+
 	std::string get_name() const override;
 
 	operation_arity get_arity() const noexcept override;

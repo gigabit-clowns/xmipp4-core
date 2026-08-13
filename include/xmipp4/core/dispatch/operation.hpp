@@ -37,8 +37,16 @@ public:
 	/**
 	 * @brief Get an identifier that uniquely represents this operation.
 	 *
-	 * @return const operation_id& The operation id.
+	 * The identifier is what binds an operation to the program builders
+	 * implementing it, so a subclass that behaves as its base must report
+	 * the base's identifier rather than one of its own. The default
+	 * implementation derives it from the dynamic type and therefore does
+	 * not; override it, as @ref basic_operation does, whenever an
+	 * operation may be derived from.
+	 *
+	 * @return operation_id The operation id.
 	 */
+	virtual
 	operation_id get_id() const noexcept;
 
 	/**

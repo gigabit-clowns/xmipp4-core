@@ -29,6 +29,13 @@ basic_operation<Derived, Traits>::get_descriptor() const noexcept
 
 template <typename Derived, typename Traits>
 inline
+operation_id basic_operation<Derived, Traits>::get_id() const noexcept
+{
+	return operation_id::of<Derived>();
+}
+
+template <typename Derived, typename Traits>
+inline
 std::string basic_operation<Derived, Traits>::get_name() const
 {
 	return Traits::get_name();

@@ -17,7 +17,7 @@ namespace xmipp4
  * free value on the dispatch path. Realistic rules use one or two pivots.
  */
 XMIPP4_INLINE_CONST_CONSTEXPR
-std::size_t max_operand_type_pivot_count = 4;
+std::size_t max_operand_type_pivot_count = 8;
 
 /**
  * @brief Origin of the value of a typing rule pivot.

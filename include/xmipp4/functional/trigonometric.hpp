@@ -5,6 +5,8 @@
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/const_array_ref.hpp>
 
+#include <utility>
+
 namespace xmipp4
 {
 
@@ -258,6 +260,30 @@ array radians(
 	const_array_ref x,
 	const execution_context &context,
 	array *out = nullptr
+);
+
+/**
+ * @brief Compute the element-wise sine and cosine of an array at once.
+ *
+ * Cheaper than calling @ref sin and @ref cos in turn, the two sharing the
+ * argument reduction that dominates their cost. Rotations and projections
+ * need both.
+ *
+ * @param x The array whose sine and cosine are computed.
+ * @param context The execution context used for dispatching.
+ * @param sine Optional output parameter to be re-used.
+ * @param cosine Optional output parameter to be re-used.
+ * @return std::pair<array, array> The element-wise sine and cosine.
+ *
+ * @see sin
+ * @see cos
+ */
+XMIPP4_CORE_API
+std::pair<array, array> sincos(
+	const_array_ref x,
+	const execution_context &context,
+	array *sine = nullptr,
+	array *cosine = nullptr
 );
 
 } // namespace xmipp4

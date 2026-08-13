@@ -7,6 +7,7 @@
 #include <xmipp4/ops/arithmetic/abs_operation.hpp>
 #include <xmipp4/ops/arithmetic/add_operation.hpp>
 #include <xmipp4/ops/arithmetic/divide_operation.hpp>
+#include <xmipp4/ops/arithmetic/divmod_operation.hpp>
 #include <xmipp4/ops/arithmetic/floor_divide_operation.hpp>
 #include <xmipp4/ops/arithmetic/modulo_operation.hpp>
 #include <xmipp4/ops/arithmetic/multiply_operation.hpp>
@@ -19,6 +20,7 @@
 using namespace xmipp4;
 using namespace xmipp4::ops;
 using xmipp4::test::verb_dispatch_fixture;
+using trompeloeil::_;
 
 TEST_CASE_METHOD(
 	verb_dispatch_fixture,
@@ -100,4 +102,70 @@ TEST_CASE_METHOD(
 )
 {
 	check_unary_verb<sign_operation>(sign);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"divmod dispatches a divmod_operation with two outputs",
+	"[array_arithmetic]"
+)
+{
+	// The only verb in the catalog with more than one output, so this is
+	// what proves the multi-output path reaches the dispatcher intact.
+	std::shared_ptr<mock_buffer> x_storage;
+	std::shared_ptr<mock_buffer> y_storage;
+	const array x_array = make_operand(x_storage, numerical_type::int32);
+	const array y_array = make_operand(y_storage, numerical_type::int32);
+	const const_array_ref x = x_array;
+	const const_array_ref y = y_array;
+
+	test::dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(
+		trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_
+	))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	divmod(x, y, context, nullptr, nullptr);
+
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(divmod_operation) );
+	CHECK( record.num_outputs == 2 );
+	CHECK( record.num_inputs == 2 );
+	CHECK( record.get_input_storage(0) == x_storage.get() );
+	CHECK( record.get_input_storage(1) == y_storage.get() );
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"divmod reuses the storage of both pre-allocated outputs",
+	"[array_arithmetic]"
+)
+{
+	std::shared_ptr<mock_buffer> x_storage;
+	std::shared_ptr<mock_buffer> y_storage;
+	std::shared_ptr<mock_buffer> quotient_storage;
+	std::shared_ptr<mock_buffer> remainder_storage;
+	const array x_array = make_operand(x_storage, numerical_type::int32);
+	const array y_array = make_operand(y_storage, numerical_type::int32);
+	array quotient = make_operand(quotient_storage, numerical_type::int32);
+	array remainder = make_operand(remainder_storage, numerical_type::int32);
+	const const_array_ref x = x_array;
+	const const_array_ref y = y_array;
+
+	test::dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(
+		trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_
+	))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = divmod(x, y, context, &quotient, &remainder);
+
+	// Each output has to land in its own slot, in signature order. Getting
+	// the two the wrong way round is the mistake a single output verb
+	// cannot make.
+	CHECK( record.get_output_storage(0) == quotient_storage.get() );
+	CHECK( record.get_output_storage(1) == remainder_storage.get() );
+	CHECK( result.first.get_storage() == quotient_storage.get() );
+	CHECK( result.second.get_storage() == remainder_storage.get() );
 }

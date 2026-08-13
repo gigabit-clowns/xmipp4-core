@@ -17,6 +17,7 @@
 #include <xmipp4/ops/trigonometric/hypot_operation.hpp>
 #include <xmipp4/ops/trigonometric/radians_operation.hpp>
 #include <xmipp4/ops/trigonometric/sin_operation.hpp>
+#include <xmipp4/ops/trigonometric/sincos_operation.hpp>
 #include <xmipp4/ops/trigonometric/sinh_operation.hpp>
 #include <xmipp4/ops/trigonometric/tan_operation.hpp>
 #include <xmipp4/ops/trigonometric/tanh_operation.hpp>
@@ -26,6 +27,7 @@
 using namespace xmipp4;
 using namespace xmipp4::ops;
 using xmipp4::test::verb_dispatch_fixture;
+using trompeloeil::_;
 
 TEST_CASE_METHOD(
 	verb_dispatch_fixture,
@@ -169,4 +171,38 @@ TEST_CASE_METHOD(
 )
 {
 	check_unary_verb<radians_operation>(radians);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"sincos dispatches a sincos_operation with two outputs and one input",
+	"[array_trigonometric]"
+)
+{
+	std::shared_ptr<mock_buffer> x_storage;
+	std::shared_ptr<mock_buffer> sine_storage;
+	std::shared_ptr<mock_buffer> cosine_storage;
+	const array x_array = make_operand(x_storage);
+	array sine = make_operand(sine_storage);
+	array cosine = make_operand(cosine_storage);
+	const const_array_ref x = x_array;
+
+	test::dispatch_record record;
+	REQUIRE_CALL(*dispatcher, dispatch(
+		trompeloeil::_, trompeloeil::_, trompeloeil::_, trompeloeil::_
+	))
+		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+	const auto result = sincos(x, context, &sine, &cosine);
+
+	CHECK( record.called );
+	REQUIRE( record.operation_type != nullptr );
+	CHECK( *record.operation_type == typeid(sincos_operation) );
+	CHECK( record.num_outputs == 2 );
+	CHECK( record.num_inputs == 1 );
+	CHECK( record.get_input_storage(0) == x_storage.get() );
+	CHECK( record.get_output_storage(0) == sine_storage.get() );
+	CHECK( record.get_output_storage(1) == cosine_storage.get() );
+	CHECK( result.first.get_storage() == sine_storage.get() );
+	CHECK( result.second.get_storage() == cosine_storage.get() );
 }

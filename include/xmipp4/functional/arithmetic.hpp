@@ -5,6 +5,8 @@
 #include <xmipp4/core/ndarray/array.hpp>
 #include <xmipp4/core/ndarray/const_array_ref.hpp>
 
+#include <utility>
+
 namespace xmipp4
 {
 
@@ -194,6 +196,36 @@ array sign(
 	const_array_ref x,
 	const execution_context &context,
 	array *out = nullptr
+);
+
+/**
+ * @brief Compute the element-wise quotient and remainder of two arrays.
+ *
+ * Computing both at once is cheaper than calling @ref floor_divide and
+ * @ref modulo in turn, the division being the expensive half of each, and
+ * the two results agree by construction.
+ *
+ * @param x The dividend array.
+ * @param y The divisor array.
+ * @param context The execution context used for dispatching.
+ * @param quotient Optional output parameter to be re-used.
+ * @param remainder Optional output parameter to be re-used.
+ * @return std::pair<array, array> The element-wise quotient and remainder.
+ *
+ * @note As with @ref floor_divide the quotient is rounded towards negative
+ * infinity, so that it pairs with the remainder. Complex arrays are not
+ * accepted.
+ *
+ * @see floor_divide
+ * @see modulo
+ */
+XMIPP4_CORE_API
+std::pair<array, array> divmod(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *quotient = nullptr,
+	array *remainder = nullptr
 );
 
 } // namespace xmipp4

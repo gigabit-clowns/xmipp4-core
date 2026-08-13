@@ -145,6 +145,21 @@ using binary_predicate_rule = operand_type_rule<
 >;
 
 /**
+ * @brief Unary operation producing two outputs of the operand type.
+ *
+ * Models operations computing two related results from one operand in a
+ * single pass, such as the sine and the cosine of an angle.
+ *
+ * @tparam Domain The admissible element types.
+ */
+template <typename Domain = inexact_type_domain>
+using unary_homogeneous_pair_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_same_as<0>, slot_same_as<0>>,
+	type_list<slot_same_as<0>>
+>;
+
+/**
  * @brief Binary operation producing two outputs of the operand type.
  *
  * Models operations computing two related results in one pass, such as the

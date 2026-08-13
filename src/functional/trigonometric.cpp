@@ -3,6 +3,7 @@
 #include <xmipp4/functional/trigonometric.hpp>
 
 #include <xmipp4/core/dispatch/execute.hpp>
+#include <xmipp4/core/span.hpp>
 #include <xmipp4/ops/trigonometric/acos_operation.hpp>
 #include <xmipp4/ops/trigonometric/acosh_operation.hpp>
 #include <xmipp4/ops/trigonometric/asin_operation.hpp>
@@ -16,9 +17,13 @@
 #include <xmipp4/ops/trigonometric/hypot_operation.hpp>
 #include <xmipp4/ops/trigonometric/radians_operation.hpp>
 #include <xmipp4/ops/trigonometric/sin_operation.hpp>
+#include <xmipp4/ops/trigonometric/sincos_operation.hpp>
 #include <xmipp4/ops/trigonometric/sinh_operation.hpp>
 #include <xmipp4/ops/trigonometric/tan_operation.hpp>
 #include <xmipp4/ops/trigonometric/tanh_operation.hpp>
+
+#include <array>
+#include <utility>
 
 namespace xmipp4
 {
@@ -167,6 +172,39 @@ array radians(
 )
 {
 	return execute_unary(ops::radians_operation(), x, context, out);
+}
+
+std::pair<array, array> sincos(
+	const_array_ref x,
+	const execution_context &context,
+	array *sine,
+	array *cosine
+)
+{
+	// Seed the outputs from whichever the caller supplied, so that their
+	// storage is reused. The dispatcher writes back into this array, which
+	// is why the results come out of it rather than out of a return value.
+	std::array<array, 2> outputs;
+	if (sine)
+	{
+		outputs[0] = sine->share();
+	}
+	if (cosine)
+	{
+		outputs[1] = cosine->share();
+	}
+
+	execute_unary(
+		ops::sincos_operation(),
+		make_span(outputs),
+		x,
+		context
+	);
+
+	return std::make_pair(
+		std::move(outputs[0]),
+		std::move(outputs[1])
+	);
 }
 
 } // namespace xmipp4

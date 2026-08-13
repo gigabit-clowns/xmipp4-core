@@ -160,9 +160,7 @@ public:
  * @ref XMIPP4_DECLARE_OPERATION for the usual case.
  *
  * @param op The operation verb, such as `add`. The generated class is named
- * `<op>_operation`. Note that `and`, `or`, `not`, `xor`, `bitand`, `bitor`
- * and `compl` are alternative tokens in C++ and cannot be used here; spell
- * such operations `logical_and`, `bitwise_xor` and so on.
+ * `<op>_operation`. 
  * @param component_traits A type providing `get_component()`, naming the
  * component the operation belongs to.
  * @param outputs Output operand names, as @ref XMIPP4_OPERANDS.

@@ -31,7 +31,7 @@ struct multiply_kernel
 
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
 	multiply,
 	ops::multiply_operation,
 	default_kernel_factory<multiply_kernel>,

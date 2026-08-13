@@ -29,7 +29,7 @@ struct copy_predicate : std::is_convertible<Q, T> {};
 
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
 	copy,
 	ops::copy_operation,
 	default_kernel_factory<copy_kernel>,

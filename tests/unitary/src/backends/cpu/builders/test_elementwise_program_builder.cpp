@@ -199,8 +199,12 @@ TEST_CASE(
 )
 {
 	const test_builder builder;
-	const mock_operation operation;
+	mock_operation operation;
 	cpu::command_queue queue;
+
+	// The rejection names the operation it was handed, so the mock has to
+	// be able to answer that much.
+	ALLOW_CALL(operation, get_name()).RETURN("mock");
 
 	const std::vector<operand_signature> outputs {
 		make_float32_signature(4)

@@ -70,7 +70,7 @@ struct modulo_predicate : std::integral_constant<
 
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
 	modulo,
 	ops::modulo_operation,
 	default_kernel_factory<modulo_kernel>,

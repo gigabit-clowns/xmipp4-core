@@ -47,7 +47,7 @@ struct fill_kernel_factory
 
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
 	fill,
 	ops::fill_operation,
 	fill_kernel_factory,

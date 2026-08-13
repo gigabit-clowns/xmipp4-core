@@ -3,6 +3,7 @@
 #include "elementwise_program_builder.hpp"
 
 #include <xmipp4/core/dispatch/operation.hpp>
+#include <xmipp4/core/dispatch/operation_cast.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/joint_layout.hpp>
 #include <xmipp4/core/layout/joint_layout_builder.hpp>
@@ -10,6 +11,7 @@
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
 
+#include <backends/cpu/builders/operand_count_traits.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
 
@@ -82,6 +84,24 @@ private:
 	joint_layout m_layout;
 };
 
+/**
+ * @brief Copy the data type of every operand signature into an array.
+ *
+ * @param types Destination, sized to the operand count.
+ * @param signatures The operand signatures.
+ */
+template <std::size_t Count>
+void extract_data_types(
+	std::array<numerical_type, Count> &types,
+	span<const operand_signature> signatures
+) noexcept
+{
+	for (std::size_t i = 0; i < Count; ++i)
+	{
+		types[i] = signatures[i].get_data_type();
+	}
+}
+
 } // namespace detail
 
 template <typename Op, typename KernelFactory, typename TypeDispatcher>
@@ -90,6 +110,58 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>
 ::get_operation_id() const noexcept
 {
 	return operation_id::of<Op>();
+}
+
+template <typename Op, typename KernelFactory, typename TypeDispatcher>
+backend_priority
+elementwise_program_builder<Op, KernelFactory, TypeDispatcher>
+::get_suitability(
+	const operation &operation,
+	span<const operand_signature> output_signatures,
+	span<const operand_signature> input_signatures,
+	xmipp4::command_queue &queue
+) const
+{
+	XMIPP4_CONST_CONSTEXPR auto output_count =
+		detail::operand_count_traits<Op>::output_count;
+	XMIPP4_CONST_CONSTEXPR auto input_count =
+		detail::operand_count_traits<Op>::input_count;
+
+	const auto base = program_builder::get_suitability(
+		operation,
+		output_signatures,
+		input_signatures,
+		queue
+	);
+	if (base == backend_priority::unsupported)
+	{
+		return base;
+	}
+
+	if (output_signatures.size() != output_count ||
+	    input_signatures.size() != input_count)
+	{
+		return backend_priority::unsupported;
+	}
+
+	std::array<numerical_type, output_count> output_types;
+	std::array<numerical_type, input_count> input_types;
+	detail::extract_data_types(output_types, output_signatures);
+	detail::extract_data_types(input_types, input_signatures);
+
+	// Reporting an unsupported element type here, rather than throwing from
+	// build(), is what lets the manager fall through to another backend.
+	const auto supported =
+		detail::dispatcher_support_query<TypeDispatcher>::is_supported(
+			make_span(output_types.data(), output_count),
+			make_span(input_types.data(), input_count)
+		);
+	if (!supported)
+	{
+		return backend_priority::unsupported;
+	}
+
+	return base;
 }
 
 template <typename Op, typename KernelFactory, typename TypeDispatcher>
@@ -103,17 +175,11 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 ) const
 {
 	XMIPP4_CONST_CONSTEXPR auto output_count =
-		static_cast<std::size_t>(Op::OUTPUT_OPERAND_COUNT);
+		detail::operand_count_traits<Op>::output_count;
 	XMIPP4_CONST_CONSTEXPR auto input_count =
-		static_cast<std::size_t>(Op::INPUT_OPERAND_COUNT);
+		detail::operand_count_traits<Op>::input_count;
 
-	const auto *typed_operation = dynamic_cast<const Op*>(&operation);
-	if (typed_operation == nullptr)
-	{
-		throw std::invalid_argument(
-			"elementwise_program_builder::build: Unexpected operation type."
-		);
-	}
+	const auto &typed_operation = operation_cast<Op>(operation);
 
 	if (output_signatures.size() != output_count)
 	{
@@ -131,15 +197,9 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 	}
 
 	std::array<numerical_type, output_count> output_types;
-	for (std::size_t i = 0; i < output_count; ++i)
-	{
-		output_types[i] = output_signatures[i].get_data_type();
-	}
 	std::array<numerical_type, input_count> input_types;
-	for (std::size_t i = 0; i < input_count; ++i)
-	{
-		input_types[i] = input_signatures[i].get_data_type();
-	}
+	detail::extract_data_types(output_types, output_signatures);
+	detail::extract_data_types(input_types, input_signatures);
 
 	joint_layout_builder layout_builder;
 	for (const auto &signature : output_signatures)
@@ -154,11 +214,11 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 	auto layout = layout_builder.build();
 	const auto &factory = m_kernel_factory;
 	return m_type_dispatcher.dispatch(
-		[typed_operation, &layout, &factory]
+		[&typed_operation, &layout, &factory]
 		(auto output_element_types, auto input_element_types)
 		{
 			auto kernel = factory(
-				*typed_operation,
+				typed_operation,
 				output_element_types,
 				input_element_types
 			);

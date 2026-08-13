@@ -31,7 +31,7 @@ struct add_kernel
 
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
 	add,
 	ops::add_operation,
 	default_kernel_factory<add_kernel>,

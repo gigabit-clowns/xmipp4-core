@@ -12,8 +12,7 @@ namespace ops
  *
  * Every operation declaration names the component it belongs to, which
  * qualifies it in diagnostics and keeps the names of different components
- * apart. The generic catalog uses this one; the CryoEM catalog and each
- * plugin provide their own.
+ * apart. 
  *
  * @see XMIPP4_DECLARE_OPERATION
  */

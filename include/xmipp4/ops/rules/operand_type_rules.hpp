@@ -90,15 +90,46 @@ using unary_complex_of_rule = operand_type_rule<
 >;
 
 /**
+ * @brief Unary operation producing the inexact counterpart of its input.
+ *
+ * Models operations whose result has a fractional part the operand's own
+ * type could not hold, such as a mean, and leaves floating point and
+ * complex inputs untouched.
+ *
+ * @tparam Domain The admissible input element types.
+ */
+template <typename Domain = arithmetic_type_domain>
+using unary_inexact_of_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_inexact_of<0>>,
+	type_list<slot_same_as<0>>
+>;
+
+/**
+ * @brief Unary operation whose output has a fixed element type.
+ *
+ * Models operations whose result does not carry the input's type at all,
+ * such as a predicate or one producing indices.
+ *
+ * @tparam Type The element type of the output.
+ * @tparam Domain The admissible input element types.
+ */
+template <numerical_type Type, typename Domain = any_type_domain>
+using unary_fixed_output_rule = operand_type_rule<
+	type_list<pivot_from_input<0, Domain>>,
+	type_list<slot_fixed<Type>>,
+	type_list<slot_same_as<0>>
+>;
+
+/**
  * @brief Unary operation producing a boolean output.
  *
  * @tparam Domain The admissible input element types.
  */
 template <typename Domain = any_type_domain>
-using unary_predicate_rule = operand_type_rule<
-	type_list<pivot_from_input<0, Domain>>,
-	type_list<slot_fixed<numerical_type::boolean>>,
-	type_list<slot_same_as<0>>
+using unary_predicate_rule = unary_fixed_output_rule<
+	numerical_type::boolean,
+	Domain
 >;
 
 /**

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../meta/type_list.hpp"
+#include <xmipp4/core/meta/type_list.hpp>
 
 #include <cstddef>
 #include <type_traits>

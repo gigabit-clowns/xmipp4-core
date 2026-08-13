@@ -5,12 +5,11 @@
 #include "operand_type_descriptor.hpp"
 #include "operand_type_resolution.hpp"
 
-#include "../operation_descriptor.hpp"
-
-#include "../../numerical/numerical_type.hpp"
-#include "../../platform/attributes.hpp"
-#include "../../platform/dynamic_shared_object.h"
-#include "../../span.hpp"
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
+#include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/platform/attributes.hpp>
+#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/span.hpp>
 
 namespace xmipp4
 {

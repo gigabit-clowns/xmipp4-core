@@ -4,8 +4,8 @@
 
 #include "operand_type_transform.hpp"
 
-#include "../../numerical/numerical_type.hpp"
-#include "../../platform/constexpr.hpp"
+#include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 
 #include <cstddef>
 

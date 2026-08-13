@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "../../numerical/numerical_type_domain_tags.hpp"
-#include "../../platform/constexpr.hpp"
+#include <xmipp4/core/numerical/numerical_type_domain_tags.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 
 #include <cstddef>
 

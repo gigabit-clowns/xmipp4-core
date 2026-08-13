@@ -5,8 +5,8 @@
 #include "operand_type_pivot.hpp"
 #include "operand_type_slot.hpp"
 
-#include "../../meta/type_list.hpp"
-#include "../../platform/constexpr.hpp"
+#include <xmipp4/core/meta/type_list.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 
 #include <cstddef>
 #include <type_traits>

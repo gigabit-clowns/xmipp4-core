@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "axis_list.hpp"
+
 #include <xmipp4/core/dispatch/operation_shape_policy.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 #include <xmipp4/core/span.hpp>
@@ -33,7 +35,7 @@ class XMIPP4_CORE_API reduction_operation_shape_policy final
 	: public operation_shape_policy
 {
 public:
-	using axis_list_type = std::vector<std::size_t>;
+	using axis_list_type = axis_list;
 
 	/**
 	 * @brief Construct a policy reducing over a set of axes.

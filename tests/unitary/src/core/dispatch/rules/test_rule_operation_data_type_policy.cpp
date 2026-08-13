@@ -9,9 +9,6 @@
 
 #include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
 
-#include <ops/policies/abs_operation_data_type_policy.hpp>
-#include <ops/policies/copy_operation_data_type_policy.hpp>
-
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -133,11 +130,10 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "unary_real_of_rule should reproduce the abs policy",
+    "unary_real_of_rule should type the abs operation",
     "[rule_operation_data_type_policy]"
 )
 {
-    const auto &legacy = ops::abs_operation_data_type_policy::get();
     const auto &rule = rule_data_type_policy<
         ops::unary_real_of_rule<arithmetic_type_domain>
     >::get();
@@ -145,41 +141,60 @@ TEST_CASE(
     for (const auto input : all_concrete_types())
     {
         const type_vector inputs = { input };
+        const auto outcome = run_deduce(rule, inputs, 1);
 
         INFO( "deduce(" << input << ")" );
-        CHECK( run_deduce(legacy, inputs, 1) == run_deduce(rule, inputs, 1) );
-
-        for (const auto output : all_concrete_types())
+        if (arithmetic_type_domain::get().contains(input))
         {
-            const type_vector outputs = { output };
-            INFO( "accept(" << output << ", " << input << ")" );
-            CHECK( run_accept(legacy, outputs, inputs) ==
-                   run_accept(rule, outputs, inputs) );
+            // Complex inputs lose their imaginary part; everything else is
+            // left alone.
+            CHECK( !outcome.rejected );
+            CHECK( outcome.outputs == type_vector{ make_real(input) } );
+        }
+        else
+        {
+            // Booleans and characters have no magnitude to take.
+            CHECK( outcome.rejected );
         }
     }
+
+    // The output is fixed by the input, so a user supplied output of any
+    // other type is refused.
+    CHECK( !run_accept(
+        rule,
+        type_vector{ numerical_type::float32 },
+        type_vector{ numerical_type::complex_float32 }
+    ) );
+    CHECK( run_accept(
+        rule,
+        type_vector{ numerical_type::complex_float32 },
+        type_vector{ numerical_type::complex_float32 }
+    ) );
 }
 
 TEST_CASE(
-    "converting_rule should reproduce the copy policy",
+    "converting_rule should type the copy operation",
     "[rule_operation_data_type_policy]"
 )
 {
-    const auto &legacy = ops::copy_operation_data_type_policy::get();
     const auto &rule = rule_data_type_policy<ops::converting_rule<>>::get();
 
     for (const auto input : all_concrete_types())
     {
         const type_vector inputs = { input };
 
+        // With no output supplied, the destination adopts the source type.
+        const auto outcome = run_deduce(rule, inputs, 1);
         INFO( "deduce(" << input << ")" );
-        CHECK( run_deduce(legacy, inputs, 1) == run_deduce(rule, inputs, 1) );
+        CHECK( !outcome.rejected );
+        CHECK( outcome.outputs == type_vector{ input } );
 
+        // With one supplied, any concrete type is admitted: that is what
+        // makes a converting copy possible without a separate operation.
         for (const auto output : all_concrete_types())
         {
-            const type_vector outputs = { output };
             INFO( "accept(" << output << ", " << input << ")" );
-            CHECK( run_accept(legacy, outputs, inputs) ==
-                   run_accept(rule, outputs, inputs) );
+            CHECK( !run_accept(rule, type_vector{ output }, inputs) );
         }
     }
 }

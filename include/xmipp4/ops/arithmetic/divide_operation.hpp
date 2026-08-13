@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/dispatch/basic_operation.hpp>
+#include <xmipp4/ops/ops_component.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 namespace xmipp4
 {
@@ -11,40 +13,20 @@ namespace ops
 {
 
 /**
- * @brief Divide the elements from two input array to into output array.
+ * @brief Divide the elements of two input arrays into an output array.
+ *
+ * Every type but boolean is admitted, division not being defined on it.
  */
-class XMIPP4_CORE_API divide_operation final
-	: public operation
-{
-public:
-	/**
-	 * @brief Indices for output operands.
-	 */
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_RESULT,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	/**
-	 * @brief Indices for input operands.
-	 */
-	enum input_operand_indices
-	{
-		INPUT_OPERAND_DIVIDEND,
-		INPUT_OPERAND_DIVISOR,
-
-		INPUT_OPERAND_COUNT
-	};
-
-	std::string get_name() const override;
-	operation_arity get_arity() const noexcept override;
-	const operation_shape_policy&
-	get_operation_shape_policy() const noexcept override;
-	const operation_data_type_policy&
-	get_operation_data_type_policy() const noexcept override;
-};
+XMIPP4_DECLARE_OPERATION(
+	divide,
+	ops_component,
+	XMIPP4_OPERANDS("result"),
+	XMIPP4_OPERANDS("dividend", "divisor"),
+	elementwise_operation_shape_policy,
+	binary_homogeneous_rule<
+		domain_difference<any_type_domain, boolean_type_domain>
+	>
+);
 
 } // namespace ops
 } // namespace xmipp4

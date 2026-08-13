@@ -5,7 +5,7 @@
 #include <xmipp4/core/dispatch/rules/operand_type_rule.hpp>
 #include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
-#include <xmipp4/core/numerical/numerical_type_domain.hpp>
+#include <xmipp4/core/numerical/numerical_type_domain_tags.hpp>
 
 namespace xmipp4
 {

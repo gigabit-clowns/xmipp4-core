@@ -157,80 +157,24 @@ numerical_type_domain operator~(const numerical_type_domain &domain) noexcept
 
 
 
-namespace detail
+XMIPP4_INLINE_CONSTEXPR_CPP14
+numerical_type_domain make_numerical_type_domain(
+	numerical_type_category category
+) noexcept
 {
+	numerical_type_domain::mask_type mask = 0;
 
-template <typename... Domains>
-inline
-numerical_type_domain compute_domain_union() noexcept
-{
-	auto result = numerical_type_domain::none();
-	(void) std::initializer_list<int>
+	const auto count = static_cast<int>(numerical_type::count);
+	for (int i = 0; i < count; ++i)
 	{
-		((result = result | Domains::get()), 0)...
-	};
-	return result;
-}
+		const auto type = static_cast<numerical_type>(i);
+		if (get_category(type) == category)
+		{
+			mask |= detail::numerical_type_domain_bit(type);
+		}
+	}
 
-template <typename... Domains>
-inline
-numerical_type_domain compute_domain_intersection() noexcept
-{
-	auto result = numerical_type_domain::all();
-	(void) std::initializer_list<int>
-	{
-		((result = result & Domains::get()), 0)...
-	};
-	return result;
-}
-
-} // namespace detail
-
-template <numerical_type_category Category>
-inline
-const numerical_type_domain& category_type_domain<Category>::get() noexcept
-{
-	static const numerical_type_domain instance =
-		make_numerical_type_domain(Category);
-	return instance;
-}
-
-template <typename... Domains>
-inline
-const numerical_type_domain& domain_union<Domains...>::get() noexcept
-{
-	static_assert(
-		sizeof...(Domains) > 0,
-		"domain_union requires at least one domain. An empty union would "
-		"silently admit no type at all."
-	);
-
-	static const numerical_type_domain instance =
-		detail::compute_domain_union<Domains...>();
-	return instance;
-}
-
-template <typename... Domains>
-inline
-const numerical_type_domain& domain_intersection<Domains...>::get() noexcept
-{
-	static_assert(
-		sizeof...(Domains) > 0,
-		"domain_intersection requires at least one domain. An empty "
-		"intersection would silently admit every type."
-	);
-
-	static const numerical_type_domain instance =
-		detail::compute_domain_intersection<Domains...>();
-	return instance;
-}
-
-inline
-const numerical_type_domain& any_type_domain::get() noexcept
-{
-	static const numerical_type_domain instance =
-		numerical_type_domain::all();
-	return instance;
+	return numerical_type_domain(mask);
 }
 
 } // namespace xmipp4

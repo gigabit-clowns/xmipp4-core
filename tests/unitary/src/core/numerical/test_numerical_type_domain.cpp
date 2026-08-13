@@ -2,8 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <xmipp4/core/numerical/numerical_type_domain.hpp>
+#include <xmipp4/core/numerical/numerical_type_domain_tags.hpp>
 
+#include <complex>
+#include <cstdint>
 #include <sstream>
 
 using namespace xmipp4;
@@ -204,6 +206,46 @@ TEST_CASE(
 
     CHECK( narrowed::get() == real_arithmetic_type_domain::get() );
     CHECK( !narrowed::get().contains(numerical_type::complex_float32) );
+}
+
+TEST_CASE(
+    "a named domain should classify static types as it does values",
+    "[numerical_type_domain]"
+)
+{
+    // A domain answers the same question in two places: the rule engine
+    // asks about a numerical_type value, and a backend asks about a static
+    // type to decide whether to instantiate a kernel at all. Both read the
+    // one constexpr mask, so they cannot drift.
+    STATIC_REQUIRE(
+        arithmetic_type_domain::contains_type<std::int32_t>::value
+    );
+    STATIC_REQUIRE(
+        !arithmetic_type_domain::contains_type<bool>::value
+    );
+    STATIC_REQUIRE(
+        !arithmetic_type_domain::contains_type<char>::value
+    );
+    STATIC_REQUIRE(
+        arithmetic_type_domain::contains_type<std::complex<float32_t>>::value
+    );
+
+    STATIC_REQUIRE(
+        !real_arithmetic_type_domain::contains_type<
+            std::complex<float32_t>
+        >::value
+    );
+
+    using no_booleans =
+        domain_difference<any_type_domain, boolean_type_domain>;
+    STATIC_REQUIRE( !no_booleans::contains_type<bool>::value );
+    STATIC_REQUIRE( no_booleans::contains_type<char>::value );
+    STATIC_REQUIRE( no_booleans::contains_type<float64_t>::value );
+
+    CHECK( arithmetic_type_domain::get().contains(numerical_type::int32) ==
+           arithmetic_type_domain::contains_type<std::int32_t>::value );
+    CHECK( arithmetic_type_domain::get().contains(numerical_type::boolean) ==
+           arithmetic_type_domain::contains_type<bool>::value );
 }
 
 TEST_CASE(

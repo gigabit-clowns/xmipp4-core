@@ -4,7 +4,6 @@
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 
 #include <cmath>
@@ -61,20 +60,12 @@ struct modulo_kernel
 	}
 };
 
-template <typename T>
-struct modulo_predicate : std::integral_constant<
-	bool,
-	(std::is_integral<T>::value && !std::is_same<T, bool>::value) ||
-	xmipp4::is_floating_point<T>::value
-> {};
-
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	modulo,
 	ops::modulo_operation,
-	default_kernel_factory<modulo_kernel>,
-	homogeneous_type_dispatcher<modulo_predicate>
+	default_kernel_factory<modulo_kernel>
 );
 
 } // namespace cpu

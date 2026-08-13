@@ -180,7 +180,7 @@ numerical_type_domain operator~(const numerical_type_domain &domain) noexcept;
  *
  * @see numerical_type_category
  */
-XMIPP4_CORE_API
+XMIPP4_CONSTEXPR_CPP14
 numerical_type_domain make_numerical_type_domain(
 	numerical_type_category category
 ) noexcept;
@@ -201,98 +201,6 @@ std::ostream& operator<<(
 );
 
 
-
-/**
- * @brief Named domain holding every type of a given category.
- *
- * Domains are named by tag types rather than by values, so that they can be
- * used as template arguments. Every tag exposes a static get() returning a
- * reference to the domain it names.
- *
- * @tparam Category The category of the types belonging to the domain.
- */
-template <numerical_type_category Category>
-struct category_type_domain
-{
-	static const numerical_type_domain& get() noexcept;
-};
-
-using boolean_type_domain =
-	category_type_domain<numerical_type_category::boolean>;
-using character_type_domain =
-	category_type_domain<numerical_type_category::character>;
-using signed_integer_type_domain =
-	category_type_domain<numerical_type_category::signed_integer>;
-using unsigned_integer_type_domain =
-	category_type_domain<numerical_type_category::unsigned_integer>;
-using floating_point_type_domain =
-	category_type_domain<numerical_type_category::floating_point>;
-using complex_type_domain =
-	category_type_domain<numerical_type_category::complex>;
-
-/**
- * @brief Named domain holding the union of other named domains.
- *
- * @tparam Domains The domain tags to be united. At least one is required.
- */
-template <typename... Domains>
-struct domain_union
-{
-	static const numerical_type_domain& get() noexcept;
-};
-
-/**
- * @brief Named domain holding the intersection of other named domains.
- *
- * This is how a backend narrows the domain of an operation without
- * restating it.
- *
- * @tparam Domains The domain tags to be intersected. At least one is
- * required.
- */
-template <typename... Domains>
-struct domain_intersection
-{
-	static const numerical_type_domain& get() noexcept;
-};
-
-/**
- * @brief Named domain holding every representable type.
- */
-struct any_type_domain
-{
-	static const numerical_type_domain& get() noexcept;
-};
-
-/// Signed and unsigned integers.
-using integral_type_domain = domain_union<
-	signed_integer_type_domain,
-	unsigned_integer_type_domain
->;
-
-/// Floating point and complex types, i.e. those with a fractional part.
-using inexact_type_domain = domain_union<
-	floating_point_type_domain,
-	complex_type_domain
->;
-
-/// Integers and floating point types, i.e. arithmetic types on the real line.
-using real_arithmetic_type_domain = domain_union<
-	integral_type_domain,
-	floating_point_type_domain
->;
-
-/// Every type arithmetic operations are defined on.
-using arithmetic_type_domain = domain_union<
-	integral_type_domain,
-	inexact_type_domain
->;
-
-/// Arithmetic types that can represent a negative value.
-using signed_arithmetic_type_domain = domain_union<
-	signed_integer_type_domain,
-	inexact_type_domain
->;
 
 } // namespace xmipp4
 

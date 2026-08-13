@@ -4,7 +4,6 @@
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 
 namespace xmipp4
@@ -24,20 +23,12 @@ struct negate_kernel
 	}
 };
 
-template <typename T>
-struct negate_predicate : std::integral_constant<
-	bool,
-	(std::is_integral<T>::value && std::is_signed<T>::value) ||
-	xmipp4::is_floating_point<T>::value
-> {};
-
 } // anonymous namespace
 
-XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX(
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	negate,
 	ops::negate_operation,
-	default_kernel_factory<negate_kernel>,
-	homogeneous_type_dispatcher<negate_predicate>
+	default_kernel_factory<negate_kernel>
 );
 
 } // namespace cpu

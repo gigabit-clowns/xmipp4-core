@@ -5,9 +5,49 @@
 #include "../../meta/type_list.hpp"
 
 #include <cstddef>
+#include <type_traits>
 
 namespace xmipp4
 {
+
+/**
+ * @brief Check that each pivot type lies in the domain its pivot declares.
+ *
+ * A backend uses this to decide whether to instantiate a program for a
+ * candidate pivot combination at all. Without it, a kernel would have to
+ * compile for element types the operation explicitly does not accept, which
+ * is what the hand written backend predicates used to be for.
+ *
+ * @tparam Pivots type_list of operand_type_pivot declarations.
+ * @tparam Types type_list of the candidate pivot element types.
+ */
+template <typename Pivots, typename Types>
+struct rule_pivots_in_domain;
+
+template <>
+struct rule_pivots_in_domain<type_list<>, type_list<>>
+	: std::true_type
+{
+};
+
+template <
+	typename Pivot, typename... Pivots,
+	typename Type, typename... Types
+>
+struct rule_pivots_in_domain<
+	type_list<Pivot, Pivots...>,
+	type_list<Type, Types...>
+>
+	: std::integral_constant<
+		bool,
+		Pivot::domain_type::template contains_type<Type>::value &&
+		rule_pivots_in_domain<
+			type_list<Pivots...>,
+			type_list<Types...>
+		>::value
+	>
+{
+};
 
 /**
  * @brief Apply the transform of every slot to the type of its pivot.

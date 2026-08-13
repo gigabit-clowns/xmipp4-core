@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/dispatch/basic_operation.hpp>
+#include <xmipp4/ops/ops_component.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 namespace xmipp4
 {
@@ -11,44 +13,22 @@ namespace ops
 {
 
 /**
- * @brief Compute the division modulo from two input array to into output 
- * array.
- * 
- * @note The modulo behaves as Python's modulo and not like C's modulo. This is,
- * output has the same sign as the divisor.
+ * @brief Compute the division remainder of two input arrays.
+ *
+ * The result takes the sign of the divisor, as in Python, rather than the
+ * sign of the dividend. Complex and boolean operands are not admitted,
+ * having no ordering to take a remainder against.
  */
-class XMIPP4_CORE_API modulo_operation final
-	: public operation
-{
-public:
-	/**
-	 * @brief Indices for output operands.
-	 */
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_RESULT,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	/**
-	 * @brief Indices for input operands.
-	 */
-	enum input_operand_indices
-	{
-		INPUT_OPERAND_DIVIDEND,
-		INPUT_OPERAND_DIVISOR,
-
-		INPUT_OPERAND_COUNT
-	};
-
-	std::string get_name() const override;
-	operation_arity get_arity() const noexcept override;
-	const operation_shape_policy&
-	get_operation_shape_policy() const noexcept override;
-	const operation_data_type_policy&
-	get_operation_data_type_policy() const noexcept override;
-};
+XMIPP4_DECLARE_OPERATION(
+	modulo,
+	ops_component,
+	XMIPP4_OPERANDS("result"),
+	XMIPP4_OPERANDS("dividend", "divisor"),
+	elementwise_operation_shape_policy,
+	binary_homogeneous_rule<
+		domain_union<real_arithmetic_type_domain, character_type_domain>
+	>
+);
 
 } // namespace ops
 } // namespace xmipp4

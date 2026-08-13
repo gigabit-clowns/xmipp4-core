@@ -63,8 +63,11 @@ using modulo_sign_types = type_list_cat_t<signed_int_types, float_types>;
 using negate_types = type_list_cat_t<signed_int_types, float_types>;
 using abs_signed_types = type_list_cat_t<signed_int_types, float_types>;
 
+// char is rejected too. It used to be accepted or not depending on
+// whether char is signed on the platform, which is not a property an
+// operation should have.
 using negate_rejected_types = type_list_cat_t<
-	bool_types, unsigned_int_types, complex_types
+	bool_types, char_types, unsigned_int_types, complex_types
 >;
 using modulo_rejected_types = type_list_cat_t<bool_types, complex_types>;
 using abs_rejected_types = type_list_cat_t<bool_types, char_types>;

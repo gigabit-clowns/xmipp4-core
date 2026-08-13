@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../numerical/numerical_type_domain.hpp"
+#include "../../numerical/numerical_type_domain_tags.hpp"
 #include "../../platform/constexpr.hpp"
 
 #include <cstddef>

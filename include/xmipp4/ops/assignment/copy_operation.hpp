@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/dispatch/basic_operation.hpp>
+#include <xmipp4/ops/ops_component.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 namespace xmipp4
 {
@@ -12,38 +14,19 @@ namespace ops
 
 /**
  * @brief Copy elements from an input array to an output array.
+ *
+ * The destination adopts the source element type unless the caller
+ * pre-allocates one of a different type, which is what makes a converting
+ * copy possible without a separate operation.
  */
-class XMIPP4_CORE_API copy_operation final
-	: public operation
-{
-public:
-	/**
-	 * @brief Indices for output operands.
-	 */
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_DESTINATION,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	/**
-	 * @brief Indices for input operands.
-	 */
-	enum input_operand_indices
-	{
-		INPUT_OPERAND_SOURCE,
-
-		INPUT_OPERAND_COUNT
-	};
-
-	std::string get_name() const override;
-	operation_arity get_arity() const noexcept override;
-	const operation_shape_policy&
-	get_operation_shape_policy() const noexcept override;
-	const operation_data_type_policy&
-	get_operation_data_type_policy() const noexcept override;
-};
+XMIPP4_DECLARE_OPERATION(
+	copy,
+	ops_component,
+	XMIPP4_OPERANDS("destination"),
+	XMIPP4_OPERANDS("source"),
+	elementwise_operation_shape_policy,
+	converting_rule<>
+);
 
 } // namespace ops
 } // namespace xmipp4

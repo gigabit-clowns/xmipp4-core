@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../platform/constexpr.hpp"
 #include "../platform/dynamic_shared_object.h"
 
 #include <ostream>
@@ -122,8 +123,13 @@ promote_types(numerical_type type1, numerical_type type2) noexcept;
  * @param type The type from which the category is inferred.
  * @return numerical_type_category The category of the input type or
  * `numerical_type_category::unknown` if error.
+ *
+ * @note Usable in a constant expression, so that the same definition
+ * serves both a runtime classification and a compile time one. Anything
+ * classifying types on both sides of the dispatch boundary, such as a
+ * numerical_type_domain, depends on there being only one.
  */
-XMIPP4_CORE_API
+XMIPP4_CONSTEXPR
 numerical_type_category get_category(numerical_type type) noexcept;
 
 XMIPP4_CORE_API
@@ -139,3 +145,5 @@ XMIPP4_CORE_API
 std::ostream& operator<<(std::ostream &os, numerical_type_category category);
 
 } // namespace xmipp4
+
+#include "numerical_type.inl"

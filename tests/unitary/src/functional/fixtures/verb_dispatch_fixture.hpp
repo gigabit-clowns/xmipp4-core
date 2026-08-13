@@ -204,6 +204,22 @@ protected:
 		array*
 	);
 
+	/// A verb reducing one array over a set of axes.
+	using reduction_verb = array (*)(
+		const_array_ref,
+		span<const std::ptrdiff_t>,
+		bool,
+		const execution_context&,
+		array*
+	);
+
+	/// A verb reducing one array over every axis.
+	using full_reduction_verb = array (*)(
+		const_array_ref,
+		const execution_context&,
+		array*
+	);
+
 	array_descriptor make_descriptor(
 		std::vector<std::size_t> extents = { 2, 3 },
 		numerical_type data_type = numerical_type::float32
@@ -392,6 +408,93 @@ protected:
 		CHECK( record.get_input_storage(0) == x_storage.get() );
 		CHECK( record.get_input_storage(1) == y_storage.get() );
 		CHECK( record.get_input_storage(2) == z_storage.get() );
+	}
+
+	/**
+	 * @brief Check that a reduction verb dispatches @p Op.
+	 *
+	 * Covers both spellings: the axes given explicitly, and the overload
+	 * without them, which reduces over every axis. The axes an operation
+	 * ends up carrying are read back off it, which is what shows that the
+	 * verb resolved them rather than deferring the question.
+	 *
+	 * @tparam Op The operation the verb is expected to build.
+	 * @param over_axes The verb taking a set of axes.
+	 * @param over_everything The verb reducing over every axis.
+	 * @param data_type Element type of the operand.
+	 */
+	template <typename Op>
+	void check_reduction_verb(
+		reduction_verb over_axes,
+		full_reduction_verb over_everything,
+		numerical_type data_type = numerical_type::float32
+	)
+	{
+		{
+			std::shared_ptr<mock_buffer> x_storage;
+			const array x_array = make_operand(x_storage, data_type);
+			const const_array_ref x = x_array;
+
+			// Referred from the end, so that resolving it is observable.
+			const std::vector<std::ptrdiff_t> axes = { -1 };
+
+			dispatch_record record;
+			std::vector<std::size_t> seen;
+			record.inspect = [&seen] (const operation &op)
+			{
+				const auto &typed = dynamic_cast<const Op&>(op);
+				const auto resolved = typed.get_shape_policy().get_axes();
+				seen.assign(resolved.begin(), resolved.end());
+			};
+			REQUIRE_CALL(*dispatcher, dispatch(
+				trompeloeil::_, trompeloeil::_,
+				trompeloeil::_, trompeloeil::_
+			))
+				.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+			over_axes(x, make_span(axes), false, context, nullptr);
+
+			INFO( "reduced over the last axis" );
+			check_record<Op>(record, 1);
+			CHECK( record.get_input_storage(0) == x_storage.get() );
+
+			// The operand is two dimensional, so the last axis is axis 1.
+			// An operation holds explicit axes, never a request to work
+			// one out later.
+			REQUIRE( seen.size() == 1 );
+			CHECK( seen[0] == 1 );
+		}
+
+		{
+			std::shared_ptr<mock_buffer> x_storage;
+			const array x_array = make_operand(x_storage, data_type);
+			const const_array_ref x = x_array;
+
+			dispatch_record record;
+			std::vector<std::size_t> seen;
+			record.inspect = [&seen] (const operation &op)
+			{
+				const auto &typed = dynamic_cast<const Op&>(op);
+				const auto resolved = typed.get_shape_policy().get_axes();
+				seen.assign(resolved.begin(), resolved.end());
+			};
+			REQUIRE_CALL(*dispatcher, dispatch(
+				trompeloeil::_, trompeloeil::_,
+				trompeloeil::_, trompeloeil::_
+			))
+				.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
+
+			over_everything(x, context, nullptr);
+
+			INFO( "reduced over every axis" );
+			check_record<Op>(record, 1);
+
+			// Reducing over all of them is spelled out into a list rather
+			// than carried into the operation as a mode.
+			REQUIRE( seen.size() == 2 );
+			CHECK( seen[0] == 0 );
+			CHECK( seen[1] == 1 );
+		}
 	}
 
 	/// Assert the parts of a record every single output verb shares.

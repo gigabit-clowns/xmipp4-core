@@ -470,6 +470,39 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	eager_dispatcher_fixture,
+	"eager_dispatcher dispatch rejects an undetermined output data type "
+	"when nothing is pre-allocated to settle it",
+	"[eager_dispatcher]"
+)
+{
+	// A rule whose output type is free leaves it unknown for a user supplied
+	// output to settle. With no output pre-allocated there is nothing to
+	// settle it, and sizing a buffer from an unknown type would allocate
+	// whatever get_size() happens to return, so this must be diagnosed
+	// instead. No allocation and no program build may take place.
+	expect_unary_operation(shape_type{4}, numerical_type::unknown);
+
+	array output; // No storage, so nothing determines the data type.
+
+	const const_array input_owner =
+		make_input_with_storage(shape_type{4}, numerical_type::float32);
+	const const_array_ref input = input_owner;
+
+	CHECK_THROWS_AS(
+		eager_dispatcher->dispatch(
+			op,
+			make_span(&output, 1),
+			make_span(&input, 1),
+			context
+		),
+		std::invalid_argument
+	);
+
+	CHECK( output.get_storage() == nullptr );
+}
+
+TEST_CASE_METHOD(
+	eager_dispatcher_fixture,
 	"eager_dispatcher dispatch builds the program, allocates output "
 	"storage and submits the command to the active queue",
 	"[eager_dispatcher]"

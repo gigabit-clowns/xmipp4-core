@@ -77,7 +77,7 @@ void check_rule_agreement()
 	const auto &policy = rule_data_type_policy<Rule>::get();
 	const auto pivots =
 		pivot_descriptor_table<typename Rule::pivot_list>::get();
-	const auto &domain = *pivots[0].domain;
+	const auto &domain = pivots[0].get_domain();
 
 	const auto count = static_cast<int>(numerical_type::count);
 	for (int i = 0; i < count; ++i)

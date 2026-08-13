@@ -35,7 +35,7 @@ bool check_pivot_value(
 		return false;
 	}
 
-	if (!pivot.domain->contains(type))
+	if (!pivot.get_domain().contains(type))
 	{
 		status = type_rule_status::domain_violation;
 		return false;
@@ -67,9 +67,10 @@ const numerical_type_domain* find_operand_domain(
 
 	for (const auto &pivot : pivots)
 	{
-		if (pivot.source == source && pivot.index == operand_index)
+		if (pivot.get_source() == source &&
+		    pivot.get_index() == operand_index)
 		{
-			return pivot.domain;
+			return &pivot.get_domain();
 		}
 	}
 
@@ -94,17 +95,17 @@ type_rule_resolution resolve_pivots(
 		const auto &pivot = pivots[i];
 		auto status = type_rule_status::ok;
 
-		switch (pivot.source)
+		switch (pivot.get_source())
 		{
 		case pivot_source::input:
 		{
-			XMIPP4_ASSERT(pivot.index < input_types.size());
-			const auto type = input_types[pivot.index];
+			XMIPP4_ASSERT(pivot.get_index() < input_types.size());
+			const auto type = input_types[pivot.get_index()];
 			if (!check_pivot_value(pivot, type, status))
 			{
 				return result.fail(
 					status,
-					pivot.index,
+					pivot.get_index(),
 					false,
 					type
 				);
@@ -115,22 +116,22 @@ type_rule_resolution resolve_pivots(
 
 		case pivot_source::operation:
 		{
-			if (pivot.index >= operation_pivots.size())
+			if (pivot.get_index() >= operation_pivots.size())
 			{
 				return result.fail(
 					type_rule_status::unresolved_pivot,
-					pivot.index,
+					pivot.get_index(),
 					false,
 					numerical_type::unknown
 				);
 			}
 
-			const auto type = operation_pivots[pivot.index];
+			const auto type = operation_pivots[pivot.get_index()];
 			if (!check_pivot_value(pivot, type, status))
 			{
 				return result.fail(
 					status,
-					pivot.index,
+					pivot.get_index(),
 					true,
 					type
 				);
@@ -151,15 +152,16 @@ type_rule_resolution resolve_pivots(
 	for (std::size_t i = 0; i < pivots.size(); ++i)
 	{
 		const auto &pivot = pivots[i];
-		if (pivot.source != pivot_source::output || pivot.default_pivot < 0)
+		if (pivot.get_source() != pivot_source::output ||
+		    pivot.get_default_pivot() < 0)
 		{
 			continue;
 		}
 
 		const auto source_index =
-			static_cast<std::size_t>(pivot.default_pivot);
+			static_cast<std::size_t>(pivot.get_default_pivot());
 		XMIPP4_ASSERT(source_index < pivots.size());
-		XMIPP4_ASSERT(pivots[source_index].source != pivot_source::output);
+		XMIPP4_ASSERT(pivots[source_index].get_source() != pivot_source::output);
 
 		const auto type = result.get_pivot(source_index);
 		auto status = type_rule_status::ok;
@@ -167,7 +169,7 @@ type_rule_resolution resolve_pivots(
 		{
 			return result.fail(
 				status,
-				pivot.index,
+				pivot.get_index(),
 				true,
 				type
 			);
@@ -193,19 +195,19 @@ type_rule_resolution bind_free_pivots(
 	for (std::size_t i = 0; i < pivots.size(); ++i)
 	{
 		const auto &pivot = pivots[i];
-		if (pivot.source != pivot_source::output)
+		if (pivot.get_source() != pivot_source::output)
 		{
 			continue;
 		}
 
-		XMIPP4_ASSERT(pivot.index < user_output_types.size());
-		const auto type = user_output_types[pivot.index];
+		XMIPP4_ASSERT(pivot.get_index() < user_output_types.size());
+		const auto type = user_output_types[pivot.get_index()];
 		auto status = type_rule_status::ok;
 		if (!check_pivot_value(pivot, type, status))
 		{
 			return result.fail(
 				status,
-				pivot.index,
+				pivot.get_index(),
 				true,
 				type
 			);
@@ -233,7 +235,7 @@ type_rule_resolution evaluate_slots(
 	for (std::size_t i = 0; i < slots.size(); ++i)
 	{
 		const auto &slot = slots[i];
-		const auto pivot = resolution.get_pivot(slot.pivot_index);
+		const auto pivot = resolution.get_pivot(slot.get_pivot_index());
 
 		if (!is_domain_representable(pivot))
 		{
@@ -244,7 +246,7 @@ type_rule_resolution evaluate_slots(
 			continue;
 		}
 
-		if (!slot.transform_domain->contains(pivot))
+		if (!slot.get_transform_domain().contains(pivot))
 		{
 			return resolution.fail(
 				type_rule_status::undefined_transform,
@@ -273,7 +275,7 @@ type_rule_resolution check_slots(
 	for (std::size_t i = 0; i < slots.size(); ++i)
 	{
 		const auto &slot = slots[i];
-		const auto pivot = resolution.get_pivot(slot.pivot_index);
+		const auto pivot = resolution.get_pivot(slot.get_pivot_index());
 
 		if (!is_domain_representable(pivot))
 		{
@@ -285,7 +287,7 @@ type_rule_resolution check_slots(
 			);
 		}
 
-		if (!slot.transform_domain->contains(pivot))
+		if (!slot.get_transform_domain().contains(pivot))
 		{
 			return resolution.fail(
 				type_rule_status::undefined_transform,
@@ -356,8 +358,8 @@ void throw_type_rule_error(
 
 		if (index < slots.size())
 		{
-			oss << " It must be " << slots[index].relation
-				<< " one of: " << *slots[index].transform_domain << ".";
+			oss << " It must be " << slots[index].get_relation()
+				<< " one of: " << slots[index].get_transform_domain() << ".";
 		}
 		break;
 	}
@@ -372,13 +374,13 @@ void throw_type_rule_error(
 		// able to fail, so fall back to the bare fact if they are absent.
 		const bool has_expected =
 			index < slots.size() &&
-			slots[index].pivot_index < resolution.get_pivot_count();
+			slots[index].get_pivot_index() < resolution.get_pivot_count();
 
 		if (has_expected)
 		{
 			const auto &slot = slots[index];
 			oss << ", but this operation requires "
-				<< slot.apply(resolution.get_pivot(slot.pivot_index));
+				<< slot.apply(resolution.get_pivot(slot.get_pivot_index()));
 		}
 
 		oss << ".";

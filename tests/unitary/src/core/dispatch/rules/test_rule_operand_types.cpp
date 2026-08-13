@@ -4,6 +4,9 @@
 
 #include <xmipp4/core/dispatch/rules/rule_operand_types.hpp>
 
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
+
 #include <xmipp4/core/dispatch/rules/operand_type_descriptor.hpp>
 #include <xmipp4/core/dispatch/rules/rule_operation_data_type_policy.hpp>
 #include <xmipp4/core/numerical/numerical_type_dispatch.hpp>
@@ -22,6 +25,23 @@ namespace
 {
 
 using type_vector = std::vector<numerical_type>;
+
+/**
+ * @brief A description for the rules under test to name in diagnostics.
+ *
+ * The operand names are generic because these tests exercise the rules
+ * rather than any particular operation.
+ */
+const operation_descriptor& rule_descriptor()
+{
+	static XMIPP4_CONST_CONSTEXPR auto outputs =
+		make_operand_names("result", "second_result");
+	static XMIPP4_CONST_CONSTEXPR auto inputs =
+		make_operand_names("left", "right", "third");
+	static const operation_descriptor instance =
+		make_operation_descriptor("xmipp4.test", "probe", outputs, inputs);
+	return instance;
+}
 
 template <typename List>
 struct to_numerical_types;
@@ -90,7 +110,11 @@ void check_rule_agreement()
 
 		// The value level half, as the dispatcher would run it.
 		type_vector deduced(Rule::output_count, numerical_type::unknown);
-		policy.deduce(make_span(deduced), make_span(reified.second));
+		policy.deduce(
+			rule_descriptor(),
+			make_span(deduced),
+			make_span(reified.second)
+		);
 
 		INFO( "pivot " << pivot );
 		CHECK( deduced == reified.first );

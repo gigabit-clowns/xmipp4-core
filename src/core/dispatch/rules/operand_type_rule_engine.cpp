@@ -310,7 +310,7 @@ type_rule_resolution check_slots(
 }
 
 void throw_type_rule_error(
-	const char *context,
+	const operation_descriptor &descriptor,
 	const type_rule_resolution &resolution,
 	span<const slot_descriptor> slots,
 	span<const pivot_descriptor> pivots
@@ -321,21 +321,22 @@ void throw_type_rule_error(
 	const auto index = resolution.get_operand_index();
 	const auto output = resolution.is_output_operand();
 	const auto *kind = output ? "output" : "input";
+	const auto operand = describe_operand(descriptor, index, output);
 
 	std::ostringstream oss;
-	oss << context << ": ";
+	oss << descriptor << ": ";
 
 	switch (resolution.get_status())
 	{
 	case type_rule_status::invalid_type:
-		oss << kind << " operand " << index << " has data type "
+		oss << kind << " operand " << operand << " has data type "
 			<< resolution.get_offending_type()
 			<< ", which is not a concrete numerical type.";
 		break;
 
 	case type_rule_status::domain_violation:
 	{
-		oss << kind << " operand " << index << " has data type "
+		oss << kind << " operand " << operand << " has data type "
 			<< resolution.get_offending_type()
 			<< ", which this operation does not accept.";
 
@@ -349,7 +350,7 @@ void throw_type_rule_error(
 
 	case type_rule_status::undefined_transform:
 	{
-		oss << "the data type of " << kind << " operand " << index
+		oss << "the data type of " << kind << " operand " << operand
 			<< " cannot be derived from element type "
 			<< resolution.get_offending_type() << ".";
 
@@ -363,7 +364,7 @@ void throw_type_rule_error(
 
 	case type_rule_status::slot_mismatch:
 	{
-		oss << kind << " operand " << index << " has data type "
+		oss << kind << " operand " << operand << " has data type "
 			<< resolution.get_offending_type();
 
 		// Reporting what was expected needs the pivots the resolution
@@ -385,7 +386,7 @@ void throw_type_rule_error(
 	}
 
 	case type_rule_status::unresolved_pivot:
-		oss << "the data type of " << kind << " operand " << index
+		oss << "the data type of " << kind << " operand " << operand
 			<< " is not determined by the inputs. Supply a pre-allocated "
 			<< "output to fix it.";
 		break;

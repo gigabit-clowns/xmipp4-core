@@ -4,6 +4,9 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <xmipp4/core/dispatch/rules/rule_operation_data_type_policy.hpp>
+
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 #include <xmipp4/core/dispatch/rules/operand_type_rule_engine.hpp>
 #include <xmipp4/ops/rules/operand_type_rules.hpp>
 
@@ -17,6 +20,23 @@ namespace
 {
 
 using type_vector = std::vector<numerical_type>;
+
+/**
+ * @brief A description for the rules under test to name in diagnostics.
+ *
+ * The operand names are generic because these tests exercise the rules
+ * rather than any particular operation.
+ */
+const operation_descriptor& rule_descriptor()
+{
+	static XMIPP4_CONST_CONSTEXPR auto outputs =
+		make_operand_names("result", "second_result");
+	static XMIPP4_CONST_CONSTEXPR auto inputs =
+		make_operand_names("left", "right", "third");
+	static const operation_descriptor instance =
+		make_operation_descriptor("xmipp4.test", "probe", outputs, inputs);
+	return instance;
+}
 
 type_vector all_concrete_types()
 {
@@ -55,7 +75,7 @@ deduce_outcome run_deduce(
 
     try
     {
-        policy.deduce(make_span(outcome.outputs), make_span(inputs));
+        policy.deduce(rule_descriptor(), make_span(outcome.outputs), make_span(inputs));
     }
     catch (const std::invalid_argument&)
     {
@@ -82,6 +102,7 @@ bool run_accept(
     try
     {
         policy.accept(
+            rule_descriptor(),
             make_span(user_outputs),
             make_span(canonical.outputs),
             make_span(inputs)
@@ -241,7 +262,7 @@ TEST_CASE(
         numerical_type::int32
     };
     CHECK_NOTHROW(
-        rule.deduce(make_span(outputs), make_span(accepted))
+        rule.deduce(rule_descriptor(), make_span(outputs), make_span(accepted))
     );
 
     // This is the drift the declarative rules exist to remove: a domain the
@@ -252,7 +273,7 @@ TEST_CASE(
         numerical_type::complex_float32
     };
     CHECK_THROWS_AS(
-        rule.deduce(make_span(outputs), make_span(rejected)),
+        rule.deduce(rule_descriptor(), make_span(outputs), make_span(rejected)),
         std::invalid_argument
     );
 
@@ -261,7 +282,7 @@ TEST_CASE(
         numerical_type::boolean
     };
     CHECK_THROWS_AS(
-        rule.deduce(make_span(outputs), make_span(booleans)),
+        rule.deduce(rule_descriptor(), make_span(outputs), make_span(booleans)),
         std::invalid_argument
     );
 }
@@ -280,7 +301,7 @@ TEST_CASE(
         numerical_type::float64
     };
 
-    rule.deduce(make_span(outputs), make_span(inputs));
+    rule.deduce(rule_descriptor(), make_span(outputs), make_span(inputs));
     CHECK( outputs[0] == numerical_type::boolean );
 }
 
@@ -300,14 +321,17 @@ TEST_CASE(
 
     try
     {
-        rule.deduce(make_span(outputs), make_span(mismatched));
+        rule.deduce(rule_descriptor(), make_span(outputs), make_span(mismatched));
         FAIL( "expected the mismatching operands to be rejected" );
     }
     catch (const std::invalid_argument &error)
     {
         const std::string message = error.what();
         using Catch::Matchers::ContainsSubstring;
-        CHECK_THAT( message, ContainsSubstring("input operand 1") );
+        // Naming the operand is the whole point of the operand names: an
+        // index alone is not much help behind a Python front end.
+        CHECK_THAT( message, ContainsSubstring("xmipp4.test.probe") );
+        CHECK_THAT( message, ContainsSubstring("input operand 'right'") );
         CHECK_THAT( message, ContainsSubstring("float32") );
         CHECK_THAT( message, ContainsSubstring("float64") );
     }
@@ -327,7 +351,7 @@ TEST_CASE(
 
     try
     {
-        rule.deduce(make_span(outputs), make_span(inputs));
+        rule.deduce(rule_descriptor(), make_span(outputs), make_span(inputs));
         FAIL( "expected the input to be rejected" );
     }
     catch (const std::invalid_argument &error)
@@ -363,6 +387,6 @@ TEST_CASE(
     type_vector outputs(1, numerical_type::unknown);
     const type_vector inputs = { numerical_type::int32 };
 
-    policy.deduce(make_span(outputs), make_span(inputs));
+    policy.deduce(rule_descriptor(), make_span(outputs), make_span(inputs));
     CHECK( outputs[0] == numerical_type::float64 );
 }

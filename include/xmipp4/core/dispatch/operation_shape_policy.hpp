@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "operation_descriptor.hpp"
+
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
 
@@ -49,11 +51,14 @@ public:
 	 * @p canonical_output_shapes holds the shapes the policy would produce
 	 * if the user had not pre-allocated outputs.
 	 *
+	 * @param descriptor Description of the operation, used to name the
+	 * operation and its operands when reporting a rejection.
 	 * @param canonical_output_shapes Output buffer, sized to the operation's
 	 * output arity. Will be filled with the canonical shapes.
 	 * @param input_shapes Shapes of the input operands.
 	 */
 	virtual void deduce(
+		const operation_descriptor &descriptor,
 		span<shape_type> canonical_output_shapes,
 		span<const shape_type> input_shapes
 	) const = 0;
@@ -70,11 +75,14 @@ public:
 	 * equal to @p canonical_output_shapes; override only for policies
 	 * that admit broader-but-compatible user outputs.
 	 *
+	 * @param descriptor Description of the operation, used to name the
+	 * operation and its operands when reporting a rejection.
 	 * @param user_output_shapes Shapes of the user-supplied outputs.
 	 * @param canonical_output_shapes Shapes produced by `deduce`.
 	 * @param input_shapes Shapes of the input operands.
 	 */
 	virtual void accept(
+		const operation_descriptor &descriptor,
 		span<const shape_type> user_output_shapes,
 		span<const shape_type> canonical_output_shapes,
 		span<const shape_type> input_shapes

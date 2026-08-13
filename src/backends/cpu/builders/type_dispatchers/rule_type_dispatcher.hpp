@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
 #include <xmipp4/core/dispatch/rules/operand_type_descriptor.hpp>
 #include <xmipp4/core/dispatch/rules/operand_type_resolution.hpp>
 #include <xmipp4/core/dispatch/rules/rule_operand_types.hpp>
@@ -84,6 +85,8 @@ public:
 	/**
 	 * @brief Resolve the operand element types and invoke the factory.
 	 *
+	 * @param descriptor Description of the operation, used to name it and
+	 * its operands when reporting a rejection.
 	 * @param factory Program factory invoked as factory(output_types,
 	 * input_types), where both arguments are type_list-s of the resolved
 	 * element types.
@@ -97,6 +100,7 @@ public:
 	 */
 	template <typename F, std::size_t OutputCount, std::size_t InputCount>
 	static std::shared_ptr<xmipp4::program> dispatch(
+		const operation_descriptor &descriptor,
 		F &&factory,
 		const std::array<numerical_type, OutputCount> &output_types,
 		const std::array<numerical_type, InputCount> &input_types,

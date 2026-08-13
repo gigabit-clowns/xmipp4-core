@@ -4,7 +4,9 @@
 
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 #include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 #include "mock/mock_factory.hpp"
@@ -34,6 +36,23 @@ struct reject_float16<T>
 {
 };
 
+// The dispatcher names the operation when it rejects one, so the tests
+// need something for it to name.
+const operation_descriptor& probe_descriptor()
+{
+	static XMIPP4_CONST_CONSTEXPR auto outputs =
+		make_operand_names("result");
+	static XMIPP4_CONST_CONSTEXPR auto inputs =
+		make_operand_names("left", "right");
+	static const operation_descriptor instance = make_operation_descriptor(
+		"xmipp4.test",
+		"probe",
+		outputs,
+		inputs
+	);
+	return instance;
+}
+
 using binary_rule = ops::binary_homogeneous_rule<>;
 using abs_rule = ops::unary_real_of_rule<arithmetic_type_domain>;
 using convert_rule = ops::converting_rule<>;
@@ -59,6 +78,7 @@ TEST_CASE(
 	).RETURN(nullptr);
 
 	rule_type_dispatcher<binary_rule>::dispatch(
+		probe_descriptor(),
 		factory,
 		std::array<numerical_type, 1>{ numerical_type::float32 },
 		std::array<numerical_type, 2>{
@@ -86,6 +106,7 @@ TEST_CASE(
 	).RETURN(nullptr);
 
 	rule_type_dispatcher<abs_rule>::dispatch(
+		probe_descriptor(),
 		factory,
 		std::array<numerical_type, 1>{ numerical_type::float64 },
 		std::array<numerical_type, 1>{ numerical_type::complex_float64 }
@@ -108,6 +129,7 @@ TEST_CASE(
 	).RETURN(nullptr);
 
 	rule_type_dispatcher<convert_rule>::dispatch(
+		probe_descriptor(),
 		factory,
 		std::array<numerical_type, 1>{ numerical_type::int16 },
 		std::array<numerical_type, 1>{ numerical_type::float32 }
@@ -126,6 +148,7 @@ TEST_CASE(
 
 	CHECK_THROWS_AS(
 		rule_type_dispatcher<binary_rule>::dispatch(
+			probe_descriptor(),
 			factory,
 			std::array<numerical_type, 1>{ numerical_type::float32 },
 			std::array<numerical_type, 2>{
@@ -149,6 +172,7 @@ TEST_CASE(
 
 	CHECK_THROWS_AS(
 		(rule_type_dispatcher<binary_rule, reject_float16>::dispatch(
+			probe_descriptor(),
 			factory,
 			std::array<numerical_type, 1>{ numerical_type::float16 },
 			std::array<numerical_type, 2>{

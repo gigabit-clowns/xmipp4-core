@@ -180,6 +180,7 @@ template <typename Rule, template <typename...> class Support>
 template <typename F, std::size_t OutputCount, std::size_t InputCount>
 std::shared_ptr<xmipp4::program>
 rule_type_dispatcher<Rule, Support>::dispatch(
+	const operation_descriptor &descriptor,
 	F &&factory,
 	const std::array<numerical_type, OutputCount> &output_types,
 	const std::array<numerical_type, InputCount> &input_types,
@@ -203,7 +204,7 @@ rule_type_dispatcher<Rule, Support>::dispatch(
 	if (!resolution)
 	{
 		throw_type_rule_error(
-			"rule_type_dispatcher::dispatch",
+			descriptor,
 			resolution,
 			resolution.is_output_operand()
 				? slot_descriptor_table<

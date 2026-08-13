@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <ostream>
+#include <string>
 
 namespace xmipp4
 {
@@ -135,6 +136,24 @@ XMIPP4_CORE_API
 std::ostream& operator<<(
 	std::ostream &os,
 	const operation_descriptor &descriptor
+);
+
+/**
+ * @brief Describe an operand for a diagnostic.
+ *
+ * Yields the operand's quoted name when it has one and its index otherwise,
+ * so that building a message never depends on a name being present.
+ *
+ * @param descriptor The operation description.
+ * @param index Index of the operand.
+ * @param output_operand Whether the operand is an output.
+ * @return std::string The description.
+ */
+XMIPP4_CORE_API
+std::string describe_operand(
+	const operation_descriptor &descriptor,
+	std::size_t index,
+	bool output_operand
 );
 
 /**

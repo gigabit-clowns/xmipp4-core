@@ -75,11 +75,13 @@ public:
 	~rule_operation_data_type_policy() override;
 
 	void deduce(
+		const operation_descriptor &descriptor,
 		span<numerical_type> canonical_output_types,
 		span<const numerical_type> input_types
 	) const override;
 
 	void accept(
+		const operation_descriptor &descriptor,
 		span<const numerical_type> user_output_types,
 		span<const numerical_type> canonical_output_types,
 		span<const numerical_type> input_types

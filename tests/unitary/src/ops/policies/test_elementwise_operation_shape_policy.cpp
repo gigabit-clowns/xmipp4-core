@@ -3,6 +3,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/core/dispatch/operation_descriptor.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 #include <xmipp4/core/span.hpp>
 
 #include <stdexcept>
@@ -12,6 +14,22 @@ using namespace xmipp4;
 using namespace xmipp4::ops;
 
 using shape_type = std::vector<std::size_t>;
+
+namespace
+{
+
+const operation_descriptor& stub_descriptor()
+{
+    static XMIPP4_CONST_CONSTEXPR auto outputs =
+        make_operand_names("result", "second_result");
+    static XMIPP4_CONST_CONSTEXPR auto inputs =
+        make_operand_names("left", "right");
+    static const operation_descriptor instance =
+        make_operation_descriptor("xmipp4.test", "probe", outputs, inputs);
+    return instance;
+}
+
+} // namespace
 
 TEST_CASE(
     "elementwise_operation_shape_policy::get returns a singleton",
@@ -33,7 +51,7 @@ TEST_CASE(
     const std::vector<shape_type> inputs = { {1, 8}, {4, 1} };
     std::vector<shape_type> outputs(2);
 
-    pol.deduce(make_span(outputs), make_span(inputs));
+    pol.deduce(stub_descriptor(), make_span(outputs), make_span(inputs));
 
     CHECK( outputs[0] == shape_type{4, 8} );
     CHECK( outputs[1] == shape_type{4, 8} );
@@ -49,7 +67,7 @@ TEST_CASE(
     const std::vector<shape_type> inputs  = { {3, 5} };
     std::vector<shape_type>       outputs(1);
 
-    pol.deduce(make_span(outputs), make_span(inputs));
+    pol.deduce(stub_descriptor(), make_span(outputs), make_span(inputs));
 
     CHECK( outputs[0] == shape_type{3, 5} );
 }
@@ -65,7 +83,7 @@ TEST_CASE(
     const std::vector<shape_type> inputs;
     std::vector<shape_type>       outputs(2, shape_type{7, 7});
 
-    pol.deduce(make_span(outputs), make_span(inputs));
+    pol.deduce(stub_descriptor(), make_span(outputs), make_span(inputs));
 
     // With no inputs there is nothing to broadcast from, so every canonical
     // output is left as an empty (scalar) shape.
@@ -87,6 +105,7 @@ TEST_CASE(
 
     CHECK_NOTHROW(
         pol.accept(
+            stub_descriptor(),
             make_span(user_outputs),
             make_span(canonical),
             make_span(inputs)
@@ -108,6 +127,7 @@ TEST_CASE(
 
     CHECK_NOTHROW(
         pol.accept(
+            stub_descriptor(),
 			make_span(user_outputs), 
 			make_span(canonical),
             make_span(inputs)
@@ -128,8 +148,12 @@ TEST_CASE(
     const std::vector<shape_type> user_outputs = { {4, 9} };
 
     CHECK_THROWS_AS(
-        pol.accept(make_span(user_outputs), make_span(canonical),
-                   make_span(inputs)),
+        pol.accept(
+            stub_descriptor(),
+            make_span(user_outputs),
+            make_span(canonical),
+            make_span(inputs)
+        ),
         std::invalid_argument
     );
 }
@@ -148,6 +172,7 @@ TEST_CASE(
 
     CHECK_THROWS_AS(
         pol.accept(
+            stub_descriptor(),
 			make_span(user_outputs), 
 			make_span(canonical),
    			make_span(inputs)

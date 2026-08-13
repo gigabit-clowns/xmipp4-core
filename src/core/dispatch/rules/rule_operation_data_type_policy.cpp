@@ -4,7 +4,6 @@
 
 #include <xmipp4/core/dispatch/rules/operand_type_rule_engine.hpp>
 #include <xmipp4/core/platform/assert.hpp>
-#include <xmipp4/core/platform/constexpr.hpp>
 
 #include <algorithm>
 
@@ -66,13 +65,11 @@ rule_operation_data_type_policy::get_slots_for_report(
 }
 
 void rule_operation_data_type_policy::deduce(
+	const operation_descriptor &descriptor,
 	span<numerical_type> canonical_output_types,
 	span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_CONST_CONSTEXPR auto context =
-		"rule_operation_data_type_policy::deduce";
-
 	auto resolution = resolve_pivots(
 		m_pivots,
 		input_types,
@@ -81,7 +78,7 @@ void rule_operation_data_type_policy::deduce(
 	if (!resolution)
 	{
 		throw_type_rule_error(
-			context,
+			descriptor,
 			resolution,
 			get_slots_for_report(resolution.is_output_operand()),
 			m_pivots
@@ -93,7 +90,12 @@ void rule_operation_data_type_policy::deduce(
 	resolution = check_slots(m_input_slots, resolution, input_types, false);
 	if (!resolution)
 	{
-		throw_type_rule_error(context, resolution, m_input_slots, m_pivots);
+		throw_type_rule_error(
+			descriptor,
+			resolution,
+			m_input_slots,
+			m_pivots
+		);
 	}
 
 	resolution = evaluate_slots(
@@ -104,19 +106,22 @@ void rule_operation_data_type_policy::deduce(
 	);
 	if (!resolution)
 	{
-		throw_type_rule_error(context, resolution, m_output_slots, m_pivots);
+		throw_type_rule_error(
+			descriptor,
+			resolution,
+			m_output_slots,
+			m_pivots
+		);
 	}
 }
 
 void rule_operation_data_type_policy::accept(
+	const operation_descriptor &descriptor,
 	span<const numerical_type> user_output_types,
 	span<const numerical_type> /*canonical_output_types*/,
 	span<const numerical_type> input_types
 ) const
 {
-	XMIPP4_CONST_CONSTEXPR auto context =
-		"rule_operation_data_type_policy::accept";
-
 	// The canonical types are not consulted: re-resolving the rule against
 	// the user supplied outputs is both equivalent and more precise, since
 	// it is what binds the pivots the inputs left free.
@@ -128,7 +133,7 @@ void rule_operation_data_type_policy::accept(
 	if (!resolution)
 	{
 		throw_type_rule_error(
-			context,
+			descriptor,
 			resolution,
 			get_slots_for_report(resolution.is_output_operand()),
 			m_pivots
@@ -138,13 +143,23 @@ void rule_operation_data_type_policy::accept(
 	resolution = bind_free_pivots(m_pivots, resolution, user_output_types);
 	if (!resolution)
 	{
-		throw_type_rule_error(context, resolution, m_output_slots, m_pivots);
+		throw_type_rule_error(
+			descriptor,
+			resolution,
+			m_output_slots,
+			m_pivots
+		);
 	}
 
 	resolution = check_slots(m_input_slots, resolution, input_types, false);
 	if (!resolution)
 	{
-		throw_type_rule_error(context, resolution, m_input_slots, m_pivots);
+		throw_type_rule_error(
+			descriptor,
+			resolution,
+			m_input_slots,
+			m_pivots
+		);
 	}
 
 	resolution = check_slots(
@@ -155,7 +170,12 @@ void rule_operation_data_type_policy::accept(
 	);
 	if (!resolution)
 	{
-		throw_type_rule_error(context, resolution, m_output_slots, m_pivots);
+		throw_type_rule_error(
+			descriptor,
+			resolution,
+			m_output_slots,
+			m_pivots
+		);
 	}
 }
 

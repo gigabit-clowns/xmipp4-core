@@ -5,6 +5,8 @@
 #include "operand_type_descriptor.hpp"
 #include "operand_type_resolution.hpp"
 
+#include "../operation_descriptor.hpp"
+
 #include "../../numerical/numerical_type.hpp"
 #include "../../platform/attributes.hpp"
 #include "../../platform/dynamic_shared_object.h"
@@ -104,8 +106,8 @@ type_rule_resolution check_slots(
 /**
  * @brief Turn a failed resolution into an exception.
  *
- * @param context Prefix identifying the caller, used as the message
- * prefix.
+ * @param descriptor Description of the operation, used to name it and its
+ * operands.
  * @param resolution The failed resolution. Must not be successful.
  * @param slots Slot table of the operand kind the failure refers to. May
  * be empty when the failure is not attributed to a slot.
@@ -114,7 +116,7 @@ type_rule_resolution check_slots(
  */
 XMIPP4_CORE_API XMIPP4_NORETURN
 void throw_type_rule_error(
-	const char *context,
+	const operation_descriptor &descriptor,
 	const type_rule_resolution &resolution,
 	span<const slot_descriptor> slots,
 	span<const pivot_descriptor> pivots

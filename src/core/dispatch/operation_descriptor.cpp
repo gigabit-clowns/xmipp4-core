@@ -2,6 +2,8 @@
 
 #include <xmipp4/core/dispatch/operation_descriptor.hpp>
 
+#include <string>
+
 namespace xmipp4
 {
 
@@ -57,6 +59,21 @@ const char* operation_descriptor::get_operand_name(
 		output_operand ? m_output_operand_names : m_input_operand_names;
 
 	return index < names.size() ? names[index] : nullptr;
+}
+
+std::string describe_operand(
+	const operation_descriptor &descriptor,
+	std::size_t index,
+	bool output_operand
+)
+{
+	const auto *name = descriptor.get_operand_name(index, output_operand);
+	if (name != nullptr)
+	{
+		return "'" + std::string(name) + "'";
+	}
+
+	return std::to_string(index);
 }
 
 std::ostream& operator<<(

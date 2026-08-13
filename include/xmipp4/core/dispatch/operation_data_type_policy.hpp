@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "operation_descriptor.hpp"
+
 #include <xmipp4/core/span.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 #include <xmipp4/core/platform/dynamic_shared_object.h>
@@ -48,11 +50,14 @@ public:
 	 * @p canonical_output_types holds the data types the policy would
 	 * produce if the user had not pre-allocated outputs.
 	 *
+	 * @param descriptor Description of the operation, used to name the
+	 * operation and its operands when reporting a rejection.
 	 * @param canonical_output_types Output buffer, sized to the operation's
 	 * output arity. Will be filled with the canonical data types.
 	 * @param input_types Data types of the input operands.
 	 */
 	virtual void deduce(
+		const operation_descriptor &descriptor,
 		span<numerical_type> canonical_output_types,
 		span<const numerical_type> input_types
 	) const = 0;
@@ -70,11 +75,14 @@ public:
 	 * that admit user outputs other than the canonical one (e.g. when the
 	 * program performs a type conversion).
 	 *
+	 * @param descriptor Description of the operation, used to name the
+	 * operation and its operands when reporting a rejection.
 	 * @param user_output_types Data types of the user-supplied outputs.
 	 * @param canonical_output_types Data types produced by `deduce`.
 	 * @param input_types Data types of the input operands.
 	 */
 	virtual void accept(
+		const operation_descriptor &descriptor,
 		span<const numerical_type> user_output_types,
 		span<const numerical_type> canonical_output_types,
 		span<const numerical_type> input_types

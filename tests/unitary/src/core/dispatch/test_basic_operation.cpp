@@ -148,6 +148,7 @@ TEST_CASE(
     std::vector<numerical_type> outputs(1, numerical_type::unknown);
 
     op.get_operation_data_type_policy().deduce(
+        op.get_descriptor(),
         make_span(outputs),
         make_span(inputs)
     );
@@ -169,6 +170,7 @@ TEST_CASE(
 
     CHECK_THROWS_AS(
         op.get_operation_data_type_policy().deduce(
+            op.get_descriptor(),
             make_span(outputs),
             make_span(mismatched)
         ),
@@ -191,6 +193,7 @@ TEST_CASE(
     // supplied output to determine.
     std::vector<numerical_type> outputs(1, numerical_type::float64);
     op.get_operation_data_type_policy().deduce(
+        op.get_descriptor(),
         make_span(outputs),
         span<const numerical_type>()
     );

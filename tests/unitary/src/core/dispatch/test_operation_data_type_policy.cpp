@@ -14,10 +14,21 @@ using namespace xmipp4;
 namespace
 {
 
+const operation_descriptor& stub_descriptor()
+{
+	static XMIPP4_CONST_CONSTEXPR auto outputs =
+		make_operand_names("result");
+	static XMIPP4_CONST_CONSTEXPR auto inputs = make_operand_names("value");
+	static const operation_descriptor instance =
+		make_operation_descriptor("xmipp4.test", "stub", outputs, inputs);
+	return instance;
+}
+
 class stub_data_type_policy : public operation_data_type_policy
 {
 public:
 	void deduce(
+		const operation_descriptor& /*descriptor*/,
 		span<numerical_type> /*canonical_output_types*/,
 		span<const numerical_type> /*input_types*/
 	) const override {}
@@ -31,7 +42,7 @@ TEST_CASE(
 )
 {
 	const stub_data_type_policy policy;
-	CHECK_NOTHROW( policy.accept({}, {}, {}) );
+	CHECK_NOTHROW( policy.accept(stub_descriptor(), {}, {}, {}) );
 }
 
 TEST_CASE(
@@ -45,7 +56,7 @@ TEST_CASE(
 	const std::vector<numerical_type> user = { numerical_type::float32 };
 	const std::vector<numerical_type> canonical = { numerical_type::float32 };
 
-	CHECK_NOTHROW( policy.accept(make_span(user), make_span(canonical), {}) );
+	CHECK_NOTHROW( policy.accept(stub_descriptor(), make_span(user), make_span(canonical), {}) );
 }
 
 TEST_CASE(
@@ -63,7 +74,7 @@ TEST_CASE(
 		numerical_type::float32, numerical_type::int32
 	};
 
-	CHECK_NOTHROW( policy.accept(make_span(user), make_span(canonical), {}) );
+	CHECK_NOTHROW( policy.accept(stub_descriptor(), make_span(user), make_span(canonical), {}) );
 }
 
 TEST_CASE(
@@ -78,11 +89,11 @@ TEST_CASE(
 	const std::vector<numerical_type> canonical = { numerical_type::float64 };
 
 	REQUIRE_THROWS_MATCHES(
-		policy.accept(make_span(user), make_span(canonical), {}),
+		policy.accept(stub_descriptor(), make_span(user), make_span(canonical), {}),
 		std::invalid_argument,
 		Catch::Matchers::Message(
-			"user-supplied output data type at index 0 (float32)"
-			" does not match the data type deduced from the inputs (float64)."
+			"xmipp4.test.stub: output operand 'result' has data type "
+			"float32, but this operation deduces float64 from its inputs."
 		)
 	);
 }
@@ -107,11 +118,11 @@ TEST_CASE(
 	};
 
 	REQUIRE_THROWS_MATCHES(
-		policy.accept(make_span(user), make_span(canonical), {}),
+		policy.accept(stub_descriptor(), make_span(user), make_span(canonical), {}),
 		std::invalid_argument,
 		Catch::Matchers::Message(
-			"user-supplied output data type at index 2 (uint8)"
-			" does not match the data type deduced from the inputs (int64)."
+			"xmipp4.test.stub: output operand 2 has data type uint8, but "
+			"this operation deduces int64 from its inputs."
 		)
 	);
 }

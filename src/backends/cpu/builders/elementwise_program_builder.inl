@@ -214,6 +214,7 @@ elementwise_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 	auto layout = layout_builder.build();
 	const auto &factory = m_kernel_factory;
 	return m_type_dispatcher.dispatch(
+		Op::get_static_descriptor(),
 		[&typed_operation, &layout, &factory]
 		(auto output_element_types, auto input_element_types)
 		{

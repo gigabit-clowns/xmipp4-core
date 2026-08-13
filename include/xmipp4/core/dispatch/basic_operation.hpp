@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return const operation_descriptor& The descriptor.
 	 */
-	const operation_descriptor& get_descriptor() const noexcept;
+	const operation_descriptor& get_descriptor() const noexcept override;
 
 	/**
 	 * @brief Get the identifier of @p Derived.

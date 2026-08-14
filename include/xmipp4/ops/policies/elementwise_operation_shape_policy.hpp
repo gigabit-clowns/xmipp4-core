@@ -20,11 +20,13 @@ class XMIPP4_CORE_API elementwise_operation_shape_policy final
 {
 public:
 	void deduce(
+		const operation_descriptor &descriptor,
 		span<shape_type> canonical_output_shapes,
 		span<const shape_type> input_shapes
 	) const override;
 
 	void accept(
+		const operation_descriptor &descriptor,
 		span<const shape_type> user_output_shapes,
 		span<const shape_type> canonical_output_shapes,
 		span<const shape_type> input_shapes

@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/platform/dynamic_shared_object.h>
+#include <xmipp4/core/dispatch/basic_operation.hpp>
+#include <xmipp4/ops/ops_component.hpp>
+#include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
+#include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 namespace xmipp4
 {
@@ -11,40 +13,19 @@ namespace ops
 {
 
 /**
- * @brief Compute the absolute value the elements from two input array to into 
- * output array.
+ * @brief Compute the absolute value of each element of the input array.
+ *
+ * The output has the real counterpart of the input type, so the magnitude
+ * of a complex array is a real one.
  */
-class XMIPP4_CORE_API abs_operation final
-	: public operation
-{
-public:
-	/**
-	 * @brief Indices for output operands.
-	 */
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_RESULT,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	/**
-	 * @brief Indices for input operands.
-	 */
-	enum input_operand_indices
-	{
-		INPUT_OPERAND_VALUE,
-
-		INPUT_OPERAND_COUNT
-	};
-
-	std::string get_name() const override;
-	operation_arity get_arity() const noexcept override;
-	const operation_shape_policy&
-	get_operation_shape_policy() const noexcept override;
-	const operation_data_type_policy&
-	get_operation_data_type_policy() const noexcept override;
-};
+XMIPP4_DECLARE_OPERATION(
+	abs,
+	ops_component,
+	XMIPP4_OPERANDS("result"),
+	XMIPP4_OPERANDS("value"),
+	elementwise_operation_shape_policy,
+	unary_real_of_rule<arithmetic_type_domain>
+);
 
 } // namespace ops
 } // namespace xmipp4

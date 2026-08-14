@@ -369,16 +369,19 @@ void eager_dispatcher::dispatch(
 
 	const auto &shape_policy = op.get_operation_shape_policy();
 	const auto &data_type_policy = op.get_operation_data_type_policy();
+	const auto &descriptor = op.get_descriptor();
 
 	auto canonical_output_shapes =
 		make_empty_shapes(n_outputs, small_output_size_tag());
 	auto canonical_output_data_types =
 		make_empty_data_types(n_outputs, small_output_size_tag());
 	shape_policy.deduce(
+		descriptor,
 		make_span(canonical_output_shapes.data(), n_outputs),
 		make_span(input_shapes.data(), n_inputs)
 	);
 	data_type_policy.deduce(
+		descriptor,
 		make_span(canonical_output_data_types.data(), n_outputs),
 		make_span(input_data_types.data(), n_inputs)
 	);
@@ -404,11 +407,13 @@ void eager_dispatcher::dispatch(
 		);
 
 		shape_policy.accept(
+			descriptor,
 			make_span(output_shapes.data(), n_outputs),
 			make_span(canonical_output_shapes.data(), n_outputs),
 			make_span(input_shapes.data(), n_inputs)
 		);
 		data_type_policy.accept(
+			descriptor,
 			make_span(output_data_types.data(), n_outputs),
 			make_span(canonical_output_data_types.data(), n_outputs),
 			make_span(input_data_types.data(), n_inputs)

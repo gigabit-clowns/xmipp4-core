@@ -4,7 +4,6 @@
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 
 namespace xmipp4
@@ -34,8 +33,7 @@ struct subtract_kernel
 XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	subtract,
 	ops::subtract_operation,
-	default_kernel_factory<subtract_kernel>,
-	homogeneous_type_dispatcher<>
+	default_kernel_factory<subtract_kernel>
 );
 
 } // namespace cpu

@@ -109,6 +109,19 @@ public:
 	}
 
 protected:
+	// The dispatcher hands the operation's description to the policies, so
+	// that whichever of them rejects a launch can name the operand.
+	static const operation_descriptor& mock_descriptor()
+	{
+		static XMIPP4_CONST_CONSTEXPR auto outputs =
+			make_operand_names("result");
+		static XMIPP4_CONST_CONSTEXPR auto inputs =
+			make_operand_names("value");
+		static const operation_descriptor instance =
+			make_operation_descriptor("xmipp4.test", "mock", outputs, inputs);
+		return instance;
+	}
+
 	// Set up @ref op as a unary operation whose policies deduce the given
 	// output shape and data type from its single input.
 	void expect_unary_operation(shape_type out_shape, numerical_type out_type)
@@ -116,6 +129,10 @@ protected:
 		expectations.push_back(
 			NAMED_ALLOW_CALL(op, get_arity())
 				.RETURN(operation_arity::unary())
+		);
+		expectations.push_back(
+			NAMED_ALLOW_CALL(op, get_descriptor())
+				.LR_RETURN(mock_descriptor())
 		);
 		expectations.push_back(
 			NAMED_ALLOW_CALL(op, get_operation_shape_policy())
@@ -128,16 +145,24 @@ protected:
 		expectations.push_back(
 			NAMED_REQUIRE_CALL(
 				shape_policy,
-				deduce(ANY(span<shape_type>), ANY(span<const shape_type>))
+				deduce(
+					ANY(const operation_descriptor&),
+					ANY(span<shape_type>),
+					ANY(span<const shape_type>)
+				)
 			)
-				.SIDE_EFFECT(_1[0] = out_shape)
+				.SIDE_EFFECT(_2[0] = out_shape)
 		);
 		expectations.push_back(
 			NAMED_REQUIRE_CALL(
 				dtype_policy,
-				deduce(ANY(span<numerical_type>), ANY(span<const numerical_type>))
+				deduce(
+					ANY(const operation_descriptor&),
+					ANY(span<numerical_type>),
+					ANY(span<const numerical_type>)
+				)
 			)
-				.SIDE_EFFECT(_1[0] = out_type)
+				.SIDE_EFFECT(_2[0] = out_type)
 		);
 	}
 
@@ -151,6 +176,7 @@ protected:
 			NAMED_REQUIRE_CALL(
 				shape_policy,
 				accept(
+					ANY(const operation_descriptor&),
 					ANY(span<const shape_type>),
 					ANY(span<const shape_type>),
 					ANY(span<const shape_type>)
@@ -161,6 +187,7 @@ protected:
 			NAMED_REQUIRE_CALL(
 				dtype_policy,
 				accept(
+					ANY(const operation_descriptor&),
 					ANY(span<const numerical_type>),
 					ANY(span<const numerical_type>),
 					ANY(span<const numerical_type>)
@@ -392,25 +419,27 @@ TEST_CASE_METHOD(
 		NAMED_REQUIRE_CALL(
 			shape_policy,
 			accept(
+				ANY(const operation_descriptor&),
 				ANY(span<const shape_type>),
 				ANY(span<const shape_type>),
 				ANY(span<const shape_type>)
 			)
 		)
-			.WITH(_1.size() == 1 && _1[0] == user_shape)       // User output.
-			.WITH(_2.size() == 1 && _2[0] == shape_type{4})    // Canonical.
+			.WITH(_2.size() == 1 && _2[0] == user_shape)       // User output.
+			.WITH(_3.size() == 1 && _3[0] == shape_type{4})    // Canonical.
 	);
 	expectations.push_back(
 		NAMED_REQUIRE_CALL(
 			dtype_policy,
 			accept(
+				ANY(const operation_descriptor&),
 				ANY(span<const numerical_type>),
 				ANY(span<const numerical_type>),
 				ANY(span<const numerical_type>)
 			)
 		)
-			.WITH(_1.size() == 1 && _1[0] == user_type)               // User.
-			.WITH(_2.size() == 1 && _2[0] == numerical_type::float32) // Canonical.
+			.WITH(_2.size() == 1 && _2[0] == user_type)               // User.
+			.WITH(_3.size() == 1 && _3[0] == numerical_type::float32) // Canonical.
 	);
 
 	register_program_builder();

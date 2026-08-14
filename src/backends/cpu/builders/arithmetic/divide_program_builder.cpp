@@ -4,7 +4,6 @@
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 
 namespace xmipp4
@@ -24,19 +23,12 @@ struct divide_kernel
 	}
 };
 
-template <typename T>
-struct divide_predicate : std::integral_constant<
-	bool,
-	!std::is_same<T, bool>::value
-> {};
-
 } // anonymous namespace
 
 XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	divide,
 	ops::divide_operation,
-	default_kernel_factory<divide_kernel>,
-	homogeneous_type_dispatcher<divide_predicate>
+	default_kernel_factory<divide_kernel>
 );
 
 } // namespace cpu

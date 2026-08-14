@@ -4,12 +4,12 @@
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 
 #include <core/hardware/host_memory/host_buffer.hpp>
 
+#include <xmipp4/core/dispatch/basic_operation.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
 #include <xmipp4/core/dispatch/operation_arity.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -22,7 +22,8 @@
 #include <xmipp4/core/span.hpp>
 
 #include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
-#include <xmipp4/ops/policies/homogeneous_operation_data_type_policy.hpp>
+#include <xmipp4/ops/ops_component.hpp>
+#include <xmipp4/ops/rules/operand_type_rules.hpp>
 
 #include "../../../core/dispatch/mock/mock_operation.hpp"
 
@@ -39,50 +40,15 @@ using namespace xmipp4::cpu;
 namespace
 {
 
-// A self-contained binary elementwise operation. build() only reads the
-// operand-count enums and the operation type; the arity and policy getters
-// are provided to make the type concrete and are never invoked by the tests.
-class test_binary_operation final
-	: public operation
-{
-public:
-	enum output_operand_indices
-	{
-		OUTPUT_OPERAND_RESULT,
-
-		OUTPUT_OPERAND_COUNT
-	};
-
-	enum input_operand_indices
-	{
-		INPUT_OPERAND_LEFT,
-		INPUT_OPERAND_RIGHT,
-
-		INPUT_OPERAND_COUNT
-	};
-
-	std::string get_name() const override
-	{
-		return "test_binary";
-	}
-
-	operation_arity get_arity() const noexcept override
-	{
-		return operation_arity(OUTPUT_OPERAND_COUNT, INPUT_OPERAND_COUNT);
-	}
-
-	const operation_shape_policy&
-	get_operation_shape_policy() const noexcept override
-	{
-		return ops::elementwise_operation_shape_policy::get();
-	}
-
-	const operation_data_type_policy&
-	get_operation_data_type_policy() const noexcept override
-	{
-		return ops::homogeneous_operation_data_type_policy::get();
-	}
-};
+// A self-contained binary elementwise operation.
+XMIPP4_DECLARE_OPERATION(
+	test_binary,
+	ops::ops_component,
+	XMIPP4_OPERANDS("result"),
+	XMIPP4_OPERANDS("left", "right"),
+	ops::elementwise_operation_shape_policy,
+	ops::binary_homogeneous_rule<>
+);
 
 // Per-element kernel adding the two inputs into the output.
 struct sum_kernel
@@ -96,8 +62,7 @@ struct sum_kernel
 
 using test_builder = elementwise_program_builder<
 	test_binary_operation,
-	default_kernel_factory<sum_kernel>,
-	homogeneous_type_dispatcher<>
+	default_kernel_factory<sum_kernel>
 >;
 
 operand_signature make_float32_signature(std::size_t count)
@@ -199,8 +164,12 @@ TEST_CASE(
 )
 {
 	const test_builder builder;
-	const mock_operation operation;
+	mock_operation operation;
 	cpu::command_queue queue;
+
+	// The rejection names the operation it was handed, so the mock has to
+	// be able to answer that much.
+	ALLOW_CALL(operation, get_name()).RETURN("mock");
 
 	const std::vector<operand_signature> outputs {
 		make_float32_signature(4)

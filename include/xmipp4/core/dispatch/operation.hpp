@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "operation_descriptor.hpp"
 #include "operation_id.hpp"
 #include "operation_arity.hpp"
 #include "operation_shape_policy.hpp"
@@ -37,9 +38,30 @@ public:
 	/**
 	 * @brief Get an identifier that uniquely represents this operation.
 	 *
-	 * @return const operation_id& The operation id.
+	 * The identifier is what binds an operation to the program builders
+	 * implementing it, so a subclass that behaves as its base must report
+	 * the base's identifier rather than one of its own. The default
+	 * implementation derives it from the dynamic type and therefore does
+	 * not; override it, as @ref basic_operation does, whenever an
+	 * operation may be derived from.
+	 *
+	 * @return operation_id The operation id.
 	 */
+	virtual
 	operation_id get_id() const noexcept;
+
+	/**
+	 * @brief Get the static description of this operation.
+	 *
+	 * Holds the operation's name and the name of each of its operands, so
+	 * that whatever rejects a launch configuration can say which operand it
+	 * objected to. @ref basic_operation supplies it from the operation's
+	 * declaration.
+	 *
+	 * @return const operation_descriptor& The description.
+	 */
+	virtual
+	const operation_descriptor& get_descriptor() const noexcept = 0;
 
 	/**
 	 * @brief Get a human readable identifier of the operation.

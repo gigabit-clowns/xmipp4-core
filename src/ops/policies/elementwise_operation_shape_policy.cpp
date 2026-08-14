@@ -5,6 +5,7 @@
 #include <xmipp4/core/layout/broadcast.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
+#include <sstream>
 #include <stdexcept>
 
 namespace xmipp4
@@ -13,6 +14,7 @@ namespace ops
 {
 
 void elementwise_operation_shape_policy::deduce(
+	const operation_descriptor& /*descriptor*/,
 	span<shape_type> canonical_output_shapes,
 	span<const shape_type> input_shapes
 ) const
@@ -48,6 +50,7 @@ void elementwise_operation_shape_policy::deduce(
 }
 
 void elementwise_operation_shape_policy::accept(
+	const operation_descriptor &descriptor,
 	span<const shape_type> user_output_shapes,
 	span<const shape_type> canonical_output_shapes,
 	span<const shape_type> /*input_shapes*/
@@ -67,10 +70,13 @@ void elementwise_operation_shape_policy::accept(
 	{
 		if (user_output_shapes[i] != reference_shape)
 		{
-			throw std::invalid_argument(
-				"elementwise_operation_shape_policy requires all outputs to "
-				"have the same shape."
-			);
+			std::ostringstream oss;
+			oss << descriptor << ": output operand "
+				<< describe_operand(descriptor, i, true)
+				<< " does not have the same shape as output operand "
+				<< describe_operand(descriptor, 0, true)
+				<< ", which an elementwise operation requires.";
+			throw std::invalid_argument(oss.str());
 		}
 	}
 
@@ -80,10 +86,11 @@ void elementwise_operation_shape_policy::accept(
 	);
 	if (!valid)
 	{
-		throw std::invalid_argument(
-			"elementwise_operation_shape_policy requires the user-supplied "
-			"output shape to be broadcast-compatible with the inputs."
-		);
+		std::ostringstream oss;
+		oss << descriptor << ": output operand "
+			<< describe_operand(descriptor, 0, true)
+			<< " has a shape the inputs cannot be broadcast to.";
+		throw std::invalid_argument(oss.str());
 	}
 }
 

@@ -114,3 +114,38 @@
 #else
 	#define XMIPP4_STD_MEMBER_INTERFACE
 #endif
+
+/**
+ * @def XMIPP4_BEGIN_TEMPLATE_BASE
+ * @brief Silence MSVC warning C4275 for a class deriving from a template.
+ *
+ * C4275 fires when a dll-interface class (see @ref XMIPP4_CORE_API) derives
+ * from a class template specialization, which is never itself a
+ * dll-interface. This is safe as long as the template is header only, so
+ * every module instantiates the same definition.
+ *
+ * Unlike @ref XMIPP4_STD_BASE_INTERFACE this comes as a pair, because the
+ * class head and its base-clause cannot be kept on a single line while
+ * respecting the line length limit. Close it with
+ * @ref XMIPP4_END_TEMPLATE_BASE right after the class definition. Expands
+ * to nothing on other compilers.
+ *
+ */
+#if defined(_MSC_VER)
+	#define XMIPP4_BEGIN_TEMPLATE_BASE \
+		__pragma(warning(push)) \
+		__pragma(warning(disable: 4275))
+#else
+	#define XMIPP4_BEGIN_TEMPLATE_BASE
+#endif
+
+/**
+ * @def XMIPP4_END_TEMPLATE_BASE
+ * @brief Close a @ref XMIPP4_BEGIN_TEMPLATE_BASE region.
+ *
+ */
+#if defined(_MSC_VER)
+	#define XMIPP4_END_TEMPLATE_BASE __pragma(warning(pop))
+#else
+	#define XMIPP4_END_TEMPLATE_BASE
+#endif

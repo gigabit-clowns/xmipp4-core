@@ -3,7 +3,6 @@
 #include <xmipp4/ops/assignment/fill_operation.hpp>
 
 #include <backends/cpu/builders/elementwise_program_builder.hpp>
-#include <backends/cpu/builders/type_dispatchers/homogeneous_type_dispatcher.hpp>
 #include <backends/cpu/load_store.hpp>
 
 namespace xmipp4
@@ -50,8 +49,7 @@ struct fill_kernel_factory
 XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
 	fill,
 	ops::fill_operation,
-	fill_kernel_factory,
-	homogeneous_type_dispatcher<>
+	fill_kernel_factory
 );
 
 } // namespace cpu

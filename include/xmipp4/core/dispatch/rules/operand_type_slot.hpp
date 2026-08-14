@@ -57,6 +57,14 @@ template <std::size_t I = 0>
 using slot_complex_of = operand_type_slot<I, complex_type_transform>;
 
 /**
+ * @brief Slot whose operand has the inexact counterpart of the pivot type.
+ *
+ * @tparam I Index of the pivot.
+ */
+template <std::size_t I = 0>
+using slot_inexact_of = operand_type_slot<I, inexact_type_transform>;
+
+/**
  * @brief Slot whose operand has a fixed type, whatever the pivot is.
  *
  * @tparam Type The type of the operand.

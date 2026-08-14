@@ -97,6 +97,21 @@ array execute_unary(
 	);
 }
 
+void execute_unary(
+	const operation &operation,
+	span<array> output_operands,
+	const_array_ref input,
+	const execution_context &context
+)
+{
+	execute(
+		operation,
+		output_operands,
+		make_span(&input, 1),
+		context
+	);
+}
+
 array execute_binary(
 	const operation &operation,
 	const_array_ref first_input,
@@ -114,6 +129,26 @@ array execute_binary(
 		make_span(inputs),
 		context,
 		out
+	);
+}
+
+void execute_binary(
+	const operation &operation,
+	span<array> output_operands,
+	const_array_ref first_input,
+	const_array_ref second_input,
+	const execution_context &context
+)
+{
+	std::array<const_array_ref, 2> inputs = {
+		std::move(first_input),
+		std::move(second_input)
+	};
+	execute(
+		operation,
+		output_operands,
+		make_span(inputs),
+		context
 	);
 }
 

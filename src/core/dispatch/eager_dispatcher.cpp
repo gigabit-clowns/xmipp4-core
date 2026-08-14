@@ -110,6 +110,7 @@ make_empty_data_types(
 template <std::size_t N>
 boost::container::small_vector<array_descriptor, N>
 resolve_output_descriptors(
+	const operation_descriptor &descriptor,
 	span<const array> output_operands,
 	span<const operation_shape_policy::shape_type> canonical_shapes,
 	span<const numerical_type> canonical_data_types,
@@ -124,7 +125,7 @@ resolve_output_descriptors(
 	boost::container::small_vector<array_descriptor, N> result;
 	result.reserve(n);
 	for (std::size_t i = 0; i < n; ++i)
-	{	
+	{
 		const auto &output_operand = output_operands[i];
 
 		if (output_operand.get_storage())
@@ -136,6 +137,21 @@ resolve_output_descriptors(
 		{
 			const auto &canonical_shape = canonical_shapes[i];
 			const auto canonical_data_type = canonical_data_types[i];
+
+			// A rule whose output type is free leaves it undetermined for a
+			// user supplied output to settle. With nothing supplied there is
+			// nothing to settle it, and sizing a buffer from an unknown type
+			// would allocate whatever get_size() happens to return.
+			if (canonical_data_type == numerical_type::unknown)
+			{
+				std::ostringstream oss;
+				oss << descriptor << ": the data type of output operand "
+					<< describe_operand(descriptor, i, true)
+					<< " is not determined by the inputs, so it must be "
+					<< "supplied as a pre-allocated output.";
+				throw std::invalid_argument(oss.str());
+			}
+
 			result.emplace_back(
 				strided_layout::make_contiguous_layout(
 					make_span(canonical_shape)
@@ -388,6 +404,7 @@ void eager_dispatcher::dispatch(
 
 	bool needs_acceptance = false;
 	auto output_descriptors = resolve_output_descriptors(
+		descriptor,
 		output_operands,
 		make_span(canonical_output_shapes.data(), n_outputs),
 		make_span(canonical_output_data_types.data(), n_outputs),
@@ -399,11 +416,11 @@ void eager_dispatcher::dispatch(
 	{
 		auto output_shapes = extract_shapes(
 			make_span(output_descriptors.data(), n_outputs),
-			small_input_size_tag()
+			small_output_size_tag()
 		);
 		auto output_data_types = extract_data_types(
 			make_span(output_descriptors.data(), n_outputs),
-			small_input_size_tag()
+			small_output_size_tag()
 		);
 
 		shape_policy.accept(

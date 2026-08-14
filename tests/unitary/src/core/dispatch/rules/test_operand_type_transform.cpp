@@ -101,6 +101,14 @@ TEST_CASE(
 }
 
 TEST_CASE(
+    "inexact_type_transform should agree on both of its halves",
+    "[operand_type_transform]"
+)
+{
+    check_transform_consistency<inexact_type_transform>();
+}
+
+TEST_CASE(
     "fixed_type_transform should agree on both of its halves",
     "[operand_type_transform]"
 )
@@ -133,6 +141,52 @@ TEST_CASE(
     // make_real, by contrast, is total.
     CHECK( real_type_transform::domain_type::get() ==
            numerical_type_domain::all() );
+
+    // make_inexact has no numeric meaning for a character, so the domain
+    // must exclude it while admitting every other type.
+    const auto &inexact = inexact_type_transform::domain_type::get();
+    CHECK( !inexact.contains(numerical_type::char8) );
+    CHECK( inexact.contains(numerical_type::boolean) );
+    CHECK( inexact.contains(numerical_type::int32) );
+    CHECK( inexact.contains(numerical_type::float32) );
+    CHECK( inexact.contains(numerical_type::complex_float32) );
+}
+
+TEST_CASE(
+    "inexact_type_transform should widen exact types and keep inexact ones",
+    "[operand_type_transform]"
+)
+{
+    // Anything that can only hold whole values widens, so that the result of
+    // an averaging operation is representable.
+    CHECK( inexact_type_transform::apply(numerical_type::int32) ==
+           numerical_type::float64 );
+    CHECK( inexact_type_transform::apply(numerical_type::uint64) ==
+           numerical_type::float64 );
+    CHECK( inexact_type_transform::apply(numerical_type::boolean) ==
+           numerical_type::float64 );
+
+    // Types that already have a fractional part are left alone, so a
+    // float32 operand is not silently widened to float64.
+    CHECK( inexact_type_transform::apply(numerical_type::float16) ==
+           numerical_type::float16 );
+    CHECK( inexact_type_transform::apply(numerical_type::float32) ==
+           numerical_type::float32 );
+    CHECK( inexact_type_transform::apply(numerical_type::complex_float32) ==
+           numerical_type::complex_float32 );
+
+    STATIC_REQUIRE( std::is_same<
+        inexact_type_transform::apply_type<std::int32_t>::type,
+        float64_t
+    >::value );
+    STATIC_REQUIRE( std::is_same<
+        inexact_type_transform::apply_type<float32_t>::type,
+        float32_t
+    >::value );
+    STATIC_REQUIRE( std::is_same<
+        inexact_type_transform::apply_type<std::complex<float32_t>>::type,
+        std::complex<float32_t>
+    >::value );
 }
 
 TEST_CASE(

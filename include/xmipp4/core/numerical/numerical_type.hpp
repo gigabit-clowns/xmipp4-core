@@ -102,6 +102,25 @@ XMIPP4_CORE_API
 numerical_type make_real(numerical_type type) noexcept;
 
 /**
+ * @brief Get the inexact equivalent of a numerical type.
+ *
+ * Types that can only represent whole values, which is to say booleans and
+ * integers, map onto float64, the widest type able to hold their result.
+ * Floating point and complex types already have a fractional part and are
+ * returned unchanged.
+ *
+ * Models the result type of operations whose value is not representable in
+ * the operand's own type, such as a mean. Characters are not admitted: they
+ * are not a numeric quantity to average.
+ *
+ * @param type The type to be made inexact.
+ * @return numerical_type The equivalent inexact type.
+ * numerical_type::unknown if error.
+ */
+XMIPP4_CORE_API
+numerical_type make_inexact(numerical_type type) noexcept;
+
+/**
  * @brief Get the common type of two numerical types.
  * 
  * The type promotion mechanism is heavily influenced by JAX's approach:

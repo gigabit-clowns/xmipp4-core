@@ -4,154 +4,51 @@
 
 #include <xmipp4/functional/creation.hpp>
 
-#include <xmipp4/core/dispatch/execution_context.hpp>
-#include <xmipp4/core/ndarray/array.hpp>
-#include <xmipp4/core/ndarray/const_array.hpp>
-#include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/core/layout/strided_layout.hpp>
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/ops/assignment/fill_operation.hpp>
 #include <xmipp4/ops/assignment/copy_operation.hpp>
-#include <xmipp4/core/numerical/numerical_type.hpp>
-#include <xmipp4/core/numerical/scalar_value.hpp>
-#include <xmipp4/core/span.hpp>
-#include <xmipp4/core/hardware/device_context.hpp>
-#include <xmipp4/core/hardware/device_session.hpp>
-#include <xmipp4/core/hardware/device_properties.hpp>
-#include <xmipp4/core/hardware/memory_allocator.hpp>
-#include <xmipp4/core/hardware/command_queue.hpp>
-#include <xmipp4/core/hardware/buffer.hpp>
-#include <xmipp4/core/hardware/memory_resource_affinity.hpp>
+#include <xmipp4/ops/assignment/fill_operation.hpp>
 
-#include "../core/dispatch/mock/mock_dispatcher.hpp"
-#include "../core/hardware/mock/mock_device.hpp"
-#include "../core/hardware/mock/mock_memory_resource.hpp"
-#include "../core/hardware/mock/mock_memory_allocator.hpp"
-#include "../core/hardware/mock/mock_command_queue.hpp"
-#include "../core/hardware/mock/mock_buffer.hpp"
-
-#include <cstddef>
-#include <memory>
-#include <stdexcept>
-#include <typeinfo>
-#include <vector>
+#include "fixtures/verb_dispatch_fixture.hpp"
 
 using namespace xmipp4;
 using namespace xmipp4::ops;
 using trompeloeil::_;
+using xmipp4::test::dispatch_record;
+using xmipp4::test::verb_dispatch_fixture;
 
 namespace
 {
 
-// Records the arguments seen by a mocked dispatch() call so that they can be
-// inspected after the function under test has returned. The fill value and
-// operation type are captured by value to stay valid past the operation's
-// (temporary) lifetime.
-struct dispatch_record
-{
-	bool called = false;
-	const std::type_info *operation_type = nullptr;
-	std::unique_ptr<scalar_value> fill_value;
-	std::size_t num_outputs = 0;
-	std::size_t num_inputs = 0;
-	const buffer *first_output_storage = nullptr;
-	const buffer *first_input_storage = nullptr;
-	const xmipp4::device_session *device_session = nullptr;
-
-	void operator()(
-		const operation &op,
-		span<array> outputs,
-		span<const const_array_ref> inputs,
-		const device_context &device_context
-	)
-	{
-		called = true;
-		operation_type = &typeid(op);
-		num_outputs = outputs.size();
-		num_inputs = inputs.size();
-		if (const auto *fill = dynamic_cast<const fill_operation*>(&op))
-		{
-			fill_value =
-				std::make_unique<scalar_value>(fill->get_fill_value());
-		}
-		if (!outputs.empty())
-		{
-			first_output_storage = outputs[0].get_storage();
-		}
-		if (!inputs.empty())
-		{
-			first_input_storage = inputs[0].get_storage();
-		}
-		device_session = device_context.get_device_session().get();
-	}
-};
-
-class array_creation_fixture
+// The verbs build their fill operation as a temporary and hand it straight
+// to the dispatcher, so its value has to be copied out while the call is
+// still on the stack.
+class fill_value_capture
 {
 public:
-	array_creation_fixture()
-		: device(std::make_shared<mock_device>())
-		, host_allocator(std::make_shared<mock_memory_allocator>())
-		, device_allocator(std::make_shared<mock_memory_allocator>())
-		, default_queue(std::make_shared<mock_command_queue>())
-		, dispatcher(std::make_shared<mock_dispatcher>())
+	explicit fill_value_capture(test::dispatch_record &record)
 	{
-
-		device_properties properties;
-		properties.set_optimal_data_alignment(128);
-
-		REQUIRE_CALL(
-			*device,
-			get_memory_resource(memory_resource_affinity::host)
-		)
-			.LR_RETURN(host_resource);
-		REQUIRE_CALL(
-			*device,
-			get_memory_resource(memory_resource_affinity::device)
-		)
-			.LR_RETURN(device_resource);
-		REQUIRE_CALL(host_resource, create_allocator())
-			.RETURN(host_allocator);
-		REQUIRE_CALL(device_resource, create_allocator())
-			.RETURN(device_allocator);
-		REQUIRE_CALL(*device, create_command_queue())
-			.RETURN(default_queue);
-
-		session = std::make_shared<device_session>(
-			device,
-			std::move(properties)
-		);
-
-		context = execution_context(
-			device_context(session),
-			dispatcher
-		);
+		record.inspect = [this] (const operation &op)
+		{
+			const auto *fill = dynamic_cast<const fill_operation*>(&op);
+			if (fill)
+			{
+				m_value = std::make_unique<scalar_value>(
+					fill->get_fill_value()
+				);
+			}
+		};
 	}
 
-protected:
-	array_descriptor make_descriptor(
-		std::vector<std::size_t> extents = { 2, 3 },
-		numerical_type data_type = numerical_type::float32
-	) const
+	const scalar_value* get() const noexcept
 	{
-		return array_descriptor(
-			strided_layout::make_contiguous_layout(make_span(extents)),
-			data_type
-		);
+		return m_value.get();
 	}
 
-	std::shared_ptr<mock_device> device;
-	std::shared_ptr<mock_memory_allocator> host_allocator;
-	std::shared_ptr<mock_memory_allocator> device_allocator;
-	mock_memory_resource host_resource;
-	mock_memory_resource device_resource;
-	std::shared_ptr<command_queue> default_queue;
-	std::shared_ptr<const device_session> session;
-	std::shared_ptr<mock_dispatcher> dispatcher;
-	execution_context context;
+private:
+	std::unique_ptr<scalar_value> m_value;
 };
 
 } // namespace
+
 
 
 TEST_CASE(
@@ -180,7 +77,7 @@ TEST_CASE(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty allocates storage from the affinity allocator and wraps it in an "
 	"array carrying the requested descriptor",
 	"[array_creation]"
@@ -209,7 +106,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty routes the allocation to the device allocator for device affinity",
 	"[array_creation]"
 )
@@ -238,7 +135,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty reuses the storage of a compatible output array instead of "
 	"allocating a new buffer",
 	"[array_creation]"
@@ -274,7 +171,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty reuses compatible storage but overrides the output array when its "
 	"descriptor differs",
 	"[array_creation]"
@@ -310,7 +207,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty allocates and overrides the output array when it has no storage",
 	"[array_creation]"
 )
@@ -345,7 +242,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty reallocates and overrides the output array when its storage lives "
 	"on a different memory resource",
 	"[array_creation]"
@@ -385,7 +282,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"empty reallocates and overrides the output array when its storage is too "
 	"small",
 	"[array_creation]"
@@ -426,7 +323,7 @@ TEST_CASE_METHOD(
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"full allocates an output array and dispatches a fill_operation carrying "
 	"the requested value",
 	"[array_creation]"
@@ -445,6 +342,7 @@ TEST_CASE_METHOD(
 		.RETURN(buffer);
 
 	dispatch_record record;
+	const fill_value_capture fill_value(record);
 	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
 		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
 
@@ -458,16 +356,16 @@ TEST_CASE_METHOD(
 	CHECK( record.called );
 	REQUIRE( record.operation_type != nullptr );
 	CHECK( *record.operation_type == typeid(fill_operation) );
-	REQUIRE( record.fill_value != nullptr );
-	CHECK( record.fill_value->get<float>() == 2.5f );
+	REQUIRE( fill_value.get() != nullptr );
+	CHECK( fill_value.get()->get<float>() == 2.5f );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 0 );
-	CHECK( record.first_output_storage == buffer.get() );
-	CHECK( record.device_session == session.get() );
+	CHECK( record.get_output_storage(0) == buffer.get() );
+	CHECK( record.session == session.get() );
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"zeros dispatches a fill_operation with a zero fill value",
 	"[array_creation]"
 )
@@ -484,6 +382,7 @@ TEST_CASE_METHOD(
 		.RETURN(buffer);
 
 	dispatch_record record;
+	const fill_value_capture fill_value(record);
 	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
 		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
 
@@ -496,14 +395,14 @@ TEST_CASE_METHOD(
 	CHECK( record.called );
 	REQUIRE( record.operation_type != nullptr );
 	CHECK( *record.operation_type == typeid(fill_operation) );
-	REQUIRE( record.fill_value != nullptr );
-	CHECK( record.fill_value->get<int>() == 0 );
+	REQUIRE( fill_value.get() != nullptr );
+	CHECK( fill_value.get()->get<int>() == 0 );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 0 );
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"ones dispatches a fill_operation with a one fill value",
 	"[array_creation]"
 )
@@ -520,6 +419,7 @@ TEST_CASE_METHOD(
 		.RETURN(buffer);
 
 	dispatch_record record;
+	const fill_value_capture fill_value(record);
 	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
 		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
 
@@ -532,14 +432,14 @@ TEST_CASE_METHOD(
 	CHECK( record.called );
 	REQUIRE( record.operation_type != nullptr );
 	CHECK( *record.operation_type == typeid(fill_operation) );
-	REQUIRE( record.fill_value != nullptr );
-	CHECK( record.fill_value->get<int>() == 1 );
+	REQUIRE( fill_value.get() != nullptr );
+	CHECK( fill_value.get()->get<int>() == 1 );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 0 );
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"copy dispatches a copy_operation with the source as the single input",
 	"[array_creation]"
 )
@@ -549,6 +449,7 @@ TEST_CASE_METHOD(
 	array source(source_buffer, descriptor);
 
 	dispatch_record record;
+	const fill_value_capture fill_value(record);
 	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
 		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
 
@@ -559,12 +460,12 @@ TEST_CASE_METHOD(
 	CHECK( *record.operation_type == typeid(copy_operation) );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 1 );
-	CHECK( record.first_input_storage == source_buffer.get() );
-	CHECK( record.device_session == session.get() );
+	CHECK( record.get_input_storage(0) == source_buffer.get() );
+	CHECK( record.session == session.get() );
 }
 
 TEST_CASE_METHOD(
-	array_creation_fixture,
+	verb_dispatch_fixture,
 	"fill dispatches a fill_operation on the provided array with no inputs",
 	"[array_creation]"
 )
@@ -574,6 +475,7 @@ TEST_CASE_METHOD(
 	array target(buffer, descriptor);
 
 	dispatch_record record;
+	const fill_value_capture fill_value(record);
 	REQUIRE_CALL(*dispatcher, dispatch(_, _, _, _))
 		.LR_SIDE_EFFECT( record(_1, _2, _3, _4) );
 
@@ -582,9 +484,9 @@ TEST_CASE_METHOD(
 	CHECK( record.called );
 	REQUIRE( record.operation_type != nullptr );
 	CHECK( *record.operation_type == typeid(fill_operation) );
-	REQUIRE( record.fill_value != nullptr );
-	CHECK( record.fill_value->get<int>() == 7 );
+	REQUIRE( fill_value.get() != nullptr );
+	CHECK( fill_value.get()->get<int>() == 7 );
 	CHECK( record.num_outputs == 1 );
 	CHECK( record.num_inputs == 0 );
-	CHECK( record.first_output_storage == buffer.get() );
+	CHECK( record.get_output_storage(0) == buffer.get() );
 }

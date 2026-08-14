@@ -2,6 +2,8 @@
 
 #include <xmipp4/ops/policies/elementwise_operation_shape_policy.hpp>
 
+#include "shape_deduction.hpp"
+
 #include <xmipp4/core/layout/broadcast.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 
@@ -14,39 +16,20 @@ namespace ops
 {
 
 void elementwise_operation_shape_policy::deduce(
-	const operation_descriptor& /*descriptor*/,
+	const operation_descriptor &descriptor,
 	span<shape_type> canonical_output_shapes,
 	span<const shape_type> input_shapes
 ) const
 {
-	if (input_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			canonical_output_shapes.end(),
-			shape_type()
-		);
-		return;
-	}
-
-	shape_type canonical_shape = input_shapes[0];
-	for (std::size_t i = 1; i < input_shapes.size(); ++i)
-	{
-		broadcast_extents_accumulate(
-			canonical_shape,
-			make_span(input_shapes[i])
-		);
-	}
-
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			canonical_shape
-		);
-		canonical_output_shapes.back() = std::move(canonical_shape);
-	}
+	// Unlike the rest of the family this admits having nothing to read a
+	// shape off, which is how an operation that only writes, such as a fill,
+	// leaves its outputs the shape they came with.
+	assign_output_shapes(
+		canonical_output_shapes,
+		input_shapes.empty()
+			? shape_type()
+			: broadcast_input_shapes(descriptor, input_shapes)
+	);
 }
 
 void elementwise_operation_shape_policy::accept(

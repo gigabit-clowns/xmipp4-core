@@ -3,14 +3,12 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <xmipp4/ops/policies/cross_product_shape_policy.hpp>
-#include <xmipp4/ops/policies/dot_product_shape_policy.hpp>
 #include <xmipp4/ops/policies/matrix_multiply_shape_policy.hpp>
 #include <xmipp4/ops/policies/matrix_vector_shape_policy.hpp>
 #include <xmipp4/ops/policies/vector_matrix_shape_policy.hpp>
 
 #include <xmipp4/core/dispatch/operand_names.hpp>
 #include <xmipp4/core/dispatch/operation_descriptor.hpp>
-#include <xmipp4/core/layout/broadcast_error.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
 
 #include <stdexcept>
@@ -234,72 +232,6 @@ TEST_CASE(
 	const auto &policy = vector_matrix_shape_policy::get();
 	CHECK_THROWS_AS(
 		deduce_one(policy, shape_type{}, { 3, 4 }),
-		std::invalid_argument
-	);
-}
-
-TEST_CASE(
-	"dot_product_shape_policy should contract two vectors into a scalar",
-	"[linalg_shape_policy]"
-)
-{
-	const auto &policy = dot_product_shape_policy::get();
-	CHECK( deduce_one(policy, { 3 }, { 3 }) == shape_type{} );
-}
-
-TEST_CASE(
-	"dot_product_shape_policy should agree with a matrix multiplication "
-	"for one and two dimensional operands",
-	"[linalg_shape_policy]"
-)
-{
-	const auto &dot = dot_product_shape_policy::get();
-	const auto &matmul = matrix_multiply_shape_policy::get();
-
-	const std::vector<std::pair<shape_type, shape_type>> cases = {
-		{ shape_type{ 3 }, shape_type{ 3 } },
-		{ shape_type{ 2, 3 }, shape_type{ 3, 4 } },
-		{ shape_type{ 3 }, shape_type{ 3, 4 } },
-		{ shape_type{ 2, 3 }, shape_type{ 3 } },
-	};
-
-	for (const auto &operands : cases)
-	{
-		INFO( "left rank " << operands.first.size()
-		      << ", right rank " << operands.second.size() );
-		CHECK( deduce_one(dot, operands.first, operands.second) ==
-		       deduce_one(matmul, operands.first, operands.second) );
-	}
-}
-
-TEST_CASE(
-	"dot_product_shape_policy should keep every axis a matrix "
-	"multiplication would have stacked",
-	"[linalg_shape_policy]"
-)
-{
-	// This is where the two part company: a matrix multiplication treats
-	// the leading axes as a stack and broadcasts them, while a dot product
-	// keeps them all, so the result grows instead of staying the same rank.
-	const auto &dot = dot_product_shape_policy::get();
-	CHECK( deduce_one(dot, { 5, 2, 3 }, { 7, 3, 4 }) ==
-	       shape_type{ 5, 2, 7, 4 } );
-
-	const auto &matmul = matrix_multiply_shape_policy::get();
-	CHECK_THROWS_AS(
-		deduce_one(matmul, { 5, 2, 3 }, { 7, 3, 4 }),
-		broadcast_error
-	);
-}
-
-TEST_CASE(
-	"dot_product_shape_policy should reject a mismatched contracted axis",
-	"[linalg_shape_policy]"
-)
-{
-	const auto &policy = dot_product_shape_policy::get();
-	CHECK_THROWS_AS(
-		deduce_one(policy, { 2, 3 }, { 4, 5 }),
 		std::invalid_argument
 	);
 }

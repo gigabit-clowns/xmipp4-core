@@ -6,7 +6,6 @@
 #include <xmipp4/core/layout/index.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
-#include <xmipp4/ops/linalg/dot_operation.hpp>
 #include <xmipp4/ops/linalg/cross_operation.hpp>
 #include <xmipp4/ops/linalg/matmul_operation.hpp>
 #include <xmipp4/ops/linalg/vecdot_operation.hpp>
@@ -52,16 +51,6 @@ array matmul(
 )
 {
 	return execute_binary(ops::matmul_operation(), x, y, context, out);
-}
-
-array dot(
-	const_array_ref x,
-	const_array_ref y,
-	const execution_context &context,
-	array *out
-)
-{
-	return execute_binary(ops::dot_operation(), x, y, context, out);
 }
 
 array vecdot(

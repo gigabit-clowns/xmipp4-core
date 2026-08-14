@@ -34,27 +34,6 @@ array matmul(
 );
 
 /**
- * @brief Contract the last axis of one array with an axis of another.
- *
- * @param x The first array.
- * @param y The second array.
- * @param context The execution context used for dispatching.
- * @param out Optional output parameter to be re-used.
- * @return array The array holding the product.
- *
- * @note Sums the products over the last axis of @p x and the second to last of
- * @p y, keeping every other axis of both. This agrees with @ref matmul
- * for one and two dimensional inputs and differs beyond that.
- */
-XMIPP4_CORE_API
-array dot(
-	const_array_ref x,
-	const_array_ref y,
-	const execution_context &context,
-	array *out = nullptr
-);
-
-/**
  * @brief Contract two arrays along one axis, broadcasting the rest.
  *
  * @param x The first array.
@@ -66,11 +45,9 @@ array dot(
  * @return array The array holding the contracted products.
  *
  * @note The inputs are broadcast together and the contracted axis is lost.
- * This differs from @ref dot, which keeps the leading axes of both inputs
- * rather than broadcasting them, and from @ref matmul, which takes the
- * last two axes as a matrix.
+ * This differs from @ref matmul, which takes the last two axes as a
+ * matrix.
  *
- * @see dot
  * @see matmul
  */
 XMIPP4_CORE_API

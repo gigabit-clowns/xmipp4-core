@@ -4,7 +4,6 @@
 
 #include <xmipp4/functional/linalg.hpp>
 
-#include <xmipp4/ops/linalg/dot_operation.hpp>
 #include <xmipp4/ops/linalg/cross_operation.hpp>
 #include <xmipp4/ops/linalg/matmul_operation.hpp>
 #include <xmipp4/ops/linalg/vecdot_operation.hpp>
@@ -26,15 +25,6 @@ TEST_CASE_METHOD(
 )
 {
 	check_binary_verb<matmul_operation>(matmul);
-}
-
-TEST_CASE_METHOD(
-	verb_dispatch_fixture,
-	"dot dispatches a dot_operation with both inputs in order",
-	"[array_linalg]"
-)
-{
-	check_binary_verb<dot_operation>(dot);
 }
 
 TEST_CASE_METHOD(

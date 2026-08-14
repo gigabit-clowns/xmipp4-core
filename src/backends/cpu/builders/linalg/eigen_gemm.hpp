@@ -10,7 +10,6 @@
 
 #include <complex>
 #include <cstddef>
-#include <tuple>
 #include <type_traits>
 
 namespace xmipp4
@@ -245,42 +244,14 @@ static constexpr std::size_t max_fixed_extent = 4;
 /**
  * @brief Smallest extent the fixed-size fast path is offered for.
  *
- * A dimension of exactly one means one of gemm_call_fixed's three
- * Eigen::Matrix instantiations is really a column vector ((extent, 1), as
- * matmul's own left operand becomes when K == 1); some MSVC toolsets fail
- * to even compile Eigen::Map over such a fixed-size matrix at all (a class
- * template instantiation failure, not a shape assertion, and reproducible
- * with a plain real scalar, so it is not a complex-specific issue and no
- * Options value works around it), where GCC and Clang have no trouble. The
- * fast path is skipped for that size everywhere rather than only where it
- * has been observed to fail, since the shapes it and the dynamic fallback
- * cover are otherwise identical.
+ * Not one: matmul's own left operand becomes an (extent, 1) matrix when
+ * K == 1, and that shape was suspected to be what some MSVC toolsets fail
+ * to compile Eigen::Map over. It turned out not to be the shape at all (see
+ * select_gemm_n and friends below), but the restriction is kept anyway,
+ * since a size of one buys negligible unrolling benefit over the dynamic
+ * path regardless of platform.
  */
 static constexpr std::size_t min_fixed_extent = 2;
-
-/**
- * @brief Dispatch a runtime extent already known to be in [min_fixed_extent,
- * max_fixed_extent] to a compile time constant.
- *
- * @p f is invoked as `f(std::integral_constant<std::size_t, extent>{})`.
- * Instantiated for exactly the cases below, regardless of which one is
- * actually taken at runtime, which is what makes @ref min_fixed_extent an
- * actual bound on what gets compiled rather than merely on what a caller's
- * own range check happens to let through at runtime: a runtime guard cannot
- * stop this switch's own case labels from being instantiated, only from
- * being reached.
- */
-template <typename F>
-auto dispatch_fixed_extent(std::size_t n, F &&f)
-	-> decltype(f(std::integral_constant<std::size_t, min_fixed_extent>{}))
-{
-	switch (n)
-	{
-		case 2: return f(std::integral_constant<std::size_t, 2>{});
-		case 3: return f(std::integral_constant<std::size_t, 3>{});
-		default: return f(std::integral_constant<std::size_t, 4>{});
-	}
-}
 
 /**
  * @brief Types worth instantiating the fixed-size fast path for.
@@ -322,6 +293,60 @@ inline bool all_row_major_compatible(
 }
 
 /**
+ * @brief Pick the (M, K, N) instantiation of gemm_call_fixed for an N known
+ * at compile time.
+ *
+ * M and K are this function template's own parameters, already concrete by
+ * the time gemm_call_fixed is named below: nothing here is derived through
+ * decltype from a generic lambda's deduced argument, unlike an earlier
+ * version of this dispatch, which some MSVC toolsets fail to compile
+ * (a class template instantiation failure reached however M was carried,
+ * fixed size or not, real or complex scalar) even though the exact same
+ * instantiation compiles when named directly, as it is here.
+ */
+template <std::size_t M, std::size_t K, typename T>
+gemm_fn<T> select_gemm_n(std::size_t n) noexcept
+{
+	switch (n)
+	{
+		case 2: return &gemm_call_fixed<M, K, 2, true, T>;
+		case 3: return &gemm_call_fixed<M, K, 3, true, T>;
+		default: return &gemm_call_fixed<M, K, 4, true, T>;
+	}
+}
+
+/**
+ * @brief Pick the K instantiation of select_gemm_n for an M known at
+ * compile time.
+ */
+template <std::size_t M, typename T>
+gemm_fn<T> select_gemm_kn(std::size_t k, std::size_t n) noexcept
+{
+	switch (k)
+	{
+		case 2: return select_gemm_n<M, 2, T>(n);
+		case 3: return select_gemm_n<M, 3, T>(n);
+		default: return select_gemm_n<M, 4, T>(n);
+	}
+}
+
+/**
+ * @brief Pick the M instantiation of select_gemm_kn.
+ *
+ * @see select_gemm_n
+ */
+template <typename T>
+gemm_fn<T> select_gemm_mkn(std::size_t m, std::size_t k, std::size_t n) noexcept
+{
+	switch (m)
+	{
+		case 2: return select_gemm_kn<2, T>(k, n);
+		case 3: return select_gemm_kn<3, T>(k, n);
+		default: return select_gemm_kn<4, T>(k, n);
+	}
+}
+
+/**
  * @brief Resolve a (M, K, N) shaped product, for a type worth fast-pathing.
  */
 template <typename T>
@@ -337,22 +362,7 @@ gemm_fn<T> resolve_gemm_fixed_path(
 	    n >= min_fixed_extent && n <= max_fixed_extent &&
 	    all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
-		return dispatch_fixed_extent(m, [&](auto m_c) {
-			std::ignore = m_c; // Only its type, resolved via decltype, is used.
-			return dispatch_fixed_extent(k, [&](auto k_c) {
-				std::ignore = k_c;
-				return dispatch_fixed_extent(n, [&](auto n_c) {
-					std::ignore = n_c;
-					return &gemm_call_fixed<
-						decltype(m_c)::value,
-						decltype(k_c)::value,
-						decltype(n_c)::value,
-						true,
-						T
-					>;
-				});
-			});
-		});
+		return select_gemm_mkn<T>(m, k, n);
 	}
 
 	return &gemm_call_dynamic<T>;

@@ -2,9 +2,8 @@
 
 #include <xmipp4/ops/policies/cross_product_shape_policy.hpp>
 
-#include <xmipp4/core/layout/broadcast.hpp>
+#include "shape_deduction.hpp"
 
-#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -44,8 +43,7 @@ void cross_product_shape_policy::deduce(
 
 	// Broadcasting first is what lets a stack of vectors cross with a
 	// single one without either being written out.
-	shape_type shape = input_shapes[0];
-	broadcast_extents_accumulate(shape, make_span(input_shapes[1]));
+	auto shape = broadcast_input_shapes(descriptor, input_shapes);
 
 	if (m_axis >= shape.size())
 	{
@@ -65,15 +63,7 @@ void cross_product_shape_policy::deduce(
 		throw std::invalid_argument(oss.str());
 	}
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 } // namespace ops

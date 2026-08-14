@@ -2,12 +2,9 @@
 
 #include <xmipp4/ops/policies/reduction_operation_shape_policy.hpp>
 
-#include <xmipp4/core/layout/broadcast.hpp>
+#include "shape_deduction.hpp"
 
-#include <algorithm>
 #include <iterator>
-#include <sstream>
-#include <stdexcept>
 #include <utility>
 
 namespace xmipp4
@@ -41,19 +38,7 @@ void reduction_operation_shape_policy::deduce(
 	span<const shape_type> input_shapes
 ) const
 {
-	if (input_shapes.empty())
-	{
-		std::ostringstream oss;
-		oss << descriptor << ": a reduction needs at least one input "
-			<< "operand to reduce.";
-		throw std::invalid_argument(oss.str());
-	}
-
-	shape_type shape = input_shapes[0];
-	for (std::size_t i = 1; i < input_shapes.size(); ++i)
-	{
-		broadcast_extents_accumulate(shape, make_span(input_shapes[i]));
-	}
+	auto shape = broadcast_input_shapes(descriptor, input_shapes);
 
 	// The rank is only known here, so this is the first place the axes can
 	// be checked against it.
@@ -76,15 +61,7 @@ void reduction_operation_shape_policy::deduce(
 		}
 	}
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 } // namespace ops

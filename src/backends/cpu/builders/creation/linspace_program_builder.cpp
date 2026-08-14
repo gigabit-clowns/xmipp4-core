@@ -42,7 +42,7 @@ public:
 		// multiplied by zero there.
 		const auto value = (index == m_stop_index)
 			? m_stop
-			: m_start + static_cast<compute_type>(index) * m_step;
+			: m_start + numerical_cast<compute_type>(index) * m_step;
 
 		store(destination, value);
 	}
@@ -83,7 +83,7 @@ struct linspace_kernel_factory
 			? (count > 1 ? count - 1 : 1)
 			: (count > 0 ? count : 1);
 		const auto step =
-			(stop - start) / static_cast<compute_type>(intervals);
+			(stop - start) / numerical_cast<compute_type>(intervals);
 
 		// Out of range when there is no sample to pin to the stop, so that
 		// the single sample of a length one sequence keeps its start.

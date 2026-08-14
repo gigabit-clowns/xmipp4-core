@@ -240,18 +240,7 @@ void gemm_call_dynamic(
 }
 
 static constexpr std::size_t max_fixed_extent = 4;
-
-/**
- * @brief Smallest extent the fixed-size fast path is offered for.
- *
- * Not one: matmul's own left operand becomes an (extent, 1) matrix when
- * K == 1, and that shape was suspected to be what some MSVC toolsets fail
- * to compile Eigen::Map over. It turned out not to be the shape at all (see
- * select_gemm_n and friends below), but the restriction is kept anyway,
- * since a size of one buys negligible unrolling benefit over the dynamic
- * path regardless of platform.
- */
-static constexpr std::size_t min_fixed_extent = 2;
+static constexpr std::size_t min_fixed_extent = 1;
 
 /**
  * @brief Types worth instantiating the fixed-size fast path for.
@@ -309,6 +298,7 @@ gemm_fn<T> select_gemm_n(std::size_t n) noexcept
 {
 	switch (n)
 	{
+		case 1: return &gemm_call_fixed<M, K, 1, true, T>;
 		case 2: return &gemm_call_fixed<M, K, 2, true, T>;
 		case 3: return &gemm_call_fixed<M, K, 3, true, T>;
 		default: return &gemm_call_fixed<M, K, 4, true, T>;
@@ -324,6 +314,7 @@ gemm_fn<T> select_gemm_kn(std::size_t k, std::size_t n) noexcept
 {
 	switch (k)
 	{
+		case 1: return select_gemm_n<M, 1, T>(n);
 		case 2: return select_gemm_n<M, 2, T>(n);
 		case 3: return select_gemm_n<M, 3, T>(n);
 		default: return select_gemm_n<M, 4, T>(n);
@@ -340,6 +331,7 @@ gemm_fn<T> select_gemm_mkn(std::size_t m, std::size_t k, std::size_t n) noexcept
 {
 	switch (m)
 	{
+		case 1: return select_gemm_kn<1, T>(k, n);
 		case 2: return select_gemm_kn<2, T>(k, n);
 		case 3: return select_gemm_kn<3, T>(k, n);
 		default: return select_gemm_kn<4, T>(k, n);
@@ -416,41 +408,195 @@ gemm_fn<T> resolve_gemm(
 }
 
 /**
+ * @brief Pick the K instantiation of gemm_call_fixed for an M known at
+ * compile time. N is always one: the right and output operands of a
+ * matrix-vector product are vectors.
+ */
+template <std::size_t M, typename T>
+gemm_fn<T> select_gemv_k(std::size_t k) noexcept
+{
+	switch (k)
+	{
+		case 1: return &gemm_call_fixed<M, 1, 1, true, T>;
+		case 2: return &gemm_call_fixed<M, 2, 1, true, T>;
+		case 3: return &gemm_call_fixed<M, 3, 1, true, T>;
+		default: return &gemm_call_fixed<M, 4, 1, true, T>;
+	}
+}
+
+/**
+ * @brief Pick the M instantiation of select_gemv_k.
+ */
+template <typename T>
+gemm_fn<T> select_gemv_mk(std::size_t m, std::size_t k) noexcept
+{
+	switch (m)
+	{
+		case 1: return select_gemv_k<1, T>(k);
+		case 2: return select_gemv_k<2, T>(k);
+		case 3: return select_gemv_k<3, T>(k);
+		default: return select_gemv_k<4, T>(k);
+	}
+}
+
+/**
+ * @brief Resolve a (M, K) matrix times a K-vector, for a type worth
+ * fast-pathing.
+ */
+template <typename T>
+gemm_fn<T> resolve_gemv_fixed_path(
+	std::size_t m, std::size_t k,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind
+)
+{
+	if (m >= min_fixed_extent && m <= max_fixed_extent &&
+	    k >= min_fixed_extent && k <= max_fixed_extent &&
+	    all_row_major_compatible(out_kind, left_kind, right_kind))
+	{
+		return select_gemv_mk<T>(m, k);
+	}
+
+	return &gemm_call_dynamic<T>;
+}
+
+/**
  * @brief Resolve a (M, K) matrix times a K-vector.
  *
- * Always the dynamic path: the vector operand (right and output alike) is
- * always padded to an (extent, 1) shaped core (see pad_as_column), which is
- * exactly the fixed-size shape @ref min_fixed_extent exists to avoid, on
- * every call rather than only some, so there is no size worth fast-pathing
- * here at all.
+ * @see resolve_gemm
  */
 template <typename T>
 gemm_fn<T> resolve_gemv(
 	std::size_t /*m*/, std::size_t /*k*/,
 	core_layout_kind /*out_kind*/,
 	core_layout_kind /*left_kind*/,
-	core_layout_kind /*right_kind*/
+	core_layout_kind /*right_kind*/,
+	std::false_type /* eigen_fixed_path_support<T> */
 ) noexcept
 {
+	return &gemm_call_dynamic<T>;
+}
+
+template <typename T>
+gemm_fn<T> resolve_gemv(
+	std::size_t m, std::size_t k,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind,
+	std::true_type /* eigen_fixed_path_support<T> */
+)
+{
+	return resolve_gemv_fixed_path<T>(m, k, out_kind, left_kind, right_kind);
+}
+
+template <typename T>
+gemm_fn<T> resolve_gemv(
+	std::size_t m, std::size_t k,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind
+)
+{
+	return resolve_gemv<T>(
+		m, k, out_kind, left_kind, right_kind, eigen_fixed_path_support<T>{}
+	);
+}
+
+/**
+ * @brief Pick the N instantiation of gemm_call_fixed for a K known at
+ * compile time. M is always one: the left and output operands of a
+ * vector-matrix product are vectors.
+ */
+template <std::size_t K, typename T>
+gemm_fn<T> select_vecgemm_n(std::size_t n) noexcept
+{
+	switch (n)
+	{
+		case 1: return &gemm_call_fixed<1, K, 1, true, T>;
+		case 2: return &gemm_call_fixed<1, K, 2, true, T>;
+		case 3: return &gemm_call_fixed<1, K, 3, true, T>;
+		default: return &gemm_call_fixed<1, K, 4, true, T>;
+	}
+}
+
+/**
+ * @brief Pick the K instantiation of select_vecgemm_n.
+ */
+template <typename T>
+gemm_fn<T> select_vecgemm_kn(std::size_t k, std::size_t n) noexcept
+{
+	switch (k)
+	{
+		case 1: return select_vecgemm_n<1, T>(n);
+		case 2: return select_vecgemm_n<2, T>(n);
+		case 3: return select_vecgemm_n<3, T>(n);
+		default: return select_vecgemm_n<4, T>(n);
+	}
+}
+
+/**
+ * @brief Resolve a K-vector times a (K, N) matrix, for a type worth
+ * fast-pathing.
+ */
+template <typename T>
+gemm_fn<T> resolve_vecgemm_fixed_path(
+	std::size_t k, std::size_t n,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind
+)
+{
+	if (k >= min_fixed_extent && k <= max_fixed_extent &&
+	    n >= min_fixed_extent && n <= max_fixed_extent &&
+	    all_row_major_compatible(out_kind, left_kind, right_kind))
+	{
+		return select_vecgemm_kn<T>(k, n);
+	}
+
 	return &gemm_call_dynamic<T>;
 }
 
 /**
  * @brief Resolve a K-vector times a (K, N) matrix.
  *
- * Always the dynamic path, for the same reason as @ref resolve_gemv: the
- * left and output operands are always padded to a (1, extent) shaped core
- * (see pad_as_row).
+ * @see resolve_gemm
  */
 template <typename T>
 gemm_fn<T> resolve_vecgemm(
 	std::size_t /*k*/, std::size_t /*n*/,
 	core_layout_kind /*out_kind*/,
 	core_layout_kind /*left_kind*/,
-	core_layout_kind /*right_kind*/
+	core_layout_kind /*right_kind*/,
+	std::false_type /* eigen_fixed_path_support<T> */
 ) noexcept
 {
 	return &gemm_call_dynamic<T>;
+}
+
+template <typename T>
+gemm_fn<T> resolve_vecgemm(
+	std::size_t k, std::size_t n,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind,
+	std::true_type /* eigen_fixed_path_support<T> */
+)
+{
+	return resolve_vecgemm_fixed_path<T>(k, n, out_kind, left_kind, right_kind);
+}
+
+template <typename T>
+gemm_fn<T> resolve_vecgemm(
+	std::size_t k, std::size_t n,
+	core_layout_kind out_kind,
+	core_layout_kind left_kind,
+	core_layout_kind right_kind
+)
+{
+	return resolve_vecgemm<T>(
+		k, n, out_kind, left_kind, right_kind, eigen_fixed_path_support<T>{}
+	);
 }
 
 } // namespace cpu

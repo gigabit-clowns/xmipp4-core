@@ -35,14 +35,22 @@ struct accumulator_footprint<type_list<Head, Tail...>>
 namespace detail
 {
 
-// Budget for the accumulators of one tile. Sized to sit comfortably inside a
-// first level data cache alongside the input stream, rather than to fill it.
-XMIPP4_CONST_CONSTEXPR std::size_t reduction_tile_budget = 4096;
+// Budget in bytes for the accumulators of one tile, whatever their number,
+// so that a kernel keeping several of them takes a proportionally shorter
+// tile and the footprint stays the same. Half of a typical first level data
+// cache, leaving the other half to the input streaming past.
+//
+// Measured on a sum of 64 M floats: raising it from 4 KB to 16 KB gains
+// between a tenth and a sixth of the time on the orientation that folds an
+// outer axis, and beyond 16 KB the gain is inside the noise. The orientation
+// that folds the contiguous axis is indifferent to it, holding one
+// accumulator across each run whatever the tile.
+XMIPP4_CONST_CONSTEXPR std::size_t reduction_tile_budget = 16384;
 
 // A tile shorter than this stops the input reads from streaming, whatever the
 // accumulators cost; a longer one stops fitting.
 XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_tile = 64;
-XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile = 1024;
+XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile = 4096;
 
 XMIPP4_INLINE_CONSTEXPR
 std::size_t clamp_reduction_tile(std::size_t count) noexcept
@@ -273,6 +281,22 @@ private:
 	using identity_available =
 		typename has_reduction_identity<Kernel, accumulator_types>::type;
 
+	// Whether the tile belongs outside the fold, which it does when the axis
+	// being folded is the contiguous one and the surviving axis is not. The
+	// first input decides: the others rarely disagree, and none of them is
+	// read more often than it.
+	using tile_outermost = std::integral_constant<
+		bool,
+		std::is_same<
+			typename std::tuple_element<0, reduced_strides>::type,
+			contiguous_stride_tag
+		>::value &&
+		!std::is_same<
+			typename std::tuple_element<0, kept_strides>::type,
+			contiguous_stride_tag
+		>::value
+	>;
+
 	/**
 	 * @brief Complete every output of one 1D vector of the surviving space.
 	 */
@@ -389,10 +413,21 @@ private:
 	/**
 	 * @brief Fold one 1D vector of the reduced space into a tile.
 	 *
-	 * The reduced position is the outer loop and the tile the inner one, so
-	 * that consecutive outputs, and the input elements feeding them, are
-	 * walked contiguously. This is the loop a reduction over an outer axis
-	 * has to vectorize on.
+	 * Which of the two loops goes inside decides how the input is read, and
+	 * the answer differs by orientation:
+	 *
+	 * - When the surviving axis is the contiguous one, the tile belongs
+	 *   inside. Consecutive outputs and the elements feeding them are then
+	 *   both walked contiguously, and the loop vectorizes across the tile.
+	 * - When the axis being folded is the contiguous one, the tile belongs
+	 *   outside. Each output's run of elements is then read as the
+	 *   contiguous stream it is, into an accumulator that stays put for the
+	 *   whole run. Keeping the tile inside here would turn that stream into
+	 *   a gather one tile stride apart, which costs an order of magnitude.
+	 *
+	 * The strides are resolved to tags before either loop is instantiated,
+	 * so the choice is made at compile time and neither shape carries a
+	 * test for it.
 	 */
 	void combine_run(
 		const input_pointers &inputs,
@@ -406,17 +441,58 @@ private:
 			width,
 			count,
 			position,
+			tile_outermost(),
 			accumulator_indices(),
 			input_indices()
 		);
 	}
 
+	// The surviving axis is walked with a stride, the folded one without.
 	template <std::size_t... As, std::size_t... Is>
 	void combine_run(
 		const input_pointers &inputs,
 		std::size_t width,
 		std::size_t count,
 		std::size_t position,
+		std::true_type,
+		std::index_sequence<As...>,
+		std::index_sequence<Is...>
+	)
+	{
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			const auto column = step_pointers(
+				inputs,
+				j,
+				m_kept_strides,
+				input_indices()
+			);
+
+			for (std::size_t e = 0; e < count; ++e)
+			{
+				const auto step = static_cast<std::ptrdiff_t>(e);
+				m_kernel.combine(
+					std::get<As>(m_tiles)[j]...,
+					(
+						std::get<Is>(column) +
+						step * static_cast<std::ptrdiff_t>(
+							std::get<Is>(m_reduced_strides)
+						)
+					)...,
+					position + e
+				);
+			}
+		}
+	}
+
+	// The folded axis is walked with a stride, the surviving one without.
+	template <std::size_t... As, std::size_t... Is>
+	void combine_run(
+		const input_pointers &inputs,
+		std::size_t width,
+		std::size_t count,
+		std::size_t position,
+		std::false_type,
 		std::index_sequence<As...>,
 		std::index_sequence<Is...>
 	)

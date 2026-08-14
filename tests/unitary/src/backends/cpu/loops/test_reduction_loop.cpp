@@ -397,10 +397,12 @@ TEST_CASE(
 )
 {
 	// More surviving elements than a tile holds, and a count that is not a
-	// multiple of it, so the last tile is partial.
+	// multiple of it, so the last tile is partial. Taken from the tile size
+	// rather than written down, so that tuning the tile cannot quietly stop
+	// this case from spanning more than one.
 	const std::size_t rows = 3;
-	const std::size_t columns = 2500;
-	REQUIRE( columns > reduction_tile_size<type_list<int>>::value );
+	const std::size_t tile = reduction_tile_size<type_list<int>>::value;
+	const std::size_t columns = tile + tile / 2 + 7;
 
 	const auto input = iota_vector(rows * columns);
 	std::vector<int> output(columns, -1);

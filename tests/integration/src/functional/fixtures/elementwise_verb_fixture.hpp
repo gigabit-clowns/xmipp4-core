@@ -588,6 +588,54 @@ protected:
 	}
 
 	/**
+	 * @brief Check a one input, two output verb across every type.
+	 *
+	 * @tparam Op The operation the verb dispatches.
+	 * @tparam Restriction Domain this case is confined to.
+	 * @param verb The verb under test, returning both results as a pair.
+	 * @param x The value every element of the input takes.
+	 * @param first_reference Called with the widened input, giving the
+	 * expected first result.
+	 * @param second_reference The same, for the second result.
+	 * @param mode How closely the results must match.
+	 */
+	template <
+		typename Op,
+		typename Restriction = any_type_domain,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void check_unary_pair(
+		Verb &&verb,
+		element_value x,
+		FirstReference &&first_reference,
+		SecondReference &&second_reference,
+		comparison_mode mode = comparison_mode::exact
+	) const
+	{
+		for (const auto type : all_numerical_types())
+		{
+			INFO( "element type " << type );
+			dispatch_numerical_types(
+				[&](auto tag)
+				{
+					using pivot_type = typename decltype(tag)::type;
+					this->template run_unary_pair<Op, pivot_type>(
+						detail::select_case<Op, Restriction, pivot_type>(),
+						verb,
+						x,
+						first_reference,
+						second_reference,
+						mode
+					);
+				},
+				type
+			);
+		}
+	}
+
+	/**
 	 * @brief Check a two input, two output verb across every type.
 	 *
 	 * @tparam Op The operation the verb dispatches.
@@ -683,6 +731,74 @@ private:
 	template <typename Op, typename T, typename... Args>
 	void run_binary_pair(detail::skip_case, Args&&...) const
 	{
+	}
+
+	template <typename Op, typename T, typename... Args>
+	void run_unary_pair(detail::skip_case, Args&&...) const
+	{
+	}
+
+	template <
+		typename Op,
+		typename T,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void run_unary_pair(
+		detail::run_case,
+		Verb &verb,
+		element_value x,
+		FirstReference &first_reference,
+		SecondReference &second_reference,
+		comparison_mode mode
+	) const
+	{
+		using operands = operand_element_types<Op, T>;
+		using input_type = typename operands::template input_type<0>;
+		using first_type = typename operands::template output_type<0>;
+		using second_type = typename operands::template output_type<1>;
+
+		auto operand = make_operand<input_type>(x);
+		const const_array_ref operand_ref = operand;
+
+		const auto results = verb(operand_ref, context, nullptr, nullptr);
+
+		const auto widened = widen(x.as<input_type>());
+		check_output<first_type>(
+			results.first, first_reference(widened), mode
+		);
+		check_output<second_type>(
+			results.second, second_reference(widened), mode
+		);
+	}
+
+	template <
+		typename Op,
+		typename T,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void run_unary_pair(
+		detail::reject_case,
+		Verb &verb,
+		element_value x,
+		FirstReference &,
+		SecondReference &,
+		comparison_mode
+	) const
+	{
+		using operands = operand_element_types<Op, T>;
+		using input_type = typename operands::template input_type<0>;
+
+		auto operand = make_operand<input_type>(x);
+		const const_array_ref operand_ref = operand;
+
+		CHECK_THROWS_AS(
+			verb(operand_ref, context, nullptr, nullptr),
+			std::invalid_argument
+		);
 	}
 
 	template <

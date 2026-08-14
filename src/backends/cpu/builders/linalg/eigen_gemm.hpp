@@ -145,19 +145,34 @@ using gemm_fn = void (*)(
  * RowMajor bit set, and a column vector (Cols == 1, Rows > 1) must not.
  * Getting this backwards, or leaving it at the caller's general-matrix
  * choice, fails INVALID_MATRIX_TEMPLATE_PARAMETERS.
+ *
+ * A 1x1 matrix is both at once, so neither constraint actually applies to
+ * it; it is kept at the default (0) explicitly rather than falling through
+ * to the general-matrix branch, since forcing a major order on a scalar
+ * shape is what MSVC's Map rejects for a complex scalar type where GCC and
+ * Clang happen to accept it.
  */
 template <std::size_t Rows, std::size_t Cols, bool RowMajor>
 struct eigen_matrix_options
-	: std::integral_constant<
-		int,
-		(Cols == 1 && Rows != 1)
-			? 0
-			: (Rows == 1 && Cols != 1)
-				? static_cast<int>(Eigen::RowMajor)
-				: (RowMajor
-					? static_cast<int>(Eigen::RowMajor)
-					: static_cast<int>(Eigen::ColMajor))
-	>
+	: std::integral_constant<int, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
+{
+};
+
+template <bool RowMajor>
+struct eigen_matrix_options<1, 1, RowMajor>
+	: std::integral_constant<int, 0>
+{
+};
+
+template <std::size_t Cols, bool RowMajor>
+struct eigen_matrix_options<1, Cols, RowMajor>
+	: std::integral_constant<int, static_cast<int>(Eigen::RowMajor)>
+{
+};
+
+template <std::size_t Rows, bool RowMajor>
+struct eigen_matrix_options<Rows, 1, RowMajor>
+	: std::integral_constant<int, 0>
 {
 };
 

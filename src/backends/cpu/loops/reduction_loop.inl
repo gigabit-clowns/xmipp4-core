@@ -622,12 +622,6 @@ void run_reduction_loop(
 	dispatch_inner_loop_strides(
 		[&] (auto kept_strides)
 		{
-			// Each stride tuple is named where it is a parameter of its own
-			// lambda, and only the name is used from the nested one. Asking
-			// for the decltype of a captured variable instead would name the
-			// variable's own type by the standard but the closure member's
-			// under MSVC, which a capture by reference makes a reference,
-			// and a reference matches no specialization of the runner.
 			using kept_strides_type = decltype(kept_strides);
 
 			dispatch_inner_loop_strides(

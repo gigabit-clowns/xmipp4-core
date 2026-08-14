@@ -9,8 +9,6 @@
 #include <xmipp4/ops/compare/greater_equal_operation.hpp>
 #include <xmipp4/ops/compare/less_operation.hpp>
 #include <xmipp4/ops/compare/less_equal_operation.hpp>
-#include <xmipp4/ops/compare/maximum_operation.hpp>
-#include <xmipp4/ops/compare/minimum_operation.hpp>
 #include <xmipp4/ops/compare/not_equal_operation.hpp>
 
 #include "fixtures/verb_dispatch_fixture.hpp"
@@ -71,22 +69,4 @@ TEST_CASE_METHOD(
 )
 {
 	check_binary_verb<greater_equal_operation>(greater_equal);
-}
-
-TEST_CASE_METHOD(
-	verb_dispatch_fixture,
-	"maximum dispatches a maximum_operation with both inputs in order",
-	"[array_compare]"
-)
-{
-	check_binary_verb<maximum_operation>(maximum);
-}
-
-TEST_CASE_METHOD(
-	verb_dispatch_fixture,
-	"minimum dispatches a minimum_operation with both inputs in order",
-	"[array_compare]"
-)
-{
-	check_binary_verb<minimum_operation>(minimum);
 }

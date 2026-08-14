@@ -13,13 +13,17 @@ namespace ops
 {
 
 /**
- * @brief Take the smaller of each pair of elements.
+ * @brief Take the larger of each pair of elements.
+ *
+ * Selects one of its operands rather than computing a new value, which is
+ * what places it here rather than among the comparisons: it is the lower
+ * bound of a @ref clip_operation taken on its own.
  *
  * Complex operands are not admitted, there being no ordering to
  * select by.
  */
 XMIPP4_DECLARE_OPERATION(
-	minimum,
+	maximum,
 	ops_component,
 	XMIPP4_OPERANDS("result"),
 	XMIPP4_OPERANDS("left", "right"),

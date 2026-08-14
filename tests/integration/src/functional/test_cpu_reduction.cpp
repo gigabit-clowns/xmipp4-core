@@ -190,7 +190,7 @@ TEST_CASE_METHOD(
 {
 	// Two rows of three, reduced along the rows.
 	const std::vector<std::size_t> extents = { 2, 3 };
-	const std::vector<double> values = { 1, 2, 3, 4, 5, 6 };
+	const std::vector<element_value> values = { 1, 2, 3, 4, 5, 6 };
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 
@@ -209,7 +209,7 @@ TEST_CASE_METHOD(
 )
 {
 	const std::vector<std::size_t> extents = { 2, 3 };
-	const std::vector<double> values = { 5, 1, 9, 3, 7, 2 };
+	const std::vector<element_value> values = { 5, 1, 9, 3, 7, 2 };
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 
@@ -256,9 +256,9 @@ TEST_CASE_METHOD(
 	const std::vector<std::ptrdiff_t> axes = { 0 };
 
 	const auto values = GENERATE(
-		std::vector<double>{ not_a_number, 1, 2 },
-		std::vector<double>{ 1, not_a_number, 2 },
-		std::vector<double>{ 1, 2, not_a_number }
+		std::vector<element_value>{ not_a_number, 1, 2 },
+		std::vector<element_value>{ 1, not_a_number, 2 },
+		std::vector<element_value>{ 1, 2, not_a_number }
 	);
 
 	auto operand = make_sequence_operand<float32_t>(extents, values);
@@ -340,7 +340,7 @@ TEST_CASE_METHOD(
 )
 {
 	const std::vector<std::size_t> extents = { 2, 3 };
-	const std::vector<double> values = { 1, 2, 3, 4, 5, 6 };
+	const std::vector<element_value> values = { 1, 2, 3, 4, 5, 6 };
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 
@@ -565,7 +565,7 @@ TEST_CASE_METHOD(
 )
 {
 	const std::vector<std::size_t> extents = { 2, 3 };
-	const std::vector<double> values = { 5, 1, 9, 3, 7, 2 };
+	const std::vector<element_value> values = { 5, 1, 9, 3, 7, 2 };
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 
@@ -615,7 +615,7 @@ TEST_CASE_METHOD(
 	// array of the reduced extents is laid out, whatever order the axes
 	// would be walked in for locality.
 	const std::vector<std::size_t> extents = { 2, 3 };
-	const std::vector<double> values = { 1, 2, 3, 4, 9, 5 };
+	const std::vector<element_value> values = { 1, 2, 3, 4, 9, 5 };
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 
@@ -657,8 +657,8 @@ TEST_CASE_METHOD(
 	// reduced space of two axes that were never neighbours, so the index
 	// cannot fall out of the layout by accident.
 	const std::vector<std::size_t> extents = { 2, 2, 3 };
-	std::vector<double> values(12, 0.0);
-	values[1 * 6 + 1 * 3 + 2] = 9.0;  // (1, 1, 2)
+	std::vector<element_value> values(12, element_value(0.0));
+	values[1 * 6 + 1 * 3 + 2] = element_value(9.0);  // (1, 1, 2)
 	auto operand = make_sequence_operand<float32_t>(extents, values);
 	const const_array_ref operand_ref = operand;
 

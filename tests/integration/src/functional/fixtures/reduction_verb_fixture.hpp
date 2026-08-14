@@ -105,13 +105,14 @@ protected:
 	 *
 	 * @tparam T The element type.
 	 * @param extents The extents of the operand.
-	 * @param values One value per element, in memory order.
+	 * @param values One value per element, in memory order. Each carries an
+	 * imaginary part, so one list serves a real and a complex operand alike.
 	 * @return array The operand.
 	 */
 	template <typename T>
 	array make_sequence_operand(
 		std::vector<std::size_t> extents,
-		const std::vector<double> &values
+		const std::vector<element_value> &values
 	) const
 	{
 		auto result = empty(
@@ -127,7 +128,7 @@ protected:
 
 		for (std::size_t i = 0; i < values.size(); ++i)
 		{
-			data[i] = element_value(values[i]).as<T>();
+			data[i] = values[i].as<T>();
 		}
 
 		return result;
@@ -145,7 +146,7 @@ protected:
 	void check_values(
 		const array &result,
 		const std::vector<std::size_t> &extents,
-		const std::vector<double> &expected
+		const std::vector<element_value> &expected
 	) const
 	{
 		const auto data_type = numerical_type_of<U>::value;
@@ -155,7 +156,7 @@ protected:
 		for (std::size_t i = 0; i < expected.size(); ++i)
 		{
 			INFO( "element " << i );
-			CHECK( values[i] == element_value(expected[i]).as<U>() );
+			CHECK( values[i] == expected[i].as<U>() );
 		}
 	}
 

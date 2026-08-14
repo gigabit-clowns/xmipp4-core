@@ -23,12 +23,14 @@ include(CMakePackageConfigHelpers)
 include(fetch_half)
 include(fetch_spdlog)
 include(fetch_boost)
+include(fetch_pocketfft)
 
 # Find dependencies
 find_package(Threads REQUIRED)
 fetch_boost(VERSION 1.90.0)
 fetch_half(VERSION 2.2.1)
 fetch_spdlog(VERSION 1.17.0)
+fetch_pocketfft(COMMIT c90e55b3d529f8efa40ed01a20de22405f45fc65)
 
 if(WIN32)
 	set(XMIPP4_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR}/xmipp4-plugins)

@@ -13,6 +13,7 @@ target_link_libraries(
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
 		half
+		pocketfft
 		${CMAKE_DL_LIBS}
 )
 if(WIN32)

@@ -3,6 +3,7 @@
 #include "reduction_loop.hpp"
 
 #include "inner_loop_stride_dispatch.hpp"
+#include "../config.hpp"
 
 #include <xmipp4/core/layout/joint_cursor.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
@@ -35,22 +36,14 @@ struct accumulator_footprint<type_list<Head, Tail...>>
 namespace detail
 {
 
-// Budget in bytes for the accumulators of one tile, whatever their number,
-// so that a kernel keeping several of them takes a proportionally shorter
-// tile and the footprint stays the same. Half of a typical first level data
-// cache, leaving the other half to the input streaming past.
-//
-// Measured on a sum of 64 M floats: raising it from 4 KB to 16 KB gains
-// between a tenth and a sixth of the time on the orientation that folds an
-// outer axis, and beyond 16 KB the gain is inside the noise. The orientation
-// that folds the contiguous axis is indifferent to it, holding one
-// accumulator across each run whatever the tile.
-XMIPP4_CONST_CONSTEXPR std::size_t reduction_tile_budget = 16384;
-
-// A tile shorter than this stops the input reads from streaming, whatever the
-// accumulators cost; a longer one stops fitting.
-XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_tile = 64;
-XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile = 4096;
+// How much of a tile the accumulators may take, and how long the tile may
+// be as a result. See config.hpp for what the defaults are worth and why.
+XMIPP4_CONST_CONSTEXPR std::size_t reduction_tile_budget =
+	XMIPP4_REDUCTION_TILE_BUDGET;
+XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_tile =
+	XMIPP4_MINIMUM_REDUCTION_TILE_SIZE;
+XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile =
+	XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE;
 
 XMIPP4_INLINE_CONSTEXPR
 std::size_t clamp_reduction_tile(std::size_t count) noexcept

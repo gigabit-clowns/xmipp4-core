@@ -47,13 +47,13 @@ class cross_core_kernel
 {
 public:
 	cross_core_kernel(
-		linalg_core_layout_plan::operand_core out_core,
-		linalg_core_layout_plan::operand_core left_core,
-		linalg_core_layout_plan::operand_core right_core
+		linalg_operand_core out_core,
+		linalg_operand_core left_core,
+		linalg_operand_core right_core
 	)
-		: m_out_stride(out_core.strides[0])
-		, m_left_stride(left_core.strides[0])
-		, m_right_stride(right_core.strides[0])
+		: m_out_stride(out_core.get_stride(0))
+		, m_left_stride(left_core.get_stride(0))
+		, m_right_stride(right_core.get_stride(0))
 	{
 	}
 

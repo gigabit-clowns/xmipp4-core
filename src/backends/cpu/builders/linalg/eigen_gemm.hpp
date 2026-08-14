@@ -51,23 +51,23 @@ enum class core_layout_kind
 };
 
 inline core_layout_kind classify_core_layout(
-	const linalg_core_layout_plan::operand_core &core
+	const linalg_operand_core &core
 ) noexcept
 {
-	if (core.rank == 1)
+	if (core.get_rank() == 1)
 	{
-		return core.strides[0] == 1
+		return core.get_stride(0) == 1
 			? core_layout_kind::vector_contiguous
 			: core_layout_kind::generic;
 	}
 
-	if (core.strides[1] == 1 &&
-	    core.strides[0] == static_cast<std::ptrdiff_t>(core.extents[1]))
+	if (core.get_stride(1) == 1 &&
+	    core.get_stride(0) == static_cast<std::ptrdiff_t>(core.get_extent(1)))
 	{
 		return core_layout_kind::row_major_contiguous;
 	}
-	if (core.strides[0] == 1 &&
-	    core.strides[1] == static_cast<std::ptrdiff_t>(core.extents[0]))
+	if (core.get_stride(0) == 1 &&
+	    core.get_stride(1) == static_cast<std::ptrdiff_t>(core.get_extent(0)))
 	{
 		return core_layout_kind::column_major_contiguous;
 	}
@@ -92,29 +92,25 @@ inline bool is_column_major_compatible(core_layout_kind kind) noexcept
  * The padding axis has extent one, so its stride is never dereferenced;
  * any value is safe.
  */
-inline linalg_core_layout_plan::operand_core pad_as_column(
-	const linalg_core_layout_plan::operand_core &vector_core
-) noexcept
+inline linalg_operand_core pad_as_column(const linalg_operand_core &vector_core) noexcept
 {
-	linalg_core_layout_plan::operand_core core;
-	core.rank = 2;
-	core.extents = { vector_core.extents[0], 1 };
-	core.strides = { vector_core.strides[0], 1 };
-	return core;
+	return linalg_operand_core(
+		2,
+		{ vector_core.get_extent(0), 1 },
+		{ vector_core.get_stride(0), 1 }
+	);
 }
 
 /**
  * @brief Pad a rank one core into a rank two row ({1, extent}).
  */
-inline linalg_core_layout_plan::operand_core pad_as_row(
-	const linalg_core_layout_plan::operand_core &vector_core
-) noexcept
+inline linalg_operand_core pad_as_row(const linalg_operand_core &vector_core) noexcept
 {
-	linalg_core_layout_plan::operand_core core;
-	core.rank = 2;
-	core.extents = { 1, vector_core.extents[0] };
-	core.strides = { 1, vector_core.strides[0] };
-	return core;
+	return linalg_operand_core(
+		2,
+		{ 1, vector_core.get_extent(0) },
+		{ 1, vector_core.get_stride(0) }
+	);
 }
 
 /**
@@ -129,9 +125,9 @@ using gemm_fn = void (*)(
 	T *out,
 	const T *left,
 	const T *right,
-	const linalg_core_layout_plan::operand_core &out_core,
-	const linalg_core_layout_plan::operand_core &left_core,
-	const linalg_core_layout_plan::operand_core &right_core
+	const linalg_operand_core &out_core,
+	const linalg_operand_core &left_core,
+	const linalg_operand_core &right_core
 );
 
 /**
@@ -170,9 +166,9 @@ void gemm_call_fixed(
 	T *out,
 	const T *left,
 	const T *right,
-	const linalg_core_layout_plan::operand_core &/*out_core*/,
-	const linalg_core_layout_plan::operand_core &/*left_core*/,
-	const linalg_core_layout_plan::operand_core &/*right_core*/
+	const linalg_operand_core &/*out_core*/,
+	const linalg_operand_core &/*left_core*/,
+	const linalg_operand_core &/*right_core*/
 )
 {
 	using left_matrix =
@@ -199,9 +195,9 @@ void gemm_call_dynamic(
 	T *out,
 	const T *left,
 	const T *right,
-	const linalg_core_layout_plan::operand_core &out_core,
-	const linalg_core_layout_plan::operand_core &left_core,
-	const linalg_core_layout_plan::operand_core &right_core
+	const linalg_operand_core &out_core,
+	const linalg_operand_core &left_core,
+	const linalg_operand_core &right_core
 )
 {
 	using dynamic_matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
@@ -209,21 +205,21 @@ void gemm_call_dynamic(
 
 	Eigen::Map<const dynamic_matrix, 0, stride_t> left_map(
 		left,
-		static_cast<Eigen::Index>(left_core.extents[0]),
-		static_cast<Eigen::Index>(left_core.extents[1]),
-		stride_t(left_core.strides[1], left_core.strides[0])
+		static_cast<Eigen::Index>(left_core.get_extent(0)),
+		static_cast<Eigen::Index>(left_core.get_extent(1)),
+		stride_t(left_core.get_stride(1), left_core.get_stride(0))
 	);
 	Eigen::Map<const dynamic_matrix, 0, stride_t> right_map(
 		right,
-		static_cast<Eigen::Index>(right_core.extents[0]),
-		static_cast<Eigen::Index>(right_core.extents[1]),
-		stride_t(right_core.strides[1], right_core.strides[0])
+		static_cast<Eigen::Index>(right_core.get_extent(0)),
+		static_cast<Eigen::Index>(right_core.get_extent(1)),
+		stride_t(right_core.get_stride(1), right_core.get_stride(0))
 	);
 	Eigen::Map<dynamic_matrix, 0, stride_t> out_map(
 		out,
-		static_cast<Eigen::Index>(out_core.extents[0]),
-		static_cast<Eigen::Index>(out_core.extents[1]),
-		stride_t(out_core.strides[1], out_core.strides[0])
+		static_cast<Eigen::Index>(out_core.get_extent(0)),
+		static_cast<Eigen::Index>(out_core.get_extent(1)),
+		stride_t(out_core.get_stride(1), out_core.get_stride(0))
 	);
 	out_map.noalias() = left_map * right_map;
 }

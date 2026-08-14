@@ -36,15 +36,15 @@ class vecmat_core_kernel
 {
 public:
 	vecmat_core_kernel(
-		linalg_core_layout_plan::operand_core out_core,
-		linalg_core_layout_plan::operand_core left_core,
-		linalg_core_layout_plan::operand_core right_core
+		linalg_operand_core out_core,
+		linalg_operand_core left_core,
+		linalg_operand_core right_core
 	)
 		: m_out_core(pad_as_row(out_core))
 		, m_left_core(pad_as_row(left_core))
 		, m_right_core(right_core)
 		, m_gemm(resolve_vecgemm<T>(
-			right_core.extents[0], right_core.extents[1],
+			right_core.get_extent(0), right_core.get_extent(1),
 			classify_core_layout(out_core),
 			classify_core_layout(left_core),
 			classify_core_layout(right_core)
@@ -58,9 +58,9 @@ public:
 	}
 
 private:
-	linalg_core_layout_plan::operand_core m_out_core;
-	linalg_core_layout_plan::operand_core m_left_core;
-	linalg_core_layout_plan::operand_core m_right_core;
+	linalg_operand_core m_out_core;
+	linalg_operand_core m_left_core;
+	linalg_operand_core m_right_core;
 	gemm_fn<T> m_gemm;
 };
 

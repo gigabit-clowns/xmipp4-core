@@ -2,11 +2,12 @@
 
 #pragma once
 
+#include "linalg_operand_core.hpp"
+
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/joint_layout.hpp>
 #include <xmipp4/core/span.hpp>
 
-#include <array>
 #include <cstddef>
 
 namespace xmipp4
@@ -26,23 +27,11 @@ namespace cpu
  * the batch and hand the core, raw, to the kernel.
  *
  * @see run_elementwise_loop
+ * @see linalg_operand_core
  */
 class linalg_core_layout_plan
 {
 public:
-	/**
-	 * @brief The raw, un-reordered core axes of one operand.
-	 *
-	 * Never merged into the batch joint_layout: the kernel receives it
-	 * directly and decides what to do with it.
-	 */
-	struct operand_core
-	{
-		std::size_t rank = 0;
-		std::array<std::size_t, 2> extents{};
-		std::array<std::ptrdiff_t, 2> strides{};
-	};
-
 	/**
 	 * @brief Plan operands whose core axes are their trailing axes.
 	 *
@@ -90,6 +79,13 @@ public:
 		std::size_t core_axis
 	);
 
+	linalg_core_layout_plan(
+		joint_layout batch_layout,
+		linalg_operand_core output_core,
+		linalg_operand_core left_core,
+		linalg_operand_core right_core
+	) noexcept;
+
 	/**
 	 * @brief The batch iteration layout.
 	 *
@@ -99,22 +95,15 @@ public:
 	 */
 	const joint_layout& get_batch_layout() const noexcept;
 
-	const operand_core& get_output_core() const noexcept;
-	const operand_core& get_left_core() const noexcept;
-	const operand_core& get_right_core() const noexcept;
+	const linalg_operand_core& get_output_core() const noexcept;
+	const linalg_operand_core& get_left_core() const noexcept;
+	const linalg_operand_core& get_right_core() const noexcept;
 
 private:
-	linalg_core_layout_plan(
-		joint_layout batch_layout,
-		operand_core output_core,
-		operand_core left_core,
-		operand_core right_core
-	) noexcept;
-
 	joint_layout m_batch_layout;
-	operand_core m_output_core;
-	operand_core m_left_core;
-	operand_core m_right_core;
+	linalg_operand_core m_output_core;
+	linalg_operand_core m_left_core;
+	linalg_operand_core m_right_core;
 };
 
 } // namespace cpu

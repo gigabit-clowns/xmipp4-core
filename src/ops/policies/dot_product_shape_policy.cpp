@@ -2,7 +2,8 @@
 
 #include <xmipp4/ops/policies/dot_product_shape_policy.hpp>
 
-#include <algorithm>
+#include "shape_deduction.hpp"
+
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
@@ -86,15 +87,7 @@ void dot_product_shape_policy::deduce(
 		shape.push_back(right.back());
 	}
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 const dot_product_shape_policy& dot_product_shape_policy::get() noexcept

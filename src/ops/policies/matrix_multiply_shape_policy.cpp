@@ -2,9 +2,11 @@
 
 #include <xmipp4/ops/policies/matrix_multiply_shape_policy.hpp>
 
+#include "shape_deduction.hpp"
+
 #include <xmipp4/core/layout/broadcast.hpp>
 
-#include <algorithm>
+#include <iterator>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -110,15 +112,7 @@ void matrix_multiply_shape_policy::deduce(
 		shape.push_back(columns);
 	}
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 const matrix_multiply_shape_policy&

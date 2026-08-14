@@ -2,7 +2,8 @@
 
 #include <xmipp4/ops/policies/inverse_real_fourier_transform_shape_policy.hpp>
 
-#include <algorithm>
+#include "shape_deduction.hpp"
+
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -105,15 +106,7 @@ void inverse_real_fourier_transform_shape_policy::deduce(
 
 	shape[restored] = compute_real_signal_extent(stored, m_parity);
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 } // namespace ops

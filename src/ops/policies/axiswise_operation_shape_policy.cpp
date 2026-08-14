@@ -2,11 +2,8 @@
 
 #include <xmipp4/ops/policies/axiswise_operation_shape_policy.hpp>
 
-#include <xmipp4/core/layout/broadcast.hpp>
+#include "shape_deduction.hpp"
 
-#include <algorithm>
-#include <sstream>
-#include <stdexcept>
 #include <utility>
 
 namespace xmipp4
@@ -33,31 +30,15 @@ void axiswise_operation_shape_policy::deduce(
 	span<const shape_type> input_shapes
 ) const
 {
-	if (input_shapes.empty())
-	{
-		std::ostringstream oss;
-		oss << descriptor << ": at least one input operand is needed to "
-			<< "take a shape from.";
-		throw std::invalid_argument(oss.str());
-	}
+	auto shape = broadcast_input_shapes(descriptor, input_shapes);
 
-	shape_type shape = input_shapes[0];
-	for (std::size_t i = 1; i < input_shapes.size(); ++i)
-	{
-		broadcast_extents_accumulate(shape, make_span(input_shapes[i]));
-	}
-
+	// The rank is only known here, so this is the first place the axes can
+	// be checked against it.
 	check_axes_within_rank(descriptor, get_axes(), shape.size());
 
-	if (!canonical_output_shapes.empty())
-	{
-		std::fill(
-			canonical_output_shapes.begin(),
-			std::prev(canonical_output_shapes.end()),
-			shape
-		);
-		canonical_output_shapes.back() = std::move(shape);
-	}
+	// The shape comes out as it went in, the axes saying what the operation
+	// does rather than what it produces.
+	assign_output_shapes(canonical_output_shapes, std::move(shape));
 }
 
 } // namespace ops

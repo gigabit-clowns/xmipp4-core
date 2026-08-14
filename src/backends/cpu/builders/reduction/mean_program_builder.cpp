@@ -2,6 +2,8 @@
 
 #include <xmipp4/ops/reduction/mean_operation.hpp>
 
+#include <xmipp4/core/numerical/numerical_cast.hpp>
+
 #include <backends/cpu/builders/reduction_program_builder.hpp>
 #include <backends/cpu/builders/default_kernel_factory.hpp>
 #include <backends/cpu/builders/fold_reduction_kernel.hpp>
@@ -56,7 +58,7 @@ public:
 	{
 		// An average of nothing is a division of zero by zero, which the
 		// inexact result type answers with a not-a-number, as NumPy does.
-		store(result, total / static_cast<Accumulator>(count));
+		store(result, total / numerical_cast<Accumulator>(count));
 	}
 };
 

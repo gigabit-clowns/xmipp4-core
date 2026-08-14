@@ -97,6 +97,69 @@ protected:
 	}
 
 	/**
+	 * @brief Build an operand holding a given sequence of values.
+	 *
+	 * A constant operand cannot tell an extremum from an average or from the
+	 * first element it met, so the cases that pin what a fold actually
+	 * chooses need an operand whose elements differ.
+	 *
+	 * @tparam T The element type.
+	 * @param extents The extents of the operand.
+	 * @param values One value per element, in memory order.
+	 * @return array The operand.
+	 */
+	template <typename T>
+	array make_sequence_operand(
+		std::vector<std::size_t> extents,
+		const std::vector<double> &values
+	) const
+	{
+		auto result = empty(
+			make_descriptor(std::move(extents), numerical_type_of<T>::value),
+			memory_resource_affinity::device,
+			context
+		);
+
+		auto *storage = result.get_storage();
+		REQUIRE( storage != nullptr );
+		auto *data = static_cast<T*>(storage->get_host_ptr());
+		REQUIRE( data != nullptr );
+
+		for (std::size_t i = 0; i < values.size(); ++i)
+		{
+			data[i] = element_value(values[i]).as<T>();
+		}
+
+		return result;
+	}
+
+	/**
+	 * @brief Check an output element by element.
+	 *
+	 * @tparam U The element type the output is expected to have.
+	 * @param result The output array.
+	 * @param extents The extents the output is expected to have.
+	 * @param expected One value per element, in memory order.
+	 */
+	template <typename U>
+	void check_values(
+		const array &result,
+		const std::vector<std::size_t> &extents,
+		const std::vector<double> &expected
+	) const
+	{
+		const auto data_type = numerical_type_of<U>::value;
+		CHECK( result.get_descriptor() == make_descriptor(extents, data_type) );
+
+		const auto values = read_host<U>(result, expected.size());
+		for (std::size_t i = 0; i < expected.size(); ++i)
+		{
+			INFO( "element " << i );
+			CHECK( values[i] == element_value(expected[i]).as<U>() );
+		}
+	}
+
+	/**
 	 * @brief The shape a reduction over these axes leaves behind.
 	 *
 	 * @param extents The extents of the input.

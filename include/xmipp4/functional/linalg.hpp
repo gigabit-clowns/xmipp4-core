@@ -34,6 +34,56 @@ array matmul(
 );
 
 /**
+ * @brief Multiply a stack of matrices by a stack of vectors.
+ *
+ * @param x The stack of matrices.
+ * @param y The stack of vectors.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the products.
+ *
+ * @note The matrix's last axis is contracted with the vector's last axis,
+ * and everything before is a stack broadcast between the operands, as
+ * with @ref matmul. Unlike @ref matmul, neither operand is promoted: @p x
+ * must already have rank two or more and @p y rank one or more.
+ *
+ * @see vecmat
+ * @see matmul
+ */
+XMIPP4_CORE_API
+array matvec(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Multiply a stack of vectors by a stack of matrices.
+ *
+ * @param x The stack of vectors.
+ * @param y The stack of matrices.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the products.
+ *
+ * @note The vector's last axis is contracted with the matrix's second to
+ * last axis, and everything before is a stack broadcast between the
+ * operands. The mirror image of @ref matvec: neither operand is promoted,
+ * so @p x must already have rank one or more and @p y rank two or more.
+ *
+ * @see matvec
+ * @see matmul
+ */
+XMIPP4_CORE_API
+array vecmat(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
  * @brief Contract two arrays along one axis, broadcasting the rest.
  *
  * @param x The first array.

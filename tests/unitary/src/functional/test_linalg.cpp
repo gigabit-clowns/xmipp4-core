@@ -6,7 +6,9 @@
 
 #include <xmipp4/ops/linalg/cross_operation.hpp>
 #include <xmipp4/ops/linalg/matmul_operation.hpp>
+#include <xmipp4/ops/linalg/matvec_operation.hpp>
 #include <xmipp4/ops/linalg/vecdot_operation.hpp>
+#include <xmipp4/ops/linalg/vecmat_operation.hpp>
 
 #include "fixtures/verb_dispatch_fixture.hpp"
 
@@ -25,6 +27,24 @@ TEST_CASE_METHOD(
 )
 {
 	check_binary_verb<matmul_operation>(matmul);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"matvec dispatches a matvec_operation with both inputs in order",
+	"[array_linalg]"
+)
+{
+	check_binary_verb<matvec_operation>(matvec);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"vecmat dispatches a vecmat_operation with both inputs in order",
+	"[array_linalg]"
+)
+{
+	check_binary_verb<vecmat_operation>(vecmat);
 }
 
 TEST_CASE_METHOD(

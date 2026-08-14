@@ -8,7 +8,9 @@
 #include <xmipp4/core/ndarray/array_descriptor.hpp>
 #include <xmipp4/ops/linalg/cross_operation.hpp>
 #include <xmipp4/ops/linalg/matmul_operation.hpp>
+#include <xmipp4/ops/linalg/matvec_operation.hpp>
 #include <xmipp4/ops/linalg/vecdot_operation.hpp>
+#include <xmipp4/ops/linalg/vecmat_operation.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -51,6 +53,26 @@ array matmul(
 )
 {
 	return execute_binary(ops::matmul_operation(), x, y, context, out);
+}
+
+array matvec(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(ops::matvec_operation(), x, y, context, out);
+}
+
+array vecmat(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(ops::vecmat_operation(), x, y, context, out);
 }
 
 array vecdot(

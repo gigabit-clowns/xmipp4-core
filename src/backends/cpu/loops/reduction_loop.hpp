@@ -94,17 +94,23 @@ struct has_reduction_identity;
  *
  * @p kernel is invoked as:
  * @code
- * kernel.seed    (accumulators..., inputs...)
- * kernel.combine (accumulators..., inputs...)
+ * kernel.seed    (accumulators..., inputs..., position)
+ * kernel.combine (accumulators..., inputs..., position)
  * kernel.finalize(outputs..., accumulators..., count)
  * kernel.identity(accumulators...)               // only when count is zero
  * @endcode
  * where `accumulators` are mutable references, `inputs` are pointers to the
  * element of each input for the current iteration and `outputs` are pointers
- * to the element of each output being completed. The accumulator types come
- * from `Kernel::accumulators<Outputs, Inputs>::type` and are unrelated to the
- * number of outputs: a kernel may keep two accumulators and write one output,
- * or the other way round.
+ * to the element of each output being completed. `position` says where in
+ * the reduced space the element sits, counted from the first element folded
+ * into that output; only an operation reporting a location has any use for
+ * it, and the arithmetic behind it disappears for the operations that
+ * ignore it. It is only meaningful when the reduced space is traversed in a
+ * defined order, which @ref reduction_layout_plan arranges on request.
+ *
+ * The accumulator types come from `Kernel::accumulators<Outputs, Inputs>::type`
+ * and are unrelated to the number of outputs: a kernel may keep two
+ * accumulators and write one output, or the other way round.
  *
  * @tparam Kernel The reduction kernel.
  * @tparam Outs Element types of the outputs.

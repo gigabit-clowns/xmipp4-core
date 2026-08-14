@@ -45,11 +45,16 @@ namespace cpu
  * interpreting the operation's own typing rule, so a builder only names one
  * when this backend supports a narrower set of element types than the
  * operation itself allows.
+ * @tparam Ordered Whether the reduced space must be traversed in the order an
+ * index into it counts, which an operation reporting where it found something
+ * needs and which costs it the reordering for locality. See
+ * @ref reduction_layout_plan.
  */
 template <
 	typename Op,
 	typename KernelFactory,
-	typename TypeDispatcher = rule_type_dispatcher<typename Op::type_rule>
+	typename TypeDispatcher = rule_type_dispatcher<typename Op::type_rule>,
+	bool Ordered = false
 >
 class reduction_program_builder final
 	: public program_builder
@@ -101,6 +106,33 @@ private:
 		::xmipp4::cpu::reduction_program_builder< \
 			op, \
 			kernel_factory \
+		> \
+	> \
+	name##_program_builder_registration( \
+		::xmipp4::get_core_program_builder_registry() \
+	)
+
+/**
+ * @brief Instantiate and auto-register a CPU reduction builder that reports
+ * where in the reduced space it found something.
+ *
+ * Traverses the reduced space in the order an index into it counts, giving up
+ * the reordering for locality so that the position the kernel is handed means
+ * the same thing whatever the operand's layout.
+ *
+ * @param name Identifier of the registration object.
+ * @param op The operation type.
+ * @param kernel_factory Factory producing the reduction kernel.
+ */
+#define XMIPP4_REGISTER_INDEXED_REDUCTION_PROGRAM_BUILDER( \
+	name, op, kernel_factory \
+) \
+	static const ::xmipp4::program_builder_registration< \
+		::xmipp4::cpu::reduction_program_builder< \
+			op, \
+			kernel_factory, \
+			::xmipp4::cpu::rule_type_dispatcher<typename op::type_rule>, \
+			true \
 		> \
 	> \
 	name##_program_builder_registration( \

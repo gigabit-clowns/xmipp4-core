@@ -11,6 +11,8 @@
 #include <xmipp4/ops/reduction/amax_operation.hpp>
 #include <xmipp4/ops/reduction/amin_operation.hpp>
 #include <xmipp4/ops/reduction/any_operation.hpp>
+#include <xmipp4/ops/reduction/argmax_operation.hpp>
+#include <xmipp4/ops/reduction/argmin_operation.hpp>
 #include <xmipp4/ops/reduction/count_nonzero_operation.hpp>
 #include <xmipp4/ops/reduction/mean_operation.hpp>
 #include <xmipp4/ops/reduction/product_operation.hpp>
@@ -530,4 +532,143 @@ TEST_CASE_METHOD(
 	{
 		CHECK( std::isnan(value) );
 	}
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax and argmin answer with the first place of a constant array",
+	"[array_reduction][cpu]"
+)
+{
+	// Every element being equal, both report the first, which is what pins
+	// that a tie keeps the earliest place rather than the latest.
+	check_reduction<argmax_operation>(
+		xmipp4::argmax,
+		{ 1 },
+		false,
+		element_value(2),
+		[](auto, std::size_t) { return 0; }
+	);
+	check_reduction<argmin_operation>(
+		xmipp4::argmin,
+		{ 1 },
+		false,
+		element_value(2),
+		[](auto, std::size_t) { return 0; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax and argmin locate the extremum along an axis",
+	"[array_reduction][cpu]"
+)
+{
+	const std::vector<std::size_t> extents = { 2, 3 };
+	const std::vector<double> values = { 5, 1, 9, 3, 7, 2 };
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	SECTION( "along the axis the elements are strided over" )
+	{
+		const std::vector<std::ptrdiff_t> axes = { 0 };
+		check_values<int64_t>(
+			xmipp4::argmax(operand_ref, make_span(axes), false, context,
+			               nullptr),
+			{ 3 },
+			{ 0, 1, 0 }
+		);
+		check_values<int64_t>(
+			xmipp4::argmin(operand_ref, make_span(axes), false, context,
+			               nullptr),
+			{ 3 },
+			{ 1, 0, 1 }
+		);
+	}
+
+	SECTION( "along the axis the elements are contiguous over" )
+	{
+		const std::vector<std::ptrdiff_t> axes = { 1 };
+		check_values<int64_t>(
+			xmipp4::argmax(operand_ref, make_span(axes), false, context,
+			               nullptr),
+			{ 2 },
+			{ 2, 1 }
+		);
+		check_values<int64_t>(
+			xmipp4::argmin(operand_ref, make_span(axes), false, context,
+			               nullptr),
+			{ 2 },
+			{ 1, 2 }
+		);
+	}
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax counts positions with the last reduced axis running fastest",
+	"[array_reduction][cpu]"
+)
+{
+	// Reducing several axes at once leaves the answer to say where in the
+	// reduced space the element was, and that space is counted the way an
+	// array of the reduced extents is laid out, whatever order the axes
+	// would be walked in for locality.
+	const std::vector<std::size_t> extents = { 2, 3 };
+	const std::vector<double> values = { 1, 2, 3, 4, 9, 5 };
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 0, 1 };
+	check_values<int64_t>(
+		xmipp4::argmax(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 4 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax and argmin reject a reduction over no elements",
+	"[array_reduction][cpu]"
+)
+{
+	auto operand = make_sequence_operand<float32_t>({ 0, 3 }, {});
+	const const_array_ref operand_ref = operand;
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+
+	CHECK_THROWS_AS(
+		xmipp4::argmax(operand_ref, make_span(axes), false, context, nullptr),
+		std::invalid_argument
+	);
+	CHECK_THROWS_AS(
+		xmipp4::argmin(operand_ref, make_span(axes), false, context, nullptr),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax counts positions across axes that are not adjacent",
+	"[array_reduction][cpu]"
+)
+{
+	// Reducing the first and last axes of a rank three array leaves a
+	// reduced space of two axes that were never neighbours, so the index
+	// cannot fall out of the layout by accident.
+	const std::vector<std::size_t> extents = { 2, 2, 3 };
+	std::vector<double> values(12, 0.0);
+	values[1 * 6 + 1 * 3 + 2] = 9.0;  // (1, 1, 2)
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	// The reduced space is (axis 0, axis 2), of extents 2 and 3, so the
+	// element at (1, 2) of it counts as 1 * 3 + 2. The other output sees
+	// nothing but zeros and answers with the first of them.
+	const std::vector<std::ptrdiff_t> axes = { 0, 2 };
+	check_values<int64_t>(
+		xmipp4::argmax(operand_ref, make_span(axes), false, context, nullptr),
+		{ 2 },
+		{ 0, 5 }
+	);
 }

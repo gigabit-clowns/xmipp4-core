@@ -54,6 +54,7 @@ struct call_log
 	std::size_t finalizes = 0;
 	std::size_t identities = 0;
 	std::vector<std::size_t> reported_counts;
+	std::vector<std::size_t> positions;
 };
 
 /**
@@ -76,15 +77,21 @@ public:
 		using type = type_list<int>;
 	};
 
-	void seed(int &accumulator, const int *value) const
+	void seed(int &accumulator, const int *value, std::size_t position) const
 	{
 		++m_log->seeds;
+		m_log->positions.push_back(position);
 		accumulator = *value;
 	}
 
-	void combine(int &accumulator, const int *value) const
+	void combine(
+		int &accumulator,
+		const int *value,
+		std::size_t position
+	) const
 	{
 		++m_log->combines;
+		m_log->positions.push_back(position);
 		accumulator += *value;
 	}
 
@@ -126,12 +133,12 @@ struct seeded_only_kernel
 		using type = type_list<int>;
 	};
 
-	void seed(int &accumulator, const int *value) const
+	void seed(int &accumulator, const int *value, std::size_t) const
 	{
 		accumulator = *value;
 	}
 
-	void combine(int &accumulator, const int *value) const
+	void combine(int &accumulator, const int *value, std::size_t) const
 	{
 		accumulator += *value;
 	}
@@ -166,7 +173,8 @@ struct masked_mean_kernel
 		double &total,
 		std::size_t &count,
 		const double *value,
-		const bool *mask
+		const bool *mask,
+		std::size_t
 	) const
 	{
 		total = *mask ? *value : 0.0;
@@ -177,7 +185,8 @@ struct masked_mean_kernel
 		double &total,
 		std::size_t &count,
 		const double *value,
-		const bool *mask
+		const bool *mask,
+		std::size_t
 	) const
 	{
 		if (*mask)
@@ -220,13 +229,23 @@ struct minmax_kernel
 		using type = type_list<int, int>;
 	};
 
-	void seed(int &lowest, int &highest, const int *value) const
+	void seed(
+		int &lowest,
+		int &highest,
+		const int *value,
+		std::size_t
+	) const
 	{
 		lowest = *value;
 		highest = *value;
 	}
 
-	void combine(int &lowest, int &highest, const int *value) const
+	void combine(
+		int &lowest,
+		int &highest,
+		const int *value,
+		std::size_t
+	) const
 	{
 		lowest = std::min(lowest, *value);
 		highest = std::max(highest, *value);

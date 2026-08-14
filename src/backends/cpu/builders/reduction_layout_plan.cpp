@@ -7,6 +7,9 @@
 #include <xmipp4/core/layout/joint_layout_builder.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 
+#include <xmipp4/core/platform/constexpr.hpp>
+
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -111,7 +114,8 @@ reduction_layout_plan::reduction_layout_plan(
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
 	span<const std::size_t> axes,
-	bool keep_dimensions
+	bool keep_dimensions,
+	bool ordered
 )
 	: m_reduction_count(0)
 {
@@ -151,6 +155,14 @@ reduction_layout_plan::reduction_layout_plan(
 		{
 			kept_axes.push_back(i);
 		}
+	}
+
+	// A layout varies its first axis fastest, so counting positions the way
+	// an index into the reduced space counts them means listing the reduced
+	// axes last one first.
+	if (ordered)
+	{
+		std::reverse(reduced_axes.begin(), reduced_axes.end());
 	}
 
 	const auto kept_extents = select_axes(extents, kept_axes);
@@ -205,8 +217,17 @@ reduction_layout_plan::reduction_layout_plan(
 		);
 	}
 
+	// Merging adjacent axes leaves the order of the positions untouched;
+	// sorting them for locality does not, so an ordered traversal keeps only
+	// the former.
+	XMIPP4_CONST_CONSTEXPR joint_layout_build_flags ordered_flags = {
+		joint_layout_build_flag_bits::enable_coalescing
+	};
+
 	m_kept_layout = kept_builder.build();
-	m_reduced_layout = reduced_builder.build();
+	m_reduced_layout = ordered
+		? reduced_builder.build(ordered_flags)
+		: reduced_builder.build();
 	m_reduction_count = element_count(reduced_extents);
 }
 

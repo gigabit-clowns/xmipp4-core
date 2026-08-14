@@ -55,6 +55,14 @@ public:
 	 * @param axes The axes being reduced, ascending and without repetitions.
 	 * @param keep_dimensions Whether the outputs kept the reduced axes with
 	 * an extent of one instead of dropping them.
+	 * @param ordered Whether the reduced space must be traversed in a
+	 * defined order, namely the one an index into it would count in: last
+	 * axis fastest, as an array of the reduced extents is laid out. An
+	 * operation that reports where in that space it found something cannot
+	 * let the traversal be permuted for locality, so it asks for this and
+	 * gives up the reordering. Adjacent axes are still merged, which
+	 * preserves the order, and for an operand already laid out that way the
+	 * order asked for is the locality-optimal one anyway.
 	 *
 	 * @throws std::invalid_argument When there is no input, when an output
 	 * does not have the rank the axes and @p keep_dimensions imply, or when
@@ -66,7 +74,8 @@ public:
 		span<const operand_signature> output_signatures,
 		span<const operand_signature> input_signatures,
 		span<const std::size_t> axes,
-		bool keep_dimensions
+		bool keep_dimensions,
+		bool ordered = false
 	);
 
 	reduction_layout_plan(const reduction_layout_plan &other) = delete;
@@ -90,6 +99,9 @@ public:
 
 	/**
 	 * @brief Get the layout over the axes being folded away.
+	 *
+	 * Its axes are sorted for locality and merged where possible, unless an
+	 * ordered traversal was asked for.
 	 *
 	 * Its operands are the inputs, in order. The operand offsets belong to
 	 * the kept layout alone, so this one starts every operand at zero and

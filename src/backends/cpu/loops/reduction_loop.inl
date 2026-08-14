@@ -333,19 +333,27 @@ private:
 		// as one that has.
 		auto count = m_reduced_vector_size;
 		seed_tile(first, width);
+
+		// Where in the reduced space each element sits. Every tile sweeps
+		// that space the same way, so the count restarts with each of them.
+		std::size_t position = 1;
 		combine_run(
 			step_pointers(first, 1, m_reduced_strides, input_indices()),
 			width,
-			count - 1
+			count - 1,
+			position
 		);
+		position += count - 1;
 
 		while ((count = m_reduced_layout.next(m_reduced_cursor, count)))
 		{
 			combine_run(
 				offset_pointers(inputs, offsets.data(), input_indices()),
 				width,
-				count
+				count,
+				position
 			);
+			position += count;
 		}
 	}
 
@@ -372,7 +380,8 @@ private:
 					step * static_cast<std::ptrdiff_t>(
 						std::get<Is>(m_kept_strides)
 					)
-				)...
+				)...,
+				std::size_t(0)
 			);
 		}
 	}
@@ -388,13 +397,15 @@ private:
 	void combine_run(
 		const input_pointers &inputs,
 		std::size_t width,
-		std::size_t count
+		std::size_t count,
+		std::size_t position
 	)
 	{
 		combine_run(
 			inputs,
 			width,
 			count,
+			position,
 			accumulator_indices(),
 			input_indices()
 		);
@@ -405,6 +416,7 @@ private:
 		const input_pointers &inputs,
 		std::size_t width,
 		std::size_t count,
+		std::size_t position,
 		std::index_sequence<As...>,
 		std::index_sequence<Is...>
 	)
@@ -428,7 +440,8 @@ private:
 						step * static_cast<std::ptrdiff_t>(
 							std::get<Is>(m_kept_strides)
 						)
-					)...
+					)...,
+					position + e
 				);
 			}
 		}

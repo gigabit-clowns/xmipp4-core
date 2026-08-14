@@ -88,17 +88,27 @@ void extract_reduction_data_types(
 
 } // namespace detail
 
-template <typename Op, typename KernelFactory, typename TypeDispatcher>
+template <
+	typename Op,
+	typename KernelFactory,
+	typename TypeDispatcher,
+	bool Ordered
+>
 operation_id
-reduction_program_builder<Op, KernelFactory, TypeDispatcher>
+reduction_program_builder<Op, KernelFactory, TypeDispatcher, Ordered>
 ::get_operation_id() const noexcept
 {
 	return operation_id::of<Op>();
 }
 
-template <typename Op, typename KernelFactory, typename TypeDispatcher>
+template <
+	typename Op,
+	typename KernelFactory,
+	typename TypeDispatcher,
+	bool Ordered
+>
 backend_priority
-reduction_program_builder<Op, KernelFactory, TypeDispatcher>
+reduction_program_builder<Op, KernelFactory, TypeDispatcher, Ordered>
 ::get_suitability(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
@@ -148,9 +158,14 @@ reduction_program_builder<Op, KernelFactory, TypeDispatcher>
 	return base;
 }
 
-template <typename Op, typename KernelFactory, typename TypeDispatcher>
+template <
+	typename Op,
+	typename KernelFactory,
+	typename TypeDispatcher,
+	bool Ordered
+>
 std::shared_ptr<xmipp4::program>
-reduction_program_builder<Op, KernelFactory, TypeDispatcher>::build(
+reduction_program_builder<Op, KernelFactory, TypeDispatcher, Ordered>::build(
 	const operation &operation,
 	span<const operand_signature> output_signatures,
 	span<const operand_signature> input_signatures,
@@ -193,7 +208,8 @@ reduction_program_builder<Op, KernelFactory, TypeDispatcher>::build(
 		output_signatures,
 		input_signatures,
 		shape_policy.get_axes(),
-		shape_policy.get_keep_dimensions()
+		shape_policy.get_keep_dimensions(),
+		Ordered
 	);
 
 	const auto &factory = m_kernel_factory;

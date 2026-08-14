@@ -691,3 +691,94 @@ TEST_CASE_METHOD(
 		ramp_spectrum
 	);
 }
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fftshift moves the zero frequency to the centre",
+	"[array_fourier][cpu]"
+)
+{
+	// Odd extent: fftshift and ifftshift disagree by one element, which is
+	// exactly what distinguishes the two.
+	auto signal = make_operand<float32_t>({ 5 }, { 0, 1, 2, 3, 4 });
+	const const_array_ref signal_ref = signal;
+
+	check_values<float32_t>(
+		xmipp4::fftshift(signal_ref, context, nullptr),
+		{ 5 },
+		{ 3, 4, 0, 1, 2 }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"ifftshift undoes fftshift",
+	"[array_fourier][cpu]"
+)
+{
+	auto shifted = make_operand<float32_t>({ 5 }, { 3, 4, 0, 1, 2 });
+	const const_array_ref shifted_ref = shifted;
+
+	check_values<float32_t>(
+		xmipp4::ifftshift(shifted_ref, context, nullptr),
+		{ 5 },
+		{ 0, 1, 2, 3, 4 }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fftshift with an even extent shifts by half",
+	"[array_fourier][cpu]"
+)
+{
+	auto signal = make_operand<float32_t>({ 4 }, { 0, 1, 2, 3 });
+	const const_array_ref signal_ref = signal;
+
+	check_values<float32_t>(
+		xmipp4::fftshift(signal_ref, context, nullptr),
+		{ 4 },
+		{ 2, 3, 0, 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fftshift along every axis shifts each one independently",
+	"[array_fourier][cpu]"
+)
+{
+	// Exercises the block decomposition with more than one shifted axis:
+	// rows and columns wrap on their own, giving 2^2 = 4 blocks.
+	auto signal = make_operand<float32_t>(
+		{ 2, 3 },
+		{ 0, 1, 2, 3, 4, 5 }
+	);
+	const const_array_ref signal_ref = signal;
+
+	check_values<float32_t>(
+		xmipp4::fftshift(signal_ref, context, nullptr),
+		{ 2, 3 },
+		{ 5, 3, 4, 2, 0, 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fftshift along a single axis leaves the other untouched",
+	"[array_fourier][cpu]"
+)
+{
+	auto signal = make_operand<float32_t>(
+		{ 2, 3 },
+		{ 0, 1, 2, 3, 4, 5 }
+	);
+	const const_array_ref signal_ref = signal;
+
+	const std::vector<std::ptrdiff_t> axes = { 1 };
+	check_values<float32_t>(
+		xmipp4::fftshift(signal_ref, make_span(axes), context, nullptr),
+		{ 2, 3 },
+		{ 2, 0, 1, 5, 3, 4 }
+	);
+}

@@ -24,19 +24,19 @@ namespace cpu
 // when several operations share it.
 
 /**
- * @brief The type an element of storage type T is computed in.
+ * @brief The type a reduction accumulator over storage type T holds.
  *
- * Half precision cannot be operated on directly, so it is widened on load and
- * rounded back on store. An accumulator is typed on the computation type
- * rather than on the storage type, which is what keeps a reduction of half
- * precision data from accumulating rounding error at every step.
+ * The widening rule of @ref element_compute_type under the name a reduction
+ * reads it by: an accumulator is typed on the computation type rather than
+ * on the storage type, which is what keeps a reduction of half precision
+ * data from accumulating rounding error at every step.
  *
  * @tparam T The storage element type.
  */
 template <typename T>
 struct reduction_compute_type
+	: element_compute_type<T>
 {
-	using type = decltype(load(std::declval<const T*>()));
 };
 
 /**

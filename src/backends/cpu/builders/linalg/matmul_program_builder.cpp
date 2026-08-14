@@ -2,9 +2,9 @@
 
 #include <xmipp4/ops/linalg/matmul_operation.hpp>
 
-#include <backends/cpu/builders/linalg/linalg_program_builder.hpp>
-#include <backends/cpu/builders/linalg/linalg_core_layout_plan.hpp>
-#include <backends/cpu/builders/linalg/eigen_gemm.hpp>
+#include <backends/cpu/builders/linalg_program_builder.hpp>
+#include <backends/cpu/builders/linalg_core_layout_plan.hpp>
+#include <backends/cpu/builders/eigen_gemm.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
 #include <xmipp4/core/meta/type_list.hpp>

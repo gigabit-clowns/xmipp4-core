@@ -11,7 +11,7 @@
 #include <xmipp4/core/platform/constexpr.hpp>
 
 #include <backends/cpu/builders/dispatcher_support_query.hpp>
-#include <backends/cpu/builders/linalg/linalg_core_layout_plan.hpp>
+#include <backends/cpu/builders/linalg_core_layout_plan.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
 

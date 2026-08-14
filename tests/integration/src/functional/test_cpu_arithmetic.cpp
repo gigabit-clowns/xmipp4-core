@@ -9,9 +9,12 @@
 #include <xmipp4/ops/arithmetic/abs_operation.hpp>
 #include <xmipp4/ops/arithmetic/add_operation.hpp>
 #include <xmipp4/ops/arithmetic/divide_operation.hpp>
+#include <xmipp4/ops/arithmetic/divmod_operation.hpp>
+#include <xmipp4/ops/arithmetic/floor_divide_operation.hpp>
 #include <xmipp4/ops/arithmetic/modulo_operation.hpp>
 #include <xmipp4/ops/arithmetic/multiply_operation.hpp>
 #include <xmipp4/ops/arithmetic/negate_operation.hpp>
+#include <xmipp4/ops/arithmetic/sign_operation.hpp>
 #include <xmipp4/ops/arithmetic/subtract_operation.hpp>
 
 #include <xmipp4/functional/creation.hpp>
@@ -20,6 +23,7 @@
 #include <xmipp4/core/numerical/scalar_value.hpp>
 
 #include <cmath>
+#include <complex>
 
 using namespace xmipp4;
 using namespace xmipp4::ops;
@@ -156,6 +160,95 @@ TEST_CASE_METHOD(
 		element_value(7),
 		element_value(-3),
 		[](auto, auto) { return -2; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"floor_divide computes the element-wise quotient rounded down",
+	"[array_arithmetic][cpu]"
+)
+{
+	check_binary<floor_divide_operation>(
+		floor_divide,
+		element_value(7),
+		element_value(3),
+		[](auto, auto) { return 2; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"floor_divide rounds towards negative infinity, unlike C's division",
+	"[array_arithmetic][cpu]"
+)
+{
+	// C truncates -7 / 3 to -2. Rounding down gives -3, which is what
+	// keeps floor_divide and modulo the two halves of one division.
+	check_binary<floor_divide_operation, signed_arithmetic_type_domain>(
+		floor_divide,
+		element_value(-7),
+		element_value(3),
+		[](auto, auto) { return -3; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"divmod computes the quotient and the remainder of one division",
+	"[array_arithmetic][cpu]"
+)
+{
+	// The pair satisfies quotient * divisor + remainder == dividend, which
+	// C's truncating division would break for a negative dividend.
+	check_binary_pair<divmod_operation, signed_arithmetic_type_domain>(
+		divmod,
+		element_value(-7),
+		element_value(3),
+		[](auto, auto) { return -3; },
+		[](auto, auto) { return 2; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"sign reports the sign of each element",
+	"[array_arithmetic][cpu]"
+)
+{
+	// A negative real, and a complex number lying along the negative real
+	// axis, both report the same unit magnitude.
+	check_unary<sign_operation, signed_arithmetic_type_domain>(
+		sign,
+		element_value(-3),
+		[](auto) { return -1; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"sign is zero for a zero element",
+	"[array_arithmetic][cpu]"
+)
+{
+	check_unary<sign_operation>(
+		sign,
+		element_value(0),
+		[](auto) { return 0; }
+	);
+}
+
+TEST_CASE_METHOD(
+	elementwise_verb_fixture,
+	"sign of a complex element is the unit vector along it",
+	"[array_arithmetic][cpu]"
+)
+{
+	// A Pythagorean pair again, so dividing by the magnitude is exact.
+	check_unary<sign_operation, complex_type_domain>(
+		sign,
+		element_value(3, 4),
+		[](auto x) { return x / std::abs(x); }
 	);
 }
 

@@ -588,6 +588,57 @@ protected:
 	}
 
 	/**
+	 * @brief Check a two input, two output verb across every type.
+	 *
+	 * @tparam Op The operation the verb dispatches.
+	 * @tparam Restriction Domain this case is confined to.
+	 * @param verb The verb under test, returning both results as a pair.
+	 * @param x The value every element of the first input takes.
+	 * @param y The value every element of the second input takes.
+	 * @param first_reference Called with both widened inputs, giving the
+	 * expected first result.
+	 * @param second_reference The same, for the second result.
+	 * @param mode How closely the results must match.
+	 */
+	template <
+		typename Op,
+		typename Restriction = any_type_domain,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void check_binary_pair(
+		Verb &&verb,
+		element_value x,
+		element_value y,
+		FirstReference &&first_reference,
+		SecondReference &&second_reference,
+		comparison_mode mode = comparison_mode::exact
+	) const
+	{
+		for (const auto type : all_numerical_types())
+		{
+			INFO( "element type " << type );
+			dispatch_numerical_types(
+				[&](auto tag)
+				{
+					using pivot_type = typename decltype(tag)::type;
+					this->template run_binary_pair<Op, pivot_type>(
+						detail::select_case<Op, Restriction, pivot_type>(),
+						verb,
+						x,
+						y,
+						first_reference,
+						second_reference,
+						mode
+					);
+				},
+				type
+			);
+		}
+	}
+
+	/**
 	 * @brief Check one output of a verb against an expected value.
 	 *
 	 * @tparam U The element type the output is expected to have.
@@ -627,6 +678,88 @@ private:
 	template <typename Op, typename T, typename... Args>
 	void run_ternary(detail::skip_case, Args&&...) const
 	{
+	}
+
+	template <typename Op, typename T, typename... Args>
+	void run_binary_pair(detail::skip_case, Args&&...) const
+	{
+	}
+
+	template <
+		typename Op,
+		typename T,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void run_binary_pair(
+		detail::run_case,
+		Verb &verb,
+		element_value x,
+		element_value y,
+		FirstReference &first_reference,
+		SecondReference &second_reference,
+		comparison_mode mode
+	) const
+	{
+		using operands = operand_element_types<Op, T>;
+		using left_type = typename operands::template input_type<0>;
+		using right_type = typename operands::template input_type<1>;
+		using first_type = typename operands::template output_type<0>;
+		using second_type = typename operands::template output_type<1>;
+
+		auto left = make_operand<left_type>(x);
+		auto right = make_operand<right_type>(y);
+		const const_array_ref left_ref = left;
+		const const_array_ref right_ref = right;
+
+		const auto results = verb(left_ref, right_ref, context, nullptr,
+		                          nullptr);
+
+		const auto widened_left = widen(x.as<left_type>());
+		const auto widened_right = widen(y.as<right_type>());
+		check_output<first_type>(
+			results.first,
+			first_reference(widened_left, widened_right),
+			mode
+		);
+		check_output<second_type>(
+			results.second,
+			second_reference(widened_left, widened_right),
+			mode
+		);
+	}
+
+	template <
+		typename Op,
+		typename T,
+		typename Verb,
+		typename FirstReference,
+		typename SecondReference
+	>
+	void run_binary_pair(
+		detail::reject_case,
+		Verb &verb,
+		element_value x,
+		element_value y,
+		FirstReference &,
+		SecondReference &,
+		comparison_mode
+	) const
+	{
+		using operands = operand_element_types<Op, T>;
+		using left_type = typename operands::template input_type<0>;
+		using right_type = typename operands::template input_type<1>;
+
+		auto left = make_operand<left_type>(x);
+		auto right = make_operand<right_type>(y);
+		const const_array_ref left_ref = left;
+		const const_array_ref right_ref = right;
+
+		CHECK_THROWS_AS(
+			verb(left_ref, right_ref, context, nullptr, nullptr),
+			std::invalid_argument
+		);
 	}
 
 	template <typename Op, typename T, typename Verb, typename Reference>

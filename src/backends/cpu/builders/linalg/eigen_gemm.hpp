@@ -240,28 +240,47 @@ void gemm_call_dynamic(
 	out_map.noalias() = left_map * right_map;
 }
 
+static constexpr std::size_t max_fixed_extent = 4;
+
 /**
- * @brief Dispatch a runtime extent already known to be in [1, 4] to a
- * compile time constant.
+ * @brief Smallest extent the fixed-size fast path is offered for.
+ *
+ * A dimension of exactly one means one of gemm_call_fixed's three
+ * Eigen::Matrix instantiations is really a column vector ((extent, 1), as
+ * matmul's own left operand becomes when K == 1); some MSVC toolsets fail
+ * to even compile Eigen::Map over such a fixed-size matrix at all (a class
+ * template instantiation failure, not a shape assertion, and reproducible
+ * with a plain real scalar, so it is not a complex-specific issue and no
+ * Options value works around it), where GCC and Clang have no trouble. The
+ * fast path is skipped for that size everywhere rather than only where it
+ * has been observed to fail, since the shapes it and the dynamic fallback
+ * cover are otherwise identical.
+ */
+static constexpr std::size_t min_fixed_extent = 2;
+
+/**
+ * @brief Dispatch a runtime extent already known to be in [min_fixed_extent,
+ * max_fixed_extent] to a compile time constant.
  *
  * @p f is invoked as `f(std::integral_constant<std::size_t, extent>{})`.
- * Instantiated for exactly the four cases below, regardless of which one is
- * actually taken at runtime; the caller must ensure @p n is one of them.
+ * Instantiated for exactly the cases below, regardless of which one is
+ * actually taken at runtime, which is what makes @ref min_fixed_extent an
+ * actual bound on what gets compiled rather than merely on what a caller's
+ * own range check happens to let through at runtime: a runtime guard cannot
+ * stop this switch's own case labels from being instantiated, only from
+ * being reached.
  */
 template <typename F>
 auto dispatch_fixed_extent(std::size_t n, F &&f)
-	-> decltype(f(std::integral_constant<std::size_t, 1>{}))
+	-> decltype(f(std::integral_constant<std::size_t, min_fixed_extent>{}))
 {
 	switch (n)
 	{
-		case 1: return f(std::integral_constant<std::size_t, 1>{});
 		case 2: return f(std::integral_constant<std::size_t, 2>{});
 		case 3: return f(std::integral_constant<std::size_t, 3>{});
 		default: return f(std::integral_constant<std::size_t, 4>{});
 	}
 }
-
-static constexpr std::size_t max_fixed_extent = 4;
 
 /**
  * @brief Types worth instantiating the fixed-size fast path for.
@@ -269,22 +288,17 @@ static constexpr std::size_t max_fixed_extent = 4;
  * eigen_scalar_support decides what this backend executes at all; this is
  * the separate, narrower question of what is worth the compile time cost of
  * the fixed-size dispatch grid below. Every other supported type (the
- * fixed-width integers, and complex) still executes correctly, through
- * gemm_call_dynamic alone, just without the unrolled fast path.
- *
- * Complex is deliberately excluded: matvec/vecmat's fixed path always maps
- * a size-one dimension (the padded vector operand), and MSVC's Eigen::Map
- * cannot construct a fixed-size matrix of that shape over a complex scalar
- * (a class template instantiation failure, not a shape assertion, so there
- * is no Options value that works around it) where GCC and Clang have no
- * trouble. Real float/double never hit that construction at all.
+ * fixed-width integers) still executes correctly, through gemm_call_dynamic
+ * alone, just without the unrolled fast path.
  */
 template <typename T>
 struct eigen_fixed_path_support
 	: std::integral_constant<
 		bool,
 		std::is_same<T, float>::value ||
-		std::is_same<T, double>::value
+		std::is_same<T, double>::value ||
+		std::is_same<T, std::complex<float>>::value ||
+		std::is_same<T, std::complex<double>>::value
 	>
 {
 };
@@ -318,9 +332,9 @@ gemm_fn<T> resolve_gemm_fixed_path(
 	core_layout_kind right_kind
 )
 {
-	if (m >= 1 && m <= max_fixed_extent &&
-	    k >= 1 && k <= max_fixed_extent &&
-	    n >= 1 && n <= max_fixed_extent &&
+	if (m >= min_fixed_extent && m <= max_fixed_extent &&
+	    k >= min_fixed_extent && k <= max_fixed_extent &&
+	    n >= min_fixed_extent && n <= max_fixed_extent &&
 	    all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
 		return dispatch_fixed_extent(m, [&](auto m_c) {
@@ -337,67 +351,6 @@ gemm_fn<T> resolve_gemm_fixed_path(
 						T
 					>;
 				});
-			});
-		});
-	}
-
-	return &gemm_call_dynamic<T>;
-}
-
-/**
- * @brief Resolve a (M, K) matrix times a K-vector, for a type worth
- * fast-pathing. N is always one: dispatching it as if it varied would
- * needlessly triple the size of the grid below.
- */
-template <typename T>
-gemm_fn<T> resolve_gemv_fixed_path(
-	std::size_t m, std::size_t k,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind
-)
-{
-	if (m >= 1 && m <= max_fixed_extent &&
-	    k >= 1 && k <= max_fixed_extent &&
-	    all_row_major_compatible(out_kind, left_kind, right_kind))
-	{
-		return dispatch_fixed_extent(m, [&](auto m_c) {
-			std::ignore = m_c;
-			return dispatch_fixed_extent(k, [&](auto k_c) {
-				std::ignore = k_c;
-				return &gemm_call_fixed<
-					decltype(m_c)::value, decltype(k_c)::value, 1, true, T
-				>;
-			});
-		});
-	}
-
-	return &gemm_call_dynamic<T>;
-}
-
-/**
- * @brief Resolve a K-vector times a (K, N) matrix, for a type worth
- * fast-pathing. M is always one, for the same reason as resolve_gemv_fixed_path.
- */
-template <typename T>
-gemm_fn<T> resolve_vecgemm_fixed_path(
-	std::size_t k, std::size_t n,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind
-)
-{
-	if (k >= 1 && k <= max_fixed_extent &&
-	    n >= 1 && n <= max_fixed_extent &&
-	    all_row_major_compatible(out_kind, left_kind, right_kind))
-	{
-		return dispatch_fixed_extent(k, [&](auto k_c) {
-			std::ignore = k_c;
-			return dispatch_fixed_extent(n, [&](auto n_c) {
-				std::ignore = n_c;
-				return &gemm_call_fixed<
-					1, decltype(k_c)::value, decltype(n_c)::value, true, T
-				>;
 			});
 		});
 	}
@@ -455,85 +408,39 @@ gemm_fn<T> resolve_gemm(
 /**
  * @brief Resolve a (M, K) matrix times a K-vector.
  *
- * @see resolve_gemm
+ * Always the dynamic path: the vector operand (right and output alike) is
+ * always padded to an (extent, 1) shaped core (see pad_as_column), which is
+ * exactly the fixed-size shape @ref min_fixed_extent exists to avoid, on
+ * every call rather than only some, so there is no size worth fast-pathing
+ * here at all.
  */
 template <typename T>
 gemm_fn<T> resolve_gemv(
 	std::size_t /*m*/, std::size_t /*k*/,
 	core_layout_kind /*out_kind*/,
 	core_layout_kind /*left_kind*/,
-	core_layout_kind /*right_kind*/,
-	std::false_type /* eigen_fixed_path_support<T> */
-)
+	core_layout_kind /*right_kind*/
+) noexcept
 {
 	return &gemm_call_dynamic<T>;
-}
-
-template <typename T>
-gemm_fn<T> resolve_gemv(
-	std::size_t m, std::size_t k,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind,
-	std::true_type /* eigen_fixed_path_support<T> */
-)
-{
-	return resolve_gemv_fixed_path<T>(m, k, out_kind, left_kind, right_kind);
-}
-
-template <typename T>
-gemm_fn<T> resolve_gemv(
-	std::size_t m, std::size_t k,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind
-)
-{
-	return resolve_gemv<T>(
-		m, k, out_kind, left_kind, right_kind, eigen_fixed_path_support<T>{}
-	);
 }
 
 /**
  * @brief Resolve a K-vector times a (K, N) matrix.
  *
- * @see resolve_gemm
+ * Always the dynamic path, for the same reason as @ref resolve_gemv: the
+ * left and output operands are always padded to a (1, extent) shaped core
+ * (see pad_as_row).
  */
 template <typename T>
 gemm_fn<T> resolve_vecgemm(
 	std::size_t /*k*/, std::size_t /*n*/,
 	core_layout_kind /*out_kind*/,
 	core_layout_kind /*left_kind*/,
-	core_layout_kind /*right_kind*/,
-	std::false_type /* eigen_fixed_path_support<T> */
-)
+	core_layout_kind /*right_kind*/
+) noexcept
 {
 	return &gemm_call_dynamic<T>;
-}
-
-template <typename T>
-gemm_fn<T> resolve_vecgemm(
-	std::size_t k, std::size_t n,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind,
-	std::true_type /* eigen_fixed_path_support<T> */
-)
-{
-	return resolve_vecgemm_fixed_path<T>(k, n, out_kind, left_kind, right_kind);
-}
-
-template <typename T>
-gemm_fn<T> resolve_vecgemm(
-	std::size_t k, std::size_t n,
-	core_layout_kind out_kind,
-	core_layout_kind left_kind,
-	core_layout_kind right_kind
-)
-{
-	return resolve_vecgemm<T>(
-		k, n, out_kind, left_kind, right_kind, eigen_fixed_path_support<T>{}
-	);
 }
 
 } // namespace cpu

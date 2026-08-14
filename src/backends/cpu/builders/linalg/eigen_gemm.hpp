@@ -10,6 +10,7 @@
 
 #include <complex>
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 
 namespace xmipp4
@@ -318,8 +319,11 @@ gemm_fn<T> resolve_gemm_fixed_path(
 	    all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
 		return dispatch_fixed_extent(m, [&](auto m_c) {
+			std::ignore = m_c; // Only its type, resolved via decltype, is used.
 			return dispatch_fixed_extent(k, [&](auto k_c) {
+				std::ignore = k_c;
 				return dispatch_fixed_extent(n, [&](auto n_c) {
+					std::ignore = n_c;
 					return &gemm_call_fixed<
 						decltype(m_c)::value,
 						decltype(k_c)::value,
@@ -353,7 +357,9 @@ gemm_fn<T> resolve_gemv_fixed_path(
 	    all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
 		return dispatch_fixed_extent(m, [&](auto m_c) {
+			std::ignore = m_c;
 			return dispatch_fixed_extent(k, [&](auto k_c) {
+				std::ignore = k_c;
 				return &gemm_call_fixed<
 					decltype(m_c)::value, decltype(k_c)::value, 1, true, T
 				>;
@@ -381,7 +387,9 @@ gemm_fn<T> resolve_vecgemm_fixed_path(
 	    all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
 		return dispatch_fixed_extent(k, [&](auto k_c) {
+			std::ignore = k_c;
 			return dispatch_fixed_extent(n, [&](auto n_c) {
+				std::ignore = n_c;
 				return &gemm_call_fixed<
 					1, decltype(k_c)::value, decltype(n_c)::value, true, T
 				>;

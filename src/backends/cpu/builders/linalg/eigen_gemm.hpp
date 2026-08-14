@@ -269,17 +269,22 @@ static constexpr std::size_t max_fixed_extent = 4;
  * eigen_scalar_support decides what this backend executes at all; this is
  * the separate, narrower question of what is worth the compile time cost of
  * the fixed-size dispatch grid below. Every other supported type (the
- * fixed-width integers) still executes correctly, through gemm_call_dynamic
- * alone, just without the unrolled fast path.
+ * fixed-width integers, and complex) still executes correctly, through
+ * gemm_call_dynamic alone, just without the unrolled fast path.
+ *
+ * Complex is deliberately excluded: matvec/vecmat's fixed path always maps
+ * a size-one dimension (the padded vector operand), and MSVC's Eigen::Map
+ * cannot construct a fixed-size matrix of that shape over a complex scalar
+ * (a class template instantiation failure, not a shape assertion, so there
+ * is no Options value that works around it) where GCC and Clang have no
+ * trouble. Real float/double never hit that construction at all.
  */
 template <typename T>
 struct eigen_fixed_path_support
 	: std::integral_constant<
 		bool,
 		std::is_same<T, float>::value ||
-		std::is_same<T, double>::value ||
-		std::is_same<T, std::complex<float>>::value ||
-		std::is_same<T, std::complex<double>>::value
+		std::is_same<T, double>::value
 	>
 {
 };

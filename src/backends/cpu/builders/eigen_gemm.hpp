@@ -176,6 +176,35 @@ struct eigen_matrix_options<1, 1, RowMajor>
 };
 
 /**
+ * @brief Pass a matrix expression through unchanged, or lazily conjugated.
+ *
+ * The tag mirrors dispatch_extent's visitors: which overload runs is
+ * chosen once at compile time by the caller's ConjugateLeft template
+ * argument, rather than by a runtime branch that would have to give both
+ * branches one common type. vecmat is the only caller that ever asks for
+ * the conjugated overload (see resolve_vecgemm), matching how NumPy's
+ * vecmat conjugates the vector it treats as a row, the same way vecdot
+ * conjugates its own first operand.
+ */
+template <typename Derived>
+inline
+const Derived& maybe_conjugate_left(
+	const Eigen::MatrixBase<Derived> &m, std::false_type
+) noexcept
+{
+	return m.derived();
+}
+
+template <typename Derived>
+inline
+auto maybe_conjugate_left(
+	const Eigen::MatrixBase<Derived> &m, std::true_type
+)
+{
+	return m.derived().conjugate();
+}
+
+/**
  * @brief GEMM over row-major-contiguous operands, with a (M, K, N) shape
  * that may be fully fixed, fully dynamic, or any mix of the two.
  *
@@ -193,8 +222,14 @@ struct eigen_matrix_options<1, 1, RowMajor>
  *
  * Callers are what guarantee the M, K, N named here match the operands'
  * actual extents when they are literals: nothing here re-checks that.
+ *
+ * @tparam ConjugateLeft Whether the left operand is conjugated before the
+ * product, as vecmat's vector operand is. Defaults to false, leaving
+ * matmul's and matvec's callers unaffected.
  */
-template <int M, int K, int N, bool RowMajor, typename T>
+template <
+	int M, int K, int N, bool RowMajor, typename T, bool ConjugateLeft = false
+>
 void gemm_call_contiguous(
 	T *out,
 	const T *left,
@@ -226,7 +261,9 @@ void gemm_call_contiguous(
 		static_cast<Eigen::Index>(out_core.get_extent(0)),
 		static_cast<Eigen::Index>(out_core.get_extent(1))
 	);
-	out_map.noalias() = left_map * right_map;
+	out_map.noalias() = maybe_conjugate_left(
+		left_map, std::integral_constant<bool, ConjugateLeft>{}
+	) * right_map;
 }
 
 /**
@@ -236,8 +273,11 @@ void gemm_call_contiguous(
  * gemm_call_contiguous assumes uses; always fully dynamic, since there is
  * no fixed shape worth unrolling for a stride pattern the caller cannot
  * even guarantee is packed.
+ *
+ * @tparam ConjugateLeft See gemm_call_contiguous's parameter of the same
+ * name.
  */
-template <typename T>
+template <typename T, bool ConjugateLeft = false>
 void gemm_call_strided(
 	T *out,
 	const T *left,
@@ -268,7 +308,9 @@ void gemm_call_strided(
 		static_cast<Eigen::Index>(out_core.get_extent(1)),
 		stride_t(out_core.get_stride(1), out_core.get_stride(0))
 	);
-	out_map.noalias() = left_map * right_map;
+	out_map.noalias() = maybe_conjugate_left(
+		left_map, std::integral_constant<bool, ConjugateLeft>{}
+	) * right_map;
 }
 
 /**
@@ -606,7 +648,7 @@ gemm_fn<T> resolve_gemv(
 /**
  * @brief Pick the N instantiation of gemm_call_contiguous for a K already
  * known. M is always one: the left and output operands of a vector-matrix
- * product are vectors.
+ * product are vectors. Left is always conjugated: see resolve_vecgemm.
  *
  * @see select_gemm_n_visitor
  */
@@ -616,12 +658,12 @@ struct select_vecgemm_n_visitor
 	template <int N>
 	gemm_fn<T> operator()(std::integral_constant<int, N>) const noexcept
 	{
-		return &gemm_call_contiguous<1, K, N, true, T>;
+		return &gemm_call_contiguous<1, K, N, true, T, true>;
 	}
 
 	gemm_fn<T> operator()(std::size_t) const noexcept
 	{
-		return &gemm_call_contiguous<1, K, Eigen::Dynamic, true, T>;
+		return &gemm_call_contiguous<1, K, Eigen::Dynamic, true, T, true>;
 	}
 };
 
@@ -662,6 +704,11 @@ gemm_fn<T> select_vecgemm_kn(std::size_t k, std::size_t n) noexcept
 /**
  * @brief Resolve a K-vector times a (K, N) matrix.
  *
+ * The vector is conjugated, matching NumPy's vecmat: the same convention
+ * vecdot follows for its own first operand, treating the vector as the
+ * row on the left of an inner-product-like contraction rather than as a
+ * plain linear map the way matvec's vector is.
+ *
  * @see resolve_gemm
  */
 template <typename T>
@@ -675,10 +722,12 @@ gemm_fn<T> resolve_vecgemm(
 {
 	if (all_row_major_compatible(out_kind, left_kind, right_kind))
 	{
-		return &gemm_call_contiguous<1, Eigen::Dynamic, Eigen::Dynamic, true, T>;
+		return &gemm_call_contiguous<
+			1, Eigen::Dynamic, Eigen::Dynamic, true, T, true
+		>;
 	}
 
-	return &gemm_call_strided<T>;
+	return &gemm_call_strided<T, true>;
 }
 
 template <typename T>
@@ -695,7 +744,7 @@ gemm_fn<T> resolve_vecgemm(
 		return select_vecgemm_kn<T>(k, n);
 	}
 
-	return &gemm_call_strided<T>;
+	return &gemm_call_strided<T, true>;
 }
 
 template <typename T>

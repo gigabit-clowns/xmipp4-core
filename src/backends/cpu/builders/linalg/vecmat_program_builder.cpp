@@ -26,10 +26,13 @@ namespace
 {
 
 /**
- * @brief Multiply a k-vector by a (k, n) matrix, once per batch element.
+ * @brief Multiply a conjugated k-vector by a (k, n) matrix, once per batch
+ * element.
  *
  * The mirror image of matvec_core_kernel: the vector operands are padded
- * into (1, extent) cores instead of (extent, 1) ones.
+ * into (1, extent) cores instead of (extent, 1) ones. Unlike matvec, the
+ * vector is conjugated before the product (resolve_vecgemm's doing, not
+ * this kernel's), matching NumPy's vecmat.
  */
 template <typename T>
 class vecmat_core_kernel

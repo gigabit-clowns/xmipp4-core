@@ -13,12 +13,18 @@ namespace ops
 {
 
 /**
- * @brief Multiply a stack of vectors by a stack of matrices.
+ * @brief Multiply a stack of conjugated vectors by a stack of matrices.
  *
  * The vector's last axis is contracted with the matrix's second to last
  * axis, and everything before is a stack broadcast between the operands.
  * The mirror image of matvec: neither operand is promoted, so the vector
  * must already have rank one or more and the matrix rank two or more.
+ *
+ * The vector is conjugated before the contraction, the same way vecdot
+ * conjugates its own first operand: this is what NumPy's vecmat does,
+ * treating the vector as the row of an inner-product-like contraction
+ * rather than as a plain linear map. matvec's vector is not conjugated,
+ * since it plays that latter role instead.
  *
  * @see matvec
  * @see matmul

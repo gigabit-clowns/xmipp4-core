@@ -443,6 +443,36 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	reduction_verb_fixture,
+	"vecmat conjugates its vector operand",
+	"[array_linalg][cpu]"
+)
+{
+	// NumPy's vecmat conjugates the vector it treats as a row, the same
+	// convention vecdot uses for its own first operand. Multiplying by the
+	// identity isolates exactly this: with no conjugation the result would
+	// be the vector itself, unchanged.
+	using complex_type = std::complex<float32_t>;
+
+	auto left = make_sequence_operand<complex_type>(
+		{ 2 },
+		{ element_value(3.0, 4.0), element_value(1.0, -2.0) }
+	);
+	auto right = make_sequence_operand<complex_type>(
+		{ 2, 2 },
+		{ 1, 0, 0, 1 }
+	);
+	const const_array_ref left_ref = left;
+	const const_array_ref right_ref = right;
+
+	check_values<complex_type>(
+		xmipp4::vecmat(left_ref, right_ref, context, nullptr),
+		{ 2 },
+		{ element_value(3.0, -4.0), element_value(1.0, 2.0) }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
 	"cross takes the cross product of two vectors",
 	"[array_linalg][cpu]"
 )

@@ -7,8 +7,12 @@
 
 #include "fixtures/reduction_verb_fixture.hpp"
 
+#include <xmipp4/ops/reduction/all_operation.hpp>
 #include <xmipp4/ops/reduction/amax_operation.hpp>
 #include <xmipp4/ops/reduction/amin_operation.hpp>
+#include <xmipp4/ops/reduction/any_operation.hpp>
+#include <xmipp4/ops/reduction/count_nonzero_operation.hpp>
+#include <xmipp4/ops/reduction/mean_operation.hpp>
 #include <xmipp4/ops/reduction/product_operation.hpp>
 #include <xmipp4/ops/reduction/sum_operation.hpp>
 
@@ -308,4 +312,222 @@ TEST_CASE_METHOD(
 		{ 3 },
 		{ 0, 0, 0 }
 	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"mean averages the elements along an axis",
+	"[array_reduction][cpu]"
+)
+{
+	// Every element being the same, the average is that element, whatever
+	// the count. The division is pinned by the case below instead.
+	check_reduction<mean_operation>(
+		xmipp4::mean,
+		{ 1 },
+		false,
+		element_value(2),
+		[](auto x, std::size_t) { return x; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"mean divides the total by the number of elements",
+	"[array_reduction][cpu]"
+)
+{
+	const std::vector<std::size_t> extents = { 2, 3 };
+	const std::vector<double> values = { 1, 2, 3, 4, 5, 6 };
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 1 };
+	check_values<float32_t>(
+		xmipp4::mean(operand_ref, make_span(axes), false, context, nullptr),
+		{ 2 },
+		{ 2, 5 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"mean of an integer array answers in an inexact type",
+	"[array_reduction][cpu]"
+)
+{
+	// The rule asks for the inexact counterpart of the operand type, so an
+	// average that is not a whole number survives rather than truncating.
+	auto operand = make_sequence_operand<int32_t>({ 2 }, { 1, 2 });
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+	check_values<float64_t>(
+		xmipp4::mean(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 1.5 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"count_nonzero counts the elements that are set",
+	"[array_reduction][cpu]"
+)
+{
+	check_reduction<count_nonzero_operation>(
+		xmipp4::count_nonzero,
+		{ 0 },
+		false,
+		element_value(1),
+		[](auto, std::size_t count) { return count; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"count_nonzero answers with zero for elements that are not set",
+	"[array_reduction][cpu]"
+)
+{
+	check_reduction<count_nonzero_operation>(
+		xmipp4::count_nonzero,
+		{ 0 },
+		false,
+		element_value(0),
+		[](auto, std::size_t) { return 0; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"count_nonzero counts a mixture",
+	"[array_reduction][cpu]"
+)
+{
+	auto operand = make_sequence_operand<float32_t>({ 2, 3 }, {0, 1, 2, 3, 0, 0});
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 1 };
+	check_values<int64_t>(
+		xmipp4::count_nonzero(
+			operand_ref, make_span(axes), false, context, nullptr
+		),
+		{ 2 },
+		{ 2, 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"any holds when an element is set and all when every one is",
+	"[array_reduction][cpu]"
+)
+{
+	check_reduction<any_operation>(
+		xmipp4::any,
+		{ 2 },
+		false,
+		element_value(1),
+		[](auto, std::size_t) { return true; }
+	);
+	check_reduction<all_operation>(
+		xmipp4::all,
+		{ 2 },
+		false,
+		element_value(1),
+		[](auto, std::size_t) { return true; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"any fails and all fails when no element is set",
+	"[array_reduction][cpu]"
+)
+{
+	check_reduction<any_operation>(
+		xmipp4::any,
+		{ 2 },
+		false,
+		element_value(0),
+		[](auto, std::size_t) { return false; }
+	);
+	check_reduction<all_operation>(
+		xmipp4::all,
+		{ 2 },
+		false,
+		element_value(0),
+		[](auto, std::size_t) { return false; }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"any and all separate on a mixture",
+	"[array_reduction][cpu]"
+)
+{
+	// The only case that tells the two apart, both answering the same way
+	// when every element agrees.
+	auto operand = make_sequence_operand<float32_t>({ 2, 3 }, {0, 1, 2, 3, 4, 5});
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 1 };
+	check_values<bool>(
+		xmipp4::any(operand_ref, make_span(axes), false, context, nullptr),
+		{ 2 },
+		{ 1, 1 }
+	);
+	check_values<bool>(
+		xmipp4::all(operand_ref, make_span(axes), false, context, nullptr),
+		{ 2 },
+		{ 0, 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"any and all answer a reduction over no elements with their identity",
+	"[array_reduction][cpu]"
+)
+{
+	// A disjunction of nothing holds of nothing and a conjunction of nothing
+	// holds of everything, which is what keeps them associative.
+	auto operand = make_sequence_operand<float32_t>({ 0, 3 }, {});
+	const const_array_ref operand_ref = operand;
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+
+	check_values<bool>(
+		xmipp4::any(operand_ref, make_span(axes), false, context, nullptr),
+		{ 3 },
+		{ 0, 0, 0 }
+	);
+	check_values<bool>(
+		xmipp4::all(operand_ref, make_span(axes), false, context, nullptr),
+		{ 3 },
+		{ 1, 1, 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"mean answers a reduction over no elements with a not-a-number",
+	"[array_reduction][cpu]"
+)
+{
+	// A total of nothing divided by nothing. The result type is inexact by
+	// the operation's own rule, so it can hold that answer, and NumPy gives
+	// the same one.
+	auto operand = make_sequence_operand<float32_t>({ 0, 3 }, {});
+	const const_array_ref operand_ref = operand;
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+
+	const auto result =
+		xmipp4::mean(operand_ref, make_span(axes), false, context, nullptr);
+
+	for (const auto value : read_host<float32_t>(result, 3))
+	{
+		CHECK( std::isnan(value) );
+	}
 }

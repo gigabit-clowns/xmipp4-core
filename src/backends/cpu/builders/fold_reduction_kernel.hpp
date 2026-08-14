@@ -40,22 +40,41 @@ struct reduction_compute_type
 };
 
 /**
+ * @brief The default way an element enters an accumulator.
+ *
+ * A plain conversion, which is what a fold over the operand's own type
+ * needs. An operation answering about its elements rather than with them,
+ * such as one counting or testing them, supplies its own instead.
+ */
+struct reduction_conversion_lift
+{
+	template <typename Accumulator, typename T>
+	static Accumulator apply(const T &value) noexcept
+	{
+		return static_cast<Accumulator>(value);
+	}
+};
+
+/**
  * @brief Reduction kernel built from a binary fold.
  *
  * Covers the operations whose whole definition is one associative binary
- * operation with a neutral element: a fold supplies the combination and the
- * identity, and everything else follows. The accumulator is the computation
- * type of the output, so the declared typing rule remains the only thing
- * deciding what a reduction accumulates in.
+ * operation with a neutral element, optionally preceded by a transformation
+ * of each element on its way into the accumulator. The accumulator is the
+ * computation type of the output, so the declared typing rule remains the
+ * only thing deciding what a reduction accumulates in.
  *
  * A fold is invoked as `fold(accumulator, value)` and must additionally
- * provide `Fold::identity<T>()`. Operations needing a transformation on the
- * way in, a post processing on the way out or more than one accumulator
- * spell those members out themselves rather than using this adaptor.
+ * provide `Fold::identity<T>()`, without which a reduction over no elements
+ * is rejected rather than answered. An operation needing a post processing
+ * on the way out derives from this and hides `finalize`; one needing more
+ * than one accumulator spells its members out itself.
  *
  * @tparam Fold The binary fold. Must be default constructible.
+ * @tparam Lift How an element enters the accumulator, invoked as
+ * `Lift::apply<Accumulator>(value)`.
  */
-template <typename Fold>
+template <typename Fold, typename Lift = reduction_conversion_lift>
 class fold_reduction_kernel
 {
 public:
@@ -78,7 +97,7 @@ public:
 	template <typename Accumulator, typename T>
 	void seed(Accumulator &accumulator, const T *value) const noexcept
 	{
-		accumulator = static_cast<Accumulator>(load(value));
+		accumulator = Lift::template apply<Accumulator>(load(value));
 	}
 
 	template <typename Accumulator, typename T>
@@ -86,7 +105,7 @@ public:
 	{
 		accumulator = m_fold(
 			accumulator,
-			static_cast<Accumulator>(load(value))
+			Lift::template apply<Accumulator>(load(value))
 		);
 	}
 

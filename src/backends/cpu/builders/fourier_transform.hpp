@@ -7,6 +7,7 @@
 #include <backends/cpu/loops/elementwise_loop.hpp>
 
 #include <xmipp4/core/numerical/fixed_width_float.hpp>
+#include <xmipp4/ops/fourier/fourier_normalization.hpp>
 
 #include <complex>
 #include <type_traits>
@@ -15,22 +16,6 @@ namespace xmipp4
 {
 namespace cpu
 {
-
-/**
- * @brief Which way round a transform goes.
- *
- * The forward transform is left as it is computed and the inverse is divided
- * by the number of samples that reached each of its values, which is the
- * convention that makes the two undo one another and the one NumPy, SciPy and
- * the array API all take when no normalisation is named. None of the
- * operations carries a normalisation parameter, so this is the whole of the
- * matter.
- */
-enum class fourier_direction
-{
-	forward,
-	inverse
-};
 
 /**
  * @brief Whether this backend can transform elements of a storage type.
@@ -93,13 +78,15 @@ struct fourier_transform_support<Pivot>
  * @ref float64_t.
  * @param plan The planned transform.
  * @param direction Which way round to transform.
+ * @param normalization Which of the transform pair carries the scaling.
  * @param output The transformed operand, displaced by its offset.
  * @param input The operand to transform, displaced by its offset.
  */
 template <typename T>
 void run_complex_to_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *output,
 	const std::complex<T> *input
 );
@@ -116,12 +103,14 @@ void run_complex_to_complex_transform(
  * @ref float64_t.
  * @param plan The planned transform.
  * @param direction Which way round to transform.
+ * @param normalization Which of the transform pair carries the scaling.
  * @param data The operand, displaced by the output offset.
  */
 template <typename T>
 void run_in_place_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *data
 );
 
@@ -132,13 +121,15 @@ void run_in_place_complex_transform(
  * @ref float64_t.
  * @param plan The planned transform.
  * @param direction Which way round to transform.
+ * @param normalization Which of the transform pair carries the scaling.
  * @param output The half spectrum, displaced by its offset.
  * @param input The real operand, displaced by its offset.
  */
 template <typename T>
 void run_real_to_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *output,
 	const T *input
 );
@@ -150,13 +141,15 @@ void run_real_to_complex_transform(
  * @ref float64_t.
  * @param plan The planned transform.
  * @param direction Which way round to transform.
+ * @param normalization Which of the transform pair carries the scaling.
  * @param output The real operand, displaced by its offset.
  * @param input The half spectrum, displaced by its offset.
  */
 template <typename T>
 void run_complex_to_real_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	T *output,
 	const std::complex<T> *input
 );
@@ -212,9 +205,17 @@ void run_fourier_conversion(
  *
  * @tparam Direction Which way round to transform.
  */
-template <fourier_direction Direction>
-struct complex_fourier_transform
+template <ops::fourier_direction Direction>
+class complex_fourier_transform
 {
+public:
+	explicit complex_fourier_transform(
+		ops::fourier_normalization normalization
+	) noexcept
+		: m_normalization(normalization)
+	{
+	}
+
 	static fourier_transform_kind get_kind() noexcept
 	{
 		return fourier_transform_kind::complex_to_complex;
@@ -231,7 +232,9 @@ struct complex_fourier_transform
 		{
 			// A transform along no axis at all is the identity, which
 			// pocketfft has no way of being asked for: it writes an output
-			// once per axis, so with no axis it would write none.
+			// once per axis, so with no axis it would write none. One sample
+			// reaches each value, so every convention scales it by one and
+			// none of them has anything to say here.
 			run_fourier_conversion(plan, output, input);
 		}
 		else
@@ -239,6 +242,7 @@ struct complex_fourier_transform
 			run_complex_to_complex_transform(
 				plan,
 				Direction,
+				m_normalization,
 				output,
 				input
 			);
@@ -260,14 +264,30 @@ struct complex_fourier_transform
 
 		if (!plan.get_axes().empty())
 		{
-			run_in_place_complex_transform(plan, Direction, output);
+			run_in_place_complex_transform(
+				plan,
+				Direction,
+				m_normalization,
+				output
+			);
 		}
 	}
+
+private:
+	ops::fourier_normalization m_normalization;
 };
 
 /// Transform a real operand into the half spectrum a real signal needs.
-struct real_to_complex_fourier_transform
+class real_to_complex_fourier_transform
 {
+public:
+	explicit real_to_complex_fourier_transform(
+		ops::fourier_normalization normalization
+	) noexcept
+		: m_normalization(normalization)
+	{
+	}
+
 	static fourier_transform_kind get_kind() noexcept
 	{
 		return fourier_transform_kind::real_to_complex;
@@ -282,16 +302,28 @@ struct real_to_complex_fourier_transform
 	{
 		run_real_to_complex_transform(
 			plan,
-			fourier_direction::forward,
+			ops::fourier_direction::forward,
+			m_normalization,
 			output,
 			input
 		);
 	}
+
+private:
+	ops::fourier_normalization m_normalization;
 };
 
 /// Transform a half spectrum back into the real signal it came from.
-struct complex_to_real_fourier_transform
+class complex_to_real_fourier_transform
 {
+public:
+	explicit complex_to_real_fourier_transform(
+		ops::fourier_normalization normalization
+	) noexcept
+		: m_normalization(normalization)
+	{
+	}
+
 	static fourier_transform_kind get_kind() noexcept
 	{
 		return fourier_transform_kind::complex_to_real;
@@ -306,20 +338,24 @@ struct complex_to_real_fourier_transform
 	{
 		run_complex_to_real_transform(
 			plan,
-			fourier_direction::inverse,
+			ops::fourier_direction::inverse,
+			m_normalization,
 			output,
 			input
 		);
 	}
+
+private:
+	ops::fourier_normalization m_normalization;
 };
 
 /// The forward transform of a complex signal.
 using forward_complex_fourier_transform =
-	complex_fourier_transform<fourier_direction::forward>;
+	complex_fourier_transform<ops::fourier_direction::forward>;
 
 /// The inverse transform of a complex spectrum.
 using inverse_complex_fourier_transform =
-	complex_fourier_transform<fourier_direction::inverse>;
+	complex_fourier_transform<ops::fourier_direction::inverse>;
 
 } // namespace cpu
 } // namespace xmipp4

@@ -21,32 +21,32 @@ namespace cpu
 namespace
 {
 
-bool is_forward(fourier_direction direction) noexcept
+bool is_forward(ops::fourier_direction direction) noexcept
 {
-	return direction == fourier_direction::forward;
+	return direction == ops::fourier_direction::forward;
 }
 
 /**
  * @brief The factor a transform scales its result by.
  *
- * The forward transform is left as it is computed and the inverse divides by
- * the number of samples, which is what makes the two undo one another.
+ * Derived by the operations rather than here, so that every backend
+ * implementing them arrives at the same number. Computed in double and
+ * rounded once into the type the transform runs in.
  */
 template <typename T>
 T get_scale(
 	const fourier_layout_plan &plan,
-	fourier_direction direction
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization
 ) noexcept
 {
-	if (is_forward(direction))
-	{
-		return T(1);
-	}
-
-	// Never zero: an empty transformed axis is turned away when the plan is
-	// made, so there is always at least the one sample of a transform along
-	// no axis at all.
-	return T(1) / static_cast<T>(plan.get_sample_count());
+	return static_cast<T>(
+		ops::get_fourier_scale(
+			normalization,
+			direction,
+			plan.get_sample_count()
+		)
+	);
 }
 
 } // anonymous namespace
@@ -54,7 +54,8 @@ T get_scale(
 template <typename T>
 void run_complex_to_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *output,
 	const std::complex<T> *input
 )
@@ -67,14 +68,15 @@ void run_complex_to_complex_transform(
 		is_forward(direction),
 		input,
 		output,
-		get_scale<T>(plan, direction)
+		get_scale<T>(plan, direction, normalization)
 	);
 }
 
 template <typename T>
 void run_in_place_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *data
 )
 {
@@ -86,14 +88,15 @@ void run_in_place_complex_transform(
 		is_forward(direction),
 		data,
 		data,
-		get_scale<T>(plan, direction)
+		get_scale<T>(plan, direction, normalization)
 	);
 }
 
 template <typename T>
 void run_real_to_complex_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	std::complex<T> *output,
 	const T *input
 )
@@ -106,14 +109,15 @@ void run_real_to_complex_transform(
 		is_forward(direction),
 		input,
 		output,
-		get_scale<T>(plan, direction)
+		get_scale<T>(plan, direction, normalization)
 	);
 }
 
 template <typename T>
 void run_complex_to_real_transform(
 	const fourier_layout_plan &plan,
-	fourier_direction direction,
+	ops::fourier_direction direction,
+	ops::fourier_normalization normalization,
 	T *output,
 	const std::complex<T> *input
 )
@@ -126,7 +130,7 @@ void run_complex_to_real_transform(
 		is_forward(direction),
 		input,
 		output,
-		get_scale<T>(plan, direction)
+		get_scale<T>(plan, direction, normalization)
 	);
 }
 
@@ -136,50 +140,58 @@ void run_complex_to_real_transform(
 // here is what keeps that header out of every builder that registers one.
 template void run_complex_to_complex_transform<float32_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float32_t>*,
 	const std::complex<float32_t>*
 );
 template void run_complex_to_complex_transform<float64_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float64_t>*,
 	const std::complex<float64_t>*
 );
 
 template void run_in_place_complex_transform<float32_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float32_t>*
 );
 template void run_in_place_complex_transform<float64_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float64_t>*
 );
 
 template void run_real_to_complex_transform<float32_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float32_t>*,
 	const float32_t*
 );
 template void run_real_to_complex_transform<float64_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	std::complex<float64_t>*,
 	const float64_t*
 );
 
 template void run_complex_to_real_transform<float32_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	float32_t*,
 	const std::complex<float32_t>*
 );
 template void run_complex_to_real_transform<float64_t>(
 	const fourier_layout_plan&,
-	fourier_direction,
+	ops::fourier_direction,
+	ops::fourier_normalization,
 	float64_t*,
 	const std::complex<float64_t>*
 );

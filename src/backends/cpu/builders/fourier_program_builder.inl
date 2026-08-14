@@ -167,7 +167,10 @@ fourier_program_builder<Op, Transform, TypeDispatcher>::build(
 		Transform::get_kind()
 	);
 
-	const auto &transform = m_transform;
+	// The convention is a parameter of the operation and the direction is
+	// baked into the transform's own type, so between the two the scale is
+	// settled before a single element is read.
+	const Transform transform(typed_operation.get_normalization());
 	return m_type_dispatcher.dispatch(
 		Op::get_static_descriptor(),
 		[&plan, &transform]

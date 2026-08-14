@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <xmipp4/functional/fourier.hpp>
 
 #include "fixtures/fourier_verb_fixture.hpp"
 
 #include <xmipp4/core/exceptions/invalid_operation_error.hpp>
+#include <xmipp4/ops/fourier/fourier_normalization.hpp>
 #include <xmipp4/core/numerical/fixed_width_float.hpp>
 
 #include <complex>
@@ -466,5 +468,226 @@ TEST_CASE_METHOD(
 		xmipp4::fft(signal_ref, make_span(no_axes), context, nullptr),
 		{},
 		{ element_value(3.0) }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fft splits the scaling with its inverse when asked for an orthonormal "
+	"transform",
+	"[array_fourier][cpu]"
+)
+{
+	// Four samples, so each transform of the pair carries a half rather than
+	// one of them carrying a quarter.
+	auto signal = make_operand<float32_t>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::fft(
+			signal_ref,
+			ops::fourier_normalization::ortho,
+			context,
+			nullptr
+		),
+		{ 4 },
+		{
+			element_value(5.0),
+			element_value(-1.0, 1.0),
+			element_value(-1.0),
+			element_value(-1.0, -1.0)
+		}
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"fft carries the whole of the scaling when asked to",
+	"[array_fourier][cpu]"
+)
+{
+	// The zero frequency is then the mean of the signal rather than its
+	// total, which is the whole point of moving the scaling forwards.
+	auto signal = make_operand<float32_t>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::fft(
+			signal_ref,
+			ops::fourier_normalization::forward,
+			context,
+			nullptr
+		),
+		{ 4 },
+		{
+			element_value(2.5),
+			element_value(-0.5, 0.5),
+			element_value(-0.5),
+			element_value(-0.5, -0.5)
+		}
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"ifft leaves the result alone when the forward transform carried the "
+	"scaling",
+	"[array_fourier][cpu]"
+)
+{
+	auto spectrum = make_operand<std::complex<float32_t>>(
+		{ 4 },
+		ramp_spectrum
+	);
+	const const_array_ref spectrum_ref = spectrum;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::ifft(
+			spectrum_ref,
+			ops::fourier_normalization::forward,
+			context,
+			nullptr
+		),
+		{ 4 },
+		{ 4, 8, 12, 16 }
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"a transform and its inverse undo one another under every convention",
+	"[array_fourier][cpu]"
+)
+{
+	// The property the convention is named for rather than the factor. The
+	// caller states the same thing on both sides and gets its signal back,
+	// with no pairing up of two different factors to get wrong.
+	const auto normalization = GENERATE(
+		ops::fourier_normalization::backward,
+		ops::fourier_normalization::ortho,
+		ops::fourier_normalization::forward
+	);
+	INFO( "convention " << normalization );
+
+	auto signal = make_operand<std::complex<float32_t>>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	const auto spectrum =
+		xmipp4::fft(signal_ref, normalization, context, nullptr);
+	const const_array_ref spectrum_ref = spectrum;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::ifft(spectrum_ref, normalization, context, nullptr),
+		{ 4 },
+		ramp
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"a real transform and its inverse undo one another under every "
+	"convention",
+	"[array_fourier][cpu]"
+)
+{
+	// The scaling of a real transform is measured against the signal rather
+	// than against the coefficients actually stored, which is what keeps this
+	// true when half of them are not there.
+	const auto normalization = GENERATE(
+		ops::fourier_normalization::backward,
+		ops::fourier_normalization::ortho,
+		ops::fourier_normalization::forward
+	);
+	INFO( "convention " << normalization );
+
+	auto signal = make_operand<float32_t>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	const auto spectrum =
+		xmipp4::rfft(signal_ref, normalization, context, nullptr);
+	const const_array_ref spectrum_ref = spectrum;
+
+	check_values<float32_t>(
+		xmipp4::irfft(spectrum_ref, 4, normalization, context, nullptr),
+		{ 4 },
+		ramp
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"rfft scales against the signal rather than against what it stores",
+	"[array_fourier][cpu]"
+)
+{
+	// Four samples come out as three coefficients, and it is the four that
+	// the orthonormal square root is taken of.
+	auto signal = make_operand<float32_t>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::rfft(
+			signal_ref,
+			ops::fourier_normalization::ortho,
+			context,
+			nullptr
+		),
+		{ 3 },
+		{
+			element_value(5.0),
+			element_value(-1.0, 1.0),
+			element_value(-1.0)
+		}
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"a numbered transform counts every axis it transforms into the scaling",
+	"[array_fourier][cpu]"
+)
+{
+	// Two axes of two, so the orthonormal factor is the square root of four
+	// rather than of two: the count is over the whole transformed subspace.
+	auto signal = make_operand<float32_t>({ 2, 2 }, { 1, 2, 3, 4 });
+	const const_array_ref signal_ref = signal;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::fft2(
+			signal_ref,
+			ops::fourier_normalization::ortho,
+			context,
+			nullptr
+		),
+		{ 2, 2 },
+		{
+			element_value(5.0),
+			element_value(-1.0),
+			element_value(-2.0),
+			0
+		}
+	);
+}
+
+TEST_CASE_METHOD(
+	fourier_verb_fixture,
+	"a transform told no convention scales as the default one does",
+	"[array_fourier][cpu]"
+)
+{
+	// Pins which of the three the shorter spelling picked, so that it cannot
+	// drift without a test saying so.
+	auto signal = make_operand<float32_t>({ 4 }, ramp);
+	const const_array_ref signal_ref = signal;
+
+	check_values<std::complex<float32_t>>(
+		xmipp4::fft(
+			signal_ref,
+			ops::fourier_normalization::backward,
+			context,
+			nullptr
+		),
+		{ 4 },
+		ramp_spectrum
 	);
 }

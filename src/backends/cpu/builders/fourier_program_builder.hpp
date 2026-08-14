@@ -36,10 +36,11 @@ namespace cpu
  * @tparam Op The operation this builder targets. It must take one operand and
  * produce one, and carry a shape policy naming the transformed axes through
  * get_axes().
- * @tparam Transform The transform to perform. It names which domain each
- * operand lives in through a static get_kind(), and performs the transform
- * when invoked as transform(plan, output, input) with the operand pointers
- * already displaced by their offsets. See @ref complex_fourier_transform,
+ * @tparam Transform The transform to perform. It is built from the scaling
+ * convention the operation carries, names which domain each operand lives in
+ * through a static get_kind(), and performs the transform when invoked as
+ * transform(plan, output, input) with the operand pointers already displaced
+ * by their offsets. See @ref complex_fourier_transform,
  * @ref real_to_complex_fourier_transform and
  * @ref complex_to_real_fourier_transform.
  * @tparam TypeDispatcher The type dispatch policy. It resolves the runtime
@@ -80,7 +81,6 @@ public:
 	) const override;
 
 private:
-	using transform_type = Transform;
 	using type_dispatcher_type = TypeDispatcher;
 
 	static_assert(
@@ -92,7 +92,6 @@ private:
 		"A Fourier transform takes exactly one operand."
 	);
 
-	XMIPP4_NO_UNIQUE_ADDRESS transform_type m_transform;
 	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 

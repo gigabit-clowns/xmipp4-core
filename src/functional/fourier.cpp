@@ -92,12 +92,44 @@ ops::axis_list last_axes(const const_array_ref &x, std::size_t count)
 array fft(
 	const_array_ref x,
 	span<const std::ptrdiff_t> axes,
+	ops::fourier_normalization normalization,
 	const execution_context &context,
 	array *out
 )
 {
 	return execute_unary(
-		ops::fft_operation(resolve_axes(x, axes)),
+		ops::fft_operation(resolve_axes(x, axes), normalization),
+		x,
+		context,
+		out
+	);
+}
+
+array fft(
+	const_array_ref x,
+	span<const std::ptrdiff_t> axes,
+	const execution_context &context,
+	array *out
+)
+{
+	return fft(
+		x,
+		axes,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array fft(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_unary(
+		ops::fft_operation(last_axes(x, 1), normalization),
 		x,
 		context,
 		out
@@ -110,8 +142,23 @@ array fft(
 	array *out
 )
 {
+	return fft(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array fft2(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::fft_operation(last_axes(x, 1)),
+		ops::fft_operation(last_axes(x, 2), normalization),
 		x,
 		context,
 		out
@@ -124,8 +171,23 @@ array fft2(
 	array *out
 )
 {
+	return fft2(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array fft3(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::fft_operation(last_axes(x, 2)),
+		ops::fft_operation(last_axes(x, 3), normalization),
 		x,
 		context,
 		out
@@ -138,8 +200,24 @@ array fft3(
 	array *out
 )
 {
+	return fft3(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array ifft(
+	const_array_ref x,
+	span<const std::ptrdiff_t> axes,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::fft_operation(last_axes(x, 3)),
+		ops::ifft_operation(resolve_axes(x, axes), normalization),
 		x,
 		context,
 		out
@@ -153,8 +231,24 @@ array ifft(
 	array *out
 )
 {
+	return ifft(
+		x,
+		axes,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array ifft(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::ifft_operation(resolve_axes(x, axes)),
+		ops::ifft_operation(last_axes(x, 1), normalization),
 		x,
 		context,
 		out
@@ -167,8 +261,23 @@ array ifft(
 	array *out
 )
 {
+	return ifft(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array ifft2(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::ifft_operation(last_axes(x, 1)),
+		ops::ifft_operation(last_axes(x, 2), normalization),
 		x,
 		context,
 		out
@@ -181,8 +290,23 @@ array ifft2(
 	array *out
 )
 {
+	return ifft2(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array ifft3(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::ifft_operation(last_axes(x, 2)),
+		ops::ifft_operation(last_axes(x, 3), normalization),
 		x,
 		context,
 		out
@@ -195,8 +319,24 @@ array ifft3(
 	array *out
 )
 {
+	return ifft3(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array rfft(
+	const_array_ref x,
+	span<const std::ptrdiff_t> axes,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::ifft_operation(last_axes(x, 3)),
+		ops::rfft_operation(resolve_axes(x, axes), normalization),
 		x,
 		context,
 		out
@@ -210,8 +350,24 @@ array rfft(
 	array *out
 )
 {
+	return rfft(
+		x,
+		axes,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array rfft(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::rfft_operation(resolve_axes(x, axes)),
+		ops::rfft_operation(last_axes(x, 1), normalization),
 		x,
 		context,
 		out
@@ -224,8 +380,23 @@ array rfft(
 	array *out
 )
 {
+	return rfft(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array rfft2(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::rfft_operation(last_axes(x, 1)),
+		ops::rfft_operation(last_axes(x, 2), normalization),
 		x,
 		context,
 		out
@@ -238,8 +409,23 @@ array rfft2(
 	array *out
 )
 {
+	return rfft2(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array rfft3(
+	const_array_ref x,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
-		ops::rfft_operation(last_axes(x, 2)),
+		ops::rfft_operation(last_axes(x, 3), normalization),
 		x,
 		context,
 		out
@@ -252,8 +438,32 @@ array rfft3(
 	array *out
 )
 {
+	return rfft3(
+		x,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array irfft(
+	const_array_ref x,
+	span<const std::ptrdiff_t> axes,
+	std::size_t extent,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
+	// An operation carries the parity, that being the whole of what the
+	// restoration needs. Naming an extent instead is a convenience, and
+	// this is where the two meet.
 	return execute_unary(
-		ops::rfft_operation(last_axes(x, 3)),
+		ops::irfft_operation(
+			resolve_axes(x, axes),
+			ops::get_signal_parity(extent),
+			normalization
+		),
 		x,
 		context,
 		out
@@ -268,13 +478,29 @@ array irfft(
 	array *out
 )
 {
-	// An operation carries the parity, that being the whole of what the
-	// restoration needs. Naming an extent instead is a convenience, and
-	// this is where the two meet.
+	return irfft(
+		x,
+		axes,
+		extent,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array irfft(
+	const_array_ref x,
+	std::size_t extent,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
 		ops::irfft_operation(
-			resolve_axes(x, axes),
-			ops::get_signal_parity(extent)
+			last_axes(x, 1),
+			ops::get_signal_parity(extent),
+			normalization
 		),
 		x,
 		context,
@@ -289,10 +515,28 @@ array irfft(
 	array *out
 )
 {
+	return irfft(
+		x,
+		extent,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array irfft2(
+	const_array_ref x,
+	std::size_t extent,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
 		ops::irfft_operation(
-			last_axes(x, 1),
-			ops::get_signal_parity(extent)
+			last_axes(x, 2),
+			ops::get_signal_parity(extent),
+			normalization
 		),
 		x,
 		context,
@@ -307,10 +551,28 @@ array irfft2(
 	array *out
 )
 {
+	return irfft2(
+		x,
+		extent,
+		ops::fourier_normalization::backward,
+		context,
+		out
+	);
+}
+
+array irfft3(
+	const_array_ref x,
+	std::size_t extent,
+	ops::fourier_normalization normalization,
+	const execution_context &context,
+	array *out
+)
+{
 	return execute_unary(
 		ops::irfft_operation(
-			last_axes(x, 2),
-			ops::get_signal_parity(extent)
+			last_axes(x, 3),
+			ops::get_signal_parity(extent),
+			normalization
 		),
 		x,
 		context,
@@ -325,12 +587,10 @@ array irfft3(
 	array *out
 )
 {
-	return execute_unary(
-		ops::irfft_operation(
-			last_axes(x, 3),
-			ops::get_signal_parity(extent)
-		),
+	return irfft3(
 		x,
+		extent,
+		ops::fourier_normalization::backward,
 		context,
 		out
 	);

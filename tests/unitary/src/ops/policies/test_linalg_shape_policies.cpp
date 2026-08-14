@@ -5,6 +5,8 @@
 #include <xmipp4/ops/policies/cross_product_shape_policy.hpp>
 #include <xmipp4/ops/policies/dot_product_shape_policy.hpp>
 #include <xmipp4/ops/policies/matrix_multiply_shape_policy.hpp>
+#include <xmipp4/ops/policies/matrix_vector_shape_policy.hpp>
+#include <xmipp4/ops/policies/vector_matrix_shape_policy.hpp>
 
 #include <xmipp4/core/dispatch/operand_names.hpp>
 #include <xmipp4/core/dispatch/operation_descriptor.hpp>
@@ -113,6 +115,123 @@ TEST_CASE(
 )
 {
 	const auto &policy = matrix_multiply_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, shape_type{}, { 3, 4 }),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"matrix_vector_shape_policy should contract the inner extents",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = matrix_vector_shape_policy::get();
+	CHECK( deduce_one(policy, { 2, 3 }, { 3 }) == shape_type{ 2 } );
+}
+
+TEST_CASE(
+	"matrix_vector_shape_policy should broadcast the stacked axes",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = matrix_vector_shape_policy::get();
+	CHECK( deduce_one(policy, { 5, 2, 3 }, { 3 }) == shape_type{ 5, 2 } );
+	CHECK( deduce_one(policy, { 1, 2, 3 }, { 5, 3 }) == shape_type{ 5, 2 } );
+}
+
+TEST_CASE(
+	"matrix_vector_shape_policy should reject mismatched inner extents",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = matrix_vector_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, { 2, 3 }, { 4 }),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"matrix_vector_shape_policy should reject a left operand of rank less "
+	"than two",
+	"[linalg_shape_policy]"
+)
+{
+	// Unlike matrix_multiply_shape_policy, a vector on the left is not
+	// promoted into a row: use vecmat for that.
+	const auto &policy = matrix_vector_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, shape_type{ 3 }, { 3 }),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"matrix_vector_shape_policy should reject a scalar right operand",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = matrix_vector_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, { 2, 3 }, shape_type{}),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"vector_matrix_shape_policy should contract the inner extents",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = vector_matrix_shape_policy::get();
+	CHECK( deduce_one(policy, { 3 }, { 3, 4 }) == shape_type{ 4 } );
+}
+
+TEST_CASE(
+	"vector_matrix_shape_policy should broadcast the stacked axes",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = vector_matrix_shape_policy::get();
+	CHECK( deduce_one(policy, { 5, 2, 3 }, { 3, 4 }) == shape_type{ 5, 2, 4 } );
+	CHECK( deduce_one(policy, { 1, 3 }, { 5, 2, 3, 4 }) ==
+	       shape_type{ 5, 2, 4 } );
+}
+
+TEST_CASE(
+	"vector_matrix_shape_policy should reject mismatched inner extents",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = vector_matrix_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, { 3 }, { 4, 5 }),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"vector_matrix_shape_policy should reject a right operand of rank less "
+	"than two",
+	"[linalg_shape_policy]"
+)
+{
+	// Unlike matrix_multiply_shape_policy, a vector on the right is not
+	// promoted into a column: use matvec for that.
+	const auto &policy = vector_matrix_shape_policy::get();
+	CHECK_THROWS_AS(
+		deduce_one(policy, { 3 }, shape_type{ 3 }),
+		std::invalid_argument
+	);
+}
+
+TEST_CASE(
+	"vector_matrix_shape_policy should reject a scalar left operand",
+	"[linalg_shape_policy]"
+)
+{
+	const auto &policy = vector_matrix_shape_policy::get();
 	CHECK_THROWS_AS(
 		deduce_one(policy, shape_type{}, { 3, 4 }),
 		std::invalid_argument

@@ -14,6 +14,7 @@ target_link_libraries(
 		Boost::intrusive
 		half
 		pocketfft
+		Eigen3::Eigen
 		${CMAKE_DL_LIBS}
 )
 if(WIN32)

@@ -2,7 +2,8 @@
 
 #include <xmipp4/ops/policies/sequence_operation_shape_policy.hpp>
 
-#include <algorithm>
+#include "shape_deduction.hpp"
+
 #include <sstream>
 #include <stdexcept>
 
@@ -37,11 +38,9 @@ void sequence_operation_shape_policy::deduce(
 		throw std::invalid_argument(oss.str());
 	}
 
-	std::fill(
-		canonical_output_shapes.begin(),
-		canonical_output_shapes.end(),
-		shape_type{ m_count }
-	);
+	// Unlike the rest of the family there is nothing to broadcast, the
+	// length being a parameter rather than something read off an operand.
+	assign_output_shapes(canonical_output_shapes, shape_type{ m_count });
 }
 
 } // namespace ops

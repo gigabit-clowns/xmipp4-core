@@ -95,7 +95,9 @@ public:
 	bool get_endpoint() const noexcept;
 
 private:
+	XMIPP4_STD_MEMBER_INTERFACE
 	scalar_value m_start;
+	XMIPP4_STD_MEMBER_INTERFACE
 	scalar_value m_stop;
 	bool m_endpoint;
 };

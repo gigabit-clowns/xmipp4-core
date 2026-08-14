@@ -49,6 +49,7 @@ public:
 	const scalar_value& get_fill_value() const noexcept;
 
 private:
+	XMIPP4_STD_MEMBER_INTERFACE
 	scalar_value m_fill_value;
 };
 XMIPP4_END_TEMPLATE_BASE

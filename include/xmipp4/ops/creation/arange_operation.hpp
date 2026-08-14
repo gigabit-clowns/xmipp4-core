@@ -84,7 +84,9 @@ public:
 	std::size_t get_count() const noexcept;
 
 private:
+	XMIPP4_STD_MEMBER_INTERFACE
 	scalar_value m_start;
+	XMIPP4_STD_MEMBER_INTERFACE
 	scalar_value m_step;
 };
 XMIPP4_END_TEMPLATE_BASE

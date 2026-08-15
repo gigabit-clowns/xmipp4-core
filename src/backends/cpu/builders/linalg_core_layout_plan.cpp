@@ -100,9 +100,9 @@ linalg_operand_core split_named_core(
 
 linalg_core_layout_plan::linalg_core_layout_plan(
 	joint_layout batch_layout,
-	linalg_operand_core output_core,
-	linalg_operand_core left_core,
-	linalg_operand_core right_core
+	const linalg_operand_core &output_core,
+	const linalg_operand_core &left_core,
+	const linalg_operand_core &right_core
 ) noexcept
 	: m_batch_layout(std::move(batch_layout))
 	, m_output_core(output_core)

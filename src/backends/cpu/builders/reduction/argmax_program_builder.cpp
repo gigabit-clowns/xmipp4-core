@@ -78,6 +78,21 @@ struct argmax_kernel
 		}
 	}
 
+	void combine(
+		bool &best,
+		std::int64_t &where,
+		const bool *value,
+		std::size_t position
+	) const noexcept
+	{
+		const auto current = load(value);
+		if (current && !best)
+		{
+			best = current;
+			where = static_cast<std::int64_t>(position);
+		}
+	}
+
 	template <typename Accumulator>
 	void merge(
 		Accumulator &best,
@@ -110,12 +125,11 @@ struct argmax_kernel
 	template <typename U, typename Accumulator>
 	void finalize(
 		U *result,
-		const Accumulator &best,
+		const Accumulator& /*best*/,
 		const std::int64_t &where,
 		std::size_t /*count*/
 	) const noexcept
 	{
-		static_cast<void>(best);
 		store(result, where);
 	}
 };

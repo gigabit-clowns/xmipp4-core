@@ -347,6 +347,36 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	reduction_verb_fixture,
+	"matvec does not conjugate its matrix operand",
+	"[array_linalg][cpu]"
+)
+{
+	// Unlike vecmat, matvec's matrix is a plain linear map with no
+	// inner-product convention attached, so it is left alone. right is a
+	// one-hot vector, isolating left's first column verbatim if the matrix
+	// is left alone, or its conjugate if it is not.
+	using complex_type = std::complex<float32_t>;
+
+	auto left = make_sequence_operand<complex_type>(
+		{ 2, 2 },
+		{
+			element_value(3.0, 4.0), element_value(1.0, -2.0),
+			element_value(5.0, 1.0), element_value(2.0, -3.0),
+		}
+	);
+	auto right = make_sequence_operand<complex_type>({ 2 }, { 1, 0 });
+	const const_array_ref left_ref = left;
+	const const_array_ref right_ref = right;
+
+	check_values<complex_type>(
+		xmipp4::matvec(left_ref, right_ref, context, nullptr),
+		{ 2 },
+		{ element_value(3.0, 4.0), element_value(5.0, 1.0) }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
 	"vecmat multiplies a vector by a matrix",
 	"[array_linalg][cpu]"
 )

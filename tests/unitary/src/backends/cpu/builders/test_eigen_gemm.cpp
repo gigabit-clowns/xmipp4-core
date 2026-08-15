@@ -4,6 +4,7 @@
 
 #include <backends/cpu/builders/eigen_gemm.hpp>
 
+#include <complex>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -341,5 +342,106 @@ TEST_CASE(
 	);
 
 	const std::vector<float> expected = { 9, 12, 15 };
+	CHECK( out == expected );
+}
+
+TEST_CASE(
+	"resolve_gemm does not conjugate its left operand",
+	"[eigen_gemm]"
+)
+{
+	// Real numbers are their own conjugate, so this needs complex values to
+	// tell "conjugated" apart from "not"; right is the identity, so the
+	// product is just left, unconjugated, if it is correct at all.
+	using complex = std::complex<float>;
+	const std::vector<complex> left = {
+		{ 3, 4 }, { 1, -2 }, { 5, 1 }, { 2, -3 }
+	}; // 2x2
+	const std::vector<complex> right = { 1, 0, 0, 1 }; // 2x2 identity
+	std::vector<complex> out(4);
+
+	const auto out_core = row_major_core(2, 2);
+	const auto left_core = row_major_core(2, 2);
+	const auto right_core = row_major_core(2, 2);
+
+	const auto gemm = resolve_gemm<complex>(
+		2, 2, 2,
+		core_layout_kind::row_major_contiguous,
+		core_layout_kind::row_major_contiguous,
+		core_layout_kind::row_major_contiguous
+	);
+	REQUIRE( gemm != nullptr );
+
+	gemm(out.data(), left.data(), right.data(), out_core, left_core, right_core);
+
+	CHECK( out == left );
+}
+
+TEST_CASE(
+	"resolve_gemv does not conjugate its matrix operand",
+	"[eigen_gemm]"
+)
+{
+	// right is a one-hot vector, so the product picks out left's first
+	// column verbatim if the matrix is left alone, or its conjugate if it
+	// is not.
+	using complex = std::complex<float>;
+	const std::vector<complex> left = {
+		{ 3, 4 }, { 1, -2 }, { 5, 1 }, { 2, -3 }
+	}; // 2x2
+	const std::vector<complex> right = { 1, 0 };
+	std::vector<complex> out(2);
+
+	const auto out_core =
+		pad_as_column(linalg_operand_core(1, { 2, 0 }, { 1, 0 }));
+	const auto left_core = row_major_core(2, 2);
+	const auto right_core =
+		pad_as_column(linalg_operand_core(1, { 2, 0 }, { 1, 0 }));
+
+	const auto gemv = resolve_gemv<complex>(
+		2, 2,
+		core_layout_kind::vector_contiguous,
+		core_layout_kind::row_major_contiguous,
+		core_layout_kind::vector_contiguous
+	);
+	REQUIRE( gemv != nullptr );
+
+	gemv(out.data(), left.data(), right.data(), out_core, left_core, right_core);
+
+	const std::vector<complex> expected = { { 3, 4 }, { 5, 1 } };
+	CHECK( out == expected );
+}
+
+TEST_CASE(
+	"resolve_vecgemm conjugates its vector operand",
+	"[eigen_gemm]"
+)
+{
+	// right is the identity, so the product is left's conjugate if vecmat's
+	// NumPy-matching convention is honoured, or left itself if it is not.
+	using complex = std::complex<float>;
+	const std::vector<complex> left = { { 3, 4 }, { 1, -2 } };
+	const std::vector<complex> right = { 1, 0, 0, 1 }; // 2x2 identity
+	std::vector<complex> out(2);
+
+	const auto out_core =
+		pad_as_row(linalg_operand_core(1, { 2, 0 }, { 1, 0 }));
+	const auto left_core =
+		pad_as_row(linalg_operand_core(1, { 2, 0 }, { 1, 0 }));
+	const auto right_core = row_major_core(2, 2);
+
+	const auto vecgemm = resolve_vecgemm<complex>(
+		2, 2,
+		core_layout_kind::vector_contiguous,
+		core_layout_kind::vector_contiguous,
+		core_layout_kind::row_major_contiguous
+	);
+	REQUIRE( vecgemm != nullptr );
+
+	vecgemm(
+		out.data(), left.data(), right.data(), out_core, left_core, right_core
+	);
+
+	const std::vector<complex> expected = { { 3, -4 }, { 1, 2 } };
 	CHECK( out == expected );
 }

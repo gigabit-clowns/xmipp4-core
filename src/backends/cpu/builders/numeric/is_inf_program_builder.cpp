@@ -26,8 +26,6 @@ struct is_inf_kernel
 		store(result, isinf(load(x)));
 	}
 
-	// <cmath> classifies a real number only, so a complex one is
-	// classified by its parts. A number with an infinite part is infinite.
 	template <typename T>
 	void operator()(bool *result, const std::complex<T> *x) const noexcept
 	{

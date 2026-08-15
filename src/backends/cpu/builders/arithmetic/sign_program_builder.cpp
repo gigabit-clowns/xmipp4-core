@@ -20,6 +20,11 @@ namespace
 
 struct sign_kernel
 {
+	void operator()(bool *result, const bool *x) const noexcept
+	{
+		store(result, load(x));
+	}
+
 	template <typename T>
 	typename std::enable_if<
 		std::is_integral<T>::value && std::is_unsigned<T>::value,
@@ -41,8 +46,6 @@ struct sign_kernel
 		store(result, static_cast<T>((T(0) < value) - (value < T(0))));
 	}
 
-	// Also serves float16_t, which load() widens to a type this can
-	// compute in.
 	template <typename T>
 	typename std::enable_if<!std::is_integral<T>::value, void>::type
 	operator()(T *result, const T *x) const noexcept
@@ -52,8 +55,6 @@ struct sign_kernel
 		const auto value = load(x);
 		using compute_type = decltype(value);
 
-		// A quantity that is not a number has no sign to report, so it
-		// is passed through as NumPy does.
 		if (isnan(value))
 		{
 			store(result, value);

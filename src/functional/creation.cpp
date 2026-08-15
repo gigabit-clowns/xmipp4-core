@@ -86,9 +86,8 @@ array_descriptor make_sequence_descriptor(
 	numerical_type data_type
 )
 {
-	const std::size_t extents[] = { count };
 	return array_descriptor(
-		strided_layout::make_contiguous_layout(make_span(extents, 1)),
+		strided_layout::make_contiguous_layout(make_span(&count, 1)),
 		data_type
 	);
 }

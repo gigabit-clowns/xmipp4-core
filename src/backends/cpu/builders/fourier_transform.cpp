@@ -1,17 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-// pocketfft re-derives the twiddle factors of a transform every time it is
-// asked for one unless it is allowed to remember them. A program is built
-// once and run many times, so without this every run would pay for a plan it
-// had already made. The cache is a bounded, mutex guarded set of function
-// local statics inside pocketfft itself.
-#define POCKETFFT_CACHE_SIZE 16
-
 #include <backends/cpu/builders/fourier_transform.hpp>
 
-#include <pocketfft_hdronly.h>
+#include <backends/cpu/config.hpp>
 
 #include <complex>
+
+#define POCKETFFT_CACHE_SIZE XMIPP4_POCKETFFT_CACHE_SIZE
+#include <pocketfft_hdronly.h>
 
 namespace xmipp4
 {

@@ -47,9 +47,9 @@ class cross_core_kernel
 {
 public:
 	cross_core_kernel(
-		linalg_operand_core out_core,
-		linalg_operand_core left_core,
-		linalg_operand_core right_core
+		const linalg_operand_core &out_core,
+		const linalg_operand_core &left_core,
+		const linalg_operand_core &right_core
 	)
 		: m_out_stride(out_core.get_stride(0))
 		, m_left_stride(left_core.get_stride(0))
@@ -198,14 +198,13 @@ public:
 
 		return cross_type_dispatcher::dispatch(
 			ops::cross_operation::get_static_descriptor(),
-			[&plan]
-			(auto output_element_types, auto input_element_types)
+			[&plan] (auto output_element_types, auto input_element_types)
 			{
-				using out_t = typename type_list_element<
-					0, decltype(output_element_types)
+				using out_type = typename type_list_element<
+					0, 
+					decltype(output_element_types)
 				>::type;
-
-				cross_core_kernel<out_t> kernel(
+				cross_core_kernel<out_type> kernel(
 					plan.get_output_core(),
 					plan.get_left_core(),
 					plan.get_right_core()

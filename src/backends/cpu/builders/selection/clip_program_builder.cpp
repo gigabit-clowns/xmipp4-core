@@ -17,9 +17,6 @@ namespace
 
 struct clip_kernel
 {
-	// Composed of the two halves it is made of, so bounds that cross
-	// leave the upper one winning, as NumPy has it, and an unordered
-	// value propagates through both.
 	template <typename T>
 	void operator()(
 		T *result,

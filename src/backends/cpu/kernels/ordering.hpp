@@ -28,6 +28,7 @@ namespace cpu
  * @return T The larger, or whichever is not a number.
  */
 template <typename T>
+inline
 typename std::enable_if<!std::is_floating_point<T>::value, T>::type
 maximum_of(T x, T y) noexcept
 {
@@ -35,6 +36,7 @@ maximum_of(T x, T y) noexcept
 }
 
 template <typename T>
+inline
 typename std::enable_if<std::is_floating_point<T>::value, T>::type
 maximum_of(T x, T y) noexcept
 {
@@ -50,6 +52,12 @@ maximum_of(T x, T y) noexcept
 	}
 
 	return x < y ? y : x;
+}
+
+inline
+bool maximum_of(bool x, bool y) noexcept
+{
+	return x || y;
 }
 
 /**
@@ -63,6 +71,7 @@ maximum_of(T x, T y) noexcept
  * @return T The smaller, or whichever is not a number.
  */
 template <typename T>
+inline
 typename std::enable_if<!std::is_floating_point<T>::value, T>::type
 minimum_of(T x, T y) noexcept
 {
@@ -70,6 +79,7 @@ minimum_of(T x, T y) noexcept
 }
 
 template <typename T>
+inline
 typename std::enable_if<std::is_floating_point<T>::value, T>::type
 minimum_of(T x, T y) noexcept
 {
@@ -85,6 +95,12 @@ minimum_of(T x, T y) noexcept
 	}
 
 	return y < x ? y : x;
+}
+
+inline
+bool minimum_of(bool x, bool y) noexcept
+{
+	return x && y;
 }
 
 } // namespace cpu

@@ -16,14 +16,6 @@ namespace
 
 struct right_shift_kernel
 {
-	// The operands promote to int before the operator sees them, so the
-	// result is cast back to the element type explicitly rather than
-	// narrowing on its way into store().
-	//
-	// Shifting by at least the width of the operand is undefined, as it
-	// is in NumPy, and is left that way rather than guarded on every
-	// element. Shifting a negative value right is arithmetic, which C++20
-	// requires and every earlier implementation did anyway.
 	template <typename T>
 	void operator()(T *result, const T *value, const T *count) const noexcept
 	{

@@ -39,9 +39,9 @@ class matmul_core_kernel
 {
 public:
 	matmul_core_kernel(
-		linalg_operand_core out_core,
-		linalg_operand_core left_core,
-		linalg_operand_core right_core
+		const linalg_operand_core &out_core,
+		const linalg_operand_core &left_core,
+		const linalg_operand_core &right_core
 	)
 		: m_out_core(out_core)
 		, m_left_core(left_core)

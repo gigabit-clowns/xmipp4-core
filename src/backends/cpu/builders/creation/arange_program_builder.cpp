@@ -29,9 +29,6 @@ public:
 
 	void operator()(T *destination, std::size_t index) const noexcept
 	{
-		// Computed from the index rather than from the element before it, so
-		// that no element inherits the rounding of the ones it follows and
-		// the sequence is the same however it is sliced.
 		store(
 			destination,
 			m_start + static_cast<compute_type>(index) * m_step

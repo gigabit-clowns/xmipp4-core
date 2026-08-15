@@ -18,9 +18,6 @@ namespace
 
 struct equal_kernel
 {
-	// The result is a boolean whatever the operands are, so the element
-	// type is deduced from the inputs alone. The rule already said so;
-	// the builder reified it and handed this a bool to write into.
 	template <typename T>
 	void operator()(bool *result, const T *x, const T *y) const noexcept
 	{

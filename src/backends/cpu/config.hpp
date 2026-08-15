@@ -30,3 +30,12 @@
 #ifndef XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE
 	#define XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE 4096UL
 #endif
+
+// pocketfft re-derives the twiddle factors of a transform every time it is
+// asked for one unless it is allowed to remember them. A program is built
+// once and run many times, so without this every run would pay for a plan it
+// had already made. The cache is a bounded, mutex guarded set of function
+// local statics inside pocketfft itself.
+#ifndef XMIPP4_POCKETFFT_CACHE_SIZE
+	#define XMIPP4_POCKETFFT_CACHE_SIZE 16UL
+#endif

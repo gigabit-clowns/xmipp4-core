@@ -74,14 +74,11 @@ struct linspace_kernel_factory
 			operation.get_stop()
 		);
 
-		// Including the stop leaves one interval fewer than there are
-		// samples; excluding it leaves exactly as many, which is what makes
-		// consecutive blocks of half open samples tile the line. A sequence
-		// too short to have an interval keeps its start, so the divisor is
-		// only there to avoid dividing by zero.
+		const auto inclusive_intervals = count > 1 ? count - 1 : 1;
+		const auto exclusive_intervals = count > 0 ? count : 1;
 		const auto intervals = endpoint
-			? (count > 1 ? count - 1 : 1)
-			: (count > 0 ? count : 1);
+			? inclusive_intervals
+			: exclusive_intervals;
 		const auto step =
 			(stop - start) / numerical_cast<compute_type>(intervals);
 

@@ -18,10 +18,6 @@ namespace
 
 struct where_kernel
 {
-	// The condition is boolean whatever the operands selected between
-	// are, which is the shape of the rule this operation declares: its
-	// free element type comes from the second input rather than the
-	// first, and the first is pinned.
 	template <typename T>
 	void operator()(
 		T *result,

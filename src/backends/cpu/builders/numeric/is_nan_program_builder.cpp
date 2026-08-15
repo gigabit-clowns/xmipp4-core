@@ -26,8 +26,6 @@ struct is_nan_kernel
 		store(result, isnan(load(x)));
 	}
 
-	// <cmath> classifies a real number only, so a complex one is
-	// classified by its parts. A number with a part that is not a number is not one either.
 	template <typename T>
 	void operator()(bool *result, const std::complex<T> *x) const noexcept
 	{

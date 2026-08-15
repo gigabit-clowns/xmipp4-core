@@ -16,9 +16,6 @@ namespace
 
 struct left_shift_kernel
 {
-	// The operands promote to int before the operator sees them, so the
-	// result is cast back to the element type explicitly rather than
-	// narrowing on its way into store().
 	template <typename T>
 	void operator()(T *result, const T *value, const T *count) const noexcept
 	{

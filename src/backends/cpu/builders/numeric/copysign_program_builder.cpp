@@ -18,8 +18,6 @@ namespace
 
 struct copysign_kernel
 {
-	// The magnitude comes first and the sign second, as the operation
-	// declares them.
 	template <typename T>
 	void operator()(
 		T *result,

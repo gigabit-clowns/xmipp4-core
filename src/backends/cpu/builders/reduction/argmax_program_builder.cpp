@@ -93,6 +93,20 @@ struct argmax_kernel
 		}
 	}
 
+	void merge(
+		bool &best,
+		std::int64_t &where,
+		const bool &other_best,
+		const std::int64_t &other_where
+	) const noexcept
+	{
+		if (other_best && !best)
+		{
+			best = other_best;
+			where = other_where;
+		}
+	}
+
 	template <typename U, typename Accumulator>
 	void finalize(
 		U *result,

@@ -48,8 +48,17 @@ XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile =
 XMIPP4_INLINE_CONSTEXPR
 std::size_t clamp_reduction_tile(std::size_t count) noexcept
 {
-	return count < minimum_reduction_tile ? minimum_reduction_tile :
-		(count > maximum_reduction_tile ? maximum_reduction_tile : count);
+	if (count > maximum_reduction_tile)
+	{
+		return maximum_reduction_tile;
+	}
+
+	if (count < minimum_reduction_tile)
+	{
+		return minimum_reduction_tile;
+	}
+
+	return count;
 }
 
 /**
@@ -551,7 +560,7 @@ private:
 	}
 
 	XMIPP4_NORETURN
-	void fill_with_identity(std::size_t, std::false_type)
+	void fill_with_identity(std::size_t, std::false_type) const
 	{
 		throw std::invalid_argument(
 			"run_reduction_loop: A reduction over no elements has no answer "
@@ -582,6 +591,46 @@ private:
 	std::size_t m_reduced_vector_size;
 	tiles_type m_tiles;
 };
+
+template <
+	typename Kernel,
+	typename Outputs,
+	typename Inputs,
+	typename KeptStrides,
+	typename ReducedStrides
+>
+inline
+void run_reduction_loop_runner(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const Outputs &outputs,
+	const Inputs &inputs,
+	const KeptStrides &kept_strides,
+	const ReducedStrides &reduced_strides
+)
+{
+	using runner_type = reduction_loop_runner<
+		Kernel, 
+		Outputs, 
+		Inputs, 
+		KeptStrides, 
+		ReducedStrides
+	>;
+
+	runner_type runner(
+		kernel,
+		kept_layout,
+		reduced_layout,
+		reduction_count,
+		outputs,
+		inputs,
+		kept_strides,
+		reduced_strides
+	);
+	runner.run();
+}
 
 } // namespace detail
 
@@ -614,28 +663,15 @@ void run_reduction_loop(
 	const std::tuple<const Ins*...> &inputs
 )
 {
-	// Only the inputs take part in the stride dispatch. The outputs are
-	// touched once per tile rather than once per element, so specializing
-	// them would multiply the instantiation count for no gain.
 	XMIPP4_CONST_CONSTEXPR std::index_sequence_for<Ins...> input_indices {};
 
 	dispatch_inner_loop_strides(
 		[&] (auto kept_strides)
 		{
-			using kept_strides_type = decltype(kept_strides);
-
 			dispatch_inner_loop_strides(
 				[&] (auto reduced_strides)
 				{
-					using reduced_strides_type = decltype(reduced_strides);
-
-					detail::reduction_loop_runner<
-						Kernel,
-						std::tuple<Outs*...>,
-						std::tuple<const Ins*...>,
-						kept_strides_type,
-						reduced_strides_type
-					> runner(
+					detail::run_reduction_loop_runner(
 						kernel,
 						kept_layout,
 						reduced_layout,
@@ -645,7 +681,6 @@ void run_reduction_loop(
 						kept_strides,
 						reduced_strides
 					);
-					runner.run();
 				},
 				reduced_layout,
 				input_indices

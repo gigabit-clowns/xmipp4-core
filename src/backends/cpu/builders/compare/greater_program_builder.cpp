@@ -16,9 +16,11 @@ namespace
 
 struct greater_kernel
 {
-	// The result is a boolean whatever the operands are, so the element
-	// type is deduced from the inputs alone. The rule already said so;
-	// the builder reified it and handed this a bool to write into.
+	void operator()(bool *result, const bool *x , const bool *y) const noexcept
+	{
+		store(result, load(x) && !load(y));
+	}
+
 	template <typename T>
 	void operator()(bool *result, const T *x, const T *y) const noexcept
 	{

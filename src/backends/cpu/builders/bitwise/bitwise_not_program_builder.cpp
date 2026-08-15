@@ -22,12 +22,6 @@ struct bitwise_not_kernel
 		store(result, static_cast<T>(~load(x)));
 	}
 
-	// A boolean holds one bit of information but occupies eight, so
-	// complementing its storage is not complementing its value: ~true
-	// promotes to -2, which converts back to true and leaves the
-	// operation doing nothing. Negating it is what NumPy does and the
-	// only reading under which this is the bitwise complement of the
-	// value rather than of its representation.
 	void operator()(bool *result, const bool *x) const noexcept
 	{
 		store(result, !load(x));

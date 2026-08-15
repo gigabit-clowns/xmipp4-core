@@ -18,10 +18,6 @@ namespace
 
 struct sign_bit_kernel
 {
-	// Reports the bit rather than the ordering, so it holds for a
-	// negative zero, which compares equal to a positive one, and for a
-	// negatively signed not-a-number. That is the distinction from a
-	// comparison against zero, and the reason the operation exists.
 	template <typename T>
 	void operator()(bool *result, const T *x) const noexcept
 	{

@@ -6,8 +6,8 @@
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/meta/type_list.hpp>
 
-#include <backends/cpu/builders/roll_block_plan.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
+#include <backends/cpu/plans/roll_layout_plan.hpp>
 
 #include <cstddef>
 #include <tuple>

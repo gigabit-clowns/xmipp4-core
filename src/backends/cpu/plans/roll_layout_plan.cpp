@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <backends/cpu/builders/roll_block_plan.hpp>
+#include <backends/cpu/plans/roll_layout_plan.hpp>
 
 #include <xmipp4/core/layout/joint_layout_builder.hpp>
 

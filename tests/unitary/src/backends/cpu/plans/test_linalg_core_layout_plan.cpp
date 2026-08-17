@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <backends/cpu/builders/linalg_core_layout_plan.hpp>
+#include <backends/cpu/plans/linalg_core_layout_plan.hpp>
 
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>

@@ -2,12 +2,13 @@
 
 #include <xmipp4/ops/linalg/cross_operation.hpp>
 
-#include <backends/cpu/builders/linalg_program_builder.hpp>
-#include <backends/cpu/builders/linalg_core_layout_plan.hpp>
-#include <backends/cpu/builders/eigen_gemm.hpp>
 #include <backends/cpu/builders/dispatcher_support_query.hpp>
+#include <backends/cpu/builders/linalg_program_builder.hpp>
+#include <backends/cpu/builders/operand_data_types.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 #include <backends/cpu/hardware/functor_program.hpp>
+#include <backends/cpu/kernels/eigen_gemm.hpp>
+#include <backends/cpu/plans/linalg_core_layout_plan.hpp>
 
 #include <xmipp4/backends/cpu/program_builder.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
@@ -83,18 +84,6 @@ private:
 using cross_type_dispatcher =
 	rule_type_dispatcher<ops::cross_operation::type_rule, eigen_scalar_support>;
 
-template <std::size_t Count>
-void extract_cross_data_types(
-	std::array<numerical_type, Count> &types,
-	span<const operand_signature> signatures
-) noexcept
-{
-	for (std::size_t i = 0; i < Count; ++i)
-	{
-		types[i] = signatures[i].get_data_type();
-	}
-}
-
 /**
  * @brief CPU program builder for cross.
  *
@@ -141,8 +130,8 @@ public:
 
 		std::array<numerical_type, output_count> output_types;
 		std::array<numerical_type, input_count> input_types;
-		extract_cross_data_types(output_types, output_signatures);
-		extract_cross_data_types(input_types, input_signatures);
+		extract_data_types(output_types, output_signatures);
+		extract_data_types(input_types, input_signatures);
 
 		const auto supported =
 			detail::dispatcher_support_query<cross_type_dispatcher>::is_supported(
@@ -189,8 +178,8 @@ public:
 
 		std::array<numerical_type, output_count> output_types;
 		std::array<numerical_type, input_count> input_types;
-		extract_cross_data_types(output_types, output_signatures);
-		extract_cross_data_types(input_types, input_signatures);
+		extract_data_types(output_types, output_signatures);
+		extract_data_types(input_types, input_signatures);
 
 		auto plan = linalg_core_layout_plan::for_named_axis(
 			output_signatures, input_signatures, axis

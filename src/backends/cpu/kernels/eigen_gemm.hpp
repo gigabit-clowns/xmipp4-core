@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "linalg_core_layout_plan.hpp"
+#include <backends/cpu/plans/linalg_core_layout_plan.hpp>
 
 #include <xmipp4/core/numerical/fixed_width_float.hpp>
 

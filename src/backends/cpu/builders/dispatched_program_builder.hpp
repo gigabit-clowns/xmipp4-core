@@ -7,6 +7,8 @@
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/numerical/numerical_type.hpp>
 
+#include <backends/cpu/builders/operand_data_types.hpp>
+
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -15,19 +17,6 @@ namespace xmipp4
 {
 namespace cpu
 {
-
-/**
- * @brief Copy the data type of every operand signature into an array.
- *
- * @tparam Count The operand count.
- * @param types Destination, sized to the operand count.
- * @param signatures The operand signatures.
- */
-template <std::size_t Count>
-void extract_data_types(
-	std::array<numerical_type, Count> &types,
-	span<const operand_signature> signatures
-) noexcept;
 
 /**
  * @brief Base for a program builder that resolves its operand element types.

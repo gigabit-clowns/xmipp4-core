@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <backends/cpu/builders/linalg_operand_core.hpp>
+#include <backends/cpu/plans/linalg_operand_core.hpp>
 
 using namespace xmipp4::cpu;
 

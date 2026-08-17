@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <backends/cpu/builders/fourier_layout_plan.hpp>
+#include <backends/cpu/plans/fourier_layout_plan.hpp>
 
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/layout/joint_layout_builder.hpp>

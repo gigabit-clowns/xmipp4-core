@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <backends/cpu/builders/roll_block_plan.hpp>
+#include <backends/cpu/plans/roll_layout_plan.hpp>
 
 #include <backends/cpu/loops/elementwise_loop.hpp>
 
@@ -26,7 +26,7 @@ TEST_CASE(
 
 TEST_CASE(
 	"build_roll_blocks makes one identity block when nothing is shifted",
-	"[roll_block_plan]"
+	"[roll_layout_plan]"
 )
 {
 	const std::vector<std::size_t> extents = { 4 };
@@ -51,7 +51,7 @@ TEST_CASE(
 
 TEST_CASE(
 	"build_roll_blocks splits a single shifted axis into two blocks",
-	"[roll_block_plan]"
+	"[roll_layout_plan]"
 )
 {
 	// A shift of 2 along an axis of extent 5: the output's first two
@@ -87,7 +87,7 @@ TEST_CASE(
 TEST_CASE(
 	"build_roll_blocks combines strides and base offsets into each block's "
 	"offset",
-	"[roll_block_plan]"
+	"[roll_layout_plan]"
 )
 {
 	const std::vector<std::size_t> extents = { 6 };
@@ -120,7 +120,7 @@ TEST_CASE(
 TEST_CASE(
 	"build_roll_blocks combines two shifted axes independently into "
 	"2^2 blocks",
-	"[roll_block_plan]"
+	"[roll_layout_plan]"
 )
 {
 	const std::vector<std::size_t> extents = { 2, 3 };

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <backends/cpu/builders/fourier_layout_plan.hpp>
+#include <backends/cpu/plans/fourier_layout_plan.hpp>
 #include <backends/cpu/load_store.hpp>
 #include <backends/cpu/loops/elementwise_loop.hpp>
 

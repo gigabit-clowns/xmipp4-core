@@ -18,18 +18,6 @@ namespace xmipp4
 namespace cpu
 {
 
-template <std::size_t Count>
-void extract_data_types(
-	std::array<numerical_type, Count> &types,
-	span<const operand_signature> signatures
-) noexcept
-{
-	for (std::size_t i = 0; i < Count; ++i)
-	{
-		types[i] = signatures[i].get_data_type();
-	}
-}
-
 template <typename Derived, typename Op, typename TypeDispatcher>
 const Derived&
 dispatched_program_builder<Derived, Op, TypeDispatcher>

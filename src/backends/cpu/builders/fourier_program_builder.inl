@@ -2,28 +2,16 @@
 
 #include "fourier_program_builder.hpp"
 
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/dispatch/operation_cast.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/meta/type_list.hpp>
-#include <xmipp4/core/numerical/numerical_type.hpp>
+#include <xmipp4/core/platform/cpp_attributes.hpp>
 
-#include <backends/cpu/builders/dispatcher_support_query.hpp>
-#include <backends/cpu/builders/fourier_layout_plan.hpp>
-#include <backends/cpu/hardware/functor_program.hpp>
-
-#include <array>
-#include <cstddef>
-#include <stdexcept>
 #include <tuple>
 #include <utility>
 
 namespace xmipp4
 {
 namespace cpu
-{
-
-namespace detail
 {
 
 /**
@@ -65,131 +53,42 @@ private:
 	fourier_layout_plan m_plan;
 };
 
-} // namespace detail
-
 template <typename Op, typename Transform, typename TypeDispatcher>
-operation_id
-fourier_program_builder<Op, Transform, TypeDispatcher>
-::get_operation_id() const noexcept
-{
-	return operation_id::of<Op>();
-}
-
-template <typename Op, typename Transform, typename TypeDispatcher>
-backend_priority
-fourier_program_builder<Op, Transform, TypeDispatcher>::get_suitability(
-	const operation &operation,
+fourier_layout_plan
+fourier_program_builder<Op, Transform, TypeDispatcher>::make_plan(
+	const Op &operation,
 	span<const operand_signature> output_signatures,
-	span<const operand_signature> input_signatures,
-	xmipp4::command_queue &queue
+	span<const operand_signature> input_signatures
 ) const
 {
-	const auto base = program_builder::get_suitability(
-		operation,
-		output_signatures,
-		input_signatures,
-		queue
-	);
-	if (base == backend_priority::unsupported)
-	{
-		return base;
-	}
-
-	if (output_signatures.size() != 1 || input_signatures.size() != 1)
-	{
-		return backend_priority::unsupported;
-	}
-
-	const std::array<numerical_type, 1> output_types = {
-		output_signatures[0].get_data_type()
-	};
-	const std::array<numerical_type, 1> input_types = {
-		input_signatures[0].get_data_type()
-	};
-
-	// Reporting an unsupported element type here, rather than throwing from
-	// build(), is what lets the manager fall through to another backend. Half
-	// precision reaches this and is turned away, the transform having no
-	// arithmetic of that width to compute in.
-	const auto supported =
-		detail::dispatcher_support_query<TypeDispatcher>::is_supported(
-			make_span(output_types.data(), output_types.size()),
-			make_span(input_types.data(), input_types.size())
-		);
-	if (!supported)
-	{
-		return backend_priority::unsupported;
-	}
-
-	return base;
-}
-
-template <typename Op, typename Transform, typename TypeDispatcher>
-std::shared_ptr<xmipp4::program>
-fourier_program_builder<Op, Transform, TypeDispatcher>::build(
-	const operation &operation,
-	span<const operand_signature> output_signatures,
-	span<const operand_signature> input_signatures,
-	xmipp4::command_queue& /*queue*/,
-	program_cache* /*cache*/
-) const
-{
-	const auto &typed_operation = operation_cast<Op>(operation);
-
-	if (output_signatures.size() != 1)
-	{
-		throw std::invalid_argument(
-			"fourier_program_builder::build: Unexpected output signature "
-			"count."
-		);
-	}
-	if (input_signatures.size() != 1)
-	{
-		throw std::invalid_argument(
-			"fourier_program_builder::build: Unexpected input signature "
-			"count."
-		);
-	}
-
-	const std::array<numerical_type, 1> output_types = {
-		output_signatures[0].get_data_type()
-	};
-	const std::array<numerical_type, 1> input_types = {
-		input_signatures[0].get_data_type()
-	};
-
-	// The axes travel with the operation, so the whole description of the
-	// transform is settled here, once per program rather than once per run.
-	fourier_layout_plan plan(
+	return fourier_layout_plan(
 		output_signatures[0],
 		input_signatures[0],
-		typed_operation.get_shape_policy().get_axes(),
+		operation.get_shape_policy().get_axes(),
 		Transform::get_kind()
 	);
+}
 
+template <typename Op, typename Transform, typename TypeDispatcher>
+template <typename... Outs, typename... Ins>
+auto
+fourier_program_builder<Op, Transform, TypeDispatcher>::make_loop_functor(
+	const Op &operation,
+	fourier_layout_plan &plan,
+	type_list<Outs...> /*output_element_types*/,
+	type_list<Ins...> /*input_element_types*/
+) const
+{
 	// The convention is a parameter of the operation and the direction is
 	// baked into the transform's own type, so between the two the scale is
 	// settled before a single element is read.
-	const Transform transform(typed_operation.get_normalization());
-	return m_type_dispatcher.dispatch(
-		Op::get_static_descriptor(),
-		[&plan, &transform]
-		(auto output_element_types, auto input_element_types)
-		{
-			using loop_functor_type = detail::fourier_transform_functor<
-				Transform,
-				decltype(output_element_types),
-				decltype(input_element_types)
-			>;
-			return make_functor_program(
-				loop_functor_type(transform, std::move(plan)),
-				output_element_types,
-				input_element_types
-			);
-		},
-		output_types,
-		input_types
-	);
+	Transform transform(operation.get_normalization());
+
+	return fourier_transform_functor<
+		Transform,
+		type_list<Outs...>,
+		type_list<Ins...>
+	>(std::move(transform), std::move(plan));
 }
 
 } // namespace cpu

@@ -9,9 +9,12 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/dispatched_program_builder.hpp>
+#include <backends/cpu/builders/linalg_core_layout_plan.hpp>
 #include <backends/cpu/builders/program_builder_registration.hpp>
-
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
+
+#include <xmipp4/core/meta/type_list.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -57,35 +60,72 @@ template <
 	typename TypeDispatcher = rule_type_dispatcher<typename Op::type_rule>
 >
 class linalg_program_builder final
-	: public program_builder
+	: public dispatched_program_builder<
+		linalg_program_builder<Op, KernelFactory, TypeDispatcher>,
+		Op,
+		TypeDispatcher
+	>
 {
 public:
 	linalg_program_builder() noexcept = default;
-	~linalg_program_builder() override = default;
 
-	operation_id get_operation_id() const noexcept override;
-
-	backend_priority get_suitability(
-		const operation &operation,
+	/**
+	 * @brief Whether every operand reaches the rank its core needs.
+	 *
+	 * A rank smaller than the core it is asked to supply means the operand
+	 * was promoted by the shape policy (matmul's vector promotion): this
+	 * builder does not implement that, and declines rather than misreading
+	 * a batch axis as a core one.
+	 *
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return bool True if every operand is at least as deep as its core.
+	 */
+	bool accepts_signatures(
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue
-	) const override;
+		span<const operand_signature> input_signatures
+	) const noexcept;
 
-	std::shared_ptr<xmipp4::program> build(
-		const operation &operation,
+	/**
+	 * @brief Split every operand into its batch axes and its core.
+	 *
+	 * @param operation The operation.
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return linalg_core_layout_plan The planned iteration.
+	 */
+	linalg_core_layout_plan make_plan(
+		const Op &operation,
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue,
-		program_cache *cache
-	) const override;
+		span<const operand_signature> input_signatures
+	) const;
+
+	/**
+	 * @brief Build the functor driving the batch loop.
+	 *
+	 * The kernel factory is handed the plan as well as the element types,
+	 * the core extents being what decides which kernel to produce.
+	 *
+	 * @tparam Outs Element types of the outputs.
+	 * @tparam Ins Element types of the inputs.
+	 * @param operation The operation.
+	 * @param plan The planned iteration, moved from.
+	 * @param output_element_types Element types of the outputs.
+	 * @param input_element_types Element types of the inputs.
+	 * @return The functor the program runs.
+	 */
+	template <typename... Outs, typename... Ins>
+	auto make_loop_functor(
+		const Op &operation,
+		linalg_core_layout_plan &plan,
+		type_list<Outs...> output_element_types,
+		type_list<Ins...> input_element_types
+	) const;
 
 private:
 	using kernel_factory_type = KernelFactory;
-	using type_dispatcher_type = TypeDispatcher;
 
 	XMIPP4_NO_UNIQUE_ADDRESS kernel_factory_type m_kernel_factory;
-	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 
 } // namespace cpu

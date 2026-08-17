@@ -9,8 +9,12 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/dispatched_program_builder.hpp>
 #include <backends/cpu/builders/program_builder_registration.hpp>
+#include <backends/cpu/builders/reduction_layout_plan.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
+
+#include <xmipp4/core/meta/type_list.hpp>
 
 #include <memory>
 
@@ -58,35 +62,55 @@ template <
 	bool Ordered = false
 >
 class reduction_program_builder final
-	: public program_builder
+	: public dispatched_program_builder<
+		reduction_program_builder<Op, KernelFactory, TypeDispatcher, Ordered>,
+		Op,
+		TypeDispatcher
+	>
 {
 public:
-	reduction_program_builder() noexcept = default;
-	~reduction_program_builder() override = default;
-
-	operation_id get_operation_id() const noexcept override;
-
-	backend_priority get_suitability(
-		const operation &operation,
+	/**
+	 * @brief Split the iteration space into the axes that survive and the
+	 * axes being folded away.
+	 *
+	 * The axes are a parameter of the operation rather than of the call, so
+	 * the whole of that split is decided here and the program that results
+	 * holds no decision left to make per element.
+	 *
+	 * @param operation The operation.
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return reduction_layout_plan The planned iteration.
+	 */
+	reduction_layout_plan make_plan(
+		const Op &operation,
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue
-	) const override;
+		span<const operand_signature> input_signatures
+	) const;
 
-	std::shared_ptr<xmipp4::program> build(
-		const operation &operation,
-		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue,
-		program_cache *cache
-	) const override;
+	/**
+	 * @brief Build the functor driving the reduction loop.
+	 *
+	 * @tparam Outs Element types of the outputs.
+	 * @tparam Ins Element types of the inputs.
+	 * @param operation The operation.
+	 * @param plan The planned iteration, moved from.
+	 * @param output_element_types Element types of the outputs.
+	 * @param input_element_types Element types of the inputs.
+	 * @return The functor the program runs.
+	 */
+	template <typename... Outs, typename... Ins>
+	auto make_loop_functor(
+		const Op &operation,
+		reduction_layout_plan &plan,
+		type_list<Outs...> output_element_types,
+		type_list<Ins...> input_element_types
+	) const;
 
 private:
 	using kernel_factory_type = KernelFactory;
-	using type_dispatcher_type = TypeDispatcher;
 
 	XMIPP4_NO_UNIQUE_ADDRESS kernel_factory_type m_kernel_factory;
-	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 
 /**

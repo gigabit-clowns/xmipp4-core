@@ -209,7 +209,7 @@ public:
 					plan.get_left_core(),
 					plan.get_right_core()
 				);
-				using loop_functor_type = detail::linalg_loop_functor<
+				using loop_functor_type = linalg_loop_functor<
 					decltype(kernel),
 					decltype(output_element_types),
 					decltype(input_element_types)

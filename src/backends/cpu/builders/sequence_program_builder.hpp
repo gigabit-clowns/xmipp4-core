@@ -9,9 +9,12 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/dispatched_program_builder.hpp>
 #include <backends/cpu/builders/program_builder_registration.hpp>
-
+#include <backends/cpu/builders/sequence_layout_plan.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
+
+#include <xmipp4/core/meta/type_list.hpp>
 
 #include <memory>
 
@@ -52,32 +55,70 @@ template <
 	typename TypeDispatcher = rule_type_dispatcher<typename Op::type_rule>
 >
 class sequence_program_builder final
-	: public program_builder
+	: public dispatched_program_builder<
+		sequence_program_builder<Op, KernelFactory, TypeDispatcher>,
+		Op,
+		TypeDispatcher
+	>
 {
 public:
 	sequence_program_builder() noexcept = default;
-	~sequence_program_builder() override = default;
 
-	operation_id get_operation_id() const noexcept override;
-
-	backend_priority get_suitability(
-		const operation &operation,
+	/**
+	 * @brief Whether the operand is the one dimensional one this writes.
+	 *
+	 * A rank other than one is not something this backend could do slower;
+	 * it is something the shape policy already rules out. Reporting it as
+	 * unsupported rather than throwing keeps that distinction, and lets the
+	 * manager fall through if another backend disagrees.
+	 *
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return bool True if the output operand has rank one.
+	 */
+	bool accepts_signatures(
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue
-	) const override;
+		span<const operand_signature> input_signatures
+	) const noexcept;
 
-	std::shared_ptr<xmipp4::program> build(
-		const operation &operation,
+	/**
+	 * @brief Settle the traversal of the operand.
+	 *
+	 * The whole traversal is three numbers off the layout, so it is settled
+	 * here, once per program rather than once per element.
+	 *
+	 * @param operation The operation.
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return sequence_layout_plan The planned traversal.
+	 */
+	sequence_layout_plan make_plan(
+		const Op &operation,
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue,
-		program_cache *cache
-	) const override;
+		span<const operand_signature> input_signatures
+	) const;
+
+	/**
+	 * @brief Build the functor driving the sequence loop.
+	 *
+	 * @tparam Outs Element types of the outputs.
+	 * @tparam Ins Element types of the inputs, empty.
+	 * @param operation The operation.
+	 * @param plan The planned traversal.
+	 * @param output_element_types Element types of the outputs.
+	 * @param input_element_types Element types of the inputs.
+	 * @return The functor the program runs.
+	 */
+	template <typename... Outs, typename... Ins>
+	auto make_loop_functor(
+		const Op &operation,
+		sequence_layout_plan &plan,
+		type_list<Outs...> output_element_types,
+		type_list<Ins...> input_element_types
+	) const;
 
 private:
 	using kernel_factory_type = KernelFactory;
-	using type_dispatcher_type = TypeDispatcher;
 
 	static_assert(
 		Op::output_operand_count == 1,
@@ -90,7 +131,6 @@ private:
 	);
 
 	XMIPP4_NO_UNIQUE_ADDRESS kernel_factory_type m_kernel_factory;
-	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 
 } // namespace cpu

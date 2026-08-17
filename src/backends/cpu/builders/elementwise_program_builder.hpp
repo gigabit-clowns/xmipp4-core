@@ -9,9 +9,12 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/dispatched_program_builder.hpp>
 #include <backends/cpu/builders/program_builder_registration.hpp>
-
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
+
+#include <xmipp4/core/layout/joint_layout.hpp>
+#include <xmipp4/core/meta/type_list.hpp>
 
 #include <memory>
 
@@ -48,35 +51,52 @@ template <
 	typename TypeDispatcher = rule_type_dispatcher<typename Op::type_rule>
 >
 class elementwise_program_builder final
-	: public program_builder
+	: public dispatched_program_builder<
+		elementwise_program_builder<Op, KernelFactory, TypeDispatcher>,
+		Op,
+		TypeDispatcher
+	>
 {
 public:
 	elementwise_program_builder() noexcept = default;
-	~elementwise_program_builder() override = default;
 
-	operation_id get_operation_id() const noexcept override;
-
-	backend_priority get_suitability(
-		const operation &operation,
+	/**
+	 * @brief Join the operand layouts into the one the loop walks.
+	 *
+	 * @param operation The operation.
+	 * @param output_signatures The output operand signatures.
+	 * @param input_signatures The input operand signatures.
+	 * @return joint_layout The layout every operand is walked through.
+	 */
+	joint_layout make_plan(
+		const Op &operation,
 		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue
-	) const override;
+		span<const operand_signature> input_signatures
+	) const;
 
-	std::shared_ptr<xmipp4::program> build(
-		const operation &operation,
-		span<const operand_signature> output_signatures,
-		span<const operand_signature> input_signatures,
-		xmipp4::command_queue &queue,
-		program_cache *cache
-	) const override;
+	/**
+	 * @brief Build the functor driving the elementwise loop.
+	 *
+	 * @tparam Outs Element types of the outputs.
+	 * @tparam Ins Element types of the inputs.
+	 * @param operation The operation.
+	 * @param layout The joined layout, moved from.
+	 * @param output_element_types Element types of the outputs.
+	 * @param input_element_types Element types of the inputs.
+	 * @return The functor the program runs.
+	 */
+	template <typename... Outs, typename... Ins>
+	auto make_loop_functor(
+		const Op &operation,
+		joint_layout &layout,
+		type_list<Outs...> output_element_types,
+		type_list<Ins...> input_element_types
+	) const;
 
 private:
 	using kernel_factory_type = KernelFactory;
-	using type_dispatcher_type = TypeDispatcher;
 
 	XMIPP4_NO_UNIQUE_ADDRESS kernel_factory_type m_kernel_factory;
-	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 
 } // namespace cpu

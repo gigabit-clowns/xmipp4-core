@@ -2,23 +2,14 @@
 
 #include "roll_program_builder.hpp"
 
-#include <backends/cpu/builders/dispatcher_support_query.hpp>
-#include <backends/cpu/builders/roll_block_plan.hpp>
-#include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
-#include <backends/cpu/hardware/functor_program.hpp>
-#include <backends/cpu/loops/elementwise_loop.hpp>
-
 #include <xmipp4/core/dispatch/operand_signature.hpp>
-#include <xmipp4/core/dispatch/operation.hpp>
-#include <xmipp4/core/dispatch/operation_cast.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
 #include <xmipp4/core/meta/type_list.hpp>
-#include <xmipp4/core/numerical/numerical_type.hpp>
-#include <xmipp4/core/platform/constexpr.hpp>
 
-#include <array>
+#include <backends/cpu/builders/roll_block_plan.hpp>
+#include <backends/cpu/loops/elementwise_loop.hpp>
+
 #include <cstddef>
-#include <stdexcept>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -26,9 +17,6 @@
 namespace xmipp4
 {
 namespace cpu
-{
-
-namespace detail
 {
 
 /**
@@ -81,84 +69,15 @@ private:
 	std::vector<joint_layout> m_blocks;
 };
 
-} // namespace detail
-
-template <typename Op, typename ShiftPolicy>
-operation_id
-roll_program_builder<Op, ShiftPolicy>::get_operation_id() const noexcept
-{
-	return operation_id::of<Op>();
-}
-
-template <typename Op, typename ShiftPolicy>
-backend_priority
-roll_program_builder<Op, ShiftPolicy>::get_suitability(
-	const operation &operation,
+template <typename Op, typename ShiftPolicy, typename TypeDispatcher>
+std::vector<joint_layout>
+roll_program_builder<Op, ShiftPolicy, TypeDispatcher>::make_plan(
+	const Op &operation,
 	span<const operand_signature> output_signatures,
-	span<const operand_signature> input_signatures,
-	xmipp4::command_queue &queue
+	span<const operand_signature> input_signatures
 ) const
 {
-	const auto base = program_builder::get_suitability(
-		operation, output_signatures, input_signatures, queue
-	);
-	if (base == backend_priority::unsupported)
-	{
-		return base;
-	}
-
-	if (output_signatures.size() != Op::output_operand_count ||
-	    input_signatures.size() != Op::input_operand_count)
-	{
-		return backend_priority::unsupported;
-	}
-
-	const std::array<numerical_type, 1> output_types = {
-		output_signatures[0].get_data_type()
-	};
-	const std::array<numerical_type, 1> input_types = {
-		input_signatures[0].get_data_type()
-	};
-
-	using type_dispatcher_type = rule_type_dispatcher<typename Op::type_rule>;
-	const auto supported =
-		detail::dispatcher_support_query<type_dispatcher_type>::is_supported(
-			make_span(output_types.data(), output_types.size()),
-			make_span(input_types.data(), input_types.size())
-		);
-	if (!supported)
-	{
-		return backend_priority::unsupported;
-	}
-
-	return base;
-}
-
-template <typename Op, typename ShiftPolicy>
-std::shared_ptr<xmipp4::program>
-roll_program_builder<Op, ShiftPolicy>::build(
-	const operation &operation,
-	span<const operand_signature> output_signatures,
-	span<const operand_signature> input_signatures,
-	xmipp4::command_queue& /*queue*/,
-	program_cache* /*cache*/
-) const
-{
-	if (output_signatures.size() != Op::output_operand_count)
-	{
-		throw std::invalid_argument(
-			"roll_program_builder::build: Unexpected output signature count."
-		);
-	}
-	if (input_signatures.size() != Op::input_operand_count)
-	{
-		throw std::invalid_argument(
-			"roll_program_builder::build: Unexpected input signature count."
-		);
-	}
-
-	const auto &typed_operation = operation_cast<Op>(operation);
-	const auto axes = typed_operation.get_shape_policy().get_axes();
+	const auto axes = operation.get_shape_policy().get_axes();
 
 	const auto &output_layout = output_signatures[0].get_layout();
 	const auto &input_layout = input_signatures[0].get_layout();
@@ -181,7 +100,7 @@ roll_program_builder<Op, ShiftPolicy>::build(
 		}
 	}
 
-	auto blocks = build_roll_blocks(
+	return build_roll_blocks(
 		make_span(extents),
 		make_span(output_strides),
 		output_layout.get_offset(),
@@ -189,33 +108,23 @@ roll_program_builder<Op, ShiftPolicy>::build(
 		input_layout.get_offset(),
 		make_span(shifts)
 	);
+}
 
-	const std::array<numerical_type, 1> output_types = {
-		output_signatures[0].get_data_type()
-	};
-	const std::array<numerical_type, 1> input_types = {
-		input_signatures[0].get_data_type()
-	};
+template <typename Op, typename ShiftPolicy, typename TypeDispatcher>
+template <typename... Outs, typename... Ins>
+auto
+roll_program_builder<Op, ShiftPolicy, TypeDispatcher>::make_loop_functor(
+	const Op& /*operation*/,
+	std::vector<joint_layout> &blocks,
+	type_list<Outs...> output_element_types,
+	type_list<Ins...> /*input_element_types*/
+) const
+{
+	using out_t = typename type_list_element<
+		0, decltype(output_element_types)
+	>::type;
 
-	using type_dispatcher_type = rule_type_dispatcher<typename Op::type_rule>;
-	return type_dispatcher_type::dispatch(
-		Op::get_static_descriptor(),
-		[&blocks]
-		(auto output_element_types, auto input_element_types)
-		{
-			using out_t = typename type_list_element<
-				0, decltype(output_element_types)
-			>::type;
-
-			return make_functor_program(
-				detail::roll_kernel<out_t>(std::move(blocks)),
-				output_element_types,
-				input_element_types
-			);
-		},
-		output_types,
-		input_types
-	);
+	return roll_kernel<out_t>(std::move(blocks));
 }
 
 } // namespace cpu

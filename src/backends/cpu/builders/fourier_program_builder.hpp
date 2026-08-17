@@ -9,6 +9,8 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/program_builder_registration.hpp>
+
 #include <backends/cpu/builders/fourier_transform.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
@@ -110,14 +112,9 @@ private:
  * @param transform The transform to perform.
  */
 #define XMIPP4_REGISTER_FOURIER_PROGRAM_BUILDER(name, op, transform) \
-	static const ::xmipp4::program_builder_registration< \
-		::xmipp4::cpu::fourier_program_builder< \
-			op, \
-			transform \
-		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
+		::xmipp4::cpu::fourier_program_builder<op, transform> \
 	)
 
 /**
@@ -135,15 +132,11 @@ private:
 #define XMIPP4_REGISTER_FOURIER_PROGRAM_BUILDER_EX( \
 	name, op, transform, ... \
 ) \
-	static const ::xmipp4::program_builder_registration< \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
 		::xmipp4::cpu::fourier_program_builder< \
-			op, \
-			transform, \
-			__VA_ARGS__ \
+			op, transform, __VA_ARGS__ \
 		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
 	)
 
 #include "fourier_program_builder.inl"

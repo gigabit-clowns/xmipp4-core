@@ -9,6 +9,8 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/program_builder_registration.hpp>
+
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
 #include <memory>
@@ -91,14 +93,9 @@ private:
  * @param kernel_factory Factory producing the per-element kernel.
  */
 #define XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(name, op, kernel_factory) \
-	static const ::xmipp4::program_builder_registration< \
-		::xmipp4::cpu::elementwise_program_builder< \
-			op, \
-			kernel_factory \
-		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
+		::xmipp4::cpu::elementwise_program_builder<op, kernel_factory> \
 	)
 
 /**
@@ -117,15 +114,11 @@ private:
 #define XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER_EX( \
 	name, op, kernel_factory, ... \
 ) \
-	static const ::xmipp4::program_builder_registration< \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
 		::xmipp4::cpu::elementwise_program_builder< \
-			op, \
-			kernel_factory, \
-			__VA_ARGS__ \
+			op, kernel_factory, __VA_ARGS__ \
 		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
 	)
 
 #include "elementwise_program_builder.inl"

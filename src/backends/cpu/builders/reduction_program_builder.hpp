@@ -9,6 +9,7 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/program_builder_registration.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
 #include <memory>
@@ -88,6 +89,24 @@ private:
 	XMIPP4_NO_UNIQUE_ADDRESS type_dispatcher_type m_type_dispatcher;
 };
 
+/**
+ * @brief A reduction builder reporting where it found something.
+ *
+ * Names the traversal requirement so that a registration does not have to
+ * respell the default type dispatcher merely to reach past it.
+ *
+ * @tparam Op The operation type this builder targets.
+ * @tparam KernelFactory Factory producing the reduction kernel.
+ */
+template <typename Op, typename KernelFactory>
+using indexed_reduction_program_builder =
+	reduction_program_builder<
+		Op,
+		KernelFactory,
+		rule_type_dispatcher<typename Op::type_rule>,
+		true
+	>;
+
 } // namespace cpu
 } // namespace xmipp4
 
@@ -102,14 +121,9 @@ private:
  * @param kernel_factory Factory producing the reduction kernel.
  */
 #define XMIPP4_REGISTER_REDUCTION_PROGRAM_BUILDER(name, op, kernel_factory) \
-	static const ::xmipp4::program_builder_registration< \
-		::xmipp4::cpu::reduction_program_builder< \
-			op, \
-			kernel_factory \
-		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
+		::xmipp4::cpu::reduction_program_builder<op, kernel_factory> \
 	)
 
 /**
@@ -127,16 +141,9 @@ private:
 #define XMIPP4_REGISTER_INDEXED_REDUCTION_PROGRAM_BUILDER( \
 	name, op, kernel_factory \
 ) \
-	static const ::xmipp4::program_builder_registration< \
-		::xmipp4::cpu::reduction_program_builder< \
-			op, \
-			kernel_factory, \
-			::xmipp4::cpu::rule_type_dispatcher<typename op::type_rule>, \
-			true \
-		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
+		::xmipp4::cpu::indexed_reduction_program_builder<op, kernel_factory> \
 	)
 
 /**
@@ -155,15 +162,11 @@ private:
 #define XMIPP4_REGISTER_REDUCTION_PROGRAM_BUILDER_EX( \
 	name, op, kernel_factory, ... \
 ) \
-	static const ::xmipp4::program_builder_registration< \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
 		::xmipp4::cpu::reduction_program_builder< \
-			op, \
-			kernel_factory, \
-			__VA_ARGS__ \
+			op, kernel_factory, __VA_ARGS__ \
 		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
 	)
 
 #include "reduction_program_builder.inl"

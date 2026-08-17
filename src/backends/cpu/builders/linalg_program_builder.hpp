@@ -9,6 +9,8 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/program_builder_registration.hpp>
+
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 
 #include <cstddef>
@@ -99,14 +101,9 @@ private:
  * @param kernel_factory Factory producing the per-batch-element kernel.
  */
 #define XMIPP4_REGISTER_LINALG_PROGRAM_BUILDER(name, op, kernel_factory) \
-	static const ::xmipp4::program_builder_registration< \
-		::xmipp4::cpu::linalg_program_builder< \
-			op, \
-			kernel_factory \
-		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
+		::xmipp4::cpu::linalg_program_builder<op, kernel_factory> \
 	)
 
 /**
@@ -124,15 +121,11 @@ private:
 #define XMIPP4_REGISTER_LINALG_PROGRAM_BUILDER_EX( \
 	name, op, kernel_factory, ... \
 ) \
-	static const ::xmipp4::program_builder_registration< \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
 		::xmipp4::cpu::linalg_program_builder< \
-			op, \
-			kernel_factory, \
-			__VA_ARGS__ \
+			op, kernel_factory, __VA_ARGS__ \
 		> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
 	)
 
 #include "linalg_program_builder.inl"

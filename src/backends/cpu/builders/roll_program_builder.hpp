@@ -8,6 +8,8 @@
 
 #include <core/dispatch/core_program_builder_registry.hpp>
 
+#include <backends/cpu/builders/program_builder_registration.hpp>
+
 #include <memory>
 
 namespace xmipp4
@@ -65,11 +67,9 @@ public:
  * @param shift_policy The shift policy type.
  */
 #define XMIPP4_REGISTER_ROLL_PROGRAM_BUILDER(name, op, shift_policy) \
-	static const ::xmipp4::program_builder_registration< \
+	XMIPP4_REGISTER_CPU_PROGRAM_BUILDER( \
+		name, \
 		::xmipp4::cpu::roll_program_builder<op, shift_policy> \
-	> \
-	name##_program_builder_registration( \
-		::xmipp4::get_core_program_builder_registry() \
 	)
 
 #include "roll_program_builder.inl"

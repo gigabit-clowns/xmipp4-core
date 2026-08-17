@@ -69,6 +69,15 @@ class fourier_program_builder final
 	>
 {
 public:
+	static_assert(
+		Op::output_operand_count == 1,
+		"A Fourier transform produces exactly one operand."
+	);
+	static_assert(
+		Op::input_operand_count == 1,
+		"A Fourier transform takes exactly one operand."
+	);
+
 	fourier_program_builder() noexcept = default;
 
 	/**
@@ -110,16 +119,6 @@ public:
 		type_list<Ins...> input_element_types
 	) const;
 
-private:
-
-	static_assert(
-		Op::output_operand_count == 1,
-		"A Fourier transform produces exactly one operand."
-	);
-	static_assert(
-		Op::input_operand_count == 1,
-		"A Fourier transform takes exactly one operand."
-	);
 };
 
 } // namespace cpu

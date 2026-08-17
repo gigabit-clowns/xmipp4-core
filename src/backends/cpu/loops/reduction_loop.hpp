@@ -112,6 +112,17 @@ struct has_reduction_identity;
  * and are unrelated to the number of outputs: a kernel may keep two
  * accumulators and write one output, or the other way round.
  *
+ * A kernel additionally carries
+ * @code
+ * kernel.merge(accumulators..., others...)
+ * @endcode
+ * folding one set of accumulators into another. This loop never calls it,
+ * being single threaded: it is the part of the concept a parallel reduction
+ * needs, where a reduced vector is split across workers and their partial
+ * accumulators are combined at the end. It is reserved for that rather than
+ * left over from anything, and is kept in step with `combine` so the two
+ * cannot disagree once it is used.
+ *
  * @tparam Kernel The reduction kernel.
  * @tparam Outs Element types of the outputs.
  * @tparam Ins Element types of the inputs.

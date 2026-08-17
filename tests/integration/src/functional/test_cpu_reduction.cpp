@@ -629,6 +629,63 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
 	reduction_verb_fixture,
+	"argmax and argmin locate a not-a-number wherever it sits",
+	"[array_reduction][cpu]"
+)
+{
+	// The same rule amax and amin take an extremum by: a not-a-number wins
+	// against any number, from either side. NumPy's argmax answers with its
+	// place rather than skipping over it, which nanargmax is for.
+	const std::vector<std::size_t> extents = { 4 };
+	const std::vector<element_value> values = {
+		1, not_a_number, 3, 2
+	};
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+	check_values<int64_t>(
+		xmipp4::argmax(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 1 }
+	);
+	check_values<int64_t>(
+		xmipp4::argmin(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
+	"argmax and argmin keep the first of several not-a-numbers",
+	"[array_reduction][cpu]"
+)
+{
+	// Nothing displaces one already held, so a later one does not take its
+	// place, the same way a tie keeps the first place it was seen.
+	const std::vector<std::size_t> extents = { 4 };
+	const std::vector<element_value> values = {
+		5, not_a_number, 7, not_a_number
+	};
+	auto operand = make_sequence_operand<float32_t>(extents, values);
+	const const_array_ref operand_ref = operand;
+
+	const std::vector<std::ptrdiff_t> axes = { 0 };
+	check_values<int64_t>(
+		xmipp4::argmax(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 1 }
+	);
+	check_values<int64_t>(
+		xmipp4::argmin(operand_ref, make_span(axes), false, context, nullptr),
+		{},
+		{ 1 }
+	);
+}
+
+TEST_CASE_METHOD(
+	reduction_verb_fixture,
 	"argmax and argmin reject a reduction over no elements",
 	"[array_reduction][cpu]"
 )

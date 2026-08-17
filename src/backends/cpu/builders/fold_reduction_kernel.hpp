@@ -5,6 +5,7 @@
 #include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
+#include <backends/cpu/builders/reduction_compute_type.hpp>
 #include <backends/cpu/load_store.hpp>
 
 #include <cstddef>
@@ -22,22 +23,6 @@ namespace cpu
 // the builders and not in kernels/, which is for the arithmetic itself: a
 // fold's own body belongs in its operation's translation unit, or in kernels/
 // when several operations share it.
-
-/**
- * @brief The type a reduction accumulator over storage type T holds.
- *
- * The widening rule of @ref element_compute_type under the name a reduction
- * reads it by: an accumulator is typed on the computation type rather than
- * on the storage type, which is what keeps a reduction of half precision
- * data from accumulating rounding error at every step.
- *
- * @tparam T The storage element type.
- */
-template <typename T>
-struct reduction_compute_type
-	: element_compute_type<T>
-{
-};
 
 /**
  * @brief The default way an element enters an accumulator.

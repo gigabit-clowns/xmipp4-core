@@ -227,19 +227,25 @@ void gemm_call_strided(
  * eigen_scalar_support decides what this backend executes at all; this is
  * the separate, narrower question of what is worth the compile time cost of
  * naming small extents as literals individually. Every other supported type
- * (the fixed-width integers) still executes correctly and still keeps
- * whichever operands are contiguous unrolled-free of a runtime stride,
- * through gemm_call_contiguous<Dynamic, Dynamic, Dynamic, ...> alone, just
- * without any dimension named as a literal.
+ * still executes correctly and still keeps whichever operands are
+ * contiguous free of a runtime stride, through
+ * gemm_call_contiguous<Dynamic, Dynamic, Dynamic, ...> alone, just without
+ * any dimension named as a literal.
+ *
+ * The real types alone are on the grid. A complex scalar costs about the
+ * same to compile as a real one and, being four real multiplies per
+ * element, gains proportionally less from having its extents unrolled;
+ * together the two of them were the larger half of a grid that no CI
+ * runner could compile four translation units of at once. The small fixed
+ * shapes this exists for, the 3x3 and 4x4 of a rotation or a homogeneous
+ * transform, are real in every case this codebase has.
  */
 template <typename T>
 struct eigen_fixed_path_support
 	: std::integral_constant<
 		bool,
 		std::is_same<T, float>::value ||
-		std::is_same<T, double>::value ||
-		std::is_same<T, std::complex<float>>::value ||
-		std::is_same<T, std::complex<double>>::value
+		std::is_same<T, double>::value
 	>
 {
 };

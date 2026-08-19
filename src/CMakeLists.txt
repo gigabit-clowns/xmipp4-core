@@ -13,6 +13,8 @@ target_link_libraries(
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
 		half
+		pocketfft
+		Eigen3::Eigen
 		${CMAKE_DL_LIBS}
 )
 if(WIN32)
@@ -86,7 +88,6 @@ function(xmipp4_add_component NAME DIR)
 		target_compile_options(
 			${NAME}
 			PRIVATE
-				/bigobj
 				/W4
 				/wd4996 # getenv warning
 		)

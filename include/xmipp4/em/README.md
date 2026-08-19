@@ -37,8 +37,24 @@ Every backend implements its `program_builder`s for em operations under
 - plugin repositories (e.g. rexlib-cuda) mirror the same skeleton and
   expose their builder SDK as `<xmipp4/backends/<name>/...>`.
 
-Builders are registered through the backend's `program_builder_registrar`
-alongside the generic ones.
+The **category** decides the directory; the builder family does not. A
+generic family template serves operations from several categories at
+once, so its instantiations are scattered across the category
+directories, and a category directory holds whichever families its
+operations happen to need. Among the generic builders `vecdot` is a
+reduction living in `linalg/`, `fftshift` a roll living in `fourier/`,
+and `arange` a sequence living in `creation/`. None of those is a
+misfiling.
+
+The family templates themselves, and the adapters to their kernel
+concepts, sit at the top level of `builders/`. What a family plans lives
+in `plans/`, beside `builders/`, because a plan is stored in the program
+and read on every execution rather than discarded after `build()`.
+Arithmetic shared by more than one operation lives in `kernels/`.
+
+Each builder is one self-contained `.cpp` ending in an
+`XMIPP4_REGISTER_*_PROGRAM_BUILDER` macro, which registers it at static
+initialization; there is no registrar list to add to.
 
 ## Coverage policy
 

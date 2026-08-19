@@ -5,6 +5,8 @@
 #include <xmipp4/functional/selection.hpp>
 
 #include <xmipp4/ops/selection/clip_operation.hpp>
+#include <xmipp4/ops/selection/maximum_operation.hpp>
+#include <xmipp4/ops/selection/minimum_operation.hpp>
 #include <xmipp4/ops/selection/where_operation.hpp>
 
 #include "fixtures/verb_dispatch_fixture.hpp"
@@ -36,4 +38,22 @@ TEST_CASE_METHOD(
 )
 {
 	check_ternary_verb<clip_operation>(clip);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"maximum dispatches a maximum_operation with both inputs in order",
+	"[array_selection]"
+)
+{
+	check_binary_verb<maximum_operation>(maximum);
+}
+
+TEST_CASE_METHOD(
+	verb_dispatch_fixture,
+	"minimum dispatches a minimum_operation with both inputs in order",
+	"[array_selection]"
+)
+{
+	check_binary_verb<minimum_operation>(minimum);
 }

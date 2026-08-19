@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/dispatch/execute.hpp>
 #include <xmipp4/ops/selection/clip_operation.hpp>
+#include <xmipp4/ops/selection/maximum_operation.hpp>
+#include <xmipp4/ops/selection/minimum_operation.hpp>
 #include <xmipp4/ops/selection/where_operation.hpp>
 
 namespace xmipp4
@@ -29,6 +31,26 @@ array clip(
 )
 {
 	return execute_ternary(ops::clip_operation(), x, lower, upper, context, out);
+}
+
+array maximum(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(ops::maximum_operation(), x, y, context, out);
+}
+
+array minimum(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out
+)
+{
+	return execute_binary(ops::minimum_operation(), x, y, context, out);
 }
 
 } // namespace xmipp4

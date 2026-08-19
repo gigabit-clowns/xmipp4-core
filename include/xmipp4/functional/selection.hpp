@@ -55,4 +55,50 @@ array clip(
 	array *out = nullptr
 );
 
+/**
+ * @brief Take the element-wise maximum of two arrays.
+ *
+ * Selects, element by element, whichever of the two operands is greater,
+ * which is the lower half of a @ref clip taken on its own.
+ *
+ * @param x The first array.
+ * @param y The second array.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise maximum.
+ *
+ * @note Complex arrays are not accepted, the complex plane having no
+ * ordering.
+ */
+XMIPP4_CORE_API
+array maximum(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Take the element-wise minimum of two arrays.
+ *
+ * Selects, element by element, whichever of the two operands is smaller,
+ * which is the upper half of a @ref clip taken on its own.
+ *
+ * @param x The first array.
+ * @param y The second array.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the element-wise minimum.
+ *
+ * @note Complex arrays are not accepted, the complex plane having no
+ * ordering.
+ */
+XMIPP4_CORE_API
+array minimum(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
 } // namespace xmipp4

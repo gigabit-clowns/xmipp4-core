@@ -41,6 +41,21 @@ add_dependencies(
 	xmipp4-test-assets
 )
 
+# On Windows enable big objects
+if(MSVC)
+	target_compile_options(
+		xmipp4-core-unitary-tests
+		PRIVATE
+			/bigobj
+	)
+elseif(MINGW)
+	target_compile_options(
+		xmipp4-core-unitary-tests
+		PRIVATE
+			-Wa,-mbig-obj
+	)
+endif()
+
 if(MSVC)
 	target_compile_options(
 		xmipp4-core-unitary-tests

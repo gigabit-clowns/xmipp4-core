@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <xmipp4/ops/trigonometric/cos_operation.hpp>
+
+#include <backends/cpu/builders/elementwise_program_builder.hpp>
+#include <backends/cpu/builders/default_kernel_factory.hpp>
+#include <backends/cpu/load_store.hpp>
+
+#include <cmath>
+#include <complex>
+
+namespace xmipp4
+{
+namespace cpu
+{
+
+namespace
+{
+
+struct cos_kernel
+{
+	template <typename T>
+	void operator()(T *result, const T *x) const noexcept
+	{
+		using std::cos;
+		store(result, cos(load(x)));
+	}
+};
+
+} // anonymous namespace
+
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+	cos,
+	ops::cos_operation,
+	default_kernel_factory<cos_kernel>
+);
+
+} // namespace cpu
+} // namespace xmipp4

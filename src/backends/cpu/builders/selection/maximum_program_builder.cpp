@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <xmipp4/ops/selection/maximum_operation.hpp>
+
+#include <backends/cpu/builders/elementwise_program_builder.hpp>
+#include <backends/cpu/builders/default_kernel_factory.hpp>
+#include <backends/cpu/kernels/ordering.hpp>
+#include <backends/cpu/load_store.hpp>
+
+namespace xmipp4
+{
+namespace cpu
+{
+
+namespace
+{
+
+struct maximum_kernel
+{
+	template <typename T>
+	void operator()(T *result, const T *x, const T *y) const noexcept
+	{
+		store(result, maximum_of(load(x), load(y)));
+	}
+};
+
+} // anonymous namespace
+
+XMIPP4_REGISTER_ELEMENTWISE_PROGRAM_BUILDER(
+	maximum,
+	ops::maximum_operation,
+	default_kernel_factory<maximum_kernel>
+);
+
+} // namespace cpu
+} // namespace xmipp4

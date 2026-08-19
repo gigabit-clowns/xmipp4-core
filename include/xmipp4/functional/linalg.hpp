@@ -34,20 +34,49 @@ array matmul(
 );
 
 /**
- * @brief Contract the last axis of one array with an axis of another.
+ * @brief Multiply a stack of matrices by a stack of vectors.
  *
- * @param x The first array.
- * @param y The second array.
+ * @param x The stack of matrices.
+ * @param y The stack of vectors.
  * @param context The execution context used for dispatching.
  * @param out Optional output parameter to be re-used.
- * @return array The array holding the product.
+ * @return array The array holding the products.
  *
- * @note Sums the products over the last axis of @p x and the second to last of
- * @p y, keeping every other axis of both. This agrees with @ref matmul
- * for one and two dimensional inputs and differs beyond that.
+ * @note The matrix's last axis is contracted with the vector's last axis,
+ * and everything before is a stack broadcast between the operands, as
+ * with @ref matmul. Unlike @ref matmul, neither operand is promoted: @p x
+ * must already have rank two or more and @p y rank one or more.
+ *
+ * @see vecmat
+ * @see matmul
  */
 XMIPP4_CORE_API
-array dot(
+array matvec(
+	const_array_ref x,
+	const_array_ref y,
+	const execution_context &context,
+	array *out = nullptr
+);
+
+/**
+ * @brief Multiply a stack of vectors by a stack of matrices.
+ *
+ * @param x The stack of vectors.
+ * @param y The stack of matrices.
+ * @param context The execution context used for dispatching.
+ * @param out Optional output parameter to be re-used.
+ * @return array The array holding the products.
+ *
+ * @note The vector's last axis is contracted with the matrix's second to
+ * last axis, and everything before is a stack broadcast between the
+ * operands. The mirror image of @ref matvec: neither operand is promoted,
+ * so @p x must already have rank one or more and @p y rank two or more.
+ *
+ * @see matvec
+ * @see matmul
+ */
+XMIPP4_CORE_API
+array vecmat(
 	const_array_ref x,
 	const_array_ref y,
 	const execution_context &context,
@@ -66,11 +95,9 @@ array dot(
  * @return array The array holding the contracted products.
  *
  * @note The inputs are broadcast together and the contracted axis is lost.
- * This differs from @ref dot, which keeps the leading axes of both inputs
- * rather than broadcasting them, and from @ref matmul, which takes the
- * last two axes as a matrix.
+ * This differs from @ref matmul, which takes the last two axes as a
+ * matrix.
  *
- * @see dot
  * @see matmul
  */
 XMIPP4_CORE_API

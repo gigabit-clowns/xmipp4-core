@@ -6,6 +6,7 @@
 
 #include <complex>
 #include <type_traits>
+#include <utility>
 
 namespace xmipp4
 {
@@ -156,6 +157,27 @@ void cast(std::complex<T> *destination, const std::complex<Q> *source) noexcept;
  */
 template <typename T, typename Q>
 void cast(std::complex<T> *destination, const Q *source) noexcept;
+
+/**
+ * @brief The type an element of storage type T is computed in.
+ *
+ * Reads the answer off @ref load rather than restating it, so that the
+ * widening rule has one definition: half precision has no arithmetic of its
+ * own and is widened on load and rounded back on store, and every other type
+ * is computed in itself.
+ *
+ * Anything holding an intermediate result, such as a reduction accumulator
+ * or the running value of a generated sequence, is typed on this rather than
+ * on the storage type, which is what keeps the rounding to the single step
+ * that writes the element.
+ *
+ * @tparam T The storage element type.
+ */
+template <typename T>
+struct element_compute_type
+{
+	using type = decltype(load(std::declval<const T*>()));
+};
 
 } // namespace cpu
 } // namespace xmipp4

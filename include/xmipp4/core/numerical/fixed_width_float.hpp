@@ -32,8 +32,17 @@ public:
 
 	operator float() const noexcept;
 
+	/**
+	 * @brief Obtain the underlying bit pattern.
+	 *
+	 * Defined inline so that every translation unit including this header
+	 * sees the member being read: the attribute this replaces was ignored
+	 * by GCC on a non-static data member.
+	 */
+	std::uint16_t get_bits() const noexcept { return m_bits; }
+
 private:
-	XMIPP4_UNUSED std::uint16_t m_bits; 
+	std::uint16_t m_bits;
 };
 static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
 

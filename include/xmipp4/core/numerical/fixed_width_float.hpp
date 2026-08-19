@@ -35,11 +35,9 @@ public:
 	/**
 	 * @brief Obtain the underlying bit pattern.
 	 *
-	 * Defined inline so that every translation unit including this header
-	 * sees the member being read: the attribute this replaces was ignored
-	 * by GCC on a non-static data member.
+	 * @return std::uint16_t Unsigned integer with the bits.
 	 */
-	std::uint16_t get_bits() const noexcept { return m_bits; }
+	std::uint16_t get_bits() const noexcept;
 
 private:
 	std::uint16_t m_bits;

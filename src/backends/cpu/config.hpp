@@ -20,6 +20,11 @@
 	#define XMIPP4_REDUCTION_TILE_BUDGET 16384UL
 #endif
 
+// Every worker of a threaded reduction holds a tile of its own, on its own
+// stack, so this is a per thread cost. At the default it is 16 KB against the
+// 8 MB, 1 MB and 512 KB default thread stacks of glibc, MSVC and musl; raising
+// it past about 64 KB needs a look at the last of those.
+//
 // Bounds on the resulting tile. A tile shorter than the minimum stops the
 // input reads from streaming, whatever the accumulators cost; one longer than
 // the maximum stops fitting.
@@ -38,4 +43,21 @@
 // local statics inside pocketfft itself.
 #ifndef XMIPP4_POCKETFFT_CACHE_SIZE
 	#define XMIPP4_POCKETFFT_CACHE_SIZE 16UL
+#endif
+
+// How much elementwise work a thread has to be given for waking it to pay for
+// itself: the hand-off, the cache line the two threads either side of a chunk
+// boundary share, and the join. A loop below one of these runs on the calling
+// thread alone.
+//
+// Stated in elementwise operations, so that a loop whose iteration costs more
+// than one of them divides it down rather than inventing a unit of its own: a
+// reduction's surviving element costs as many as it folds, and a linalg batch
+// element costs a whole matrix product. See grain_for_cost.
+//
+// This is the default. It may be overridden at run time through the
+// XMIPP4_PARALLEL_GRAIN_SIZE environment variable, which is what lets a test
+// suite of small operands reach the threaded paths at all.
+#ifndef XMIPP4_PARALLEL_GRAIN_SIZE
+	#define XMIPP4_PARALLEL_GRAIN_SIZE 32768UL
 #endif

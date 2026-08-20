@@ -68,9 +68,16 @@ public:
 		std::size_t last_dim
 	) const;
 
+	std::size_t seek(
+		joint_cursor &ite,
+		std::size_t position,
+		std::size_t first_dim,
+		std::size_t last_dim
+	) const;
+
 	std::size_t next(
-		joint_cursor &ite, 
-		std::size_t n, 
+		joint_cursor &ite,
+		std::size_t n,
 		std::size_t first_dim,
 		std::size_t last_dim
 	) const noexcept;

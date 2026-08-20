@@ -118,9 +118,42 @@ public:
 	) const;
 
 	/**
+	 * @brief Populate a cursor for traversing this layout, positioned at a
+	 * given point of the traversal.
+	 *
+	 * The position counts the way the traversal does, `first_dim` varying
+	 * fastest, so that a range of it names a contiguous stretch of the very
+	 * iteration `next()` performs: two cursors splitting that range visit
+	 * between them exactly what one cursor visits alone. This is what lets an
+	 * iteration be shared out, whether over threads or over anything else.
+	 *
+	 * `seek(ite, 0, ...)` is `iter(ite, ...)`.
+	 *
+	 * @param ite The iterator to be populated.
+	 * @param position Index into the iterated range, counting `first_dim`
+	 * fastest. Must be less than the number of positions that range holds.
+	 * Otherwise behavior is undefined.
+	 * @param first_dim Index of the inner-most dimension to be iterated. Must
+	 * be less or equal to get_rank(). Defaults to zero.
+	 * @param last_dim Index of the outer-most dimension to be iterated. Must
+	 * be less or equal to `get_rank()` or equal to `end_dim`. Defaults to
+	 * `end_dim`.
+	 * @return std::size_t Number of remaining elements in the inner-most
+	 * iterated dimension, as `iter()` reports it. 0 if the layout can not be
+	 * iterated.
+	 */
+	XMIPP4_CORE_API
+	std::size_t seek(
+		joint_cursor &ite,
+		std::size_t position,
+		std::size_t first_dim = 0,
+		std::size_t last_dim = end_dim
+	) const;
+
+	/**
 	 * @brief Advance a cursor.
-	 * 
-	 * @param ite The iterator to be advanced. Must have been populated by 
+	 *
+	 * @param ite The iterator to be advanced. Must have been populated by
 	 * `iter()`. The previous call to `iter()` or `next()` must have returned
 	 * a non-zero value.
 	 * @param n Number of elements to be advanced. Must be less or equal to the 

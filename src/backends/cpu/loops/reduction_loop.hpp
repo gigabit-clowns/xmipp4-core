@@ -15,6 +15,8 @@ namespace xmipp4
 namespace cpu
 {
 
+class loop_schedule;
+
 /**
  * @defgroup cpu_reduction_loop Reduction loop
  *
@@ -154,6 +156,53 @@ void run_reduction_loop(
 	std::size_t reduction_count,
 	const std::tuple<Outs*...> &outputs,
 	const std::tuple<const Ins*...> &inputs
+);
+
+/**
+ * @brief Fold the inputs into the outputs, spreading the surviving space over
+ * the threads a schedule names.
+ *
+ * As the unscheduled overload, but the surviving space is cut into contiguous
+ * ranges and each is folded by one thread. Every output is written by exactly
+ * one of them, and each is folded in the order it would be folded serially,
+ * so the answer is the same bit for bit whatever the number of threads and
+ * whatever the kernel. `merge` is not needed here and is not called.
+ *
+ * The threads divide the outputs, so a reduction with few of them and a deep
+ * fold behind each, of which a reduction to a scalar is the extreme, gains
+ * nothing from this. Splitting the fold itself is what that case needs.
+ *
+ * The kernel is invoked concurrently on one and the same object. Every
+ * accumulator and cursor a chunk works with belongs to that chunk, so a
+ * kernel holding no state of its own, which is what every one of them holds,
+ * needs no thought.
+ *
+ * @tparam Kernel The reduction kernel.
+ * @tparam Outs Element types of the outputs.
+ * @tparam Ins Element types of the inputs.
+ * @param kernel The kernel describing the fold.
+ * @param kept_layout Layout over the axes that survive.
+ * @param reduced_layout Layout over the axes being folded away.
+ * @param reduction_count How many elements each output folds.
+ * @param outputs Base pointer of each output.
+ * @param inputs Base pointer of each input.
+ * @param schedule The threads to spread the loop over.
+ *
+ * @throws std::invalid_argument if the reduction is over no elements and the
+ * kernel has no identity.
+ *
+ * @see run_reduction_loop
+ * @see loop_schedule
+ */
+template <typename Kernel, typename... Outs, typename... Ins>
+void run_reduction_loop(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const std::tuple<Outs*...> &outputs,
+	const std::tuple<const Ins*...> &inputs,
+	const loop_schedule &schedule
 );
 
 /** @} */

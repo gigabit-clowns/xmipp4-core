@@ -3,6 +3,8 @@
 #include "reduction_loop.hpp"
 
 #include "inner_loop_stride_dispatch.hpp"
+#include "loop_schedule.hpp"
+#include "parallel_grain.hpp"
 #include "../config.hpp"
 
 #include <xmipp4/core/layout/joint_cursor.hpp>
@@ -235,12 +237,27 @@ public:
 	}
 
 	/**
-	 * @brief Reduce into every output element.
+	 * @brief Reduce into a range of the output elements.
+	 *
+	 * The range is over the surviving space, so it names a set of outputs.
+	 * Two runners covering a range between them fill exactly the outputs one
+	 * runner over the whole of it fills, each output folded by exactly one of
+	 * them and in the order it would be folded serially. That is what lets
+	 * the surviving space be shared out without the kernel having to merge
+	 * anything.
+	 *
+	 * @param begin First position of the surviving space to fill.
+	 * @param end Past-the-end position of the surviving space to fill.
 	 */
-	void run()
+	void run_range(std::size_t begin, std::size_t end)
 	{
-		auto vector_size = m_kept_layout.iter(m_kept_cursor);
-		if (vector_size == 0)
+		if (begin >= end)
+		{
+			return;
+		}
+
+		auto run = m_kept_layout.seek(m_kept_cursor, begin);
+		if (run == 0)
 		{
 			return; // The outputs are empty, so there is nothing to fill.
 		}
@@ -250,11 +267,23 @@ public:
 		// allocate once per tile, iter() building a fresh cursor every call.
 		m_reduced_vector_size = m_reduced_layout.iter(m_reduced_cursor);
 
-		do
+		auto remaining = end - begin;
+		for (;;)
 		{
+			// run_kept_vector steps from wherever the cursor sits, so a
+			// cursor parked inside a vector is handed what is left of it.
+			const auto vector_size = std::min(run, remaining);
 			run_kept_vector(vector_size);
+
+			remaining -= vector_size;
+			if (remaining == 0)
+			{
+				break;
+			}
+
+			run = m_kept_layout.next(m_kept_cursor, vector_size);
+			XMIPP4_ASSERT( run > 0 );
 		}
-		while ((vector_size = m_kept_layout.next(m_kept_cursor, vector_size)));
 	}
 
 private:
@@ -608,7 +637,9 @@ void run_reduction_loop_runner(
 	const Outputs &outputs,
 	const Inputs &inputs,
 	const KeptStrides &kept_strides,
-	const ReducedStrides &reduced_strides
+	const ReducedStrides &reduced_strides,
+	std::size_t begin,
+	std::size_t end
 )
 {
 	using runner_type = reduction_loop_runner<
@@ -629,7 +660,7 @@ void run_reduction_loop_runner(
 		kept_strides,
 		reduced_strides
 	);
-	runner.run();
+	runner.run_range(begin, end);
 }
 
 } // namespace detail
@@ -663,31 +694,73 @@ void run_reduction_loop(
 	const std::tuple<const Ins*...> &inputs
 )
 {
+	run_reduction_loop(
+		kernel,
+		kept_layout,
+		reduced_layout,
+		reduction_count,
+		outputs,
+		inputs,
+		loop_schedule()
+	);
+}
+
+template <typename Kernel, typename... Outs, typename... Ins>
+inline
+void run_reduction_loop(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const std::tuple<Outs*...> &outputs,
+	const std::tuple<const Ins*...> &inputs,
+	const loop_schedule &schedule
+)
+{
 	XMIPP4_CONST_CONSTEXPR std::index_sequence_for<Ins...> input_indices {};
 
-	dispatch_inner_loop_strides(
-		[&] (auto kept_strides)
+	// One iteration of the surviving space folds the whole reduced space, so
+	// that is what an iteration costs and what the grain is stated in.
+	const auto cost = reduction_count > 0 ? reduction_count : 1;
+
+	// The split is outside both stride dispatches. Inside, the body handed to
+	// the pool would be a distinct type per pair of stride combinations and
+	// would instantiate the type erasure 3^(2N) times over. Outside, it is
+	// instantiated once and the dispatches are re-entered per chunk.
+	schedule.with_grain(grain_for_cost(cost)).run(
+		kept_layout.compute_element_count(),
+		[&] (std::size_t begin, std::size_t end)
 		{
 			dispatch_inner_loop_strides(
-				[&] (auto reduced_strides)
+				[&] (auto kept_strides)
 				{
-					detail::run_reduction_loop_runner(
-						kernel,
-						kept_layout,
+					dispatch_inner_loop_strides(
+						[&] (auto reduced_strides)
+						{
+							// A runner of its own per chunk, so that the
+							// cursors and the accumulator tiles it carries
+							// live on the stack of whichever thread runs it.
+							detail::run_reduction_loop_runner(
+								kernel,
+								kept_layout,
+								reduced_layout,
+								reduction_count,
+								outputs,
+								inputs,
+								kept_strides,
+								reduced_strides,
+								begin,
+								end
+							);
+						},
 						reduced_layout,
-						reduction_count,
-						outputs,
-						inputs,
-						kept_strides,
-						reduced_strides
+						input_indices
 					);
 				},
-				reduced_layout,
+				kept_layout,
 				input_indices
 			);
-		},
-		kept_layout,
-		input_indices
+		}
 	);
 }
 

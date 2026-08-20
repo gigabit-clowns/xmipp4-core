@@ -7,6 +7,7 @@
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <backends/cpu/loops/loop_schedule.hpp>
+#include <backends/cpu/loops/parallel_grain.hpp>
 #include <backends/cpu/loops/reduction_loop.hpp>
 
 #include <tuple>
@@ -40,16 +41,19 @@ public:
 		std::tuple<Outs*...> outputs,
 		std::tuple<const Ins*...> inputs,
 		std::tuple<>,
-		thread_pool &/*pool*/
+		thread_pool &pool
 	) const
 	{
+		// The grain is settled inside the loop, which is the only place that
+		// knows how deep the fold behind each output is.
 		run_reduction_loop(
 			m_functor,
 			m_plan.get_kept_layout(),
 			m_plan.get_reduced_layout(),
 			m_plan.get_reduction_count(),
 			outputs,
-			inputs
+			inputs,
+			loop_schedule(pool, 1)
 		);
 	}
 

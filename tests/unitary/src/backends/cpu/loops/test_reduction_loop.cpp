@@ -2,7 +2,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <backends/cpu/loops/loop_schedule.hpp>
 #include <backends/cpu/loops/reduction_loop.hpp>
+
+#include <xmipp4/backends/cpu/thread_pool.hpp>
+#include <xmipp4/core/platform/constexpr.hpp>
 
 #include <xmipp4/core/layout/joint_layout.hpp>
 #include <xmipp4/core/layout/joint_layout_builder.hpp>
@@ -11,6 +15,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
@@ -640,4 +645,139 @@ TEST_CASE(
 	CHECK( reduction_tile_size<two_large>::value <
 	       reduction_tile_size<one_large>::value );
 	CHECK( reduction_tile_size<two_large>::value > 0 );
+}
+
+namespace
+{
+
+/**
+ * @brief Sum the inputs, and report where the largest of them sat.
+ *
+ * Two accumulators of different kinds on purpose: the sum is what floating
+ * point reassociation would disturb, and the position is what a tie-break
+ * would. Both have to survive the surviving space being shared out.
+ */
+struct sum_and_argmax_kernel
+{
+	template <typename Outputs, typename Inputs>
+	struct accumulators;
+
+	template <typename... Outs, typename In>
+	struct accumulators<type_list<Outs...>, type_list<In>>
+	{
+		using type = type_list<double, std::int64_t, double>;
+	};
+
+	void seed(
+		double &total,
+		std::int64_t &where,
+		double &best,
+		const double *value,
+		std::size_t position
+	) const noexcept
+	{
+		total = *value;
+		best = *value;
+		where = static_cast<std::int64_t>(position);
+	}
+
+	void combine(
+		double &total,
+		std::int64_t &where,
+		double &best,
+		const double *value,
+		std::size_t position
+	) const noexcept
+	{
+		total += *value;
+		if (*value > best)
+		{
+			best = *value;
+			where = static_cast<std::int64_t>(position);
+		}
+	}
+
+	void finalize(
+		double *total_out,
+		std::int64_t *where_out,
+		double &total,
+		std::int64_t &where,
+		double &/*best*/,
+		std::size_t /*count*/
+	) const noexcept
+	{
+		*total_out = total;
+		*where_out = where;
+	}
+};
+
+} // anonymous namespace
+
+TEST_CASE(
+	"run_reduction_loop should give the same answer however many threads "
+	"fold the surviving space",
+	"[reduction_loop]"
+)
+{
+	// The surviving space is what gets shared out, so each output is still
+	// folded start to finish by one thread and in the serial order. The
+	// answer therefore has to match bit for bit, sums included, which is
+	// what a tolerance here would hide rather than check.
+	XMIPP4_CONST_CONSTEXPR std::size_t kept = 37;
+	XMIPP4_CONST_CONSTEXPR std::size_t reduced = 11;
+
+	std::vector<double> input(kept*reduced);
+	for (std::size_t i = 0; i < input.size(); ++i)
+	{
+		// Values whose sum depends on the order they are added in, so that a
+		// reassociated fold would be caught.
+		input[i] = 1.0 / static_cast<double>(i + 1);
+	}
+
+	const auto kept_layout = make_layout(
+		{ kept },
+		{ { static_cast<std::ptrdiff_t>(reduced) }, { 1 }, { 1 } }
+	);
+	const auto reduced_layout = make_layout({ reduced }, { { 1 } });
+
+	const auto fold =
+		[&] (const loop_schedule &schedule,
+		     std::vector<double> &totals,
+		     std::vector<std::int64_t> &wheres)
+		{
+			totals.assign(kept, 0.0);
+			wheres.assign(kept, -1);
+			run_reduction_loop(
+				sum_and_argmax_kernel(),
+				kept_layout,
+				reduced_layout,
+				reduced,
+				std::make_tuple(totals.data(), wheres.data()),
+				std::make_tuple(
+					static_cast<const double*>(input.data())
+				),
+				schedule
+			);
+		};
+
+	std::vector<double> serial_totals;
+	std::vector<std::int64_t> serial_wheres;
+	fold(loop_schedule(), serial_totals, serial_wheres);
+
+	// Every output was filled, so a silently skipped chunk would show.
+	CHECK( std::count(serial_wheres.cbegin(), serial_wheres.cend(), -1) == 0 );
+
+	for (std::size_t workers : { std::size_t(0), std::size_t(1),
+	                             std::size_t(3), std::size_t(8) })
+	{
+		thread_pool pool(workers);
+
+		std::vector<double> totals;
+		std::vector<std::int64_t> wheres;
+		fold(loop_schedule(pool, 1), totals, wheres);
+
+		INFO( "workers " << workers );
+		CHECK( totals == serial_totals );
+		CHECK( wheres == serial_wheres );
+	}
 }

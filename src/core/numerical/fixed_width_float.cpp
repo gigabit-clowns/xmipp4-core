@@ -22,4 +22,9 @@ float16_t::operator float() const noexcept
 	return float16_to_float(*this);
 }
 
+std::uint16_t float16_t::get_bits() const noexcept
+{
+	return m_bits;
+}
+
 } // namespace xmipp4

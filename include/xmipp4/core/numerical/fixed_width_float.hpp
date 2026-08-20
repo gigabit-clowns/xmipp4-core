@@ -32,8 +32,15 @@ public:
 
 	operator float() const noexcept;
 
+	/**
+	 * @brief Obtain the underlying bit pattern.
+	 *
+	 * @return std::uint16_t Unsigned integer with the bits.
+	 */
+	std::uint16_t get_bits() const noexcept;
+
 private:
-	XMIPP4_UNUSED std::uint16_t m_bits; 
+	std::uint16_t m_bits;
 };
 static_assert(sizeof(float16_t) == 2, "float16_t should be 2 bytes long");
 

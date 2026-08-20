@@ -12,6 +12,7 @@
 #include <xmipp4/core/platform/attributes.hpp>
 
 #include <algorithm>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -99,6 +100,97 @@ struct accumulator_tiles<type_list<Accumulators...>, Size>
 {
 	using type = std::tuple<std::array<Accumulators, Size>...>;
 };
+
+/**
+ * @brief The half-open slice of the reduced space one chunk folds.
+ *
+ * The first `count % chunk_count` chunks are one element longer than the
+ * rest, which balances them without ever leaving one empty. An empty slice
+ * would have no first element to seed from.
+ */
+inline
+void split_reduced_range(
+	std::size_t count,
+	std::size_t chunk_count,
+	std::size_t chunk,
+	std::size_t &begin,
+	std::size_t &end
+) noexcept
+{
+	const auto quotient = count / chunk_count;
+	const auto remainder = count % chunk_count;
+
+	begin = chunk*quotient + std::min(chunk, remainder);
+	end = begin + quotient;
+	if (chunk < remainder)
+	{
+		++end;
+	}
+}
+
+/**
+ * @brief One buffer per accumulator type, holding the partial answers every
+ * thread of a fold split arrived at.
+ *
+ * Separate buffers rather than one of a composite accumulator, for the reason
+ * @ref accumulator_tiles keeps them apart: the merge walks the accumulators of
+ * consecutive outputs.
+ *
+ * Sized at run time, unlike a tile, because it holds one entry per surviving
+ * element per chunk. This is only ever built when the surviving space is too
+ * small to share out, so that product stays small.
+ */
+template <typename Accumulators>
+struct accumulator_buffers;
+
+template <typename... Accumulators>
+struct accumulator_buffers<type_list<Accumulators...>>
+{
+	// An array rather than a std::vector, because std::vector<bool> packs its
+	// elements into bits and a reduction over booleans is an ordinary thing
+	// to ask for. Two threads writing what look like distinct entries would
+	// then be writing the same byte, which is a race the language gives no
+	// way to see and no way to fix from here.
+	using type = std::tuple<std::unique_ptr<Accumulators[]>...>;
+};
+
+/**
+ * @brief Give every buffer the same length.
+ *
+ * Indexed rather than typed: two accumulators of a kernel may well be of the
+ * same type, as the position and the value of an extremum are, and std::get
+ * by type would not know them apart.
+ */
+template <typename... Accumulators, std::size_t... As>
+inline
+void resize_accumulator_buffers(
+	std::tuple<std::unique_ptr<Accumulators[]>...> &buffers,
+	std::size_t size,
+	std::index_sequence<As...>
+)
+{
+	(void) std::initializer_list<int> {
+		(
+			std::get<As>(buffers) =
+				std::unique_ptr<Accumulators[]>(new Accumulators[size]()),
+			0
+		)...
+	};
+}
+
+template <typename... Accumulators>
+inline
+void resize_accumulator_buffers(
+	std::tuple<std::unique_ptr<Accumulators[]>...> &buffers,
+	std::size_t size
+)
+{
+	resize_accumulator_buffers(
+		buffers,
+		size,
+		std::index_sequence_for<Accumulators...>()
+	);
+}
 
 /**
  * @brief Stride of an operand along the innermost axis of a layout.
@@ -209,6 +301,49 @@ public:
 	using kept_strides = std::tuple<KeptStrides...>;
 	using reduced_strides = std::tuple<ReducedStrides...>;
 
+	using accumulator_types = typename Kernel::template accumulators<
+		type_list<Outs...>,
+		type_list<Ins...>
+	>::type;
+
+	static_assert(
+		type_list_size<accumulator_types>::value > 0,
+		"A reduction kernel must declare at least one accumulator."
+	);
+
+	static XMIPP4_CONST_CONSTEXPR std::size_t input_count = sizeof...(Ins);
+	static XMIPP4_CONST_CONSTEXPR std::size_t output_count = sizeof...(Outs);
+	static XMIPP4_CONST_CONSTEXPR std::size_t tile_size =
+		reduction_tile_size<accumulator_types>::value;
+
+	using tiles_type =
+		typename accumulator_tiles<accumulator_types, tile_size>::type;
+	using partial_buffers =
+		typename accumulator_buffers<accumulator_types>::type;
+	using accumulator_indices = std::make_index_sequence<
+		type_list_size<accumulator_types>::value
+	>;
+	using input_indices = std::index_sequence_for<Ins...>;
+	using output_indices = std::index_sequence_for<Outs...>;
+	using identity_available =
+		typename has_reduction_identity<Kernel, accumulator_types>::type;
+
+	// Whether the tile belongs outside the fold, which it does when the axis
+	// being folded is the contiguous one and the surviving axis is not. The
+	// first input decides: the others rarely disagree, and none of them is
+	// read more often than it.
+	using tile_outermost = std::integral_constant<
+		bool,
+		std::is_same<
+			typename std::tuple_element<0, reduced_strides>::type,
+			contiguous_stride_tag
+		>::value &&
+		!std::is_same<
+			typename std::tuple_element<0, kept_strides>::type,
+			contiguous_stride_tag
+		>::value
+	>;
+
 	reduction_loop_runner(
 		const Kernel &kernel,
 		const joint_layout &kept_layout,
@@ -251,6 +386,136 @@ public:
 	 */
 	void run_range(std::size_t begin, std::size_t end)
 	{
+		// A full sweep of the reduced space rewinds its cursor, so it is
+		// armed once here and reused by every tile. Arming it per tile would
+		// allocate once per tile, iter() building a fresh cursor every call.
+		m_reduced_vector_size = m_reduced_layout.iter(m_reduced_cursor);
+
+		walk_kept_range(
+			begin,
+			end,
+			[this] (
+				const input_pointers &inputs,
+				const output_pointers &outputs,
+				std::size_t /*kept_position*/,
+				std::size_t width
+			)
+			{
+				accumulate_tile(inputs, width);
+				finalize_tile(outputs, width);
+			}
+		);
+	}
+
+	/**
+	 * @brief Fold one slice of the reduced space into a set of partials.
+	 *
+	 * Walks the whole surviving space, folding only `[begin, end)` of the
+	 * reduced space into each tile, and leaves the accumulators in @p buffers
+	 * rather than finishing them into outputs. What every chunk leaves there
+	 * is merged afterwards by @ref merge_and_finalize.
+	 *
+	 * The accumulators are built in the runner's own tile and copied out once
+	 * per tile, rather than accumulated into @p buffers directly. With a
+	 * surviving space small enough for this to be the path taken, several
+	 * chunks' entries share a cache line, and folding into them would be
+	 * false sharing on the hottest variable of the loop.
+	 *
+	 * @param chunk Which chunk this is, deciding where in @p buffers it
+	 * writes.
+	 * @param kept_count How many surviving elements there are.
+	 * @param begin,end The slice of the reduced space to fold.
+	 * @param buffers Where the partial accumulators are left.
+	 */
+	void fold_reduced_slice(
+		std::size_t chunk,
+		std::size_t kept_count,
+		std::size_t begin,
+		std::size_t end,
+		partial_buffers &buffers
+	)
+	{
+		XMIPP4_ASSERT( begin < end );
+
+		// Where this slice starts. Every tile re-folds the same slice, so the
+		// cursor is positioned once and copied back rather than sought again.
+		m_reduced_vector_size = m_reduced_layout.seek(m_reduced_cursor, begin);
+		XMIPP4_ASSERT( m_reduced_vector_size > 0 );
+		m_reduced_origin = m_reduced_cursor;
+
+		const auto base = chunk*kept_count;
+		walk_kept_range(
+			0,
+			kept_count,
+			[this, base, begin, end, &buffers] (
+				const input_pointers &inputs,
+				const output_pointers &/*outputs*/,
+				std::size_t kept_position,
+				std::size_t width
+			)
+			{
+				accumulate_slice(inputs, width, begin, end);
+				store_tile(buffers, base + kept_position, width);
+			}
+		);
+	}
+
+	/**
+	 * @brief Merge every chunk's partials and write the outputs.
+	 *
+	 * Ascending in the chunk index, never in the order the chunks happened to
+	 * finish: merge is only required to keep the earlier of two equally good
+	 * answers, so the order it sees is what decides which one that is. Running
+	 * serially here is what makes that order the reduced space's own, and the
+	 * answer the same whichever thread did what.
+	 *
+	 * @param chunk_count How many chunks left partials.
+	 * @param kept_count How many surviving elements there are.
+	 * @param buffers The partial accumulators.
+	 */
+	void merge_and_finalize(
+		std::size_t chunk_count,
+		std::size_t kept_count,
+		const partial_buffers &buffers
+	)
+	{
+		walk_kept_range(
+			0,
+			kept_count,
+			[this, chunk_count, kept_count, &buffers] (
+				const input_pointers &/*inputs*/,
+				const output_pointers &outputs,
+				std::size_t kept_position,
+				std::size_t width
+			)
+			{
+				merge_tile(
+					buffers,
+					kept_position,
+					kept_count,
+					chunk_count,
+					width
+				);
+				finalize_tile(outputs, width);
+			}
+		);
+	}
+
+private:
+	/**
+	 * @brief Walk a range of the surviving space, tile by tile.
+	 *
+	 * @param begin,end The range of the surviving space to walk.
+	 * @param action Invoked per tile with the operand pointers displaced to
+	 * its start, the tile's position in the surviving space, and its width.
+	 */
+	template <typename Action>
+	void walk_kept_range(
+		std::size_t begin,
+		std::size_t end,
+		const Action &action
+	)
+	{
 		if (begin >= end)
 		{
 			return;
@@ -262,19 +527,16 @@ public:
 			return; // The outputs are empty, so there is nothing to fill.
 		}
 
-		// A full sweep of the reduced space rewinds its cursor, so it is
-		// armed once here and reused by every tile. Arming it per tile would
-		// allocate once per tile, iter() building a fresh cursor every call.
-		m_reduced_vector_size = m_reduced_layout.iter(m_reduced_cursor);
-
+		auto position = begin;
 		auto remaining = end - begin;
 		for (;;)
 		{
-			// run_kept_vector steps from wherever the cursor sits, so a
-			// cursor parked inside a vector is handed what is left of it.
+			// The cursor may be parked inside a vector, in which case what is
+			// left of it is what gets walked.
 			const auto vector_size = std::min(run, remaining);
-			run_kept_vector(vector_size);
+			walk_kept_vector(position, vector_size, action);
 
+			position += vector_size;
 			remaining -= vector_size;
 			if (remaining == 0)
 			{
@@ -286,52 +548,20 @@ public:
 		}
 	}
 
-private:
-	using accumulator_types = typename Kernel::template accumulators<
-		type_list<Outs...>,
-		type_list<Ins...>
-	>::type;
-
-	static_assert(
-		type_list_size<accumulator_types>::value > 0,
-		"A reduction kernel must declare at least one accumulator."
-	);
-
-	static XMIPP4_CONST_CONSTEXPR std::size_t input_count = sizeof...(Ins);
-	static XMIPP4_CONST_CONSTEXPR std::size_t output_count = sizeof...(Outs);
-	static XMIPP4_CONST_CONSTEXPR std::size_t tile_size =
-		reduction_tile_size<accumulator_types>::value;
-
-	using tiles_type =
-		typename accumulator_tiles<accumulator_types, tile_size>::type;
-	using accumulator_indices = std::make_index_sequence<
-		type_list_size<accumulator_types>::value
-	>;
-	using input_indices = std::index_sequence_for<Ins...>;
-	using output_indices = std::index_sequence_for<Outs...>;
-	using identity_available =
-		typename has_reduction_identity<Kernel, accumulator_types>::type;
-
-	// Whether the tile belongs outside the fold, which it does when the axis
-	// being folded is the contiguous one and the surviving axis is not. The
-	// first input decides: the others rarely disagree, and none of them is
-	// read more often than it.
-	using tile_outermost = std::integral_constant<
-		bool,
-		std::is_same<
-			typename std::tuple_element<0, reduced_strides>::type,
-			contiguous_stride_tag
-		>::value &&
-		!std::is_same<
-			typename std::tuple_element<0, kept_strides>::type,
-			contiguous_stride_tag
-		>::value
-	>;
 
 	/**
-	 * @brief Complete every output of one 1D vector of the surviving space.
+	 * @brief Cut one 1D vector of the surviving space into tiles.
+	 *
+	 * @param position Where the vector starts in the surviving space.
+	 * @param vector_size How many of its elements to cover.
+	 * @param action Invoked per tile.
 	 */
-	void run_kept_vector(std::size_t vector_size)
+	template <typename Action>
+	void walk_kept_vector(
+		std::size_t position,
+		std::size_t vector_size,
+		const Action &action
+	)
 	{
 		const auto offsets = m_kept_cursor.get_offsets();
 		const auto inputs = offset_pointers(
@@ -349,17 +579,15 @@ private:
 		{
 			const auto width = std::min(tile_size, vector_size - begin);
 
-			accumulate_tile(
+			action(
 				step_pointers(inputs, begin, m_kept_strides, input_indices()),
-				width
-			);
-			finalize_tile(
 				step_pointers(
 					outputs,
 					begin,
 					m_output_strides,
 					output_indices()
 				),
+				position + begin,
 				width
 			);
 		}
@@ -387,7 +615,7 @@ private:
 		// what lets a fold with no neutral element be expressed the same way
 		// as one that has.
 		auto count = m_reduced_vector_size;
-		seed_tile(first, width);
+		seed_tile(first, width, 0);
 
 		// Where in the reduced space each element sits. Every tile sweeps
 		// that space the same way, so the count restarts with each of them.
@@ -412,15 +640,195 @@ private:
 		}
 	}
 
-	void seed_tile(const input_pointers &inputs, std::size_t width)
+	/**
+	 * @brief Fold one slice of the reduced space into the accumulators of a
+	 * tile.
+	 *
+	 * Seeds from the first element of the slice, exactly as the whole-space
+	 * fold seeds from the first element of the space, so a fold with no
+	 * neutral element needs nothing extra here either.
+	 *
+	 * The positions handed to the kernel are absolute within the reduced
+	 * space, not relative to the slice. An operation reporting where in that
+	 * space it found something depends on it, and so does the merge that
+	 * follows: the earlier of two equally good answers is only the earlier
+	 * one if both were numbered from the same origin.
+	 *
+	 * @param inputs Operand pointers at the start of the tile.
+	 * @param width How many outputs the tile covers.
+	 * @param begin,end The slice of the reduced space to fold.
+	 */
+	void accumulate_slice(
+		const input_pointers &inputs,
+		std::size_t width,
+		std::size_t begin,
+		std::size_t end
+	)
 	{
-		seed_tile(inputs, width, accumulator_indices(), input_indices());
+		XMIPP4_ASSERT( begin < end );
+
+		// Every tile folds the same slice, so the cursor goes back to where
+		// the slice starts rather than being sought there again: seek()
+		// allocates, an assignment between two cursors of one shape does not.
+		m_reduced_cursor = m_reduced_origin;
+
+		auto run = m_reduced_vector_size;
+		auto remaining = end - begin;
+		auto position = begin;
+
+		{
+			const auto offsets = m_reduced_cursor.get_offsets();
+			const auto first = offset_pointers(
+				inputs,
+				offsets.data(),
+				input_indices()
+			);
+
+			seed_tile(first, width, position);
+
+			// The rest of the run the slice starts in, minus the element the
+			// seed just consumed.
+			const auto count = std::min(run, remaining) - 1;
+			combine_run(
+				step_pointers(first, 1, m_reduced_strides, input_indices()),
+				width,
+				count,
+				position + 1
+			);
+
+			run = count + 1;
+		}
+
+		position += run;
+		remaining -= run;
+
+		while (remaining)
+		{
+			run = m_reduced_layout.next(m_reduced_cursor, run);
+			XMIPP4_ASSERT( run > 0 );
+
+			const auto offsets = m_reduced_cursor.get_offsets();
+			const auto count = std::min(run, remaining);
+			combine_run(
+				offset_pointers(inputs, offsets.data(), input_indices()),
+				width,
+				count,
+				position
+			);
+
+			run = count;
+			position += count;
+			remaining -= count;
+		}
+	}
+
+	/**
+	 * @brief Copy a tile's accumulators into a chunk's partials.
+	 */
+	void store_tile(
+		partial_buffers &buffers,
+		std::size_t slot,
+		std::size_t width
+	)
+	{
+		store_tile(buffers, slot, width, accumulator_indices());
+	}
+
+	template <std::size_t... As>
+	void store_tile(
+		partial_buffers &buffers,
+		std::size_t slot,
+		std::size_t width,
+		std::index_sequence<As...>
+	)
+	{
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			(void) std::initializer_list<int> {
+				(
+					std::get<As>(buffers)[slot + j] =
+						std::get<As>(m_tiles)[j],
+					0
+				)...
+			};
+		}
+	}
+
+	/**
+	 * @brief Fold every chunk's partials for a tile into its accumulators.
+	 */
+	void merge_tile(
+		const partial_buffers &buffers,
+		std::size_t slot,
+		std::size_t kept_count,
+		std::size_t chunk_count,
+		std::size_t width
+	)
+	{
+		merge_tile(
+			buffers,
+			slot,
+			kept_count,
+			chunk_count,
+			width,
+			accumulator_indices()
+		);
+	}
+
+	template <std::size_t... As>
+	void merge_tile(
+		const partial_buffers &buffers,
+		std::size_t slot,
+		std::size_t kept_count,
+		std::size_t chunk_count,
+		std::size_t width,
+		std::index_sequence<As...>
+	)
+	{
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			// The first chunk is the answer so far, and every other is folded
+			// into it in ascending order. Starting from it rather than from
+			// an identity is the same reason seeding does.
+			(void) std::initializer_list<int> {
+				(
+					std::get<As>(m_tiles)[j] =
+						std::get<As>(buffers)[slot + j],
+					0
+				)...
+			};
+
+			for (std::size_t c = 1; c < chunk_count; ++c)
+			{
+				const auto other = c*kept_count + slot + j;
+				m_kernel.merge(
+					std::get<As>(m_tiles)[j]...,
+					std::get<As>(buffers)[other]...
+				);
+			}
+		}
+	}
+
+	void seed_tile(
+		const input_pointers &inputs,
+		std::size_t width,
+		std::size_t position
+	)
+	{
+		seed_tile(
+			inputs,
+			width,
+			position,
+			accumulator_indices(),
+			input_indices()
+		);
 	}
 
 	template <std::size_t... As, std::size_t... Is>
 	void seed_tile(
 		const input_pointers &inputs,
 		std::size_t width,
+		std::size_t position,
 		std::index_sequence<As...>,
 		std::index_sequence<Is...>
 	)
@@ -436,7 +844,7 @@ private:
 						std::get<Is>(m_kept_strides)
 					)
 				)...,
-				std::size_t(0)
+				position
 			);
 		}
 	}
@@ -617,6 +1025,7 @@ private:
 	std::array<std::ptrdiff_t, output_count> m_output_strides;
 	joint_cursor m_kept_cursor;
 	joint_cursor m_reduced_cursor;
+	joint_cursor m_reduced_origin;
 	std::size_t m_reduced_vector_size;
 	tiles_type m_tiles;
 };
@@ -661,6 +1070,110 @@ void run_reduction_loop_runner(
 		reduced_strides
 	);
 	runner.run_range(begin, end);
+}
+
+/**
+ * @brief Fold a reduction by splitting the space it folds over.
+ *
+ * Used when there are too few surviving elements to give every thread one.
+ * Each chunk folds its own slice of the reduced space over the whole
+ * surviving space into partials of its own, and those are merged afterwards,
+ * in ascending chunk order, on the thread that joins them.
+ *
+ * The kernel's merge is what makes this expressible, and this is the only
+ * caller of it.
+ *
+ * @warning Splitting the fold reassociates it. A sum of floating point values
+ * therefore stops being bit for bit what one thread computes, and stops being
+ * the same across worker counts.
+ */
+template <
+	typename Kernel,
+	typename Outputs,
+	typename Inputs,
+	typename KeptStrides,
+	typename ReducedStrides
+>
+inline
+void run_reduction_fold_split(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const Outputs &outputs,
+	const Inputs &inputs,
+	const KeptStrides &kept_strides,
+	const ReducedStrides &reduced_strides,
+	std::size_t kept_count,
+	std::size_t chunk_count,
+	const loop_schedule &schedule
+)
+{
+	using runner_type = reduction_loop_runner<
+		Kernel,
+		Outputs,
+		Inputs,
+		KeptStrides,
+		ReducedStrides
+	>;
+	using buffers_type = typename runner_type::partial_buffers;
+
+	// One entry per surviving element per chunk. This path is only taken when
+	// the surviving space is too small to share out, so the product is small.
+	buffers_type buffers;
+	resize_accumulator_buffers(buffers, chunk_count*kept_count);
+
+	// Cut here rather than letting the pool cut, so that a chunk index means
+	// the same slice however many chunks the pool decides to run at once, and
+	// so that the whole thing still works when it declines to split at all.
+	schedule.with_grain(1).run(
+		chunk_count,
+		[&] (std::size_t first, std::size_t last)
+		{
+			for (std::size_t chunk = first; chunk < last; ++chunk)
+			{
+				std::size_t begin;
+				std::size_t end;
+				split_reduced_range(
+					reduction_count,
+					chunk_count,
+					chunk,
+					begin,
+					end
+				);
+
+				runner_type runner(
+					kernel,
+					kept_layout,
+					reduced_layout,
+					reduction_count,
+					outputs,
+					inputs,
+					kept_strides,
+					reduced_strides
+				);
+				runner.fold_reduced_slice(
+					chunk,
+					kept_count,
+					begin,
+					end,
+					buffers
+				);
+			}
+		}
+	);
+
+	runner_type runner(
+		kernel,
+		kept_layout,
+		reduced_layout,
+		reduction_count,
+		outputs,
+		inputs,
+		kept_strides,
+		reduced_strides
+	);
+	runner.merge_and_finalize(chunk_count, kept_count, buffers);
 }
 
 } // namespace detail
@@ -722,13 +1235,66 @@ void run_reduction_loop(
 	// One iteration of the surviving space folds the whole reduced space, so
 	// that is what an iteration costs and what the grain is stated in.
 	const auto cost = reduction_count > 0 ? reduction_count : 1;
+	const auto kept_count = kept_layout.compute_element_count();
+	const auto workers = schedule.get_concurrency();
+
+	// Which of the two spaces to share out. Splitting the surviving one is
+	// preferred wherever it has the parallelism to spare: it needs no merge,
+	// no buffer, and it reassociates nothing, so its answer is what one
+	// thread computes down to the last bit. Twice the worker count rather
+	// than once, so that a ragged finish has somewhere to go.
+	//
+	// Only when there are too few outputs for that is the fold itself split,
+	// of which a reduction to a scalar is the extreme: one output, and all of
+	// the work behind it.
+	const auto split_the_fold =
+		workers > 1 &&
+		kept_count > 0 &&
+		kept_count < 2*workers &&
+		reduction_count >= 2*workers &&
+		kept_count*reduction_count >= get_parallel_grain_size();
+
+	if (split_the_fold)
+	{
+		const auto chunk_count = std::min(reduction_count, workers);
+
+		dispatch_inner_loop_strides(
+			[&] (auto kept_strides)
+			{
+				dispatch_inner_loop_strides(
+					[&] (auto reduced_strides)
+					{
+						detail::run_reduction_fold_split(
+							kernel,
+							kept_layout,
+							reduced_layout,
+							reduction_count,
+							outputs,
+							inputs,
+							kept_strides,
+							reduced_strides,
+							kept_count,
+							chunk_count,
+							schedule
+						);
+					},
+					reduced_layout,
+					input_indices
+				);
+			},
+			kept_layout,
+			input_indices
+		);
+
+		return;
+	}
 
 	// The split is outside both stride dispatches. Inside, the body handed to
 	// the pool would be a distinct type per pair of stride combinations and
 	// would instantiate the type erasure 3^(2N) times over. Outside, it is
 	// instantiated once and the dispatches are re-entered per chunk.
 	schedule.with_grain(grain_for_cost(cost)).run(
-		kept_layout.compute_element_count(),
+		kept_count,
 		[&] (std::size_t begin, std::size_t end)
 		{
 			dispatch_inner_loop_strides(

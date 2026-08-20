@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <backends/cpu/config.hpp>
 #include <backends/cpu/loops/loop_schedule.hpp>
 #include <backends/cpu/loops/reduction_loop.hpp>
 
@@ -697,6 +698,27 @@ struct sum_and_argmax_kernel
 		}
 	}
 
+	void merge(
+		double &total,
+		std::int64_t &where,
+		double &best,
+		const double &other_total,
+		const std::int64_t &other_where,
+		const double &other_best
+	) const noexcept
+	{
+		total += other_total;
+
+		// Strict, so a tie keeps the incumbent. Merging in ascending slice
+		// order then keeps the earliest position, which is what the serial
+		// fold would have reported.
+		if (other_best > best)
+		{
+			best = other_best;
+			where = other_where;
+		}
+	}
+
 	void finalize(
 		double *total_out,
 		std::int64_t *where_out,
@@ -779,5 +801,84 @@ TEST_CASE(
 		INFO( "workers " << workers );
 		CHECK( totals == serial_totals );
 		CHECK( wheres == serial_wheres );
+	}
+}
+
+TEST_CASE(
+	"run_reduction_loop should split the fold when there are too few outputs "
+	"to share out",
+	"[reduction_loop]"
+)
+{
+	// One output and a deep fold behind it: the surviving space has nothing
+	// to give a second thread, so this is the shape that has to reach the
+	// merge to be threaded at all.
+	//
+	// Deep enough to be worth threading at the default grain, so that the
+	// fold split is the path actually taken here rather than something the
+	// case only describes.
+	XMIPP4_CONST_CONSTEXPR std::size_t reduced = 4*XMIPP4_PARALLEL_GRAIN_SIZE;
+
+	// Whole numbers, so that the sum is exact whatever order it is added in
+	// and the check can be an equality rather than a tolerance. That the fold
+	// reassociates is documented; what is pinned here is that it still visits
+	// every element exactly once.
+	//
+	// The largest value appears twice, in the middle and at the very end.
+	// Both are past the first third of the range, so neither falls in the
+	// first slice however few slices there are, and they fall in different
+	// slices however many. That is what makes the merge order observable:
+	// the two are equal, so which position survives is decided by which
+	// partial the merge sees first, and only merging them in the order the
+	// slices sit in keeps the earlier one.
+	std::vector<double> input(reduced, 0.0);
+	input[reduced/2] = 1.0;
+	input[reduced - 1] = 1.0;
+
+	const auto kept_layout = make_layout({}, { {}, {}, {} });
+	const auto reduced_layout = make_layout({ reduced }, { { 1 } });
+
+	const auto fold =
+		[&] (const loop_schedule &schedule, double &total, std::int64_t &where)
+		{
+			total = 0.0;
+			where = -1;
+			run_reduction_loop(
+				sum_and_argmax_kernel(),
+				kept_layout,
+				reduced_layout,
+				reduced,
+				std::make_tuple(&total, &where),
+				std::make_tuple(
+					static_cast<const double*>(input.data())
+				),
+				schedule
+			);
+		};
+
+	double serial_total = 0.0;
+	std::int64_t serial_where = -1;
+	fold(loop_schedule(), serial_total, serial_where);
+
+	CHECK( serial_total == 2.0 );
+	CHECK( serial_where == static_cast<std::int64_t>(reduced/2) );
+
+	for (std::size_t workers : { std::size_t(1), std::size_t(3),
+	                             std::size_t(4), std::size_t(8) })
+	{
+		thread_pool pool(workers);
+
+		double total = 0.0;
+		std::int64_t where = -1;
+		fold(loop_schedule(pool, 1), total, where);
+
+		INFO( "workers " << workers );
+		CHECK( total == serial_total );
+
+		// The first of the equal maxima, which only survives if the partials
+		// are merged in the order the slices sit in rather than the order the
+		// threads happened to finish, and if every slice numbered its
+		// positions from the whole space rather than from itself.
+		CHECK( where == serial_where );
 	}
 }

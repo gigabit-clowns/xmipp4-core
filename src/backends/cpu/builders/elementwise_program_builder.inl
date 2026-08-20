@@ -9,6 +9,7 @@
 
 #include <backends/cpu/loops/elementwise_loop.hpp>
 #include <backends/cpu/loops/loop_schedule.hpp>
+#include <backends/cpu/loops/parallel_grain.hpp>
 
 #include <cstddef>
 #include <tuple>
@@ -43,12 +44,13 @@ public:
 		std::tuple<Outs*...> outputs,
 		std::tuple<const Ins*...> inputs,
 		std::tuple<>,
-		thread_pool &/*pool*/
+		thread_pool &pool
 	) const
 	{
 		run(
 			outputs,
 			inputs,
+			loop_schedule(pool, grain_for_cost(1)),
 			std::index_sequence_for<Outs...>(),
 			std::index_sequence_for<Ins...>()
 		);
@@ -59,6 +61,7 @@ private:
 	void run(
 		const std::tuple<Outs*...> &outputs,
 		const std::tuple<const Ins*...> &inputs,
+		const loop_schedule &schedule,
 		std::index_sequence<OutputIndices...>,
 		std::index_sequence<InputIndices...>
 	) const
@@ -66,6 +69,7 @@ private:
 		run_elementwise_loop(
 			m_functor,
 			m_layout,
+			schedule,
 			std::get<OutputIndices>(outputs)...,
 			std::get<InputIndices>(inputs)...
 		);

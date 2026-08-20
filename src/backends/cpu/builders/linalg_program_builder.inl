@@ -9,6 +9,7 @@
 
 #include <backends/cpu/loops/elementwise_loop.hpp>
 #include <backends/cpu/loops/loop_schedule.hpp>
+#include <backends/cpu/loops/parallel_grain.hpp>
 
 #include <tuple>
 #include <utility>
@@ -42,12 +43,16 @@ public:
 		std::tuple<Out*> outputs,
 		std::tuple<const Left*, const Right*> inputs,
 		std::tuple<>,
-		thread_pool &/*pool*/
+		thread_pool &pool
 	) const
 	{
+		// One iteration here is a whole matrix product, so the grain is
+		// stated in those rather than in elements: anything of a realistic
+		// size makes it one batch element per thread.
 		run_elementwise_loop(
 			m_functor,
 			m_plan.get_batch_layout(),
+			loop_schedule(pool, grain_for_cost(m_plan.get_core_cost())),
 			std::get<0>(outputs),
 			std::get<0>(inputs),
 			std::get<1>(inputs)

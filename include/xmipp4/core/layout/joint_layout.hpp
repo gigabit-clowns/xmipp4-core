@@ -68,10 +68,23 @@ public:
 
 	/**
 	 * @brief Get the extents of the iteration space.
-	 * 
+	 *
 	 * @return span<const std::size_t> The extents of the iteration space.
 	 */
 	XMIPP4_CORE_API span<const std::size_t> get_extents() const;
+
+	/**
+	 * @brief Computes the number of positions the iteration space holds.
+	 *
+	 * The product of the extents, which is how many times a traversal of the
+	 * whole layout visits its operands, and so the range `seek()` indexes
+	 * into. A layout of no axes holds a single position, the identity of 
+	 * the product.
+	 *
+	 * @return std::size_t Number of positions. 0 if the layout can not be
+	 * iterated, as `iter()` and `seek()` report it.
+	 */
+	XMIPP4_CORE_API std::size_t compute_element_count() const noexcept;
 
 	/**
 	 * @brief Get the strides for an operand.

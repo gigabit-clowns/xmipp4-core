@@ -39,6 +39,42 @@ void run_elementwise_outer_loop(
 );
 
 /**
+ * @brief Apply an inner loop to part of a multidimensional layout.
+ *
+ * As @ref run_elementwise_outer_loop, but walking only the elements in
+ * `[begin, end)` of the layout's iteration space, counted the way the
+ * traversal counts them. Two calls covering a range between them visit
+ * exactly what one call over the whole of it visits, in the same order per
+ * element, which is what lets an elementwise loop be shared out over threads.
+ *
+ * The range does not have to fall on the boundaries of the innermost axis. A
+ * range starting or ending inside a vector simply hands the inner loop a
+ * shorter one, beginning where it begins: the count says how many elements
+ * there are, never that they start an axis.
+ *
+ * @tparam InnerLoop Functor to be dispatched for 1D vectors. Must have a
+ * signature accepting `(Pointers... operands, std::size_t count)`.
+ * @tparam Pointers CV-qualified pointers. There must be one per operand in
+ * the layout.
+ * @param inner_loop The functor to be invoked for each 1D vector.
+ * @param layout Access layout used for iterating over the operands.
+ * @param begin First element of the iteration space to visit.
+ * @param end Past-the-end element of the iteration space to visit. Must not
+ * exceed the number of elements the layout holds.
+ * @param pointers The base pointer of each operand.
+ *
+ * @see run_elementwise_outer_loop
+ */
+template <typename InnerLoop, typename... Pointers>
+void run_elementwise_outer_loop_range(
+	InnerLoop &&inner_loop,
+	const joint_layout &layout,
+	std::size_t begin,
+	std::size_t end,
+	Pointers... pointers
+);
+
+/**
  * @brief Run an elementwise loop over a layout at 1D-vector granularity,
  * statically dispatching each operand's inner-loop stride.
  *

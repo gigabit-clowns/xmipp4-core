@@ -226,6 +226,18 @@ std::size_t joint_layout_implementation::iter(
 }
 
 inline
+std::size_t
+joint_layout_implementation::compute_element_count() const noexcept
+{
+	std::size_t result = 1;
+	for (const auto extent : m_extents)
+	{
+		result *= extent;
+	}
+	return result;
+}
+
+inline
 std::size_t joint_layout_implementation::seek(
 	joint_cursor &ite,
 	std::size_t position,

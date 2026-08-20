@@ -57,6 +57,8 @@ public:
 	std::size_t get_number_of_operands() const noexcept;
 
 	span<const std::size_t> get_extents() const noexcept;
+
+	std::size_t compute_element_count() const noexcept;
 	
 	span<const std::ptrdiff_t> get_strides(std::size_t operand) const;
 

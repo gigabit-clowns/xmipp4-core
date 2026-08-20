@@ -59,6 +59,46 @@ TEST_CASE( "getting extents on an initialized joint_layout should return its ext
 	REQUIRE( std::equal(extents.cbegin(), extents.cend(), result.begin(), result.end()) );
 }
 
+TEST_CASE( "computing the element count of a default constructed joint_layout should return zero", "[joint_layout]" )
+{
+	joint_layout layout;
+	REQUIRE( layout.compute_element_count() == 0 );
+}
+
+TEST_CASE( "computing the element count of a joint_layout should return the product of its extents", "[joint_layout]" )
+{
+	joint_layout_implementation::extent_vector_type extents =
+		{ 20, 4, 16, 2 };
+	auto implementation =
+		std::make_unique<joint_layout_implementation>(extents);
+	joint_layout layout(std::move(implementation));
+
+	REQUIRE( layout.compute_element_count() == 20*4*16*2 );
+}
+
+TEST_CASE( "computing the element count of a joint_layout with no axes should return one", "[joint_layout]" )
+{
+	// The identity of the product: a layout of no axes holds a single
+	// position, which is the one iter() reports and the one a traversal has
+	// to visit.
+	joint_layout_implementation::extent_vector_type extents;
+	auto implementation =
+		std::make_unique<joint_layout_implementation>(extents);
+	joint_layout layout(std::move(implementation));
+
+	REQUIRE( layout.compute_element_count() == 1 );
+}
+
+TEST_CASE( "computing the element count of a joint_layout with an empty axis should return zero", "[joint_layout]" )
+{
+	joint_layout_implementation::extent_vector_type extents = { 4, 0, 2 };
+	auto implementation =
+		std::make_unique<joint_layout_implementation>(extents);
+	joint_layout layout(std::move(implementation));
+
+	REQUIRE( layout.compute_element_count() == 0 );
+}
+
 TEST_CASE( "getting the number of operands on an joint_layout should return its operand count", "[joint_layout]" )
 {
 	joint_layout_implementation::extent_vector_type extents = 

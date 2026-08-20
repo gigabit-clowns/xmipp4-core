@@ -14,6 +14,7 @@
 #include <xmipp4/core/dispatch/operation_arity.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/backends/cpu/program.hpp>
+#include <xmipp4/backends/cpu/thread_pool.hpp>
 
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/program.hpp>
@@ -39,6 +40,15 @@ using namespace xmipp4::cpu;
 
 namespace
 {
+
+// A pool of no workers keeps every loop on the calling thread, which is what
+// these cases want: they are about what the program computes, not about how
+// many threads it computes it on.
+thread_pool& serial_pool()
+{
+	static thread_pool instance(0);
+	return instance;
+}
 
 // A self-contained binary elementwise operation.
 XMIPP4_DECLARE_OPERATION(
@@ -149,7 +159,8 @@ TEST_CASE(
 	executable.execute(
 		make_span(output_operands),
 		make_span(input_operands),
-		make_span(scratch_operands)
+		make_span(scratch_operands),
+		serial_pool()
 	);
 
 	for (std::size_t i = 0; i < count; ++i)

@@ -8,6 +8,7 @@
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
 #include <backends/cpu/loops/elementwise_loop.hpp>
+#include <backends/cpu/loops/loop_schedule.hpp>
 
 #include <tuple>
 #include <utility>
@@ -40,7 +41,8 @@ public:
 	void operator()(
 		std::tuple<Out*> outputs,
 		std::tuple<const Left*, const Right*> inputs,
-		std::tuple<>
+		std::tuple<>,
+		thread_pool &/*pool*/
 	) const
 	{
 		run_elementwise_loop(

@@ -6,6 +6,7 @@
 #include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
+#include <backends/cpu/loops/loop_schedule.hpp>
 #include <backends/cpu/loops/reduction_loop.hpp>
 
 #include <tuple>
@@ -38,7 +39,8 @@ public:
 	void operator()(
 		std::tuple<Outs*...> outputs,
 		std::tuple<const Ins*...> inputs,
-		std::tuple<>
+		std::tuple<>,
+		thread_pool &/*pool*/
 	) const
 	{
 		run_reduction_loop(

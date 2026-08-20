@@ -3,6 +3,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <backends/cpu/builders/dispatched_program_builder.hpp>
+
+#include <xmipp4/backends/cpu/thread_pool.hpp>
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 
@@ -63,7 +65,8 @@ public:
 	void operator()(
 		std::tuple<T*>,
 		std::tuple<const T*>,
-		std::tuple<>
+		std::tuple<>,
+		thread_pool&
 	) const
 	{
 	}

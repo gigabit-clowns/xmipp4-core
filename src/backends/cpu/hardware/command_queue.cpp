@@ -3,9 +3,11 @@
 #include "command_queue.hpp"
 
 #include <xmipp4/backends/cpu/program.hpp>
+#include <xmipp4/backends/cpu/thread_pool.hpp>
 #include <xmipp4/core/hardware/command.hpp>
 
 #include <stdexcept>
+#include <utility>
 
 namespace xmipp4
 {
@@ -13,6 +15,13 @@ namespace cpu
 {
 
 std::shared_ptr<command_queue> command_queue::m_instance;
+
+command_queue::command_queue(std::shared_ptr<thread_pool> pool)
+	: m_pool(
+		pool ? std::move(pool) : thread_pool::get_default()
+	)
+{
+}
 
 void command_queue::submit(const command &cmd)
 {
@@ -25,12 +34,21 @@ void command_queue::submit(const command &cmd)
 		);
 	}
 
+	// Synchronous, and it has to stay that way: the command holds spans the
+	// caller owns, which stop being valid the moment this returns. Threading
+	// a program does not change that, the pool being fork-join.
 	const auto& cpu_prog = dynamic_cast<const program&>(*prog);
 	cpu_prog.execute(
 		cmd.get_outputs(),
 		cmd.get_inputs(),
-		cmd.get_scratch()
+		cmd.get_scratch(),
+		*m_pool
 	);
+}
+
+thread_pool& command_queue::get_thread_pool() const noexcept
+{
+	return *m_pool;
 }
 
 void command_queue::signal(event &/*event*/)
@@ -45,7 +63,9 @@ void command_queue::wait(const event&)
 
 std::shared_ptr<command_queue> command_queue::create()
 {
-	// As command_queue lacks any state, we can use the singleton pattern
+	// The only state a command_queue holds is the pool it runs programs over,
+	// and every queue of this backend shares the one the backend shares, so
+	// there is still nothing to tell two of them apart.
 	if (m_instance == nullptr)
 	{
 		m_instance = std::make_shared<command_queue>();

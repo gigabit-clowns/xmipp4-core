@@ -80,7 +80,15 @@ TEST_CASE(
 	   .bind_inputs(make_span(inputs))
 	   .bind_scratch(make_span(scratch));
 
-	REQUIRE_CALL(*prog, execute(trompeloeil::_, trompeloeil::_, trompeloeil::_))
+	REQUIRE_CALL(
+		*prog,
+		execute(
+			trompeloeil::_,
+			trompeloeil::_,
+			trompeloeil::_,
+			trompeloeil::_
+		)
+	)
 		.LR_WITH(_1.data() == outputs.data() && _1.size() == outputs.size())
 		.LR_WITH(_2.data() == inputs.data() && _2.size() == inputs.size())
 		.LR_WITH(_3.data() == scratch.data() && _3.size() == scratch.size());

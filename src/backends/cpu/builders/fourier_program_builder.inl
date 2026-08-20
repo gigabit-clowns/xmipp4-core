@@ -6,6 +6,8 @@
 #include <xmipp4/core/meta/type_list.hpp>
 #include <xmipp4/core/platform/cpp_attributes.hpp>
 
+#include <backends/cpu/loops/loop_schedule.hpp>
+
 #include <tuple>
 #include <utility>
 
@@ -38,7 +40,8 @@ public:
 	void operator()(
 		std::tuple<Out*> outputs,
 		std::tuple<const In*> inputs,
-		std::tuple<>
+		std::tuple<>,
+		thread_pool &/*pool*/
 	) const
 	{
 		m_transform(

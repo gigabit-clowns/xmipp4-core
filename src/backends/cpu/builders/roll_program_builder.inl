@@ -7,6 +7,7 @@
 #include <xmipp4/core/meta/type_list.hpp>
 
 #include <backends/cpu/loops/elementwise_loop.hpp>
+#include <backends/cpu/loops/loop_schedule.hpp>
 #include <backends/cpu/plans/roll_layout_plan.hpp>
 
 #include <cstddef>
@@ -54,7 +55,8 @@ public:
 	void operator()(
 		std::tuple<T *> outputs,
 		std::tuple<const T *> inputs,
-		std::tuple<>
+		std::tuple<>,
+		thread_pool &/*pool*/
 	) const
 	{
 		T *const out = std::get<0>(outputs);

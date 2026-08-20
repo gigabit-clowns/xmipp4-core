@@ -8,6 +8,7 @@
 #include <core/hardware/host_memory/host_buffer.hpp>
 
 #include <xmipp4/backends/cpu/program.hpp>
+#include <xmipp4/backends/cpu/thread_pool.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
@@ -32,6 +33,15 @@ using namespace xmipp4::cpu;
 
 namespace
 {
+
+// A pool of no workers keeps every loop on the calling thread, which is what
+// these cases want: they are about what the program computes, not about how
+// many threads it computes it on.
+thread_pool& serial_pool()
+{
+	static thread_pool instance(0);
+	return instance;
+}
 
 using complex_type = std::complex<float32_t>;
 
@@ -82,7 +92,8 @@ void run(
 	executable.execute(
 		make_span(outputs),
 		make_span(inputs),
-		make_span(scratches)
+		make_span(scratches),
+		serial_pool()
 	);
 }
 

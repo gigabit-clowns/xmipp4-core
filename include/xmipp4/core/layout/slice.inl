@@ -53,31 +53,6 @@ const typename slice::step_type& slice::get_step() const noexcept
 	return m_step;
 }
 
-XMIPP4_INLINE_CONSTEXPR 
-bool operator==(const slice& lhs, const slice& rhs) noexcept
-{
-	return
-		lhs.get_start() == rhs.get_start() &&
-		lhs.get_count() == rhs.get_count() &&
-		lhs.get_step() == rhs.get_step();
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool operator!=(const slice& lhs, const slice& rhs) noexcept
-{
-	return !(lhs == rhs);
-}
-
-template <typename T>
-inline 
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const slice &s)
-{
-	return
-		os << "slice(" << s.get_start()
-		<< ", " << s.get_count()
-		<< ", " << s.get_step() << ")";
-}
-
 XMIPP4_INLINE_CONSTEXPR std::size_t end() noexcept
 {
 	return std::numeric_limits<std::size_t>::max();

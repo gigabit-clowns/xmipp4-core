@@ -207,10 +207,16 @@ public:
 	XMIPP4_CORE_API
 	static
 	strided_layout make_custom_layout(
-		span<const std::size_t> extents, 
-		span<const std::ptrdiff_t> strides, 
+		span<const std::size_t> extents,
+		span<const std::ptrdiff_t> strides,
 		std::ptrdiff_t offset = 0
 	);
+
+	// Defined out of line: the implementation type is incomplete here.
+	friend XMIPP4_CORE_API
+	bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept;
+	friend XMIPP4_CORE_API
+	bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 
 private:
 	// Copy-on-write implementation
@@ -223,12 +229,6 @@ private:
 	explicit 
 	strided_layout(strided_layout_implementation &&impl);
 };
-
-XMIPP4_CORE_API
-bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept;
-
-XMIPP4_CORE_API
-bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
 
 } // namespace xmipp4
 

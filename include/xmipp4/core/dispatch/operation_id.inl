@@ -12,18 +12,6 @@ operation_id::operation_id(std::type_index id) noexcept
 }
 
 inline
-bool operation_id::operator==(const operation_id &other) const noexcept
-{
-	return m_id == other.m_id;
-}
-
-inline
-bool operation_id::operator!=(const operation_id &other) const noexcept
-{
-	return !(operator==(other));
-}
-
-inline
 std::size_t operation_id::hash() const noexcept
 {
 	return std::hash<std::type_index>()(m_id);

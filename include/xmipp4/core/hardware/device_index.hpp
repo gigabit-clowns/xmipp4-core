@@ -83,27 +83,70 @@ public:
 	XMIPP4_CORE_API
 	std::size_t get_device_id() const noexcept;
 
+	friend bool
+	operator==(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		return lhs.get_device_id() == rhs.get_device_id() &&
+			lhs.get_backend_name() == rhs.get_backend_name();
+	}
+
+	friend bool
+	operator!=(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		return lhs.get_device_id() != rhs.get_device_id() ||
+			lhs.get_backend_name() != rhs.get_backend_name();
+	}
+
+	friend bool
+	operator<(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		if (lhs.get_backend_name() < rhs.get_backend_name())
+		{
+			return true;
+		}
+		else if(lhs.get_backend_name() == rhs.get_backend_name())
+		{
+			return lhs.get_device_id() < rhs.get_device_id();
+		}
+		return false;
+	}
+
+	friend bool
+	operator<=(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		if (lhs.get_backend_name() < rhs.get_backend_name())
+		{
+			return true;
+		}
+		else if(lhs.get_backend_name() == rhs.get_backend_name())
+		{
+			return lhs.get_device_id() <= rhs.get_device_id();
+		}
+		return false;
+	}
+
+	friend bool
+	operator>(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		return rhs < lhs;
+	}
+
+	friend bool
+	operator>=(const device_index &lhs, const device_index &rhs) noexcept
+	{
+		return rhs <= lhs;
+	}
+
+	friend std::ostream&
+	operator<<(std::ostream &os, const device_index &index)
+	{
+		return os << index.get_backend_name() << ':' << index.get_device_id();
+	}
+
 private:
 	std::string m_backend_name;
 	std::size_t m_device_id;
 };
-
-
-XMIPP4_CORE_API
-bool operator==(const device_index &lhs, const device_index &rhs) noexcept;
-XMIPP4_CORE_API
-bool operator!=(const device_index &lhs, const device_index &rhs) noexcept;
-XMIPP4_CORE_API
-bool operator<(const device_index &lhs, const device_index &rhs) noexcept;
-XMIPP4_CORE_API
-bool operator<=(const device_index &lhs, const device_index &rhs) noexcept;
-XMIPP4_CORE_API
-bool operator>(const device_index &lhs, const device_index &rhs) noexcept;
-XMIPP4_CORE_API
-bool operator>=(const device_index &lhs, const device_index &rhs) noexcept;
-
-XMIPP4_CORE_API
-std::ostream& operator<<(std::ostream &os, const device_index &index);
 
 /**
  * @brief Parse the device ID from a string.

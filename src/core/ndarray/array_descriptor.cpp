@@ -47,24 +47,6 @@ numerical_type array_descriptor::get_data_type() const noexcept
 	return m_data_type;
 }
 
-bool operator==(
-	const array_descriptor &lhs, 
-	const array_descriptor &rhs
-) noexcept
-{
-	return 
-		lhs.get_data_type() == rhs.get_data_type() &&
-		lhs.get_layout() == rhs.get_layout();
-}
-
-bool operator!=(
-	const array_descriptor &lhs, 
-	const array_descriptor &rhs
-) noexcept
-{
-	return !(lhs == rhs);
-}
-
 array_descriptor make_contiguous_array_descriptor(
 	span<const std::size_t> extents,
 	numerical_type data_type

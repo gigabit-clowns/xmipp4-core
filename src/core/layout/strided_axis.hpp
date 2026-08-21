@@ -38,8 +38,17 @@ public:
 	strided_axis& operator=(const strided_axis& other) = default;
 	strided_axis& operator=(strided_axis&& other) = default;
 	
-	XMIPP4_CONSTEXPR bool operator==(const strided_axis& other) const noexcept;
-	XMIPP4_CONSTEXPR bool operator!=(const strided_axis& other) const noexcept;
+	friend XMIPP4_CONSTEXPR
+	bool operator==(const strided_axis& lhs, const strided_axis& rhs) noexcept
+	{
+		return lhs.m_extent == rhs.m_extent && lhs.m_stride == rhs.m_stride;
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(const strided_axis& lhs, const strided_axis& rhs) noexcept
+	{
+		return !(lhs == rhs);
+	}
 
 	XMIPP4_CONSTEXPR_CPP20 void swap(strided_axis &other) noexcept;
 

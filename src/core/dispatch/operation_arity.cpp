@@ -49,22 +49,4 @@ operation_arity operation_arity::ternary() noexcept
 	return operation_arity(1, 3);
 }
 
-bool operator==(
-	const operation_arity &lhs,
-	const operation_arity &rhs
-) noexcept
-{
-	return
-		lhs.get_output_count() == rhs.get_output_count() &&
-		lhs.get_input_count() == rhs.get_input_count();
-}
-
-bool operator!=(
-	const operation_arity &lhs,
-	const operation_arity &rhs
-) noexcept
-{
-	return !(lhs == rhs);
-}
-
 } // namespace xmipp4

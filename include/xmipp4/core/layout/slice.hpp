@@ -85,20 +85,36 @@ public:
 	 */
 	XMIPP4_CONSTEXPR const step_type& get_step() const noexcept;
 
+	friend XMIPP4_CONSTEXPR
+	bool operator==(const slice &lhs, const slice &rhs) noexcept
+	{
+		return
+			lhs.get_start() == rhs.get_start() &&
+			lhs.get_count() == rhs.get_count() &&
+			lhs.get_step() == rhs.get_step();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(const slice &lhs, const slice &rhs) noexcept
+	{
+		return !(lhs == rhs);
+	}
+
+	template <typename T>
+	friend std::basic_ostream<T>&
+	operator<<(std::basic_ostream<T> &os, const slice &s)
+	{
+		return
+			os << "slice(" << s.get_start()
+			<< ", " << s.get_count()
+			<< ", " << s.get_step() << ")";
+	}
+
 private:
 	start_type m_start;
 	count_type m_count;
 	step_type m_step;
 };
-
-XMIPP4_CONSTEXPR
-bool operator==(const slice &lhs, const slice &rhs) noexcept;
-
-XMIPP4_CONSTEXPR
-bool operator!=(const slice &lhs, const slice &rhs) noexcept;
-
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, const slice &s);
 
 /**
  * @brief Get the value representing the end of an array to be used as

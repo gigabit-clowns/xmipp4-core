@@ -83,22 +83,6 @@ operand_signature::operator=(const operand_signature &other) = default;
 operand_signature&
 operand_signature::operator=(operand_signature &&other) noexcept = default;
 
-bool operand_signature::operator==(
-	const operand_signature &other
-) const noexcept
-{
-	return
-		get_descriptor() == other.get_descriptor() &&
-		get_memory_resource() == other.get_memory_resource();
-}
-
-bool operand_signature::operator!=(
-	const operand_signature &other
-) const noexcept
-{
-	return !(*this == other);
-}
-
 std::size_t operand_signature::hash() const noexcept
 {
 	auto seed = m_descriptor.hash();

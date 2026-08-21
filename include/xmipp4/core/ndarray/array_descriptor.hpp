@@ -77,22 +77,28 @@ public:
 	XMIPP4_CORE_API
 	numerical_type get_data_type() const noexcept;
 
+	friend bool operator==(
+		const array_descriptor &lhs,
+		const array_descriptor &rhs
+	) noexcept
+	{
+		return
+			lhs.get_data_type() == rhs.get_data_type() &&
+			lhs.get_layout() == rhs.get_layout();
+	}
+
+	friend bool operator!=(
+		const array_descriptor &lhs,
+		const array_descriptor &rhs
+	) noexcept
+	{
+		return !(lhs == rhs);
+	}
+
 private:
 	strided_layout m_layout;
 	numerical_type m_data_type;
 };
-
-XMIPP4_CORE_API
-bool operator==(
-	const array_descriptor &lhs, 
-	const array_descriptor &rhs
-) noexcept;
-
-XMIPP4_CORE_API
-bool operator!=(
-	const array_descriptor &lhs, 
-	const array_descriptor &rhs
-) noexcept;
 
 /**
  * @brief Create an array descriptor with a contiguous layout.

@@ -69,11 +69,23 @@ public:
 	XMIPP4_CORE_API
 	operand_signature& operator=(operand_signature &&other) noexcept;
 
-	XMIPP4_CORE_API
-	bool operator==(const operand_signature &other) const noexcept;
+	friend bool operator==(
+		const operand_signature &lhs,
+		const operand_signature &rhs
+	) noexcept
+	{
+		return
+			lhs.get_descriptor() == rhs.get_descriptor() &&
+			lhs.get_memory_resource() == rhs.get_memory_resource();
+	}
 
-	XMIPP4_CORE_API
-	bool operator!=(const operand_signature &other) const noexcept;
+	friend bool operator!=(
+		const operand_signature &lhs,
+		const operand_signature &rhs
+	) noexcept
+	{
+		return !(lhs == rhs);
+	}
 
 	/**
 	 * @brief Get the hash value for this object.

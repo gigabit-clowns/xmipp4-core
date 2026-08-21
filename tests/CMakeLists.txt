@@ -9,6 +9,15 @@ fetch_trompeloeil(VERSION 49)
 
 include(Catch)
 
+function(xmipp4_register_tests target)
+	if(XMIPP4_CORE_REGISTER_TESTS_PER_BINARY)
+		add_test(NAME ${target} COMMAND ${target})
+		set_tests_properties(${target} PROPERTIES TIMEOUT 3600)
+	else()
+		catch_discover_tests(${target})
+	endif()
+endfunction()
+
 add_subdirectory(assets)
 add_subdirectory(unitary)
 add_subdirectory(integration)

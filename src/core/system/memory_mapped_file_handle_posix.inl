@@ -5,8 +5,8 @@
 #include <xmipp4/core/platform/constexpr.hpp>
 
 #include <stdexcept>
-#include <sstream>
-#include <cstring>
+#include <system_error>
+#include <cerrno>
 #include <cstdlib>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -77,9 +77,9 @@ inline int open_file(
 
 	if (file < 0) 
 	{
-		std::ostringstream oss;
-		oss << "Error opening file: " << std::strerror(errno);
-		throw std::runtime_error(oss.str());
+		throw std::system_error(
+			errno, std::generic_category(), "Error opening file"
+		);
 	}
 	return file;
 }
@@ -106,9 +106,9 @@ inline void* memory_map_file_descriptor(
 
 	if (result == MAP_FAILED)
 	{
-		std::ostringstream oss;
-		oss << "Error memory mapping the file: " << std::strerror(errno);
-		throw std::runtime_error(oss.str());
+		throw std::system_error(
+			errno, std::generic_category(), "Error memory mapping the file"
+		);
 	}
 
 	return result;

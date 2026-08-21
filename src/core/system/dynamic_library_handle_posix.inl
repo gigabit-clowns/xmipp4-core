@@ -15,7 +15,7 @@ inline void* dynamic_library_open(const char* filename)
 {
 	XMIPP4_CONST_CONSTEXPR int flags = RTLD_LAZY;
 	auto *const result = ::dlopen(filename, flags);
-	if (result == NULL)
+	if (result == nullptr)
 	{
 		throw std::system_error(std::error_code(), dlerror());
 	}

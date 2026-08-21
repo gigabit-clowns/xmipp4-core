@@ -10,12 +10,6 @@
 // proportionally shorter tile and the footprint stays the same. Half of a
 // typical first level data cache, leaving the other half to the input
 // streaming past.
-//
-// Measured on a sum of 64 M floats: raising it from 4 KB to 16 KB gains
-// between a tenth and a sixth of the time on the orientation that folds an
-// outer axis, and beyond 16 KB the gain is inside the noise. The orientation
-// that folds the contiguous axis is indifferent to it, holding one
-// accumulator across each run whatever the tile.
 #ifndef XMIPP4_REDUCTION_TILE_BUDGET
 	#define XMIPP4_REDUCTION_TILE_BUDGET 16384UL
 #endif
@@ -34,6 +28,32 @@
 
 #ifndef XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE
 	#define XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE 4096UL
+#endif
+
+// Budget in bytes for the sub-accumulators one run is folded into at a time,
+// whatever their number, read the same way the tile budget is: a kernel
+// keeping several accumulators takes proportionally fewer lanes.
+//
+// A run folded into a single accumulator is a chain of dependent operations,
+// one every few cycles however wide the vector registers are, because a
+// floating point fold is not associative and no compiler may break it. Lanes
+// are what break it: the run is dealt out over several sub-accumulators and
+// they are merged once at the end. Only a kernel that says its fold may be
+// reassociated is folded this way; see has_reassociable_fold.
+#ifndef XMIPP4_REDUCTION_FOLD_LANE_BUDGET
+	#define XMIPP4_REDUCTION_FOLD_LANE_BUDGET 256UL
+#endif
+
+// Bounds on the resulting lane count. The maximum is where the measurement
+// above stops improving; past it the seeding and the merge cost more than
+// the extra independence buys. The minimum keeps the arithmetic meaningful
+// for a kernel whose accumulators exceed the budget on their own.
+#ifndef XMIPP4_MAXIMUM_REDUCTION_FOLD_LANES
+	#define XMIPP4_MAXIMUM_REDUCTION_FOLD_LANES 16UL
+#endif
+
+#ifndef XMIPP4_MINIMUM_REDUCTION_FOLD_LANES
+	#define XMIPP4_MINIMUM_REDUCTION_FOLD_LANES 2UL
 #endif
 
 // pocketfft re-derives the twiddle factors of a transform every time it is

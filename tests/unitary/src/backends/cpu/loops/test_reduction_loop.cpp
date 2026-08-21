@@ -882,3 +882,262 @@ TEST_CASE(
 		CHECK( where == serial_where );
 	}
 }
+
+namespace
+{
+
+/**
+ * @brief One invocation of a bulk member of a vector kernel.
+ */
+struct bulk_call
+{
+	const int *input;
+	std::ptrdiff_t stride;
+	std::size_t extent;
+	std::size_t position;
+};
+
+/**
+ * @brief Summing vector kernel that records the bulk calls it receives.
+ *
+ * Which of `combine_run` and `combine_strip` carries the fold is decided by
+ * the layouts, so a kernel that records both is what tells them apart.
+ */
+class recording_vector_kernel
+{
+public:
+	recording_vector_kernel()
+		: m_runs(std::make_shared<std::vector<bulk_call>>())
+		, m_strips(std::make_shared<std::vector<bulk_call>>())
+	{
+	}
+
+	template <typename Outputs, typename Inputs>
+	struct accumulators
+	{
+		using type = type_list<int>;
+	};
+
+	void seed(int &accumulator, const int *value, std::size_t) const
+	{
+		accumulator = *value;
+	}
+
+	template <typename... Strides>
+	void combine_run(
+		const std::tuple<int*> &accumulators,
+		const std::tuple<const int*> &inputs,
+		const std::tuple<Strides...> &strides,
+		std::size_t count,
+		std::size_t position
+	) const
+	{
+		const auto stride = read_stride(strides);
+		const auto *input = std::get<0>(inputs);
+		m_runs->push_back(bulk_call{ input, stride, count, position });
+
+		auto &accumulator = *std::get<0>(accumulators);
+		for (std::size_t e = 0; e < count; ++e)
+		{
+			accumulator += input[static_cast<std::ptrdiff_t>(e)*stride];
+		}
+	}
+
+	template <typename... Strides>
+	void combine_strip(
+		const std::tuple<int*> &accumulators,
+		const std::tuple<const int*> &inputs,
+		const std::tuple<Strides...> &strides,
+		std::size_t width,
+		std::size_t position
+	) const
+	{
+		const auto stride = read_stride(strides);
+		const auto *input = std::get<0>(inputs);
+		m_strips->push_back(bulk_call{ input, stride, width, position });
+
+		auto *accumulators_begin = std::get<0>(accumulators);
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			accumulators_begin[j] +=
+				input[static_cast<std::ptrdiff_t>(j)*stride];
+		}
+	}
+
+	void merge(int &accumulator, const int &other) const
+	{
+		accumulator += other;
+	}
+
+	void finalize(int *result, const int &accumulator, std::size_t) const
+	{
+		*result = accumulator;
+	}
+
+	const std::vector<bulk_call>& runs() const noexcept
+	{
+		return *m_runs;
+	}
+
+	const std::vector<bulk_call>& strips() const noexcept
+	{
+		return *m_strips;
+	}
+
+private:
+	std::shared_ptr<std::vector<bulk_call>> m_runs;
+	std::shared_ptr<std::vector<bulk_call>> m_strips;
+
+	template <typename... Strides>
+	static std::ptrdiff_t read_stride(const std::tuple<Strides...> &strides)
+	{
+		return static_cast<std::ptrdiff_t>(std::get<0>(strides));
+	}
+};
+
+} // anonymous namespace
+
+TEST_CASE(
+	"run_reduction_vector_loop should hand the fold over a run when the "
+	"reduced axis is the contiguous one",
+	"[reduction_loop]"
+)
+{
+	// A 4x3 matrix folded along its contiguous axis. Each output's elements
+	// are one stretch of memory, so they reach the kernel as one run and the
+	// accumulator stays put for the whole of it.
+	const auto input = iota_vector(12);
+	std::vector<int> output(4, -1);
+
+	const recording_vector_kernel kernel;
+	run_reduction_vector_loop(
+		kernel,
+		make_layout({4}, {{3}, {1}}),
+		make_layout({3}, {{1}}),
+		3,
+		std::make_tuple(output.data()),
+		std::make_tuple(static_cast<const int*>(input.data()))
+	);
+
+	CHECK( kernel.strips().empty() );
+	REQUIRE( kernel.runs().size() == 4 );
+
+	for (std::size_t j = 0; j < 4; ++j)
+	{
+		INFO( "output " << j );
+
+		// The first element of the run seeded the accumulator, so the run
+		// handed over starts at the second and is one shorter.
+		CHECK( kernel.runs()[j].input == input.data() + 3*j + 1 );
+		CHECK( kernel.runs()[j].stride == 1 );
+		CHECK( kernel.runs()[j].extent == 2 );
+		CHECK( kernel.runs()[j].position == 1 );
+	}
+
+	CHECK( output == std::vector<int>({3, 12, 21, 30}) );
+}
+
+TEST_CASE(
+	"run_reduction_vector_loop should hand the fold over a strip when the "
+	"surviving axis is the contiguous one",
+	"[reduction_loop]"
+)
+{
+	// The same matrix folded along its outer axis. Consecutive outputs are
+	// now consecutive in memory, so one element of the reduced space feeds
+	// the whole strip and the strip is what gets walked.
+	const auto input = iota_vector(12);
+	std::vector<int> output(3, -1);
+
+	const recording_vector_kernel kernel;
+	run_reduction_vector_loop(
+		kernel,
+		make_layout({3}, {{1}, {1}}),
+		make_layout({4}, {{3}}),
+		4,
+		std::make_tuple(output.data()),
+		std::make_tuple(static_cast<const int*>(input.data()))
+	);
+
+	CHECK( kernel.runs().empty() );
+	REQUIRE( kernel.strips().size() == 3 );
+
+	for (std::size_t e = 0; e < 3; ++e)
+	{
+		INFO( "reduced element " << e );
+
+		// One call per element of the reduced space that was not the seed,
+		// each covering the whole strip.
+		CHECK( kernel.strips()[e].input == input.data() + 3*(e + 1) );
+		CHECK( kernel.strips()[e].stride == 1 );
+		CHECK( kernel.strips()[e].extent == 3 );
+		CHECK( kernel.strips()[e].position == e + 1 );
+	}
+
+	CHECK( output == std::vector<int>({18, 22, 26}) );
+}
+
+TEST_CASE(
+	"run_reduction_vector_loop should hand over a stride it could not resolve "
+	"as itself",
+	"[reduction_loop]"
+)
+{
+	// Where a stride is one or zero the kernel is handed a tag, which is what
+	// lets one written against explicit vector types specialize on it; the
+	// two orientation cases above check that. Anything else arrives as the
+	// runtime value it is, and the walk still follows it.
+	//
+	// Neither axis is contiguous here, which is also what settles the
+	// orientation: the run is only worth handing over whole when it is the
+	// stream that reading it in order makes it, so everything else folds a
+	// strip at a time.
+	const auto input = iota_vector(12);
+	std::vector<int> output(2, -1);
+
+	const recording_vector_kernel kernel;
+	run_reduction_vector_loop(
+		kernel,
+		make_layout({2}, {{6}, {1}}),
+		make_layout({3}, {{2}}),
+		3,
+		std::make_tuple(output.data()),
+		std::make_tuple(static_cast<const int*>(input.data()))
+	);
+
+	CHECK( kernel.runs().empty() );
+	REQUIRE( kernel.strips().size() == 2 );
+
+	CHECK( kernel.strips()[0].stride == 6 );
+	CHECK( kernel.strips()[0].input == input.data() + 2 );
+	CHECK( kernel.strips()[1].stride == 6 );
+	CHECK( kernel.strips()[1].input == input.data() + 4 );
+
+	CHECK( output == std::vector<int>({0 + 2 + 4, 6 + 8 + 10}) );
+}
+
+TEST_CASE(
+	"run_reduction_vector_loop should not invoke the kernel for a fold over "
+	"a single element",
+	"[reduction_loop]"
+)
+{
+	// The seed is the whole answer, so there is nothing left to hand over in
+	// bulk and neither member is called.
+	const auto input = iota_vector(3);
+	std::vector<int> output(3, -1);
+
+	const recording_vector_kernel kernel;
+	run_reduction_vector_loop(
+		kernel,
+		make_layout({3}, {{1}, {1}}),
+		make_layout({}, {{}}),
+		1,
+		std::make_tuple(output.data()),
+		std::make_tuple(static_cast<const int*>(input.data()))
+	);
+
+	CHECK( kernel.runs().empty() );
+	CHECK( kernel.strips().empty() );
+	CHECK( output == input );
+}

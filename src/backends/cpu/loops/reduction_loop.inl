@@ -4,8 +4,9 @@
 
 #include "inner_loop_stride_dispatch.hpp"
 #include "loop_schedule.hpp"
+#include "operand_pointers.hpp"
 #include "parallel_grain.hpp"
-#include "../config.hpp"
+#include "reduction_element_adaptor.hpp"
 
 #include <xmipp4/core/layout/joint_cursor.hpp>
 #include <xmipp4/core/platform/assert.hpp>
@@ -21,86 +22,8 @@ namespace xmipp4
 {
 namespace cpu
 {
-
-template <>
-struct accumulator_footprint<type_list<>>
-	: std::integral_constant<std::size_t, 0>
-{
-};
-
-template <typename Head, typename... Tail>
-struct accumulator_footprint<type_list<Head, Tail...>>
-	: std::integral_constant<
-		std::size_t,
-		sizeof(Head) + accumulator_footprint<type_list<Tail...>>::value
-	>
-{
-};
-
 namespace detail
 {
-
-// How much of a tile the accumulators may take, and how long the tile may
-// be as a result. See config.hpp for what the defaults are worth and why.
-XMIPP4_CONST_CONSTEXPR std::size_t reduction_tile_budget =
-	XMIPP4_REDUCTION_TILE_BUDGET;
-XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_tile =
-	XMIPP4_MINIMUM_REDUCTION_TILE_SIZE;
-XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_tile =
-	XMIPP4_MAXIMUM_REDUCTION_TILE_SIZE;
-
-XMIPP4_INLINE_CONSTEXPR
-std::size_t clamp_reduction_tile(std::size_t count) noexcept
-{
-	if (count > maximum_reduction_tile)
-	{
-		return maximum_reduction_tile;
-	}
-
-	if (count < minimum_reduction_tile)
-	{
-		return minimum_reduction_tile;
-	}
-
-	return count;
-}
-
-/**
- * @brief Detect a kernel's optional identity member.
- */
-template <typename Kernel, typename... Accumulators>
-class identity_detector
-{
-	template <typename K>
-	static auto probe(int) -> decltype(
-		std::declval<const K&>().identity(
-			std::declval<Accumulators&>()...
-		),
-		std::true_type()
-	);
-
-	template <typename K>
-	static std::false_type probe(...);
-
-public:
-	using type = decltype(probe<Kernel>(0));
-};
-
-/**
- * @brief One fixed size array per accumulator type.
- *
- * Separate arrays rather than one array of a composite accumulator: the tile
- * loop walks the accumulators of consecutive outputs, so keeping each
- * accumulator contiguous is what lets that loop vectorize.
- */
-template <typename Accumulators, std::size_t Size>
-struct accumulator_tiles;
-
-template <typename... Accumulators, std::size_t Size>
-struct accumulator_tiles<type_list<Accumulators...>, Size>
-{
-	using type = std::tuple<std::array<Accumulators, Size>...>;
-};
 
 /**
  * @brief One buffer per accumulator type, holding what every thread of a fold
@@ -198,57 +121,6 @@ std::ptrdiff_t get_inner_stride(
 	const auto strides = layout.get_strides(operand);
 	return strides.empty() ? 0 : strides[0];
 }
-
-/**
- * @brief Displace every pointer of a tuple by one offset each.
- */
-template <typename... Pointers, std::size_t... Is>
-inline
-std::tuple<Pointers...> offset_pointers(
-	const std::tuple<Pointers...> &pointers,
-	const std::ptrdiff_t *offsets,
-	std::index_sequence<Is...>
-)
-{
-	return std::make_tuple((std::get<Is>(pointers) + offsets[Is])...);
-}
-
-/**
- * @brief Advance every pointer of a tuple by a multiple of its stride.
- */
-template <typename... Pointers, typename... Strides, std::size_t... Is>
-inline
-std::tuple<Pointers...> step_pointers(
-	const std::tuple<Pointers...> &pointers,
-	std::size_t index,
-	const std::tuple<Strides...> &strides,
-	std::index_sequence<Is...>
-)
-{
-	const auto step = static_cast<std::ptrdiff_t>(index);
-	return std::make_tuple(
-		(
-			std::get<Is>(pointers) +
-			step * static_cast<std::ptrdiff_t>(std::get<Is>(strides))
-		)...
-	);
-}
-
-template <typename... Pointers, std::size_t Count, std::size_t... Is>
-inline
-std::tuple<Pointers...> step_pointers(
-	const std::tuple<Pointers...> &pointers,
-	std::size_t index,
-	const std::array<std::ptrdiff_t, Count> &strides,
-	std::index_sequence<Is...>
-)
-{
-	const auto step = static_cast<std::ptrdiff_t>(index);
-	return std::make_tuple(
-		(std::get<Is>(pointers) + step * strides[Is])...
-	);
-}
-
 
 /**
  * @brief The accumulators of one strip of consecutive outputs.
@@ -359,8 +231,7 @@ public:
 			count,
 			position,
 			strip_outermost(),
-			accumulator_indices(),
-			input_indices()
+			accumulator_indices()
 		);
 	}
 
@@ -478,21 +349,22 @@ private:
 	}
 
 	/**
-	 * @brief Fold a run with the strip inside it.
+	 * @brief Fold a run with the strip outside it.
 	 *
-	 * Taken when the surviving axis is the contiguous one. Consecutive outputs
-	 * and the elements feeding them are then both walked contiguously, and the
-	 * loop vectorizes across the strip.
+	 * Taken when the axis being folded is the contiguous one. Each output's
+	 * run is then read as the contiguous stream it is, into an accumulator
+	 * that stays put for the whole of it, which is what `combine_run` is
+	 * shaped for. Keeping the strip inside here would turn that stream into a
+	 * gather one strip apart, which costs an order of magnitude.
 	 */
-	template <std::size_t... As, std::size_t... Is>
+	template <std::size_t... As>
 	void combine(
 		const input_pointers &inputs,
 		std::size_t width,
 		std::size_t count,
 		std::size_t position,
 		std::true_type,
-		std::index_sequence<As...>,
-		std::index_sequence<Is...>
+		std::index_sequence<As...>
 	)
 	{
 		for (std::size_t j = 0; j < width; ++j)
@@ -504,42 +376,33 @@ private:
 				input_indices()
 			);
 
-			for (std::size_t e = 0; e < count; ++e)
-			{
-				const auto element = step_pointers(
-					column,
-					e,
-					m_reduced_strides,
-					input_indices()
-				);
-
-				m_kernel.combine(
-					std::get<As>(m_tiles)[j]...,
-					std::get<Is>(element)...,
-					position + e
-				);
-			}
+			m_kernel.combine_run(
+				std::make_tuple(&std::get<As>(m_tiles)[j]...),
+				column,
+				m_reduced_strides,
+				count,
+				position
+			);
 		}
 	}
 
 	/**
-	 * @brief Fold a run with the strip outside it.
+	 * @brief Fold a run with the strip inside it.
 	 *
-	 * Taken when the axis being folded is the contiguous one. Each output's
-	 * run is then read as the contiguous stream it is, into an accumulator
-	 * that stays put for the whole of it. Keeping the strip inside here would
-	 * turn that stream into a gather one strip apart, which costs an order of
-	 * magnitude.
+	 * Taken when the surviving axis is the contiguous one. Consecutive
+	 * outputs and the elements feeding them are then both walked
+	 * contiguously, which is what `combine_strip` is shaped for: one element
+	 * of the reduced space into every accumulator of the strip, the two walks
+	 * running side by side.
 	 */
-	template <std::size_t... As, std::size_t... Is>
+	template <std::size_t... As>
 	void combine(
 		const input_pointers &inputs,
 		std::size_t width,
 		std::size_t count,
 		std::size_t position,
 		std::false_type,
-		std::index_sequence<As...>,
-		std::index_sequence<Is...>
+		std::index_sequence<As...>
 	)
 	{
 		for (std::size_t e = 0; e < count; ++e)
@@ -551,21 +414,13 @@ private:
 				input_indices()
 			);
 
-			for (std::size_t j = 0; j < width; ++j)
-			{
-				const auto element = step_pointers(
-					row,
-					j,
-					m_kept_strides,
-					input_indices()
-				);
-
-				m_kernel.combine(
-					std::get<As>(m_tiles)[j]...,
-					std::get<Is>(element)...,
-					position + e
-				);
-			}
+			m_kernel.combine_strip(
+				std::make_tuple(std::get<As>(m_tiles).data()...),
+				row,
+				m_kept_strides,
+				width,
+				position + e
+			);
 		}
 	}
 
@@ -1081,24 +936,6 @@ private:
 
 } // namespace detail
 
-template <typename Accumulators>
-struct reduction_tile_size
-	: std::integral_constant<
-		std::size_t,
-		detail::clamp_reduction_tile(
-			detail::reduction_tile_budget /
-			accumulator_footprint<Accumulators>::value
-		)
-	>
-{
-};
-
-template <typename Kernel, typename... Accumulators>
-struct has_reduction_identity<Kernel, type_list<Accumulators...>>
-	: detail::identity_detector<Kernel, Accumulators...>::type
-{
-};
-
 namespace detail
 {
 
@@ -1347,7 +1184,7 @@ void run_reduction_output_split(
 
 template <typename Kernel, typename... Outs, typename... Ins>
 inline
-void run_reduction_loop(
+void run_reduction_vector_loop(
 	const Kernel &kernel,
 	const joint_layout &kept_layout,
 	const joint_layout &reduced_layout,
@@ -1356,7 +1193,7 @@ void run_reduction_loop(
 	const std::tuple<const Ins*...> &inputs
 )
 {
-	run_reduction_loop(
+	run_reduction_vector_loop(
 		kernel,
 		kept_layout,
 		reduced_layout,
@@ -1369,7 +1206,7 @@ void run_reduction_loop(
 
 template <typename Kernel, typename... Outs, typename... Ins>
 inline
-void run_reduction_loop(
+void run_reduction_vector_loop(
 	const Kernel &kernel,
 	const joint_layout &kept_layout,
 	const joint_layout &reduced_layout,
@@ -1429,6 +1266,50 @@ void run_reduction_loop(
 	);
 }
 
+template <typename Kernel, typename... Outs, typename... Ins>
+inline
+void run_reduction_loop(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const std::tuple<Outs*...> &outputs,
+	const std::tuple<const Ins*...> &inputs
+)
+{
+	run_reduction_loop(
+		kernel,
+		kept_layout,
+		reduced_layout,
+		reduction_count,
+		outputs,
+		inputs,
+		loop_schedule()
+	);
+}
+
+template <typename Kernel, typename... Outs, typename... Ins>
+inline
+void run_reduction_loop(
+	const Kernel &kernel,
+	const joint_layout &kept_layout,
+	const joint_layout &reduced_layout,
+	std::size_t reduction_count,
+	const std::tuple<Outs*...> &outputs,
+	const std::tuple<const Ins*...> &inputs,
+	const loop_schedule &schedule
+)
+{
+	run_reduction_vector_loop(
+		make_reduction_element_adaptor(kernel),
+		kept_layout,
+		reduced_layout,
+		reduction_count,
+		outputs,
+		inputs,
+		schedule
+	);
+}
 
 } // namespace cpu
 } // namespace xmipp4

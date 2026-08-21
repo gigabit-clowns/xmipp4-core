@@ -5,6 +5,7 @@
 #include <xmipp4/core/platform/assert.hpp>
 
 #include <core/logger.hpp>
+#include <core/system/fork_handler.hpp>
 
 #include <algorithm>
 #include <condition_variable>
@@ -133,6 +134,31 @@ public:
 		const void *context
 	);
 
+	/**
+	 * @brief Bring every worker down, ahead of a fork.
+	 *
+	 * Runs in the process that is about to fork, while its threads are all
+	 * still alive, so the joins are ordinary joins and the stacks are handed
+	 * back. What the fork then copies holds no thread, no handle naming one
+	 * and no mutex any of them left locked.
+	 *
+	 * The job lock is taken and kept, so that no other thread can start a job
+	 * in the window before the fork. @ref resume_after_fork releases it.
+	 *
+	 * @warning Deadlocks if called from a thread that is itself running a
+	 * loop body, since the job it belongs to can then never finish. A body
+	 * must not fork.
+	 */
+	void prepare_for_fork();
+
+	/**
+	 * @brief Put the workers back, after a fork.
+	 *
+	 * Run by the parent and by the child alike: both hold a pool that was
+	 * emptied before the fork, and both want it filled again.
+	 */
+	void resume_after_fork();
+
 private:
 	/**
 	 * @brief One chunk, snapshot out of the job description.
@@ -146,6 +172,7 @@ private:
 		std::size_t end;
 	};
 
+	std::size_t m_worker_count;
 	std::vector<std::thread> m_workers;
 
 	std::mutex m_mutex;
@@ -175,13 +202,107 @@ private:
 	bool claim(chunk_work &work);
 	void finish_chunk(std::size_t chunk, std::exception_ptr exception);
 	bool is_job_finished() const noexcept;
+	void spawn_workers();
 	void stop_and_join() noexcept;
 };
+
+namespace
+{
+
+/**
+ * @brief Every pool alive in this process.
+ *
+ * A fork handler is handed no argument, so whatever it acts on has to be
+ * reachable from somewhere it already knows. Holding all of the pools rather
+ * than only the one the backend shares is what keeps a fork from being safe
+ * for some of them and not for others.
+ *
+ * Reached first by a pool's constructor, so it is built before any pool
+ * finishes being built and therefore torn down after the last of them.
+ */
+std::vector<thread_pool_implementation*>& get_fork_registry()
+{
+	static std::vector<thread_pool_implementation*> instance;
+	return instance;
+}
+
+std::mutex& get_fork_registry_mutex()
+{
+	static std::mutex instance;
+	return instance;
+}
+
+/**
+ * @brief Empty every pool, in the parent, before the fork.
+ *
+ * Keeps the registry lock, which the handler that runs after the fork
+ * releases. Between the two, no pool may be built, destroyed or started.
+ */
+void prepare_pools_for_fork()
+{
+	get_fork_registry_mutex().lock();
+	for (auto *pool : get_fork_registry())
+	{
+		pool->prepare_for_fork();
+	}
+}
+
+/**
+ * @brief Fill every pool again, after the fork.
+ *
+ * The parent and the child both run this, and there is nothing to tell them
+ * apart: each holds a pool that was emptied before the fork, and each wants it
+ * filled again. That symmetry is the whole reason for emptying the pool ahead
+ * of the fork rather than repairing it afterwards.
+ */
+void resume_pools_after_fork()
+{
+	for (auto *pool : get_fork_registry())
+	{
+		pool->resume_after_fork();
+	}
+	get_fork_registry_mutex().unlock();
+}
+
+void add_to_fork_registry(thread_pool_implementation &pool)
+{
+	// Registered once, by the first pool built. A process hands its handlers
+	// on to anything it forks, so a child keeps them without asking.
+	static std::once_flag registered;
+	std::call_once(
+		registered,
+		[] ()
+		{
+			register_fork_handler(
+				&prepare_pools_for_fork,
+				&resume_pools_after_fork,
+				&resume_pools_after_fork
+			);
+		}
+	);
+
+	std::lock_guard<std::mutex> lock(get_fork_registry_mutex());
+	get_fork_registry().push_back(&pool);
+}
+
+void remove_from_fork_registry(thread_pool_implementation &pool)
+{
+	std::lock_guard<std::mutex> lock(get_fork_registry_mutex());
+
+	auto &registry = get_fork_registry();
+	registry.erase(
+		std::remove(registry.begin(), registry.end(), &pool),
+		registry.end()
+	);
+}
+
+} // anonymous namespace
 
 thread_pool_implementation::thread_pool_implementation(
 	std::size_t worker_count
 )
-	: m_generation(0)
+	: m_worker_count(worker_count)
+	, m_generation(0)
 	, m_count(0)
 	, m_chunk_count(0)
 	, m_next_chunk(0)
@@ -192,13 +313,9 @@ thread_pool_implementation::thread_pool_implementation(
 	, m_failed_chunk(0)
 	, m_stop(false)
 {
-	m_workers.reserve(worker_count);
 	try
 	{
-		for (std::size_t i = 0; i < worker_count; ++i)
-		{
-			m_workers.emplace_back(&thread_pool_implementation::work, this);
-		}
+		spawn_workers();
 	}
 	catch (...)
 	{
@@ -207,16 +324,19 @@ thread_pool_implementation::thread_pool_implementation(
 		stop_and_join();
 		throw;
 	}
+
+	add_to_fork_registry(*this);
 }
 
 thread_pool_implementation::~thread_pool_implementation()
 {
+	remove_from_fork_registry(*this);
 	stop_and_join();
 }
 
 std::size_t thread_pool_implementation::get_size() const noexcept
 {
-	return m_workers.size() + 1; // The caller participates.
+	return m_worker_count + 1; // The caller participates.
 }
 
 void thread_pool_implementation::run(
@@ -415,6 +535,46 @@ void thread_pool_implementation::finish_chunk(
 bool thread_pool_implementation::is_job_finished() const noexcept
 {
 	return m_running == 0 && (m_failed || m_next_chunk >= m_chunk_count);
+}
+
+void thread_pool_implementation::prepare_for_fork()
+{
+	m_job_mutex.lock();
+	stop_and_join();
+	m_workers.clear();
+}
+
+void thread_pool_implementation::resume_after_fork()
+{
+	// No thread but this one is left to race with, the pool having been
+	// emptied before the fork, so none of this needs the mutex.
+	m_stop = false;
+	m_generation = 0;
+
+	try
+	{
+		spawn_workers();
+	}
+	catch (...)
+	{
+		// A fork handler has nobody to report to, and a pool that could not
+		// get its threads back is still usable: every loop then runs on the
+		// thread that asked for it.
+		stop_and_join();
+		m_workers.clear();
+		m_worker_count = 0;
+	}
+
+	m_job_mutex.unlock();
+}
+
+void thread_pool_implementation::spawn_workers()
+{
+	m_workers.reserve(m_worker_count);
+	for (std::size_t i = 0; i < m_worker_count; ++i)
+	{
+		m_workers.emplace_back(&thread_pool_implementation::work, this);
+	}
 }
 
 void thread_pool_implementation::stop_and_join() noexcept

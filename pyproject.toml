@@ -38,9 +38,6 @@ wheel.install-dir="/data"
 wheel.py-api = "py3" # Python version agnostic
 cmake.version = ">=3.16"
 cmake.build-type = "Release"
-# Already the default everywhere but Windows, where it falls back to the
-# Visual Studio generator. Naming it keeps the three platforms in step.
-cmake.args = ["-GNinja"]
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"

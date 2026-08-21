@@ -20,6 +20,11 @@
     {
       "matchDatasources": ["custom.half"],
       "extractVersion": "^/projects/half/files/half/(?<version>[0-9.]+)/$"
+    },
+    {
+      "description": "A commit carries no release timestamp to age against, and strict internal checks would hold the update forever",
+      "matchDatasources": ["git-refs"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
     }
   ],
   "customDatasources": {
@@ -71,6 +76,23 @@
       "packageNameTemplate": "rollbear/trompeloeil",
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["**/CMakeLists.txt"],
+      "matchStrings": ["fetch_eigen\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "depNameTemplate": "eigen",
+      "packageNameTemplate": "libeigen/eigen",
+      "datasourceTemplate": "gitlab-tags"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["**/CMakeLists.txt"],
+      "matchStrings": ["fetch_pocketfft\\(COMMIT (?<currentDigest>[^)]+)\\)"],
+      "depNameTemplate": "pocketfft",
+      "packageNameTemplate": "https://github.com/mreineck/pocketfft",
+      "currentValueTemplate": "cpp",
+      "datasourceTemplate": "git-refs"
     }
   ]
 }

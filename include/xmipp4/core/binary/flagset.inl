@@ -173,14 +173,16 @@ template<typename B>
 XMIPP4_INLINE_CONSTEXPR flagset<B>& 
 flagset<B>::set(const flagset& other) noexcept
 {
-	return *this |= other;
+	*this |= other;
+	return *this;
 }
 
 template<typename B>
 XMIPP4_INLINE_CONSTEXPR flagset<B>& 
 flagset<B>::clear() noexcept
 {
-	return *this = flagset();
+	*this = flagset();
+	return *this;
 }
 
 template<typename B>
@@ -195,7 +197,8 @@ template<typename B>
 XMIPP4_INLINE_CONSTEXPR flagset<B>& 
 flagset<B>::toggle(const flagset& other) noexcept
 {
-	return *this ^= other;
+	*this ^= other;
+	return *this;
 }
 
 template<typename B>

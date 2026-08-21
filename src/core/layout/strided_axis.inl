@@ -16,18 +16,6 @@ strided_axis::strided_axis(std::size_t extent, std::ptrdiff_t stride) noexcept
 {   
 }
 		
-XMIPP4_INLINE_CONSTEXPR 
-bool strided_axis::operator==(const strided_axis& other) const noexcept
-{
-	return m_extent == other.m_extent && m_stride == other.m_stride;
-}
-
-XMIPP4_INLINE_CONSTEXPR 
-bool strided_axis::operator!=(const strided_axis& other) const noexcept
-{
-	return !(*this == other);
-}
-
 XMIPP4_INLINE_CONSTEXPR_CPP20
 void strided_axis::swap(strided_axis &other) noexcept
 {

@@ -38,7 +38,8 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T&>::type
 set_lowest_zero_inplace(T& x) noexcept
 {
-	return x |= x + 1;
+	x |= x + 1;
+	return x;
 }
 
 template<typename T>
@@ -46,7 +47,8 @@ XMIPP4_INLINE_CONSTEXPR
 typename std::enable_if<std::is_unsigned<T>::value, T&>::type
 clear_lowest_one_inplace(T& x) noexcept
 {
-	return x &= x - 1;
+	x &= x - 1;
+	return x;
 }
 
 template<typename T>

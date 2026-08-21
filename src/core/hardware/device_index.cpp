@@ -38,59 +38,6 @@ std::size_t device_index::get_device_id() const noexcept
 	return m_device_id;
 }
 
-bool operator==(const device_index &lhs, const device_index &rhs) noexcept
-{
-	return lhs.get_device_id() == rhs.get_device_id() &&
-		lhs.get_backend_name() == rhs.get_backend_name();
-}
-
-bool operator!=(const device_index &lhs, const device_index &rhs) noexcept
-{
-	return lhs.get_device_id() != rhs.get_device_id() ||
-		lhs.get_backend_name() != rhs.get_backend_name();
-}
-
-bool operator<(const device_index &lhs, const device_index &rhs) noexcept
-{
-	if (lhs.get_backend_name() < rhs.get_backend_name())
-	{
-		return true;
-	}
-	else if(lhs.get_backend_name() == rhs.get_backend_name())
-	{
-		return lhs.get_device_id() < rhs.get_device_id();
-	}
-	return false;
-}
-
-bool operator<=(const device_index &lhs, const device_index &rhs) noexcept
-{
-	if (lhs.get_backend_name() < rhs.get_backend_name())
-	{
-		return true;
-	}
-	else if(lhs.get_backend_name() == rhs.get_backend_name())
-	{
-		return lhs.get_device_id() <= rhs.get_device_id();
-	}
-	return false;
-}
-
-bool operator>(const device_index &lhs, const device_index &rhs) noexcept
-{
-	return rhs < lhs;
-}
-
-bool operator>=(const device_index &lhs, const device_index &rhs) noexcept
-{
-	return rhs <= lhs;
-}
-
-std::ostream& operator<<(std::ostream &os, const device_index &index)
-{
-	return os << index.get_backend_name() << ':' << index.get_device_id();
-}
-
 bool parse_device_index(std::string_view text, device_index &result)
 {
 	if(text.empty())

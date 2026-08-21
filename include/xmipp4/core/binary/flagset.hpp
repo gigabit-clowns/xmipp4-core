@@ -162,20 +162,30 @@ public:
 	/**
 	 * @brief Compares for equality with another flagset
 	 * 
+	 * @param lhs One flagset
 	 * @param rhs The other flagset
 	 * @return true If both flagset-s are equal
 	 * @return false If both flagset-s are not equal
 	 */
-	XMIPP4_CONSTEXPR bool operator==(const flagset& rhs) const noexcept;
+	friend XMIPP4_CONSTEXPR
+	bool operator==(const flagset& lhs, const flagset& rhs) noexcept
+	{
+		return lhs.m_data == rhs.m_data;
+	}
 
 	/**
 	 * @brief Compares for inequality with another flagset
 	 * 
+	 * @param lhs One flagset
 	 * @param rhs The other flagset
 	 * @return true If both flagset-s are not equal
 	 * @return false If both flagset-s are equal
 	 */
-	XMIPP4_CONSTEXPR bool operator!=(const flagset& rhs) const noexcept;
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(const flagset& lhs, const flagset& rhs) noexcept
+	{
+		return lhs.m_data != rhs.m_data;
+	}
 
 	/**
 	 * @brief Obtain the underlying integer representation of the flags.
@@ -292,21 +302,27 @@ public:
 	 */
 	XMIPP4_CONSTEXPR flagset& toggle(const flagset& other) noexcept;
 
+	friend XMIPP4_CONSTEXPR
+	flagset operator|(const flagset& lhs, const flagset& rhs) noexcept
+	{
+		return flagset(lhs.m_data | rhs.m_data);
+	}
+
+	friend XMIPP4_CONSTEXPR
+	flagset operator&(const flagset& lhs, const flagset& rhs) noexcept
+	{
+		return flagset(lhs.m_data & rhs.m_data);
+	}
+
+	friend XMIPP4_CONSTEXPR
+	flagset operator^(const flagset& lhs, const flagset& rhs) noexcept
+	{
+		return flagset(lhs.m_data ^ rhs.m_data);
+	}
+
 private:
 	unsigned_type m_data;
 };
-
-template<typename B>
-XMIPP4_CONSTEXPR 
-flagset<B> operator|(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
-
-template<typename B>
-XMIPP4_CONSTEXPR 
-flagset<B> operator&(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
-
-template<typename B>
-XMIPP4_CONSTEXPR 
-flagset<B> operator^(const flagset<B>& lhs, const flagset<B>& rhs) noexcept;
 
 } // namespace xmipp4
 

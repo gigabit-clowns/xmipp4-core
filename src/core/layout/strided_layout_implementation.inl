@@ -267,45 +267,6 @@ strided_layout_implementation::strided_layout_implementation(
 }
 
 inline
-bool strided_layout_implementation::operator==(
-	const strided_layout_implementation &other
-) const noexcept
-{
-	if (m_offset != other.m_offset)
-	{
-		return false;
-	}
-
-	if (m_axes.size() != other.m_axes.size())
-	{
-		return false;
-	}
-
-	const auto n = m_axes.size();
-	for (std::size_t i = 0; i < n; ++i)
-	{
-		const auto &axis1 = m_axes[i];
-		const auto &axis2 = other.m_axes[i];
-
-		const auto extent1 = axis1.get_extent();
-		const auto extent2 = axis2.get_extent();
-		if (extent1 != extent2)
-		{
-			return false;
-		}
-
-		const auto stride1 = axis1.get_stride();
-		const auto stride2 = axis2.get_stride();
-		if (extent1 != 1 && stride1 != stride2)
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-inline
 std::size_t strided_layout_implementation::hash() const noexcept
 {
 	std::size_t seed = boost::hash_value(m_offset);

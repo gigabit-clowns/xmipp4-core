@@ -117,41 +117,54 @@ public:
 	 */
 	XMIPP4_CONSTEXPR stride_type stride() const noexcept;
 
+	friend XMIPP4_CONSTEXPR strided_pointer_iterator operator+(
+		strided_pointer_iterator it,
+		std::ptrdiff_t n
+	) noexcept
+	{
+		it += n;
+		return it;
+	}
+
+	friend XMIPP4_CONSTEXPR strided_pointer_iterator operator+(
+		std::ptrdiff_t n,
+		strided_pointer_iterator it
+	) noexcept
+	{
+		it += n;
+		return it;
+	}
+
+	friend XMIPP4_CONSTEXPR strided_pointer_iterator operator-(
+		strided_pointer_iterator it,
+		std::ptrdiff_t n
+	) noexcept
+	{
+		it -= n;
+		return it;
+	}
+
+	friend XMIPP4_CONSTEXPR bool operator==(
+		const strided_pointer_iterator &lhs,
+		const strided_pointer_iterator &rhs
+	) noexcept
+	{
+		return lhs.data() == rhs.data();
+	}
+
+	friend XMIPP4_CONSTEXPR bool operator!=(
+		const strided_pointer_iterator &lhs,
+		const strided_pointer_iterator &rhs
+	) noexcept
+	{
+		return !(lhs == rhs);
+	}
+
 private:
 	pointer m_data;
 	stride_type m_stride;
 
 };
-
-template <typename T, typename Stride>
-XMIPP4_CONSTEXPR strided_pointer_iterator<T, Stride> operator+(
-	strided_pointer_iterator<T, Stride> it,
-	std::ptrdiff_t n
-) noexcept;
-
-template <typename T, typename Stride>
-XMIPP4_CONSTEXPR strided_pointer_iterator<T, Stride> operator+(
-	std::ptrdiff_t n,
-	strided_pointer_iterator<T, Stride> it
-) noexcept;
-
-template <typename T, typename Stride>
-XMIPP4_CONSTEXPR strided_pointer_iterator<T, Stride> operator-(
-	strided_pointer_iterator<T, Stride> it,
-	std::ptrdiff_t n
-) noexcept;
-
-template <typename T, typename Stride>
-XMIPP4_CONSTEXPR bool operator==(
-	const strided_pointer_iterator<T, Stride> &lhs,
-	const strided_pointer_iterator<T, Stride> &rhs
-) noexcept;
-
-template <typename T, typename Stride>
-XMIPP4_CONSTEXPR bool operator!=(
-	const strided_pointer_iterator<T, Stride> &lhs,
-	const strided_pointer_iterator<T, Stride> &rhs
-) noexcept;
 
 /**
  * @brief Construct a `strided_pointer_iterator` deducing its element type.

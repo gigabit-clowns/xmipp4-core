@@ -36,6 +36,53 @@ public:
 
 	XMIPP4_CONSTEXPR std::uint32_t get_data() const noexcept;
 
+	friend XMIPP4_CONSTEXPR
+	bool operator==(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() == rhs.get_data();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() != rhs.get_data();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator<(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() < rhs.get_data();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator<=(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() <= rhs.get_data();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator>(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() > rhs.get_data();
+	}
+
+	friend XMIPP4_CONSTEXPR
+	bool operator>=(const version& lhs, const version& rhs) noexcept
+	{
+		return lhs.get_data() >= rhs.get_data();
+	}
+
+	template<typename T>
+	friend std::basic_ostream<T>&
+	operator<<(std::basic_ostream<T>& os, const version& ver)
+	{
+		XMIPP4_CONST_CONSTEXPR T sep = '.';
+		return os
+			<< ver.get_major() << sep
+			<< ver.get_minor() << sep
+			<< ver.get_patch();
+	}
+
 private:
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t patch_bits = 10;
 	static XMIPP4_INLINE_CONST_CONSTEXPR std::size_t minor_bits = 10;
@@ -54,16 +101,6 @@ private:
 
 	std::uint32_t m_data;
 };
-
-XMIPP4_CONSTEXPR bool operator==(const version& lhs, const version& rhs) noexcept;
-XMIPP4_CONSTEXPR bool operator!=(const version& lhs, const version& rhs) noexcept;
-XMIPP4_CONSTEXPR bool operator<(const version& lhs, const version& rhs) noexcept;
-XMIPP4_CONSTEXPR bool operator<=(const version& lhs, const version& rhs) noexcept;
-XMIPP4_CONSTEXPR bool operator>(const version& lhs, const version& rhs) noexcept;
-XMIPP4_CONSTEXPR bool operator>=(const version& lhs, const version& rhs) noexcept;
-		
-template<typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T>& os, const version& ver);
 
 } // namespace xmipp4
 

@@ -18,15 +18,27 @@ namespace xmipp4
  * NumPy equivalent of Ellipsis or "...".
  * 
  */
-struct ellipsis_tag {};
+struct ellipsis_tag
+{
+	friend XMIPP4_CONSTEXPR
+	bool operator==(ellipsis_tag, ellipsis_tag) noexcept
+	{
+		return true;
+	}
 
-XMIPP4_CONSTEXPR
-bool operator==(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
-XMIPP4_CONSTEXPR
-bool operator!=(ellipsis_tag lhs, ellipsis_tag rhs) noexcept;
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(ellipsis_tag, ellipsis_tag) noexcept
+	{
+		return false;
+	}
 
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, ellipsis_tag);
+	template <typename T>
+	friend std::basic_ostream<T>&
+	operator<<(std::basic_ostream<T> &os, ellipsis_tag)
+	{
+		return os << "ellipsis_tag";
+	}
+};
 
 /**
  * @brief Construct an ellipsis_tag.
@@ -42,15 +54,27 @@ ellipsis_tag ellipsis() noexcept;
  * NumPy equivalent of numpy.newaxis() or "None".
  * 
  */
-struct new_axis_tag {};
+struct new_axis_tag
+{
+	friend XMIPP4_CONSTEXPR
+	bool operator==(new_axis_tag, new_axis_tag) noexcept
+	{
+		return true;
+	}
 
-XMIPP4_CONSTEXPR
-bool operator==(new_axis_tag, new_axis_tag) noexcept;
-XMIPP4_CONSTEXPR
-bool operator!=(new_axis_tag, new_axis_tag) noexcept;
+	friend XMIPP4_CONSTEXPR
+	bool operator!=(new_axis_tag, new_axis_tag) noexcept
+	{
+		return false;
+	}
 
-template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &os, new_axis_tag);
+	template <typename T>
+	friend std::basic_ostream<T>&
+	operator<<(std::basic_ostream<T> &os, new_axis_tag)
+	{
+		return os << "new_axis_tag";
+	}
+};
 
 /**
  * @brief Construct a new_axis_tag.

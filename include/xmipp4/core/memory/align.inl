@@ -37,8 +37,9 @@ template <typename T>
 XMIPP4_NODISCARD inline
 T* align_floor(T* address, std::size_t alignment) noexcept
 {
-	align_floor_inplace(reinterpret_cast<std::uintptr_t&>(address), alignment);
-	return address;
+	auto value = reinterpret_cast<std::uintptr_t>(address);
+	align_floor_inplace(value, alignment);
+	return reinterpret_cast<T*>(value);
 }
 
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 
@@ -60,8 +61,9 @@ template <typename T>
 XMIPP4_NODISCARD inline
 T* align_ceil(T* address, std::size_t alignment) noexcept
 {
-	align_ceil_inplace(reinterpret_cast<std::uintptr_t&>(address), alignment);
-	return address;
+	auto value = reinterpret_cast<std::uintptr_t>(address);
+	align_ceil_inplace(value, alignment);
+	return reinterpret_cast<T*>(value);
 }
 
 XMIPP4_NODISCARD XMIPP4_INLINE_CONSTEXPR 

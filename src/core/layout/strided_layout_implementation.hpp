@@ -33,7 +33,44 @@ public:
 		std::ptrdiff_t offset 
 	) noexcept;
 
-	bool operator==(const strided_layout_implementation &other) const noexcept;
+	friend bool operator==(
+		const strided_layout_implementation &lhs,
+		const strided_layout_implementation &rhs
+	) noexcept
+	{
+		if (lhs.m_offset != rhs.m_offset)
+		{
+			return false;
+		}
+
+		if (lhs.m_axes.size() != rhs.m_axes.size())
+		{
+			return false;
+		}
+
+		const auto n = lhs.m_axes.size();
+		for (std::size_t i = 0; i < n; ++i)
+		{
+			const auto &axis1 = lhs.m_axes[i];
+			const auto &axis2 = rhs.m_axes[i];
+
+			const auto extent1 = axis1.get_extent();
+			const auto extent2 = axis2.get_extent();
+			if (extent1 != extent2)
+			{
+				return false;
+			}
+
+			const auto stride1 = axis1.get_stride();
+			const auto stride2 = axis2.get_stride();
+			if (extent1 != 1 && stride1 != stride2)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	std::size_t hash() const noexcept;
 

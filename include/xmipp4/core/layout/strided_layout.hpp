@@ -212,11 +212,16 @@ public:
 		std::ptrdiff_t offset = 0
 	);
 
-	// Defined out of line: the implementation type is incomplete here.
+	// Defined out of line: it compares the implementations, and the
+	// implementation type is incomplete here.
 	friend XMIPP4_CORE_API
 	bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept;
-	friend XMIPP4_CORE_API
-	bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept;
+
+	friend bool
+	operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept
+	{
+		return !(lhs == rhs);
+	}
 
 private:
 	// Copy-on-write implementation

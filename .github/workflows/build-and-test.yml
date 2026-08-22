@@ -54,7 +54,6 @@ jobs:
 
       # Ninja does not locate MSVC on its own the way the Visual Studio
       # generator does; without this the configure step finds no cl.exe.
-      # vswhere and vcvars ship with Visual Studio on the runner.
       - name: Set up MSVC environment
         if: matrix.compiler.cxx == 'cl'
         shell: pwsh

@@ -83,8 +83,9 @@ struct fourier_transform_support<Pivot>
  * @param normalization Which of the transform pair carries the scaling.
  * @param output The transformed operand, displaced by its offset.
  * @param input The operand to transform, displaced by its offset.
- * @param nthreads How many threads pocketfft may use. It spawns them itself,
- * from a pool of its own, so this is a count and not a pool.
+ * @param nthreads How many threads pocketfft may use. Ignored while its
+ * threading is off, see the definition, but still stated so that turning
+ * it back on is one define rather than a signature change.
  */
 template <typename T>
 void run_complex_to_complex_transform(
@@ -110,7 +111,7 @@ void run_complex_to_complex_transform(
  * @param direction Which way round to transform.
  * @param normalization Which of the transform pair carries the scaling.
  * @param data The operand, displaced by the output offset.
- * @param nthreads How many threads pocketfft may use.
+ * @param nthreads How many threads pocketfft may use. Currently ignored.
  */
 template <typename T>
 void run_in_place_complex_transform(
@@ -131,7 +132,7 @@ void run_in_place_complex_transform(
  * @param normalization Which of the transform pair carries the scaling.
  * @param output The half spectrum, displaced by its offset.
  * @param input The real operand, displaced by its offset.
- * @param nthreads How many threads pocketfft may use.
+ * @param nthreads How many threads pocketfft may use. Currently ignored.
  */
 template <typename T>
 void run_real_to_complex_transform(
@@ -153,7 +154,7 @@ void run_real_to_complex_transform(
  * @param normalization Which of the transform pair carries the scaling.
  * @param output The real operand, displaced by its offset.
  * @param input The half spectrum, displaced by its offset.
- * @param nthreads How many threads pocketfft may use.
+ * @param nthreads How many threads pocketfft may use. Currently ignored.
  */
 template <typename T>
 void run_complex_to_real_transform(

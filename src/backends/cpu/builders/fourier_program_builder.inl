@@ -45,10 +45,12 @@ public:
 		thread_pool &pool
 	) const
 	{
-		// pocketfft threads a transform itself, from a pool of its own, so
-		// what it is handed is a count and not this pool. The grain is stated
-		// per element for the conversion pass, which is an elementwise loop
-		// and the only part of this that uses the pool directly.
+		// pocketfft is handed a count rather than this pool, threading a
+		// transform from a pool of its own when it threads one at all. It is
+		// currently built with its threading off, so the transform runs on
+		// the calling thread and the count only says what it could use. The
+		// grain is stated per element for the conversion pass, which is an
+		// elementwise loop and the only part of this that uses the pool.
 		m_transform(
 			m_plan,
 			std::get<0>(outputs) + m_plan.get_output_offset(),

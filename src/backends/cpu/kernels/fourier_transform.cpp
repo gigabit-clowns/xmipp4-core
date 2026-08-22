@@ -6,6 +6,22 @@
 
 #include <complex>
 
+// pocketfft parks its workers in a function local static whose destructor
+// joins them. Compiled into this shared library, that join runs during static
+// destruction, which on Windows is DLL_PROCESS_DETACH: after the loader has
+// already stopped every other thread. MinGW's pthread_join waits there for a
+// completion that never comes, and the process hangs at exit. It is the same
+// reason cpu::device owns the pool this backend threads its own loops over
+// rather than a static holding it.
+//
+// Nothing has hit this yet, only because pocketfft declines to thread a
+// transform whose axis is shorter than 1000 samples and nothing asks it for a
+// longer one. That is not a property worth relying on, so the threading is
+// off until the transform is spread over cpu::thread_pool instead.
+//
+// This is the only translation unit that includes pocketfft, so defining it
+// here cannot make one build of the header disagree with another.
+#define POCKETFFT_NO_MULTITHREADING
 #define POCKETFFT_CACHE_SIZE XMIPP4_POCKETFFT_CACHE_SIZE
 #include <pocketfft_hdronly.h>
 

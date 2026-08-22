@@ -12,8 +12,7 @@ jobs:
     permissions:
       actions: write
     runs-on: ubuntu-latest
-    # A fork's token is read only, so the deletion would fail rather than
-    # leave anything behind. Those caches expire on their own after 7 days.
+		# Only delete caches for pull requests from the same repository, not from forks.
     if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Delete caches
@@ -22,10 +21,6 @@ jobs:
           GH_REPO: ${{ github.repository }}
           REF: refs/pull/${{ github.event.pull_request.number }}/merge
         run: |
-          # The compiler cache saves a new entry on every run, because a
-          # cache cannot be overwritten, and a pull request's entries are
-          # reachable from its own ref alone. Once it closes they are dead
-          # weight against the repository's shared 10 GB.
           ids=$(gh cache list --ref "$REF" --limit 100 --json id --jq '.[].id')
           if [ -z "$ids" ]; then
             echo "No caches for $REF"

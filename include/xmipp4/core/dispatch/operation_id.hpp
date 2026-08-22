@@ -23,8 +23,17 @@ public:
 	operation_id& operator=(const operation_id &other) = default;
 	operation_id& operator=(operation_id &&other) = default;
 	
-	bool operator==(const operation_id &other) const noexcept;
-	bool operator!=(const operation_id &other) const noexcept;
+	friend bool
+	operator==(const operation_id &lhs, const operation_id &rhs) noexcept
+	{
+		return lhs.m_id == rhs.m_id;
+	}
+
+	friend bool
+	operator!=(const operation_id &lhs, const operation_id &rhs) noexcept
+	{
+		return !(lhs == rhs);
+	}
 
 	/**
 	 * @brief Compute the hash for this operation identifier.

@@ -30,5 +30,5 @@ if(WIN32)
 	)
 endif()
 
-# Discover tests
-catch_discover_tests(xmipp4-core-integration-tests)
+# Register tests
+xmipp4_register_tests(xmipp4-core-integration-tests)

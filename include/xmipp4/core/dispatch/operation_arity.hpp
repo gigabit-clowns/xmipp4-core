@@ -100,21 +100,27 @@ public:
 	XMIPP4_CORE_API
 	static operation_arity ternary() noexcept;
 
+	friend bool operator==(
+		const operation_arity &lhs,
+		const operation_arity &rhs
+	) noexcept
+	{
+		return
+			lhs.get_output_count() == rhs.get_output_count() &&
+			lhs.get_input_count() == rhs.get_input_count();
+	}
+
+	friend bool operator!=(
+		const operation_arity &lhs,
+		const operation_arity &rhs
+	) noexcept
+	{
+		return !(lhs == rhs);
+	}
+
 private:
 	std::size_t m_output_count;
 	std::size_t m_input_count;
 };
-
-XMIPP4_CORE_API
-bool operator==(
-	const operation_arity &lhs,
-	const operation_arity &rhs
-) noexcept;
-
-XMIPP4_CORE_API
-bool operator!=(
-	const operation_arity &lhs,
-	const operation_arity &rhs
-) noexcept;
 
 } // namespace xmipp4

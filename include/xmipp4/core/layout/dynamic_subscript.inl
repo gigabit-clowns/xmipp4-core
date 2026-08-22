@@ -74,24 +74,6 @@ slice dynamic_subscript::get_slice() const
 	return make_slice(m_data[0], m_data[1], m_data[2]);
 }
 
-template <typename T>
-inline
-std::basic_ostream<T>& operator<<(
-	std::basic_ostream<T>& os, 
-	const dynamic_subscript &subscript
-)
-{
-	os << "dynamic_subscript(";
-	visit(
-		[&os] (auto x)
-		{
-			os << x;
-		},
-		subscript
-	);
-	return os << ")";
-}
-
 template <typename F>
 XMIPP4_INLINE_CONSTEXPR
 auto visit(F&& func, const dynamic_subscript &subscript)

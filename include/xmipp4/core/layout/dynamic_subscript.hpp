@@ -110,6 +110,23 @@ public:
 	 */
 	slice get_slice() const;
 
+	template <typename T>
+	friend std::basic_ostream<T>& operator<<(
+		std::basic_ostream<T>& os,
+		const dynamic_subscript &subscript
+	)
+	{
+		os << "dynamic_subscript(";
+		visit(
+			[&os] (auto x)
+			{
+				os << x;
+			},
+			subscript
+		);
+		return os << ")";
+	}
+
 private:
 	using storage_type = std::array<std::ptrdiff_t, 3>;
 
@@ -123,12 +140,6 @@ class bad_dynamic_subscript_access
 public:
 	using std::logic_error::logic_error;
 };
-
-template <typename T>
-std::basic_ostream<T>& operator<<(
-	std::basic_ostream<T>& os, 
-	const dynamic_subscript &subscript
-);
 
 /**
  * @brief Invoke the provided function with the value held by the dynamic 

@@ -135,59 +135,6 @@ strided_pointer_iterator<T, Stride>::stride() const noexcept
 
 template <typename T, typename Stride>
 XMIPP4_INLINE_CONSTEXPR
-strided_pointer_iterator<T, Stride> operator+(
-	strided_pointer_iterator<T, Stride> it,
-	std::ptrdiff_t n
-) noexcept
-{
-	it += n;
-	return it;
-}
-
-template <typename T, typename Stride>
-XMIPP4_INLINE_CONSTEXPR
-strided_pointer_iterator<T, Stride> operator+(
-	std::ptrdiff_t n,
-	strided_pointer_iterator<T, Stride> it
-) noexcept
-{
-	it += n;
-	return it;
-}
-
-template <typename T, typename Stride>
-XMIPP4_INLINE_CONSTEXPR
-strided_pointer_iterator<T, Stride> operator-(
-	strided_pointer_iterator<T, Stride> it,
-	std::ptrdiff_t n
-) noexcept
-{
-	it -= n;
-	return it;
-}
-
-template <typename T, typename Stride>
-XMIPP4_INLINE_CONSTEXPR
-bool operator==(
-	const strided_pointer_iterator<T, Stride> &lhs,
-	const strided_pointer_iterator<T, Stride> &rhs
-) noexcept
-{
-	return lhs.data() == rhs.data();
-}
-
-template <typename T, typename Stride>
-XMIPP4_INLINE_CONSTEXPR
-bool operator!=(
-	const strided_pointer_iterator<T, Stride> &lhs,
-	const strided_pointer_iterator<T, Stride> &rhs
-) noexcept
-{
-	return !(lhs == rhs);
-}
-
-template <typename T, typename Stride>
-XMIPP4_INLINE_CONSTEXPR
 strided_pointer_iterator<T, Stride> make_strided_pointer_iterator(
 	T* data,
 	Stride stride

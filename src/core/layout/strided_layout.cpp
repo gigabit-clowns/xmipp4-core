@@ -229,9 +229,4 @@ bool operator==(const strided_layout &lhs, const strided_layout &rhs) noexcept
 	return lhs.get_implementation() == rhs.get_implementation();
 }
 
-bool operator!=(const strided_layout &lhs, const strided_layout &rhs) noexcept
-{
-	return !(lhs == rhs);
-}
-
 } // namespace xmipp4

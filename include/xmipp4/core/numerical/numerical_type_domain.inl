@@ -112,42 +112,6 @@ numerical_type_domain numerical_type_domain::none() noexcept
 }
 
 XMIPP4_INLINE_CONSTEXPR
-bool operator==(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept
-{
-	return lhs.get_mask() == rhs.get_mask();
-}
-
-XMIPP4_INLINE_CONSTEXPR
-bool operator!=(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept
-{
-	return !(lhs == rhs);
-}
-
-XMIPP4_INLINE_CONSTEXPR
-numerical_type_domain operator&(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept
-{
-	return numerical_type_domain(lhs.get_mask() & rhs.get_mask());
-}
-
-XMIPP4_INLINE_CONSTEXPR
-numerical_type_domain operator|(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept
-{
-	return numerical_type_domain(lhs.get_mask() | rhs.get_mask());
-}
-
-XMIPP4_INLINE_CONSTEXPR
 numerical_type_domain operator~(const numerical_type_domain &domain) noexcept
 {
 	return numerical_type_domain(

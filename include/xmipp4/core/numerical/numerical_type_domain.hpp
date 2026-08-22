@@ -116,6 +116,82 @@ public:
 	static XMIPP4_CONSTEXPR
 	numerical_type_domain none() noexcept;
 
+	friend XMIPP4_CONSTEXPR bool operator==(
+		const numerical_type_domain &lhs,
+		const numerical_type_domain &rhs
+	) noexcept
+	{
+		return lhs.get_mask() == rhs.get_mask();
+	}
+
+	friend XMIPP4_CONSTEXPR bool operator!=(
+		const numerical_type_domain &lhs,
+		const numerical_type_domain &rhs
+	) noexcept
+	{
+		return !(lhs == rhs);
+	}
+
+	/**
+	 * @brief Compute the intersection of two domains.
+	 */
+	friend XMIPP4_CONSTEXPR numerical_type_domain operator&(
+		const numerical_type_domain &lhs,
+		const numerical_type_domain &rhs
+	) noexcept
+	{
+		return numerical_type_domain(lhs.get_mask() & rhs.get_mask());
+	}
+
+	/**
+	 * @brief Compute the union of two domains.
+	 */
+	friend XMIPP4_CONSTEXPR numerical_type_domain operator|(
+		const numerical_type_domain &lhs,
+		const numerical_type_domain &rhs
+	) noexcept
+	{
+		return numerical_type_domain(lhs.get_mask() | rhs.get_mask());
+	}
+
+	/**
+	 * @brief Write a human readable representation of a domain.
+	 *
+	 * The types are listed in enumerator order, separated by commas.
+	 *
+	 * @param os The stream where the domain is written.
+	 * @param domain The domain to be written.
+	 * @return std::ostream& The stream.
+	 */
+	friend std::ostream& operator<<(
+		std::ostream &os,
+		const numerical_type_domain &domain
+	)
+	{
+		if (domain.empty())
+		{
+			return os << "<none>";
+		}
+
+		bool first = true;
+		const auto count = static_cast<int>(numerical_type::count);
+		for (int i = 0; i < count; ++i)
+		{
+			const auto type = static_cast<numerical_type>(i);
+			if (domain.contains(type))
+			{
+				if (!first)
+				{
+					os << ", ";
+				}
+				os << type;
+				first = false;
+			}
+		}
+
+		return os;
+	}
+
 private:
 	mask_type m_mask;
 };
@@ -132,36 +208,6 @@ private:
  */
 XMIPP4_CONSTEXPR
 bool is_domain_representable(numerical_type type) noexcept;
-
-XMIPP4_CONSTEXPR
-bool operator==(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept;
-
-XMIPP4_CONSTEXPR
-bool operator!=(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept;
-
-/**
- * @brief Compute the intersection of two domains.
- */
-XMIPP4_CONSTEXPR
-numerical_type_domain operator&(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept;
-
-/**
- * @brief Compute the union of two domains.
- */
-XMIPP4_CONSTEXPR
-numerical_type_domain operator|(
-	const numerical_type_domain &lhs,
-	const numerical_type_domain &rhs
-) noexcept;
 
 /**
  * @brief Compute the complement of a domain.
@@ -184,21 +230,6 @@ XMIPP4_CONSTEXPR_CPP14
 numerical_type_domain make_numerical_type_domain(
 	numerical_type_category category
 ) noexcept;
-
-/**
- * @brief Write a human readable representation of a domain.
- *
- * The types are listed in enumerator order, separated by commas.
- *
- * @param os The stream where the domain is written.
- * @param domain The domain to be written.
- * @return std::ostream& The stream.
- */
-XMIPP4_CORE_API
-std::ostream& operator<<(
-	std::ostream &os,
-	const numerical_type_domain &domain
-);
 
 
 

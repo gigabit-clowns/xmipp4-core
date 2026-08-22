@@ -76,12 +76,4 @@ std::string describe_operand(
 	return std::to_string(index);
 }
 
-std::ostream& operator<<(
-	std::ostream &os,
-	const operation_descriptor &descriptor
-)
-{
-	return os << descriptor.get_component() << '.' << descriptor.get_name();
-}
-
 } // namespace xmipp4

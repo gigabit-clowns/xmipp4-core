@@ -1,0 +1,66 @@
+name: Clean up caches
+permissions: {}
+
+on:
+  pull_request:
+    types:
+      - closed
+
+  workflow_run:
+    workflows:
+      - Build and Test
+    types:
+      - completed
+
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch whose caches are all deleted
+        required: true
+        type: string
+
+jobs:
+  delete_every_cache_of_a_ref:
+    name: Delete every cache of a ref
+    # A fork's token is read only, so the deletion would fail rather than
+    # leave anything behind. Those caches expire on their own after 7 days.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    permissions:
+      contents: read
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # A closed pull request's caches are reachable from its own ref
+      # alone, so none of them can ever be restored again.
+      - name: Clean up caches
+        uses: ./.github/actions/clean-up-caches
+        with:
+          scope: every
+          ref: >-
+            ${{ github.event_name == 'pull_request'
+                && format('refs/pull/{0}/merge', github.event.pull_request.number)
+                || format('refs/heads/{0}', inputs.branch) }}
+          token: ${{ github.token }}
+
+  delete_superseded_caches:
+    name: Delete the caches a newer run has replaced
+    if: github.event_name == 'workflow_run'
+    permissions:
+      contents: read
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Clean up caches
+        uses: ./.github/actions/clean-up-caches
+        with:
+          scope: superseded
+          token: ${{ github.token }}

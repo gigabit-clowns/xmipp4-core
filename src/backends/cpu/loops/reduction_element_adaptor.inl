@@ -262,9 +262,20 @@ void reduction_element_adaptor<Kernel>::combine_strip(
 	std::index_sequence<Is...> input_indices
 ) const
 {
-	// No lanes here, and none needed: the strip is already as many
-	// independent accumulators as it is wide, so the chain this breaks in
-	// combine_run was never formed.
+	// No lanes here: the strip is already as many independent accumulators as
+	// it is wide, so the chain combine_run breaks was never formed.
+	//
+	// What the strip does not escape is where its accumulators live. The tile
+	// is indexed by a width settled at run time, so it stays in memory and is
+	// read and written once per element folded, where a fold holding a fixed
+	// number of them keeps them in registers and writes each once per output.
+	// Measured against that arrangement, this trails it by about half on
+	// operands that fit in cache and by six times when the strip is only a
+	// vector wide, and beats it by two to three times once the operand comes
+	// from main memory, the tile streaming where a narrow block gathers.
+	// Closing the first without losing the second wants a fixed size block
+	// folded to completion inside the tile, which is a level of blocking this
+	// does not have.
 	for (std::size_t j = 0; j < width; ++j)
 	{
 		const auto element =

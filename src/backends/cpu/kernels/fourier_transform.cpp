@@ -4,22 +4,9 @@
 
 #include <backends/cpu/config.hpp>
 
-#include <xmipp4/core/platform/operating_system.h>
-
 #include <complex>
 
 #define POCKETFFT_CACHE_SIZE XMIPP4_POCKETFFT_CACHE_SIZE
-
-// pocketfft keeps a thread pool of its own, which this backend started using
-// the moment it began passing a thread count. That pool is no more able to
-// survive a fork than any other, and pocketfft already carries the handlers
-// that bring it down beforehand and put it back after. They are guarded by
-// this, so without it they are compiled away and the pool is left to be
-// inherited by a child that can only hang on it.
-#if XMIPP4_POSIX
-	#define POCKETFFT_PTHREADS
-#endif
-
 #include <pocketfft_hdronly.h>
 
 namespace xmipp4

@@ -139,6 +139,9 @@ struct kernel_without_identity
 XMIPP4_CONST_CONSTEXPR std::size_t int_lane_count =
 	reduction_fold_lane_count<type_list<int>>::value;
 
+XMIPP4_CONST_CONSTEXPR std::size_t strip_block =
+	reduction_strip_block_size<type_list<int>>::value;
+
 std::vector<int> iota_vector(std::size_t count)
 {
 	std::vector<int> result(count);
@@ -448,17 +451,21 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"reduction_element_adaptor should fold one element into every "
-	"accumulator of a strip",
+	"reduction_element_adaptor should fold a run into every accumulator of a "
+	"strip",
 	"[reduction_element_adaptor]"
 )
 {
-	// The other orientation: the accumulators are what is walked, one step
-	// each, and the elements feeding them come from the kept layout. There
-	// are no lanes here, the strip being as many independent accumulators as
-	// it is wide already.
+	// The other orientation: the accumulators are what is walked, and the
+	// elements feeding them come from the kept layout while the run comes
+	// from the reduced one. There are no lanes here, the strip being as many
+	// independent accumulators as it is wide already.
 	XMIPP4_CONST_CONSTEXPR std::size_t width = 4;
-	const auto values = iota_vector(width);
+	XMIPP4_CONST_CONSTEXPR std::size_t count = 3;
+
+	// A count by width matrix, row major, so a step along the run is `width`
+	// elements and a step along the strip is one.
+	const auto values = iota_vector(count*width);
 	const reassociable_fold_kernel kernel;
 
 	std::vector<int> accumulators(width, 10);
@@ -466,18 +473,75 @@ TEST_CASE(
 		std::make_tuple(accumulators.data()),
 		std::make_tuple(values.data()),
 		std::make_tuple(contiguous_stride_tag()),
+		std::make_tuple(std::ptrdiff_t(width)),
 		width,
+		count,
 		7
 	);
 
-	REQUIRE( accumulators == std::vector<int>{ 11, 12, 13, 14 } );
-
-	// One element of the reduced space feeds the whole strip, so they all
-	// sit at the same place in it.
+	// Column j holds 10 plus the column's three elements.
 	REQUIRE(
-		kernel.log().combined == std::vector<std::size_t>(width, 7)
+		accumulators ==
+		std::vector<int>{ 10+1+5+9, 10+2+6+10, 10+3+7+11, 10+4+8+12 }
 	);
 	REQUIRE( kernel.log().merges == 0 );
+
+	// Every element of the strip at one place in the run shares its position.
+	auto positions = kernel.log().combined;
+	std::sort(positions.begin(), positions.end());
+	std::vector<std::size_t> expected;
+	for (std::size_t e = 0; e < count; ++e)
+	{
+		expected.insert(expected.end(), width, 7 + e);
+	}
+	REQUIRE( positions == expected );
+}
+
+TEST_CASE(
+	"reduction_element_adaptor should fold a strip of any width",
+	"[reduction_element_adaptor]"
+)
+{
+	// A strip is walked in blocks of a size settled at compile time, so its
+	// width is only a whole number of them by accident. Sweeping across the
+	// width catches a block that is dropped, folded twice, or reads past the
+	// accumulators it was given.
+	XMIPP4_CONST_CONSTEXPR std::size_t count = 3;
+	XMIPP4_CONST_CONSTEXPR std::size_t widest = 4*strip_block + 3;
+	const auto values = iota_vector(count*widest);
+
+	for (std::size_t width = 1; width <= widest; ++width)
+	{
+		const recording_fold_kernel kernel;
+		std::vector<int> accumulators(widest + 1, 0);
+		accumulators.back() = -1; // A guard, to catch a block running over.
+
+		make_reduction_element_adaptor(kernel).combine_strip(
+			std::make_tuple(accumulators.data()),
+			std::make_tuple(values.data()),
+			std::make_tuple(contiguous_stride_tag()),
+			std::make_tuple(std::ptrdiff_t(widest)),
+			width,
+			count,
+			0
+		);
+
+		INFO( "width " << width );
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			int expected = 0;
+			for (std::size_t e = 0; e < count; ++e)
+			{
+				expected += values[e*widest + j];
+			}
+			REQUIRE( accumulators[j] == expected );
+		}
+		for (std::size_t j = width; j < widest; ++j)
+		{
+			REQUIRE( accumulators[j] == 0 );
+		}
+		REQUIRE( accumulators.back() == -1 );
+	}
 }
 
 TEST_CASE(
@@ -496,7 +560,9 @@ TEST_CASE(
 		std::make_tuple(accumulators.data()),
 		std::make_tuple(values.data()),
 		std::make_tuple(broadcasting_stride_tag()),
+		std::make_tuple(broadcasting_stride_tag()),
 		width,
+		1,
 		0
 	);
 

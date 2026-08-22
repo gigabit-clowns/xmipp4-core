@@ -56,6 +56,56 @@
 	#define XMIPP4_MINIMUM_REDUCTION_FOLD_LANES 2UL
 #endif
 
+// Budget in bytes for the accumulators one strip block holds, read the same
+// way the two above are.
+//
+// The tile is indexed by a width settled at run time, so it lives in memory
+// and every element folded reads and writes it. A block is a fixed number of
+// accumulators taken out of the tile, folded over the reduced axis to
+// completion, and put back once: the count is a compile time constant, so the
+// loop over it unrolls and the accumulators can stay in registers.
+//
+// At the default this is a handful of vector registers, which is what the
+// same arrangement in PyTorch's vectorized_outer_sum reserves.
+#ifndef XMIPP4_REDUCTION_STRIP_BLOCK_BUDGET
+	#define XMIPP4_REDUCTION_STRIP_BLOCK_BUDGET 128UL
+#endif
+
+#ifndef XMIPP4_MAXIMUM_REDUCTION_STRIP_BLOCK
+	#define XMIPP4_MAXIMUM_REDUCTION_STRIP_BLOCK 32UL
+#endif
+
+#ifndef XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK
+	#define XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK 4UL
+#endif
+
+// The shortest run worth folding a block at a time.
+//
+// A block is taken out of the tile and put back once, which pays for itself
+// against the read and write per element the tile would otherwise take. What
+// it costs is the read of the input, which becomes a walk of a block's width
+// down the reduced axis rather than one stretch of the strip. Over a short
+// run that walk never gets going, and the block loses more than it saves.
+#ifndef XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK_RUN
+	#define XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK_RUN 16UL
+#endif
+
+// How much of the input one pass over the blocks of a strip may span, in
+// bytes.
+//
+// Blocking the accumulators turns the walk of the reduced axis inside out:
+// each block walks the whole of it before the next one starts, so the input
+// is read a block's width at a time rather than a strip's. That is the access
+// pattern a narrow block gathers on, and it is why a reduction over a large
+// operand suffers from it. Bounding what one pass spans keeps the rows a
+// block re-walks in cache while the passes themselves stay sequential.
+//
+// Half of a small second level cache, so that a machine with less than this
+// one degrades rather than thrashes.
+#ifndef XMIPP4_REDUCTION_STRIP_PASS_BUDGET
+	#define XMIPP4_REDUCTION_STRIP_PASS_BUDGET 262144UL
+#endif
+
 // pocketfft re-derives the twiddle factors of a transform every time it is
 // asked for one unless it is allowed to remember them. A program is built
 // once and run many times, so without this every run would pay for a plan it

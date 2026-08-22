@@ -79,7 +79,8 @@ class loop_schedule;
  * kernel.identity(accumulators...)               // only when count is zero
  *
  * kernel.combine_run  (accumulators, inputs, strides, count, position)
- * kernel.combine_strip(accumulators, inputs, strides, width, position)
+ * kernel.combine_strip(accumulators, inputs, kept_strides, reduced_strides,
+ *                      width, count, position)
  * @endcode
  * where `accumulators` are mutable references, `inputs` are pointers to the
  * element of each input for the current iteration and `outputs` are pointers
@@ -101,12 +102,19 @@ class loop_schedule;
  * inner strides of the reduced layout, one per input. Element `e` of the run
  * sits at `input + e*stride` and at position `position + e`.
  *
- * `combine_strip` folds **one** element of the reduced space into each of
- * `width` consecutive accumulator sets. `accumulators` is a `std::tuple` of
- * one pointer per accumulator, each at the first accumulator of its strip and
- * walked with a stride of one; `inputs` and `strides` are as above but taken
- * from the kept layout. Accumulator `j` takes the element at
- * `input + j*stride`, and every one of them shares `position`.
+ * `combine_strip` folds a run into each of `width` consecutive accumulator
+ * sets, and so is handed both layouts' strides. `accumulators` is a
+ * `std::tuple` of one pointer per accumulator, each at the first accumulator
+ * of its strip and walked with a stride of one; `inputs` sits at the first
+ * element of the run for the first accumulator. Accumulator `j` takes element
+ * `e` of the run at `input + e*reduced_stride + j*kept_stride`, at position
+ * `position + e`.
+ *
+ * Both loops belong to the kernel here, rather than the reduced one being
+ * driven from outside, because which of them runs innermost is what decides
+ * whether the accumulators can live in registers: a block of them folded over
+ * the length of a run is written once, where a strip walked once per element
+ * of the reduced space is written every time.
  *
  * Which of the two carries the fold is decided by the layouts, not by the
  * kernel: the loop calls `combine_run` when the axis being folded is the

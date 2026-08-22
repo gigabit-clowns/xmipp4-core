@@ -69,6 +69,25 @@ template <typename Accumulators>
 struct reduction_fold_lane_count;
 
 /**
+ * @brief Number of accumulators one strip block holds.
+ *
+ * The tile a strip is folded into is indexed by a width settled at run time,
+ * so it lives in memory and every element folded reads and writes it. A block
+ * is a fixed number of accumulators taken out of it and folded over the
+ * reduced axis to completion before being put back: the count is a compile
+ * time constant, so the loop over it unrolls and the accumulators can stay in
+ * registers.
+ *
+ * Sized from a byte budget as the tile and the lanes are, so a kernel keeping
+ * several accumulators takes a proportionally narrower block. See config.hpp
+ * for what the bounds are worth and why.
+ *
+ * @tparam Accumulators A type_list of accumulator types.
+ */
+template <typename Accumulators>
+struct reduction_strip_block_size;
+
+/**
  * @brief Check whether a kernel supplies an identity.
  *
  * An identity is only needed to answer a reduction over no elements at all.
@@ -89,22 +108,13 @@ struct has_reduction_identity;
  * static constexpr bool reassociable_fold = true;
  * @endcode
  * A kernel that declares it `false`, or does not declare it at all, has its
- * folds kept in order. A `bool` rather than a tag type because the
- * declaration is what a kernel author reads, and it should say what it means
- * without knowing this file.
+ * folds kept in order. 
  *
  * Declaring it states two things: that its `merge` is associative, so the
  * order the lanes are folded in does not matter, and that it is commutative
  * enough for a lane to hold elements that were not next to each other.
  *
- * The second is the one that is easy to lose. A kernel reporting *where* it
- * found something relies on `merge` seeing partial answers in the order the
- * elements were visited, which is what lets it keep the earliest of two equal
- * ones. Dealing every other element to a different lane breaks that, so such
- * a kernel must not declare this. A fold that answers with a value and not a
- * place, which is every operation built on @ref fold_reduction_kernel, may.
- *
- * Declaring it accepts that a fold over inexact arithmetic stops being bit
+ * Declaring it accepts that a fold over **inexact** arithmetic stops being bit
  * for bit what a single accumulator arrives at. That is the same trade the
  * threaded fold split already makes, and it is what buys an order of
  * magnitude on a long run.

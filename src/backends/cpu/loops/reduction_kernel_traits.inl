@@ -64,6 +64,35 @@ std::size_t clamp_reduction_tile(std::size_t count) noexcept
 	return count;
 }
 
+// The same three for the accumulators one strip block holds, and the input
+// one pass over the blocks of a strip may span.
+XMIPP4_CONST_CONSTEXPR std::size_t reduction_strip_block_budget =
+	XMIPP4_REDUCTION_STRIP_BLOCK_BUDGET;
+XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_strip_block =
+	XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK;
+XMIPP4_CONST_CONSTEXPR std::size_t maximum_reduction_strip_block =
+	XMIPP4_MAXIMUM_REDUCTION_STRIP_BLOCK;
+XMIPP4_CONST_CONSTEXPR std::size_t reduction_strip_pass_budget =
+	XMIPP4_REDUCTION_STRIP_PASS_BUDGET;
+XMIPP4_CONST_CONSTEXPR std::size_t minimum_reduction_strip_block_run =
+	XMIPP4_MINIMUM_REDUCTION_STRIP_BLOCK_RUN;
+
+XMIPP4_INLINE_CONSTEXPR
+std::size_t clamp_reduction_strip_block(std::size_t count) noexcept
+{
+	if (count > maximum_reduction_strip_block)
+	{
+		return maximum_reduction_strip_block;
+	}
+
+	if (count < minimum_reduction_strip_block)
+	{
+		return minimum_reduction_strip_block;
+	}
+
+	return count;
+}
+
 XMIPP4_INLINE_CONSTEXPR
 std::size_t clamp_reduction_fold_lanes(std::size_t count) noexcept
 {
@@ -127,6 +156,18 @@ struct reduction_fold_lane_count
 		std::size_t,
 		detail::clamp_reduction_fold_lanes(
 			detail::reduction_fold_lane_budget /
+			accumulator_footprint<Accumulators>::value
+		)
+	>
+{
+};
+
+template <typename Accumulators>
+struct reduction_strip_block_size
+	: std::integral_constant<
+		std::size_t,
+		detail::clamp_reduction_strip_block(
+			detail::reduction_strip_block_budget /
 			accumulator_footprint<Accumulators>::value
 		)
 	>

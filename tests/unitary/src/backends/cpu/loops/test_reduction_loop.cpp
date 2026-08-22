@@ -895,6 +895,8 @@ struct bulk_call
 	std::ptrdiff_t stride;
 	std::size_t extent;
 	std::size_t position;
+	std::ptrdiff_t reduced_stride = 0;
+	std::size_t count = 0;
 };
 
 /**
@@ -943,24 +945,32 @@ public:
 		}
 	}
 
-	template <typename... Strides>
+	template <typename... KeptStrides, typename... ReducedStrides>
 	void combine_strip(
 		const std::tuple<int*> &accumulators,
 		const std::tuple<const int*> &inputs,
-		const std::tuple<Strides...> &strides,
+		const std::tuple<KeptStrides...> &kept_strides,
+		const std::tuple<ReducedStrides...> &reduced_strides,
 		std::size_t width,
+		std::size_t count,
 		std::size_t position
 	) const
 	{
-		const auto stride = read_stride(strides);
+		const auto kept = read_stride(kept_strides);
+		const auto reduced = read_stride(reduced_strides);
 		const auto *input = std::get<0>(inputs);
-		m_strips->push_back(bulk_call{ input, stride, width, position });
+		m_strips->push_back(
+			bulk_call{ input, kept, width, position, reduced, count });
 
 		auto *accumulators_begin = std::get<0>(accumulators);
-		for (std::size_t j = 0; j < width; ++j)
+		for (std::size_t e = 0; e < count; ++e)
 		{
-			accumulators_begin[j] +=
-				input[static_cast<std::ptrdiff_t>(j)*stride];
+			const auto *row = input + static_cast<std::ptrdiff_t>(e)*reduced;
+			for (std::size_t j = 0; j < width; ++j)
+			{
+				accumulators_begin[j] +=
+					row[static_cast<std::ptrdiff_t>(j)*kept];
+			}
 		}
 	}
 
@@ -1060,19 +1070,17 @@ TEST_CASE(
 	);
 
 	CHECK( kernel.runs().empty() );
-	REQUIRE( kernel.strips().size() == 3 );
+	REQUIRE( kernel.strips().size() == 1 );
 
-	for (std::size_t e = 0; e < 3; ++e)
-	{
-		INFO( "reduced element " << e );
-
-		// One call per element of the reduced space that was not the seed,
-		// each covering the whole strip.
-		CHECK( kernel.strips()[e].input == input.data() + 3*(e + 1) );
-		CHECK( kernel.strips()[e].stride == 1 );
-		CHECK( kernel.strips()[e].extent == 3 );
-		CHECK( kernel.strips()[e].position == e + 1 );
-	}
+	// One call for the whole run, both loops belonging to the kernel: the
+	// three elements of the reduced space that were not the seed, across the
+	// three outputs of the strip.
+	CHECK( kernel.strips()[0].input == input.data() + 3 );
+	CHECK( kernel.strips()[0].stride == 1 );
+	CHECK( kernel.strips()[0].extent == 3 );
+	CHECK( kernel.strips()[0].reduced_stride == 3 );
+	CHECK( kernel.strips()[0].count == 3 );
+	CHECK( kernel.strips()[0].position == 1 );
 
 	CHECK( output == std::vector<int>({18, 22, 26}) );
 }
@@ -1106,12 +1114,12 @@ TEST_CASE(
 	);
 
 	CHECK( kernel.runs().empty() );
-	REQUIRE( kernel.strips().size() == 2 );
+	REQUIRE( kernel.strips().size() == 1 );
 
 	CHECK( kernel.strips()[0].stride == 6 );
+	CHECK( kernel.strips()[0].reduced_stride == 2 );
 	CHECK( kernel.strips()[0].input == input.data() + 2 );
-	CHECK( kernel.strips()[1].stride == 6 );
-	CHECK( kernel.strips()[1].input == input.data() + 4 );
+	CHECK( kernel.strips()[0].count == 2 );
 
 	CHECK( output == std::vector<int>({0 + 2 + 4, 6 + 8 + 10}) );
 }

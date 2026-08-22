@@ -222,70 +222,208 @@ void reduction_element_adaptor<Kernel>::combine_run(
 }
 
 template <typename Kernel>
-template <typename... Accumulators, typename... Ins, typename... Strides>
+template <
+	typename... Accumulators,
+	typename... Ins,
+	typename... KeptStrides,
+	typename... ReducedStrides
+>
 inline
 void reduction_element_adaptor<Kernel>::combine_strip(
 	const std::tuple<Accumulators*...> &accumulators,
 	const std::tuple<const Ins*...> &inputs,
-	const std::tuple<Strides...> &strides,
+	const std::tuple<KeptStrides...> &kept_strides,
+	const std::tuple<ReducedStrides...> &reduced_strides,
 	std::size_t width,
+	std::size_t count,
 	std::size_t position
 ) const
 {
-	combine_strip(
-		accumulators,
-		inputs,
-		strides,
-		width,
-		position,
-		std::index_sequence_for<Accumulators...>(),
-		std::index_sequence_for<Ins...>()
-	);
+	XMIPP4_CONST_CONSTEXPR std::size_t block =
+		reduction_strip_block_size<type_list<Accumulators...>>::value;
+
+	XMIPP4_CONST_CONSTEXPR std::integral_constant<std::size_t, block> tag {};
+	XMIPP4_CONST_CONSTEXPR std::index_sequence_for<Accumulators...> as {};
+	XMIPP4_CONST_CONSTEXPR std::index_sequence_for<Ins...> is {};
+
+	// Over a run this short the walk down the reduced axis that a block reads
+	// never gets going, and costs more than holding the accumulators saves.
+	// See config.hpp for where the bound comes from.
+	if (count < detail::minimum_reduction_strip_block_run)
+	{
+		fold_strip_columns(
+			accumulators,
+			inputs,
+			kept_strides,
+			reduced_strides,
+			0,
+			width,
+			count,
+			position,
+			as,
+			is
+		);
+		return;
+	}
+
+	std::size_t first = 0;
+	for (; first + block <= width; first += block)
+	{
+		fold_strip_block(
+			accumulators,
+			inputs,
+			kept_strides,
+			reduced_strides,
+			first,
+			count,
+			position,
+			tag,
+			as,
+			is
+		);
+	}
+
+	if (first < width)
+	{
+		fold_strip_columns(
+			accumulators,
+			inputs,
+			kept_strides,
+			reduced_strides,
+			first,
+			width - first,
+			count,
+			position,
+			as,
+			is
+		);
+	}
+}
+
+template <typename Kernel>
+template <
+	std::size_t Block,
+	typename... Accumulators,
+	typename... Ins,
+	typename... KeptStrides,
+	typename... ReducedStrides,
+	std::size_t... As,
+	std::size_t... Is
+>
+inline
+void reduction_element_adaptor<Kernel>::fold_strip_block(
+	const std::tuple<Accumulators*...> &accumulators,
+	const std::tuple<const Ins*...> &inputs,
+	const std::tuple<KeptStrides...> &kept_strides,
+	const std::tuple<ReducedStrides...> &reduced_strides,
+	std::size_t first,
+	std::size_t count,
+	std::size_t position,
+	std::integral_constant<std::size_t, Block>,
+	std::index_sequence<As...>,
+	std::index_sequence<Is...> input_indices
+) const
+{
+	typename detail::accumulator_tiles<
+		type_list<Accumulators...>,
+		Block
+	>::type held;
+
+	// Taken out of the tile once, put back once. Everything between is a
+	// value, which is the whole reason the block has a size the compiler
+	// knows.
+	for (std::size_t b = 0; b < Block; ++b)
+	{
+		(void) std::initializer_list<int> {
+			(
+				std::get<As>(held)[b] =
+					std::get<As>(accumulators)[first + b],
+				0
+			)...
+		};
+	}
+
+	for (std::size_t e = 0; e < count; ++e)
+	{
+		const auto row =
+			detail::step_pointers(inputs, e, reduced_strides, input_indices);
+		const auto column =
+			detail::step_pointers(row, first, kept_strides, input_indices);
+
+		for (std::size_t b = 0; b < Block; ++b)
+		{
+			const auto element = detail::step_pointers(
+				column,
+				b,
+				kept_strides,
+				input_indices
+			);
+
+			m_kernel.combine(
+				std::get<As>(held)[b]...,
+				std::get<Is>(element)...,
+				position + e
+			);
+		}
+	}
+
+	for (std::size_t b = 0; b < Block; ++b)
+	{
+		(void) std::initializer_list<int> {
+			(
+				std::get<As>(accumulators)[first + b] =
+					std::get<As>(held)[b],
+				0
+			)...
+		};
+	}
 }
 
 template <typename Kernel>
 template <
 	typename... Accumulators,
 	typename... Ins,
-	typename... Strides,
+	typename... KeptStrides,
+	typename... ReducedStrides,
 	std::size_t... As,
 	std::size_t... Is
 >
 inline
-void reduction_element_adaptor<Kernel>::combine_strip(
+void reduction_element_adaptor<Kernel>::fold_strip_columns(
 	const std::tuple<Accumulators*...> &accumulators,
 	const std::tuple<const Ins*...> &inputs,
-	const std::tuple<Strides...> &strides,
+	const std::tuple<KeptStrides...> &kept_strides,
+	const std::tuple<ReducedStrides...> &reduced_strides,
+	std::size_t first,
 	std::size_t width,
+	std::size_t count,
 	std::size_t position,
 	std::index_sequence<As...>,
 	std::index_sequence<Is...> input_indices
 ) const
 {
-	// No lanes here: the strip is already as many independent accumulators as
-	// it is wide, so the chain combine_run breaks was never formed.
-	//
-	// What the strip does not escape is where its accumulators live. The tile
-	// is indexed by a width settled at run time, so it stays in memory and is
-	// read and written once per element folded, where a fold holding a fixed
-	// number of them keeps them in registers and writes each once per output.
-	// Measured against that arrangement, this trails it by about half on
-	// operands that fit in cache and by six times when the strip is only a
-	// vector wide, and beats it by two to three times once the operand comes
-	// from main memory, the tile streaming where a narrow block gathers.
-	// Closing the first without losing the second wants a fixed size block
-	// folded to completion inside the tile, which is a level of blocking this
-	// does not have.
-	for (std::size_t j = 0; j < width; ++j)
+	for (std::size_t e = 0; e < count; ++e)
 	{
-		const auto element =
-			detail::step_pointers(inputs, j, strides, input_indices);
+		const auto row =
+			detail::step_pointers(inputs, e, reduced_strides, input_indices);
+		const auto column =
+			detail::step_pointers(row, first, kept_strides, input_indices);
 
-		m_kernel.combine(
-			std::get<As>(accumulators)[j]...,
-			std::get<Is>(element)...,
-			position
-		);
+		for (std::size_t j = 0; j < width; ++j)
+		{
+			const auto element = detail::step_pointers(
+				column,
+				j,
+				kept_strides,
+				input_indices
+			);
+
+			m_kernel.combine(
+				std::get<As>(accumulators)[first + j]...,
+				std::get<Is>(element)...,
+				position + e
+			);
+		}
 	}
 }
 

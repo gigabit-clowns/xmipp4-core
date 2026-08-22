@@ -32,8 +32,6 @@ namespace cpu
  * output rather than once per element folded, and vectorizing them would buy
  * a fraction of a fraction.
  *
- * ### Lanes
- *
  * `combine_run` folds one run into one accumulator, which is a chain of
  * dependent operations: the next fold cannot start until the last has
  * finished, however wide the vector registers are and whatever the
@@ -112,26 +110,34 @@ public:
 	) const;
 
 	/**
-	 * @brief Fold one element into each accumulator set of a strip.
-	 *
-	 * Every element of the strip sits at the same place in the reduced space,
-	 * so they share a position.
+	 * @brief Fold a run of the reduced space into every accumulator of a
+	 * strip.
 	 *
 	 * @tparam Accumulators Accumulator types, one per accumulator.
 	 * @tparam Ins Input element types, one per input.
-	 * @tparam Strides Resolved inner strides of the kept layout.
+	 * @tparam KeptStrides Resolved inner strides of the kept layout.
+	 * @tparam ReducedStrides Resolved inner strides of the reduced layout.
 	 * @param accumulators Pointer to the first accumulator of each strip.
-	 * @param inputs Pointer to each input at the first element of the strip.
-	 * @param strides How far one step along the strip moves each input.
+	 * @param inputs Pointer to each input at the first element of the run.
+	 * @param kept_strides How far one step along the strip moves each input.
+	 * @param reduced_strides How far one step along the run moves each input.
 	 * @param width How many outputs the strip covers.
-	 * @param position Where in the reduced space these elements sit.
+	 * @param count How many elements of the reduced space the run holds.
+	 * @param position Where the run starts in the reduced space.
 	 */
-	template <typename... Accumulators, typename... Ins, typename... Strides>
+	template <
+		typename... Accumulators,
+		typename... Ins,
+		typename... KeptStrides,
+		typename... ReducedStrides
+	>
 	void combine_strip(
 		const std::tuple<Accumulators*...> &accumulators,
 		const std::tuple<const Ins*...> &inputs,
-		const std::tuple<Strides...> &strides,
+		const std::tuple<KeptStrides...> &kept_strides,
+		const std::tuple<ReducedStrides...> &reduced_strides,
 		std::size_t width,
+		std::size_t count,
 		std::size_t position
 	) const;
 
@@ -199,18 +205,49 @@ private:
 		std::index_sequence<Is...>
 	) const;
 
+	// One block of the strip, folded over the whole run before the next one
+	// starts. Block is a compile time constant, so the loop over it unrolls
+	// and its accumulators are values rather than places in the tile.
 	template <
+		std::size_t Block,
 		typename... Accumulators,
 		typename... Ins,
-		typename... Strides,
+		typename... KeptStrides,
+		typename... ReducedStrides,
 		std::size_t... As,
 		std::size_t... Is
 	>
-	void combine_strip(
+	void fold_strip_block(
 		const std::tuple<Accumulators*...> &accumulators,
 		const std::tuple<const Ins*...> &inputs,
-		const std::tuple<Strides...> &strides,
+		const std::tuple<KeptStrides...> &kept_strides,
+		const std::tuple<ReducedStrides...> &reduced_strides,
+		std::size_t first,
+		std::size_t count,
+		std::size_t position,
+		std::integral_constant<std::size_t, Block>,
+		std::index_sequence<As...>,
+		std::index_sequence<Is...>
+	) const;
+
+	// What is left of a strip once the blocks have had it, folded through the
+	// tile as before. Never wider than a block.
+	template <
+		typename... Accumulators,
+		typename... Ins,
+		typename... KeptStrides,
+		typename... ReducedStrides,
+		std::size_t... As,
+		std::size_t... Is
+	>
+	void fold_strip_columns(
+		const std::tuple<Accumulators*...> &accumulators,
+		const std::tuple<const Ins*...> &inputs,
+		const std::tuple<KeptStrides...> &kept_strides,
+		const std::tuple<ReducedStrides...> &reduced_strides,
+		std::size_t first,
 		std::size_t width,
+		std::size_t count,
 		std::size_t position,
 		std::index_sequence<As...>,
 		std::index_sequence<Is...>

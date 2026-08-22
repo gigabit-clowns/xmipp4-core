@@ -14,6 +14,7 @@
 #include <xmipp4/core/platform/attributes.hpp>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -236,6 +237,27 @@ public:
 	}
 
 	/**
+	 * @brief How much of the reduced space to hand over at once.
+	 *
+	 * A run handed over whole is walked block by block, each block folding
+	 * the length of it before the next one starts. That is what keeps a
+	 * block's accumulators in registers, and it is also what turns the read
+	 * of the input from one stretch of a strip into a walk of a block's
+	 * width, which is only cheap while the rows a block re-walks stay in
+	 * cache. Bounding the run bounds what one pass spans.
+	 *
+	 * Unbounded in the other orientation, where a run is folded into a single
+	 * accumulator and the longer it is the less the lanes cost to set up.
+	 *
+	 * @param width How many outputs the strip covers.
+	 * @return std::size_t The longest run worth handing over. Never zero.
+	 */
+	static std::size_t preferred_run_length(std::size_t width) noexcept
+	{
+		return preferred_run_length(width, strip_outermost());
+	}
+
+	/**
 	 * @brief Start every accumulator from the kernel's neutral element.
 	 *
 	 * Only reachable for a reduction over no elements at all, which an
@@ -322,6 +344,29 @@ private:
 		>::value
 	>;
 
+	static std::size_t preferred_run_length(
+		std::size_t,
+		std::true_type
+	) noexcept
+	{
+		return std::numeric_limits<std::size_t>::max();
+	}
+
+	static std::size_t preferred_run_length(
+		std::size_t width,
+		std::false_type
+	) noexcept
+	{
+		XMIPP4_CONST_CONSTEXPR std::size_t element_footprint =
+			accumulator_footprint<type_list<Ins...>>::value;
+
+		const auto span = std::max<std::size_t>(width*element_footprint, 1);
+		return std::max<std::size_t>(
+			detail::reduction_strip_pass_budget / span,
+			1
+		);
+	}
+
 	template <std::size_t... As, std::size_t... Is>
 	void seed(
 		const input_pointers &inputs,
@@ -405,23 +450,15 @@ private:
 		std::index_sequence<As...>
 	)
 	{
-		for (std::size_t e = 0; e < count; ++e)
-		{
-			const auto row = step_pointers(
-				inputs,
-				e,
-				m_reduced_strides,
-				input_indices()
-			);
-
-			m_kernel.combine_strip(
-				std::make_tuple(std::get<As>(m_tiles).data()...),
-				row,
-				m_kept_strides,
-				width,
-				position + e
-			);
-		}
+		m_kernel.combine_strip(
+			std::make_tuple(std::get<As>(m_tiles).data()...),
+			inputs,
+			m_kept_strides,
+			m_reduced_strides,
+			width,
+			count,
+			position
+		);
 	}
 
 	void set_identity(std::size_t width, std::true_type)
@@ -882,7 +919,7 @@ private:
 		m_accumulators.seed(first, width, position);
 
 		auto count = std::min(run, remaining) - 1;
-		m_accumulators.combine(
+		fold_run(
 			step_pointers(first, 1, m_reduced_strides, input_indices()),
 			width,
 			count,
@@ -899,7 +936,7 @@ private:
 			XMIPP4_ASSERT( run > 0 );
 
 			count = std::min(run, remaining);
-			m_accumulators.combine(
+			fold_run(
 				current_reduced_pointers(inputs),
 				width,
 				count,
@@ -908,6 +945,36 @@ private:
 
 			position += count;
 			remaining -= count;
+		}
+	}
+
+	/**
+	 * @brief Fold one run of the reduced space into the current strip.
+	 *
+	 * Handed over in passes no longer than the accumulators want to see at
+	 * once, so that whatever they do with a run is bounded in what it spans.
+	 * One pass for the whole run is the usual answer.
+	 */
+	void fold_run(
+		const input_pointers &base,
+		std::size_t width,
+		std::size_t count,
+		std::size_t position
+	)
+	{
+		const auto limit = accumulators_type::preferred_run_length(width);
+
+		std::size_t done = 0;
+		while (done < count)
+		{
+			const auto pass = std::min(limit, count - done);
+			m_accumulators.combine(
+				step_pointers(base, done, m_reduced_strides, input_indices()),
+				width,
+				pass,
+				position + done
+			);
+			done += pass;
 		}
 	}
 

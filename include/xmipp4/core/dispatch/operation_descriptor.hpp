@@ -115,28 +115,30 @@ public:
 		bool output_operand
 	) const noexcept;
 
+	/**
+	 * @brief Write the qualified name of an operation.
+	 *
+	 * The component and the name are joined with a dot, as in
+	 * "xmipp4.ops.add".
+	 *
+	 * @param os The stream where the descriptor is written.
+	 * @param descriptor The descriptor to be written.
+	 * @return std::ostream& The stream.
+	 */
+	friend std::ostream& operator<<(
+		std::ostream &os,
+		const operation_descriptor &descriptor
+	)
+	{
+		return os << descriptor.get_component() << '.' << descriptor.get_name();
+	}
+
 private:
 	const char *m_component;
 	const char *m_name;
 	span<const char* const> m_output_operand_names;
 	span<const char* const> m_input_operand_names;
 };
-
-/**
- * @brief Write the qualified name of an operation.
- *
- * The component and the name are joined with a dot, as in
- * "xmipp4.ops.add".
- *
- * @param os The stream where the descriptor is written.
- * @param descriptor The descriptor to be written.
- * @return std::ostream& The stream.
- */
-XMIPP4_CORE_API
-std::ostream& operator<<(
-	std::ostream &os,
-	const operation_descriptor &descriptor
-);
 
 /**
  * @brief Describe an operand for a diagnostic.

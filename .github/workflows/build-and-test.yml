@@ -29,6 +29,7 @@ jobs:
           compiler: {c: clang, cxx: clang++}
         - os: windows-latest
           compiler: {c: cl, cxx: cl}
+          generator: "Ninja"
         - os: windows-latest
           compiler: {c: gcc, cxx: g++}
           generator: "Ninja"
@@ -51,10 +52,13 @@ jobs:
           compiler-c: ${{ matrix.compiler.c }}
           compiler-cxx: ${{ matrix.compiler.cxx }}
 
-      # MSVC is left out: ccache only caches it when debug info is embedded
-      # in the object with /Z7, which this build does not ask for.
+      # Ninja does not locate MSVC on its own the way the Visual Studio
+      # generator does; without this the configure step finds no cl.exe.
+      - name: Set up MSVC environment
+        if: matrix.compiler.cxx == 'cl'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+
       - name: Set up compiler cache
-        if: matrix.compiler.cxx != 'cl'
         uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
         with:
           key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
@@ -72,8 +76,9 @@ jobs:
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
             XMIPP4_CORE_ENABLE_COVERAGE=ON
-            ${{ matrix.compiler.cxx != 'cl' && 'CMAKE_C_COMPILER_LAUNCHER=ccache' || '' }}
-            ${{ matrix.compiler.cxx != 'cl' && 'CMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}
+            CMAKE_C_COMPILER_LAUNCHER=ccache
+            CMAKE_CXX_COMPILER_LAUNCHER=ccache
+            ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded' || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
 

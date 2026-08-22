@@ -8,6 +8,9 @@
 #include <core/hardware/host_memory/host_buffer.hpp>
 
 #include <xmipp4/backends/cpu/program.hpp>
+#include <xmipp4/backends/cpu/thread_pool.hpp>
+
+#include "../serial_pool.hpp"
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
@@ -32,6 +35,7 @@ using namespace xmipp4::cpu;
 
 namespace
 {
+
 
 using complex_type = std::complex<float32_t>;
 
@@ -82,7 +86,8 @@ void run(
 	executable.execute(
 		make_span(outputs),
 		make_span(inputs),
-		make_span(scratches)
+		make_span(scratches),
+		*get_serial_pool()
 	);
 }
 
@@ -142,7 +147,7 @@ TEST_CASE(
 	// offset, which is why this is pinned here rather than through one.
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(unit_extents, { 1 }, 2, numerical_type::complex_float32)
@@ -199,7 +204,7 @@ TEST_CASE(
 	// transformable as one laid out end to end.
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(unit_extents, { 2 }, 1, numerical_type::complex_float32)
@@ -248,7 +253,7 @@ TEST_CASE(
 	// directly instead of going through the output.
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(unit_extents, { 1 }, 0, numerical_type::complex_float32)
@@ -294,7 +299,7 @@ TEST_CASE(
 	// manager look for a backend that can.
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
@@ -330,7 +335,7 @@ TEST_CASE(
 {
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	mock_memory_resource host_resource;
 	ALLOW_CALL(host_resource, get_kind())
@@ -366,7 +371,7 @@ TEST_CASE(
 {
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	// A transform produces exactly one operand.
 	const std::vector<operand_signature> outputs {
@@ -399,7 +404,7 @@ TEST_CASE(
 	// into forward order first.
 	const fft_builder builder;
 	const ops::fft_operation operation{ ops::axis_list{ 0 } };
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(unit_extents, { 1 }, 0, numerical_type::complex_float32)

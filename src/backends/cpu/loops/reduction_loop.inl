@@ -57,10 +57,11 @@ void allocate_accumulator_buffers(
 	std::index_sequence<As...>
 )
 {
+	// make_unique for an array type value-initializes, so this keeps the
+	// zeroing the explicit new Accumulators[size]() did.
 	(void) std::initializer_list<int> {
 		(
-			std::get<As>(buffers) =
-				std::unique_ptr<Accumulators[]>(new Accumulators[size]()),
+			std::get<As>(buffers) = std::make_unique<Accumulators[]>(size),
 			0
 		)...
 	};

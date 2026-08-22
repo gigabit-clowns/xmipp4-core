@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -388,7 +389,7 @@ void thread_pool_implementation::stop_and_join() noexcept
 
 thread_pool::thread_pool(std::size_t worker_count)
 	: m_implementation(
-		new thread_pool_implementation(worker_count)
+		std::make_unique<thread_pool_implementation>(worker_count)
 	)
 {
 }

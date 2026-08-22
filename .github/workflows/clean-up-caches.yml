@@ -1,0 +1,68 @@
+name: Clean up caches
+permissions: {}
+
+on:
+  pull_request:
+    types:
+      - closed
+
+  workflow_run:
+    workflows:
+      - Build and Test
+    types:
+      - completed
+
+jobs:
+  delete_pull_request_caches:
+    name: Delete the caches of a closed pull request
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REF: refs/pull/${{ github.event.pull_request.number }}/merge
+        run: |
+          ids=$(gh cache list --ref "$REF" --limit 100 --json id --jq '.[].id')
+          if [ -z "$ids" ]; then
+            echo "No caches for $REF"
+            exit 0
+          fi
+
+          for id in $ids; do
+            gh cache delete "$id"
+          done
+
+  delete_superseded_caches:
+    name: Delete the caches a newer run has replaced
+    if: github.event_name == 'workflow_run'
+    permissions:
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # A cache cannot be overwritten, so the compiler cache stores a
+          # new entry on every run and restores by prefix. Only the newest
+          # of each prefix is ever read; the rest are dead weight against
+          # the repository's shared budget.
+          ids=$(gh cache list --limit 100 --json id,key,ref,createdAt --jq '
+            group_by(.ref + "|" + (.key | sub("-[0-9]{4}-[0-9]{2}-[0-9]{2}T.*$"; "")))
+            | map(sort_by(.createdAt) | .[0:-1])
+            | flatten
+            | .[].id
+          ')
+          if [ -z "$ids" ]; then
+            echo "Nothing superseded"
+            exit 0
+          fi
+
+          for id in $ids; do
+            gh cache delete "$id"
+          done

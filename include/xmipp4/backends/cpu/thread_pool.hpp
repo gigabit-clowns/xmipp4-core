@@ -116,16 +116,22 @@ public:
 	);
 
 	/**
-	 * @brief Get the pool used when no other one is named.
+	 * @brief How many workers a pool spawns when nothing else says otherwise.
 	 *
-	 * Built on first use with one participant per hardware thread, unless
-	 * the XMIPP4_NUM_THREADS environment variable says otherwise, and never
-	 * destroyed. See the definition for why it outlives static destruction.
+	 * One participant per hardware thread ends up running a loop, and the
+	 * thread that asked for it is one of them, so this is one fewer than that.
 	 *
-	 * @return const std::shared_ptr<thread_pool>& The default pool.
+	 * The number may be capped from the environment, through
+	 * XMIPP4_NUM_THREADS. The machine is a run time property, so a compile
+	 * time knob could not answer this: a user under a batch scheduler or
+	 * inside a process pool needs to cap the library from outside it, which
+	 * is what every peer library offers a variable for. A value of one means
+	 * no worker at all, and so a fully serial library.
+	 *
+	 * @return std::size_t The worker count, which may be zero.
 	 */
 	XMIPP4_CORE_API
-	static const std::shared_ptr<thread_pool>& get_default();
+	static std::size_t get_default_worker_count();
 
 private:
 	XMIPP4_STD_MEMBER_INTERFACE

@@ -16,6 +16,8 @@
 #include <xmipp4/backends/cpu/program.hpp>
 #include <xmipp4/backends/cpu/thread_pool.hpp>
 
+#include "../serial_pool.hpp"
+
 #include <xmipp4/core/hardware/buffer.hpp>
 #include <xmipp4/core/hardware/program.hpp>
 #include <xmipp4/core/layout/strided_layout.hpp>
@@ -41,14 +43,6 @@ using namespace xmipp4::cpu;
 namespace
 {
 
-// A pool of no workers keeps every loop on the calling thread, which is what
-// these cases want: they are about what the program computes, not about how
-// many threads it computes it on.
-thread_pool& serial_pool()
-{
-	static thread_pool instance(0);
-	return instance;
-}
 
 // A self-contained binary elementwise operation.
 XMIPP4_DECLARE_OPERATION(
@@ -113,7 +107,7 @@ TEST_CASE(
 {
 	const test_builder builder;
 	const test_binary_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::size_t count = 4;
 	const std::vector<operand_signature> outputs {
@@ -160,7 +154,7 @@ TEST_CASE(
 		make_span(output_operands),
 		make_span(input_operands),
 		make_span(scratch_operands),
-		serial_pool()
+		*get_serial_pool()
 	);
 
 	for (std::size_t i = 0; i < count; ++i)
@@ -176,7 +170,7 @@ TEST_CASE(
 {
 	const test_builder builder;
 	mock_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	// The rejection names the operation it was handed, so the mock has to
 	// be able to answer that much.
@@ -210,7 +204,7 @@ TEST_CASE(
 {
 	const test_builder builder;
 	const test_binary_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	// The operation expects exactly one output.
 	const std::vector<operand_signature> outputs {
@@ -242,7 +236,7 @@ TEST_CASE(
 {
 	const test_builder builder;
 	const test_binary_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_float32_signature(4)

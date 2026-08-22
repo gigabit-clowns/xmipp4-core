@@ -5,6 +5,8 @@
 #include <backends/cpu/hardware/functor_program.hpp>
 
 #include <xmipp4/backends/cpu/thread_pool.hpp>
+
+#include "../serial_pool.hpp"
 #include <core/hardware/host_memory/host_buffer.hpp>
 
 #include <xmipp4/core/hardware/buffer.hpp>
@@ -91,14 +93,6 @@ std::shared_ptr<host_buffer> make_host_buffer(std::size_t size)
 	return std::make_shared<host_buffer>(size, 64);
 }
 
-// A pool of no workers runs every body on the calling thread, which is what
-// these cases want: they are about the operands reaching the functor, not
-// about which thread carries them there.
-thread_pool& serial_pool()
-{
-	static thread_pool instance(0);
-	return instance;
-}
 
 } // namespace
 
@@ -195,7 +189,7 @@ TEST_CASE(
 		make_span(outputs),
 		make_span(inputs),
 		make_span(scratch),
-		serial_pool()
+		*get_serial_pool()
 	);
 }
 
@@ -233,7 +227,7 @@ TEST_CASE(
 		make_span(outputs),
 		make_span(inputs),
 		make_span(scratch),
-		serial_pool()
+		*get_serial_pool()
 	);
 }
 
@@ -261,7 +255,7 @@ TEST_CASE(
 			make_span(outputs),
 			make_span(inputs),
 			make_span(scratch),
-			serial_pool()
+			*get_serial_pool()
 		),
 		std::invalid_argument
 	);
@@ -288,7 +282,7 @@ TEST_CASE(
 			make_span(outputs),
 			make_span(inputs),
 			make_span(scratch),
-			serial_pool()
+			*get_serial_pool()
 		),
 		std::invalid_argument
 	);

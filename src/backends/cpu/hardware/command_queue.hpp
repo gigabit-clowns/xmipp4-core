@@ -23,14 +23,17 @@ public:
 	/**
 	 * @brief Construct a queue over a set of threads.
 	 *
+	 * The pool is named rather than reached for, so that the only thing in
+	 * this backend that owns threads is the @ref device a queue was made by.
+	 * Nothing static holds one, which is what keeps the workers being joined
+	 * while the program is still running rather than while it is exiting.
+	 *
 	 * @param pool The threads the programs submitted here may spread
-	 * themselves over. Defaults to the pool the backend shares, and falls
-	 * back to it when null. Naming one is what lets a test drive a whole
-	 * program through a known number of threads.
+	 * themselves over.
+	 *
+	 * @throws std::invalid_argument If @p pool is null.
 	 */
-	explicit command_queue(
-		std::shared_ptr<thread_pool> pool = nullptr
-	);
+	explicit command_queue(std::shared_ptr<thread_pool> pool);
 	~command_queue() override = default;
 
 	void submit(const command &cmd) override;
@@ -44,7 +47,6 @@ public:
 	 */
 	thread_pool& get_thread_pool() const noexcept;
 
-	static std::shared_ptr<command_queue> create();
 	static
 	command_queue* try_cast(xmipp4::command_queue &queue) noexcept;
 	static
@@ -52,8 +54,6 @@ public:
 
 private:
 	std::shared_ptr<thread_pool> m_pool;
-
-	static std::shared_ptr<command_queue> m_instance;
 };
 
 } // namespace cpu

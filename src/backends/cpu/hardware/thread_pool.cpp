@@ -50,54 +50,6 @@ void compute_chunk_range(
 	}
 }
 
-/**
- * @brief How many workers the default pool spawns.
- *
- * One thread per hardware thread ends up running the loop, and the thread
- * that asked for it is one of them, so the pool is asked for one fewer worker
- * than that. Counting participants here rather than at the call site is what
- * keeps the subtraction next to the reason for it, and what keeps a count of
- * zero from wrapping into a request for every thread the machine can address.
- *
- * The number may be capped from the environment. The machine is a run time
- * property, so a compile time knob could not answer this: a user under a
- * batch scheduler or inside a process pool needs to cap the library from
- * outside it, which is what every peer library offers a variable for. One
- * participant means no worker at all, and so a fully serial library.
- */
-std::size_t get_default_worker_count()
-{
-	std::size_t participants = std::thread::hardware_concurrency();
-	if (participants == 0)
-	{
-		// hardware_concurrency() is allowed to give up, and there is nothing
-		// better to assume than a single core when it does.
-		participants = 1;
-	}
-
-	const char* environment_variable;
-	if ((environment_variable = std::getenv(XMIPP4_NUM_THREADS_ENV_VARIABLE)))
-	{
-		char *end = nullptr;
-		const auto parsed = std::strtoul(environment_variable, &end, 10);
-		if (end != environment_variable && *end == '\0' && parsed > 0)
-		{
-			participants = static_cast<std::size_t>(parsed);
-		}
-		else
-		{
-			XMIPP4_LOG_WARN(
-				"Ignoring {}=\"{}\": expected a positive integer.",
-				XMIPP4_NUM_THREADS_ENV_VARIABLE,
-				environment_variable
-			);
-		}
-	}
-
-	XMIPP4_ASSERT( participants > 0 );
-	return participants - 1;
-}
-
 } // anonymous namespace
 
 /**
@@ -458,12 +410,41 @@ void thread_pool::run(
 	m_implementation->run(count, grain_size, body, context);
 }
 
-const std::shared_ptr<thread_pool>& thread_pool::get_default()
+std::size_t thread_pool::get_default_worker_count()
 {
-	static std::shared_ptr<thread_pool> instance =
-		std::make_shared<thread_pool>(get_default_worker_count());
+	// Counting participants here rather than at the call site is what keeps
+	// the subtraction next to the reason for it, and what keeps a count of
+	// zero from wrapping into a request for every thread the machine can
+	// address.
+	std::size_t participants = std::thread::hardware_concurrency();
+	if (participants == 0)
+	{
+		// hardware_concurrency() is allowed to give up, and there is nothing
+		// better to assume than a single core when it does.
+		participants = 1;
+	}
 
-	return instance;
+	const char* environment_variable;
+	if ((environment_variable = std::getenv(XMIPP4_NUM_THREADS_ENV_VARIABLE)))
+	{
+		char *end = nullptr;
+		const auto parsed = std::strtoul(environment_variable, &end, 10);
+		if (end != environment_variable && *end == '\0' && parsed > 0)
+		{
+			participants = static_cast<std::size_t>(parsed);
+		}
+		else
+		{
+			XMIPP4_LOG_WARN(
+				"Ignoring {}=\"{}\": expected a positive integer.",
+				XMIPP4_NUM_THREADS_ENV_VARIABLE,
+				environment_variable
+			);
+		}
+	}
+
+	XMIPP4_ASSERT( participants > 0 );
+	return participants - 1;
 }
 
 } // namespace cpu

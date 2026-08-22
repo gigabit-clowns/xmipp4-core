@@ -8,6 +8,8 @@
 #include <backends/cpu/builders/type_dispatchers/rule_type_dispatcher.hpp>
 #include <backends/cpu/hardware/command_queue.hpp>
 
+#include "../serial_pool.hpp"
+
 #include <xmipp4/core/dispatch/basic_operation.hpp>
 #include <xmipp4/core/dispatch/operand_signature.hpp>
 #include <xmipp4/core/dispatch/operation.hpp>
@@ -193,7 +195,7 @@ TEST_CASE(
 
 	const silent_program_builder builder;
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
@@ -220,7 +222,7 @@ TEST_CASE(
 		.RETURN(memory_resource_kind::host);
 
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&host_resource)
@@ -256,7 +258,7 @@ TEST_CASE(
 
 	const silent_program_builder builder;
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	// The operation takes exactly one input.
 	const std::vector<operand_signature> outputs {
@@ -285,7 +287,7 @@ TEST_CASE(
 
 	const silent_program_builder builder;
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(&device_resource)
@@ -308,7 +310,7 @@ TEST_CASE(
 {
 	const silent_program_builder builder;
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(nullptr)
@@ -336,7 +338,7 @@ TEST_CASE(
 {
 	const silent_program_builder builder;
 	const probe_operation operation;
-	cpu::command_queue queue;
+	cpu::command_queue queue(get_serial_pool());
 
 	const std::vector<operand_signature> outputs {
 		make_signature(nullptr),

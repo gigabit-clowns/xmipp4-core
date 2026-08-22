@@ -335,14 +335,16 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"thread_pool::get_default should always answer the same pool",
+	"thread_pool::get_default_worker_count should leave room for the caller",
 	"[thread_pool]"
 )
 {
-	const auto &first = thread_pool::get_default();
-	const auto &second = thread_pool::get_default();
-
-	REQUIRE( first != nullptr );
-	CHECK( first == second );
-	CHECK( first->get_size() >= 1 );
+	// One participant per hardware thread, the caller being one of them, so
+	// the count is one short of a full machine and a single core asks for no
+	// worker at all. Nothing stronger can be checked without pinning down the
+	// machine the case runs on.
+	CHECK_NOTHROW( thread_pool::get_default_worker_count() );
+	CHECK(
+		thread_pool(thread_pool::get_default_worker_count()).get_size() >= 1
+	);
 }

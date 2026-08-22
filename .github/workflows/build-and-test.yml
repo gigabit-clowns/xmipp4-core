@@ -54,9 +54,21 @@ jobs:
 
       # Ninja does not locate MSVC on its own the way the Visual Studio
       # generator does; without this the configure step finds no cl.exe.
+      # vswhere and vcvars ship with Visual Studio on the runner.
       - name: Set up MSVC environment
         if: matrix.compiler.cxx == 'cl'
-        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $install = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          if (-not $install) { throw 'No Visual Studio installation with the C++ tools' }
+          $vcvars = Join-Path $install 'VC\Auxiliary\Build\vcvars64.bat'
+          cmd /c "`"$vcvars`" && set" |
+            Where-Object { $_ -match '^([^=]+)=(.*)$' } |
+            ForEach-Object { "$($Matches[1])=$($Matches[2])" } |
+            Add-Content -Path $env:GITHUB_ENV -Encoding utf8
 
       - name: Set up compiler cache
         uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23

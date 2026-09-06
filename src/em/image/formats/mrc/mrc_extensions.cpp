@@ -35,11 +35,9 @@ bool contains(
 
 bool is_readable_extension(const std::string &extension) noexcept
 {
-	// .st, .rec and .ali are what IMOD names a tilt series, a reconstruction
-	// and an aligned stack, none of which differ from an MRC file in
-	// anything but their name.
 	static const std::array<const char*, 6> extensions = {{
-		".mrc", ".mrcs", ".map", ".st", ".rec", ".ali"
+		".mrc", ".mrcs", ".map", 
+		".st", ".rec", ".ali" // IMOD <4.11
 	}};
 
 	return contains(extensions, extension);

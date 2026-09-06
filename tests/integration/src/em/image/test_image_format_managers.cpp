@@ -62,7 +62,7 @@ TEST_CASE( "the image format managers are reachable as services",
 	}
 }
 
-TEST_CASE( "the bundled library registers no image format yet",
+TEST_CASE( "a file that is not there is claimed by no bundled format",
 	"[image_format_manager]" )
 {
 	service_catalog catalog;
@@ -70,6 +70,9 @@ TEST_CASE( "the bundled library registers no image format yet",
 
 	SECTION( "no format claims a file for reading" )
 	{
+		// The bundled MRC format reads a file on the identifier its header
+		// carries, and a file that is not there carries none. What it does
+		// claim is pinned by test_mrc_real_files.cpp.
 		const auto manager =
 			catalog.get_service_manager<image_read_format_manager>();
 

@@ -195,8 +195,10 @@ TEST_CASE( "a registered format is inert for every other file",
 	const auto writers =
 		catalog.get_service_manager<image_write_format_manager>();
 
+	// The MRC extensions are not among these: the bundled MRC format claims
+	// them, which is what test_image_format_managers.cpp pins.
 	const std::vector<std::string> others = {
-		"absent.mrc", "absent.mrcs", "absent.tif", "absent.tiff",
+		"absent.tif", "absent.tiff",
 		"absent.h5", "absent.em", "absent.eer", "absent", "absent."
 	};
 

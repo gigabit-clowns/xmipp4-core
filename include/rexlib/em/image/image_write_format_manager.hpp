@@ -67,12 +67,12 @@ public:
 	 * which is what tells a stack of images from a volume.
 	 * @param data_type Data type of its elements.
 	 * @param metadata How its samples map onto physical space.
-	 * @return std::unique_ptr<image_writer> The opened writer, never null.
+	 * @return std::shared_ptr<image_writer> The opened writer, never null.
 	 * @throws invalid_operation_error If no registered format recognizes the
 	 * file, or if the chosen one can not represent the requested file.
 	 * @throws image_format_error If the file could not be created.
 	 */
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const std::string &path,
 		span<const std::size_t> extents,
 		std::size_t core_rank,

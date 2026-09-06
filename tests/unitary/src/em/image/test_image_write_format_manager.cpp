@@ -57,7 +57,7 @@ public:
 		return m_suitability;
 	}
 
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const image_probe &,
 		span<const std::size_t> extents,
 		std::size_t core_rank,
@@ -70,7 +70,7 @@ public:
 			m_record->extents.assign(extents.begin(), extents.end());
 			m_record->core_rank = core_rank;
 		}
-		return std::make_unique<mock_image_writer>();
+		return std::make_shared<mock_image_writer>();
 	}
 
 private:

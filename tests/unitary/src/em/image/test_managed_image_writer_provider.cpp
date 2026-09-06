@@ -60,7 +60,7 @@ public:
 		return backend_priority::normal;
 	}
 
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const image_probe &probe,
 		span<const std::size_t> extents,
 		std::size_t core_rank,
@@ -68,14 +68,14 @@ public:
 		const image_metadata &
 	) const override
 	{
-		auto writer = std::make_unique<mock_image_writer>();
+		auto writer = std::make_shared<mock_image_writer>();
 		m_log->push_back(open_record{
 			probe.get_path(),
 			std::vector<std::size_t>(extents.begin(), extents.end()),
 			core_rank,
 			writer.get()
 		});
-		return std::unique_ptr<image_writer>(writer.release());
+		return writer;
 	}
 
 private:

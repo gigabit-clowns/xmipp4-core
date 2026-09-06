@@ -44,7 +44,7 @@ public:
 		return backend_priority::normal;
 	}
 
-	std::unique_ptr<image_reader> open(const image_probe &) const override
+	std::shared_ptr<image_reader> open(const image_probe &) const override
 	{
 		++(*m_count);
 		return std::make_unique<mock_image_reader>();

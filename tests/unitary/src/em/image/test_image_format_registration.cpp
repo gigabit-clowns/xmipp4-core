@@ -59,7 +59,7 @@ public:
 			: backend_priority::unsupported;
 	}
 
-	std::unique_ptr<image_reader> open(const image_probe &) const override
+	std::shared_ptr<image_reader> open(const image_probe &) const override
 	{
 		return std::make_unique<mock_image_reader>();
 	}
@@ -82,7 +82,7 @@ public:
 			: backend_priority::unsupported;
 	}
 
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const image_probe &,
 		span<const std::size_t>,
 		std::size_t,

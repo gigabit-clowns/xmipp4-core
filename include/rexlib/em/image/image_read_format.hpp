@@ -74,10 +74,10 @@ public:
 	 * @ref backend_priority::unsupported for @p probe.
 	 *
 	 * @param probe The file to open.
-	 * @return std::unique_ptr<image_reader> The opened reader, never null.
+	 * @return std::shared_ptr<image_reader> The opened reader, never null.
 	 * @throws image_format_error If the file is malformed or truncated.
 	 */
-	virtual std::unique_ptr<image_reader> open(
+	virtual std::shared_ptr<image_reader> open(
 		const image_probe &probe
 	) const = 0;
 };

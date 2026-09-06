@@ -253,7 +253,7 @@ TEST_CASE(
 	image_transaction_plan plan(make_span(plane_extents), 3, 3);
 	std::atomic<std::size_t> entered(0);
 	const auto barrier =
-		[&entered]
+		[&entered, file_count]
 		{
 			entered.fetch_add(1);
 			while (entered.load() < file_count)

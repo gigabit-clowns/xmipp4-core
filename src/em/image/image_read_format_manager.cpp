@@ -49,7 +49,7 @@ public:
 		return ite->get();
 	}
 
-	std::unique_ptr<image_reader> open(const image_probe &probe) const
+	std::shared_ptr<image_reader> open(const image_probe &probe) const
 	{
 		const auto *format = get_most_suitable_format(probe);
 		if (!format)
@@ -88,7 +88,7 @@ bool image_read_format_manager::register_format(
 	return create_if_null().register_format(std::move(format));
 }
 
-std::unique_ptr<image_reader>
+std::shared_ptr<image_reader>
 image_read_format_manager::open(const std::string &path) const
 {
 	return get_implementation().open(image_probe(path));

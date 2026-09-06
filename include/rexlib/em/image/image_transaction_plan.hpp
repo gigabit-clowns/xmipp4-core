@@ -65,10 +65,9 @@ namespace em
  * differing core shape are two transactions, and would be two arrays anyway.
  *
  * The regions are held in the order they were added and in no other. Walking
- * them one file at a time is what a consumer reading them wants, and
- * @ref image_region_grouping is that ordering, kept outside this class so
- * that a
- * plan is what is transferred and nothing else.
+ * them one file at a time is what a consumer reading them wants, and that
+ * ordering is built beside the plan rather than by it, so that a plan is
+ * what is transferred and nothing else.
  */
 class image_transaction_plan
 {

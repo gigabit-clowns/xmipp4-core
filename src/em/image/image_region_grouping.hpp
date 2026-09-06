@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <rexlib/core/platform/dynamic_shared_object.h>
-
 #include <cstddef>
 #include <vector>
 
@@ -50,19 +48,13 @@ public:
 	/**
 	 * @brief Construct a grouping over no region and no file.
 	 */
-	REXLIB_API
 	image_region_grouping() noexcept;
 
-	REXLIB_API
 	image_region_grouping(const image_region_grouping &other);
-	REXLIB_API
 	image_region_grouping(image_region_grouping &&other) noexcept;
-	REXLIB_API
 	~image_region_grouping();
 
-	REXLIB_API
 	image_region_grouping& operator=(const image_region_grouping &other);
-	REXLIB_API
 	image_region_grouping& operator=(image_region_grouping &&other) noexcept;
 
 	/**
@@ -77,13 +69,11 @@ public:
 	 *
 	 * @param plan The transaction whose regions are ordered.
 	 */
-	REXLIB_API
 	void build(const image_transaction_plan &plan);
 
 	/**
 	 * @brief Drop the ordering, keeping the capacity.
 	 */
-	REXLIB_API
 	void clear() noexcept;
 
 	/**
@@ -92,7 +82,6 @@ public:
 	 * @param files Number of files to make room for.
 	 * @param regions Number of regions to make room for.
 	 */
-	REXLIB_API
 	void reserve(std::size_t files, std::size_t regions);
 
 	/**
@@ -100,7 +89,6 @@ public:
 	 *
 	 * @return std::size_t The number of regions.
 	 */
-	REXLIB_API
 	std::size_t get_region_count() const noexcept;
 
 	/**
@@ -108,7 +96,6 @@ public:
 	 *
 	 * @return std::size_t The number of files.
 	 */
-	REXLIB_API
 	std::size_t get_file_count() const noexcept;
 
 	/**
@@ -120,7 +107,6 @@ public:
 	 *
 	 * @return std::size_t The number of files addressed.
 	 */
-	REXLIB_API
 	std::size_t get_addressed_file_count() const noexcept;
 
 	/**
@@ -130,7 +116,6 @@ public:
 	 * @ref get_file_count.
 	 * @return std::size_t Position of its first region in this ordering.
 	 */
-	REXLIB_API
 	std::size_t get_first_position(std::size_t file_index) const noexcept;
 
 	/**
@@ -142,7 +127,6 @@ public:
 	 * @ref get_file_count.
 	 * @return std::size_t The number of regions.
 	 */
-	REXLIB_API
 	std::size_t get_file_region_count(std::size_t file_index) const noexcept;
 
 	/**
@@ -153,7 +137,6 @@ public:
 	 * @return std::size_t Index of the region in the plan this was built
 	 * from.
 	 */
-	REXLIB_API
 	std::size_t get_region(std::size_t position) const noexcept;
 
 	/**
@@ -170,7 +153,6 @@ public:
 	 * @return image_transfer_plan The transfer plan for that file alone.
 	 * Empty for a file no region addresses.
 	 */
-	REXLIB_API
 	image_transfer_plan build_file_transfer_plan(
 		const image_transaction_plan &plan,
 		std::size_t file_index

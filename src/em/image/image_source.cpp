@@ -10,9 +10,10 @@
 #include <rexlib/core/ndarray/array_ref.hpp>
 #include <rexlib/em/image/image_reader.hpp>
 #include <rexlib/em/image/image_reader_provider.hpp>
-#include <rexlib/em/image/image_region_grouping.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
+
+#include <em/image/image_region_grouping.hpp>
 
 #include <cstddef>
 #include <memory>

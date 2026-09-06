@@ -8,11 +8,12 @@
 #include <rexlib/core/concurrency/task.hpp>
 #include <rexlib/core/ndarray/const_array.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
-#include <rexlib/em/image/image_region_grouping.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
 #include <rexlib/em/image/image_writer.hpp>
 #include <rexlib/em/image/image_writer_provider.hpp>
+
+#include <em/image/image_region_grouping.hpp>
 
 #include <cstddef>
 #include <memory>

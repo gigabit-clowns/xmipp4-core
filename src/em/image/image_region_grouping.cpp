@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <rexlib/em/image/image_region_grouping.hpp>
+#include <em/image/image_region_grouping.hpp>
 
 #include <rexlib/core/platform/assert.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>

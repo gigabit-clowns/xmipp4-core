@@ -22,7 +22,7 @@ class image_writer_provider;
 /**
  * @brief Executes a transaction plan by writing every file it names.
  *
- * Splits the plan by file with @ref image_region_grouping and writes each
+ * Splits the plan by the file each region addresses and writes each
  * file's regions as one task, fanned out onto the executor this was
  * constructed with. Files are therefore written concurrently to
  * whatever degree the executor allows, not necessarily one after

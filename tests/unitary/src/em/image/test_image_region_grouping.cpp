@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <rexlib/em/image/image_region_grouping.hpp>
+#include <em/image/image_region_grouping.hpp>
 
 #include <rexlib/em/image/image_transaction_plan.hpp>
 

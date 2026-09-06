@@ -22,7 +22,7 @@ class image_transaction_plan;
 /**
  * @brief Executes a transaction plan by reading every file it names.
  *
- * Splits the plan by file with @ref image_region_grouping and reads each
+ * Splits the plan by the file each region addresses and reads each
  * file's regions as one task, fanned out onto the executor this was
  * constructed with. Files are therefore read concurrently to whatever
  * degree the executor allows, not necessarily one after another.

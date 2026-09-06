@@ -74,12 +74,10 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/memcheck/install-memtool@main
 
       - name: Set up compiler cache
-        uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
+        uses: gigabit-clowns/.github/.github/composites/restore-ccache@main
         with:
           key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
           max-size: 1G
-          evict-old-files: 7d
-          save: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
@@ -99,6 +97,12 @@ jobs:
             ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded' || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
+
+      - name: Save the compiler cache
+        if: github.ref == 'refs/heads/main'
+        uses: gigabit-clowns/.github/.github/composites/save-ccache@main
+        with:
+          key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
 
       - name: Run tests without memory check
         if: matrix.os != 'ubuntu-latest'

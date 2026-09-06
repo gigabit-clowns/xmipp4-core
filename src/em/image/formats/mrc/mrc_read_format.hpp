@@ -34,7 +34,7 @@ public:
 	backend_priority
 	get_suitability(const image_probe &probe) const override;
 
-	std::unique_ptr<image_reader> open(
+	std::shared_ptr<image_reader> open(
 		const image_probe &probe
 	) const override;
 };

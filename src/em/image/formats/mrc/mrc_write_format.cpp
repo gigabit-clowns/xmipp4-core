@@ -33,7 +33,7 @@ mrc_write_format::get_suitability(const image_probe &probe) const
 		: backend_priority::unsupported;
 }
 
-std::unique_ptr<image_writer> mrc_write_format::open(
+std::shared_ptr<image_writer> mrc_write_format::open(
 	const image_probe &probe,
 	span<const std::size_t> extents,
 	std::size_t core_rank,
@@ -43,7 +43,7 @@ std::unique_ptr<image_writer> mrc_write_format::open(
 {
 	// Nothing of the metadata reaches the file: image_metadata states
 	// nothing yet.
-	return std::make_unique<mrc_writer>(
+	return std::make_shared<mrc_writer>(
 		probe.get_path(), 
 		extents, 
 		core_rank, 

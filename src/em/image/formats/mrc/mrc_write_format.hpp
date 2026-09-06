@@ -30,7 +30,7 @@ public:
 	backend_priority
 	get_suitability(const image_probe &probe) const override;
 
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const image_probe &probe,
 		span<const std::size_t> extents,
 		std::size_t core_rank,

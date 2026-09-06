@@ -47,7 +47,7 @@ mrc_read_format::get_suitability(const image_probe &probe) const
 std::unique_ptr<image_reader>
 mrc_read_format::open(const image_probe &probe) const
 {
-	return std::unique_ptr<image_reader>(new mrc_reader(probe.get_path()));
+	return std::make_unique<mrc_reader>(probe.get_path());
 }
 
 REXLIB_REGISTER_IMAGE_READ_FORMAT(mrc, rexlib::em::mrc::mrc_read_format);

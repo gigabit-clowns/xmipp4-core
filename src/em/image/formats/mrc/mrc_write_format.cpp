@@ -43,8 +43,11 @@ std::unique_ptr<image_writer> mrc_write_format::open(
 {
 	// Nothing of the metadata reaches the file: image_metadata states
 	// nothing yet.
-	return std::unique_ptr<image_writer>(
-		new mrc_writer(probe.get_path(), extents, core_rank, data_type)
+	return std::make_unique<mrc_writer>(
+		probe.get_path(), 
+		extents, 
+		core_rank, 
+		data_type
 	);
 }
 

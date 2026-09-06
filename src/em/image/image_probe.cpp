@@ -34,7 +34,7 @@ std::string get_lowercase_extension(const std::string &path)
 		extension.begin(),
 		extension.end(),
 		extension.begin(),
-		[] (char character) -> char
+		[] (char character)
 		{
 			return static_cast<char>(
 				std::tolower(static_cast<unsigned char>(character))

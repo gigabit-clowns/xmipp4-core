@@ -12,6 +12,7 @@ target_link_libraries(
 		Boost::container # Eventually replace in C++23
 		Boost::unordered # Eventually replace in C++23
 		Boost::intrusive
+		Boost::interprocess
 		half
 		pocketfft
 		Eigen3::Eigen

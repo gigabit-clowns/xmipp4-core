@@ -46,7 +46,7 @@ public:
 		return m_suitability;
 	}
 
-	std::unique_ptr<image_reader> open(
+	std::shared_ptr<image_reader> open(
 		const image_probe &
 	) const override
 	{

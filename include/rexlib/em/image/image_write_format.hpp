@@ -85,14 +85,14 @@ public:
 	 * a write will supply.
 	 * @param metadata How its samples map onto physical space. A format
 	 * writes what of it it can carry and ignores the rest.
-	 * @return std::unique_ptr<image_writer> The opened writer, never null.
+	 * @return std::shared_ptr<image_writer> The opened writer, never null.
 	 * @throws std::invalid_argument If @p core_rank is zero or exceeds the
 	 * rank of @p extents.
 	 * @throws invalid_operation_error If this format can not represent the
 	 * requested file, such as a rank or a data type it has no encoding for.
 	 * @throws image_format_error If the file could not be created.
 	 */
-	virtual std::unique_ptr<image_writer> open(
+	virtual std::shared_ptr<image_writer> open(
 		const image_probe &probe,
 		span<const std::size_t> extents,
 		std::size_t core_rank,

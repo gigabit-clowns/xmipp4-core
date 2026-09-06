@@ -50,7 +50,7 @@ public:
 		return ite->get();
 	}
 
-	std::unique_ptr<image_writer> open(
+	std::shared_ptr<image_writer> open(
 		const image_probe &probe,
 		span<const std::size_t> extents,
 		std::size_t core_rank,
@@ -101,7 +101,7 @@ bool image_write_format_manager::register_format(
 	return create_if_null().register_format(std::move(format));
 }
 
-std::unique_ptr<image_writer> image_write_format_manager::open(
+std::shared_ptr<image_writer> image_write_format_manager::open(
 	const std::string &path,
 	span<const std::size_t> extents,
 	std::size_t core_rank,

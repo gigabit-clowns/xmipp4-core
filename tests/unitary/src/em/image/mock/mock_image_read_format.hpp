@@ -30,7 +30,7 @@ public:
 
 	MAKE_CONST_MOCK1(
 		open,
-		std::unique_ptr<image_reader>(const image_probe &probe),
+		std::shared_ptr<image_reader>(const image_probe &probe),
 		override
 	);
 };

@@ -134,7 +134,6 @@ public:
 	static std::size_t get_default_worker_count();
 
 private:
-	REXLIB_STD_MEMBER_INTERFACE
 	std::unique_ptr<thread_pool_implementation> m_implementation;
 };
 

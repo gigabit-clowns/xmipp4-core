@@ -75,7 +75,6 @@ public:
 
 private:
 	class implementation;
-	REXLIB_STD_MEMBER_INTERFACE
 	std::unique_ptr<implementation> m_implementation;
 };
 

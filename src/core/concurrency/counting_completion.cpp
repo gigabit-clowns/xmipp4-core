@@ -32,13 +32,7 @@ public:
 
 		if (m_remaining.fetch_sub(1, std::memory_order_acq_rel) == 1)
 		{
-			// Empty on purpose: synchronizes with wait()'s check-then-block
-			// on the same mutex, so a waiter cannot be caught between
-			// checking the predicate and registering for notify_all below.
-			// Removing this lock/unlock reintroduces that lost-wakeup race.
-			{
-				const std::lock_guard<std::mutex> lock(m_mutex);
-			}
+			const std::lock_guard<std::mutex> lock(m_mutex);
 			m_cv.notify_all();
 		}
 	}

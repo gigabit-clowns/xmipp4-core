@@ -6,6 +6,7 @@
 #include <rexlib/core/hardware/buffer.hpp>
 #include <rexlib/core/hardware/memory_resource.hpp>
 #include <rexlib/core/ndarray/array_ref.hpp>
+#include <rexlib/core/ndarray/const_array_ref.hpp>
 
 #include <stdexcept>
 
@@ -16,9 +17,11 @@ namespace em
 namespace mrc
 {
 
-void* get_host_data(array_ref array)
+namespace
 {
-	auto *storage = array.get_storage();
+
+void check_storage(const buffer *storage)
+{
 	if (storage == nullptr)
 	{
 		throw std::invalid_argument(
@@ -33,14 +36,38 @@ void* get_host_data(array_ref array)
 			"host."
 		);
 	}
+}
 
-	auto *data = storage->get_host_ptr();
+void check_data(const void *data)
+{
 	if (data == nullptr)
 	{
 		throw invalid_operation_error(
 			"mrc: The array does not expose its storage to the host."
 		);
 	}
+}
+
+} // anonymous namespace
+
+void* get_host_data(array_ref array)
+{
+	auto *storage = array.get_storage();
+	check_storage(storage);
+
+	auto *data = storage->get_host_ptr();
+	check_data(data);
+
+	return data;
+}
+
+const void* get_host_data(const_array_ref array)
+{
+	const auto *storage = array.get_storage();
+	check_storage(storage);
+
+	const auto *data = storage->get_host_ptr();
+	check_data(data);
 
 	return data;
 }

@@ -83,16 +83,27 @@ TEST_CASE( "a file that is not there is claimed by no bundled format",
 		);
 	}
 
-	SECTION( "no format claims a file for writing" )
+	SECTION( "the MRC format claims it for writing" )
+	{
+		// A file being created does not exist yet, so the extension is the
+		// whole of what a write format has to decide on.
+		const auto manager =
+			catalog.get_service_manager<image_write_format_manager>();
+
+		REQUIRE( manager->get_most_suitable_format(probe) != nullptr );
+	}
+
+	SECTION( "an extension no format writes is still claimed by none" )
 	{
 		const auto manager =
 			catalog.get_service_manager<image_write_format_manager>();
+		const image_probe other("absent.eer");
 		const std::vector<std::size_t> extents = {2, 2};
 
-		REQUIRE( manager->get_most_suitable_format(probe) == nullptr );
+		REQUIRE( manager->get_most_suitable_format(other) == nullptr );
 		REQUIRE_THROWS_AS(
 			manager->open(
-				"absent.mrc",
+				"absent.eer",
 				make_span(extents),
 				2,
 				numerical_type::float32,

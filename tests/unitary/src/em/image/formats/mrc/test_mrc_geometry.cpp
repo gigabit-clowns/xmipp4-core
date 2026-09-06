@@ -7,6 +7,7 @@
 #include <rexlib/core/exceptions/invalid_operation_error.hpp>
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
 
+#include <stdexcept>
 #include <vector>
 
 using namespace rexlib;
@@ -322,11 +323,14 @@ TEST_CASE( "a shape the MRC format cannot hold is refused",
 	const std::vector<std::size_t> line = {4};
 	const std::vector<std::size_t> too_deep = {2, 3, 4, 3, 4};
 
+	// A core rank that does not name a subset of the extents breaks the
+	// contract of image_write_format::open rather than naming a file the MRC
+	// format has no shape for, and is refused as such.
 	SECTION( "a core rank of zero is refused" )
 	{
 		REQUIRE_THROWS_AS(
 			make_header(make_span(image), 0, numerical_type::float32),
-			invalid_operation_error
+			std::invalid_argument
 		);
 	}
 
@@ -334,7 +338,7 @@ TEST_CASE( "a shape the MRC format cannot hold is refused",
 	{
 		REQUIRE_THROWS_AS(
 			make_header(make_span(image), 3, numerical_type::float32),
-			invalid_operation_error
+			std::invalid_argument
 		);
 	}
 

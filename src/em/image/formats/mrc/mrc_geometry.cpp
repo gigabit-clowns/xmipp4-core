@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <numeric>
+#include <stdexcept>
 
 namespace rexlib
 {
@@ -151,7 +152,7 @@ mrc_header make_header(
 	const auto rank = extents.size();
 	if (core_rank == 0 || core_rank > rank)
 	{
-		throw invalid_operation_error(
+		throw std::invalid_argument(
 			"mrc::make_header: The core rank must name at least one and at "
 			"most every extent."
 		);

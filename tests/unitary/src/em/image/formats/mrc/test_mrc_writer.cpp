@@ -1,0 +1,425 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include <catch2/catch_test_macros.hpp>
+
+#include <em/image/formats/mrc/mrc_writer.hpp>
+
+#include <em/image/formats/mrc/mrc_reader.hpp>
+#include <em/image/formats/mrc/mrc_write_format.hpp>
+
+#include <core/hardware/host_memory/host_buffer.hpp>
+#include <rexlib/core/exceptions/invalid_operation_error.hpp>
+#include <rexlib/core/hardware/buffer.hpp>
+#include <rexlib/core/layout/strided_layout.hpp>
+#include <rexlib/core/ndarray/array.hpp>
+#include <rexlib/core/ndarray/array_descriptor.hpp>
+#include <rexlib/core/ndarray/array_ref.hpp>
+#include <rexlib/core/ndarray/const_array_ref.hpp>
+#include <rexlib/em/image/image_metadata.hpp>
+#include <rexlib/em/image/image_probe.hpp>
+#include <rexlib/em/image/image_transfer_plan.hpp>
+#include <rexlib/tests/assets.hpp>
+
+#include <boost/filesystem/operations.hpp>
+
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <numeric>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+using namespace rexlib;
+using namespace rexlib::em;
+using namespace rexlib::em::mrc;
+
+namespace
+{
+
+// A path under the build tree that is removed when the test leaves, whether
+// it succeeded or not.
+class scoped_path
+{
+public:
+	explicit scoped_path(const std::string &name)
+		: m_path(get_scratch_path(name))
+	{
+		std::remove(m_path.c_str());
+	}
+
+	scoped_path(const scoped_path &other) = delete;
+	scoped_path(scoped_path &&other) = delete;
+
+	~scoped_path()
+	{
+		std::remove(m_path.c_str());
+	}
+
+	scoped_path& operator=(const scoped_path &other) = delete;
+	scoped_path& operator=(scoped_path &&other) = delete;
+
+	const std::string& get() const noexcept
+	{
+		return m_path;
+	}
+
+private:
+	std::string m_path;
+};
+
+std::size_t element_count(const std::vector<std::size_t> &extents)
+{
+	return std::accumulate(
+		extents.cbegin(),
+		extents.cend(),
+		std::size_t(1),
+		std::multiplies<std::size_t>()
+	);
+}
+
+array make_host_array(
+	const std::vector<std::size_t> &extents,
+	const std::vector<float> &values
+)
+{
+	auto storage = std::make_shared<host_buffer>(
+		element_count(extents) * sizeof(float),
+		alignof(float)
+	);
+	std::memcpy(
+		storage->get_host_ptr(),
+		values.data(),
+		values.size() * sizeof(float)
+	);
+
+	return array(
+		std::move(storage),
+		array_descriptor(
+			strided_layout::make_contiguous_layout(make_span(extents)),
+			numerical_type::float32
+		)
+	);
+}
+
+std::vector<float> counting(std::size_t count)
+{
+	std::vector<float> values(count);
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		values[i] = static_cast<float>(i) + 0.5F;
+	}
+
+	return values;
+}
+
+image_transfer_plan whole_of(const std::vector<std::size_t> &extents)
+{
+	image_transfer_plan regions(
+		make_span(extents), extents.size(), extents.size());
+	regions.add(
+		make_span(std::vector<std::size_t>(extents.size(), 0)),
+		make_span(std::vector<std::size_t>(extents.size(), 0))
+	);
+
+	return regions;
+}
+
+std::vector<float> read_back(
+	const std::string &path,
+	const std::vector<std::size_t> &extents
+)
+{
+	const mrc_reader reader(path);
+
+	auto destination = make_host_array(
+		extents, std::vector<float>(element_count(extents), -1.0F));
+	reader.read(array_ref(destination), whole_of(extents));
+
+	const auto *data = static_cast<const float*>(
+		destination.get_storage()->get_host_ptr());
+
+	return std::vector<float>(data, data + element_count(extents));
+}
+
+} // anonymous namespace
+
+TEST_CASE( "an MRC file is created with the shape it is opened over",
+	"[mrc_writer]" )
+{
+	const scoped_path path("writer.mrc");
+
+	SECTION( "a writer reports what it was created over" )
+	{
+		const std::vector<std::size_t> extents = {2, 3, 4};
+		mrc_writer writer(
+			path.get(), make_span(extents), 2, numerical_type::float32);
+
+		REQUIRE( writer.get_extents().size() == 3 );
+		REQUIRE( writer.get_extents()[0] == 2 );
+		REQUIRE( writer.get_core_rank() == 2 );
+		REQUIRE( writer.get_data_type() == numerical_type::float32 );
+	}
+
+	SECTION( "the file is laid out in full before anything is written" )
+	{
+		const std::vector<std::size_t> extents = {2, 3, 4};
+		{
+			const mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::float32);
+		}
+
+		REQUIRE( boost::filesystem::file_size(path.get()) ==
+			1024 + 24 * sizeof(float) );
+	}
+
+	SECTION( "a shape the format has no file for is refused" )
+	{
+		const std::vector<std::size_t> line = {4};
+
+		REQUIRE_THROWS_AS(
+			mrc_writer(
+				path.get(), make_span(line), 1, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a core rank that names no subset of the extents is refused" )
+	{
+		const std::vector<std::size_t> extents = {2, 3};
+
+		REQUIRE_THROWS_AS(
+			mrc_writer(
+				path.get(), make_span(extents), 0, numerical_type::float32),
+			std::invalid_argument
+		);
+		REQUIRE_THROWS_AS(
+			mrc_writer(
+				path.get(), make_span(extents), 3, numerical_type::float32),
+			std::invalid_argument
+		);
+	}
+
+	SECTION( "a data type no mode holds is refused" )
+	{
+		const std::vector<std::size_t> extents = {2, 3};
+
+		REQUIRE_THROWS_AS(
+			mrc_writer(
+				path.get(), make_span(extents), 2, numerical_type::float64),
+			invalid_operation_error
+		);
+	}
+}
+
+TEST_CASE( "what is written to an MRC file is what is read back",
+	"[mrc_writer]" )
+{
+	const scoped_path path("writer.mrc");
+
+	SECTION( "a single image round-trips" )
+	{
+		const std::vector<std::size_t> extents = {3, 4};
+		const auto values = counting(12);
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::float32);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "a stack of images round-trips, and keeps its core rank" )
+	{
+		const std::vector<std::size_t> extents = {2, 3, 4};
+		const auto values = counting(24);
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::float32);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_core_rank() == 2 );
+		REQUIRE( reader.get_extents()[0] == 2 );
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "a volume round-trips, and keeps its core rank" )
+	{
+		const std::vector<std::size_t> extents = {2, 3, 4};
+		const auto values = counting(24);
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 3, numerical_type::float32);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_core_rank() == 3 );
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "a stack of volumes round-trips, and keeps its four axes" )
+	{
+		const std::vector<std::size_t> extents = {2, 3, 4, 5};
+		const auto values = counting(120);
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 3, numerical_type::float32);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_extents().size() == 4 );
+		REQUIRE( reader.get_core_rank() == 3 );
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "a narrower file keeps what its type can hold" )
+	{
+		const std::vector<std::size_t> extents = {2, 2};
+		const std::vector<float> values = {-2.0F, -1.0F, 0.0F, 300.0F};
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::int16);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_data_type() == numerical_type::int16 );
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "unsigned bytes survive the mode they share with signed ones" )
+	{
+		const std::vector<std::size_t> extents = {2, 2};
+		const std::vector<float> values = {0.0F, 1.0F, 200.0F, 255.0F};
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::uint8);
+			const auto source = make_host_array(extents, values);
+			writer.write(const_array_ref(source), whole_of(extents));
+			writer.flush();
+		}
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_data_type() == numerical_type::uint8 );
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "regions written one at a time fill the file" )
+	{
+		const std::vector<std::size_t> extents = {3, 2, 2};
+		const std::vector<std::size_t> plane = {2, 2};
+		const auto values = counting(12);
+
+		{
+			mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::float32);
+			const auto source = make_host_array(extents, values);
+
+			for (std::size_t i = 0; i < 3; ++i)
+			{
+				image_transfer_plan regions(make_span(plane), 3, 3);
+				regions.add(
+					make_span(std::vector<std::size_t>{i, 0, 0}),
+					make_span(std::vector<std::size_t>{i, 0, 0})
+				);
+				writer.write(const_array_ref(source), regions);
+			}
+
+			writer.flush();
+		}
+
+		REQUIRE( read_back(path.get(), extents) == values );
+	}
+
+	SECTION( "an uninitialized source is refused" )
+	{
+		const std::vector<std::size_t> extents = {2, 2};
+		mrc_writer writer(
+			path.get(), make_span(extents), 2, numerical_type::float32);
+
+		REQUIRE_THROWS_AS(
+			writer.write(const_array_ref(), whole_of(extents)),
+			std::invalid_argument
+		);
+	}
+}
+
+TEST_CASE( "the MRC format claims the files it can create",
+	"[mrc_write_format]" )
+{
+	const mrc_write_format format;
+
+	SECTION( "it is named" )
+	{
+		REQUIRE( format.get_name() == "MRC" );
+	}
+
+	SECTION( "the extensions it creates are claimed" )
+	{
+		REQUIRE( format.get_suitability(image_probe("absent.mrc")) ==
+			backend_priority::normal );
+		REQUIRE( format.get_suitability(image_probe("absent.mrcs")) ==
+			backend_priority::normal );
+		REQUIRE( format.get_suitability(image_probe("absent.map")) ==
+			backend_priority::normal );
+	}
+
+	SECTION( "an extension it reads but does not create is not claimed" )
+	{
+		REQUIRE( format.get_suitability(image_probe("absent.st")) ==
+			backend_priority::unsupported );
+		REQUIRE( format.get_suitability(image_probe("absent.rec")) ==
+			backend_priority::unsupported );
+	}
+
+	SECTION( "any other extension is not claimed" )
+	{
+		REQUIRE( format.get_suitability(image_probe("absent.tif")) ==
+			backend_priority::unsupported );
+		REQUIRE( format.get_suitability(image_probe("absent")) ==
+			backend_priority::unsupported );
+	}
+
+	SECTION( "a claimed file opens into a writer" )
+	{
+		const scoped_path path("writer.mrc");
+		const std::vector<std::size_t> extents = {3, 4};
+
+		const auto writer = format.open(
+			image_probe(path.get()),
+			make_span(extents),
+			2,
+			numerical_type::float32,
+			image_metadata()
+		);
+
+		REQUIRE( writer != nullptr );
+		REQUIRE( writer->get_core_rank() == 2 );
+	}
+}

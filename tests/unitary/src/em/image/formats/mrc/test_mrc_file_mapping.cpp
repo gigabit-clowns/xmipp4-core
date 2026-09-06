@@ -5,9 +5,11 @@
 #include <em/image/formats/mrc/mrc_file_mapping.hpp>
 
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
+#include <rexlib/tests/assets.hpp>
 
 #include <boost/filesystem/operations.hpp>
 
+#include <cstdio>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -19,18 +21,15 @@ using namespace rexlib::em::mrc;
 namespace
 {
 
-// A path in the temporary directory of the system rather than in the working
-// directory, so that a test does not depend on where it was run from and
-// leaves nothing behind when it fails.
+// A path under the build tree that is removed when the test leaves, whether
+// it succeeded or not.
 class scoped_path
 {
 public:
-	scoped_path()
-		: m_path((
-			boost::filesystem::temp_directory_path() /
-			boost::filesystem::unique_path("rexlib-mrc-%%%%-%%%%.tmp")
-		).string())
+	explicit scoped_path(const std::string &name)
+		: m_path(get_scratch_path(name))
 	{
+		std::remove(m_path.c_str());
 	}
 
 	scoped_path(const scoped_path &other) = delete;
@@ -38,8 +37,7 @@ public:
 
 	~scoped_path()
 	{
-		boost::system::error_code code;
-		boost::filesystem::remove(m_path, code);
+		std::remove(m_path.c_str());
 	}
 
 	scoped_path& operator=(const scoped_path &other) = delete;
@@ -80,7 +78,7 @@ std::size_t size_on_disk(const std::string &path)
 TEST_CASE( "a file is laid out in full before it is mapped",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path;
+	const scoped_path path("mapping.tmp");
 
 	SECTION( "it is created at exactly the size asked for" )
 	{
@@ -106,7 +104,7 @@ TEST_CASE( "a file is laid out in full before it is mapped",
 TEST_CASE( "an MRC file is read through its mapping",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path;
+	const scoped_path path("mapping.tmp");
 
 	SECTION( "the whole file is mapped from its first byte" )
 	{
@@ -142,7 +140,7 @@ TEST_CASE( "an MRC file is read through its mapping",
 TEST_CASE( "an MRC file is written through its mapping",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path;
+	const scoped_path path("mapping.tmp");
 
 	SECTION( "what is written reaches the storage" )
 	{
@@ -180,7 +178,7 @@ TEST_CASE( "an MRC file is written through its mapping",
 TEST_CASE( "a mapping carries its file when it is moved",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path;
+	const scoped_path path("mapping.tmp");
 	write_file(path.get(), {'a', 'b', 'c', 'd'});
 
 	SECTION( "a moved mapping keeps reading the file" )
@@ -195,7 +193,7 @@ TEST_CASE( "a mapping carries its file when it is moved",
 
 	SECTION( "a mapping assigned over keeps reading the file" )
 	{
-		const scoped_path other;
+		const scoped_path other("mapping-other.tmp");
 		write_file(other.get(), {'z'});
 
 		mrc_file_mapping original(path.get(), read_only);

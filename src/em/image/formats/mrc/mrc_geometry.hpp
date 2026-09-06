@@ -124,6 +124,8 @@ private:
  * @param core_rank How many trailing extents are one image or volume.
  * @param data_type Data type of the elements.
  * @return mrc_header The header, in the byte order of the host.
+ * @throws std::invalid_argument If @p core_rank is zero or exceeds the rank
+ * of @p extents.
  * @throws invalid_operation_error If no MRC file has that shape, or if no
  * mode holds @p data_type.
  */

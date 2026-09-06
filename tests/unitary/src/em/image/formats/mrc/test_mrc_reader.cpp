@@ -16,9 +16,9 @@
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
 #include <rexlib/em/image/image_probe.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
+#include <rexlib/tests/assets.hpp>
 
-#include <boost/filesystem/operations.hpp>
-
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -33,15 +33,15 @@ using namespace rexlib::em::mrc;
 namespace
 {
 
+// A path under the build tree that is removed when the test leaves, whether
+// it succeeded or not.
 class scoped_path
 {
 public:
-	scoped_path()
-		: m_path((
-			boost::filesystem::temp_directory_path() /
-			boost::filesystem::unique_path("rexlib-mrc-%%%%-%%%%.mrc")
-		).string())
+	explicit scoped_path(const std::string &name)
+		: m_path(get_scratch_path(name))
 	{
+		std::remove(m_path.c_str());
 	}
 
 	scoped_path(const scoped_path &other) = delete;
@@ -49,8 +49,7 @@ public:
 
 	~scoped_path()
 	{
-		boost::system::error_code code;
-		boost::filesystem::remove(m_path, code);
+		std::remove(m_path.c_str());
 	}
 
 	scoped_path& operator=(const scoped_path &other) = delete;
@@ -183,7 +182,7 @@ std::vector<float> read_all(const mrc_reader &reader)
 TEST_CASE( "an MRC file is opened and reports what it holds",
 	"[mrc_reader]" )
 {
-	const scoped_path path;
+	const scoped_path path("reader.mrc");
 
 	SECTION( "a stack of images reports two core axes" )
 	{
@@ -222,7 +221,7 @@ TEST_CASE( "an MRC file is opened and reports what it holds",
 TEST_CASE( "the values of an MRC file are read into an array",
 	"[mrc_reader]" )
 {
-	const scoped_path path;
+	const scoped_path path("reader.mrc");
 
 	SECTION( "the whole of a stack arrives in order" )
 	{
@@ -274,7 +273,7 @@ TEST_CASE( "the values of an MRC file are read into an array",
 TEST_CASE( "a file that contradicts its own header is refused",
 	"[mrc_reader]" )
 {
-	const scoped_path path;
+	const scoped_path path("reader.mrc");
 
 	SECTION( "one shorter than the shape it states is refused" )
 	{
@@ -303,7 +302,7 @@ TEST_CASE( "a file that contradicts its own header is refused",
 TEST_CASE( "the MRC format claims the files it can read",
 	"[mrc_read_format]" )
 {
-	const scoped_path path;
+	const scoped_path path("reader.mrc");
 	const mrc_read_format format;
 
 	SECTION( "it is named" )
@@ -327,8 +326,7 @@ TEST_CASE( "the MRC format claims the files it can read",
 		REQUIRE( format.get_suitability(image_probe(other)) ==
 			backend_priority::normal );
 
-		boost::system::error_code code;
-		boost::filesystem::remove(other, code);
+		std::remove(other.c_str());
 	}
 
 	SECTION( "a long enough file of a known extension is claimed weakly" )

@@ -35,8 +35,8 @@ public:
 	/**
 	 * @brief Most bytes a probe reads off the front of a file.
 	 */
-	static REXLIB_INLINE_CONST_CONSTEXPR std::size_t max_leading_bytes =
-		1024;
+	static
+	REXLIB_INLINE_CONST_CONSTEXPR std::size_t max_leading_bytes = 4096;
 
 	/**
 	 * @brief Construct a probe by reading the leading bytes of a file.

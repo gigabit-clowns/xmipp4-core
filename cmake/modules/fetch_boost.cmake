@@ -21,6 +21,7 @@ function(fetch_boost)
 		intrusive
 		unordered
 		filesystem
+		interprocess
 	)
 	set(BOOST_CONTAINER_HEADER_ONLY ON)
 	set(BOOST_USE_STATIC_LIBS ON)

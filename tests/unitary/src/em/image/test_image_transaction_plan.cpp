@@ -43,7 +43,7 @@ TEST_CASE( "an image_transaction_plan starts empty of files and regions",
 {
 	const image_transaction_plan plan(make_span(plane_extents), 3, 3);
 
-	REQUIRE( plan.get_size() == 0 );
+	REQUIRE( plan.get_region_count() == 0 );
 	REQUIRE( plan.get_file_count() == 0 );
 	REQUIRE( to_vector(plan.get_extents()) == plane_extents );
 	REQUIRE( plan.get_rank() == 2 );
@@ -62,7 +62,7 @@ TEST_CASE( "an image_transaction_plan states the shape of its regions",
 		REQUIRE( plan.get_rank() == 2 );
 		REQUIRE( plan.get_file_rank() == 3 );
 		REQUIRE( plan.get_array_rank() == 3 );
-		REQUIRE( plan.get_size() == 0 );
+		REQUIRE( plan.get_region_count() == 0 );
 	}
 
 	SECTION( "the two sides may differ in rank" )
@@ -138,7 +138,7 @@ TEST_CASE( "an image_transaction_plan does not care how big its files are",
 	add_element(plan, small, 12, 1);
 	add_element(plan, large, 999, 2);
 
-	REQUIRE( plan.get_size() == 3 );
+	REQUIRE( plan.get_region_count() == 3 );
 	REQUIRE( to_vector(plan.get_file_offset(0)) ==
 		std::vector<std::size_t>{1199, 0, 0} );
 	REQUIRE( to_vector(plan.get_file_offset(1)) ==
@@ -188,7 +188,7 @@ TEST_CASE( "an image_transaction_plan refuses a region it can not hold",
 			plan.add(file, make_span(three, 3), make_span(two, 2)),
 			std::invalid_argument
 		);
-		REQUIRE( plan.get_size() == 0 );
+		REQUIRE( plan.get_region_count() == 0 );
 	}
 }
 
@@ -200,7 +200,7 @@ TEST_CASE( "clearing an image_transaction_plan keeps the shape",
 	add_element(plan, file, 0, 0);
 	plan.clear();
 
-	REQUIRE( plan.get_size() == 0 );
+	REQUIRE( plan.get_region_count() == 0 );
 	REQUIRE( plan.get_file_count() == 0 );
 	REQUIRE( to_vector(plan.get_extents()) == plane_extents );
 	REQUIRE( plan.get_file_rank() == 3 );
@@ -233,7 +233,7 @@ TEST_CASE( "an image_transaction_plan reused across calls stops allocating",
 	{
 		fill();
 
-		REQUIRE( plan.get_size() == count );
+		REQUIRE( plan.get_region_count() == count );
 		REQUIRE( plan.get_file_count() == 2 );
 		REQUIRE( plan.get_file_offset(0).data() == offsets );
 	}
@@ -250,7 +250,7 @@ TEST_CASE( "an image_transaction_plan has value semantics",
 	{
 		const image_transaction_plan copy(plan);
 
-		REQUIRE( copy.get_size() == 1 );
+		REQUIRE( copy.get_region_count() == 1 );
 		REQUIRE( copy.get_file_count() == 1 );
 		REQUIRE( copy.get_file(0) == "stack_0.mrcs" );
 		REQUIRE( to_vector(copy.get_file_offset(0)) ==
@@ -263,7 +263,7 @@ TEST_CASE( "an image_transaction_plan has value semantics",
 		image_transaction_plan copy(plan);
 		copy.clear();
 
-		REQUIRE( copy.get_size() == 0 );
-		REQUIRE( plan.get_size() == 1 );
+		REQUIRE( copy.get_region_count() == 0 );
+		REQUIRE( plan.get_region_count() == 1 );
 	}
 }

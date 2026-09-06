@@ -60,7 +60,6 @@ public:
 	acquire(const std::string &path) override;
 
 private:
-	REXLIB_STD_MEMBER_INTERFACE
 	std::shared_ptr<const image_read_format_manager> m_formats;
 };
 

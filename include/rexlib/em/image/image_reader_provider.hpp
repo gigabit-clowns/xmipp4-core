@@ -28,6 +28,7 @@ class image_reader;
  * shared memory segment or a set already open fits the same interface with
  * no format manager anywhere in it.
  *
+ * @par Thread safety
  * A provider may be asked for readers concurrently, since that is what a
  * transaction in flight does.
  */

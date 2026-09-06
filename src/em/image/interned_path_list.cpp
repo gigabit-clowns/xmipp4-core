@@ -82,21 +82,22 @@ std::size_t interned_path_list::find(const std::string &path) const noexcept
 	return static_cast<std::size_t>(std::distance(m_paths.begin(), ite));
 }
 
-std::size_t interned_path_list::get_size() const noexcept
+std::size_t interned_path_list::get_entry_count() const noexcept
 {
 	return m_entries.size();
 }
 
-const std::string& interned_path_list::get(std::size_t entry) const noexcept
+const std::string&
+interned_path_list::get(std::size_t entry_index) const noexcept
 {
-	return get_path(get_path_index(entry));
+	return get_path(get_path_index(entry_index));
 }
 
 std::size_t
-interned_path_list::get_path_index(std::size_t entry) const noexcept
+interned_path_list::get_path_index(std::size_t entry_index) const noexcept
 {
-	REXLIB_ASSERT(entry < m_entries.size());
-	return m_entries[entry];
+	REXLIB_ASSERT(entry_index < m_entries.size());
+	return m_entries[entry_index];
 }
 
 std::size_t interned_path_list::get_path_count() const noexcept

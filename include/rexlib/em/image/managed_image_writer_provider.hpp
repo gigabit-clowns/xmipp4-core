@@ -122,7 +122,7 @@ public:
 	 * @return std::size_t The number of files.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_file_count() const noexcept;
 
 	/**
 	 * @brief Get a writer over one declared file, creating it on the first
@@ -151,7 +151,6 @@ public:
 
 private:
 	class implementation;
-	REXLIB_STD_MEMBER_INTERFACE
 	std::unique_ptr<implementation> m_implementation;
 };
 

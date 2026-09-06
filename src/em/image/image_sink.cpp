@@ -12,7 +12,7 @@
 #include <rexlib/em/image/image_transfer_plan.hpp>
 #include <rexlib/em/image/image_writer.hpp>
 #include <rexlib/em/image/image_writer_provider.hpp>
-#include <rexlib/em/image/region_grouping.hpp>
+#include <rexlib/em/image/image_region_grouping.hpp>
 
 #include <em/image/region_dispatch.hpp>
 
@@ -91,7 +91,7 @@ std::shared_ptr<completion> image_sink::write(
 	const image_transaction_plan &plan
 )
 {
-	region_grouping grouping;
+	image_region_grouping grouping;
 	grouping.build(plan);
 
 	auto shared_source = std::make_shared<const_array>(std::move(source));
@@ -105,7 +105,7 @@ std::shared_ptr<completion> image_sink::write(
 		++file_index
 	)
 	{
-		if (grouping.get_region_count(file_index) == 0)
+		if (grouping.get_file_region_count(file_index) == 0)
 		{
 			continue;
 		}

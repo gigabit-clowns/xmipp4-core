@@ -61,7 +61,7 @@ TEST_CASE( "a caching reader provider asks its backing only on a miss",
 		REQUIRE_CALL(*backing, acquire("stack_0.mrcs")).RETURN(reader);
 
 		REQUIRE( provider.acquire("stack_0.mrcs") == reader );
-		REQUIRE( provider.get_size() == 1 );
+		REQUIRE( provider.get_reader_count() == 1 );
 	}
 
 	SECTION( "a hit does not" )
@@ -85,7 +85,7 @@ TEST_CASE( "a caching reader provider asks its backing only on a miss",
 		REQUIRE( provider.acquire("stack_0.mrcs") == first );
 		REQUIRE( provider.acquire("stack_1.mrcs") == second );
 		REQUIRE( provider.acquire("stack_0.mrcs") == first );
-		REQUIRE( provider.get_size() == 2 );
+		REQUIRE( provider.get_reader_count() == 2 );
 	}
 }
 
@@ -117,7 +117,7 @@ TEST_CASE( "a caching reader provider reopens only what it evicted",
 		provider.acquire("stack_0.mrcs");
 		provider.acquire("stack_2.mrcs");
 
-		REQUIRE( provider.get_size() == 2 );
+		REQUIRE( provider.get_reader_count() == 2 );
 
 		provider.acquire("stack_0.mrcs");   // still held
 		provider.acquire("stack_1.mrcs");   // evicted, asked again
@@ -131,10 +131,10 @@ TEST_CASE( "a caching reader provider reopens only what it evicted",
 		for (std::size_t i = 0; i < 8; ++i)
 		{
 			provider.acquire("stack_" + std::to_string(i) + ".mrcs");
-			REQUIRE( provider.get_size() <= provider.get_capacity() );
+			REQUIRE( provider.get_reader_count() <= provider.get_capacity() );
 		}
 
-		REQUIRE( provider.get_size() == 2 );
+		REQUIRE( provider.get_reader_count() == 2 );
 	}
 }
 
@@ -159,7 +159,7 @@ TEST_CASE( "an evicted reader stays alive while it is still held",
 
 	provider.acquire("stack_1.mrcs");   // evicts stack_0
 
-	REQUIRE( provider.get_size() == 1 );
+	REQUIRE( provider.get_reader_count() == 1 );
 	REQUIRE_FALSE( observer.expired() );
 	REQUIRE( held.get() == raw );
 }

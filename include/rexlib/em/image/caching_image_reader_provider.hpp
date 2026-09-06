@@ -76,7 +76,7 @@ public:
 	 * @ref get_capacity.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_reader_count() const noexcept;
 
 	/**
 	 * @brief Get a reader over one file, opening it only on a miss.
@@ -94,7 +94,6 @@ public:
 
 private:
 	class implementation;
-	REXLIB_STD_MEMBER_INTERFACE
 	std::unique_ptr<implementation> m_implementation;
 };
 

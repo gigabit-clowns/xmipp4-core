@@ -139,7 +139,7 @@ TEST_CASE( "a managed writer provider serves only what was declared",
 
 	SECTION( "it starts serving nothing" )
 	{
-		REQUIRE( provider.get_size() == 0 );
+		REQUIRE( provider.get_file_count() == 0 );
 		REQUIRE_THROWS_AS(
 			provider.acquire("stack_0.mrcs"),
 			std::out_of_range
@@ -150,7 +150,7 @@ TEST_CASE( "a managed writer provider serves only what was declared",
 	{
 		declare_stack(provider, "stack_0.mrcs");
 
-		REQUIRE( provider.get_size() == 1 );
+		REQUIRE( provider.get_file_count() == 1 );
 		REQUIRE( log->empty() );
 	}
 
@@ -164,7 +164,7 @@ TEST_CASE( "a managed writer provider serves only what was declared",
 			declare_stack(provider, "stack_0.mrcs"),
 			invalid_operation_error
 		);
-		REQUIRE( provider.get_size() == 1 );
+		REQUIRE( provider.get_file_count() == 1 );
 	}
 }
 
@@ -188,7 +188,7 @@ TEST_CASE( "a managed writer provider refuses a core rank it can not mean",
 			),
 			std::invalid_argument
 		);
-		REQUIRE( provider.get_size() == 0 );
+		REQUIRE( provider.get_file_count() == 0 );
 	}
 
 	SECTION( "a core rank above the rank of the extents is refused" )
@@ -203,7 +203,7 @@ TEST_CASE( "a managed writer provider refuses a core rank it can not mean",
 			),
 			std::invalid_argument
 		);
-		REQUIRE( provider.get_size() == 0 );
+		REQUIRE( provider.get_file_count() == 0 );
 	}
 
 	SECTION( "a core rank equal to the rank of the extents is one volume" )
@@ -288,7 +288,7 @@ TEST_CASE( "closing a file finishes it", "[managed_image_writer_provider]" )
 
 		provider.close("stack_0.mrcs");
 
-		REQUIRE( provider.get_size() == 0 );
+		REQUIRE( provider.get_file_count() == 0 );
 		REQUIRE_THROWS_AS(
 			provider.acquire("stack_0.mrcs"),
 			std::out_of_range
@@ -299,7 +299,7 @@ TEST_CASE( "closing a file finishes it", "[managed_image_writer_provider]" )
 	{
 		provider.close("stack_0.mrcs");
 
-		REQUIRE( provider.get_size() == 0 );
+		REQUIRE( provider.get_file_count() == 0 );
 		REQUIRE( log->empty() );
 	}
 
@@ -347,6 +347,6 @@ TEST_CASE( "a managed writer provider flushes what it opened and no more",
 		provider.flush();
 
 		REQUIRE( count(*log, "stack_2.mrcs") == 0 );
-		REQUIRE( provider.get_size() == 3 );
+		REQUIRE( provider.get_file_count() == 3 );
 	}
 }

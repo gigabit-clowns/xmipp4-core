@@ -182,9 +182,9 @@ TEST_CASE(
 	REQUIRE_CALL(*readers, acquire("stack_0.mrcs")).RETURN(reader_zero);
 	REQUIRE_CALL(*readers, acquire("stack_1.mrcs")).RETURN(reader_one);
 	REQUIRE_CALL(*reader_zero, read(trompeloeil::_, trompeloeil::_))
-		.LR_WITH( _2.get_size() == 3 );
+		.LR_WITH( _2.get_region_count() == 3 );
 	REQUIRE_CALL(*reader_one, read(trompeloeil::_, trompeloeil::_))
-		.LR_WITH( _2.get_size() == 1 );
+		.LR_WITH( _2.get_region_count() == 1 );
 
 	image_source source(readers, std::make_shared<synchronous_executor>());
 	const auto completion = source.read(make_test_array(), plan);

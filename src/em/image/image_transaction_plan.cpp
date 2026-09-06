@@ -4,6 +4,8 @@
 
 #include <rexlib/core/platform/assert.hpp>
 
+#include <em/image/checked_extents.hpp>
+
 #include <stdexcept>
 #include <utility>
 
@@ -12,42 +14,17 @@ namespace rexlib
 namespace em
 {
 
-namespace
-{
-
-std::vector<std::size_t> checked_extents(
-	span<const std::size_t> extents,
-	std::size_t file_rank,
-	std::size_t array_rank
-)
-{
-	if (extents.size() > file_rank)
-	{
-		throw std::invalid_argument(
-			"image_transaction_plan: The regions do not fit in the rank of "
-			"the files."
-		);
-	}
-
-	if (extents.size() > array_rank)
-	{
-		throw std::invalid_argument(
-			"image_transaction_plan: The regions do not fit in the rank of "
-			"the array."
-		);
-	}
-
-	return std::vector<std::size_t>(extents.begin(), extents.end());
-}
-
-} // namespace
-
 image_transaction_plan::image_transaction_plan(
 	span<const std::size_t> extents,
 	std::size_t file_rank,
 	std::size_t array_rank
 )
-	: m_extents(checked_extents(extents, file_rank, array_rank))
+	: m_extents(checked_extents(
+		extents,
+		file_rank,
+		array_rank,
+		"image_transaction_plan"
+	))
 	, m_file_offsets(file_rank)
 	, m_array_offsets(array_rank)
 {
@@ -125,9 +102,9 @@ void image_transaction_plan::reserve(
 	m_array_offsets.reserve(regions);
 }
 
-std::size_t image_transaction_plan::get_size() const noexcept
+std::size_t image_transaction_plan::get_region_count() const noexcept
 {
-	return m_files.get_size();
+	return m_files.get_entry_count();
 }
 
 std::size_t image_transaction_plan::get_rank() const noexcept
@@ -162,21 +139,23 @@ image_transaction_plan::get_file(std::size_t file_index) const noexcept
 }
 
 std::size_t
-image_transaction_plan::get_region_file(std::size_t region) const noexcept
+image_transaction_plan::get_region_file(std::size_t region_index) const noexcept
 {
-	return m_files.get_path_index(region);
+	return m_files.get_path_index(region_index);
 }
 
 span<const std::size_t>
-image_transaction_plan::get_file_offset(std::size_t region) const noexcept
+image_transaction_plan::get_file_offset(std::size_t region_index) const noexcept
 {
-	return m_file_offsets.get(region);
+	return m_file_offsets.get(region_index);
 }
 
 span<const std::size_t>
-image_transaction_plan::get_array_offset(std::size_t region) const noexcept
+image_transaction_plan::get_array_offset(
+	std::size_t region_index
+) const noexcept
 {
-	return m_array_offsets.get(region);
+	return m_array_offsets.get(region_index);
 }
 
 } // namespace em

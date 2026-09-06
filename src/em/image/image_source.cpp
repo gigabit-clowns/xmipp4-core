@@ -12,7 +12,7 @@
 #include <rexlib/em/image/image_reader_provider.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
-#include <rexlib/em/image/region_grouping.hpp>
+#include <rexlib/em/image/image_region_grouping.hpp>
 
 #include <em/image/region_dispatch.hpp>
 
@@ -91,7 +91,7 @@ std::shared_ptr<completion> image_source::read(
 	const image_transaction_plan &plan
 ) const
 {
-	region_grouping grouping;
+	image_region_grouping grouping;
 	grouping.build(plan);
 
 	auto shared_destination = std::make_shared<array>(std::move(destination));
@@ -105,7 +105,7 @@ std::shared_ptr<completion> image_source::read(
 		++file_index
 	)
 	{
-		if (grouping.get_region_count(file_index) == 0)
+		if (grouping.get_file_region_count(file_index) == 0)
 		{
 			continue;
 		}

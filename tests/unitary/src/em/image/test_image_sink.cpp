@@ -182,9 +182,9 @@ TEST_CASE(
 	REQUIRE_CALL(*writers, acquire("stack_0.mrcs")).RETURN(writer_zero);
 	REQUIRE_CALL(*writers, acquire("stack_1.mrcs")).RETURN(writer_one);
 	REQUIRE_CALL(*writer_zero, write(trompeloeil::_, trompeloeil::_))
-		.LR_WITH( _2.get_size() == 3 );
+		.LR_WITH( _2.get_region_count() == 3 );
 	REQUIRE_CALL(*writer_one, write(trompeloeil::_, trompeloeil::_))
-		.LR_WITH( _2.get_size() == 1 );
+		.LR_WITH( _2.get_region_count() == 1 );
 
 	image_sink sink(writers, std::make_shared<synchronous_executor>());
 	const auto completion = sink.write(make_test_array(), plan);
@@ -291,7 +291,10 @@ TEST_CASE(
 	CHECK_NOTHROW( completion->get() );
 }
 
-TEST_CASE( "image_sink's flush delegates to the writer provider", "[image_sink]" )
+TEST_CASE(
+	"image_sink's flush delegates to the writer provider",
+	"[image_sink]"
+)
 {
 	const auto writers = std::make_shared<mock_image_writer_provider>();
 	REQUIRE_CALL(*writers, flush());

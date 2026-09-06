@@ -12,7 +12,10 @@ namespace rexlib
 namespace em
 {
 
-static bool parse_position(
+namespace
+{
+
+bool parse_position(
 	const char *begin,
 	const char *end,
 	std::size_t &result
@@ -48,6 +51,8 @@ static bool parse_position(
 	result = value - 1;
 	return true;
 }
+
+} // namespace
 
 image_location::image_location() noexcept
 	: m_position_in_stack(no_position)

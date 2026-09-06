@@ -33,7 +33,7 @@ public:
 		return m_capacity;
 	}
 
-	std::size_t get_size() const noexcept
+	std::size_t get_reader_count() const noexcept
 	{
 		const std::lock_guard<std::mutex> lock(m_mutex);
 		return m_entries.size();
@@ -54,19 +54,19 @@ public:
 	}
 
 private:
-	struct entry_type
+	struct cached_reader
 	{
 		std::string path;
 		std::shared_ptr<const image_reader> reader;
 	};
 
-	using entry_list_type = std::list<entry_type>;
+	using cached_reader_list = std::list<cached_reader>;
 
 	mutable std::mutex m_mutex;
 	std::shared_ptr<image_reader_provider> m_backing;
 	std::size_t m_capacity;
-	entry_list_type m_entries;
-	std::unordered_map<std::string, entry_list_type::iterator> m_index;
+	cached_reader_list m_entries;
+	std::unordered_map<std::string, cached_reader_list::iterator> m_index;
 
 	std::shared_ptr<const image_reader> touch(const std::string &path)
 	{
@@ -102,7 +102,7 @@ private:
 			evict_oldest();
 		}
 
-		m_entries.push_front(entry_type{path, reader});
+		m_entries.push_front(cached_reader{path, reader});
 		m_index.emplace(path, m_entries.begin());
 	}
 
@@ -149,9 +149,9 @@ std::size_t caching_image_reader_provider::get_capacity() const noexcept
 	return m_implementation->get_capacity();
 }
 
-std::size_t caching_image_reader_provider::get_size() const noexcept
+std::size_t caching_image_reader_provider::get_reader_count() const noexcept
 {
-	return m_implementation->get_size();
+	return m_implementation->get_reader_count();
 }
 
 std::shared_ptr<const image_reader>

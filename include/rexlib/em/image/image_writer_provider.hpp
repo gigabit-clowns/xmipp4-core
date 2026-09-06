@@ -23,6 +23,7 @@ class image_writer;
  * it is finished — is lifecycle the owner of the provider drives, so it
  * belongs to the implementation rather than here.
  *
+ * @par Thread safety
  * A provider may be asked for writers concurrently. It does not follow that
  * the writers may be written concurrently.
  */

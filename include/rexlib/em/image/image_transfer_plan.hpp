@@ -120,7 +120,7 @@ public:
 	 * @return std::size_t The number of regions.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_region_count() const noexcept;
 
 	/**
 	 * @brief Get the rank of one region.
@@ -160,24 +160,26 @@ public:
 	/**
 	 * @brief Get where a region starts in the file.
 	 *
-	 * @param index Index of the region. Must be below @ref get_size.
+	 * @param region_index Index of the region. Must be below
+	 * @ref get_region_count.
 	 * @return span<const std::size_t> The offset, of rank
 	 * @ref get_file_rank. It refers to storage owned by this plan.
 	 */
 	REXLIB_API
 	span<const std::size_t>
-	get_file_offset(std::size_t index) const noexcept;
+	get_file_offset(std::size_t region_index) const noexcept;
 
 	/**
 	 * @brief Get where a region starts in the array.
 	 *
-	 * @param index Index of the region. Must be below @ref get_size.
+	 * @param region_index Index of the region. Must be below
+	 * @ref get_region_count.
 	 * @return span<const std::size_t> The offset, of rank
 	 * @ref get_array_rank. It refers to storage owned by this plan.
 	 */
 	REXLIB_API
 	span<const std::size_t>
-	get_array_offset(std::size_t index) const noexcept;
+	get_array_offset(std::size_t region_index) const noexcept;
 
 private:
 	std::vector<std::size_t> m_extents;

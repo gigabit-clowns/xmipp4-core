@@ -126,6 +126,7 @@ public:
 	 * may carry in its header; asking for @ref get_data_type converts
 	 * nothing at all.
 	 *
+	 * @par Thread safety
 	 * This method may be called concurrently on one reader. A reader that
 	 * can not decode in parallel serialises the calls itself, so a caller
 	 * never loses correctness by issuing them at once.

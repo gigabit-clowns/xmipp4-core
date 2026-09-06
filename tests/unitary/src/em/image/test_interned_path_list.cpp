@@ -15,7 +15,7 @@ TEST_CASE( "an interned_path_list starts empty", "[interned_path_list]" )
 {
 	const interned_path_list files;
 
-	REQUIRE( files.get_size() == 0 );
+	REQUIRE( files.get_entry_count() == 0 );
 	REQUIRE( files.get_path_count() == 0 );
 	REQUIRE( files.find("stack_0.mrcs") == interned_path_list::no_path );
 }
@@ -48,7 +48,7 @@ TEST_CASE( "interning gives equal paths one index", "[interned_path_list]" )
 	{
 		files.intern("stack_0.mrcs");
 
-		REQUIRE( files.get_size() == 0 );
+		REQUIRE( files.get_entry_count() == 0 );
 	}
 
 	SECTION( "find reports the index a path was interned under" )
@@ -75,7 +75,7 @@ TEST_CASE( "an interned_path_list holds more entries than paths",
 	SECTION( "the two sizes are counted separately" )
 	{
 		REQUIRE( files.get_path_count() == 2 );
-		REQUIRE( files.get_size() == 3 );
+		REQUIRE( files.get_entry_count() == 3 );
 	}
 
 	SECTION( "each entry reports the path it refers to" )
@@ -107,7 +107,7 @@ TEST_CASE( "appending a path interns it as well", "[interned_path_list]" )
 		REQUIRE( files.append(std::string("stack_0.mrcs")) == 0 );
 		REQUIRE( files.append(std::string("stack_0.mrcs")) == 1 );
 		REQUIRE( files.get_path_count() == 1 );
-		REQUIRE( files.get_size() == 2 );
+		REQUIRE( files.get_entry_count() == 2 );
 	}
 
 	SECTION( "an entry naming no interned path is refused" )
@@ -115,7 +115,7 @@ TEST_CASE( "appending a path interns it as well", "[interned_path_list]" )
 		files.intern("stack_0.mrcs");
 
 		REQUIRE_THROWS_AS( files.append(std::size_t(1)), std::out_of_range );
-		REQUIRE( files.get_size() == 0 );
+		REQUIRE( files.get_entry_count() == 0 );
 	}
 }
 
@@ -127,7 +127,7 @@ TEST_CASE( "clearing an interned_path_list drops paths and entries",
 	files.append(std::string("stack_1.mrcs"));
 	files.clear();
 
-	REQUIRE( files.get_size() == 0 );
+	REQUIRE( files.get_entry_count() == 0 );
 	REQUIRE( files.get_path_count() == 0 );
 	REQUIRE( files.find("stack_0.mrcs") == interned_path_list::no_path );
 }
@@ -158,7 +158,7 @@ TEST_CASE( "an interned_path_list reused across calls stops allocating",
 	{
 		fill();
 
-		REQUIRE( files.get_size() == count );
+		REQUIRE( files.get_entry_count() == count );
 		REQUIRE( files.get_path_count() == 2 );
 		REQUIRE( files.get(count - 1) == "stack_1.mrcs" );
 		REQUIRE( &files.get_path(0) == paths );
@@ -175,7 +175,7 @@ TEST_CASE( "an interned_path_list has value semantics",
 	{
 		const interned_path_list copy(files);
 
-		REQUIRE( copy.get_size() == 1 );
+		REQUIRE( copy.get_entry_count() == 1 );
 		REQUIRE( copy.get_path_count() == 1 );
 		REQUIRE( copy.get(0) == "stack_0.mrcs" );
 	}
@@ -185,7 +185,7 @@ TEST_CASE( "an interned_path_list has value semantics",
 		interned_path_list copy(files);
 		copy.clear();
 
-		REQUIRE( copy.get_size() == 0 );
-		REQUIRE( files.get_size() == 1 );
+		REQUIRE( copy.get_entry_count() == 0 );
+		REQUIRE( files.get_entry_count() == 1 );
 	}
 }

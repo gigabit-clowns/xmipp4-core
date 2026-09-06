@@ -31,7 +31,7 @@ class image_transaction_plan;
  *
  * @code
  * const auto first = grouping.get_first_position(file);
- * const auto count = grouping.get_region_count(file);
+ * const auto count = grouping.get_file_region_count(file);
  * for (auto i = first; i < first + count; ++i)
  * {
  *     const auto region = grouping.get_region(i);
@@ -43,26 +43,26 @@ class image_transaction_plan;
  * and keeps the capacity, so one instance reused from one transaction to the
  * next allocates nothing after the first.
  */
-class region_grouping
+class image_region_grouping
 {
 public:
 	/**
 	 * @brief Construct a grouping over no region and no file.
 	 */
 	REXLIB_API
-	region_grouping() noexcept;
+	image_region_grouping() noexcept;
 
 	REXLIB_API
-	region_grouping(const region_grouping &other);
+	image_region_grouping(const image_region_grouping &other);
 	REXLIB_API
-	region_grouping(region_grouping &&other) noexcept;
+	image_region_grouping(image_region_grouping &&other) noexcept;
 	REXLIB_API
-	~region_grouping();
+	~image_region_grouping();
 
 	REXLIB_API
-	region_grouping& operator=(const region_grouping &other);
+	image_region_grouping& operator=(const image_region_grouping &other);
 	REXLIB_API
-	region_grouping& operator=(region_grouping &&other) noexcept;
+	image_region_grouping& operator=(image_region_grouping &&other) noexcept;
 
 	/**
 	 * @brief Order the regions of a plan by the file they address.
@@ -100,7 +100,7 @@ public:
 	 * @return std::size_t The number of regions.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_region_count() const noexcept;
 
 	/**
 	 * @brief Get how many files the regions were grouped over.
@@ -130,13 +130,13 @@ public:
 	 * @return std::size_t The number of regions.
 	 */
 	REXLIB_API
-	std::size_t get_region_count(std::size_t file_index) const noexcept;
+	std::size_t get_file_region_count(std::size_t file_index) const noexcept;
 
 	/**
 	 * @brief Get the region at one position of this ordering.
 	 *
 	 * @param position Position in the ordering. Must be below
-	 * @ref get_size.
+	 * @ref get_region_count.
 	 * @return std::size_t Index of the region in the plan this was built
 	 * from.
 	 */

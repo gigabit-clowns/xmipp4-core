@@ -19,7 +19,7 @@ namespace em
  * Every index a plan holds is a tuple of one coordinate per axis, and a plan
  * holds as many of them as it has regions. Held one vector per index that
  * would be one allocation per region; held here it is one flat vector of
- * @ref get_size by @ref get_rank values, so a batch of any size costs a
+ * @ref get_index_count by @ref get_rank values, so a batch of any size costs a
  * bounded number of allocations and @ref clear keeps the capacity: one
  * instance reused from one call to the next allocates nothing after the
  * first.
@@ -95,12 +95,12 @@ public:
 	 * @return std::size_t The number of indices.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_index_count() const noexcept;
 
 	/**
 	 * @brief Get one index.
 	 *
-	 * @param position Position of the index. Must be below @ref get_size.
+	 * @param position Position of the index. Must be below @ref get_index_count.
 	 * @return span<const std::size_t> The coordinates, of rank
 	 * @ref get_rank. It refers to storage owned by this table, which adding
 	 * to, assigning to or destroying it invalidates.

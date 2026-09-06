@@ -14,7 +14,10 @@ namespace rexlib
 namespace em
 {
 
-static std::string get_lowercase_extension(const std::string &path)
+namespace
+{
+
+std::string get_lowercase_extension(const std::string &path)
 {
 	std::string extension;
 
@@ -42,7 +45,7 @@ static std::string get_lowercase_extension(const std::string &path)
 	return extension;
 }
 
-static bool read_leading_bytes(
+bool read_leading_bytes(
 	const std::string &path,
 	std::vector<byte> &bytes
 )
@@ -62,6 +65,8 @@ static bool read_leading_bytes(
 
 	return true;
 }
+
+} // namespace
 
 image_probe::image_probe(std::string path)
 	: m_path(std::move(path))

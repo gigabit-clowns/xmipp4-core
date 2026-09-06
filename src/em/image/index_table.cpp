@@ -60,7 +60,7 @@ std::size_t index_table::get_rank() const noexcept
 	return m_rank;
 }
 
-std::size_t index_table::get_size() const noexcept
+std::size_t index_table::get_index_count() const noexcept
 {
 	return m_size;
 }

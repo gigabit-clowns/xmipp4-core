@@ -28,7 +28,7 @@ TEST_CASE( "an index_table starts empty", "[index_table]" )
 		const index_table table;
 
 		REQUIRE( table.get_rank() == 0 );
-		REQUIRE( table.get_size() == 0 );
+		REQUIRE( table.get_index_count() == 0 );
 	}
 
 	SECTION( "a table constructed with a rank carries it" )
@@ -36,7 +36,7 @@ TEST_CASE( "an index_table starts empty", "[index_table]" )
 		const index_table table(3);
 
 		REQUIRE( table.get_rank() == 3 );
-		REQUIRE( table.get_size() == 0 );
+		REQUIRE( table.get_index_count() == 0 );
 	}
 }
 
@@ -51,7 +51,7 @@ TEST_CASE( "an index_table reads back what it was given", "[index_table]" )
 		table.add(make_span(first, 3));
 		table.add(make_span(second, 3));
 
-		REQUIRE( table.get_size() == 2 );
+		REQUIRE( table.get_index_count() == 2 );
 		REQUIRE( to_vector(table.get(0)) ==
 			std::vector<std::size_t>{2, 0, 0} );
 		REQUIRE( to_vector(table.get(1)) ==
@@ -64,7 +64,7 @@ TEST_CASE( "an index_table reads back what it was given", "[index_table]" )
 		table.add(make_span(index, 3));
 		table.clear();
 
-		REQUIRE( table.get_size() == 0 );
+		REQUIRE( table.get_index_count() == 0 );
 		REQUIRE( table.get_rank() == 3 );
 	}
 }
@@ -89,7 +89,7 @@ TEST_CASE( "an index_table refuses an index of the wrong rank",
 			table.add(make_span(two, 2)),
 			std::invalid_argument
 		);
-		REQUIRE( table.get_size() == 0 );
+		REQUIRE( table.get_index_count() == 0 );
 	}
 }
 
@@ -102,7 +102,7 @@ TEST_CASE( "an index_table of rank zero holds indices addressing nothing",
 	table.add(span<const std::size_t>());
 	table.add(span<const std::size_t>());
 
-	REQUIRE( table.get_size() == 2 );
+	REQUIRE( table.get_index_count() == 2 );
 	REQUIRE( table.get(0).empty() );
 	REQUIRE( table.get(1).empty() );
 }
@@ -135,7 +135,7 @@ TEST_CASE( "an index_table reused across calls stops allocating",
 	{
 		fill();
 
-		REQUIRE( table.get_size() == count );
+		REQUIRE( table.get_index_count() == count );
 		REQUIRE( to_vector(table.get(count - 1)) ==
 			std::vector<std::size_t>{count - 1, 0, 0} );
 	}
@@ -161,7 +161,7 @@ TEST_CASE( "an index_table has value semantics", "[index_table]" )
 		const index_table copy(table);
 
 		REQUIRE( copy.get_rank() == 3 );
-		REQUIRE( copy.get_size() == 1 );
+		REQUIRE( copy.get_index_count() == 1 );
 		REQUIRE( to_vector(copy.get(0)) ==
 			std::vector<std::size_t>{2, 0, 0} );
 	}
@@ -171,7 +171,7 @@ TEST_CASE( "an index_table has value semantics", "[index_table]" )
 		index_table copy(table);
 		copy.clear();
 
-		REQUIRE( copy.get_size() == 0 );
-		REQUIRE( table.get_size() == 1 );
+		REQUIRE( copy.get_index_count() == 0 );
+		REQUIRE( table.get_index_count() == 1 );
 	}
 }

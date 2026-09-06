@@ -25,9 +25,9 @@ namespace em
  * the entries are indices into them.
  *
  * The list therefore has two sizes. @ref get_path_count is how many distinct
- * paths were interned and @ref get_size how many entries refer to them, and
- * the second is the larger one. Both are addressed separately:
- * @ref get_path takes a path index, @ref get takes an entry.
+ * paths were interned and @ref get_entry_count how many entries refer to
+ * them, and the second is the larger one. Both are addressed separately:
+ * @ref get_path takes a path index, @ref get takes an entry index.
  *
  * @ref clear keeps both capacities and the interned paths are dropped with
  * them, so one instance reused from one call to the next allocates nothing
@@ -129,32 +129,34 @@ public:
 	 * @return std::size_t The number of entries.
 	 */
 	REXLIB_API
-	std::size_t get_size() const noexcept;
+	std::size_t get_entry_count() const noexcept;
 
 	/**
 	 * @brief Get the path one entry refers to.
 	 *
-	 * @param entry Position of the entry. Must be below @ref get_size.
+	 * @param entry_index Position of the entry. Must be below
+	 * @ref get_entry_count.
 	 * @return const std::string& The path. It refers to storage owned by
 	 * this list, which interning into, assigning to or destroying it
 	 * invalidates.
 	 */
 	REXLIB_API
-	const std::string& get(std::size_t entry) const noexcept;
+	const std::string& get(std::size_t entry_index) const noexcept;
 
 	/**
 	 * @brief Get which interned path one entry refers to.
 	 *
-	 * @param entry Position of the entry. Must be below @ref get_size.
+	 * @param entry_index Position of the entry. Must be below
+	 * @ref get_entry_count.
 	 * @return std::size_t The path index, below @ref get_path_count.
 	 */
 	REXLIB_API
-	std::size_t get_path_index(std::size_t entry) const noexcept;
+	std::size_t get_path_index(std::size_t entry_index) const noexcept;
 
 	/**
 	 * @brief Get how many distinct paths are held.
 	 *
-	 * Never above @ref get_size, and below it as soon as one path is named
+	 * Never above @ref get_entry_count, and below it as soon as one path is named
 	 * twice.
 	 *
 	 * @return std::size_t The number of distinct paths.

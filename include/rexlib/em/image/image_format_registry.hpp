@@ -75,7 +75,6 @@ public:
 	void register_all(image_read_format_manager &manager) const;
 
 private:
-	REXLIB_STD_MEMBER_INTERFACE
 	std::vector<image_read_format_factory> m_factories;
 };
 
@@ -124,7 +123,6 @@ public:
 	void register_all(image_write_format_manager &manager) const;
 
 private:
-	REXLIB_STD_MEMBER_INTERFACE
 	std::vector<image_write_format_factory> m_factories;
 };
 

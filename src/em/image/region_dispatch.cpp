@@ -3,14 +3,14 @@
 #include <em/image/region_dispatch.hpp>
 
 #include <rexlib/em/image/image_transaction_plan.hpp>
-#include <rexlib/em/image/region_grouping.hpp>
+#include <rexlib/em/image/image_region_grouping.hpp>
 
 namespace rexlib
 {
 namespace em
 {
 
-std::size_t count_files_with_regions(const region_grouping &grouping)
+std::size_t count_files_with_regions(const image_region_grouping &grouping)
 {
 	std::size_t count = 0;
 	for (
@@ -19,7 +19,7 @@ std::size_t count_files_with_regions(const region_grouping &grouping)
 		++file_index
 	)
 	{
-		if (grouping.get_region_count(file_index) > 0)
+		if (grouping.get_file_region_count(file_index) > 0)
 		{
 			++count;
 		}
@@ -30,12 +30,12 @@ std::size_t count_files_with_regions(const region_grouping &grouping)
 
 image_transfer_plan build_file_transfer_plan(
 	const image_transaction_plan &plan,
-	const region_grouping &grouping,
+	const image_region_grouping &grouping,
 	std::size_t file_index
 )
 {
 	const auto first = grouping.get_first_position(file_index);
-	const auto count = grouping.get_region_count(file_index);
+	const auto count = grouping.get_file_region_count(file_index);
 
 	image_transfer_plan transfer(
 		plan.get_extents(),

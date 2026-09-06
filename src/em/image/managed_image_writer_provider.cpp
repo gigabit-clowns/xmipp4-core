@@ -48,12 +48,12 @@ public:
 			);
 		}
 
-		entry_type entry;
-		entry.extents.assign(extents.begin(), extents.end());
-		entry.metadata = metadata;
-		entry.core_rank = core_rank;
-		entry.data_type = data_type;
-		m_files.emplace(std::move(path), std::move(entry));
+		declared_file file;
+		file.extents.assign(extents.begin(), extents.end());
+		file.metadata = metadata;
+		file.core_rank = core_rank;
+		file.data_type = data_type;
+		m_files.emplace(std::move(path), std::move(file));
 	}
 
 	void close(const std::string &path)
@@ -83,7 +83,7 @@ public:
 		}
 	}
 
-	std::size_t get_size() const noexcept
+	std::size_t get_file_count() const noexcept
 	{
 		const std::lock_guard<std::mutex> lock(m_mutex);
 		return m_files.size();
@@ -142,7 +142,7 @@ public:
 private:
 	// What a file was declared as, kept until it is created. The path is
 	// the key it is stored under.
-	struct entry_type
+	struct declared_file
 	{
 		std::vector<std::size_t> extents;
 		image_metadata metadata;
@@ -153,7 +153,7 @@ private:
 
 	mutable std::mutex m_mutex;
 	std::shared_ptr<const image_write_format_manager> m_formats;
-	std::unordered_map<std::string, entry_type> m_files;
+	std::unordered_map<std::string, declared_file> m_files;
 };
 
 managed_image_writer_provider::managed_image_writer_provider(
@@ -214,9 +214,9 @@ void managed_image_writer_provider::close(const std::string &path)
 	m_implementation->close(path);
 }
 
-std::size_t managed_image_writer_provider::get_size() const noexcept
+std::size_t managed_image_writer_provider::get_file_count() const noexcept
 {
-	return m_implementation->get_size();
+	return m_implementation->get_file_count();
 }
 
 std::shared_ptr<image_writer>

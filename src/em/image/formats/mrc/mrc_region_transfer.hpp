@@ -2,167 +2,74 @@
 
 #pragma once
 
-#include <rexlib/core/layout/joint_layout.hpp>
+#include "mrc_region_read_plan.hpp"
+#include "mrc_region_write_plan.hpp"
+
 #include <rexlib/core/memory/byte.hpp>
 #include <rexlib/core/memory/byte_order.hpp>
 #include <rexlib/core/numerical/numerical_type.hpp>
-#include <rexlib/core/span.hpp>
-
-#include <cstddef>
-#include <vector>
 
 namespace rexlib
 {
 namespace em
 {
-
-class image_transfer_plan;
-
 namespace mrc
 {
 
 /**
- * @brief Which side of a transfer is written through.
+ * @brief Move every region of a batch out of a file and into an array.
+ *
+ * Values are converted to @p array_type, and read in @p file_order.
+ *
+ * @param plan The regions and the space they are walked in.
+ * @param array_data First element of the array.
+ * @param array_type Data type of the array.
+ * @param file_data First element of the values of the file, past both of its
+ * headers.
+ * @param file_type Data type of the file.
+ * @param file_order Byte order the file states its values in.
+ * @throws invalid_operation_error If @p array_type can not be produced from
+ * @p file_type, or if @p file_type is not one an MRC file holds.
  */
-enum class mrc_transfer_direction
-{
-	read,
-	write
-};
+void read_regions(
+	const mrc_region_read_plan &plan,
+	void *array_data,
+	numerical_type array_type,
+	const byte *file_data,
+	numerical_type file_type,
+	byte_order file_order
+);
 
 /**
- * @brief One batch of regions moved between a mapped file and an array.
+ * @brief Move every region of a batch out of an array and into a file.
  *
- * Every region of a plan has the same extents and differs only in where it
- * starts on each side, so the iteration space is the same for all of them:
- * one @ref joint_layout is built here and every region is walked with it,
- * differing only by a pointer. Building it once is what keeps the per region
- * cost to arithmetic, whatever the batch size.
+ * The mirror of @ref read_regions, over a plan whose layout is ordered for
+ * the file instead.
  *
- * The layout names the destination first, which is why a direction is stated
- * when the transfer is built rather than when it is run.
- * @ref joint_layout orders its axes by the strides of its operands taken in
- * order, the first one to prefer an order deciding it and the rest only
- * breaking ties, so whichever operand is named first is the one the traversal
- * is made sequential for. Making that the side being written matters more
- * than making it the side being read: a scattered write through a mapping
- * dirties its pages out of order, and what that costs on the way back to the
- * storage is not something the read side has an equivalent of.
- *
- * Where each region starts is resolved into a pair of pointer offsets when
- * the transfer is constructed, and so is every bounds check. A plan that does
- * not fit is refused before anything has been moved rather than halfway
- * through it.
+ * @param plan The regions and the space they are walked in.
+ * @param array_data First element of the array.
+ * @param array_type Data type of the array.
+ * @param file_data First element of the values of the file, past both of its
+ * headers.
+ * @param file_type Data type of the file.
+ * @param file_order Byte order the file states its values in.
+ * @throws invalid_operation_error If @p file_type can not be produced from
+ * @p array_type, or if @p file_type is not one an MRC file holds.
  */
-class mrc_region_transfer
+void write_regions(
+	const mrc_region_write_plan &plan,
+	const void *array_data,
+	numerical_type array_type,
+	byte *file_data,
+	numerical_type file_type,
+	byte_order file_order
+);
+
+namespace detail
 {
-public:
-	/**
-	 * @brief Resolve a batch of regions against the two sides they address.
-	 *
-	 * The extents of @p regions cover the trailing axes of each side, which
-	 * spans a single position along the leading axes they do not reach.
-	 *
-	 * @param direction Which side is written through. Only the matching one
-	 * of @ref read and @ref write may be called afterwards.
-	 * @param regions The regions to move.
-	 * @param file_extents Extents of the file.
-	 * @param file_strides Distance between consecutive elements of the file
-	 * along each axis, in elements.
-	 * @param array_extents Extents of the array.
-	 * @param array_strides Distance between consecutive elements of the
-	 * array along each axis, in elements.
-	 * @param array_offset Index of the first element of the array.
-	 * @throws std::invalid_argument If a rank does not match the plan or the
-	 * strides do not match their extents.
-	 * @throws std::out_of_range If a region is not contained in the file or
-	 * in the array where it is placed.
-	 */
-	mrc_region_transfer(
-		mrc_transfer_direction direction,
-		const image_transfer_plan &regions,
-		span<const std::size_t> file_extents,
-		span<const std::ptrdiff_t> file_strides,
-		span<const std::size_t> array_extents,
-		span<const std::ptrdiff_t> array_strides,
-		std::ptrdiff_t array_offset
-	);
-
-	mrc_region_transfer(const mrc_region_transfer &other) = delete;
-	mrc_region_transfer(mrc_region_transfer &&other) noexcept;
-	~mrc_region_transfer();
-
-	mrc_region_transfer&
-	operator=(const mrc_region_transfer &other) = delete;
-	mrc_region_transfer&
-	operator=(mrc_region_transfer &&other) noexcept;
-
-	/**
-	 * @brief Get how many regions are moved.
-	 *
-	 * @return std::size_t The number of regions.
-	 */
-	std::size_t get_region_count() const noexcept;
-
-	/**
-	 * @brief Move every region out of the file and into the array.
-	 *
-	 * Values are converted to @p array_type, and read in @p file_order.
-	 *
-	 * Must only be called on a transfer built for
-	 * @ref mrc_transfer_direction::read.
-	 *
-	 * @param array_data First element of the array.
-	 * @param array_type Data type of the array.
-	 * @param file_data First element of the values of the file, past both
-	 * of its headers.
-	 * @param file_type Data type of the file.
-	 * @param file_order Byte order the file states its values in.
-	 * @throws invalid_operation_error If @p array_type can not be produced
-	 * from @p file_type, or if @p file_type is not one an MRC file holds.
-	 */
-	void read(
-		void *array_data,
-		numerical_type array_type,
-		const byte *file_data,
-		numerical_type file_type,
-		byte_order file_order
-	) const;
-
-	/**
-	 * @brief Move every region out of the array and into the file.
-	 *
-	 * The mirror of @ref read, over a layout ordered for the file instead.
-	 *
-	 * Must only be called on a transfer built for
-	 * @ref mrc_transfer_direction::write.
-	 *
-	 * @param array_data First element of the array.
-	 * @param array_type Data type of the array.
-	 * @param file_data First element of the values of the file, past both
-	 * of its headers.
-	 * @param file_type Data type of the file.
-	 * @param file_order Byte order the file states its values in.
-	 * @throws invalid_operation_error If @p file_type can not be produced
-	 * from @p array_type, or if @p file_type is not one an MRC file holds.
-	 */
-	void write(
-		const void *array_data,
-		numerical_type array_type,
-		byte *file_data,
-		numerical_type file_type,
-		byte_order file_order
-	) const;
-
-private:
-	mrc_transfer_direction m_direction;
-	joint_layout m_layout;
-	std::vector<std::ptrdiff_t> m_array_offsets;
-	std::vector<std::ptrdiff_t> m_file_offsets;
-};
 
 /**
- * @brief Move every region of one batch out of a file of one element type.
+ * @brief Move a batch out of a file of one statically known element type.
  *
  * Defined in mrc_region_transfer_impl.hpp and explicitly instantiated once
  * per element type an MRC file holds, in the mrc_region_transfer_<type>.cpp
@@ -172,9 +79,7 @@ private:
  * translation unit per element type keeps each of them well inside it.
  *
  * @tparam Q Element type of the file.
- * @param layout The iteration space every region shares.
- * @param array_offsets Where each region starts in the array, in elements.
- * @param file_offsets Where each region starts in the file, in elements.
+ * @param plan The regions and the space they are walked in.
  * @param array_data First element of the array.
  * @param array_type Data type of the array.
  * @param file_data First element of the values of the file.
@@ -183,10 +88,8 @@ private:
  * @p Q.
  */
 template <typename Q>
-void read_regions(
-	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
+void read_regions_as(
+	const mrc_region_read_plan &plan,
 	void *array_data,
 	numerical_type array_type,
 	const Q *file_data,
@@ -194,23 +97,20 @@ void read_regions(
 );
 
 /**
- * @brief Move every region of one batch into a file of one element type.
+ * @brief Move a batch into a file of one statically known element type.
  *
- * The mirror of @ref read_regions, split across translation units the same
- * way and for the same reason.
- *
- * @see read_regions
+ * @see read_regions_as
  */
 template <typename Q>
-void write_regions(
-	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
+void write_regions_as(
+	const mrc_region_write_plan &plan,
 	const void *array_data,
 	numerical_type array_type,
 	Q *file_data,
 	bool swapped
 );
+
+} // namespace detail
 
 } // namespace mrc
 } // namespace em

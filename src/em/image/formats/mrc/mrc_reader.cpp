@@ -3,6 +3,7 @@
 #include "mrc_reader.hpp"
 
 #include "mrc_host_access.hpp"
+#include "mrc_region_read_plan.hpp"
 #include "mrc_region_transfer.hpp"
 
 #include <rexlib/core/ndarray/array_descriptor.hpp>
@@ -92,8 +93,7 @@ void mrc_reader::read(
 	layout.get_extents(array_extents);
 	layout.get_strides(array_strides);
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		m_geometry.get_extents(),
 		m_geometry.get_strides(),
@@ -102,7 +102,8 @@ void mrc_reader::read(
 		layout.get_offset()
 	);
 
-	transfer.read(
+	read_regions(
+		plan,
 		array_data,
 		descriptor.get_data_type(),
 		m_mapping.get_data() + m_geometry.get_data_offset(),

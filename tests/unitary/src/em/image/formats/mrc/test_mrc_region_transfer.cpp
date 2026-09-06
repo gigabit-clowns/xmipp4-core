@@ -4,6 +4,9 @@
 
 #include <em/image/formats/mrc/mrc_region_transfer.hpp>
 
+#include <em/image/formats/mrc/mrc_region_read_plan.hpp>
+#include <em/image/formats/mrc/mrc_region_write_plan.hpp>
+
 #include <rexlib/core/exceptions/invalid_operation_error.hpp>
 #include <rexlib/core/layout/joint_layout_builder.hpp>
 #include <rexlib/core/numerical/numerical_type_traits.hpp>
@@ -127,8 +130,7 @@ TEST_CASE( "one region is moved out of a file and into an array",
 	regions.add(make_span(std::vector<std::size_t>{0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -138,7 +140,8 @@ TEST_CASE( "one region is moved out of a file and into an array",
 	SECTION( "every value arrives where it belongs" )
 	{
 		std::vector<float32_t> array(12, -1.0F);
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			get_system_byte_order()
@@ -149,7 +152,7 @@ TEST_CASE( "one region is moved out of a file and into an array",
 
 	SECTION( "the transfer reports how many regions it holds" )
 	{
-		REQUIRE( transfer.get_region_count() == 1 );
+		REQUIRE( plan.get_offsets().get_region_count() == 1 );
 	}
 }
 
@@ -170,8 +173,7 @@ TEST_CASE( "a batch of regions shares one layout",
 		);
 	}
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(file_extents), make_span(file_strides),
 		make_span(file_extents), make_span(file_strides),
@@ -181,7 +183,8 @@ TEST_CASE( "a batch of regions shares one layout",
 	SECTION( "each region lands where its own offsets put it" )
 	{
 		std::vector<float32_t> array(12, -1.0F);
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			get_system_byte_order()
@@ -192,7 +195,7 @@ TEST_CASE( "a batch of regions shares one layout",
 		};
 
 		REQUIRE( array == expected );
-		REQUIRE( transfer.get_region_count() == 3 );
+		REQUIRE( plan.get_offsets().get_region_count() == 3 );
 	}
 }
 
@@ -210,8 +213,7 @@ TEST_CASE( "a region reaches an array of a different rank",
 	regions.add(make_span(std::vector<std::size_t>{1, 0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(file_extents), make_span(file_strides),
 		make_span(array_extents), make_span(array_strides),
@@ -219,7 +221,8 @@ TEST_CASE( "a region reaches an array of a different rank",
 	);
 
 	std::vector<float32_t> array(4, -1.0F);
-	transfer.read(
+	read_regions(
+			plan,
 		array.data(), numerical_type::float32,
 		as_file(file), numerical_type::float32,
 		get_system_byte_order()
@@ -241,8 +244,7 @@ TEST_CASE( "a region lands in a strided array",
 	regions.add(make_span(std::vector<std::size_t>{0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(extents), make_span(file_strides),
 		make_span(extents), make_span(array_strides),
@@ -250,7 +252,8 @@ TEST_CASE( "a region lands in a strided array",
 	);
 
 	std::vector<float32_t> array(10, -1.0F);
-	transfer.read(
+	read_regions(
+			plan,
 		array.data(), numerical_type::float32,
 		as_file(file), numerical_type::float32,
 		get_system_byte_order()
@@ -274,8 +277,7 @@ TEST_CASE( "values are converted into the type asked for",
 	regions.add(make_span(std::vector<std::size_t>{0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -287,7 +289,8 @@ TEST_CASE( "values are converted into the type asked for",
 		const std::vector<std::int16_t> file = {-2, -1, 0, 1};
 		std::vector<float32_t> array(4, 9.0F);
 
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::int16,
 			get_system_byte_order()
@@ -306,7 +309,8 @@ TEST_CASE( "values are converted into the type asked for",
 		};
 		std::vector<float64_t> array(4, 9.0);
 
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::float64,
 			as_file(file), numerical_type::float16,
 			get_system_byte_order()
@@ -320,14 +324,14 @@ TEST_CASE( "values are converted into the type asked for",
 		const std::vector<float64_t> array = {0.5, 1.5, -2.5, 3.0};
 		std::vector<float16_t> file(4);
 
-		const mrc_region_transfer writer(
-			mrc_transfer_direction::write,
+		const mrc_region_write_plan writer(
 			regions,
 			make_span(extents), make_span(strides),
 			make_span(extents), make_span(strides),
 			0
 		);
-		writer.write(
+		write_regions(
+			writer,
 			array.data(), numerical_type::float64,
 			as_file(file), numerical_type::float16,
 			get_system_byte_order()
@@ -342,7 +346,8 @@ TEST_CASE( "values are converted into the type asked for",
 		const std::vector<float32_t> file = {1, 2, 3, 4};
 		std::vector<std::complex<float32_t>> array(4);
 
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::complex_float32,
 			as_file(file), numerical_type::float32,
 			get_system_byte_order()
@@ -358,7 +363,8 @@ TEST_CASE( "values are converted into the type asked for",
 		std::vector<float32_t> array(4);
 
 		REQUIRE_THROWS_AS(
-			transfer.read(
+			read_regions(
+			plan,
 				array.data(), numerical_type::float32,
 				as_file(file), numerical_type::complex_float32,
 				get_system_byte_order()
@@ -373,7 +379,8 @@ TEST_CASE( "values are converted into the type asked for",
 		std::vector<float64_t> array(4);
 
 		REQUIRE_THROWS_AS(
-			transfer.read(
+			read_regions(
+			plan,
 				array.data(), numerical_type::float64,
 				as_file(file), numerical_type::float64,
 				get_system_byte_order()
@@ -393,8 +400,7 @@ TEST_CASE( "a file of the other byte order is read in it",
 	regions.add(make_span(std::vector<std::size_t>{0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -409,7 +415,8 @@ TEST_CASE( "a file of the other byte order is read in it",
 			[] (std::int16_t v) { return reversed(v); });
 
 		std::vector<std::int16_t> array(4, 0);
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::int16,
 			as_file(file), numerical_type::int16,
 			other_byte_order()
@@ -426,7 +433,8 @@ TEST_CASE( "a file of the other byte order is read in it",
 			[] (float32_t v) { return reversed(v); });
 
 		std::vector<float32_t> array(4, 0.0F);
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			other_byte_order()
@@ -450,7 +458,8 @@ TEST_CASE( "a file of the other byte order is read in it",
 			});
 
 		std::vector<std::complex<float32_t>> array(4);
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::complex_float32,
 			as_file(file), numerical_type::complex_float32,
 			other_byte_order()
@@ -464,7 +473,8 @@ TEST_CASE( "a file of the other byte order is read in it",
 		const std::vector<std::int8_t> file = {-2, -1, 0, 1};
 		std::vector<std::int8_t> array(4, 9);
 
-		transfer.read(
+		read_regions(
+			plan,
 			array.data(), numerical_type::int8,
 			as_file(file), numerical_type::int8,
 			other_byte_order()
@@ -484,8 +494,7 @@ TEST_CASE( "a region is moved out of an array and into a file",
 	regions.add(make_span(std::vector<std::size_t>{0, 0}),
 		make_span(std::vector<std::size_t>{0, 0}));
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::write,
+	const mrc_region_write_plan plan(
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -497,7 +506,8 @@ TEST_CASE( "a region is moved out of an array and into a file",
 		const std::vector<float32_t> array = {-2.0F, -1.0F, 0.0F, 1.0F};
 		std::vector<std::int16_t> file(4, 9);
 
-		transfer.write(
+		write_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::int16,
 			get_system_byte_order()
@@ -511,7 +521,8 @@ TEST_CASE( "a region is moved out of an array and into a file",
 		const std::vector<float32_t> array = {-2.0F, -1.0F, 0.0F, 1.0F};
 		std::vector<std::int16_t> file(4, 9);
 
-		transfer.write(
+		write_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::int16,
 			other_byte_order()
@@ -534,20 +545,21 @@ TEST_CASE( "a region is moved out of an array and into a file",
 		std::vector<float32_t> file(4, 9.0F);
 		std::vector<float32_t> reread(4, 0.0F);
 
-		transfer.write(
+		write_regions(
+			plan,
 			array.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			other_byte_order()
 		);
 
-		const mrc_region_transfer reader(
-			mrc_transfer_direction::read,
+		const mrc_region_read_plan reader(
 			regions,
 			make_span(extents), make_span(strides),
 			make_span(extents), make_span(strides),
 			0
 		);
-		reader.read(
+		read_regions(
+			reader,
 			reread.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			other_byte_order()
@@ -562,7 +574,8 @@ TEST_CASE( "a region is moved out of an array and into a file",
 		std::vector<float32_t> file(4);
 
 		REQUIRE_THROWS_AS(
-			transfer.write(
+			write_regions(
+			plan,
 				array.data(), numerical_type::complex_float32,
 				as_file(file), numerical_type::float32,
 				get_system_byte_order()
@@ -586,8 +599,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 			make_span(std::vector<std::size_t>{0, 0}));
 
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -604,8 +616,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 			make_span(std::vector<std::size_t>{0, 1}));
 
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -624,8 +635,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 			make_span(std::vector<std::size_t>{0, 0}));
 
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -651,8 +661,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	SECTION( "file extents of the wrong rank are refused" )
 	{
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(deeper), make_span(deeper_strides),
 				make_span(extents), make_span(strides),
@@ -665,8 +674,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	SECTION( "array extents of the wrong rank are refused" )
 	{
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(deeper), make_span(deeper_strides),
@@ -679,8 +687,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	SECTION( "strides that do not match their extents are refused" )
 	{
 		REQUIRE_THROWS_AS(
-			mrc_region_transfer(
-				mrc_transfer_direction::read,
+			mrc_region_read_plan(
 				regions,
 				make_span(extents), make_span(deeper_strides),
 				make_span(extents), make_span(strides),
@@ -699,8 +706,7 @@ TEST_CASE( "an empty batch moves nothing and succeeds",
 	const std::vector<float32_t> file = {1, 2, 3, 4};
 
 	const image_transfer_plan regions(make_span(extents), 2, 2);
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::read,
+	const mrc_region_read_plan plan(
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -708,12 +714,13 @@ TEST_CASE( "an empty batch moves nothing and succeeds",
 	);
 
 	std::vector<float32_t> array(4, -1.0F);
-	transfer.read(
+	read_regions(
+			plan,
 		array.data(), numerical_type::float32,
 		as_file(file), numerical_type::float32,
 		get_system_byte_order()
 	);
 
-	REQUIRE( transfer.get_region_count() == 0 );
+	REQUIRE( plan.get_offsets().get_region_count() == 0 );
 	REQUIRE( array == std::vector<float32_t>{-1, -1, -1, -1} );
 }

@@ -4,6 +4,7 @@
 
 #include "mrc_host_access.hpp"
 #include "mrc_region_transfer.hpp"
+#include "mrc_region_write_plan.hpp"
 
 #include <rexlib/core/ndarray/array_descriptor.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
@@ -98,8 +99,7 @@ void mrc_writer::write(
 	layout.get_extents(array_extents);
 	layout.get_strides(array_strides);
 
-	const mrc_region_transfer transfer(
-		mrc_transfer_direction::write,
+	const mrc_region_write_plan plan(
 		regions,
 		m_geometry.get_extents(),
 		m_geometry.get_strides(),
@@ -108,7 +108,8 @@ void mrc_writer::write(
 		layout.get_offset()
 	);
 
-	transfer.write(
+	write_regions(
+		plan,
 		array_data,
 		descriptor.get_data_type(),
 		m_mapping.get_data() + m_geometry.get_data_offset(),

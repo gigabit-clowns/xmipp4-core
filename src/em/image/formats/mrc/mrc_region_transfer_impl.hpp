@@ -52,8 +52,8 @@ template <
 void run_regions(
 	const Kernel &kernel,
 	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &destination_offsets,
-	const std::vector<std::ptrdiff_t> &source_offsets,
+	span<const std::ptrdiff_t> destination_offsets,
+	span<const std::ptrdiff_t> source_offsets,
 	DestinationPointer destination_data,
 	SourcePointer source_data
 )
@@ -78,8 +78,8 @@ void run_supported_regions(
 	std::true_type,
 	const Kernel &kernel,
 	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &destination_offsets,
-	const std::vector<std::ptrdiff_t> &source_offsets,
+	span<const std::ptrdiff_t> destination_offsets,
+	span<const std::ptrdiff_t> source_offsets,
 	DestinationPointer destination_data,
 	SourcePointer source_data
 )
@@ -106,58 +106,57 @@ void run_supported_regions(
 	std::false_type,
 	const Kernel &,
 	const joint_layout &,
-	const std::vector<std::ptrdiff_t> &,
-	const std::vector<std::ptrdiff_t> &,
+	span<const std::ptrdiff_t>,
+	span<const std::ptrdiff_t>,
 	DestinationPointer,
 	SourcePointer
 )
 {
 	throw invalid_operation_error(
-		"mrc_region_transfer: The values of the file can not be converted "
-		"into the data type asked for."
+		"mrc: The values of the file can not be converted into the data "
+		"type asked for."
 	);
 }
 
-} // namespace detail
-
 template <typename Q>
-void read_regions(
-	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
+void read_regions_as(
+	const mrc_region_read_plan &plan,
 	void *array_data,
 	numerical_type array_type,
 	const Q *file_data,
 	bool swapped
 )
 {
+	const auto &offsets = plan.get_offsets();
+
 	dispatch_numerical_types(
 		[&] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
-			const auto support = detail::transfer_support<T, Q>();
+			const auto support = transfer_support<T, Q>();
 			auto *array = static_cast<T*>(array_data);
 
+			// The array is the destination here, so it comes first.
 			if (swapped)
 			{
-				detail::run_supported_regions(
+				run_supported_regions(
 					support,
 					mrc_byte_swapped_read_kernel(),
-					layout,
-					array_offsets,
-					file_offsets,
+					plan.get_layout(),
+					offsets.get_array(),
+					offsets.get_file(),
 					array,
 					file_data
 				);
 			}
 			else
 			{
-				detail::run_supported_regions(
+				run_supported_regions(
 					support,
 					mrc_read_kernel(),
-					layout,
-					array_offsets,
-					file_offsets,
+					plan.get_layout(),
+					offsets.get_array(),
+					offsets.get_file(),
 					array,
 					file_data
 				);
@@ -168,44 +167,44 @@ void read_regions(
 }
 
 template <typename Q>
-void write_regions(
-	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
+void write_regions_as(
+	const mrc_region_write_plan &plan,
 	const void *array_data,
 	numerical_type array_type,
 	Q *file_data,
 	bool swapped
 )
 {
+	const auto &offsets = plan.get_offsets();
+
 	dispatch_numerical_types(
 		[&] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
-			const auto support = detail::transfer_support<Q, T>();
+			const auto support = transfer_support<Q, T>();
 			const auto *array = static_cast<const T*>(array_data);
 
 			// The file is the destination here, so it comes first.
 			if (swapped)
 			{
-				detail::run_supported_regions(
+				run_supported_regions(
 					support,
 					mrc_byte_swapped_write_kernel(),
-					layout,
-					file_offsets,
-					array_offsets,
+					plan.get_layout(),
+					offsets.get_file(),
+					offsets.get_array(),
 					file_data,
 					array
 				);
 			}
 			else
 			{
-				detail::run_supported_regions(
+				run_supported_regions(
 					support,
 					mrc_write_kernel(),
-					layout,
-					file_offsets,
-					array_offsets,
+					plan.get_layout(),
+					offsets.get_file(),
+					offsets.get_array(),
 					file_data,
 					array
 				);
@@ -214,6 +213,8 @@ void write_regions(
 		array_type
 	);
 }
+
+} // namespace detail
 
 /**
  * @brief Instantiate the region transfer for one element type of a file.
@@ -224,19 +225,15 @@ void write_regions(
  * CPU copy builder costs.
  */
 #define REXLIB_INSTANTIATE_MRC_REGION_TRANSFER(...) \
-	template void read_regions<__VA_ARGS__>( \
-		const joint_layout&, \
-		const std::vector<std::ptrdiff_t>&, \
-		const std::vector<std::ptrdiff_t>&, \
+	template void detail::read_regions_as<__VA_ARGS__>( \
+		const mrc_region_read_plan&, \
 		void*, \
 		numerical_type, \
 		const __VA_ARGS__*, \
 		bool \
 	); \
-	template void write_regions<__VA_ARGS__>( \
-		const joint_layout&, \
-		const std::vector<std::ptrdiff_t>&, \
-		const std::vector<std::ptrdiff_t>&, \
+	template void detail::write_regions_as<__VA_ARGS__>( \
+		const mrc_region_write_plan&, \
 		const void*, \
 		numerical_type, \
 		__VA_ARGS__*, \

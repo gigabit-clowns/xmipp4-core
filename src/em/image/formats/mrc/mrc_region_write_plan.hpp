@@ -55,13 +55,13 @@ public:
 	);
 
 	mrc_region_write_plan(const mrc_region_write_plan &other) = delete;
-	mrc_region_write_plan(mrc_region_write_plan &&other) noexcept;
-	~mrc_region_write_plan();
+	mrc_region_write_plan(mrc_region_write_plan &&other) noexcept = default;
+	~mrc_region_write_plan() = default;
 
 	mrc_region_write_plan&
 	operator=(const mrc_region_write_plan &other) = delete;
 	mrc_region_write_plan&
-	operator=(mrc_region_write_plan &&other) noexcept;
+	operator=(mrc_region_write_plan &&other) noexcept = default;
 
 	/**
 	 * @brief Get where each region starts on each side.

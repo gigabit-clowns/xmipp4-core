@@ -16,10 +16,6 @@ namespace em
 namespace mrc
 {
 
-mrc_write_format::mrc_write_format() noexcept = default;
-
-mrc_write_format::~mrc_write_format() = default;
-
 std::string mrc_write_format::get_name() const
 {
 	return "MRC";

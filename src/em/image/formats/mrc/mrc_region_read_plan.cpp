@@ -31,16 +31,6 @@ mrc_region_read_plan::mrc_region_read_plan(
 {
 }
 
-mrc_region_read_plan::mrc_region_read_plan(
-	mrc_region_read_plan &&other
-) noexcept = default;
-
-mrc_region_read_plan::~mrc_region_read_plan() = default;
-
-mrc_region_read_plan& mrc_region_read_plan::operator=(
-	mrc_region_read_plan &&other
-) noexcept = default;
-
 const mrc_region_offsets&
 mrc_region_read_plan::get_offsets() const noexcept
 {

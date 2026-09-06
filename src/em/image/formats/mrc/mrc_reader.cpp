@@ -56,8 +56,6 @@ mrc_reader::mrc_reader(const std::string &path)
 	check_length(m_mapping, m_geometry);
 }
 
-mrc_reader::~mrc_reader() = default;
-
 span<const std::size_t> mrc_reader::get_extents() const noexcept
 {
 	return m_geometry.get_extents();

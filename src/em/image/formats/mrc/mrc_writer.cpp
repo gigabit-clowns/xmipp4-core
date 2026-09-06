@@ -6,6 +6,7 @@
 #include "mrc_region_transfer.hpp"
 #include "mrc_region_write_plan.hpp"
 
+#include <core/logger.hpp>
 #include <rexlib/core/ndarray/array_descriptor.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
@@ -59,13 +60,21 @@ mrc_writer::~mrc_writer()
 {
 	// A destructor can not report a failure, so a writer whose failures
 	// matter is flushed explicitly beforehand. This is what keeps a writer
-	// that was not from leaving the header unwritten.
+	// that was not from leaving the header unwritten, and saying so is all
+	// that can be done about a file that never reached the storage.
 	try
 	{
 		m_mapping.flush();
 	}
-	catch (const std::exception &)
+	catch (const std::exception &error)
 	{
+		REXLIB_LOG_ERROR(
+			"Failed to flush an MRC file while closing it: {}", error.what()
+		);
+	}
+	catch (...)
+	{
+		REXLIB_LOG_ERROR("Failed to flush an MRC file while closing it.");
 	}
 }
 

@@ -25,9 +25,9 @@ class mrc_read_format final
 	: public image_read_format
 {
 public:
-	mrc_read_format() noexcept;
+	mrc_read_format() noexcept = default;
 
-	~mrc_read_format() override;
+	~mrc_read_format() override = default;
 
 	std::string get_name() const override;
 

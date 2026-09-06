@@ -52,6 +52,10 @@ public:
 	mrc_file_mapping(const std::string &path, access_flags access);
 
 	mrc_file_mapping(const mrc_file_mapping &other) = delete;
+
+	// Defined where boost::interprocess is included rather than defaulted
+	// here: destroying either pointer needs the type it points at to be
+	// complete, and neither is at this point.
 	mrc_file_mapping(mrc_file_mapping &&other) noexcept;
 	~mrc_file_mapping();
 

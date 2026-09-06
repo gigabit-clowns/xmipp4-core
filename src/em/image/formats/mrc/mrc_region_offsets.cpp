@@ -120,22 +120,6 @@ mrc_region_offsets::mrc_region_offsets(
 	}
 }
 
-mrc_region_offsets::mrc_region_offsets(
-	const mrc_region_offsets &other
-) = default;
-
-mrc_region_offsets::mrc_region_offsets(
-	mrc_region_offsets &&other
-) noexcept = default;
-
-mrc_region_offsets::~mrc_region_offsets() = default;
-
-mrc_region_offsets&
-mrc_region_offsets::operator=(const mrc_region_offsets &other) = default;
-
-mrc_region_offsets&
-mrc_region_offsets::operator=(mrc_region_offsets &&other) noexcept = default;
-
 std::size_t mrc_region_offsets::get_region_count() const noexcept
 {
 	return m_array.size();

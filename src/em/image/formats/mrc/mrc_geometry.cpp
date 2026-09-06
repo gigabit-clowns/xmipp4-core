@@ -95,14 +95,6 @@ mrc_geometry::mrc_geometry(const mrc_header &header)
 	check_element_alignment(m_data_offset, m_data_type);
 }
 
-mrc_geometry::mrc_geometry(const mrc_geometry &other) = default;
-mrc_geometry::mrc_geometry(mrc_geometry &&other) noexcept = default;
-mrc_geometry::~mrc_geometry() = default;
-
-mrc_geometry& mrc_geometry::operator=(const mrc_geometry &other) = default;
-mrc_geometry&
-mrc_geometry::operator=(mrc_geometry &&other) noexcept = default;
-
 span<const std::size_t> mrc_geometry::get_extents() const noexcept
 {
 	return make_span(m_extents.data(), m_extents.size());

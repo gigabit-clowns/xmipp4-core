@@ -18,10 +18,6 @@ namespace em
 namespace mrc
 {
 
-mrc_read_format::mrc_read_format() noexcept = default;
-
-mrc_read_format::~mrc_read_format() = default;
-
 std::string mrc_read_format::get_name() const
 {
 	return "MRC";

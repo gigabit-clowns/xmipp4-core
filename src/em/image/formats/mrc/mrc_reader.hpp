@@ -41,7 +41,7 @@ public:
 	 */
 	explicit mrc_reader(const std::string &path);
 
-	~mrc_reader() override;
+	~mrc_reader() override = default;
 
 	span<const std::size_t> get_extents() const noexcept override;
 

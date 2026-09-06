@@ -42,12 +42,12 @@ public:
 	 */
 	explicit mrc_geometry(const mrc_header &header);
 
-	mrc_geometry(const mrc_geometry &other);
-	mrc_geometry(mrc_geometry &&other) noexcept;
-	~mrc_geometry();
+	mrc_geometry(const mrc_geometry &other) = default;
+	mrc_geometry(mrc_geometry &&other) noexcept = default;
+	~mrc_geometry() = default;
 
-	mrc_geometry& operator=(const mrc_geometry &other);
-	mrc_geometry& operator=(mrc_geometry &&other) noexcept;
+	mrc_geometry& operator=(const mrc_geometry &other) = default;
+	mrc_geometry& operator=(mrc_geometry &&other) noexcept = default;
 
 	/**
 	 * @brief Get the extents of the file, slowest axis first.

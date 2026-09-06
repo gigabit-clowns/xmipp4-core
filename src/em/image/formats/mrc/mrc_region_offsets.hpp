@@ -63,12 +63,14 @@ public:
 		std::ptrdiff_t array_offset
 	);
 
-	mrc_region_offsets(const mrc_region_offsets &other);
-	mrc_region_offsets(mrc_region_offsets &&other) noexcept;
-	~mrc_region_offsets();
+	mrc_region_offsets(const mrc_region_offsets &other) = default;
+	mrc_region_offsets(mrc_region_offsets &&other) noexcept = default;
+	~mrc_region_offsets() = default;
 
-	mrc_region_offsets& operator=(const mrc_region_offsets &other);
-	mrc_region_offsets& operator=(mrc_region_offsets &&other) noexcept;
+	mrc_region_offsets&
+	operator=(const mrc_region_offsets &other) = default;
+	mrc_region_offsets&
+	operator=(mrc_region_offsets &&other) noexcept = default;
 
 	/**
 	 * @brief Get how many regions the batch holds.

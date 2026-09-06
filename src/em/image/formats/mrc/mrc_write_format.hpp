@@ -21,9 +21,9 @@ class mrc_write_format final
 	: public image_write_format
 {
 public:
-	mrc_write_format() noexcept;
+	mrc_write_format() noexcept = default;
 
-	~mrc_write_format() override;
+	~mrc_write_format() override = default;
 
 	std::string get_name() const override;
 

@@ -8,6 +8,7 @@ add_subdirectory(faulty_plugin2)
 # path, so the tests no longer depend on their working directory.
 set(REXLIB_TEST_ASSET_ROOT ${CMAKE_CURRENT_BINARY_DIR}/assets)
 set(REXLIB_TEST_PLUGINS_DIRECTORY ${REXLIB_TEST_ASSET_ROOT}/plugins)
+set(REXLIB_TEST_MRC_DIRECTORY ${REXLIB_TEST_ASSET_ROOT}/mrc)
 
 # Stage the assets next to the build tree.
 add_custom_target(
@@ -18,6 +19,9 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:dummy-plugin> ${REXLIB_TEST_PLUGINS_DIRECTORY}
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:faulty-plugin1> ${REXLIB_TEST_PLUGINS_DIRECTORY}
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:faulty-plugin2> ${REXLIB_TEST_PLUGINS_DIRECTORY}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${REXLIB_TEST_MRC_DIRECTORY}
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/mrc/EMD-3197.map ${REXLIB_TEST_MRC_DIRECTORY}
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/mrc/EMD-3001.map ${REXLIB_TEST_MRC_DIRECTORY}
 )
 
 # Interface target that gives any test suite access to the assets: the

@@ -42,6 +42,17 @@ inline std::string get_test_plugin_directory()
 	#endif
 }
 
+inline std::string get_mrc_asset_path(const std::string &name)
+{
+	#if REXLIB_WINDOWS
+		return get_asset_root() + "\\mrc\\" + name;
+	#elif REXLIB_APPLE || REXLIB_LINUX
+		return get_asset_root() + "/mrc/" + name;
+	#else
+		#error "Unknown platform"
+	#endif
+}
+
 inline std::string get_mock_plugin_path(const std::string &name)
 {
 

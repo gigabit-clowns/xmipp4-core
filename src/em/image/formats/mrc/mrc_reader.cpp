@@ -93,6 +93,7 @@ void mrc_reader::read(
 	layout.get_strides(array_strides);
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		m_geometry.get_extents(),
 		m_geometry.get_strides(),

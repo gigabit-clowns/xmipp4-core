@@ -41,47 +41,66 @@ struct transfer_support : std::is_convertible<Source, Destination>
  * pointers, so the layout is built once and only the two bases move. The loop
  * over the regions is here rather than inside the layout for exactly that
  * reason.
+ *
+ * The destination comes first, in the order the layout names its operands.
  */
-template <typename Kernel, typename ArrayPointer, typename FilePointer>
+template <
+	typename Kernel,
+	typename DestinationPointer,
+	typename SourcePointer
+>
 void run_regions(
 	const Kernel &kernel,
 	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
-	ArrayPointer array_data,
-	FilePointer file_data
+	const std::vector<std::ptrdiff_t> &destination_offsets,
+	const std::vector<std::ptrdiff_t> &source_offsets,
+	DestinationPointer destination_data,
+	SourcePointer source_data
 )
 {
-	for (std::size_t i = 0; i < array_offsets.size(); ++i)
+	for (std::size_t i = 0; i < destination_offsets.size(); ++i)
 	{
 		cpu::run_elementwise_loop(
 			kernel,
 			layout,
-			array_data + array_offsets[i],
-			file_data + file_offsets[i]
+			destination_data + destination_offsets[i],
+			source_data + source_offsets[i]
 		);
 	}
 }
 
-template <typename Kernel, typename ArrayPointer, typename FilePointer>
+template <
+	typename Kernel,
+	typename DestinationPointer,
+	typename SourcePointer
+>
 void run_supported_regions(
 	std::true_type,
 	const Kernel &kernel,
 	const joint_layout &layout,
-	const std::vector<std::ptrdiff_t> &array_offsets,
-	const std::vector<std::ptrdiff_t> &file_offsets,
-	ArrayPointer array_data,
-	FilePointer file_data
+	const std::vector<std::ptrdiff_t> &destination_offsets,
+	const std::vector<std::ptrdiff_t> &source_offsets,
+	DestinationPointer destination_data,
+	SourcePointer source_data
 )
 {
 	run_regions(
-		kernel, layout, array_offsets, file_offsets, array_data, file_data
+		kernel,
+		layout,
+		destination_offsets,
+		source_offsets,
+		destination_data,
+		source_data
 	);
 }
 
 // The unsupported overload never instantiates a loop, which is what keeps one
 // from being compiled for every pair of element types no conversion joins.
-template <typename Kernel, typename ArrayPointer, typename FilePointer>
+template <
+	typename Kernel,
+	typename DestinationPointer,
+	typename SourcePointer
+>
 REXLIB_NORETURN
 void run_supported_regions(
 	std::false_type,
@@ -89,8 +108,8 @@ void run_supported_regions(
 	const joint_layout &,
 	const std::vector<std::ptrdiff_t> &,
 	const std::vector<std::ptrdiff_t> &,
-	ArrayPointer,
-	FilePointer
+	DestinationPointer,
+	SourcePointer
 )
 {
 	throw invalid_operation_error(
@@ -166,16 +185,17 @@ void write_regions(
 			const auto support = detail::transfer_support<Q, T>();
 			const auto *array = static_cast<const T*>(array_data);
 
+			// The file is the destination here, so it comes first.
 			if (swapped)
 			{
 				detail::run_supported_regions(
 					support,
 					mrc_byte_swapped_write_kernel(),
 					layout,
-					array_offsets,
 					file_offsets,
-					array,
-					file_data
+					array_offsets,
+					file_data,
+					array
 				);
 			}
 			else
@@ -184,10 +204,10 @@ void write_regions(
 					support,
 					mrc_write_kernel(),
 					layout,
-					array_offsets,
 					file_offsets,
-					array,
-					file_data
+					array_offsets,
+					file_data,
+					array
 				);
 			}
 		},

@@ -16,6 +16,9 @@ namespace mrc
 /**
  * @brief Read one element of a file into an array.
  *
+ * Every kernel here names its destination first, which is the order the
+ * layout its loop walks names its operands in.
+ *
  * Conversion goes through @ref cpu::cast rather than @ref numerical_cast:
  * the two implement the same cases, but numerical_cast reaches
  * @ref float16_t through constructors exported across the shared object
@@ -54,8 +57,8 @@ struct mrc_byte_swapped_read_kernel
  */
 struct mrc_write_kernel
 {
-	template <typename T, typename Q>
-	void operator()(const T *array, Q *file) const noexcept
+	template <typename Q, typename T>
+	void operator()(Q *file, const T *array) const noexcept
 	{
 		cpu::cast(file, array);
 	}
@@ -71,8 +74,8 @@ struct mrc_write_kernel
  */
 struct mrc_byte_swapped_write_kernel
 {
-	template <typename T, typename Q>
-	void operator()(const T *array, Q *file) const noexcept
+	template <typename Q, typename T>
+	void operator()(Q *file, const T *array) const noexcept
 	{
 		Q value;
 		cpu::cast(&value, array);

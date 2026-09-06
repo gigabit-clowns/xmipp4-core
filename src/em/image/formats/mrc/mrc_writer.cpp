@@ -99,6 +99,7 @@ void mrc_writer::write(
 	layout.get_strides(array_strides);
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::write,
 		regions,
 		m_geometry.get_extents(),
 		m_geometry.get_strides(),

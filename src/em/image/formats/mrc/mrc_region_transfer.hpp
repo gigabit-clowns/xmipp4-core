@@ -22,6 +22,15 @@ namespace mrc
 {
 
 /**
+ * @brief Which side of a transfer is written through.
+ */
+enum class mrc_transfer_direction
+{
+	read,
+	write
+};
+
+/**
  * @brief One batch of regions moved between a mapped file and an array.
  *
  * Every region of a plan has the same extents and differs only in where it
@@ -30,10 +39,15 @@ namespace mrc
  * differing only by a pointer. Building it once is what keeps the per region
  * cost to arithmetic, whatever the batch size.
  *
- * The layout names the array first and the file second, in both directions.
- * What changes between a read and a write is which of the two is written
- * through and which side the byte order is converted on, not the geometry, so
- * one instance serves either.
+ * The layout names the destination first, which is why a direction is stated
+ * when the transfer is built rather than when it is run.
+ * @ref joint_layout orders its axes by the strides of its operands taken in
+ * order, the first one to prefer an order deciding it and the rest only
+ * breaking ties, so whichever operand is named first is the one the traversal
+ * is made sequential for. Making that the side being written matters more
+ * than making it the side being read: a scattered write through a mapping
+ * dirties its pages out of order, and what that costs on the way back to the
+ * storage is not something the read side has an equivalent of.
  *
  * Where each region starts is resolved into a pair of pointer offsets when
  * the transfer is constructed, and so is every bounds check. A plan that does
@@ -49,6 +63,8 @@ public:
 	 * The extents of @p regions cover the trailing axes of each side, which
 	 * spans a single position along the leading axes they do not reach.
 	 *
+	 * @param direction Which side is written through. Only the matching one
+	 * of @ref read and @ref write may be called afterwards.
 	 * @param regions The regions to move.
 	 * @param file_extents Extents of the file.
 	 * @param file_strides Distance between consecutive elements of the file
@@ -63,6 +79,7 @@ public:
 	 * in the array where it is placed.
 	 */
 	mrc_region_transfer(
+		mrc_transfer_direction direction,
 		const image_transfer_plan &regions,
 		span<const std::size_t> file_extents,
 		span<const std::ptrdiff_t> file_strides,
@@ -92,6 +109,9 @@ public:
 	 *
 	 * Values are converted to @p array_type, and read in @p file_order.
 	 *
+	 * Must only be called on a transfer built for
+	 * @ref mrc_transfer_direction::read.
+	 *
 	 * @param array_data First element of the array.
 	 * @param array_type Data type of the array.
 	 * @param file_data First element of the values of the file, past both
@@ -112,8 +132,10 @@ public:
 	/**
 	 * @brief Move every region out of the array and into the file.
 	 *
-	 * The mirror of @ref read: the same regions and the same layout, the
-	 * opposite direction.
+	 * The mirror of @ref read, over a layout ordered for the file instead.
+	 *
+	 * Must only be called on a transfer built for
+	 * @ref mrc_transfer_direction::write.
 	 *
 	 * @param array_data First element of the array.
 	 * @param array_type Data type of the array.
@@ -133,6 +155,7 @@ public:
 	) const;
 
 private:
+	mrc_transfer_direction m_direction;
 	joint_layout m_layout;
 	std::vector<std::ptrdiff_t> m_array_offsets;
 	std::vector<std::ptrdiff_t> m_file_offsets;

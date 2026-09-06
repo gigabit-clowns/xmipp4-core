@@ -5,6 +5,7 @@
 #include <rexlib/core/exceptions/invalid_operation_error.hpp>
 #include <rexlib/core/layout/joint_layout_builder.hpp>
 #include <rexlib/core/numerical/fixed_width_float.hpp>
+#include <rexlib/core/platform/assert.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
 
 #include <complex>
@@ -77,6 +78,7 @@ std::ptrdiff_t resolve_offset(
 } // anonymous namespace
 
 mrc_region_transfer::mrc_region_transfer(
+	mrc_transfer_direction direction,
 	const image_transfer_plan &regions,
 	span<const std::size_t> file_extents,
 	span<const std::ptrdiff_t> file_strides,
@@ -84,6 +86,7 @@ mrc_region_transfer::mrc_region_transfer(
 	span<const std::ptrdiff_t> array_strides,
 	std::ptrdiff_t array_offset
 )
+	: m_direction(direction)
 {
 	check_rank(
 		file_extents.size(),
@@ -134,13 +137,24 @@ mrc_region_transfer::mrc_region_transfer(
 		);
 	}
 
+	// The destination is named first, so that it is the operand the axis
+	// order is chosen for.
 	const auto region_rank = regions.get_rank();
+	const auto array_axes = trailing(array_strides, region_rank);
+	const auto file_axes = trailing(file_strides, region_rank);
+
 	joint_layout_builder builder;
 	builder.set_extents(regions.get_extents());
-	builder.add_operand(
-		regions.get_extents(), trailing(array_strides, region_rank), 0);
-	builder.add_operand(
-		regions.get_extents(), trailing(file_strides, region_rank), 0);
+	if (direction == mrc_transfer_direction::read)
+	{
+		builder.add_operand(regions.get_extents(), array_axes, 0);
+		builder.add_operand(regions.get_extents(), file_axes, 0);
+	}
+	else
+	{
+		builder.add_operand(regions.get_extents(), file_axes, 0);
+		builder.add_operand(regions.get_extents(), array_axes, 0);
+	}
 	m_layout = builder.build();
 }
 
@@ -167,6 +181,8 @@ void mrc_region_transfer::read(
 	byte_order file_order
 ) const
 {
+	REXLIB_ASSERT( m_direction == mrc_transfer_direction::read );
+
 	const auto swapped = file_order != get_system_byte_order();
 
 	switch (file_type)
@@ -209,6 +225,8 @@ void mrc_region_transfer::write(
 	byte_order file_order
 ) const
 {
+	REXLIB_ASSERT( m_direction == mrc_transfer_direction::write );
+
 	const auto swapped = file_order != get_system_byte_order();
 
 	switch (file_type)

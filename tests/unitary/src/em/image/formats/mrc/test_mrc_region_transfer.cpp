@@ -5,6 +5,7 @@
 #include <em/image/formats/mrc/mrc_region_transfer.hpp>
 
 #include <rexlib/core/exceptions/invalid_operation_error.hpp>
+#include <rexlib/core/layout/joint_layout_builder.hpp>
 #include <rexlib/core/numerical/numerical_type_traits.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
 
@@ -83,6 +84,38 @@ byte* as_file(std::vector<T> &values)
 
 } // anonymous namespace
 
+TEST_CASE( "the operand named first is the one the axes are ordered for",
+	"[mrc_region_transfer]" )
+{
+	// What the direction of a transfer is for. joint_layout compares the
+	// strides of its operands in the order they were added and takes the
+	// first answer that is not a tie, so naming the destination first is what
+	// makes the traversal sequential in the side being written.
+	const std::vector<std::size_t> extents = {4, 8};
+	const std::vector<std::ptrdiff_t> row_major = {8, 1};
+	const std::vector<std::ptrdiff_t> column_major = {1, 4};
+
+	joint_layout_builder row_first;
+	row_first.set_extents(make_span(extents));
+	row_first.add_operand(make_span(extents), make_span(row_major), 0);
+	row_first.add_operand(make_span(extents), make_span(column_major), 0);
+	const auto ordered_for_rows = row_first.build();
+
+	joint_layout_builder column_first;
+	column_first.set_extents(make_span(extents));
+	column_first.add_operand(make_span(extents), make_span(column_major), 0);
+	column_first.add_operand(make_span(extents), make_span(row_major), 0);
+	const auto ordered_for_columns = column_first.build();
+
+	// Neither operand is contiguous in the other's order, so nothing
+	// coalesces and both layouts keep their two axes. The innermost axis is
+	// the one the first operand walks with a stride of one.
+	REQUIRE( ordered_for_rows.get_strides(0)[0] == 1 );
+	REQUIRE( ordered_for_columns.get_strides(0)[0] == 1 );
+	REQUIRE( ordered_for_rows.get_strides(1)[0] != 1 );
+	REQUIRE( ordered_for_columns.get_strides(1)[0] != 1 );
+}
+
 TEST_CASE( "one region is moved out of a file and into an array",
 	"[mrc_region_transfer]" )
 {
@@ -95,6 +128,7 @@ TEST_CASE( "one region is moved out of a file and into an array",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -137,6 +171,7 @@ TEST_CASE( "a batch of regions shares one layout",
 	}
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(file_extents), make_span(file_strides),
 		make_span(file_extents), make_span(file_strides),
@@ -176,6 +211,7 @@ TEST_CASE( "a region reaches an array of a different rank",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(file_extents), make_span(file_strides),
 		make_span(array_extents), make_span(array_strides),
@@ -206,6 +242,7 @@ TEST_CASE( "a region lands in a strided array",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(extents), make_span(file_strides),
 		make_span(extents), make_span(array_strides),
@@ -238,6 +275,7 @@ TEST_CASE( "values are converted into the type asked for",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -282,7 +320,14 @@ TEST_CASE( "values are converted into the type asked for",
 		const std::vector<float64_t> array = {0.5, 1.5, -2.5, 3.0};
 		std::vector<float16_t> file(4);
 
-		transfer.write(
+		const mrc_region_transfer writer(
+			mrc_transfer_direction::write,
+			regions,
+			make_span(extents), make_span(strides),
+			make_span(extents), make_span(strides),
+			0
+		);
+		writer.write(
 			array.data(), numerical_type::float64,
 			as_file(file), numerical_type::float16,
 			get_system_byte_order()
@@ -349,6 +394,7 @@ TEST_CASE( "a file of the other byte order is read in it",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -439,6 +485,7 @@ TEST_CASE( "a region is moved out of an array and into a file",
 		make_span(std::vector<std::size_t>{0, 0}));
 
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::write,
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),
@@ -492,7 +539,15 @@ TEST_CASE( "a region is moved out of an array and into a file",
 			as_file(file), numerical_type::float32,
 			other_byte_order()
 		);
-		transfer.read(
+
+		const mrc_region_transfer reader(
+			mrc_transfer_direction::read,
+			regions,
+			make_span(extents), make_span(strides),
+			make_span(extents), make_span(strides),
+			0
+		);
+		reader.read(
 			reread.data(), numerical_type::float32,
 			as_file(file), numerical_type::float32,
 			other_byte_order()
@@ -532,6 +587,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -549,6 +605,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -568,6 +625,7 @@ TEST_CASE( "a batch that does not fit is refused before anything moves",
 
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(extents), make_span(strides),
@@ -594,6 +652,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	{
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(deeper), make_span(deeper_strides),
 				make_span(extents), make_span(strides),
@@ -607,6 +666,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	{
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(extents), make_span(strides),
 				make_span(deeper), make_span(deeper_strides),
@@ -620,6 +680,7 @@ TEST_CASE( "a batch whose ranks disagree with its sides is refused",
 	{
 		REQUIRE_THROWS_AS(
 			mrc_region_transfer(
+				mrc_transfer_direction::read,
 				regions,
 				make_span(extents), make_span(deeper_strides),
 				make_span(extents), make_span(strides),
@@ -639,6 +700,7 @@ TEST_CASE( "an empty batch moves nothing and succeeds",
 
 	const image_transfer_plan regions(make_span(extents), 2, 2);
 	const mrc_region_transfer transfer(
+		mrc_transfer_direction::read,
 		regions,
 		make_span(extents), make_span(strides),
 		make_span(extents), make_span(strides),

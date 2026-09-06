@@ -11,6 +11,10 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  group: build-and-test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_and_test_with_cmake:
     name: CMake
@@ -63,18 +67,7 @@ jobs:
       # generator does; without this the configure step finds no cl.exe.
       - name: Set up MSVC environment
         if: matrix.compiler.cxx == 'cl'
-        shell: pwsh
-        run: |
-          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
-          $install = & $vswhere -latest -products * `
-            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath
-          if (-not $install) { throw 'No Visual Studio installation with the C++ tools' }
-          $vcvars = Join-Path $install 'VC\Auxiliary\Build\vcvars64.bat'
-          cmd /c "`"$vcvars`" && set" |
-            Where-Object { $_ -match '^([^=]+)=(.*)$' } |
-            ForEach-Object { "$($Matches[1])=$($Matches[2])" } |
-            Add-Content -Path $env:GITHUB_ENV -Encoding utf8
+        uses: gigabit-clowns/.github/.github/composites/setup-msvc@main
 
       - name: Install memcheck tool
         if: matrix.os == 'ubuntu-latest'
@@ -85,6 +78,8 @@ jobs:
         with:
           key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
           max-size: 1G
+          evict-old-files: 7d
+          save: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
@@ -151,11 +146,16 @@ jobs:
     needs: build_and_test_with_cmake
     runs-on: ubuntu-latest
     steps:
+      - name: Merge the coverage reports
+        uses: gigabit-clowns/.github/.github/composites/merge-cpp-coverage-reports@main
+        with:
+          coverage-pattern: "coverage-report-*"
+          coverage-path: ${{ github.workspace }}/build
+          report-path: ${{ github.workspace }}/build/coverage.xml
+          show-coverage: true
+
       - name: SonarQube Scan
         uses: gigabit-clowns/.github/.github/composites/sonar-scan@main
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-artifact-name: "sonar-build-files"
-          coverage-pattern: "coverage-report-*"
-          coverage-path: ${{ github.workspace }}/build
-          show-coverage: true

@@ -63,53 +63,34 @@ void run_regions(
 	}
 }
 
-template <typename ArrayPointer, typename FilePointer>
+template <typename Kernel, typename ArrayPointer, typename FilePointer>
 void run_supported_regions(
 	std::true_type,
+	const Kernel &kernel,
 	const joint_layout &layout,
 	const std::vector<std::ptrdiff_t> &array_offsets,
 	const std::vector<std::ptrdiff_t> &file_offsets,
 	ArrayPointer array_data,
-	FilePointer file_data,
-	bool swapped
+	FilePointer file_data
 )
 {
-	if (swapped)
-	{
-		run_regions(
-			mrc_transfer_byte_swapped(),
-			layout,
-			array_offsets,
-			file_offsets,
-			array_data,
-			file_data
-		);
-	}
-	else
-	{
-		run_regions(
-			mrc_transfer(),
-			layout,
-			array_offsets,
-			file_offsets,
-			array_data,
-			file_data
-		);
-	}
+	run_regions(
+		kernel, layout, array_offsets, file_offsets, array_data, file_data
+	);
 }
 
 // The unsupported overload never instantiates a loop, which is what keeps one
 // from being compiled for every pair of element types no conversion joins.
-template <typename ArrayPointer, typename FilePointer>
+template <typename Kernel, typename ArrayPointer, typename FilePointer>
 REXLIB_NORETURN
 void run_supported_regions(
 	std::false_type,
+	const Kernel &,
 	const joint_layout &,
 	const std::vector<std::ptrdiff_t> &,
 	const std::vector<std::ptrdiff_t> &,
 	ArrayPointer,
-	FilePointer,
-	bool
+	FilePointer
 )
 {
 	throw invalid_operation_error(
@@ -135,16 +116,33 @@ void read_regions(
 		[&] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
+			const auto support = detail::transfer_support<T, Q>();
+			auto *array = static_cast<T*>(array_data);
 
-			detail::run_supported_regions(
-				detail::transfer_support<T, Q>(),
-				layout,
-				array_offsets,
-				file_offsets,
-				static_cast<T*>(array_data),
-				file_data,
-				swapped
-			);
+			if (swapped)
+			{
+				detail::run_supported_regions(
+					support,
+					mrc_byte_swapped_read_kernel(),
+					layout,
+					array_offsets,
+					file_offsets,
+					array,
+					file_data
+				);
+			}
+			else
+			{
+				detail::run_supported_regions(
+					support,
+					mrc_read_kernel(),
+					layout,
+					array_offsets,
+					file_offsets,
+					array,
+					file_data
+				);
+			}
 		},
 		array_type
 	);
@@ -165,16 +163,33 @@ void write_regions(
 		[&] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
+			const auto support = detail::transfer_support<Q, T>();
+			const auto *array = static_cast<const T*>(array_data);
 
-			detail::run_supported_regions(
-				detail::transfer_support<Q, T>(),
-				layout,
-				array_offsets,
-				file_offsets,
-				static_cast<const T*>(array_data),
-				file_data,
-				swapped
-			);
+			if (swapped)
+			{
+				detail::run_supported_regions(
+					support,
+					mrc_byte_swapped_write_kernel(),
+					layout,
+					array_offsets,
+					file_offsets,
+					array,
+					file_data
+				);
+			}
+			else
+			{
+				detail::run_supported_regions(
+					support,
+					mrc_write_kernel(),
+					layout,
+					array_offsets,
+					file_offsets,
+					array,
+					file_data
+				);
+			}
 		},
 		array_type
 	);

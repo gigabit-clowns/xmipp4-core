@@ -4,8 +4,6 @@
 
 #include <rexlib/core/platform/assert.hpp>
 
-#include <em/image/checked_extents.hpp>
-
 #include <stdexcept>
 
 namespace rexlib
@@ -13,17 +11,42 @@ namespace rexlib
 namespace em
 {
 
+namespace
+{
+
+std::vector<std::size_t> sanitize_extents(
+	span<const std::size_t> extents,
+	std::size_t file_rank,
+	std::size_t array_rank
+)
+{
+	if (extents.size() > file_rank)
+	{
+		throw std::invalid_argument(
+			"image_transfer_plan: The regions do not fit in the rank of "
+			"the file."
+		);
+	}
+
+	if (extents.size() > array_rank)
+	{
+		throw std::invalid_argument(
+			"image_transfer_plan: The regions do not fit in the rank of "
+			"the array."
+		);
+	}
+
+	return std::vector<std::size_t>(extents.begin(), extents.end());
+}
+
+} // namespace
+
 image_transfer_plan::image_transfer_plan(
 	span<const std::size_t> extents,
 	std::size_t file_rank,
 	std::size_t array_rank
 )
-	: m_extents(checked_extents(
-		extents,
-		file_rank,
-		array_rank,
-		"image_transfer_plan"
-	))
+	: m_extents(sanitize_extents(extents, file_rank, array_rank))
 	, m_file_offsets(file_rank)
 	, m_array_offsets(array_rank)
 {

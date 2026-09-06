@@ -4,6 +4,7 @@
 
 #include <rexlib/core/platform/assert.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>
+#include <rexlib/em/image/image_transfer_plan.hpp>
 
 #include <numeric>
 
@@ -76,6 +77,21 @@ std::size_t image_region_grouping::get_file_count() const noexcept
 	return m_first_position.empty() ? 0 : m_first_position.size() - 1;
 }
 
+std::size_t image_region_grouping::get_addressed_file_count() const noexcept
+{
+	std::size_t addressed_file_count = 0;
+	const auto file_count = get_file_count();
+	for (std::size_t file_index = 0; file_index < file_count; ++file_index)
+	{
+		if (get_file_region_count(file_index) > 0)
+		{
+			++addressed_file_count;
+		}
+	}
+
+	return addressed_file_count;
+}
+
 std::size_t
 image_region_grouping::get_first_position(std::size_t file_index) const noexcept
 {
@@ -97,6 +113,32 @@ image_region_grouping::get_region(std::size_t position) const noexcept
 {
 	REXLIB_ASSERT(position < m_regions.size());
 	return m_regions[position];
+}
+
+image_transfer_plan image_region_grouping::build_file_transfer_plan(
+	const image_transaction_plan &plan,
+	std::size_t file_index
+) const
+{
+	const auto first = get_first_position(file_index);
+	const auto count = get_file_region_count(file_index);
+
+	image_transfer_plan transfer(
+		plan.get_extents(),
+		plan.get_file_rank(),
+		plan.get_array_rank()
+	);
+	transfer.reserve(count);
+	for (auto i = first; i < first + count; ++i)
+	{
+		const auto region = get_region(i);
+		transfer.add(
+			plan.get_file_offset(region),
+			plan.get_array_offset(region)
+		);
+	}
+
+	return transfer;
 }
 
 } // namespace em

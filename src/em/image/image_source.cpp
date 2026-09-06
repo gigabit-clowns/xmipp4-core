@@ -10,11 +10,9 @@
 #include <rexlib/core/ndarray/array_ref.hpp>
 #include <rexlib/em/image/image_reader.hpp>
 #include <rexlib/em/image/image_reader_provider.hpp>
+#include <rexlib/em/image/image_region_grouping.hpp>
 #include <rexlib/em/image/image_transaction_plan.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
-#include <rexlib/em/image/image_region_grouping.hpp>
-
-#include <em/image/region_dispatch.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -96,14 +94,11 @@ std::shared_ptr<completion> image_source::read(
 
 	auto shared_destination = std::make_shared<array>(std::move(destination));
 	auto result = std::make_shared<counting_completion>(
-		count_files_with_regions(grouping)
+		grouping.get_addressed_file_count()
 	);
 
-	for (
-		std::size_t file_index = 0;
-		file_index < grouping.get_file_count();
-		++file_index
-	)
+	const auto file_count = grouping.get_file_count();
+	for (std::size_t file_index = 0; file_index < file_count; ++file_index)
 	{
 		if (grouping.get_file_region_count(file_index) == 0)
 		{
@@ -113,7 +108,7 @@ std::shared_ptr<completion> image_source::read(
 		m_executor->submit(
 			std::make_unique<image_read_task>(
 				plan.get_file(file_index),
-				build_file_transfer_plan(plan, grouping, file_index),
+				grouping.build_file_transfer_plan(plan, file_index),
 				shared_destination,
 				m_readers
 			),

@@ -13,6 +13,7 @@ namespace em
 {
 
 class image_transaction_plan;
+class image_transfer_plan;
 
 /**
  * @brief The regions of a transaction, ordered by the file they address.
@@ -111,6 +112,18 @@ public:
 	std::size_t get_file_count() const noexcept;
 
 	/**
+	 * @brief Get how many files at least one region addresses.
+	 *
+	 * A file the plan named but that no region addresses is one of
+	 * @ref get_file_count and none of these, so this is what a consumer
+	 * counts to know how many files it will open.
+	 *
+	 * @return std::size_t The number of files addressed.
+	 */
+	REXLIB_API
+	std::size_t get_addressed_file_count() const noexcept;
+
+	/**
 	 * @brief Get where the regions of one file start.
 	 *
 	 * @param file_index Index of the file. Must be below
@@ -142,6 +155,26 @@ public:
 	 */
 	REXLIB_API
 	std::size_t get_region(std::size_t position) const noexcept;
+
+	/**
+	 * @brief Build the transfer plan for the regions of one file.
+	 *
+	 * Takes the shape from @p plan and appends every region this grouping
+	 * holds for @p file_index, in the order it holds them, so that the file
+	 * is read or written in one call.
+	 *
+	 * @param plan The transaction the shape and the regions come from. Must
+	 * be the one this grouping was built from.
+	 * @param file_index Index of the file. Must be below
+	 * @ref get_file_count.
+	 * @return image_transfer_plan The transfer plan for that file alone.
+	 * Empty for a file no region addresses.
+	 */
+	REXLIB_API
+	image_transfer_plan build_file_transfer_plan(
+		const image_transaction_plan &plan,
+		std::size_t file_index
+	) const;
 
 private:
 	std::vector<std::size_t> m_regions;

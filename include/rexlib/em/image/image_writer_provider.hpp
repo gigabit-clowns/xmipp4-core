@@ -19,13 +19,11 @@ class image_writer;
  *
  * The counterpart of @ref image_reader_provider, and as small: a consumer
  * names a file and gets something it can write. How that file came to be
- * writable at all — what extents and data type it was created with, and when
- * it is finished — is lifecycle the owner of the provider drives, so it
- * belongs to the implementation rather than here.
+ * writable at all (what extents and data type it was created with) depends
+ * on the implementation.
  *
  * @par Thread safety
- * A provider may be asked for writers concurrently. It does not follow that
- * the writers may be written concurrently.
+ * A provider may be asked for writers concurrently.
  */
 class REXLIB_API image_writer_provider
 {

@@ -14,15 +14,12 @@ class image_transaction_plan;
 class image_transfer_plan;
 
 /**
- * @brief The regions of a transaction, ordered by the file they address.
+ * @brief Indexes regions of a transaction, ordered by the file they address.
  *
  * An @ref image_transaction_plan holds its regions in the order they were
  * added, which for a batch drawn at random is an order that hops from stack
  * to stack. A consumer wants the opposite: every region of one file
- * together, so that the file is opened once and read once. This is that
- * ordering, and it is a type of its own rather than a phase of the plan,
- * because it is what a reader wants of a transaction and not something the
- * transaction is.
+ * together, so that the file is opened once and read once. 
  *
  * It does not hold the regions, only where they are: @ref get_region maps a
  * position of the ordering to a region of the plan it was built from, which
@@ -62,10 +59,6 @@ public:
 	 *
 	 * Regions addressing one file keep the order they have in @p plan.
 	 * Replaces whatever this grouping held, keeping its capacity.
-	 *
-	 * The grouping describes @p plan as it was when this was called. Adding
-	 * to the plan afterwards does not update it, and using the two together
-	 * then addresses regions that have moved; build again instead.
 	 *
 	 * @param plan The transaction whose regions are ordered.
 	 */
@@ -139,30 +132,32 @@ public:
 	 */
 	std::size_t get_region(std::size_t position) const noexcept;
 
-	/**
-	 * @brief Build the transfer plan for the regions of one file.
-	 *
-	 * Takes the shape from @p plan and appends every region this grouping
-	 * holds for @p file_index, in the order it holds them, so that the file
-	 * is read or written in one call.
-	 *
-	 * @param plan The transaction the shape and the regions come from. Must
-	 * be the one this grouping was built from.
-	 * @param file_index Index of the file. Must be below
-	 * @ref get_file_count.
-	 * @return image_transfer_plan The transfer plan for that file alone.
-	 * Empty for a file no region addresses.
-	 */
-	image_transfer_plan build_file_transfer_plan(
-		const image_transaction_plan &plan,
-		std::size_t file_index
-	) const;
-
 private:
 	std::vector<std::size_t> m_regions;
 	std::vector<std::size_t> m_first_position;
 	std::vector<std::size_t> m_cursors;
 };
+
+/**
+ * @brief Make the transfer plan for the regions of one file.
+ *
+ * Takes the shape from @p plan and appends every region @p grouping holds
+ * for @p file_index, in the order it holds them, so that the file is read
+ * or written in one call.
+ *
+ * @param grouping The grouping the regions are read from.
+ * @param plan The transaction the shape and the regions come from. Must be
+ * the one @p grouping was built from.
+ * @param file_index Index of the file. Must be below
+ * @ref image_region_grouping::get_file_count.
+ * @return image_transfer_plan The transfer plan for that file alone. Empty
+ * for a file no region addresses.
+ */
+image_transfer_plan make_file_transfer_plan(
+	const image_region_grouping &grouping,
+	const image_transaction_plan &plan,
+	std::size_t file_index
+);
 
 } // namespace em
 } // namespace rexlib

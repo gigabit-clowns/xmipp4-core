@@ -36,7 +36,7 @@ namespace em
  * direction, so a plane of a stack may equally be read into an array that
  * does not carry the axis it was stacked along.
  *
- * The shape — the extents and the two ranks — is stated when a plan is
+ * The shape (the extents and the two ranks) is stated when a plan is
  * constructed and never changes. A plan is therefore always one whole thing
  * rather than something to be configured before it can be used, and only the
  * regions come and go.

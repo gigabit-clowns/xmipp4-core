@@ -19,14 +19,13 @@ class image_probe;
 /**
  * @brief The ability of one file format to be read.
  *
- * A format contributes one of these to be able to open files for reading,
- * and one @ref image_write_format to be able to create them. A format that
- * only reads registers only this one and never has to say that it can not
- * write.
+ * It serves as a factory for @ref image_reader-s that decode a particular
+ * file format. It is able to judge its own suitability for a given file through
+ * an @ref image_probe and in case it fits, serve the reader for it.
  *
- * Formats are collected by an @ref image_read_format_manager, which shows
- * every one of them the same @ref image_probe and opens the file with
- * whichever reports the highest @ref backend_priority.
+ * Formats are usually collected by an @ref image_read_format_manager.
+ * 
+ * For write access, see @ref image_write_format.
  */
 class REXLIB_API image_read_format
 {

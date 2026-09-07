@@ -109,7 +109,7 @@ std::shared_ptr<completion> image_sink::write(
 		m_executor->submit(
 			std::make_unique<image_write_task>(
 				plan.get_file(file_index),
-				grouping.build_file_transfer_plan(plan, file_index),
+				make_file_transfer_plan(grouping, plan, file_index),
 				shared_source,
 				m_writers
 			),

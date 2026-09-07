@@ -25,10 +25,6 @@ namespace em
  * A writer is opened over complete extents, so the shape of the file is
  * settled before anything is written; the file can be laid out once up
  * front and a region can be written wherever it belongs, in any order.
- *
- * Growing a file whose length is not known until the data runs out is a
- * different contract, needing a cursor and a count patched as it goes, and
- * is not this interface.
  */
 class REXLIB_API image_writer
 {
@@ -61,8 +57,6 @@ public:
 	 * dimensionality of what the file holds, two for an image and three for
 	 * a volume, and it is what tells a stack of @c N images from one volume
 	 * of @c N planes: their extents are identical and only this differs.
-	 * Each format records the difference in its own way, as MRC does
-	 * through its space group and its grid size.
 	 *
 	 * Equal to the rank of @ref get_extents for a file holding a single
 	 * image or volume.

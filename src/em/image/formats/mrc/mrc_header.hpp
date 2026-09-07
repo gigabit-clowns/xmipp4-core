@@ -37,7 +37,7 @@ namespace mrc
 class mrc_header
 {
 public:
-	using vector_type = std::array<float, vector_size>;
+	using vector3f_type = std::array<float, 3>;
 
 	/**
 	 * @brief Construct a header of zeros in the byte order of the host.
@@ -75,11 +75,11 @@ public:
 	std::int32_t get_section_sampling() const noexcept;
 	void set_section_sampling(std::int32_t sampling) noexcept;
 
-	const vector_type& get_cell_size() const noexcept;
-	void set_cell_size(const vector_type &size) noexcept;
+	const vector3f_type& get_cell_size() const noexcept;
+	void set_cell_size(const vector3f_type &size) noexcept;
 
-	const vector_type& get_cell_angles() const noexcept;
-	void set_cell_angles(const vector_type &angles) noexcept;
+	const vector3f_type& get_cell_angles() const noexcept;
+	void set_cell_angles(const vector3f_type &angles) noexcept;
 
 	std::int32_t get_column_axis() const noexcept;
 	void set_column_axis(std::int32_t axis) noexcept;
@@ -152,8 +152,8 @@ private:
 	std::int32_t m_column_sampling;
 	std::int32_t m_row_sampling;
 	std::int32_t m_section_sampling;
-	vector_type m_cell_size;
-	vector_type m_cell_angles;
+	vector3f_type m_cell_size;
+	vector3f_type m_cell_angles;
 	std::int32_t m_column_axis;
 	std::int32_t m_row_axis;
 	std::int32_t m_section_axis;

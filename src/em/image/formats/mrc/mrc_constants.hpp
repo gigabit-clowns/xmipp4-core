@@ -85,11 +85,6 @@ REXLIB_INLINE_CONST_CONSTEXPR std::size_t label = 80;
 REXLIB_INLINE_CONST_CONSTEXPR std::size_t label_count = 10;
 
 /**
- * @brief Number of components of the cell, the cell angles and the origin.
- */
-REXLIB_INLINE_CONST_CONSTEXPR std::size_t vector_size = 3;
-
-/**
  * @brief The identifier a file carries at @ref offset::map.
  *
  * Only its first three bytes are matched when a file is recognized: that is

@@ -64,10 +64,10 @@ void write_scalar(
 	std::memcpy(bytes.data() + offset, &raw, sizeof(raw));
 }
 
-mrc_header::vector_type
-read_vector(span<const byte> bytes, std::size_t offset, byte_order order)
+mrc_header::vector3f_type
+read_vector3f(span<const byte> bytes, std::size_t offset, byte_order order)
 {
-	mrc_header::vector_type value;
+	mrc_header::vector3f_type value;
 	for (std::size_t i = 0; i < value.size(); ++i)
 	{
 		value[i] = read_scalar<float>(
@@ -78,10 +78,10 @@ read_vector(span<const byte> bytes, std::size_t offset, byte_order order)
 	return value;
 }
 
-void write_vector(
+void write_vector3f(
 	span<byte> bytes,
 	std::size_t offset,
-	const mrc_header::vector_type &value,
+	const mrc_header::vector3f_type &value,
 	byte_order order
 )
 {
@@ -201,7 +201,7 @@ byte_order resolve_byte_order(span<const byte> bytes)
 
 bool is_axis_permutation(const mrc_header &header) noexcept
 {
-	std::array<std::int32_t, vector_size> axes = {
+	std::array<std::int32_t, 3> axes = {
 		header.get_column_axis(),
 		header.get_row_axis(),
 		header.get_section_axis()
@@ -354,22 +354,22 @@ void mrc_header::set_section_sampling(std::int32_t sampling) noexcept
 	m_section_sampling = sampling;
 }
 
-const mrc_header::vector_type& mrc_header::get_cell_size() const noexcept
+const mrc_header::vector3f_type& mrc_header::get_cell_size() const noexcept
 {
 	return m_cell_size;
 }
 
-void mrc_header::set_cell_size(const vector_type &size) noexcept
+void mrc_header::set_cell_size(const vector3f_type &size) noexcept
 {
 	m_cell_size = size;
 }
 
-const mrc_header::vector_type& mrc_header::get_cell_angles() const noexcept
+const mrc_header::vector3f_type& mrc_header::get_cell_angles() const noexcept
 {
 	return m_cell_angles;
 }
 
-void mrc_header::set_cell_angles(const vector_type &angles) noexcept
+void mrc_header::set_cell_angles(const vector3f_type &angles) noexcept
 {
 	m_cell_angles = angles;
 }
@@ -579,8 +579,8 @@ mrc_header parse_header(span<const byte> bytes)
 		read_scalar<std::int32_t>(bytes, offset::my, order));
 	header.set_section_sampling(
 		read_scalar<std::int32_t>(bytes, offset::mz, order));
-	header.set_cell_size(read_vector(bytes, offset::cella, order));
-	header.set_cell_angles(read_vector(bytes, offset::cellb, order));
+	header.set_cell_size(read_vector3f(bytes, offset::cella, order));
+	header.set_cell_angles(read_vector3f(bytes, offset::cellb, order));
 	header.set_column_axis(
 		read_scalar<std::int32_t>(bytes, offset::mapc, order));
 	header.set_row_axis(
@@ -649,8 +649,8 @@ void serialize_header(const mrc_header &header, span<byte> bytes)
 	write_scalar(bytes, offset::mx, header.get_column_sampling(), order);
 	write_scalar(bytes, offset::my, header.get_row_sampling(), order);
 	write_scalar(bytes, offset::mz, header.get_section_sampling(), order);
-	write_vector(bytes, offset::cella, header.get_cell_size(), order);
-	write_vector(bytes, offset::cellb, header.get_cell_angles(), order);
+	write_vector3f(bytes, offset::cella, header.get_cell_size(), order);
+	write_vector3f(bytes, offset::cellb, header.get_cell_angles(), order);
 	write_scalar(bytes, offset::mapc, header.get_column_axis(), order);
 	write_scalar(bytes, offset::mapr, header.get_row_axis(), order);
 	write_scalar(bytes, offset::maps, header.get_section_axis(), order);

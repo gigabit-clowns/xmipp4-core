@@ -108,7 +108,7 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Save the fetched sources
-        if: steps.fetched.outputs.cache-hit != 'true'
+        if: steps.fetched.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ runner.os == 'Windows' && 'C:/fetched' || '/tmp/fetched' }}

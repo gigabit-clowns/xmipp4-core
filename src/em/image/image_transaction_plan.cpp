@@ -2,6 +2,8 @@
 
 #include <rexlib/em/image/image_transaction_plan.hpp>
 
+#include "image_region_extents.hpp"
+
 #include <rexlib/core/platform/assert.hpp>
 
 #include <stdexcept>
@@ -12,42 +14,22 @@ namespace rexlib
 namespace em
 {
 
-namespace
-{
-
-std::vector<std::size_t> sanitize_extents(
-	span<const std::size_t> extents,
-	std::size_t file_rank,
-	std::size_t array_rank
-)
-{
-	if (extents.size() > file_rank)
-	{
-		throw std::invalid_argument(
-			"image_transaction_plan: The regions do not fit in the rank of "
-			"the files."
-		);
-	}
-
-	if (extents.size() > array_rank)
-	{
-		throw std::invalid_argument(
-			"image_transaction_plan: The regions do not fit in the rank of "
-			"the array."
-		);
-	}
-
-	return std::vector<std::size_t>(extents.begin(), extents.end());
-}
-
-} // namespace
-
 image_transaction_plan::image_transaction_plan(
 	span<const std::size_t> extents,
 	std::size_t file_rank,
 	std::size_t array_rank
 )
-	: m_extents(sanitize_extents(extents, file_rank, array_rank))
+	: m_extents(
+		sanitize_region_extents(
+			extents,
+			file_rank,
+			array_rank,
+			"image_transaction_plan: The regions do not fit in the rank of "
+			"the files.",
+			"image_transaction_plan: The regions do not fit in the rank of "
+			"the array."
+		)
+	)
 	, m_file_offsets(file_rank)
 	, m_array_offsets(array_rank)
 {

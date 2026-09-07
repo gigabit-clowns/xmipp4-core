@@ -2,7 +2,6 @@
 Device-agnostic array computing library with a pluggable backend architecture
 
 [![Build and Test](https://github.com/gigabit-clowns/rexlib/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/gigabit-clowns/rexlib/actions/workflows/build-and-test.yml)
-[![Run tests with memcheck](https://github.com/gigabit-clowns/rexlib/actions/workflows/test-with-memcheck.yml/badge.svg)](https://github.com/gigabit-clowns/rexlib/actions/workflows/test-with-memcheck.yml)
 
 ## SonarCloud status
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_rexlib&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_rexlib)

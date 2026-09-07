@@ -79,13 +79,11 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
           max-size: 1G
 
-      # The archives are the same everywhere, so only the path splits them.
       - name: Restore the fetched sources
         id: fetched
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: gigabit-clowns/.github/.github/composites/restore-fetched@main
         with:
-          path: ${{ runner.os == 'Windows' && 'C:/fetched' || '/tmp/fetched' }}
-          key: fetched-${{ runner.os == 'Windows' && 'windows' || 'unix' }}-${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
@@ -98,7 +96,7 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
-            FETCHCONTENT_BASE_DIR=${{ runner.os == 'Windows' && 'C:/fetched' || '/tmp/fetched' }}
+            FETCHCONTENT_BASE_DIR=${{ steps.fetched.outputs.dir }}
             REXLIB_ENABLE_COVERAGE=ON
             REXLIB_REGISTER_TESTS_PER_BINARY=ON
             CMAKE_C_COMPILER_LAUNCHER=ccache
@@ -108,11 +106,8 @@ jobs:
           build-args: --config ${{ env.BUILD_TYPE }}
 
       - name: Save the fetched sources
-        if: steps.fetched.outputs.cache-hit != 'true'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ${{ runner.os == 'Windows' && 'C:/fetched' || '/tmp/fetched' }}
-          key: fetched-${{ runner.os == 'Windows' && 'windows' || 'unix' }}-${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+        if: github.ref == 'refs/heads/main'
+        uses: gigabit-clowns/.github/.github/composites/save-fetched@main
 
       - name: Save the compiler cache
         if: github.ref == 'refs/heads/main'

@@ -4,6 +4,7 @@
 
 #include <rexlib/core/platform/constexpr.hpp>
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -104,21 +105,21 @@ REXLIB_INLINE_CONST_CONSTEXPR std::size_t map_id_match_size = 3;
 /**
  * @brief First two bytes of the machine stamp of a little-endian file.
  */
-REXLIB_INLINE_CONST_CONSTEXPR std::uint8_t
-little_endian_machine_stamp[] = {0x44, 0x44};
+REXLIB_INLINE_CONST_CONSTEXPR std::array<std::uint8_t, 2>
+little_endian_machine_stamp = {{0x44, 0x44}};
 
 /**
  * @brief First two bytes of the machine stamp some little-endian files carry
  * in place of @ref little_endian_machine_stamp.
  */
-REXLIB_INLINE_CONST_CONSTEXPR std::uint8_t
-legacy_little_endian_machine_stamp[] = {0x44, 0x41};
+REXLIB_INLINE_CONST_CONSTEXPR std::array<std::uint8_t, 2>
+legacy_little_endian_machine_stamp = {{0x44, 0x41}};
 
 /**
  * @brief First two bytes of the machine stamp of a big-endian file.
  */
-REXLIB_INLINE_CONST_CONSTEXPR std::uint8_t
-big_endian_machine_stamp[] = {0x11, 0x11};
+REXLIB_INLINE_CONST_CONSTEXPR std::array<std::uint8_t, 2>
+big_endian_machine_stamp = {{0x11, 0x11}};
 
 /**
  * @brief Space group of a file holding one image or a stack of them.

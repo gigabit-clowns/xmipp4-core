@@ -136,7 +136,10 @@ bool is_printable_ascii(const std::string &text) noexcept
 	);
 }
 
-bool matches_stamp(span<const byte> bytes, const std::uint8_t (&stamp)[2])
+bool matches_stamp(
+	span<const byte> bytes,
+	const std::array<std::uint8_t, 2> &stamp
+)
 {
 	return as_uint8(bytes[offset::machst]) == stamp[0] &&
 		as_uint8(bytes[offset::machst + 1]) == stamp[1];
@@ -676,7 +679,7 @@ void serialize_header(const mrc_header &header, span<byte> bytes)
 		write_label(bytes, i, labels[i]);
 	}
 
-	const auto *stamp = order == byte_order::little_endian
+	const auto &stamp = order == byte_order::little_endian
 		? little_endian_machine_stamp
 		: big_endian_machine_stamp;
 	bytes[offset::machst] = as_byte(stamp[0]);

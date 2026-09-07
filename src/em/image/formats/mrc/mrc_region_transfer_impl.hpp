@@ -130,7 +130,7 @@ void read_regions_as(
 	const auto &offsets = plan.get_offsets();
 
 	dispatch_numerical_types(
-		[&] (auto array_tag)
+		[&offsets, &plan, array_data, file_data, swapped] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
 			const auto support = transfer_support<T, Q>();
@@ -178,7 +178,7 @@ void write_regions_as(
 	const auto &offsets = plan.get_offsets();
 
 	dispatch_numerical_types(
-		[&] (auto array_tag)
+		[&offsets, &plan, array_data, file_data, swapped] (auto array_tag)
 		{
 			using T = typename decltype(array_tag)::type;
 			const auto support = transfer_support<Q, T>();

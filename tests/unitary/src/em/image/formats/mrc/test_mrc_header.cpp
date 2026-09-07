@@ -35,6 +35,9 @@ REXLIB_CONST_CONSTEXPR std::size_t ispg_offset = 88;
 REXLIB_CONST_CONSTEXPR std::size_t nsymbt_offset = 92;
 REXLIB_CONST_CONSTEXPR std::size_t imod_stamp_offset = 152;
 REXLIB_CONST_CONSTEXPR std::size_t imod_flags_offset = 156;
+REXLIB_CONST_CONSTEXPR std::size_t nlabl_offset = 220;
+REXLIB_CONST_CONSTEXPR std::size_t label_offset = 224;
+REXLIB_CONST_CONSTEXPR std::size_t label_size = 80;
 REXLIB_CONST_CONSTEXPR std::size_t map_offset = 208;
 REXLIB_CONST_CONSTEXPR std::size_t machst_offset = 212;
 
@@ -513,5 +516,144 @@ TEST_CASE( "an MRC header survives being written and read back",
 				header, make_span(written.data(), written.size())),
 			std::invalid_argument
 		);
+	}
+}
+
+TEST_CASE( "an MRC file records the software that wrote it",
+	"[mrc_header]" )
+{
+	SECTION( "a label survives being written and read back" )
+	{
+		mrc_header header;
+		header.set_mode(mrc_mode::float32);
+		header.set_column_axis(1);
+		header.set_row_axis(2);
+		header.set_section_axis(3);
+		header.add_label("Created by something");
+
+		raw_header written(header_size, byte{});
+		serialize_header(header, make_span(written.data(), written.size()));
+		const auto reread = parse_header(view(written));
+
+		REQUIRE( reread.get_labels().size() == 1 );
+		REQUIRE( reread.get_labels()[0] == "Created by something" );
+	}
+
+	SECTION( "the count and the records agree on what is written" )
+	{
+		mrc_header header;
+		header.set_mode(mrc_mode::float32);
+		header.set_column_axis(1);
+		header.set_row_axis(2);
+		header.set_section_axis(3);
+		header.add_label("first");
+		header.add_label("second");
+
+		raw_header written(header_size, byte{});
+		serialize_header(header, make_span(written.data(), written.size()));
+
+		std::int32_t stated = 0;
+		std::memcpy(&stated, written.data() + nlabl_offset, sizeof(stated));
+
+		REQUIRE( stated == 2 );
+		REQUIRE( std::string(
+			reinterpret_cast<const char*>(written.data()) + label_offset,
+			5) == "first" );
+		REQUIRE( std::string(
+			reinterpret_cast<const char*>(written.data()) +
+				label_offset + label_size,
+			6) == "second" );
+	}
+
+	SECTION( "a record is padded with spaces to its full width" )
+	{
+		mrc_header header;
+		header.set_mode(mrc_mode::float32);
+		header.set_column_axis(1);
+		header.set_row_axis(2);
+		header.set_section_axis(3);
+		header.add_label("short");
+
+		raw_header written(header_size, byte{});
+		serialize_header(header, make_span(written.data(), written.size()));
+
+		const auto *first =
+			reinterpret_cast<const char*>(written.data()) + label_offset;
+
+		REQUIRE( std::string(first + 5, label_size - 5) ==
+			std::string(label_size - 5, ' ') );
+	}
+
+	SECTION( "a file that uses no label states none" )
+	{
+		mrc_header header;
+		header.set_mode(mrc_mode::float32);
+		header.set_column_axis(1);
+		header.set_row_axis(2);
+		header.set_section_axis(3);
+
+		raw_header written(header_size, byte{});
+		serialize_header(header, make_span(written.data(), written.size()));
+		const auto reread = parse_header(view(written));
+
+		std::int32_t stated = 0;
+		std::memcpy(&stated, written.data() + nlabl_offset, sizeof(stated));
+
+		REQUIRE( stated == 0 );
+		REQUIRE( reread.get_labels().empty() );
+	}
+
+	SECTION( "a label of the full width survives" )
+	{
+		const std::string full(label_size, 'x');
+
+		mrc_header header;
+		header.set_mode(mrc_mode::float32);
+		header.set_column_axis(1);
+		header.set_row_axis(2);
+		header.set_section_axis(3);
+		header.add_label(full);
+
+		raw_header written(header_size, byte{});
+		serialize_header(header, make_span(written.data(), written.size()));
+		const auto reread = parse_header(view(written));
+
+		REQUIRE( reread.get_labels()[0] == full );
+	}
+}
+
+TEST_CASE( "a label an MRC file cannot carry is refused", "[mrc_header]" )
+{
+	mrc_header header;
+
+	SECTION( "one longer than a record is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			header.add_label(std::string(label_size + 1, 'x')),
+			std::invalid_argument
+		);
+	}
+
+	SECTION( "one holding anything but printable ASCII is refused" )
+	{
+		// A record is fixed width text, so a terminator or a control
+		// character in the middle of one would be read back as something
+		// else.
+		REQUIRE_THROWS_AS(
+			header.add_label(std::string("a\0b", 3)),
+			std::invalid_argument
+		);
+		REQUIRE_THROWS_AS( header.add_label("a\tb"), std::invalid_argument );
+	}
+
+	SECTION( "an eleventh label is refused" )
+	{
+		for (std::size_t i = 0; i < 10; ++i)
+		{
+			header.add_label("filler");
+		}
+
+		REQUIRE_THROWS_AS( header.add_label("one too many"),
+			std::out_of_range );
 	}
 }

@@ -91,6 +91,51 @@ void write_vector(
 	}
 }
 
+bool is_label_padding(char c) noexcept
+{
+	return c == ' ' || c == '\0';
+}
+
+std::string read_label(span<const byte> bytes, std::size_t index)
+{
+	const auto *first = reinterpret_cast<const char*>(bytes.data()) +
+		offset::label + index * size::label;
+
+	auto length = size::label;
+	while (length > 0 && is_label_padding(first[length-1]))
+	{
+		--length;
+	}
+
+	return std::string(first, length);
+}
+
+void write_label(span<byte> bytes, std::size_t index, const std::string &text)
+{
+	auto *first = reinterpret_cast<char*>(bytes.data()) +
+		offset::label + index * size::label;
+
+	std::memcpy(first, text.data(), text.size());
+	std::memset(
+		first + text.size(), 
+		' ', 
+		size::label - text.size()
+	);
+}
+
+bool is_printable_ascii(const std::string &text) noexcept
+{
+	return std::all_of(
+		text.cbegin(),
+		text.cend(),
+		[] (char character)
+		{
+			const auto value = static_cast<unsigned char>(character);
+			return value >= 0x20 && value < 0x7F;
+		}
+	);
+}
+
 bool matches_stamp(span<const byte> bytes, const std::uint8_t (&stamp)[2])
 {
 	return as_uint8(bytes[offset::machst]) == stamp[0] &&
@@ -446,6 +491,37 @@ void mrc_header::set_imod_flags(std::int32_t flags) noexcept
 	m_imod_flags = flags;
 }
 
+span<const std::string> mrc_header::get_labels() const noexcept
+{
+	return make_span(m_labels.data(), m_labels.size());
+}
+
+void mrc_header::add_label(const std::string &label)
+{
+	if (m_labels.size() >= label_count)
+	{
+		throw std::out_of_range(
+			"mrc_header::add_label: An MRC file holds no more labels."
+		);
+	}
+
+	if (label.size() > size::label)
+	{
+		throw std::invalid_argument(
+			"mrc_header::add_label: The label is longer than a label record."
+		);
+	}
+
+	if (!is_printable_ascii(label))
+	{
+		throw std::invalid_argument(
+			"mrc_header::add_label: A label holds printable ASCII only."
+		);
+	}
+
+	m_labels.push_back(label);
+}
+
 bool has_map_identifier(span<const byte> bytes) noexcept
 {
 	if (bytes.size() < offset::map + map_id_match_size)
@@ -523,6 +599,23 @@ mrc_header parse_header(span<const byte> bytes)
 	header.set_imod_flags(
 		read_scalar<std::int32_t>(bytes, offset::imod_flags, order));
 
+	// Only the labels the file says it uses are taken. A count past the room
+	// there is says nothing trustworthy about the rest, so it is clamped
+	// rather than treated as a reason to refuse the file.
+	const auto stated = read_scalar<std::int32_t>(bytes, offset::nlabl, order);
+	const auto used = std::min(
+		static_cast<std::size_t>(std::max(stated, 0)), 
+		label_count
+	);
+	for (std::size_t i = 0; i < used; ++i)
+	{
+		const auto text = read_label(bytes, i);
+		if (is_printable_ascii(text))
+		{
+			header.add_label(text);
+		}
+	}
+
 	validate(header);
 
 	return header;
@@ -570,6 +663,18 @@ void serialize_header(const mrc_header &header, span<byte> bytes)
 	write_scalar(bytes, offset::imod_flags, header.get_imod_flags(), order);
 
 	std::memcpy(bytes.data() + offset::map, map_id, size::map);
+
+	const auto &labels = header.get_labels();
+	write_scalar(
+		bytes,
+		offset::nlabl,
+		static_cast<std::int32_t>(labels.size()),
+		order
+	);
+	for (std::size_t i = 0; i < labels.size(); ++i)
+	{
+		write_label(bytes, i, labels[i]);
+	}
 
 	const auto *stamp = order == byte_order::little_endian
 		? little_endian_machine_stamp

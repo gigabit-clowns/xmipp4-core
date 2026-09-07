@@ -4,6 +4,7 @@
 
 #include <em/image/formats/mrc/mrc_writer.hpp>
 
+#include <em/image/formats/mrc/mrc_header.hpp>
 #include <em/image/formats/mrc/mrc_reader.hpp>
 #include <em/image/formats/mrc/mrc_write_format.hpp>
 
@@ -24,6 +25,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
@@ -102,6 +104,15 @@ array make_host_array(
 	);
 }
 
+mrc_header header_of(const std::string &path)
+{
+	std::ifstream input(path.c_str(), std::ios::in | std::ios::binary);
+	std::vector<byte> raw(header_size);
+	input.read(reinterpret_cast<char*>(raw.data()), header_size);
+
+	return parse_header(make_span(raw.data(), raw.size()));
+}
+
 std::vector<float> counting(std::size_t count)
 {
 	std::vector<float> values(count);
@@ -171,6 +182,23 @@ TEST_CASE( "an MRC file is created with the shape it is opened over",
 
 		REQUIRE( boost::filesystem::file_size(path.get()) ==
 			1024 + 24 * sizeof(float) );
+	}
+
+	SECTION( "the file records the library that wrote it" )
+	{
+		const std::vector<std::size_t> extents = {3, 4};
+		{
+			const mrc_writer writer(
+				path.get(), make_span(extents), 2, numerical_type::float32);
+		}
+
+		// The header owns the labels the span refers to, so it has to
+		// outlive it.
+		const auto header = header_of(path.get());
+		const auto labels = header.get_labels();
+
+		REQUIRE( labels.size() == 1 );
+		REQUIRE( labels[0].compare(0, 17, "Created by rexlib") == 0 );
 	}
 
 	SECTION( "a shape the format has no file for is refused" )

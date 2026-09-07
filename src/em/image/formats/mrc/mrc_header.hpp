@@ -11,6 +11,8 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 namespace rexlib
 {
@@ -115,6 +117,32 @@ public:
 	std::int32_t get_imod_flags() const noexcept;
 	void set_imod_flags(std::int32_t flags) noexcept;
 
+	/**
+	 * @brief Get the labels the file carries.
+	 *
+	 * The ones in use, in order. A file states how many it uses and holds
+	 * room for @ref label_count; holding only those in use is what keeps the
+	 * count and the labels from disagreeing, and keeps a blank one from
+	 * appearing between two that are filled.
+	 *
+	 * @return span<const std::string> The labels.
+	 */
+	span<const std::string> get_labels() const noexcept;
+
+	/**
+	 * @brief Append a label.
+	 *
+	 * This is how software records that it wrote a file.
+	 *
+	 * @param label The text. Must be printable ASCII and must fit in
+	 * @ref size::label bytes.
+	 * @throws std::invalid_argument If @p label is too long or holds
+	 * anything but printable ASCII.
+	 * @throws std::out_of_range If the file already carries
+	 * @ref label_count labels.
+	 */
+	void add_label(const std::string &label);
+
 private:
 	byte_order m_byte_order;
 	std::int32_t m_column_count;
@@ -138,6 +166,7 @@ private:
 	std::int32_t m_version;
 	std::int32_t m_imod_stamp;
 	std::int32_t m_imod_flags;
+	std::vector<std::string> m_labels;
 };
 
 /**

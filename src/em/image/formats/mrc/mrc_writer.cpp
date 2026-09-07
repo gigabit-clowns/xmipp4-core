@@ -7,10 +7,13 @@
 #include "mrc_region_write_plan.hpp"
 
 #include <core/logger.hpp>
+#include <rexlib/core/library_version.hpp>
 #include <rexlib/core/ndarray/array_descriptor.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
 #include <rexlib/em/image/image_transfer_plan.hpp>
 
+#include <sstream>
+#include <string>
 #include <vector>
 
 namespace rexlib
@@ -22,6 +25,24 @@ namespace mrc
 
 namespace
 {
+
+std::string make_signature()
+{
+	std::ostringstream text;
+	text << "Created by rexlib " << get_library_version();
+	return text.str();
+}
+
+mrc_header make_signed_header(
+	span<const std::size_t> extents,
+	std::size_t core_rank,
+	numerical_type data_type
+)
+{
+	auto header = make_header(extents, core_rank, data_type);
+	header.add_label(make_signature());
+	return header;
+}
 
 // The file is laid out before it is mapped, since a mapping can neither
 // create one nor resize it.
@@ -46,7 +67,7 @@ mrc_writer::mrc_writer(
 	std::size_t core_rank,
 	numerical_type data_type
 )
-	: m_header(make_header(extents, core_rank, data_type))
+	: m_header(make_signed_header(extents, core_rank, data_type))
 	, m_geometry(m_header)
 	, m_mapping(lay_out_file(path, m_geometry))
 {

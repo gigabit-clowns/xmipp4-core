@@ -113,7 +113,7 @@ void put_machine_stamp(
 
 raw_header make_raw_header(byte_order order)
 {
-	raw_header raw(header_size, byte{});
+	raw_header raw(header_size, rexlib::byte{});
 
 	put_int32(raw, nx_offset, 4, order);
 	put_int32(raw, ny_offset, 3, order);
@@ -133,7 +133,7 @@ raw_header make_raw_header(byte_order order)
 	return raw;
 }
 
-span<const byte> view(const raw_header &raw)
+span<const rexlib::byte> view(const raw_header &raw)
 {
 	return make_span(raw.data(), raw.size());
 }
@@ -168,7 +168,7 @@ TEST_CASE( "the MRC identifier is found where the specification puts it",
 
 	SECTION( "bytes too few to reach it are not" )
 	{
-		const raw_header raw(map_offset, byte{});
+		const raw_header raw(map_offset, rexlib::byte{});
 
 		REQUIRE_FALSE( has_map_identifier(view(raw)) );
 	}
@@ -436,7 +436,7 @@ TEST_CASE( "an MRC header survives being written and read back",
 
 			const auto original = parse_header(view(raw));
 
-			raw_header written(header_size, byte{});
+			raw_header written(header_size, rexlib::byte{});
 			serialize_header(original, make_span(written.data(),
 				written.size()));
 			const auto reread = parse_header(view(written));
@@ -464,7 +464,7 @@ TEST_CASE( "an MRC header survives being written and read back",
 		header.set_row_axis(2);
 		header.set_section_axis(3);
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 
 		REQUIRE( has_map_identifier(view(written)) );
@@ -481,7 +481,7 @@ TEST_CASE( "an MRC header survives being written and read back",
 		header.set_section_axis(3);
 		header.set_byte_order(byte_order::big_endian);
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 
 		REQUIRE( as_uint8(written[machst_offset]) == 0x11 );
@@ -497,7 +497,7 @@ TEST_CASE( "an MRC header survives being written and read back",
 		header.set_section_axis(3);
 		header.set_imod_stamp(1146047817);
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 		const auto reread = parse_header(view(written));
 
@@ -509,7 +509,7 @@ TEST_CASE( "an MRC header survives being written and read back",
 	SECTION( "a destination too short is refused" )
 	{
 		const mrc_header header;
-		raw_header written(header_size - 1, byte{});
+		raw_header written(header_size - 1, rexlib::byte{});
 
 		REQUIRE_THROWS_AS(
 			serialize_header(
@@ -531,7 +531,7 @@ TEST_CASE( "an MRC file records the software that wrote it",
 		header.set_section_axis(3);
 		header.add_label("Created by something");
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 		const auto reread = parse_header(view(written));
 
@@ -549,7 +549,7 @@ TEST_CASE( "an MRC file records the software that wrote it",
 		header.add_label("first");
 		header.add_label("second");
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 
 		std::int32_t stated = 0;
@@ -574,7 +574,7 @@ TEST_CASE( "an MRC file records the software that wrote it",
 		header.set_section_axis(3);
 		header.add_label("short");
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 
 		const auto *first =
@@ -592,7 +592,7 @@ TEST_CASE( "an MRC file records the software that wrote it",
 		header.set_row_axis(2);
 		header.set_section_axis(3);
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 		const auto reread = parse_header(view(written));
 
@@ -614,7 +614,7 @@ TEST_CASE( "an MRC file records the software that wrote it",
 		header.set_section_axis(3);
 		header.add_label(full);
 
-		raw_header written(header_size, byte{});
+		raw_header written(header_size, rexlib::byte{});
 		serialize_header(header, make_span(written.data(), written.size()));
 		const auto reread = parse_header(view(written));
 

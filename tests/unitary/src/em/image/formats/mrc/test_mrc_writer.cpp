@@ -107,7 +107,7 @@ array make_host_array(
 mrc_header header_of(const std::string &path)
 {
 	std::ifstream input(path.c_str(), std::ios::in | std::ios::binary);
-	std::vector<byte> raw(header_size);
+	std::vector<rexlib::byte> raw(header_size);
 	input.read(reinterpret_cast<char*>(raw.data()), header_size);
 
 	return parse_header(make_span(raw.data(), raw.size()));

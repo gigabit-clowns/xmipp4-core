@@ -74,15 +74,15 @@ byte_order other_byte_order()
 }
 
 template <typename T>
-const byte* as_file(const std::vector<T> &values)
+const rexlib::byte* as_file(const std::vector<T> &values)
 {
-	return reinterpret_cast<const byte*>(values.data());
+	return reinterpret_cast<const rexlib::byte*>(values.data());
 }
 
 template <typename T>
-byte* as_file(std::vector<T> &values)
+rexlib::byte* as_file(std::vector<T> &values)
 {
-	return reinterpret_cast<byte*>(values.data());
+	return reinterpret_cast<rexlib::byte*>(values.data());
 }
 
 } // anonymous namespace

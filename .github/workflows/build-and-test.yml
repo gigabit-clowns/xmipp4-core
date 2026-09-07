@@ -79,6 +79,12 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.compiler.cxx }}
           max-size: 1G
 
+      - name: Restore the fetched sources
+        id: fetched
+        uses: gigabit-clowns/.github/.github/composites/restore-fetched@main
+        with:
+          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
         with:
@@ -90,6 +96,7 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
             CMAKE_EXPORT_COMPILE_COMMANDS=ON
+            FETCHCONTENT_BASE_DIR=${{ steps.fetched.outputs.dir }}
             REXLIB_ENABLE_COVERAGE=ON
             REXLIB_REGISTER_TESTS_PER_BINARY=ON
             CMAKE_C_COMPILER_LAUNCHER=ccache
@@ -97,6 +104,10 @@ jobs:
             ${{ matrix.compiler.cxx == 'cl' && 'CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded' || '' }}
           run-build: true
           build-args: --config ${{ env.BUILD_TYPE }}
+
+      - name: Save the fetched sources
+        if: github.ref == 'refs/heads/main'
+        uses: gigabit-clowns/.github/.github/composites/save-fetched@main
 
       - name: Save the compiler cache
         if: github.ref == 'refs/heads/main'

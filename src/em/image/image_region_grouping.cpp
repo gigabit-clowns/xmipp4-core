@@ -115,13 +115,14 @@ image_region_grouping::get_region(std::size_t position) const noexcept
 	return m_regions[position];
 }
 
-image_transfer_plan image_region_grouping::build_file_transfer_plan(
+image_transfer_plan make_file_transfer_plan(
+	const image_region_grouping &grouping,
 	const image_transaction_plan &plan,
 	std::size_t file_index
-) const
+)
 {
-	const auto first = get_first_position(file_index);
-	const auto count = get_file_region_count(file_index);
+	const auto first = grouping.get_first_position(file_index);
+	const auto count = grouping.get_file_region_count(file_index);
 
 	image_transfer_plan transfer(
 		plan.get_extents(),
@@ -131,7 +132,7 @@ image_transfer_plan image_region_grouping::build_file_transfer_plan(
 	transfer.reserve(count);
 	for (auto i = first; i < first + count; ++i)
 	{
-		const auto region = get_region(i);
+		const auto region = grouping.get_region(i);
 		transfer.add(
 			plan.get_file_offset(region),
 			plan.get_array_offset(region)

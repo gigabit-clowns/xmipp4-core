@@ -41,7 +41,7 @@ REXLIB_CONST_CONSTEXPR std::size_t label_size = 80;
 REXLIB_CONST_CONSTEXPR std::size_t map_offset = 208;
 REXLIB_CONST_CONSTEXPR std::size_t machst_offset = 212;
 
-using raw_header = std::vector<byte>;
+using raw_header = std::vector<rexlib::byte>;
 
 void put_bytes(
 	raw_header &raw,

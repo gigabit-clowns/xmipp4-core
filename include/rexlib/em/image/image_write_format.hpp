@@ -23,9 +23,13 @@ class image_probe;
 /**
  * @brief The ability of one file format to be written.
  *
- * The counterpart of @ref image_read_format, registered separately so that a
- * format may offer one without the other and so that a program that only
- * reads never reaches the writing side at all.
+ * It serves as a factory for @ref image_writer-s that encode a particular
+ * file format. It is able to judge its own suitability for a given file through
+ * an @ref image_probe and in case it fits, serve the writer for it.
+ *
+ * Formats are usually collected by an @ref image_write_format_manager.
+ * 
+ * For read access, see @ref image_read_format.
  */
 class REXLIB_API image_write_format
 {

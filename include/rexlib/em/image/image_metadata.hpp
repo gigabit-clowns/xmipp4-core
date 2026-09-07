@@ -12,7 +12,7 @@ namespace em
 /**
  * @brief What a format states about a file beyond its shape and data type.
  *
- * It holds nothing for now; structure and contents to be determined.
+ * TODO: It holds nothing for now; structure and contents are to be determined.
  */
 class image_metadata
 {

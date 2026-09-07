@@ -19,10 +19,10 @@ namespace em
  * @brief A list of paths in which equal paths cost one string.
  *
  * A transaction names one file per region, and the same file over and over:
- * a batch of two hundred and fifty six elements drawn from eight stacks
- * names eight distinct paths. Holding a string per entry would copy each of
- * them as many times as it is named, so the distinct paths are held once and
- * the entries are indices into them.
+ * a batch of 256 elements drawn from 8 stacks names eight distinct paths. 
+ * Holding a string per entry would copy each of them as many times as it is 
+ * named, so the distinct paths are held once and the entries are indices into 
+ * them.
  *
  * The list therefore has two sizes. @ref get_path_count is how many distinct
  * paths were interned and @ref get_entry_count how many entries refer to

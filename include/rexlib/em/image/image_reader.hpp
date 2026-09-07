@@ -117,8 +117,9 @@ public:
 	 * @p destination; a side whose rank exceeds that of the extents spans a
 	 * single position along the axes they do not reach.
 	 *
-	 * Regions may be read in any order. Where two of them land on the same
-	 * elements of @p destination, which one prevails is unspecified.
+	 * Regions may be read in any order. If two of them land on the same
+	 * elements of @p destination, which one prevails is unspecified and thus
+	 * this pattern should be avoided.
 	 *
 	 * Values are converted to the data type of @p destination with
 	 * @ref numerical_cast semantics, which preserve the numeric value.

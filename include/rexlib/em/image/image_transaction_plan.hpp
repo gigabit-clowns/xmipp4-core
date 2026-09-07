@@ -19,55 +19,27 @@ namespace em
 /**
  * @brief The regions transferred in one transaction.
  *
- * A transaction is what a caller submits and awaits: one array, one set of
- * files, completing as a whole. It is what an @ref image_source reads and an
- * @ref image_sink writes, where an @ref image_transfer_plan is what one
- * @ref image_reader reads and one @ref image_writer writes. The two are
- * peers describing the same thing at different scopes; neither holds the
- * other.
+ * A transaction describes moving data between one array and one set of
+ * files as a single whole.
  *
- * Every region pairs an offset into a file with an offset into the array,
- * names which file it belongs to, and shares one set of extents with every
- * other region. The two sides are named for what they are rather than for
- * which way the data moves, so there is nothing to remember: the file side
- * is the files whatever the call does with them, and the direction belongs
- * to the call.
+ * Every region pairs an ND offset into a file with an ND offset into the
+ * array, names the file it belongs to, and shares one set of extents with
+ * every other region in the plan.
  *
- * The extents are the shape of one region and nothing else, so they carry
- * the rank of the region rather than the rank of either side, exactly as
- * @ref image_transfer_plan does. A side of higher rank spans a single
- * position along the axes the extents do not reach, which are its leading
- * ones.
+ * The extents are the shape of one region, so their rank is the rank of the
+ * region rather than of either side, exactly as in @ref image_transfer_plan.
+ * A side of higher rank spans a single position along the axes the extents
+ * don't reach; those axes are implicitly padded with leading ones.
  *
- * The shape — the extents and the two ranks — is stated when a plan is
- * constructed and never changes. A plan is therefore always one whole thing
- * rather than something to be configured before it can be used, and only the
- * files and the regions come and go.
+ * The extents and each side's ranks is fixed when a plan is constructed and 
+ * never changes afterward, so a plan is always a complete, ready-to-use object 
+ * rather than something configured before use. Only its files and regions come
+ * and go, and every file must share the same rank.
  *
- * Every file has the same rank, since a transaction over files of differing
- * rank has no consumer and would cost the flat layout that makes this type
- * worth having: the offsets live in @ref index_table and the paths in an
- * @ref interned_path_list, so a transaction of any size costs a bounded
- * number of allocations and @ref clear keeps the capacity.
- *
- * The same rank, and nothing more. **The files may be of any size**, which
- * is the ordinary case: a dataset of twelve thousand particles spread over
- * stacks of one thousand, seven hundred and fifty, and twelve hundred is one
- * transaction like any other. A plan records the extents of no file, only
- * offsets into them, and each reader or writer bounds-checks what it is
- * given against its own file, which is the only place a file's extents are
- * known and the only place they are needed.
- *
- * What every region does share is its shape, since a plan carries one set of
- * extents. Reading whole elements therefore means those elements share a
- * core shape — which is not a restriction imposed here but what a batch is,
- * since they land in one array whose slots are one shape. Elements of
- * differing core shape are two transactions, and would be two arrays anyway.
- *
- * The regions are held in the order they were added and in no other. Walking
- * them one file at a time is what a consumer reading them wants, and that
- * ordering is built beside the plan rather than by it, so that a plan is
- * what is transferred and nothing else.
+ * Regions are held in the order they were added. A consumer that wants to walk 
+ * them one file at a time builds that ordering alongside the plan rather than 
+ * relying on the plan for it, keeping the plan itself limited to what is 
+ * transferred and nothing else.
  */
 class image_transaction_plan
 {

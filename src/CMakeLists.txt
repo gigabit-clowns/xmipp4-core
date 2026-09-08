@@ -7,14 +7,11 @@
 # has to. They are PUBLIC on these targets, which are internal and never
 # exported: the unitary suite compiles against the same headers, so it has to
 # see the same include directories.
-function(rexlib_add_component NAME DIR)
-	file(
-		GLOB_RECURSE
-		SOURCES
-			${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.cpp
-			${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.c
-	)
-	add_library(${NAME} OBJECT ${SOURCES})
+#
+# Each is created empty and filled in by the CMakeLists of the directories it
+# spans, one per directory, through target_sources.
+function(rexlib_add_component NAME)
+	add_library(${NAME} OBJECT)
 	set_target_properties(
 		${NAME}
 		PROPERTIES
@@ -27,7 +24,7 @@ function(rexlib_add_component NAME DIR)
 		PUBLIC
 			$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 		PRIVATE
-			${CMAKE_CURRENT_SOURCE_DIR}
+			${PROJECT_SOURCE_DIR}/src
 	)
 	target_compile_definitions(
 		${NAME}
@@ -95,7 +92,7 @@ endfunction()
 # components included. spdlog and half are the two that travel: core/logger.hpp
 # includes one and core/numerical/float16_conversions.hpp the other, so every
 # component that includes either of those headers needs them too.
-rexlib_add_component(rexlib-core-obj core)
+rexlib_add_component(rexlib-core-obj)
 target_link_libraries(
 	rexlib-core-obj
 	PUBLIC
@@ -113,9 +110,9 @@ endif()
 
 # Operation declarations, and nothing outside the standard library and this
 # project's own headers.
-rexlib_add_component(rexlib-ops-obj ops)
+rexlib_add_component(rexlib-ops-obj)
 
-rexlib_add_component(rexlib-functional-obj functional)
+rexlib_add_component(rexlib-functional-obj)
 target_link_libraries(
 	rexlib-functional-obj
 	PUBLIC
@@ -123,7 +120,7 @@ target_link_libraries(
 		spdlog::spdlog_header_only
 )
 
-rexlib_add_component(rexlib-cpu-obj backends/cpu)
+rexlib_add_component(rexlib-cpu-obj)
 target_link_libraries(
 	rexlib-cpu-obj
 	PUBLIC
@@ -134,7 +131,7 @@ target_link_libraries(
 		Eigen3::Eigen
 )
 
-rexlib_add_component(rexlib-em-obj em)
+rexlib_add_component(rexlib-em-obj)
 target_link_libraries(
 	rexlib-em-obj
 	PUBLIC
@@ -146,6 +143,14 @@ target_link_libraries(
 		Boost::container_hash
 		Boost::interprocess
 )
+
+# The sources, one CMakeLists per directory. They come after every component
+# above, since each names the target it adds itself to.
+add_subdirectory(core)
+add_subdirectory(ops)
+add_subdirectory(functional)
+add_subdirectory(backends)
+add_subdirectory(em)
 
 # Assemble the single shared library from the component objects.
 #

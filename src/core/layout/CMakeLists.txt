@@ -1,0 +1,11 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		broadcast.cpp
+		broadcast_error.cpp
+		index.cpp
+		joint_cursor.cpp
+		joint_layout.cpp
+		joint_layout_builder.cpp
+		strided_layout.cpp
+)

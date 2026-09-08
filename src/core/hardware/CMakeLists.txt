@@ -1,0 +1,24 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		buffer.cpp
+		command.cpp
+		command_queue.cpp
+		device.cpp
+		device_backend.cpp
+		device_context.cpp
+		device_index.cpp
+		device_manager.cpp
+		device_properties.cpp
+		device_session.cpp
+		device_type.cpp
+		event.cpp
+		memory_allocator.cpp
+		memory_allocator_table.cpp
+		memory_resource.cpp
+		memory_resource_kind.cpp
+		program.cpp
+		program_scratch_requirement.cpp
+)
+
+add_subdirectory(host_memory)

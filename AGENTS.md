@@ -28,6 +28,14 @@ The same top level groups appear on both sides, `core`, `backends`, `ops`,
 `functional` and `em`, but not every directory has a counterpart: a header with
 no implementation of its own lives only under `include/`.
 
+Every directory holding sources carries a `CMakeLists.txt` naming them, which
+adds them to the component target its group belongs to and descends into the
+directories below it. A new `.cpp` has to be named there before it is built:
+the lists are explicit rather than globbed, so that adding a file cannot go
+unnoticed by the build system and so that link order does not follow whatever
+order the file system returns. That order matters here, since the CPU program
+builders register themselves through objects at namespace scope.
+
 ## Building
 
 ```

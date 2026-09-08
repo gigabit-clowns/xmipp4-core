@@ -1,0 +1,23 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		core_program_builder_registry.cpp
+		dispatcher.cpp
+		eager_dispatcher.cpp
+		execute.cpp
+		execution_context.cpp
+		operand_signature.cpp
+		operation.cpp
+		operation_arity.cpp
+		operation_cast.cpp
+		operation_data_type_policy.cpp
+		operation_descriptor.cpp
+		operation_shape_policy.cpp
+		program_builder.cpp
+		program_builder_registry.cpp
+		program_cache.cpp
+		program_cache_key.cpp
+		program_manager.cpp
+)
+
+add_subdirectory(rules)

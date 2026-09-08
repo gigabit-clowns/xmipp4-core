@@ -1,0 +1,7 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		host_buffer.cpp
+		host_memory_allocator.cpp
+		host_memory_resource.cpp
+)

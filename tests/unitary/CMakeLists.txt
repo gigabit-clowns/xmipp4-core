@@ -1,13 +1,6 @@
-# Register all source and header files
-file(
-	GLOB_RECURSE 
-	TEST_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-)
-
 # Add the test executable
-add_executable(rexlib-unitary-tests ${TEST_SOURCES})
+add_executable(rexlib-unitary-tests)
+add_subdirectory(src)
 target_compile_definitions(
 	rexlib-unitary-tests
 	PRIVATE

@@ -1,0 +1,10 @@
+target_sources(
+	rexlib-cpu-obj
+	PRIVATE
+		fourier_layout_plan.cpp
+		linalg_core_layout_plan.cpp
+		linalg_operand_core.cpp
+		reduction_layout_plan.cpp
+		roll_layout_plan.cpp
+		sequence_layout_plan.cpp
+)

@@ -55,15 +55,6 @@ struct deduce_outcome
     type_vector outputs;
 };
 
-bool operator==(const deduce_outcome &lhs, const deduce_outcome &rhs)
-{
-    if (lhs.rejected != rhs.rejected)
-    {
-        return false;
-    }
-    return lhs.rejected || lhs.outputs == rhs.outputs;
-}
-
 deduce_outcome run_deduce(
     const operation_data_type_policy &policy,
     const type_vector &inputs,

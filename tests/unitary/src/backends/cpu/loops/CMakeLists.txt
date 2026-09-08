@@ -1,0 +1,10 @@
+target_sources(
+	rexlib-unitary-tests
+	PRIVATE
+		test_elementwise_loop.cpp
+		test_inner_loop_stride_dispatch.cpp
+		test_reduction_element_adaptor.cpp
+		test_reduction_loop.cpp
+		test_sequence_loop.cpp
+		test_strided_pointer_iterator.cpp
+)

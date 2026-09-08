@@ -97,7 +97,7 @@ jobs:
         id: fetched
         uses: gigabit-clowns/.github/.github/composites/restore-fetched@main
         with:
-          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/rexlib_add_*.cmake') }}
 
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
@@ -167,6 +167,95 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.compiler.c == 'gcc'
         with:
           build-artifact-name: sonar-build-files
+
+  build_with_system_dependencies:
+    name: CMake with system dependencies
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      BUILD_TYPE: Release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install the dependencies the distribution carries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            libboost-container-dev \
+            libboost-filesystem-dev \
+            libeigen3-dev \
+            libspdlog-dev \
+            catch2
+
+      # half and pocketfft are packaged nowhere, so a system build of them is
+      # a packager dropping the header on the include path. Doing the same
+      # here is what covers Findhalf.cmake and Findpocketfft.cmake.
+      - name: Place the headers no distribution packages
+        # Bump alongside the half version in CMakeLists.txt.
+        env:
+          HALF_SHA256: 76ddbf406e9d9b772ec73af2bf925b38b290b4390cc4064720a08d4b4bca0aa9
+        run: |
+          commit=$(sed -n 's/.*rexlib_add_pocketfft(COMMIT \([^)]*\)).*/\1/p' CMakeLists.txt)
+          version=$(sed -n 's/.*rexlib_add_half(VERSION \([^) ]*\).*/\1/p' CMakeLists.txt)
+          curl -fsS -o pocketfft_hdronly.h \
+            "https://raw.githubusercontent.com/mreineck/pocketfft/${commit}/pocketfft_hdronly.h"
+          # SourceForge always redirects to a geo-selected mirror, so this
+          # download has to follow redirects; the checksum is what makes
+          # trusting whichever mirror answers unnecessary.
+          curl -fsSL --proto '=https' --proto-redir '=https' -o half.zip \
+            "https://downloads.sourceforge.net/project/half/half/${version}/half-${version}.zip"
+          echo "${HALF_SHA256}  half.zip" | sha256sum -c -
+          unzip -q half.zip -d half
+          sudo install -m 644 pocketfft_hdronly.h half/include/half.hpp /usr/local/include/
+
+      - name: Set up compiler cache
+        uses: gigabit-clowns/.github/.github/composites/restore-ccache@main
+        with:
+          key: ubuntu-latest-system-dependencies
+          max-size: 1G
+
+      - name: Configure and build with CMake
+        uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
+        with:
+          source-dir: ${{ github.workspace }}
+          build-dir: "${{ github.workspace }}/build"
+          c-compiler: gcc
+          cxx-compiler: g++
+          options: |
+            CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            REXLIB_USE_SYSTEM_BOOST=ON
+            REXLIB_USE_SYSTEM_SPDLOG=ON
+            REXLIB_USE_SYSTEM_HALF=ON
+            REXLIB_USE_SYSTEM_POCKETFFT=ON
+            REXLIB_USE_SYSTEM_EIGEN=ON
+            REXLIB_USE_SYSTEM_CATCH2=ON
+            CMAKE_C_COMPILER_LAUNCHER=ccache
+            CMAKE_CXX_COMPILER_LAUNCHER=ccache
+          run-build: true
+          build-args: --config ${{ env.BUILD_TYPE }}
+
+      - name: Save the compiler cache
+        if: github.ref == 'refs/heads/main'
+        uses: gigabit-clowns/.github/.github/composites/save-ccache@main
+        with:
+          key: ubuntu-latest-system-dependencies
+
+      # A system build must not drag a dependency into the install: every one
+      # of them is private and none appears in a public header.
+      - name: Check that no dependency reached the install
+        run: |
+          cmake --install build --prefix "${{ runner.temp }}/install"
+          found=$(find "${{ runner.temp }}/install" \
+            \( -iname '*catch*' -o -iname '*eigen*' -o -iname '*spdlog*' \
+               -o -iname '*boost*' -o -iname '*half*' -o -iname '*pocketfft*' \) \
+            -print)
+          if [ -n "$found" ]; then
+            echo "A dependency reached the install tree:"
+            echo "$found"
+            exit 1
+          fi
 
   sonar-scan:
     name: SonarQube scan

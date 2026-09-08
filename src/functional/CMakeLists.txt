@@ -1,0 +1,21 @@
+target_sources(
+	rexlib-functional-obj
+	PRIVATE
+		arithmetic.cpp
+		bitwise.cpp
+		cast.cpp
+		compare.cpp
+		complex.cpp
+		creation.cpp
+		fourier.cpp
+		linalg.cpp
+		logical.cpp
+		numeric.cpp
+		power.cpp
+		reduction.cpp
+		rounding.cpp
+		selection.cpp
+		transfer.cpp
+		trigonometric.cpp
+		view.cpp
+)

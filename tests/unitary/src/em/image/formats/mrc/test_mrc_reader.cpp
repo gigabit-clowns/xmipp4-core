@@ -35,6 +35,10 @@ namespace
 
 // A path under the build tree that is removed when the test leaves, whether
 // it succeeded or not.
+//
+// The scratch directory is shared and every case runs as a process of its
+// own, so two cases naming the same file race: one truncates what the other
+// has mapped. No two names here may repeat.
 class scoped_path
 {
 public:
@@ -182,7 +186,7 @@ std::vector<float> read_all(const mrc_reader &reader)
 TEST_CASE( "an MRC file is opened and reports what it holds",
 	"[mrc_reader]" )
 {
-	const scoped_path path("reader.mrc");
+	const scoped_path path("reader_open.mrc");
 
 	SECTION( "a stack of images reports two core axes" )
 	{
@@ -221,7 +225,7 @@ TEST_CASE( "an MRC file is opened and reports what it holds",
 TEST_CASE( "the values of an MRC file are read into an array",
 	"[mrc_reader]" )
 {
-	const scoped_path path("reader.mrc");
+	const scoped_path path("reader_values.mrc");
 
 	SECTION( "the whole of a stack arrives in order" )
 	{
@@ -273,7 +277,7 @@ TEST_CASE( "the values of an MRC file are read into an array",
 TEST_CASE( "a file that contradicts its own header is refused",
 	"[mrc_reader]" )
 {
-	const scoped_path path("reader.mrc");
+	const scoped_path path("reader_bad_header.mrc");
 
 	SECTION( "one shorter than the shape it states is refused" )
 	{
@@ -302,7 +306,7 @@ TEST_CASE( "a file that contradicts its own header is refused",
 TEST_CASE( "the MRC format claims the files it can read",
 	"[mrc_read_format]" )
 {
-	const scoped_path path("reader.mrc");
+	const scoped_path path("reader_claimed.mrc");
 	const mrc_read_format format;
 
 	SECTION( "it is named" )

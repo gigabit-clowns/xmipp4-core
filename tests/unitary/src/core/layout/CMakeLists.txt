@@ -1,0 +1,13 @@
+target_sources(
+	rexlib-unitary-tests
+	PRIVATE
+		test_broadcast.cpp
+		test_dynamic_subscript.cpp
+		test_index.cpp
+		test_joint_cursor.cpp
+		test_joint_layout.cpp
+		test_joint_layout_builder.cpp
+		test_slice.cpp
+		test_strided_axis.cpp
+		test_strided_layout.cpp
+)

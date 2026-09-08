@@ -1,0 +1,8 @@
+target_sources(
+	rexlib-unitary-tests
+	PRIVATE
+		test_fourier_layout_plan.cpp
+		test_linalg_core_layout_plan.cpp
+		test_linalg_operand_core.cpp
+		test_roll_layout_plan.cpp
+)

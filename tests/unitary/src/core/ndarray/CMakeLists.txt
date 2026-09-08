@@ -1,0 +1,9 @@
+target_sources(
+	rexlib-unitary-tests
+	PRIVATE
+		test_array.cpp
+		test_array_descriptor.cpp
+		test_array_ref.cpp
+		test_const_array.cpp
+		test_const_array_ref.cpp
+)

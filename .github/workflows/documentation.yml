@@ -7,6 +7,20 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
     branches:
       - main
+    paths-ignore:
+      - LICENSE
+      - '**.md'
+      - .github/workflows/clean-up-caches.yml
+      - .github/workflows/codeql-actions.yml
+      - .github/workflows/codeql-cpp.yml
+      - .github/workflows/build-and-test.yml
+      - .github/workflows/keep-caches-warm.yml
+      - .github/workflows/release.yml
+      - .gitignore
+      - .vscode/**
+      - doc/**
+      - logos/**
+      - renovate.json
 
   pull_request:
     branches:

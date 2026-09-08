@@ -148,9 +148,7 @@ public:
 private:
 	static std::unique_ptr<typename Registry::format_type> create_format()
 	{
-		return std::unique_ptr<typename Registry::format_type>(
-			new Format()
-		);
+		return std::make_unique<Format>();
 	}
 };
 

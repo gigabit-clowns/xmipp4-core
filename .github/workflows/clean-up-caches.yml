@@ -5,6 +5,7 @@ on:
   workflow_run:
     workflows:
       - Build and Test
+      - CodeQL Cpp
     types:
       - completed
 

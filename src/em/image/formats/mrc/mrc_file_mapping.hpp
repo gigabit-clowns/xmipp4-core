@@ -78,6 +78,25 @@ public:
 	std::size_t get_size() const noexcept;
 
 	/**
+	 * @brief Ask for a stretch of the mapping to be brought into memory.
+	 *
+	 * A mapped read that touches a page the process does not hold yet traps
+	 * into the kernel, and a batch reading a stretch of a file that way pays
+	 * for one of those per page of it. This asks for the whole stretch at
+	 * once instead, so that the reads that follow find it there.
+	 *
+	 * It is advice and nothing more: the bytes are readable either way, and
+	 * a platform that does not take it, or takes it and does nothing, only
+	 * leaves the faults to happen as they did before. Nothing is reported
+	 * because there is nothing a caller would do differently.
+	 *
+	 * @param offset Where the stretch starts, in bytes from the start of the
+	 * mapping.
+	 * @param size How many bytes it covers. Clamped to what is mapped.
+	 */
+	void prefetch(std::size_t offset, std::size_t size) const noexcept;
+
+	/**
 	 * @brief Make everything written through the mapping reach the storage.
 	 *
 	 * @throws image_format_error If the mapping could not be flushed.

@@ -5,6 +5,7 @@
 #include "mrc_host_access.hpp"
 #include "mrc_region_read_plan.hpp"
 #include "mrc_region_transfer.hpp"
+#include "mrc_region_window.hpp"
 
 #include <rexlib/core/ndarray/array_descriptor.hpp>
 #include <rexlib/core/ndarray/array_ref.hpp>
@@ -81,6 +82,12 @@ void mrc_reader::read(
 	const image_transfer_plan &regions
 ) const
 {
+	const auto window = make_region_window(regions, m_geometry);
+	m_mapping.prefetch(
+		m_geometry.get_data_offset() + window.byte_offset,
+		window.byte_size
+	);
+
 	auto *array_data = get_host_data(destination);
 
 	const auto &descriptor = destination.get_descriptor();

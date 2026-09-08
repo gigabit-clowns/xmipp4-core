@@ -27,6 +27,12 @@ namespace mrc
  * what lets @ref read be called concurrently: the mapping and the layout it
  * builds per call are the only state a read touches, and neither is shared
  * across calls.
+ *
+ * A read asks for the stretch of the mapping its regions cover before it
+ * moves any of them, so that the transfer finds the pages there instead of
+ * trapping into the kernel for one page of them at a time. See
+ * @ref mrc_file_mapping::prefetch, which is advice and changes nothing about
+ * what is read.
  */
 class mrc_reader final
 	: public image_reader

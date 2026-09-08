@@ -158,7 +158,7 @@ jobs:
     name: CMake with system dependencies
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Intentionally old
     env:
       BUILD_TYPE: Debug
     steps:

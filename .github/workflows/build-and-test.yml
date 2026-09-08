@@ -193,13 +193,20 @@ jobs:
       # a packager dropping the header on the include path. Doing the same
       # here is what covers Findhalf.cmake and Findpocketfft.cmake.
       - name: Place the headers no distribution packages
+        # Bump alongside the half version in CMakeLists.txt.
+        env:
+          HALF_SHA256: 76ddbf406e9d9b772ec73af2bf925b38b290b4390cc4064720a08d4b4bca0aa9
         run: |
           commit=$(sed -n 's/.*rexlib_add_pocketfft(COMMIT \([^)]*\)).*/\1/p' CMakeLists.txt)
           version=$(sed -n 's/.*rexlib_add_half(VERSION \([^) ]*\).*/\1/p' CMakeLists.txt)
           curl -fsS -o pocketfft_hdronly.h \
             "https://raw.githubusercontent.com/mreineck/pocketfft/${commit}/pocketfft_hdronly.h"
-          curl -fsS -o half.zip \
+          # SourceForge always redirects to a geo-selected mirror, so this
+          # download has to follow redirects; the checksum is what makes
+          # trusting whichever mirror answers unnecessary.
+          curl -fsSL --proto '=https' --proto-redir '=https' -o half.zip \
             "https://downloads.sourceforge.net/project/half/half/${version}/half-${version}.zip"
+          echo "${HALF_SHA256}  half.zip" | sha256sum -c -
           unzip -q half.zip -d half
           sudo install -m 644 pocketfft_hdronly.h half/include/half.hpp /usr/local/include/
 

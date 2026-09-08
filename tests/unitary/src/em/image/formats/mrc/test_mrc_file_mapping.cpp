@@ -23,6 +23,10 @@ namespace
 
 // A path under the build tree that is removed when the test leaves, whether
 // it succeeded or not.
+//
+// The scratch directory is shared and every case runs as a process of its
+// own, so two cases naming the same file race: one truncates what the other
+// has mapped. No two names here may repeat.
 class scoped_path
 {
 public:
@@ -78,7 +82,7 @@ std::size_t size_on_disk(const std::string &path)
 TEST_CASE( "a file is laid out in full before it is mapped",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path("mapping.tmp");
+	const scoped_path path("mapping_layout.tmp");
 
 	SECTION( "it is created at exactly the size asked for" )
 	{
@@ -104,7 +108,7 @@ TEST_CASE( "a file is laid out in full before it is mapped",
 TEST_CASE( "an MRC file is read through its mapping",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path("mapping.tmp");
+	const scoped_path path("mapping_read.tmp");
 
 	SECTION( "the whole file is mapped from its first byte" )
 	{
@@ -140,7 +144,7 @@ TEST_CASE( "an MRC file is read through its mapping",
 TEST_CASE( "an MRC file is written through its mapping",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path("mapping.tmp");
+	const scoped_path path("mapping_write.tmp");
 
 	SECTION( "what is written reaches the storage" )
 	{
@@ -178,7 +182,7 @@ TEST_CASE( "an MRC file is written through its mapping",
 TEST_CASE( "a mapping carries its file when it is moved",
 	"[mrc_file_mapping]" )
 {
-	const scoped_path path("mapping.tmp");
+	const scoped_path path("mapping_moved.tmp");
 	write_file(path.get(), {'a', 'b', 'c', 'd'});
 
 	SECTION( "a moved mapping keeps reading the file" )

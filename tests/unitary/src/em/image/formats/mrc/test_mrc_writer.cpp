@@ -42,6 +42,10 @@ namespace
 
 // A path under the build tree that is removed when the test leaves, whether
 // it succeeded or not.
+//
+// The scratch directory is shared and every case runs as a process of its
+// own, so two cases naming the same file race: one truncates what the other
+// has mapped. No two names here may repeat.
 class scoped_path
 {
 public:
@@ -348,7 +352,7 @@ TEST_CASE( "a header built from a shape reports that shape when parsed",
 TEST_CASE( "an MRC file is created with the shape it is opened over",
 	"[mrc_writer]" )
 {
-	const scoped_path path("writer.mrc");
+	const scoped_path path("writer_created.mrc");
 
 	SECTION( "a writer reports what it was created over" )
 	{
@@ -433,7 +437,7 @@ TEST_CASE( "an MRC file is created with the shape it is opened over",
 TEST_CASE( "what is written to an MRC file is what is read back",
 	"[mrc_writer]" )
 {
-	const scoped_path path("writer.mrc");
+	const scoped_path path("writer_round_trip.mrc");
 
 	SECTION( "a single image round-trips" )
 	{
@@ -626,7 +630,7 @@ TEST_CASE( "the MRC format claims the files it can create",
 
 	SECTION( "a claimed file opens into a writer" )
 	{
-		const scoped_path path("writer.mrc");
+		const scoped_path path("writer_claimed.mrc");
 		const std::vector<std::size_t> extents = {3, 4};
 
 		const auto writer = format.open(

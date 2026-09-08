@@ -1,0 +1,9 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		array.cpp
+		array_descriptor.cpp
+		array_ref.cpp
+		const_array.cpp
+		const_array_ref.cpp
+)

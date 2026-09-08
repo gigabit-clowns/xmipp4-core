@@ -1,0 +1,29 @@
+target_sources(
+	rexlib-em-obj
+	PRIVATE
+		caching_image_reader_provider.cpp
+		direct_image_reader_provider.cpp
+		image_format_registry.cpp
+		image_location.cpp
+		image_metadata.cpp
+		image_probe.cpp
+		image_read_format.cpp
+		image_read_format_manager.cpp
+		image_reader.cpp
+		image_reader_provider.cpp
+		image_region_extents.cpp
+		image_region_grouping.cpp
+		image_sink.cpp
+		image_source.cpp
+		image_transaction_plan.cpp
+		image_transfer_plan.cpp
+		image_write_format.cpp
+		image_write_format_manager.cpp
+		image_writer.cpp
+		image_writer_provider.cpp
+		index_table.cpp
+		interned_path_list.cpp
+		managed_image_writer_provider.cpp
+)
+
+add_subdirectory(formats)

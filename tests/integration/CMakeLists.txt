@@ -1,15 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
-
-# Register all source and header files
-file(
-	GLOB_RECURSE
-	TEST_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-)
-
 # Add the test executable
-add_executable(rexlib-integration-tests ${TEST_SOURCES})
+add_executable(rexlib-integration-tests)
+add_subdirectory(src)
 target_link_libraries(
 	rexlib-integration-tests
 	PRIVATE
@@ -30,5 +21,7 @@ if(WIN32)
 	)
 endif()
 
+rexlib_enable_warnings(rexlib-integration-tests)
+
 # Register tests
-rexlib_register_tests(rexlib-integration-tests)
+rexlib_register_tests(rexlib-integration-tests integration)

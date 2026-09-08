@@ -28,6 +28,10 @@ namespace
 
 // A path under the build tree that is removed when the test leaves, whether
 // it succeeded or not.
+//
+// The scratch directory is shared and every case runs as a process of its
+// own, so two cases naming the same file race: one truncates what the other
+// has mapped. No two names here may repeat.
 class scoped_path
 {
 public:
@@ -119,7 +123,7 @@ TEST_CASE_METHOD( cpu_execution_context_fixture,
 
 	for (const auto &subject : shapes)
 	{
-		const scoped_path path("round_trip.mrc");
+		const scoped_path path("round_trip_managers.mrc");
 		const auto values = counting(element_count(subject.extents));
 
 		auto source = zeros(
@@ -184,7 +188,7 @@ TEST_CASE_METHOD( cpu_execution_context_fixture,
 
 	for (const auto file_type : file_types)
 	{
-		const scoped_path path("round_trip.mrc");
+		const scoped_path path("round_trip_conversion.mrc");
 
 		auto source = zeros(
 			make_descriptor(extents, numerical_type::float32),

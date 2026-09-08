@@ -16,7 +16,9 @@ TEST_CASE( "aligned_alloc should produce aligned allocations", "[aligned_alloc]"
 
 	for (std::size_t i = 0; i < repetitions; ++i)
 	{
-		auto *data = static_cast<char*>(rexlib::aligned_alloc(size, alignment));
+		auto *data = static_cast<unsigned char*>(
+			rexlib::aligned_alloc(size, alignment)
+		);
 		REQUIRE( data != nullptr ); // Assuming no OOM situation. 
 		REQUIRE( get_alignment(data) >= alignment );
 

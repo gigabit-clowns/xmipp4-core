@@ -1,0 +1,7 @@
+target_sources(
+	rexlib-core-obj
+	PRIVATE
+		operand_type_resolution.cpp
+		operand_type_rule_engine.cpp
+		rule_operation_data_type_policy.cpp
+)

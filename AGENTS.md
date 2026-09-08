@@ -21,12 +21,20 @@ the same pull request that causes it.
 | `src/ops/`, `src/functional/`, `src/em/` | Operation declarations and the functions that reach them |
 | `src/em/image/` | The image I/O subsystem, one directory per file format |
 | `tests/unitary/`, `tests/integration/` | Catch2 suites, with trompeloeil for mocks |
-| `cmake/modules/` | One `fetch_*.cmake` per dependency |
+| `cmake/modules/` | One `rexlib_add_*.cmake` per dependency, plus the `Find*.cmake` for those that ship no package config |
 | `cmake/config/` | The template for the installed CMake package config |
 
 The same top level groups appear on both sides, `core`, `backends`, `ops`,
 `functional` and `em`, but not every directory has a counterpart: a header with
 no implementation of its own lives only under `include/`.
+
+Every directory holding sources carries a `CMakeLists.txt` naming them, which
+adds them to the component target its group belongs to and descends into the
+directories below it. A new `.cpp` has to be named there before it is built:
+the lists are explicit rather than globbed, so that adding a file cannot go
+unnoticed by the build system and so that link order does not follow whatever
+order the file system returns. That order matters here, since the CPU program
+builders register themselves through objects at namespace scope.
 
 ## Building
 
@@ -36,29 +44,54 @@ cmake --build build -j
 ctest --test-dir build
 ```
 
-CMake 3.16 is the minimum. The sources are written to C++14 and reach anything
+CMake 3.18 is the minimum. The sources are written to C++14 and reach anything
 newer through the `REXLIB_*` feature macros, so that a compiler without it
 still builds them; CMake asks for C++17 but leaves
 `CMAKE_CXX_STANDARD_REQUIRED` off, so the request is a preference. One
 declaration does not follow this, `parse_device_index` in
 `core/hardware/device_index.hpp`, which takes a `std::string_view`.
 
-Options, all `OFF` by default:
+Options:
 
-| Option | Effect |
-|---|---|
-| `REXLIB_BUILD_DOC` | Builds the Doxygen target |
-| `REXLIB_ENABLE_COVERAGE` | Adds coverage instrumentation |
-| `REXLIB_REGISTER_TESTS_PER_BINARY` | Registers one CTest entry per test executable instead of one per Catch2 case |
+| Option | Default | Effect |
+|---|---|---|
+| `REXLIB_INSTALL` | `ON` | Generates the install and export rules |
+| `REXLIB_BUILD_TESTING` | `BUILD_TESTING` | Builds the test suites |
+| `REXLIB_BUILD_DOC` | `OFF` | Builds the Doxygen target |
+| `REXLIB_ENABLE_COVERAGE` | `OFF` | Adds coverage instrumentation |
+| `REXLIB_REGISTER_TESTS_PER_BINARY` | `OFF` | Registers one CTest entry per test executable instead of one per Catch2 case |
+
+`REXLIB_BUILD_TESTING` lets a project that embeds rexlib drop its tests without
+turning off `BUILD_TESTING` for its own.
+
+Each suite carries its name as a CTest label, so `ctest -L unitary` and
+`ctest -L integration` run one of them. The label is set whichever way the
+cases were registered.
 
 The last one exists because a memory checker pays its start-up on every test
 CTest runs. Discovering each case makes it re-analyse the whole binary once per
 case, which took the memcheck job past six hours.
 
-Dependencies are fetched, not found: boost, spdlog, half, pocketfft and eigen,
-each through its `cmake/modules/fetch_*.cmake`. Boost and spdlog are linked
-statically and privately, so the installed package asks only for `Threads` and
-an archive of it is self contained.
+Dependencies come through one `cmake/modules/rexlib_add_*.cmake` each: boost,
+spdlog, half, pocketfft and eigen for the library, catch2 and trompeloeil for
+the tests. Every one is fetched and built by default and can instead be taken
+from the system, either all at once with `REXLIB_USE_SYSTEM_DEPENDENCIES` or
+one at a time with `REXLIB_USE_SYSTEM_BOOST` and its siblings, which default to
+the value the global one had when the build directory was first configured.
+
+Each function takes the release to fetch as `VERSION` and, separately, the one
+`find_package` demands as `MINIMUM`. The fetched pin tracks the newest release
+and would be a floor no distribution meets. Renovate reads `VERSION` in place,
+so it stays a literal in `CMakeLists.txt`. `FETCHCONTENT_SOURCE_DIR_<NAME>`
+points a fetch at a local checkout without either option.
+
+half and pocketfft ship no CMake package config anywhere, so their system path
+goes through this project's own `Findhalf.cmake` and `Findpocketfft.cmake`.
+Neither header carries a version, so neither module can check one.
+
+Every dependency is private and none appears in a public header, so the
+installed package asks only for `Threads` whichever way they were obtained,
+and an archive of a default build is self contained.
 
 ## Conventions
 
@@ -118,7 +151,7 @@ runtime and whether it is the debug one.
 
 | Workflow | Does |
 |---|---|
-| `build-and-test.yml` | Builds and tests the matrix, then the SonarQube scan |
+| `build-and-test.yml` | Builds and tests the matrix and a system dependency build, then the SonarQube scan |
 | `deploy.yml` | Builds the documentation, and the binary archives, and publishes both |
 | `release.yml` | Tags and releases, through the shared workflow of the organisation |
 | `clean-up-caches.yml` | Returns Actions cache space |
@@ -127,6 +160,14 @@ The matrix covers Linux, macOS and Windows, gcc, clang and MSVC, x86_64 and
 Arm. MSVC builds through Ninja rather than the Visual Studio generator, since
 that is the only way a compiler cache can be used, and the environment is set
 up with `vswhere` and `vcvars` beforehand.
+
+Beside the matrix, one `ubuntu-latest` job builds against system dependencies,
+so that the `find_package` half of every `rexlib_add_*` module keeps being
+exercised. It takes boost, eigen, spdlog and catch2 from apt and puts the half
+and pocketfft headers on the include path the way a packager would, which is
+what covers `Findhalf.cmake` and `Findpocketfft.cmake`; trompeloeil, packaged
+nowhere and more than one header, stays fetched. The job also asserts that no
+dependency reached the install tree.
 
 Every entry runs the suites, and the `ubuntu-latest` ones run them under a
 memory checker with `REXLIB_REGISTER_TESTS_PER_BINARY`. The rest run them

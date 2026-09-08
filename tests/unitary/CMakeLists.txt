@@ -1,23 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
-
-# Register all source and header files
-file(
-	GLOB_RECURSE 
-	TEST_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-)
-
 # Add the test executable
-add_executable(
-    rexlib-unitary-tests
-    ${TEST_SOURCES}
-	$<TARGET_OBJECTS:rexlib-core-obj>
-	$<TARGET_OBJECTS:rexlib-ops-obj>
-	$<TARGET_OBJECTS:rexlib-functional-obj>
-	$<TARGET_OBJECTS:rexlib-cpu-obj>
-	$<TARGET_OBJECTS:rexlib-em-obj>
-)
+add_executable(rexlib-unitary-tests)
+add_subdirectory(src)
 target_compile_definitions(
 	rexlib-unitary-tests
 	PRIVATE
@@ -28,11 +11,24 @@ target_include_directories(
 	PRIVATE 
 		${PROJECT_SOURCE_DIR}/src
 )
+# This suite reaches symbols the shared library hides, so it embeds the
+# component objects rather than importing them. Linking the object libraries
+# brings their private dependencies too, which is what the LINK_LIBRARIES of
+# rexlib used to be read for.
+#
+# rexlib is linked as well, and on purpose: the plugins some cases load are
+# modules against the shared library, and they have to resolve against it.
+# This executable therefore holds a second copy of the library's state, hidden
+# and distinct from the one those plugins see.
 target_link_libraries(
 	rexlib-unitary-tests
 	PRIVATE
+		rexlib-core-obj
+		rexlib-ops-obj
+		rexlib-functional-obj
+		rexlib-cpu-obj
+		rexlib-em-obj
 		rexlib
-		$<TARGET_PROPERTY:rexlib,LINK_LIBRARIES>
 		rexlib-test-assets-interface
 		Catch2::Catch2WithMain
 		trompeloeil::trompeloeil
@@ -77,5 +73,7 @@ if(WIN32)
 	)
 endif()
 
+rexlib_enable_warnings(rexlib-unitary-tests)
+
 # Register tests
-rexlib_register_tests(rexlib-unitary-tests)
+rexlib_register_tests(rexlib-unitary-tests unitary)

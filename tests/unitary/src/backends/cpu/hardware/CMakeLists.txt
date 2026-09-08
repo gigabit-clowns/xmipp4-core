@@ -1,0 +1,10 @@
+target_sources(
+	rexlib-unitary-tests
+	PRIVATE
+		test_command_queue.cpp
+		test_device.cpp
+		test_device_backend.cpp
+		test_event.cpp
+		test_functor_program.cpp
+		test_thread_pool.cpp
+)

@@ -268,12 +268,18 @@ TEST_CASE( "calling next on an array access layout on a stepping basis should ad
 		{
 			for (std::size_t k = 0; k < extents[0]; ++k)
 			{
+				// An index times a stride is signed arithmetic: an offset is a
+				// ptrdiff_t and a stride may be negative.
+				const auto si = static_cast<std::ptrdiff_t>(i);
+				const auto sj = static_cast<std::ptrdiff_t>(j);
+				const auto sk = static_cast<std::ptrdiff_t>(k);
+
 				REQUIRE( indices[0] == k );
 				REQUIRE( indices[1] == j );
 				REQUIRE( indices[2] == i );
 	
-				CHECK( 2048 + k*strides1[0] + j*strides1[1] + i*strides1[2] == offsets[0] );
-				CHECK( 1024 + k*strides2[0] + j*strides2[1] + i*strides2[2] == offsets[1] );
+				CHECK( 2048 + sk*strides1[0] + sj*strides1[1] + si*strides1[2] == offsets[0] );
+				CHECK( 1024 + sk*strides2[0] + sj*strides2[1] + si*strides2[2] == offsets[1] );
 
 				std::size_t expected;
 				if (k == extents[0]-1)
@@ -331,19 +337,22 @@ TEST_CASE( "calling next on an array access layout on a block basis should advan
 	{
 		for (std::size_t j = 0; j < extents[1]; ++j)
 		{
+			const auto si = static_cast<std::ptrdiff_t>(i);
+			const auto sj = static_cast<std::ptrdiff_t>(j);
+
 			REQUIRE( indices[0] == 0 );
 			REQUIRE( indices[1] == j );
 			REQUIRE( indices[2] == i );
-			CHECK( 2048 + j*strides1[1] + i*strides1[2] == offsets[0] );
-			CHECK( 1024 + j*strides2[1] + i*strides2[2] == offsets[1] );
+			CHECK( 2048 + sj*strides1[1] + si*strides1[2] == offsets[0] );
+			CHECK( 1024 + sj*strides2[1] + si*strides2[2] == offsets[1] );
 
 			REQUIRE( layout.next(ite, 8) == 7 );
 
 			REQUIRE( indices[0] == 8 );
 			REQUIRE( indices[1] == j );
 			REQUIRE( indices[2] == i );
-			CHECK( 2048 + 8*strides1[0] + j*strides1[1] + i*strides1[2] == offsets[0] );
-			CHECK( 1024 + 8*strides2[0] + j*strides2[1] + i*strides2[2] == offsets[1] );
+			CHECK( 2048 + 8*strides1[0] + sj*strides1[1] + si*strides1[2] == offsets[0] );
+			CHECK( 1024 + 8*strides2[0] + sj*strides2[1] + si*strides2[2] == offsets[1] );
 
 			std::size_t expected;
 			if (j == extents[1]-1 && i == extents[2]-1)
@@ -389,24 +398,26 @@ TEST_CASE( "calling next on an array access layout on an first_dim should poster
 	REQUIRE( offsets.size() == 2 );
 	REQUIRE( indices.size() == 3 );
 
-	const auto first_index = GENERATE(0, 2, 3);
+	const std::size_t first_index = GENERATE(0, 2, 3);
 	indices[0] = first_index; // Should not be modified.
 
 	for (std::size_t i = 0; i < extents[2]; ++i)
 	{
+		const auto si = static_cast<std::ptrdiff_t>(i);
+
 		REQUIRE( indices[0] == first_index );
 		REQUIRE( indices[1] == 0 );
 		REQUIRE( indices[2] == i );
-		REQUIRE( 2048 + i*strides1[2] == offsets[0] );
-		REQUIRE( 1024 + i*strides2[2] == offsets[1] );
+		REQUIRE( 2048 + si*strides1[2] == offsets[0] );
+		REQUIRE( 1024 + si*strides2[2] == offsets[1] );
 
 		REQUIRE( layout.next(ite, 8, 1) == 7 );
 
 		REQUIRE( indices[0] == first_index );
 		REQUIRE( indices[1] == 8 );
 		REQUIRE( indices[2] == i );
-		REQUIRE( 2048 + 8*strides1[1] + i*strides1[2] == offsets[0] );
-		REQUIRE( 1024 + 8*strides2[1] + i*strides2[2] == offsets[1] );
+		REQUIRE( 2048 + 8*strides1[1] + si*strides1[2] == offsets[0] );
+		REQUIRE( 1024 + 8*strides2[1] + si*strides2[2] == offsets[1] );
 
 		std::size_t expected;
 		if (i == extents[2]-1)
@@ -451,8 +462,8 @@ TEST_CASE( "calling next on an array access layout with first_dim and last_dim s
 	REQUIRE( offsets.size() == 2 );
 	REQUIRE( indices.size() == 3 );
 
-	const auto first_index = GENERATE(0, 2, 3);
-	const auto last_index = GENERATE(0, 2, 3);
+	const std::size_t first_index = GENERATE(0, 2, 3);
+	const std::size_t last_index = GENERATE(0, 2, 3);
 	indices[0] = first_index; // Should not be modified.
 	indices[2] = last_index; // Should not be modified.
 

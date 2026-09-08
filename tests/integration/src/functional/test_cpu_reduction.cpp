@@ -43,6 +43,12 @@ T repeated(T value, std::size_t count) noexcept
 	return value * static_cast<T>(count);
 }
 
+// A sum of booleans saturates, so only whether the run is empty matters.
+bool repeated(bool value, std::size_t count) noexcept
+{
+	return value && count != 0;
+}
+
 } // anonymous namespace
 
 TEST_CASE_METHOD(

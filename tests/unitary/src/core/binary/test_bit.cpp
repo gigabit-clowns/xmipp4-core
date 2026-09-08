@@ -621,16 +621,17 @@ TEST_CASE( "bit_ceil returns the smallest power of two not less than value", "[b
 
 TEST_CASE( "bit_width returns the minimum number of bits to represent value", "[bit]" )
 {
-	unsigned input, expected;
+	unsigned input;
+	int expected;
 	std::tie(input, expected) = GENERATE(
-		table<unsigned, unsigned>({
-			{0U, 0U},
-			{1U, 1U},
-			{2U, 2U},
-			{3U, 2U},
-			{4U, 3U},
-			{5U, 3U},
-			{31U, 5U}
+		table<unsigned, int>({
+			{0U, 0},
+			{1U, 1},
+			{2U, 2},
+			{3U, 2},
+			{4U, 3},
+			{5U, 3},
+			{31U, 5}
 		})
 	);
 	REQUIRE(bit_width(input) == expected);
@@ -640,9 +641,10 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 {
 	SECTION( "8 bits" )
 	{
-		uint8_t input, expected;
+		uint8_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint8_t, uint8_t>({
+			table<uint8_t, int>({
 				{0x00, 8},
 				{0x01, 7},
 				{0x02, 6},
@@ -657,9 +659,10 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 	}
 	SECTION( "32 bits" )
 	{
-		uint32_t input, expected;
+		uint32_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint32_t, uint32_t>({
+			table<uint32_t, int>({
 				{0x00000000, 32},
 				{0x00000001, 31},
 				{0x00000002, 30},
@@ -674,9 +677,10 @@ TEST_CASE( "count_leading_zeros counts the number of leading zeros", "[bit]" )
 	}
 	SECTION( "64 bits" )
 	{
-		uint64_t input, expected;
+		uint64_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint64_t, uint64_t>({
+			table<uint64_t, int>({
 				{0x0000000000000000ULL, 64},
 				{0x0000000000000001ULL, 63},
 				{0x0000000000000002ULL, 62},
@@ -695,9 +699,10 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 {
 	SECTION( "8 bits" )
 	{
-		uint8_t input, expected;
+		uint8_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint8_t, uint8_t>({
+			table<uint8_t, int>({
 				{0x00, 0},
 				{0x88, 1},
 				{0xC0, 2},
@@ -713,9 +718,10 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 	}
 	SECTION( "32 bits" )
 	{
-		uint32_t input, expected;
+		uint32_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint32_t, uint32_t>({
+			table<uint32_t, int>({
 				{0x00000000, 0},
 				{0x88888888, 1},
 				{0xCD063678, 2},
@@ -731,9 +737,10 @@ TEST_CASE( "count_leading_ones counts the number of leading ones", "[bit]" )
 	}
 	SECTION( "64 bits" )
 	{
-		uint64_t input, expected;
+		uint64_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint64_t, uint64_t>({
+			table<uint64_t, int>({
 				{0x0000000000000000ULL, 0},
 				{0x8888888888888888ULL, 1},
 				{0xCD0612F3D43A6878ULL, 2},
@@ -753,9 +760,10 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 {
 	SECTION( "8 bits" )
 	{
-		uint8_t input, expected;
+		uint8_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint8_t, uint8_t>({
+			table<uint8_t, int>({
 				{0x00, 8},
 				{0x01, 0},
 				{0x02, 1},
@@ -771,9 +779,10 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 	}
 	SECTION( "32 bits" )
 	{
-		uint32_t input, expected;
+		uint32_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint32_t, uint32_t>({
+			table<uint32_t, int>({
 				{0x00000000, 32},
 				{0x00000001, 0},
 				{0x00000002, 1},
@@ -788,9 +797,10 @@ TEST_CASE( "count_trailing_zeros counts the number of trailing zeros", "[bit]" )
 	}
 	SECTION( "64 bits" )
 	{
-		uint64_t input, expected;
+		uint64_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint64_t, uint64_t>({
+			table<uint64_t, int>({
 				{0x0000000000000000ULL, 64},
 				{0x0000000000000001ULL, 0},
 				{0x0000000000000002ULL, 1},
@@ -809,9 +819,10 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 {
 	SECTION( "8 bits" )
 	{
-		uint8_t input, expected;
+		uint8_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint8_t, uint8_t>({
+			table<uint8_t, int>({
 				{0x00, 0},
 				{0x88, 0},
 				{0x03, 2},
@@ -827,9 +838,10 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 	}
 	SECTION( "32 bits" )
 	{
-		uint32_t input, expected;
+		uint32_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint32_t, uint32_t>({
+			table<uint32_t, int>({
 				{0x00000000, 0},
 				{0x88888888, 0},
 				{0x02ABC001, 1},
@@ -844,9 +856,10 @@ TEST_CASE( "count_trailing_ones counts the number of trailing ones", "[bit]" )
 	}
 	SECTION( "64 bits" )
 	{
-		uint64_t input, expected;
+		uint64_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint64_t, uint64_t>({
+			table<uint64_t, int>({
 				{0x0000000000000000ULL, 0},
 				{0x8888888888888888ULL, 0},
 				{0xCD0612F3D43A6873ULL, 2},
@@ -866,9 +879,10 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 {
 	SECTION( "8 bits" )
 	{
-		uint8_t input, expected;
+		uint8_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint8_t, uint8_t>({
+			table<uint8_t, int>({
 				{0x00, 0},
 				{0x01, 1},
 				{0x02, 1},
@@ -883,9 +897,10 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 	}
 	SECTION( "32 bits" )
 	{
-		uint32_t input, expected;
+		uint32_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint32_t, uint32_t>({
+			table<uint32_t, int>({
 				{0x00000000, 0},
 				{0x00000001, 1},
 				{0x00000002, 1},
@@ -900,9 +915,10 @@ TEST_CASE( "popcount counts the number of set bits", "[bit]" )
 	}
 	SECTION( "64 bits" )
 	{
-		uint64_t input, expected;
+		uint64_t input;
+		int expected;
 		std::tie(input, expected) = GENERATE(
-			table<uint64_t, uint64_t>({
+			table<uint64_t, int>({
 				{0x0000000000000000ULL, 0},
 				{0x0000000000000001ULL, 1},
 				{0x0000000000000002ULL, 1},

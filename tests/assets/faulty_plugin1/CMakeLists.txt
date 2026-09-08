@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/faulty_plugin1.cpp)
 add_library(faulty-plugin1 MODULE ${SOURCES})
 set_target_properties(

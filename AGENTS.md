@@ -64,6 +64,10 @@ Options:
 `REXLIB_BUILD_TESTING` lets a project that embeds rexlib drop its tests without
 turning off `BUILD_TESTING` for its own.
 
+Each suite carries its name as a CTest label, so `ctest -L unitary` and
+`ctest -L integration` run one of them. The label is set whichever way the
+cases were registered.
+
 The last one exists because a memory checker pays its start-up on every test
 CTest runs. Discovering each case makes it re-analyse the whole binary once per
 case, which took the memcheck job past six hours.

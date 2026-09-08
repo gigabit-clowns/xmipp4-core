@@ -34,7 +34,8 @@ TEST_CASE( "reverse_byte_order correctly reverses byte order for integral types"
 	}
 	SECTION( "int64_t" )
 	{
-		REQUIRE( reverse_byte_order(int64_t(0x123456789ABCDEF0)) == 0xF0DEBC9A78563412 );
+		const auto expected = static_cast<int64_t>(0xF0DEBC9A78563412ULL);
+		REQUIRE( reverse_byte_order(int64_t(0x123456789ABCDEF0)) == expected );
 	}
 	SECTION( "uint64_t" )
 	{

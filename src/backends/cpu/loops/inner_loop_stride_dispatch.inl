@@ -94,13 +94,13 @@ auto dispatch_inner_loop_strides(
 		);
 	}
 
-	REXLIB_CONST_CONSTEXPR std::size_t inner_index = 0;
+	// The innermost axis is the first of every operand's strides.
 	return detail::dispatch_strides(
 		[&callable] (auto... stride_tags)
 		{
 			return std::forward<F>(callable)(std::make_tuple(stride_tags...));
 		},
-		(layout.get_strides(Is)[inner_index])...
+		(layout.get_strides(Is)[0])...
 	);
 }
 

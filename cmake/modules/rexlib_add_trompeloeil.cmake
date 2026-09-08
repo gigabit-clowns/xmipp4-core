@@ -22,4 +22,14 @@ function(rexlib_add_trompeloeil)
 	set(archive "https://github.com/rollbear/trompeloeil/archive/refs/tags")
 	FetchContent_Declare(Trompeloeil URL "${archive}/v${arg_VERSION}.tar.gz")
 	FetchContent_MakeAvailable(Trompeloeil)
+
+	# Its headers are not ours to fix, so hold them at arm's length from the
+	# warnings the suites are built with. A subdirectory build leaves the
+	# include directories ordinary; only find_package would have marked them.
+	get_target_property(includes trompeloeil INTERFACE_INCLUDE_DIRECTORIES)
+	set_target_properties(
+		trompeloeil
+		PROPERTIES
+			INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${includes}"
+	)
 endfunction()

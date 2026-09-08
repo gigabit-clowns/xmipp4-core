@@ -15,7 +15,7 @@ TEST_CASE("sanitize_index with a in-bounds positive index should return the same
 	const std::ptrdiff_t index = GENERATE(0, 4, 8, 15);
 
 	const auto sanitized = sanitize_index(index, extent);
-	REQUIRE( sanitized == index );
+	REQUIRE( sanitized == static_cast<std::size_t>(index) );
 }
 
 TEST_CASE("sanitize_index with a in-bounds negative index should return the poisitivized value", "[index]")

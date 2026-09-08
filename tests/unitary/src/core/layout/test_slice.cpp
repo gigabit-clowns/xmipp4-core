@@ -100,7 +100,7 @@ TEST_CASE( "sanitize_slice should pass correct positive start values" )
 
 	slice input(start, count, step);
 	const auto output = sanitize_slice(input, extent);
-	REQUIRE(output.get_start() == static_cast<std::size_t>(start));
+	REQUIRE(output.get_start() == start);
 	REQUIRE(output.get_count() == count);
 	REQUIRE(output.get_step() == step);
 }
@@ -114,7 +114,7 @@ TEST_CASE( "sanitize_slice should tolerate past-the-end start when forwards stri
 
 	slice input(start, count, step);
 	const auto output = sanitize_slice(input, extent);
-	REQUIRE(output.get_start() == static_cast<std::size_t>(start));
+	REQUIRE(output.get_start() == start);
 }
 
 TEST_CASE( "sanitize_slice should replace correct negative start values" )
@@ -123,9 +123,9 @@ TEST_CASE( "sanitize_slice should replace correct negative start values" )
 	const std::ptrdiff_t count = 1;
 	const std::ptrdiff_t step = GENERATE(1, -1, 10, -10);
 	std::ptrdiff_t start;
-	std::size_t expected;
+	std::ptrdiff_t expected;
 	std::tie(start, expected) = GENERATE(
-		table<std::ptrdiff_t, std::size_t>({
+		table<std::ptrdiff_t, std::ptrdiff_t>({
 			{-1, 15},
 			{-4, 12},
 			{-16, 0}

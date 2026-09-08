@@ -10,8 +10,8 @@ target_link_libraries(
 		Boost::container # Eventually replace in C++23
 		Boost::container_hash
 		Boost::interprocess
-		half
-		pocketfft
+		half::half
+		pocketfft::pocketfft
 		Eigen3::Eigen
 		${CMAKE_DL_LIBS}
 )

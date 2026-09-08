@@ -21,7 +21,7 @@ the same pull request that causes it.
 | `src/ops/`, `src/functional/`, `src/em/` | Operation declarations and the functions that reach them |
 | `src/em/image/` | The image I/O subsystem, one directory per file format |
 | `tests/unitary/`, `tests/integration/` | Catch2 suites, with trompeloeil for mocks |
-| `cmake/modules/` | One `fetch_*.cmake` per dependency |
+| `cmake/modules/` | One `rexlib_add_*.cmake` per dependency, plus the `Find*.cmake` for those that ship no package config |
 | `cmake/config/` | The template for the installed CMake package config |
 
 The same top level groups appear on both sides, `core`, `backends`, `ops`,
@@ -60,10 +60,26 @@ The last one exists because a memory checker pays its start-up on every test
 CTest runs. Discovering each case makes it re-analyse the whole binary once per
 case, which took the memcheck job past six hours.
 
-Dependencies are fetched, not found: boost, spdlog, half, pocketfft and eigen,
-each through its `cmake/modules/fetch_*.cmake`. Boost and spdlog are linked
-statically and privately, so the installed package asks only for `Threads` and
-an archive of it is self contained.
+Dependencies come through one `cmake/modules/rexlib_add_*.cmake` each: boost,
+spdlog, half, pocketfft and eigen for the library, catch2 and trompeloeil for
+the tests. Every one is fetched and built by default and can instead be taken
+from the system, either all at once with `REXLIB_USE_SYSTEM_DEPENDENCIES` or
+one at a time with `REXLIB_USE_SYSTEM_BOOST` and its siblings, which default to
+the value the global one had when the build directory was first configured.
+
+Each function takes the release to fetch as `VERSION` and, separately, the one
+`find_package` demands as `MINIMUM`. The fetched pin tracks the newest release
+and would be a floor no distribution meets. Renovate reads `VERSION` in place,
+so it stays a literal in `CMakeLists.txt`. `FETCHCONTENT_SOURCE_DIR_<NAME>`
+points a fetch at a local checkout without either option.
+
+half and pocketfft ship no CMake package config anywhere, so their system path
+goes through this project's own `Findhalf.cmake` and `Findpocketfft.cmake`.
+Neither header carries a version, so neither module can check one.
+
+Every dependency is private and none appears in a public header, so the
+installed package asks only for `Threads` whichever way they were obtained,
+and an archive of a default build is self contained.
 
 ## Conventions
 
@@ -123,7 +139,7 @@ runtime and whether it is the debug one.
 
 | Workflow | Does |
 |---|---|
-| `build-and-test.yml` | Builds and tests the matrix, then the SonarQube scan |
+| `build-and-test.yml` | Builds and tests the matrix and a system dependency build, then the SonarQube scan |
 | `deploy.yml` | Builds the documentation, and the binary archives, and publishes both |
 | `release.yml` | Tags and releases, through the shared workflow of the organisation |
 | `clean-up-caches.yml` | Returns Actions cache space |
@@ -132,6 +148,14 @@ The matrix covers Linux, macOS and Windows, gcc, clang and MSVC, x86_64 and
 Arm. MSVC builds through Ninja rather than the Visual Studio generator, since
 that is the only way a compiler cache can be used, and the environment is set
 up with `vswhere` and `vcvars` beforehand.
+
+Beside the matrix, one `ubuntu-latest` job builds against system dependencies,
+so that the `find_package` half of every `rexlib_add_*` module keeps being
+exercised. It takes boost, eigen, spdlog and catch2 from apt and puts the half
+and pocketfft headers on the include path the way a packager would, which is
+what covers `Findhalf.cmake` and `Findpocketfft.cmake`; trompeloeil, packaged
+nowhere and more than one header, stays fetched. The job also asserts that no
+dependency reached the install tree.
 
 Every entry runs the suites, and the `ubuntu-latest` ones run them under a
 memory checker with `REXLIB_REGISTER_TESTS_PER_BINARY`. The rest run them

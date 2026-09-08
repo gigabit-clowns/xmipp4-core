@@ -41,7 +41,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_boost\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_boost\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "boost",
       "packageNameTemplate": "boostorg/boost",
       "datasourceTemplate": "github-releases",
@@ -50,14 +50,14 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_half\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_half\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "half",
       "datasourceTemplate": "custom.half"
     },
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_spdlog\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_spdlog\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "spdlog",
       "packageNameTemplate": "gabime/spdlog",
       "datasourceTemplate": "github-tags",
@@ -66,7 +66,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_catch2\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_catch2\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "catch2",
       "packageNameTemplate": "catchorg/Catch2",
       "datasourceTemplate": "github-tags",
@@ -75,7 +75,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_trompeloeil\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_trompeloeil\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "trompeloeil",
       "packageNameTemplate": "rollbear/trompeloeil",
       "datasourceTemplate": "github-tags",
@@ -84,7 +84,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_eigen\\(VERSION (?<currentValue>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_eigen\\(VERSION (?<currentValue>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "eigen",
       "packageNameTemplate": "libeigen/eigen",
       "datasourceTemplate": "gitlab-tags"
@@ -92,7 +92,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["**/CMakeLists.txt"],
-      "matchStrings": ["fetch_pocketfft\\(COMMIT (?<currentDigest>[^)]+)\\)"],
+      "matchStrings": ["rexlib_add_pocketfft\\(COMMIT (?<currentDigest>[^\\s)]+)[^)]*\\)"],
       "depNameTemplate": "pocketfft",
       "packageNameTemplate": "https://github.com/mreineck/pocketfft",
       "currentValueTemplate": "cpp",

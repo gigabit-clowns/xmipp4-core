@@ -21,11 +21,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(fetch_half)
-include(fetch_spdlog)
-include(fetch_boost)
-include(fetch_pocketfft)
-include(fetch_eigen)
+include(rexlib_add_half)
+include(rexlib_add_spdlog)
+include(rexlib_add_boost)
+include(rexlib_add_pocketfft)
+include(rexlib_add_eigen)
 
 # ---------------------------------------------------------------------------
 # Options
@@ -39,20 +39,16 @@ option(REXLIB_REGISTER_TESTS_PER_BINARY "Register one test per test executable i
 # Lets a consumer that embeds rexlib drop its tests without dropping its own.
 option(REXLIB_BUILD_TESTING "Build rexlib's tests" ${BUILD_TESTING})
 
-# ---------------------------------------------------------------------------
-# Dependencies
-# ---------------------------------------------------------------------------
-
-find_package(Threads REQUIRED)
-fetch_boost(VERSION 1.92.0)
-fetch_half(VERSION 2.2.1)
-fetch_spdlog(VERSION 1.17.0)
-fetch_pocketfft(COMMIT c90e55b3d529f8efa40ed01a20de22405f45fc65)
-fetch_eigen(VERSION 5.0.1)
-
-# ---------------------------------------------------------------------------
-# The package
-# ---------------------------------------------------------------------------
+# Every dependency is private and none appears in a public header, so taking
+# one from the system changes nothing for a consumer of the installed package.
+# Each option seeds its default from the global one, which only takes effect
+# on the first configure of a build directory.
+option(REXLIB_USE_SYSTEM_DEPENDENCIES "Use find_package for the dependencies instead of fetching them" OFF)
+option(REXLIB_USE_SYSTEM_BOOST "Use find_package for Boost" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
+option(REXLIB_USE_SYSTEM_SPDLOG "Use find_package for spdlog" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
+option(REXLIB_USE_SYSTEM_HALF "Use find_package for half" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
+option(REXLIB_USE_SYSTEM_POCKETFFT "Use find_package for pocketfft" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
+option(REXLIB_USE_SYSTEM_EIGEN "Use find_package for Eigen" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
 
 # The default goes through a variable of its own: assigning to the cache
 # entry's own name first would leave a normal variable shadowing it, and the
@@ -70,6 +66,21 @@ set(
 	REXLIB_PLUGINS_INSTALL_DIR ${REXLIB_PLUGINS_DIR_DEFAULT}
 	CACHE STRING "Directory where the rexlib plugins are installed"
 )
+
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+
+find_package(Threads REQUIRED)
+rexlib_add_boost(VERSION 1.92.0 MINIMUM 1.70.0)
+rexlib_add_half(VERSION 2.2.1)
+rexlib_add_spdlog(VERSION 1.17.0 MINIMUM 1.4.0)
+rexlib_add_pocketfft(COMMIT c90e55b3d529f8efa40ed01a20de22405f45fc65)
+rexlib_add_eigen(VERSION 5.0.1)
+
+# ---------------------------------------------------------------------------
+# The package
+# ---------------------------------------------------------------------------
 
 # Same helper the installed package config offers, so that a plugin built
 # inside a superbuild installs itself exactly as an out-of-tree one does.

@@ -196,9 +196,9 @@ jobs:
         run: |
           commit=$(sed -n 's/.*rexlib_add_pocketfft(COMMIT \([^)]*\)).*/\1/p' CMakeLists.txt)
           version=$(sed -n 's/.*rexlib_add_half(VERSION \([^) ]*\).*/\1/p' CMakeLists.txt)
-          curl -fsSL -o pocketfft_hdronly.h \
+          curl -fsS -o pocketfft_hdronly.h \
             "https://raw.githubusercontent.com/mreineck/pocketfft/${commit}/pocketfft_hdronly.h"
-          curl -fsSL -o half.zip \
+          curl -fsS -o half.zip \
             "https://downloads.sourceforge.net/project/half/half/${version}/half-${version}.zip"
           unzip -q half.zip -d half
           sudo install -m 644 pocketfft_hdronly.h half/include/half.hpp /usr/local/include/

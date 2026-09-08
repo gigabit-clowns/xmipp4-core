@@ -73,5 +73,7 @@ if(WIN32)
 	)
 endif()
 
+rexlib_enable_warnings(rexlib-unitary-tests)
+
 # Register tests
-rexlib_register_tests(rexlib-unitary-tests)
+rexlib_register_tests(rexlib-unitary-tests unitary)

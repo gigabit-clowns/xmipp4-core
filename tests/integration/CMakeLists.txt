@@ -21,5 +21,7 @@ if(WIN32)
 	)
 endif()
 
+rexlib_enable_warnings(rexlib-integration-tests)
+
 # Register tests
-rexlib_register_tests(rexlib-integration-tests)
+rexlib_register_tests(rexlib-integration-tests integration)

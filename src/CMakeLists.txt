@@ -59,23 +59,7 @@ function(rexlib_add_component NAME)
 		)
 	endif()
 
-	# Enable warnings
-	if(MSVC)
-		target_compile_options(
-			${NAME}
-			PRIVATE
-				/W4
-				/wd4996 # getenv warning
-		)
-	else()
-		target_compile_options(
-			${NAME}
-			PRIVATE
-				-Wall
-				-Wextra
-				-Wpedantic
-		)
-	endif()
+	rexlib_enable_warnings(${NAME})
 
 	# Add coverage flags if requested
 	if(REXLIB_ENABLE_COVERAGE)

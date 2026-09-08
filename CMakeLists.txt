@@ -66,6 +66,7 @@ set(
 	REXLIB_PLUGINS_INSTALL_DIR ${REXLIB_PLUGINS_DIR_DEFAULT}
 	CACHE STRING "Directory where the rexlib plugins are installed"
 )
+unset(REXLIB_PLUGINS_DIR_DEFAULT)
 
 # ---------------------------------------------------------------------------
 # Dependencies

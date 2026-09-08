@@ -1,31 +1,12 @@
-# Usage requirements of the private dependencies, shared by every component
-# object library and by the final shared library.
-add_library(rexlib-private-deps INTERFACE)
-target_link_libraries(
-	rexlib-private-deps
-	INTERFACE
-		Threads::Threads
-		spdlog::spdlog_header_only
-		Boost::filesystem # Eventually replace by std::filesystem (C++17)
-		Boost::container # Eventually replace in C++23
-		Boost::container_hash
-		Boost::interprocess
-		half::half
-		pocketfft::pocketfft
-		Eigen3::Eigen
-		${CMAKE_DL_LIBS}
-)
-if(WIN32)
-	target_link_libraries(
-		rexlib-private-deps
-		INTERFACE
-			ws2_32 # Winsock
-	)
-endif()
-
 # Define one object library per component. Properties that CMake only
 # applies automatically to SHARED targets (export define, PIC, hidden
 # visibility) must be set explicitly on each object library.
+#
+# A component links only the dependencies its own sources reach, so that the
+# boundary between the subsystems is one CMake keeps rather than one a reader
+# has to. They are PUBLIC on these targets, which are internal and never
+# exported: the unitary suite compiles against the same headers, so it has to
+# see the same include directories.
 function(rexlib_add_component NAME DIR)
 	file(
 		GLOB_RECURSE
@@ -108,28 +89,86 @@ function(rexlib_add_component NAME DIR)
 		endif()
 	endif()
 
-	target_link_libraries(
-		${NAME}
-		PRIVATE
-			rexlib-private-deps
-	)
 endfunction()
 
+# What each component links is what its sources reach, headers of the other
+# components included. spdlog and half are the two that travel: core/logger.hpp
+# includes one and core/numerical/float16_conversions.hpp the other, so every
+# component that includes either of those headers needs them too.
 rexlib_add_component(rexlib-core-obj core)
-rexlib_add_component(rexlib-ops-obj ops)
-rexlib_add_component(rexlib-functional-obj functional)
-rexlib_add_component(rexlib-cpu-obj backends/cpu)
-rexlib_add_component(rexlib-em-obj em)
+target_link_libraries(
+	rexlib-core-obj
+	PUBLIC
+		Threads::Threads
+		spdlog::spdlog_header_only
+		half::half
+		Boost::filesystem # Eventually replace by std::filesystem (C++17)
+		Boost::container # Eventually replace in C++23
+		Boost::container_hash
+		${CMAKE_DL_LIBS} # Loading the plugins
+)
+if(WIN32)
+	target_link_libraries(rexlib-core-obj PUBLIC ws2_32) # gethostname
+endif()
 
-# Assemble the single shared library from the component objects
-add_library(
+# Operation declarations, and nothing outside the standard library and this
+# project's own headers.
+rexlib_add_component(rexlib-ops-obj ops)
+
+rexlib_add_component(rexlib-functional-obj functional)
+target_link_libraries(
+	rexlib-functional-obj
+	PUBLIC
+		Threads::Threads
+		spdlog::spdlog_header_only
+)
+
+rexlib_add_component(rexlib-cpu-obj backends/cpu)
+target_link_libraries(
+	rexlib-cpu-obj
+	PUBLIC
+		Threads::Threads
+		spdlog::spdlog_header_only
+		half::half
+		pocketfft::pocketfft
+		Eigen3::Eigen
+)
+
+rexlib_add_component(rexlib-em-obj em)
+target_link_libraries(
+	rexlib-em-obj
+	PUBLIC
+		Threads::Threads
+		spdlog::spdlog_header_only
+		half::half
+		Boost::filesystem
+		Boost::container
+		Boost::container_hash
+		Boost::interprocess
+)
+
+# Assemble the single shared library from the component objects.
+#
+# The components are linked rather than spliced in with $<TARGET_OBJECTS:>,
+# which carries only the object files: linking an object library brings its
+# usage requirements and its own link dependencies along with them, so the
+# private dependencies above reach this link without being named twice.
+#
+# SHARED unconditionally, BUILD_SHARED_LIBS deliberately not honoured. A
+# plugin is a module that links this library and is loaded into a process that
+# already has it, so there has to be one copy of its state, not one per
+# plugin. Note that a static rexlib would also break install(EXPORT), which
+# only tolerates the unexported targets below because a shared library keeps
+# its private dependencies out of its interface.
+add_library(rexlib SHARED)
+target_link_libraries(
 	rexlib
-	SHARED
-		$<TARGET_OBJECTS:rexlib-core-obj>
-		$<TARGET_OBJECTS:rexlib-ops-obj>
-		$<TARGET_OBJECTS:rexlib-functional-obj>
-		$<TARGET_OBJECTS:rexlib-cpu-obj>
-		$<TARGET_OBJECTS:rexlib-em-obj>
+	PRIVATE
+		rexlib-core-obj
+		rexlib-ops-obj
+		rexlib-functional-obj
+		rexlib-cpu-obj
+		rexlib-em-obj
 )
 set_target_properties(
 	rexlib
@@ -161,14 +200,10 @@ if(REXLIB_ENABLE_COVERAGE)
 	endif()
 endif()
 
-# Link dependencies
-target_link_libraries(
-	rexlib
-	PUBLIC
-		Threads::Threads
-	PRIVATE
-		rexlib-private-deps
-)
+# The one dependency a consumer of the installed package inherits, which is
+# why the package config finds it again. The rest arrive privately with the
+# components above.
+target_link_libraries(rexlib PUBLIC Threads::Threads)
 
 # Create the alias
 add_library(rexlib::rexlib ALIAS rexlib)

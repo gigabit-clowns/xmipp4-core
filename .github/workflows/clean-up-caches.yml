@@ -9,6 +9,7 @@ on:
   workflow_run:
     workflows:
       - Build and Test
+      - CodeQL C++
     types:
       - completed
 

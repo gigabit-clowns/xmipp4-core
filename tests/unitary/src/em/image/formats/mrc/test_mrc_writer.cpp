@@ -4,6 +4,7 @@
 
 #include <em/image/formats/mrc/mrc_writer.hpp>
 
+#include <em/image/formats/mrc/mrc_geometry.hpp>
 #include <em/image/formats/mrc/mrc_header.hpp>
 #include <em/image/formats/mrc/mrc_reader.hpp>
 #include <em/image/formats/mrc/mrc_write_format.hpp>
@@ -154,6 +155,195 @@ std::vector<float> read_back(
 }
 
 } // anonymous namespace
+
+TEST_CASE( "a header is built from the shape a file is created with",
+	"[mrc_writer]" )
+{
+	const std::vector<std::size_t> image = {3, 4};
+	const std::vector<std::size_t> stack = {5, 3, 4};
+	const std::vector<std::size_t> volume_stack = {3, 4, 3, 4};
+
+	SECTION( "a single image states one section and no space group" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::float32);
+
+		REQUIRE( header.get_column_count() == 4 );
+		REQUIRE( header.get_row_count() == 3 );
+		REQUIRE( header.get_section_count() == 1 );
+		REQUIRE( header.get_section_sampling() == 1 );
+		REQUIRE( header.get_space_group() == 0 );
+	}
+
+	SECTION( "a stack of images states a sampling of one" )
+	{
+		const auto header = make_header(
+			make_span(stack), 2, numerical_type::float32);
+
+		REQUIRE( header.get_section_count() == 5 );
+		REQUIRE( header.get_section_sampling() == 1 );
+		REQUIRE( header.get_space_group() == 0 );
+	}
+
+	SECTION( "a volume states its depth as its sampling" )
+	{
+		const auto header = make_header(
+			make_span(stack), 3, numerical_type::float32);
+
+		REQUIRE( header.get_section_count() == 5 );
+		REQUIRE( header.get_section_sampling() == 5 );
+		REQUIRE( header.get_space_group() == 1 );
+	}
+
+	SECTION( "a stack of volumes divides its sections between two axes" )
+	{
+		const auto header = make_header(
+			make_span(volume_stack), 3, numerical_type::float32);
+
+		REQUIRE( header.get_section_count() == 12 );
+		REQUIRE( header.get_section_sampling() == 4 );
+		REQUIRE( header.get_space_group() == 401 );
+	}
+
+	SECTION( "what it does not derive is what a new file carries" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::float32);
+
+		REQUIRE( header.get_column_axis() == 1 );
+		REQUIRE( header.get_row_axis() == 2 );
+		REQUIRE( header.get_section_axis() == 3 );
+		REQUIRE( header.get_version() == 20141 );
+		REQUIRE( header.get_cell_angles()[0] == 90.0F );
+		REQUIRE( header.get_byte_order() == get_system_byte_order() );
+	}
+
+	SECTION( "statistics that were not computed carry their sentinels" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::float32);
+
+		REQUIRE( header.get_data_min() == 0.0F );
+		REQUIRE( header.get_data_max() == -1.0F );
+		REQUIRE( header.get_data_mean() == -2.0F );
+		REQUIRE( header.get_data_rms() == -1.0F );
+	}
+
+	SECTION( "unsigned bytes are stamped as such" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::uint8);
+
+		REQUIRE( header.get_mode() == mrc_mode::int8 );
+		REQUIRE( header.get_imod_stamp() == 1146047817 );
+		REQUIRE_FALSE( holds_signed_bytes(header) );
+	}
+
+	SECTION( "signed bytes are not" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::int8);
+
+		REQUIRE( header.get_mode() == mrc_mode::int8 );
+		REQUIRE( header.get_imod_stamp() == 0 );
+		REQUIRE( holds_signed_bytes(header) );
+	}
+
+	SECTION( "it is signed with the library that built it" )
+	{
+		const auto header = make_header(
+			make_span(image), 2, numerical_type::float32);
+
+		const auto labels = header.get_labels();
+
+		REQUIRE( labels.size() == 1 );
+		REQUIRE( labels[0].compare(0, 17, "Created by rexlib") == 0 );
+	}
+}
+
+TEST_CASE( "a shape the MRC format cannot hold builds no header",
+	"[mrc_writer]" )
+{
+	const std::vector<std::size_t> image = {3, 4};
+	const std::vector<std::size_t> stack = {5, 3, 4};
+	const std::vector<std::size_t> volume_stack = {3, 4, 3, 4};
+	const std::vector<std::size_t> line = {4};
+	const std::vector<std::size_t> too_deep = {2, 3, 4, 3, 4};
+
+	// A core rank that does not name a subset of the extents breaks the
+	// contract of image_write_format::open rather than naming a file the MRC
+	// format has no shape for, and is refused as such.
+	SECTION( "a core rank of zero is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(image), 0, numerical_type::float32),
+			std::invalid_argument
+		);
+	}
+
+	SECTION( "a core rank above the rank is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(image), 3, numerical_type::float32),
+			std::invalid_argument
+		);
+	}
+
+	SECTION( "a rank of one is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(line), 1, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a rank above four is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(too_deep), 3, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a stack of images of images is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(volume_stack), 2, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a data type the format has no mode for is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			make_header(make_span(stack), 2, numerical_type::float64),
+			invalid_operation_error
+		);
+	}
+}
+
+TEST_CASE( "a header built from a shape reports that shape when parsed",
+	"[mrc_writer]" )
+{
+	const std::vector<std::vector<std::size_t>> shapes = {
+		{3, 4}, {5, 3, 4}, {5, 3, 4}, {3, 4, 3, 4}
+	};
+	const std::size_t core_ranks[] = {2, 2, 3, 3};
+
+	for (std::size_t i = 0; i < shapes.size(); ++i)
+	{
+		const auto header = make_header(
+			make_span(shapes[i]), core_ranks[i], numerical_type::float32);
+		const mrc_geometry geometry(header);
+
+		const auto extents = geometry.get_extents();
+
+		REQUIRE( std::vector<std::size_t>(extents.begin(), extents.end()) ==
+			shapes[i] );
+		REQUIRE( geometry.get_core_rank() == core_ranks[i] );
+		REQUIRE( geometry.get_data_type() == numerical_type::float32 );
+	}
+}
 
 TEST_CASE( "an MRC file is created with the shape it is opened over",
 	"[mrc_writer]" )

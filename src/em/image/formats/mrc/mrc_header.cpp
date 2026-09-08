@@ -112,6 +112,7 @@ std::string read_label(span<const byte> bytes, std::size_t index)
 
 void write_label(span<byte> bytes, std::size_t index, const std::string &text)
 {
+	REXLIB_ASSERT(text.size() <= size::label);
 	auto *first = reinterpret_cast<char*>(bytes.data()) +
 		offset::label + index * size::label;
 

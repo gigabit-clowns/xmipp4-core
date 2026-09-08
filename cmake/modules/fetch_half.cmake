@@ -10,14 +10,12 @@ function(fetch_half)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	cmake_policy(SET CMP0135 NEW) # To avoid warnings
-	set(NO_OP_COMMAND "${CMAKE_COMMAND} -E true")
+	if(POLICY CMP0135)
+		cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	endif()
 	FetchContent_Declare(
 		half
 		URL https://sourceforge.net/projects/half/files/half/${arg_VERSION}/half-${arg_VERSION}.zip
-		CONFIGURE_COMMAND ${NO_OP_COMMAND}
-		BUILD_COMMAND ${NO_OP_COMMAND}
-		INSTALL_COMMAND ${NO_OP_COMMAND}
 	)
 	FetchContent_MakeAvailable(half)
 

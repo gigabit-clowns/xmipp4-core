@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
-include(CTest)
 include(fetch_catch2)
 include(fetch_trompeloeil)
 

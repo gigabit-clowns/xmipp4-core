@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dummy_plugin.cpp)
 add_library(dummy-plugin MODULE ${SOURCES})
 set_target_properties(

@@ -10,7 +10,9 @@ function(fetch_trompeloeil)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	if(POLICY CMP0135)
+		cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	endif()
 	FetchContent_Declare(
 		Trompeloeil
 		URL https://github.com/rollbear/trompeloeil/archive/refs/tags/v${arg_VERSION}.tar.gz

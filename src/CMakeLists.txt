@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 # Usage requirements of the private dependencies, shared by every component
 # object library and by the final shared library.
 add_library(rexlib-private-deps INTERFACE)
@@ -10,8 +8,7 @@ target_link_libraries(
 		spdlog::spdlog_header_only
 		Boost::filesystem # Eventually replace by std::filesystem (C++17)
 		Boost::container # Eventually replace in C++23
-		Boost::unordered # Eventually replace in C++23
-		Boost::intrusive
+		Boost::container_hash
 		Boost::interprocess
 		half
 		pocketfft
@@ -55,9 +52,9 @@ function(rexlib_add_component NAME DIR)
 		${NAME}
 		PRIVATE
 			REXLIB_EXPORTING
-			REXLIB_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-			REXLIB_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-			REXLIB_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
+			REXLIB_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+			REXLIB_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+			REXLIB_VERSION_PATCH=${PROJECT_VERSION_PATCH}
 	)
 
 	# On Windows disable min and max macros
@@ -137,7 +134,8 @@ add_library(
 set_target_properties(
 	rexlib
 	PROPERTIES
-		SOVERSION ${PROJECT_VERSION}
+		VERSION ${PROJECT_VERSION}
+		SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 target_include_directories(
 	rexlib

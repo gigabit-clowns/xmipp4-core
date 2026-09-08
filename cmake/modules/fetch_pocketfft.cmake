@@ -10,7 +10,9 @@ function(fetch_pocketfft)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	if(POLICY CMP0135)
+		cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	endif()
 	FetchContent_Declare(
 		pocketfft
 		URL https://github.com/mreineck/pocketfft/archive/${arg_COMMIT}.tar.gz

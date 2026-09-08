@@ -10,16 +10,19 @@ function(fetch_boost)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	if(POLICY CMP0135)
+		cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	endif()
 	FetchContent_Declare(
 		Boost
 		URL https://github.com/boostorg/boost/releases/download/boost-${arg_VERSION}/boost-${arg_VERSION}-cmake.tar.gz
 	)
 
+	# Only the modules the sources include. Every one listed here is built,
+	# so an unused entry is paid for on every clean build.
 	set(BOOST_INCLUDE_LIBRARIES
 		container
-		intrusive
-		unordered
+		container_hash
 		filesystem
 		interprocess
 	)

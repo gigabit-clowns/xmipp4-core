@@ -10,7 +10,9 @@ function(fetch_catch2)
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
 
-	cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	if(POLICY CMP0135)
+		cmake_policy(SET CMP0135 NEW) # To avoid warnings
+	endif()
 	FetchContent_Declare(
 		Catch2
 		URL https://github.com/catchorg/Catch2/archive/refs/tags/v${arg_VERSION}.tar.gz

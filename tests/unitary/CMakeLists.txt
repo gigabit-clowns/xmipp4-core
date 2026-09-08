@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 # Register all source and header files
 file(
 	GLOB_RECURSE 

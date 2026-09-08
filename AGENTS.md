@@ -36,20 +36,25 @@ cmake --build build -j
 ctest --test-dir build
 ```
 
-CMake 3.16 is the minimum. The sources are written to C++14 and reach anything
+CMake 3.18 is the minimum. The sources are written to C++14 and reach anything
 newer through the `REXLIB_*` feature macros, so that a compiler without it
 still builds them; CMake asks for C++17 but leaves
 `CMAKE_CXX_STANDARD_REQUIRED` off, so the request is a preference. One
 declaration does not follow this, `parse_device_index` in
 `core/hardware/device_index.hpp`, which takes a `std::string_view`.
 
-Options, all `OFF` by default:
+Options:
 
-| Option | Effect |
-|---|---|
-| `REXLIB_BUILD_DOC` | Builds the Doxygen target |
-| `REXLIB_ENABLE_COVERAGE` | Adds coverage instrumentation |
-| `REXLIB_REGISTER_TESTS_PER_BINARY` | Registers one CTest entry per test executable instead of one per Catch2 case |
+| Option | Default | Effect |
+|---|---|---|
+| `REXLIB_INSTALL` | `ON` | Generates the install and export rules |
+| `REXLIB_BUILD_TESTING` | `BUILD_TESTING` | Builds the test suites |
+| `REXLIB_BUILD_DOC` | `OFF` | Builds the Doxygen target |
+| `REXLIB_ENABLE_COVERAGE` | `OFF` | Adds coverage instrumentation |
+| `REXLIB_REGISTER_TESTS_PER_BINARY` | `OFF` | Registers one CTest entry per test executable instead of one per Catch2 case |
+
+`REXLIB_BUILD_TESTING` lets a project that embeds rexlib drop its tests without
+turning off `BUILD_TESTING` for its own.
 
 The last one exists because a memory checker pays its start-up on every test
 CTest runs. Discovering each case makes it re-analyse the whole binary once per

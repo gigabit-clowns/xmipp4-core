@@ -2,13 +2,10 @@ name: Clean up caches
 permissions: {}
 
 on:
-  pull_request:
-    types:
-      - closed
-
   workflow_run:
     workflows:
       - Build and Test
+      - CodeQL Cpp
     types:
       - completed
 
@@ -28,22 +25,6 @@ on:
         type: string
 
 jobs:
-  # A closed pull request's caches are reachable from its own ref alone, so
-  # none of them can ever be restored again.
-  after_a_pull_request:
-    permissions:
-      actions: write
-    name: Delete every cache of the closed pull request
-    # A fork's token is read only, so the deletion would fail rather than
-    # leave anything behind. Those caches expire on their own after 7 days.
-    if: >-
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository
-    uses: gigabit-clowns/.github/.github/workflows/clean-up-caches.yml@main
-    with:
-      scope: all
-      ref: refs/pull/${{ github.event.pull_request.number }}/merge
-
   # Every ref: a superseded entry is dead wherever it sits, since the newest
   # of its prefix is the only one that will ever be restored.
   after_a_build:

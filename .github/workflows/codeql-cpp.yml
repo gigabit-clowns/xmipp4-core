@@ -1,0 +1,73 @@
+name: CodeQL Cpp
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/codeql-cpp.yml
+      - CMakeLists.txt
+      - cmake/**
+      - src/**
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/codeql-cpp.yml
+      - CMakeLists.txt
+      - cmake/**
+      - src/**
+
+  # A schedule ignores the path filters, so this reaches code nothing has
+  # touched since the queries last changed.
+  schedule:
+    - cron: '37 3 * * 1'
+
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: codeql-cpp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@fddeee1a7ece751b577e409a89057319e3172939 # v4
+        with:
+          languages: c-cpp
+          build-mode: manual
+
+      - name: Restore the fetched sources
+        id: fetched
+        uses: gigabit-clowns/.github/.github/composites/restore-fetched@main
+        with:
+          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+
+      # No compiler cache here: the extractor sees only the compilations that
+      # run, so whatever ccache served would be missing from the database.
+      # Two at a time, because each one carries an extractor beside it.
+      - name: Build the library
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=OFF \
+            -DFETCHCONTENT_BASE_DIR=${{ steps.fetched.outputs.dir }}
+          cmake --build build --parallel 2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@fddeee1a7ece751b577e409a89057319e3172939 # v4
+        with:
+          category: /language:c-cpp

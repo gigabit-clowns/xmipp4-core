@@ -42,14 +42,23 @@ option(REXLIB_BUILD_TESTING "Build rexlib's tests" ${BUILD_TESTING})
 
 # Every dependency is private and none appears in a public header, so taking
 # one from the system changes nothing for a consumer of the installed package.
-# Each option seeds its default from the global one, which only takes effect
-# on the first configure of a build directory.
 option(REXLIB_USE_SYSTEM_DEPENDENCIES "Use find_package for the dependencies instead of fetching them" OFF)
-option(REXLIB_USE_SYSTEM_BOOST "Use find_package for Boost" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
-option(REXLIB_USE_SYSTEM_SPDLOG "Use find_package for spdlog" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
-option(REXLIB_USE_SYSTEM_HALF "Use find_package for half" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
-option(REXLIB_USE_SYSTEM_POCKETFFT "Use find_package for pocketfft" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
-option(REXLIB_USE_SYSTEM_EIGEN "Use find_package for Eigen" ${REXLIB_USE_SYSTEM_DEPENDENCIES})
+option(REXLIB_USE_SYSTEM_BOOST "Use find_package for Boost" OFF)
+option(REXLIB_USE_SYSTEM_SPDLOG "Use find_package for spdlog" OFF)
+option(REXLIB_USE_SYSTEM_HALF "Use find_package for half" OFF)
+option(REXLIB_USE_SYSTEM_POCKETFFT "Use find_package for pocketfft" OFF)
+option(REXLIB_USE_SYSTEM_EIGEN "Use find_package for Eigen" OFF)
+
+# The global switch turns all of them on, on every configure rather than only
+# seeding their defaults, so that setting it on a build directory that already
+# exists takes effect. 
+if(REXLIB_USE_SYSTEM_DEPENDENCIES)
+	set(REXLIB_USE_SYSTEM_BOOST ON)
+	set(REXLIB_USE_SYSTEM_SPDLOG ON)
+	set(REXLIB_USE_SYSTEM_HALF ON)
+	set(REXLIB_USE_SYSTEM_POCKETFFT ON)
+	set(REXLIB_USE_SYSTEM_EIGEN ON)
+endif()
 
 # The default goes through a variable of its own: assigning to the cache
 # entry's own name first would leave a normal variable shadowing it, and the

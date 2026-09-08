@@ -195,9 +195,6 @@ jobs:
           key: ubuntu-latest-system-dependencies
           max-size: 1G
 
-      # trompeloeil is the one dependency with neither a distribution package
-      # nor a single header to drop in, so it stays fetched. That the rest do
-      # not is what this job is for.
       - name: Configure and build with CMake
         uses: threeal/cmake-action@725d1314ccf9ea922805d7e3f9d9bcbca892b406 # v2
         with:
@@ -207,8 +204,12 @@ jobs:
           cxx-compiler: g++
           options: |
             CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-            REXLIB_USE_SYSTEM_DEPENDENCIES=ON
-            REXLIB_USE_SYSTEM_TROMPELOEIL=OFF
+            REXLIB_USE_SYSTEM_BOOST=ON
+            REXLIB_USE_SYSTEM_SPDLOG=ON
+            REXLIB_USE_SYSTEM_HALF=ON
+            REXLIB_USE_SYSTEM_POCKETFFT=ON
+            REXLIB_USE_SYSTEM_EIGEN=ON
+            REXLIB_USE_SYSTEM_CATCH2=ON
             CMAKE_C_COMPILER_LAUNCHER=ccache
             CMAKE_CXX_COMPILER_LAUNCHER=ccache
           run-build: true

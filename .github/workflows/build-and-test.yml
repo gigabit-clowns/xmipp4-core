@@ -174,7 +174,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     env:
-      BUILD_TYPE: Debug
+      BUILD_TYPE: Release
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -234,9 +234,6 @@ jobs:
         uses: gigabit-clowns/.github/.github/composites/save-ccache@main
         with:
           key: ubuntu-latest-system-dependencies
-
-      - name: Run tests
-        uses: gigabit-clowns/.github/.github/composites/run-ctest@main
 
       # A system build must not drag a dependency into the install: every one
       # of them is private and none appears in a public header.

@@ -167,26 +167,12 @@ REXLIB_INLINE_CONSTEXPR
 typename std::enable_if<std::is_integral<T>::value, T&>::type
 convert_byte_order_inplace(T& x, byte_order from, byte_order to) noexcept
 {
-	switch (from)
+	if (from == to)
 	{
-	case byte_order::big_endian:
-		switch (to)
-		{
-		case byte_order::big_endian:
-			return x;
-		case byte_order::little_endian:
-			return reverse_byte_order_inplace(x);
-		}
-
-	case byte_order::little_endian:
-		switch (to)
-		{
-		case byte_order::big_endian:
-			return reverse_byte_order_inplace(x);
-		case byte_order::little_endian:
-			return x;
-		}
+		return x;
 	}
+
+	return reverse_byte_order_inplace(x);
 }
 
 } // namespace rexlib

@@ -54,7 +54,7 @@ jobs:
         id: fetched
         uses: gigabit-clowns/.github/.github/composites/restore-fetched@main
         with:
-          key: ${{ hashFiles('CMakeLists.txt', 'cmake/modules/fetch_*.cmake') }}
+          key: ${{ hashFiles('CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/modules/rexlib_add_*.cmake') }}
 
       # No compiler cache here: the extractor sees only the compilations that
       # run, so whatever ccache served would be missing from the database.

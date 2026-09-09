@@ -4,11 +4,13 @@
 
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
 
+#include <rexlib/core/platform/operating_system.h>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
-#if defined(__unix__) || defined(__APPLE__)
+#if defined(REXLIB_POSIX)
 	#include <sys/mman.h>
 	#include <unistd.h>
 	#if defined(MADV_WILLNEED)

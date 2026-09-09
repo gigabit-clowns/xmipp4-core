@@ -31,6 +31,7 @@ jobs:
           {"os": "windows-latest", "prefix": "ccache-windows-latest-g++"},
           {"os": "windows-11-arm", "prefix": "ccache-windows-11-arm-cl"},
           {"os": "windows-11-arm", "prefix": "ccache-windows-11-arm-g++"},
-          {"os": "ubuntu-latest", "prefix": "fetched-unix", "path": "/tmp/fetched"},
+          {"os": "ubuntu-latest", "prefix": "fetched-linux", "path": "/tmp/fetched"},
+          {"os": "macos-latest", "prefix": "fetched-macos", "path": "/tmp/fetched"},
           {"os": "windows-latest", "prefix": "fetched-windows", "path": "C:/fetched"}
         ]

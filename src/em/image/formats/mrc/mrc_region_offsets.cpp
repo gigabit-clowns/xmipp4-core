@@ -43,12 +43,13 @@ std::ptrdiff_t resolve_offset(
 	std::ptrdiff_t offset = 0;
 	for (std::size_t axis = 0; axis < rank; ++axis)
 	{
+		// Check "offset within bounds, then extent within what remains"
+		// to avoid false negatives due to overflow
 		const auto extent = get_region_extent(regions, rank, axis);
-
-		// Checks "offset within bounds, then extent within what remains"
-		// to avoid unbounded access situations
-		if (region_offset[axis] > extents[axis] ||
-			extent > extents[axis] - region_offset[axis])
+		const auto offset = region_offset[axis];
+		const auto boundary = extents[axis];
+		const auto remaining = boundary - offset;
+		if (offset > boundary || extent > remaining)
 		{
 			throw std::out_of_range(
 				"mrc_region_offsets: A region does not fit where it is "

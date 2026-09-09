@@ -117,6 +117,15 @@ REXLIB_INLINE_CONST_CONSTEXPR std::array<std::uint8_t, 2>
 big_endian_machine_stamp = {{0x11, 0x11}};
 
 /**
+ * @brief Number of axes of space the columns, the rows and the sections of a
+ * file run along.
+ *
+ * @ref offset::mapc, @ref offset::mapr and @ref offset::maps name one of them
+ * each, counting from one.
+ */
+REXLIB_INLINE_CONST_CONSTEXPR std::int32_t space_axis_count = 3;
+
+/**
  * @brief Space group of a file holding one image or a stack of them.
  */
 REXLIB_INLINE_CONST_CONSTEXPR std::int32_t image_stack_space_group = 0;

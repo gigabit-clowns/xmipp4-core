@@ -37,6 +37,19 @@ mrc_header make_header_of(
 	return header;
 }
 
+mrc_header with_axes(
+	mrc_header header,
+	std::int32_t column_axis,
+	std::int32_t row_axis,
+	std::int32_t section_axis
+)
+{
+	header.set_column_axis(column_axis);
+	header.set_row_axis(row_axis);
+	header.set_section_axis(section_axis);
+	return header;
+}
+
 std::vector<std::size_t> extents_of(const mrc_geometry &geometry)
 {
 	const auto extents = geometry.get_extents();
@@ -151,6 +164,106 @@ TEST_CASE( "the values of an MRC file are laid out contiguously",
 
 		REQUIRE( strides_of(geometry) ==
 			std::vector<std::ptrdiff_t>{48, 12, 4, 1} );
+	}
+}
+
+TEST_CASE( "a stack of volumes that holds no stack of volumes is not one",
+	"[mrc_geometry]" )
+{
+	SECTION( "volumes one section thick are a stack of images" )
+	{
+		const mrc_geometry geometry(make_header_of(4, 3, 6, 1, 401));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{6, 3, 4} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{12, 4, 1} );
+		REQUIRE( geometry.get_core_rank() == 2 );
+	}
+
+	SECTION( "a stack of a single volume is a volume" )
+	{
+		const mrc_geometry geometry(make_header_of(4, 3, 5, 5, 401));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{5, 3, 4} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{12, 4, 1} );
+		REQUIRE( geometry.get_core_rank() == 3 );
+	}
+
+	SECTION( "a single volume of a single section is a volume too" )
+	{
+		const mrc_geometry geometry(make_header_of(4, 3, 1, 1, 401));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{1, 3, 4} );
+		REQUIRE( geometry.get_core_rank() == 3 );
+	}
+
+	SECTION( "a single image of a stack of images is still an image" )
+	{
+		const mrc_geometry geometry(make_header_of(4, 3, 1, 1, 0));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{3, 4} );
+		REQUIRE( geometry.get_core_rank() == 2 );
+	}
+}
+
+TEST_CASE( "the axes of an MRC file are ordered by the axis of space each "
+	"runs along",
+	"[mrc_geometry]" )
+{
+	SECTION( "a volume whose columns run along Z is reported along Z, Y and X" )
+	{
+		// The axis correspondence of EMD-3001: its columns run along Z, its
+		// rows along X and its sections along Y.
+		const mrc_geometry geometry(
+			with_axes(make_header_of(73, 43, 25, 72, 4), 3, 1, 2));
+
+		REQUIRE( extents_of(geometry) ==
+			std::vector<std::size_t>{73, 25, 43} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{1, 3139, 73} );
+		REQUIRE( geometry.get_core_rank() == 3 );
+		REQUIRE( geometry.get_element_count() == 25 * 43 * 73 );
+	}
+
+	SECTION( "a single image swaps its two axes" )
+	{
+		const mrc_geometry geometry(
+			with_axes(make_header_of(4, 3, 1, 1, 0), 2, 1, 3));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{4, 3} );
+		REQUIRE( strides_of(geometry) == std::vector<std::ptrdiff_t>{1, 4} );
+	}
+
+	SECTION( "the sections of a stack of images are no axis of space" )
+	{
+		const mrc_geometry geometry(
+			with_axes(make_header_of(4, 3, 5, 1, 0), 2, 1, 3));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{5, 4, 3} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{12, 1, 4} );
+		REQUIRE( geometry.get_core_rank() == 2 );
+	}
+
+	SECTION( "the volumes of a stack of volumes are no axis of space either" )
+	{
+		const mrc_geometry geometry(
+			with_axes(make_header_of(4, 3, 12, 4, 401), 2, 3, 1));
+
+		REQUIRE( extents_of(geometry) ==
+			std::vector<std::size_t>{3, 3, 4, 4} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{48, 4, 1, 12} );
+		REQUIRE( geometry.get_core_rank() == 3 );
+	}
+
+	SECTION( "an axis correspondence that is no permutation is refused" )
+	{
+		REQUIRE_THROWS_AS(
+			mrc_geometry(with_axes(make_header_of(4, 3, 5, 1, 0), 1, 1, 3)),
+			image_format_error
+		);
 	}
 }
 

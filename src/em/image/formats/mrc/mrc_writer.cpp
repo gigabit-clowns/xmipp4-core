@@ -37,8 +37,17 @@ std::string make_signature()
 	return text.str();
 }
 
-// The file is laid out before it is mapped, since a mapping can neither
-// create one nor resize it.
+void check_stack_extent(std::size_t extent, const char *what)
+{
+	if (extent == 1)
+	{
+		std::ostringstream message;
+		message << "mrc::make_header: The MRC format holds no " << what
+			<< ": it states it as the shape without that axis.";
+		throw invalid_operation_error(message.str());
+	}
+}
+
 mrc_file_mapping lay_out_file(
 	const std::string &path,
 	const mrc_geometry &geometry
@@ -190,6 +199,8 @@ mrc_header make_header(
 	}
 	else if (rank == 3 && core_rank == 2)
 	{
+		check_stack_extent(extents[0], "stack of one image");
+
 		header.set_section_count(static_cast<std::int32_t>(extents[0]));
 		header.set_section_sampling(1);
 		header.set_space_group(image_stack_space_group);
@@ -203,6 +214,9 @@ mrc_header make_header(
 	}
 	else if (rank == 4 && core_rank == 3)
 	{
+		check_stack_extent(extents[0], "stack of one volume");
+		check_stack_extent(extents[1], "stack of volumes one section thick");
+
 		const auto depth = static_cast<std::int32_t>(extents[1]);
 		header.set_section_count(
 			static_cast<std::int32_t>(extents[0] * extents[1]));

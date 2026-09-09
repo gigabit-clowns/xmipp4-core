@@ -121,8 +121,8 @@ void mrc_file_mapping::prefetch(
 #else
 	// Windows advises through PrefetchVirtualMemory, which is not wired up
 	// here: the mapping is read as it always was, one fault at a time.
-	(void)offset;
-	(void)size;
+	std::ignore = offset;
+	std::ignore = size;
 #endif
 }
 

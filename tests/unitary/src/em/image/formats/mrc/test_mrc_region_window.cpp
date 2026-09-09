@@ -59,8 +59,8 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 
 		const auto window = make_region_window(regions, geometry);
 
-		CHECK( window.byte_offset == 0 );
-		CHECK( window.byte_size == 0 );
+		CHECK( window.get_byte_offset() == 0 );
+		CHECK( window.get_byte_size() == 0 );
 	}
 
 	SECTION( "one plane covers itself alone" )
@@ -70,8 +70,8 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 
 		const auto window = make_region_window(regions, geometry);
 
-		CHECK( window.byte_offset == 2 * plane_bytes );
-		CHECK( window.byte_size == plane_bytes );
+		CHECK( window.get_byte_offset() == 2 * plane_bytes );
+		CHECK( window.get_byte_size() == plane_bytes );
 	}
 
 	SECTION( "a run of planes starts where the run does" )
@@ -83,8 +83,8 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 
 		const auto window = make_region_window(regions, geometry);
 
-		CHECK( window.byte_offset == plane_bytes );
-		CHECK( window.byte_size == 3 * plane_bytes );
+		CHECK( window.get_byte_offset() == plane_bytes );
+		CHECK( window.get_byte_size() == 3 * plane_bytes );
 	}
 
 	SECTION( "planes out of order and with a gap cover what lies between" )
@@ -95,8 +95,8 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 
 		const auto window = make_region_window(regions, geometry);
 
-		CHECK( window.byte_offset == plane_bytes );
-		CHECK( window.byte_size == 4 * plane_bytes );
+		CHECK( window.get_byte_offset() == plane_bytes );
+		CHECK( window.get_byte_size() == 4 * plane_bytes );
 	}
 
 	SECTION( "a region of the whole stack covers all of it" )
@@ -108,8 +108,8 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 
 		const auto window = make_region_window(regions, geometry);
 
-		CHECK( window.byte_offset == 0 );
-		CHECK( window.byte_size == 5 * plane_bytes );
+		CHECK( window.get_byte_offset() == 0 );
+		CHECK( window.get_byte_size() == 5 * plane_bytes );
 	}
 }
 
@@ -125,6 +125,6 @@ TEST_CASE( "the window of a batch stays inside the file",
 
 	const auto window = make_region_window(regions, geometry);
 
-	CHECK( window.byte_offset <= 5 * plane_bytes );
-	CHECK( window.byte_offset + window.byte_size <= 5 * plane_bytes );
+	CHECK( window.get_byte_offset() <= 5 * plane_bytes );
+	CHECK( window.get_byte_offset() + window.get_byte_size() <= 5 * plane_bytes );
 }

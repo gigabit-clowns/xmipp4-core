@@ -16,17 +16,34 @@ namespace em
 namespace mrc
 {
 
+mrc_region_window::mrc_region_window(
+	std::size_t byte_offset,
+	std::size_t byte_size
+) noexcept
+	: m_byte_offset(byte_offset)
+	, m_byte_size(byte_size)
+{
+}
+
+std::size_t mrc_region_window::get_byte_offset() const noexcept
+{
+	return m_byte_offset;
+}
+
+std::size_t mrc_region_window::get_byte_size() const noexcept
+{
+	return m_byte_size;
+}
+
 mrc_region_window make_region_window(
 	const image_transfer_plan &regions,
 	const mrc_geometry &geometry
 ) noexcept
 {
-	mrc_region_window result = {0, 0};
-
 	const auto region_count = regions.get_region_count();
 	if (region_count == 0)
 	{
-		return result;
+		return mrc_region_window(0, 0);
 	}
 
 	const auto span_per_region =
@@ -53,10 +70,8 @@ mrc_region_window make_region_window(
 		static_cast<std::size_t>(geometry.get_strides()[0]) *
 		get_size(geometry.get_data_type());
 
-	result.byte_offset = first * position_size;
-	result.byte_size = (last - first) * position_size;
-
-	return result;
+	return mrc_region_window(
+		first * position_size, (last - first) * position_size);
 }
 
 } // namespace mrc

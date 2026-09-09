@@ -104,8 +104,8 @@ void mrc_reader::read(
 
 	const auto window = make_region_window(regions, m_geometry);
 	m_mapping.prefetch(
-		m_geometry.get_data_offset() + window.byte_offset,
-		window.byte_size
+		m_geometry.get_data_offset() + window.get_byte_offset(),
+		window.get_byte_size()
 	);
 
 	read_regions(

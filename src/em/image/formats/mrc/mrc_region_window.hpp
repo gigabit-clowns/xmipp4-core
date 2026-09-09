@@ -25,10 +25,45 @@ class mrc_geometry;
  * This is the prefetch range, not a read bound. Regions past the end of the
  * file are clamped out here and later rejected by @ref mrc_region_read_plan.
  */
-struct mrc_region_window
+class mrc_region_window
 {
-	std::size_t byte_offset;
-	std::size_t byte_size;
+public:
+	/**
+	 * @brief Construct the stretch from its bounds, in bytes.
+	 *
+	 * @param byte_offset Byte offset of the first value the stretch reaches,
+	 * from the start of the values.
+	 * @param byte_size Number of bytes the stretch spans.
+	 */
+	mrc_region_window(
+		std::size_t byte_offset,
+		std::size_t byte_size
+	) noexcept;
+
+	mrc_region_window(const mrc_region_window &other) = default;
+	mrc_region_window(mrc_region_window &&other) noexcept = default;
+	~mrc_region_window() = default;
+
+	mrc_region_window& operator=(const mrc_region_window &other) = default;
+	mrc_region_window& operator=(mrc_region_window &&other) noexcept = default;
+
+	/**
+	 * @brief Get the byte offset of the first value the stretch reaches.
+	 *
+	 * @return std::size_t The byte offset, from the start of the values.
+	 */
+	std::size_t get_byte_offset() const noexcept;
+
+	/**
+	 * @brief Get the number of bytes the stretch spans.
+	 *
+	 * @return std::size_t The byte size.
+	 */
+	std::size_t get_byte_size() const noexcept;
+
+private:
+	std::size_t m_byte_offset;
+	std::size_t m_byte_size;
 };
 
 /**

@@ -45,11 +45,8 @@ std::ptrdiff_t resolve_offset(
 	{
 		const auto extent = get_region_extent(regions, rank, axis);
 
-		// Checked as "offset within bounds, then extent within what remains"
-		// rather than "offset + extent <= bound": an offset can be as large
-		// as std::size_t allows (image_location::no_position is), and
-		// offset + extent would silently wrap past the bound instead of
-		// exceeding it.
+		// Checks "offset within bounds, then extent within what remains"
+		// to avoid unbounded access situations
 		if (region_offset[axis] > extents[axis] ||
 			extent > extents[axis] - region_offset[axis])
 		{

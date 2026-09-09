@@ -213,14 +213,6 @@ void validate(const mrc_header &header)
 		);
 	}
 
-	if (!has_axis_permutation(header))
-	{
-		throw image_format_error(
-			"mrc::parse_header: The axis correspondence of the file is not "
-			"a permutation of the three axes."
-		);
-	}
-
 	if (is_volume_stack_space_group(header.get_space_group()))
 	{
 		const auto sampling = header.get_section_sampling();

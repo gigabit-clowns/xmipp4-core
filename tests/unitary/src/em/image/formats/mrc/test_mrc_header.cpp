@@ -300,12 +300,15 @@ TEST_CASE( "an MRC header that contradicts the format is refused",
 		REQUIRE_THROWS_AS( parse_header(view(raw)), image_format_error );
 	}
 
-	SECTION( "an axis correspondence that repeats an axis is refused" )
+	SECTION( "an axis correspondence that repeats an axis is not refused" )
 	{
 		auto raw = make_raw_header(byte_order::little_endian);
 		put_int32(raw, maps_offset, 1, byte_order::little_endian);
 
-		REQUIRE_THROWS_AS( parse_header(view(raw)), image_format_error );
+		const auto header = parse_header(view(raw));
+
+		REQUIRE( header.get_section_axis() == 1 );
+		REQUIRE_FALSE( has_axis_permutation(header) );
 	}
 
 	SECTION( "a stack of volumes that does not divide evenly is refused" )

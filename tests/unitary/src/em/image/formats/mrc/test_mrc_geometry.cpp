@@ -258,12 +258,26 @@ TEST_CASE( "the axes of an MRC file are ordered by the axis of space each "
 		REQUIRE( geometry.get_core_rank() == 3 );
 	}
 
-	SECTION( "an axis correspondence that is no permutation is refused" )
+	SECTION( "an axis correspondence that is no permutation is read in order" )
 	{
-		REQUIRE_THROWS_AS(
-			mrc_geometry(with_axes(make_header_of(4, 3, 5, 1, 0), 1, 1, 3)),
-			image_format_error
-		);
+		const mrc_geometry geometry(
+			with_axes(make_header_of(4, 3, 5, 1, 0), 1, 1, 3));
+
+		REQUIRE( extents_of(geometry) == std::vector<std::size_t>{5, 3, 4} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{12, 4, 1} );
+		REQUIRE( geometry.get_core_rank() == 2 );
+	}
+
+	SECTION( "an axis correspondence of zeros is read in order too" )
+	{
+		const mrc_geometry geometry(
+			with_axes(make_header_of(4, 3, 12, 4, 401), 0, 0, 0));
+
+		REQUIRE( extents_of(geometry) ==
+			std::vector<std::size_t>{3, 4, 3, 4} );
+		REQUIRE( strides_of(geometry) ==
+			std::vector<std::ptrdiff_t>{48, 12, 4, 1} );
 	}
 }
 

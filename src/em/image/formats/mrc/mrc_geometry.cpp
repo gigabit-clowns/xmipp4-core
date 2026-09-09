@@ -4,6 +4,7 @@
 
 #include "mrc_constants.hpp"
 
+#include <core/logger.hpp>
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
 
 #include <algorithm>
@@ -126,6 +127,17 @@ derive_core_space_axes(const mrc_header &header, std::size_t core_rank)
 	return axes;
 }
 
+std::vector<std::size_t> make_stored_order(std::size_t rank)
+{
+	std::vector<std::size_t> order(rank);
+	std::iota(order.begin(), order.end(), std::size_t(0));
+
+	return order;
+}
+
+// A file whose three fields name anything but the three axes of space, one
+// each, states no order to put its axes in, and is read as the file it would
+// be if they named them in order.
 std::vector<std::size_t> derive_axis_order(
 	const mrc_header &header,
 	std::size_t rank,
@@ -134,18 +146,23 @@ std::vector<std::size_t> derive_axis_order(
 {
 	if (!has_axis_permutation(header))
 	{
-		throw image_format_error(
-			"mrc_geometry: The columns, the rows and the sections of the file "
-			"do not run along the three axes of space, one each."
+		REXLIB_LOG_WARN(
+			"An MRC file states that its columns, its rows and its sections "
+			"run along the axes {}, {} and {}, which are not the three axes "
+			"of space, one each. It is read as though they ran along 1, 2 "
+			"and 3.",
+			header.get_column_axis(),
+			header.get_row_axis(),
+			header.get_section_axis()
 		);
+
+		return make_stored_order(rank);
 	}
 
 	const auto core_axes = derive_core_space_axes(header, core_rank);
 	const auto leading = rank - core_rank;
 
-	std::vector<std::size_t> order(leading);
-	std::iota(order.begin(), order.end(), std::size_t(0));
-
+	auto order = make_stored_order(leading);
 	for (auto space_axis = space_axis_count; space_axis > 0; --space_axis)
 	{
 		const auto stored = std::find(

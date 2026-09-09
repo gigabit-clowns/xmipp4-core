@@ -135,9 +135,9 @@ std::vector<std::size_t> make_stored_order(std::size_t rank)
 	return order;
 }
 
-// A file whose three fields name anything but the three axes of space, one
-// each, states no order to put its axes in, and is read as the file it would
-// be if they named them in order.
+// A file that states no axis correspondence at all is read as the file it
+// would be if it named the three axes in order, which is what the writer that
+// left the fields alone laid out.
 std::vector<std::size_t> derive_axis_order(
 	const mrc_header &header,
 	std::size_t rank,
@@ -146,14 +146,18 @@ std::vector<std::size_t> derive_axis_order(
 {
 	if (!has_axis_permutation(header))
 	{
+		if (!has_unset_axes(header))
+		{
+			throw image_format_error(
+				"mrc_geometry: The axis correspondence of the file names "
+				"anything but the three axes of space, one each."
+			);
+		}
+
 		REXLIB_LOG_WARN(
-			"An MRC file states that its columns, its rows and its sections "
-			"run along the axes {}, {} and {}, which are not the three axes "
-			"of space, one each. It is read as though they ran along 1, 2 "
-			"and 3.",
-			header.get_column_axis(),
-			header.get_row_axis(),
-			header.get_section_axis()
+			"An MRC file does not state which axes of space its columns, its "
+			"rows and its sections run along. It is read as though they ran "
+			"along 1, 2 and 3."
 		);
 
 		return make_stored_order(rank);

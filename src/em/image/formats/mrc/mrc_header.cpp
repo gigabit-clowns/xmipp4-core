@@ -213,6 +213,14 @@ void validate(const mrc_header &header)
 		);
 	}
 
+	if (!has_axis_permutation(header) && !has_unset_axes(header))
+	{
+		throw image_format_error(
+			"mrc::parse_header: The axis correspondence of the file names "
+			"anything but the three axes of space, one each."
+		);
+	}
+
 	if (is_volume_stack_space_group(header.get_space_group()))
 	{
 		const auto sampling = header.get_section_sampling();
@@ -677,6 +685,13 @@ bool has_axis_permutation(const mrc_header &header) noexcept
 	std::sort(axes.begin(), axes.end());
 
 	return axes[0] == 1 && axes[1] == 2 && axes[2] == 3;
+}
+
+bool has_unset_axes(const mrc_header &header) noexcept
+{
+	return header.get_column_axis() == 0 &&
+		header.get_row_axis() == 0 &&
+		header.get_section_axis() == 0;
 }
 
 bool holds_signed_bytes(const mrc_header &header) noexcept

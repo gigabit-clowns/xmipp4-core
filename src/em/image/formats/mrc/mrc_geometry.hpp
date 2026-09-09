@@ -32,9 +32,8 @@ namespace mrc
  * the header names the axis of space the columns, the rows and the sections
  * each run along. This reports them along the axes of space, so a file that
  * names them in another order is reported with the strides of its axes out of
- * descending order rather than with its axes transposed. One that names
- * anything but the three axes, one each, is read as though it named them in
- * order.
+ * descending order rather than with its axes transposed. One that names no
+ * axis at all is read as though it named them in order.
  */
 class mrc_geometry
 {
@@ -43,8 +42,10 @@ public:
 	 * @brief Derive the shape of a file from its header.
 	 *
 	 * @param header The header of the file.
-	 * @throws image_format_error If the values of the file would not begin at
-	 * an offset its elements can be addressed at.
+	 * @throws image_format_error If the axis correspondence of the header
+	 * names anything but the three axes of space, one each, without being
+	 * unset, or if the values of the file would not begin at an offset its
+	 * elements can be addressed at.
 	 */
 	explicit mrc_geometry(const mrc_header &header);
 

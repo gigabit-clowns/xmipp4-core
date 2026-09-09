@@ -19,16 +19,11 @@ class mrc_geometry;
 /**
  * @brief The stretch of a file that a batch of regions reaches into.
  *
- * Whole positions along the slowest axis of the file, from the first the
- * batch reaches to the last, gaps included, stated in bytes from the start of
- * the values. A batch of scattered positions therefore covers what lies
- * between them as well, which is what keeps this one stretch of the file
- * rather than a list of them.
+ * Byte range along the slowest axis, from the first position a batch reaches
+ * to the last, gaps included, measured from the start of the values.
  *
- * It says where a batch is going to read, which is all a prefetch needs. It
- * is not a bound on where a batch may read: a region past the end of the file
- * is clamped away here and refused by @ref mrc_region_read_plan, where the
- * batch is resolved and every region is checked.
+ * This is the prefetch range, not a read bound. Regions past the end of the
+ * file are clamped out here and later rejected by @ref mrc_region_read_plan.
  */
 struct mrc_region_window
 {

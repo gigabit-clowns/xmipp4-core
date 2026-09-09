@@ -8,6 +8,7 @@ target_sources(
 		image_location.cpp
 		image_metadata.cpp
 		image_probe.cpp
+		image_read.cpp
 		image_read_format.cpp
 		image_read_format_manager.cpp
 		image_reader.cpp
@@ -18,6 +19,7 @@ target_sources(
 		image_source.cpp
 		image_transaction_plan.cpp
 		image_transfer_plan.cpp
+		image_write.cpp
 		image_write_format.cpp
 		image_write_format_manager.cpp
 		image_writer.cpp

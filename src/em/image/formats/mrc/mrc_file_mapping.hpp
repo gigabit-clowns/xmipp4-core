@@ -80,15 +80,7 @@ public:
 	/**
 	 * @brief Ask for a stretch of the mapping to be brought into memory.
 	 *
-	 * A mapped read that touches a page the process does not hold yet traps
-	 * into the kernel, and a batch reading a stretch of a file that way pays
-	 * for one of those per page of it. This asks for the whole stretch at
-	 * once instead, so that the reads that follow find it there.
-	 *
-	 * It is advice and nothing more: the bytes are readable either way, and
-	 * a platform that does not take it, or takes it and does nothing, only
-	 * leaves the faults to happen as they did before. Nothing is reported
-	 * because there is nothing a caller would do differently.
+	 * Hints the kernel to bring the whole stretch of a file at once.
 	 *
 	 * @param offset Where the stretch starts, in bytes from the start of the
 	 * mapping.

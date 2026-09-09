@@ -46,10 +46,10 @@ std::ptrdiff_t resolve_offset(
 		// Check "offset within bounds, then extent within what remains"
 		// to avoid false negatives due to overflow
 		const auto extent = get_region_extent(regions, rank, axis);
-		const auto offset = region_offset[axis];
+		const auto position = region_offset[axis];
 		const auto boundary = extents[axis];
-		const auto remaining = boundary - offset;
-		if (offset > boundary || extent > remaining)
+		const auto remaining = boundary - position;
+		if (position > boundary || extent > remaining)
 		{
 			throw std::out_of_range(
 				"mrc_region_offsets: A region does not fit where it is "

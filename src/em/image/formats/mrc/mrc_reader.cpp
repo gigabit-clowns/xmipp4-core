@@ -82,12 +82,6 @@ void mrc_reader::read(
 	const image_transfer_plan &regions
 ) const
 {
-	const auto window = make_region_window(regions, m_geometry);
-	m_mapping.prefetch(
-		m_geometry.get_data_offset() + window.byte_offset,
-		window.byte_size
-	);
-
 	auto *array_data = get_host_data(destination);
 
 	const auto &descriptor = destination.get_descriptor();
@@ -98,6 +92,7 @@ void mrc_reader::read(
 	layout.get_extents(array_extents);
 	layout.get_strides(array_strides);
 
+	// Validate the batch before the prefetch touches it.
 	const mrc_region_read_plan plan(
 		regions,
 		m_geometry.get_extents(),
@@ -105,6 +100,12 @@ void mrc_reader::read(
 		make_span(array_extents),
 		make_span(array_strides),
 		layout.get_offset()
+	);
+
+	const auto window = make_region_window(regions, m_geometry);
+	m_mapping.prefetch(
+		m_geometry.get_data_offset() + window.byte_offset,
+		window.byte_size
 	);
 
 	read_regions(

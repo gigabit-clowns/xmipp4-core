@@ -19,8 +19,6 @@ on:
       - cmake/**
       - src/**
 
-  # A schedule ignores the path filters, so this reaches code nothing has
-  # touched since the queries last changed.
   schedule:
     - cron: '37 3 * * 1'
 
@@ -56,9 +54,7 @@ jobs:
         with:
           key: ${{ hashFiles('CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/modules/rexlib_add_*.cmake') }}
 
-      # No compiler cache here: the extractor sees only the compilations that
-      # run, so whatever ccache served would be missing from the database.
-      # Two at a time, because each one carries an extractor beside it.
+      # No compiler cache here.
       - name: Build the library
         run: |
           cmake -S . -B build \

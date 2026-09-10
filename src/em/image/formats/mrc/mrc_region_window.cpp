@@ -16,6 +16,27 @@ namespace em
 namespace mrc
 {
 
+namespace
+{
+
+// The axis a batch's positions are spread along: every other axis is fully
+// covered by each region, so it is the one walked outermost in memory, the
+// one with the largest stride.
+std::size_t find_slowest_axis(span<const std::ptrdiff_t> strides) noexcept
+{
+	std::size_t slowest = 0;
+	for (std::size_t axis = 1; axis < strides.size(); ++axis)
+	{
+		if (strides[axis] > strides[slowest])
+		{
+			slowest = axis;
+		}
+	}
+	return slowest;
+}
+
+} // anonymous namespace
+
 mrc_region_window::mrc_region_window(
 	std::size_t byte_offset,
 	std::size_t byte_size
@@ -46,32 +67,30 @@ mrc_region_window make_region_window(
 		return mrc_region_window(0, 0);
 	}
 
-	// TODO properly derive this when axis ordering is accounted in mrc_geometry
-	REXLIB_CONST_CONSTEXPR std::size_t slowest_axis = 0;
+	const auto slowest_axis = find_slowest_axis(geometry.get_strides());
 
 	const auto region_extent =
 		get_region_extent(regions, regions.get_file_rank(), slowest_axis);
-	const auto positions = geometry.get_extents()[slowest_axis];
 
-	// A position is clamped to `positions` before it takes part in any
-	// arithmetic, not after: a position can be as large as std::size_t
-	// allows (image_location::no_position is), and "position + region_extent"
-	// would silently wrap instead of landing past the end. A region past the
-	// end of the file is not an error here: it is only refused later, where
-	// the batch is resolved and every region is checked.
-	const auto clamped = [positions] (std::size_t position) noexcept
-	{
-		return std::min(position, positions);
-	};
+	auto first_position = regions.get_file_offset(0)[slowest_axis];
+	REXLIB_ASSERT(first_position <= geometry.get_extents()[slowest_axis]);
+	REXLIB_ASSERT(
+		region_extent <= geometry.get_extents()[slowest_axis] - first_position
+	);
 
-	auto first_position = clamped(regions.get_file_offset(0)[slowest_axis]);
-	auto last_position = std::min(first_position + region_extent, positions);
+	auto last_position = first_position + region_extent;
 	for (std::size_t i = 1; i < region_count; ++i)
 	{
-		const auto position = clamped(regions.get_file_offset(i)[slowest_axis]);
+		const auto position = regions.get_file_offset(i)[slowest_axis];
+		REXLIB_ASSERT(
+			position <= geometry.get_extents()[slowest_axis]
+		);
+		REXLIB_ASSERT(
+			region_extent <= geometry.get_extents()[slowest_axis] - position
+		);
+
 		first_position = std::min(first_position, position);
-		last_position = std::max(
-			last_position, std::min(position + region_extent, positions));
+		last_position = std::max(last_position, position + region_extent);
 	}
 
 	const auto stride_in_bytes =

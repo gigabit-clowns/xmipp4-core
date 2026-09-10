@@ -111,20 +111,15 @@ TEST_CASE( "the window of a batch covers the planes it reaches",
 		CHECK( window.get_byte_offset() == 0 );
 		CHECK( window.get_byte_size() == 5 * plane_bytes );
 	}
-}
 
-TEST_CASE( "the window of a batch stays inside the file",
-	"[mrc_region_window]" )
-{
-	const auto geometry = make_stack_geometry();
+	SECTION( "a plane at the last valid position covers itself alone" )
+	{
+		image_transfer_plan regions(make_span(plane), 3, 3);
+		add_plane(regions, 4);
 
-	// A region past the end is refused where the batch is resolved. Here it
-	// only has to not ask for bytes the mapping does not hold.
-	image_transfer_plan regions(make_span(plane), 3, 3);
-	add_plane(regions, 9);
+		const auto window = make_region_window(regions, geometry);
 
-	const auto window = make_region_window(regions, geometry);
-
-	CHECK( window.get_byte_offset() <= 5 * plane_bytes );
-	CHECK( window.get_byte_offset() + window.get_byte_size() <= 5 * plane_bytes );
+		CHECK( window.get_byte_offset() == 4 * plane_bytes );
+		CHECK( window.get_byte_size() == plane_bytes );
+	}
 }

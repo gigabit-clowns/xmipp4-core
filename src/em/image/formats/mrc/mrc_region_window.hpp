@@ -22,8 +22,10 @@ class mrc_geometry;
  * Byte range along the slowest axis, from the first position a batch reaches
  * to the last, gaps included, measured from the start of the values.
  *
- * This is the prefetch range, not a read bound. Regions past the end of the
- * file are clamped out here and later rejected by @ref mrc_region_read_plan.
+ * This is the prefetch range for a batch @ref mrc_region_read_plan has
+ * already validated: every position is assumed to already be within the
+ * file, since a batch that is not is refused there before either of them
+ * ever runs.
  */
 class mrc_region_window
 {
@@ -69,10 +71,11 @@ private:
 /**
  * @brief Work out the stretch of a file a batch of regions reaches into.
  *
- * @param regions The regions to be moved.
+ * @param regions The regions to be moved. Every position along the slowest
+ * axis is assumed to already be within @p geometry's extents.
  * @param geometry The shape of the file they address.
- * @return mrc_region_window The stretch, clamped to the values of the file.
- * Empty for a batch of no region.
+ * @return mrc_region_window The stretch, in bytes. Empty for a batch of no
+ * region.
  */
 mrc_region_window make_region_window(
 	const image_transfer_plan &regions,

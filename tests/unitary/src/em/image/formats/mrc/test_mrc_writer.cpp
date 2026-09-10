@@ -301,6 +301,51 @@ TEST_CASE( "a shape the MRC format cannot hold builds no header",
 		);
 	}
 
+	// The format states the count of images or volumes of a stack as a
+	// section count, and the depth of a volume beside it, which leaves it no
+	// way to say that either of them is one: such a file states the shape
+	// without that axis and reads back as it.
+	SECTION( "a stack of one image is refused" )
+	{
+		const std::vector<std::size_t> single = {1, 3, 4};
+
+		REQUIRE_THROWS_AS(
+			make_header(make_span(single), 2, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a stack of one volume is refused" )
+	{
+		const std::vector<std::size_t> single = {1, 3, 3, 4};
+
+		REQUIRE_THROWS_AS(
+			make_header(make_span(single), 3, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	SECTION( "a stack of volumes one section thick is refused" )
+	{
+		const std::vector<std::size_t> flat = {3, 1, 3, 4};
+
+		REQUIRE_THROWS_AS(
+			make_header(make_span(flat), 3, numerical_type::float32),
+			invalid_operation_error
+		);
+	}
+
+	// A volume of one section is not a stack of one of anything: the format
+	// states it as a section count of one, which is what it reads back as.
+	SECTION( "a volume of a single section is not refused" )
+	{
+		const std::vector<std::size_t> flat = {1, 3, 4};
+
+		REQUIRE_NOTHROW(
+			make_header(make_span(flat), 3, numerical_type::float32)
+		);
+	}
+
 	SECTION( "a rank above four is refused" )
 	{
 		REQUIRE_THROWS_AS(

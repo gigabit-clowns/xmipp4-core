@@ -220,6 +220,32 @@ TEST_CASE( "an MRC file is opened and reports what it holds",
 		REQUIRE( reader.get_extents().size() == 2 );
 		REQUIRE( reader.get_core_rank() == 2 );
 	}
+
+	SECTION( "a stack of volumes one section thick is a stack of images" )
+	{
+		auto raw = make_file(4, 3, 6, 401, 2, counting(72));
+		put_int32(raw, 36, 1);
+		write_file(path.get(), raw);
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_extents().size() == 3 );
+		REQUIRE( reader.get_extents()[0] == 6 );
+		REQUIRE( reader.get_extents()[1] == 3 );
+		REQUIRE( reader.get_extents()[2] == 4 );
+		REQUIRE( reader.get_core_rank() == 2 );
+	}
+
+	SECTION( "a stack of a single volume is a volume" )
+	{
+		write_file(path.get(), make_file(4, 3, 6, 401, 2, counting(72)));
+
+		const mrc_reader reader(path.get());
+
+		REQUIRE( reader.get_extents().size() == 3 );
+		REQUIRE( reader.get_extents()[0] == 6 );
+		REQUIRE( reader.get_core_rank() == 3 );
+	}
 }
 
 TEST_CASE( "the values of an MRC file are read into an array",

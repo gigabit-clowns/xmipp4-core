@@ -56,6 +56,48 @@ std::vector<float> values_of(const std::string &path)
 	return values;
 }
 
+// The values of a volume along the three axes of space, the one along X
+// changing fastest. The columns of the file change fastest and run along the
+// axis MAPC names, its rows along MAPR and its sections along MAPS, so the
+// three are walked in whichever order puts the axes of space in that one.
+std::vector<float> values_along_space_of(const std::string &path)
+{
+	const auto raw = read_bytes(path);
+	const auto values = values_of(path);
+
+	const std::size_t columns = static_cast<std::size_t>(field(raw, 0));
+	const std::size_t rows = static_cast<std::size_t>(field(raw, 4));
+	const std::size_t sections = static_cast<std::size_t>(field(raw, 8));
+	const std::size_t counts[3] = {columns, rows, sections};
+	const std::size_t stored_strides[3] = {1, columns, columns * rows};
+
+	std::size_t extents[3] = {0, 0, 0};
+	std::size_t strides[3] = {0, 0, 0};
+	for (std::size_t stored = 0; stored < 3; ++stored)
+	{
+		const auto axis =
+			static_cast<std::size_t>(field(raw, 64 + 4 * stored)) - 1;
+		extents[axis] = counts[stored];
+		strides[axis] = stored_strides[stored];
+	}
+
+	std::vector<float> ordered;
+	ordered.reserve(values.size());
+	for (std::size_t z = 0; z < extents[2]; ++z)
+	{
+		for (std::size_t y = 0; y < extents[1]; ++y)
+		{
+			for (std::size_t x = 0; x < extents[0]; ++x)
+			{
+				ordered.push_back(
+					values[z * strides[2] + y * strides[1] + x * strides[0]]);
+			}
+		}
+	}
+
+	return ordered;
+}
+
 std::size_t element_count(span<const std::size_t> extents)
 {
 	return std::accumulate(
@@ -114,14 +156,31 @@ TEST_CASE_METHOD( cpu_execution_context_fixture,
 
 		REQUIRE( reader->get_core_rank() == 3 );
 		REQUIRE( reader->get_extents().size() == 3 );
-		REQUIRE( reader->get_extents()[0] == 25 );
-		REQUIRE( reader->get_extents()[1] == 43 );
-		REQUIRE( reader->get_extents()[2] == 73 );
+	}
+
+	SECTION( "a volume is read along the axes its header names" )
+	{
+		// The columns of EMD-3001 run along Z, its rows along X and its
+		// sections along Y, so its counts of 73, 43 and 25 are extents of 43
+		// along X, 25 along Y and 73 along Z.
+		const auto path = get_mrc_asset_path("EMD-3001.map");
+		const auto raw = read_bytes(path);
+
+		REQUIRE( field(raw, 64) == 3 );
+		REQUIRE( field(raw, 68) == 1 );
+		REQUIRE( field(raw, 72) == 2 );
+
+		const auto reader = manager->open(path);
+
+		REQUIRE( reader->get_extents().size() == 3 );
+		REQUIRE( reader->get_extents()[0] == 73 );
+		REQUIRE( reader->get_extents()[1] == 25 );
+		REQUIRE( reader->get_extents()[2] == 43 );
 	}
 }
 
 TEST_CASE_METHOD( cpu_execution_context_fixture,
-	"the values of a real MRC file arrive as the file holds them",
+	"the values of a real MRC file arrive along the axes its header names",
 	"[mrc][image_format_manager]" )
 {
 	const auto manager =
@@ -152,7 +211,7 @@ TEST_CASE_METHOD( cpu_execution_context_fixture,
 		reader->read(array_ref(destination), regions);
 
 		const auto count = element_count(extents);
-		const auto expected = values_of(path);
+		const auto expected = values_along_space_of(path);
 
 		REQUIRE( expected.size() == count );
 		REQUIRE( read_host<float>(destination, count) == expected );

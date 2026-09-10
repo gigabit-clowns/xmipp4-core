@@ -26,7 +26,12 @@ EMD-3001.map
 MicroED structure of a peptide from alpha-synuclein, space group 4 (P21).
 https://www.ebi.ac.uk/pdbe/entry/emdb/EMD-3001
 
-Its grid sampling (40, 12, 72) has nothing to do with its extents
+Its grid sampling (40, 12, 72) has nothing to do with its counts
 (73, 43, 25): in a crystallographic file MZ is a unit cell sampling and not a
 count of sections per volume. It also carries a 160 byte extended header, so
 the offset its values begin at is one this project did not lay out.
+
+Its axis correspondence is MAPC, MAPR, MAPS = 3, 1, 2, which makes it the
+specimen of a file whose columns, rows and sections are not X, Y and Z in that
+order: it is 43 along X, 25 along Y and 73 along Z, and a reader that ignored
+those three fields would report it transposed.

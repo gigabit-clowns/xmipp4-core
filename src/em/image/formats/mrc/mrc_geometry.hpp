@@ -23,12 +23,17 @@ namespace mrc
  * An MRC file states its shape as three counts and a space group, and the
  * same three counts mean different things depending on that space group: a
  * stack of images and one volume of the same depth differ only in it, and a
- * stack of volumes divides the sections between its two leading axes. This
- * resolves all of it once, when a file is opened, into the extents and the
- * core rank an @ref image_reader reports.
+ * stack of volumes divides the sections between its two leading axes, unless
+ * the division leaves one of them a single element, which is how a volume and
+ * a stack of images are stated too. This resolves all of it once, when a file
+ * is opened, into the extents and the core rank an @ref image_reader reports.
  *
- * The values of a file are laid out contiguously in the order of the extents,
- * so the strides follow from them.
+ * The values themselves are laid out with the columns changing fastest, and
+ * the header names the axis of space the columns, the rows and the sections
+ * each run along. This reports them along the axes of space, so a file that
+ * names them in another order is reported with the strides of its axes out of
+ * descending order rather than with its axes transposed. One that names no
+ * axis at all is read as though it named them in order.
  */
 class mrc_geometry
 {
@@ -37,8 +42,10 @@ public:
 	 * @brief Derive the shape of a file from its header.
 	 *
 	 * @param header The header of the file.
-	 * @throws image_format_error If the values of the file would not begin
-	 * at an offset its elements can be addressed at.
+	 * @throws image_format_error If the axis correspondence of the header
+	 * names anything but the three axes of space, one each, without being
+	 * unset, or if the values of the file would not begin at an offset its
+	 * elements can be addressed at.
 	 */
 	explicit mrc_geometry(const mrc_header &header);
 
@@ -50,7 +57,11 @@ public:
 	mrc_geometry& operator=(mrc_geometry &&other) noexcept = default;
 
 	/**
-	 * @brief Get the extents of the file, slowest axis first.
+	 * @brief Get the extents of the file.
+	 *
+	 * The axes of a stack come first, and the axes of one image or volume
+	 * follow in the order of the axes of space, the one along the first axis
+	 * of space last.
 	 *
 	 * @return span<const std::size_t> The extents.
 	 */
@@ -67,7 +78,8 @@ public:
 	/**
 	 * @brief Get the distance between consecutive elements along each axis.
 	 *
-	 * In elements rather than bytes, and of the same rank as the extents.
+	 * In elements rather than bytes, and of the same rank as the extents and
+	 * in their order.
 	 *
 	 * @return span<const std::ptrdiff_t> The strides.
 	 */

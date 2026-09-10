@@ -46,32 +46,41 @@ mrc_region_window make_region_window(
 		return mrc_region_window(0, 0);
 	}
 
-	const auto span_per_region =
-		get_region_extent(regions, regions.get_file_rank(), 0);
-	const auto positions = geometry.get_extents()[0];
+	// TODO properly derive this when axis ordering is accounted in mrc_geometry
+	REXLIB_CONST_CONSTEXPR std::size_t slowest_axis = 0;
 
-	// A region's position is clamped to `positions` before it takes part in
-	// any arithmetic to avoid underflow situations.
-	const auto clamped = [positions] (std::size_t position) noexcept
-	{
-		return std::min(position, positions);
-	};
+	const auto region_extent =
+		get_region_extent(regions, regions.get_file_rank(), slowest_axis);
 
-	auto first = clamped(regions.get_file_offset(0)[0]);
-	auto last = std::min(first + span_per_region, positions);
+	auto first_position = regions.get_file_offset(0)[slowest_axis];
+	REXLIB_ASSERT(first_position <= geometry.get_extents()[slowest_axis]);
+	REXLIB_ASSERT(
+		region_extent <= geometry.get_extents()[slowest_axis] - first_position
+	);
+
+	auto last_position = first_position + region_extent;
 	for (std::size_t i = 1; i < region_count; ++i)
 	{
-		const auto position = clamped(regions.get_file_offset(i)[0]);
-		first = std::min(first, position);
-		last = std::max(last, std::min(position + span_per_region, positions));
+		const auto position = regions.get_file_offset(i)[slowest_axis];
+		REXLIB_ASSERT(
+			position <= geometry.get_extents()[slowest_axis]
+		);
+		REXLIB_ASSERT(
+			region_extent <= geometry.get_extents()[slowest_axis] - position
+		);
+
+		first_position = std::min(first_position, position);
+		last_position = std::max(last_position, position + region_extent);
 	}
 
-	const auto position_size =
-		static_cast<std::size_t>(geometry.get_strides()[0]) *
+	const auto stride_in_bytes =
+		static_cast<std::size_t>(geometry.get_strides()[slowest_axis]) *
 		get_size(geometry.get_data_type());
 
 	return mrc_region_window(
-		first * position_size, (last - first) * position_size);
+		first_position * stride_in_bytes,
+		(last_position - first_position) * stride_in_bytes
+	);
 }
 
 } // namespace mrc

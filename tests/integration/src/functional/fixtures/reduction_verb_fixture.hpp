@@ -11,6 +11,7 @@
 
 #include <rexlib/core/hardware/memory_resource_affinity.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
+#include <rexlib/core/numerical/numerical_cast.hpp>
 #include <rexlib/core/numerical/numerical_type.hpp>
 #include <rexlib/core/numerical/numerical_type_traits.hpp>
 #include <rexlib/core/numerical/scalar_value.hpp>
@@ -294,7 +295,7 @@ protected:
 			count *= extent;
 		}
 
-		const auto stored = detail::element_narrow<U>::apply(expected);
+		const auto stored = numerical_cast<U>(expected);
 		for (const auto value : read_host<U>(result, count))
 		{
 			detail::element_checker<U>::apply(value, stored, mode);

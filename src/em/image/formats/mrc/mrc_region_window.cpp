@@ -51,26 +51,27 @@ mrc_region_window make_region_window(
 
 	const auto region_extent =
 		get_region_extent(regions, regions.get_file_rank(), slowest_axis);
+	const auto positions = geometry.get_extents()[slowest_axis];
 
-	auto first_position = regions.get_file_offset(0)[slowest_axis];
-	REXLIB_ASSERT(first_position <= geometry.get_extents()[slowest_axis]);
-	REXLIB_ASSERT(
-		region_extent <= geometry.get_extents()[slowest_axis] - first_position
-	);
+	// A position is clamped to `positions` before it takes part in any
+	// arithmetic, not after: a position can be as large as std::size_t
+	// allows (image_location::no_position is), and "position + region_extent"
+	// would silently wrap instead of landing past the end. A region past the
+	// end of the file is not an error here: it is only refused later, where
+	// the batch is resolved and every region is checked.
+	const auto clamped = [positions] (std::size_t position) noexcept
+	{
+		return std::min(position, positions);
+	};
 
-	auto last_position = first_position + region_extent;
+	auto first_position = clamped(regions.get_file_offset(0)[slowest_axis]);
+	auto last_position = std::min(first_position + region_extent, positions);
 	for (std::size_t i = 1; i < region_count; ++i)
 	{
-		const auto position = regions.get_file_offset(i)[slowest_axis];
-		REXLIB_ASSERT(
-			position <= geometry.get_extents()[slowest_axis]
-		);
-		REXLIB_ASSERT(
-			region_extent <= geometry.get_extents()[slowest_axis] - position
-		);
-
+		const auto position = clamped(regions.get_file_offset(i)[slowest_axis]);
 		first_position = std::min(first_position, position);
-		last_position = std::max(last_position, position + region_extent);
+		last_position = std::max(
+			last_position, std::min(position + region_extent, positions));
 	}
 
 	const auto stride_in_bytes =

@@ -57,7 +57,7 @@ std::int64_t locate(const Kernel &kernel, const T (&values)[N])
 		>::type
 	>::type;
 
-	accumulator_type best = accumulator_type();
+	auto best = accumulator_type();
 	std::int64_t where = 0;
 	kernel.seed(best, where, &values[0], std::size_t(0));
 	for (std::size_t i = 1; i < N; ++i)

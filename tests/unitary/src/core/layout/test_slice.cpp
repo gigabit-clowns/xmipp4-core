@@ -171,7 +171,7 @@ TEST_CASE( "sanitize_slice should throw with out of bounds start values" )
 TEST_CASE( "sanitize_slice should complete end values" )
 {
 	const auto extent = 16;
-	const std::ptrdiff_t count = end();
+	const std::size_t count = end();
 	std::ptrdiff_t start;
 	std::ptrdiff_t step;
 	std::size_t expected_count;

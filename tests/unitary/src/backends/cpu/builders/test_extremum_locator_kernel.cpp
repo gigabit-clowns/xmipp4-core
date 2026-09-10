@@ -171,7 +171,7 @@ TEST_CASE(
 {
 	// merge is the part of the concept a parallel reduction needs; it must
 	// agree with combine about which of two candidates wins.
-	const maximum_locator kernel;
+	const maximum_locator kernel = maximum_locator();
 
 	float best = 3.0F;
 	std::int64_t where = 7;
@@ -190,7 +190,7 @@ TEST_CASE(
 	"[extremum_locator_kernel]"
 )
 {
-	const maximum_locator kernel;
+	const maximum_locator kernel = maximum_locator();
 
 	std::int64_t result = -1;
 	kernel.finalize(&result, 9.0F, std::int64_t(4), std::size_t(6));

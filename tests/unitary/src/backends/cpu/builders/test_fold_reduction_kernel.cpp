@@ -158,7 +158,7 @@ TEST_CASE(
 {
 	// merge is the part of the concept a parallel reduction needs, and must
 	// agree with combine, which is why it is the same fold.
-	const sum_kernel kernel;
+	const sum_kernel kernel = sum_kernel();
 
 	double accumulator = 6.0;
 	kernel.merge(accumulator, 4.0);
@@ -186,7 +186,7 @@ TEST_CASE(
 	"[fold_reduction_kernel]"
 )
 {
-	const sum_kernel kernel;
+	const sum_kernel kernel = sum_kernel();
 
 	double accumulator = 7.0;
 	kernel.identity(accumulator);

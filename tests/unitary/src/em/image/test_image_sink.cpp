@@ -248,12 +248,12 @@ TEST_CASE(
 	// Each file's write spins until every other one has also started. A
 	// sink that serialized file writes would deadlock the first one here
 	// rather than merely run slowly.
-	REXLIB_CONST_CONSTEXPR std::size_t file_count = 4;
+	static REXLIB_CONST_CONSTEXPR std::size_t file_count = 4;
 
 	image_transaction_plan plan(make_span(plane_extents), 3, 3);
 	std::atomic<std::size_t> entered(0);
 	const auto barrier =
-		[&entered, file_count]
+		[&entered]
 		{
 			entered.fetch_add(1);
 			while (entered.load() < file_count)

@@ -21,7 +21,7 @@ TEST_CASE( "span default construction yields empty span", "[span]" )
 
 TEST_CASE( "span construction from data and size", "[span]" )
 {
-	std::array<int, 8> data;
+	std::array<int, 8> data = {};
 
 	span<int, 8> static_span(data.data(), data.size());
 	REQUIRE(static_span.size() == data.size());
@@ -34,7 +34,7 @@ TEST_CASE( "span construction from data and size", "[span]" )
 
 TEST_CASE( "span copy construction preserves data and size", "[span]" )
 {
-	std::array<int, 8> data;
+	std::array<int, 8> data = {};
 
 	span<int, 8> static_span(data.data(), data.size());
 	auto static_span2 = static_span;

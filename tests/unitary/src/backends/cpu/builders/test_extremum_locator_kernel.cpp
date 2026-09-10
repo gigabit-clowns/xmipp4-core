@@ -57,7 +57,7 @@ std::int64_t locate(const Kernel &kernel, const T (&values)[N])
 		>::type
 	>::type;
 
-	accumulator_type best = accumulator_type();
+	auto best = accumulator_type();
 	std::int64_t where = 0;
 	kernel.seed(best, where, &values[0], std::size_t(0));
 	for (std::size_t i = 1; i < N; ++i)
@@ -171,7 +171,7 @@ TEST_CASE(
 {
 	// merge is the part of the concept a parallel reduction needs; it must
 	// agree with combine about which of two candidates wins.
-	const maximum_locator kernel;
+	const auto kernel = maximum_locator();
 
 	float best = 3.0F;
 	std::int64_t where = 7;
@@ -190,7 +190,7 @@ TEST_CASE(
 	"[extremum_locator_kernel]"
 )
 {
-	const maximum_locator kernel;
+	const auto kernel = maximum_locator();
 
 	std::int64_t result = -1;
 	kernel.finalize(&result, 9.0F, std::int64_t(4), std::size_t(6));

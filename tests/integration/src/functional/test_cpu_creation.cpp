@@ -11,6 +11,7 @@
 #include <rexlib/core/ndarray/array.hpp>
 #include <rexlib/core/ndarray/const_array.hpp>
 #include <rexlib/core/hardware/memory_resource_affinity.hpp>
+#include <rexlib/core/numerical/numerical_cast.hpp>
 #include <rexlib/core/numerical/numerical_type_traits.hpp>
 #include <rexlib/core/numerical/scalar_value.hpp>
 
@@ -416,7 +417,7 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 	for (std::size_t i = 0; i < values.size(); ++i)
 	{
 		INFO( "element " << i );
-		CHECK( values[i] == static_cast<TestType>(i) );
+		CHECK( values[i] == numerical_cast<TestType>(i) );
 	}
 }
 
@@ -613,7 +614,7 @@ TEMPLATE_LIST_TEST_CASE_METHOD(
 	for (std::size_t i = 0; i < values.size(); ++i)
 	{
 		INFO( "element " << i );
-		CHECK( values[i] == static_cast<TestType>(i) );
+		CHECK( values[i] == numerical_cast<TestType>(i) );
 	}
 }
 

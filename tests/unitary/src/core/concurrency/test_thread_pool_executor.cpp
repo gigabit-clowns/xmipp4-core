@@ -125,7 +125,7 @@ TEST_CASE(
 	// actually serialized tasks would deadlock the first one here rather
 	// than merely running slowly, which is what makes this observable
 	// rather than timing-dependent.
-	REXLIB_CONST_CONSTEXPR std::size_t worker_count = 4;
+	static REXLIB_CONST_CONSTEXPR std::size_t worker_count = 4;
 	thread_pool_executor executor(worker_count);
 
 	std::atomic<std::size_t> entered(0);
@@ -136,7 +136,7 @@ TEST_CASE(
 	{
 		tasks.emplace_back(
 			std::make_unique<lambda_task>(
-				[&entered, worker_count]
+				[&entered]
 				{
 					entered.fetch_add(1);
 					while (entered.load() < worker_count)

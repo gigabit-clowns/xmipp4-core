@@ -7,6 +7,8 @@
 
 #include "fixtures/reduction_verb_fixture.hpp"
 
+#include <rexlib/core/numerical/numerical_cast.hpp>
+
 #include <rexlib/ops/reduction/all_operation.hpp>
 #include <rexlib/ops/reduction/amax_operation.hpp>
 #include <rexlib/ops/reduction/amin_operation.hpp>
@@ -40,7 +42,7 @@ const double not_a_number = std::numeric_limits<double>::quiet_NaN();
 template <typename T>
 T repeated(T value, std::size_t count) noexcept
 {
-	return value * static_cast<T>(count);
+	return value * numerical_cast<T>(count);
 }
 
 // A sum of booleans saturates, so only whether the run is empty matters.

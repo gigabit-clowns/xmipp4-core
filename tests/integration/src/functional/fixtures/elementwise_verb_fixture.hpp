@@ -11,6 +11,7 @@
 
 #include <rexlib/core/hardware/memory_resource_affinity.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
+#include <rexlib/core/numerical/numerical_cast.hpp>
 #include <rexlib/core/numerical/numerical_type.hpp>
 #include <rexlib/core/numerical/numerical_type_traits.hpp>
 #include <rexlib/core/numerical/scalar_value.hpp>
@@ -314,7 +315,7 @@ protected:
 		const auto data_type = numerical_type_of<U>::value;
 		CHECK( result.get_descriptor() == make_descriptor({ 2, 3 }, data_type) );
 
-		const auto stored = detail::element_narrow<U>::apply(expected);
+		const auto stored = numerical_cast<U>(expected);
 		for (const auto value : read_host<U>(result, element_count))
 		{
 			detail::element_checker<U>::apply(value, stored, mode);

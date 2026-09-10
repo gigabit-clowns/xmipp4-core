@@ -19,6 +19,7 @@
 #include <rexlib/core/meta/type_tag.hpp>
 #include <rexlib/core/ndarray/const_array_ref.hpp>
 #include <rexlib/core/numerical/fixed_width_float.hpp>
+#include <rexlib/core/numerical/numerical_cast.hpp>
 #include <rexlib/core/numerical/numerical_type.hpp>
 #include <rexlib/core/numerical/numerical_type_dispatch.hpp>
 #include <rexlib/core/numerical/numerical_type_domain_tags.hpp>
@@ -72,7 +73,7 @@ struct element_value_cast
 {
 	static T apply(double real, double) noexcept
 	{
-		return static_cast<T>(real);
+		return numerical_cast<T>(real);
 	}
 };
 
@@ -82,8 +83,8 @@ struct element_value_cast<std::complex<T>>
 	static std::complex<T> apply(double real, double imaginary) noexcept
 	{
 		return std::complex<T>(
-			static_cast<T>(real),
-			static_cast<T>(imaginary)
+			numerical_cast<T>(real),
+			numerical_cast<T>(imaginary)
 		);
 	}
 };
@@ -172,43 +173,6 @@ enum class comparison_mode
 
 namespace detail
 {
-
-/**
- * @brief Round a computed value back into its stored element type.
- *
- * Mirrors the backend's store(). Comparing stored values rather than
- * computed ones is what keeps the exact mode exact for float16_t.
- *
- * @tparam T The stored element type.
- */
-template <typename T>
-struct element_narrow
-{
-	template <typename V>
-	static T apply(const V &value) noexcept
-	{
-		return static_cast<T>(value);
-	}
-};
-
-template <typename T>
-struct element_narrow<std::complex<T>>
-{
-	template <typename V>
-	static std::complex<T> apply(const std::complex<V> &value) noexcept
-	{
-		return std::complex<T>(
-			static_cast<T>(value.real()),
-			static_cast<T>(value.imag())
-		);
-	}
-
-	template <typename V>
-	static std::complex<T> apply(const V &value) noexcept
-	{
-		return std::complex<T>(static_cast<T>(value));
-	}
-};
 
 /**
  * @brief Compare one real component against its expected value.

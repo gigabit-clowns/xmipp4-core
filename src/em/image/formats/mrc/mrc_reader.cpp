@@ -5,6 +5,7 @@
 #include "mrc_host_access.hpp"
 #include "mrc_region_read_plan.hpp"
 #include "mrc_region_transfer.hpp"
+#include "mrc_region_window.hpp"
 
 #include <rexlib/core/ndarray/array_descriptor.hpp>
 #include <rexlib/core/ndarray/array_ref.hpp>
@@ -91,6 +92,7 @@ void mrc_reader::read(
 	layout.get_extents(array_extents);
 	layout.get_strides(array_strides);
 
+	// Validate the batch before the prefetch touches it.
 	const mrc_region_read_plan plan(
 		regions,
 		m_geometry.get_extents(),
@@ -98,6 +100,12 @@ void mrc_reader::read(
 		make_span(array_extents),
 		make_span(array_strides),
 		layout.get_offset()
+	);
+
+	const auto window = make_region_window(regions, m_geometry);
+	m_mapping.prefetch(
+		m_geometry.get_data_offset() + window.get_byte_offset(),
+		window.get_byte_size()
 	);
 
 	read_regions(

@@ -212,6 +212,28 @@ mrc_header parse_header(span<const byte> bytes);
 void serialize_header(const mrc_header &header, span<byte> bytes);
 
 /**
+ * @brief Check whether the axis correspondence of a header is a permutation.
+ *
+ * The columns, the rows and the sections of a file each run along one of the
+ * three axes of space, and no two of them along the same one.
+ *
+ * @param header The header to consult.
+ * @return bool true if the three fields name the three axes, one each.
+ */
+bool has_axis_permutation(const mrc_header &header) noexcept;
+
+/**
+ * @brief Check whether the axis correspondence of a header is unset.
+ *
+ * Zero is no axis, and a header of zeros is what a writer that never touched
+ * the three fields leaves behind.
+ *
+ * @param header The header to consult.
+ * @return bool true if none of the three fields names an axis.
+ */
+bool has_unset_axes(const mrc_header &header) noexcept;
+
+/**
  * @brief Check whether mode 0 of a header holds signed values.
  *
  * True unless the header carries the IMOD stamp without its signed byte flag,

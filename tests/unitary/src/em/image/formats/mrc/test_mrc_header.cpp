@@ -308,6 +308,21 @@ TEST_CASE( "an MRC header that contradicts the format is refused",
 		REQUIRE_THROWS_AS( parse_header(view(raw)), image_format_error );
 	}
 
+	// Zero is no axis, which is what a writer that never touched the three
+	// fields leaves behind, and is read as the three axes in order.
+	SECTION( "an axis correspondence of zeros is not refused" )
+	{
+		auto raw = make_raw_header(byte_order::little_endian);
+		put_int32(raw, mapc_offset, 0, byte_order::little_endian);
+		put_int32(raw, mapr_offset, 0, byte_order::little_endian);
+		put_int32(raw, maps_offset, 0, byte_order::little_endian);
+
+		const auto header = parse_header(view(raw));
+
+		REQUIRE( has_unset_axes(header) );
+		REQUIRE_FALSE( has_axis_permutation(header) );
+	}
+
 	SECTION( "a stack of volumes that does not divide evenly is refused" )
 	{
 		auto raw = make_raw_header(byte_order::little_endian);

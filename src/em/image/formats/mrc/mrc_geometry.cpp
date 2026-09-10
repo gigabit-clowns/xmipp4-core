@@ -4,8 +4,10 @@
 
 #include "mrc_constants.hpp"
 
+#include <core/logger.hpp>
 #include <rexlib/em/image/exceptions/image_format_error.hpp>
 
+#include <algorithm>
 #include <functional>
 #include <numeric>
 
@@ -24,38 +26,75 @@ std::size_t to_extent(std::int32_t count) noexcept
 	return static_cast<std::size_t>(count);
 }
 
-std::vector<std::size_t> derive_extents(const mrc_header &header)
+enum class file_kind
 {
+	image,
+	image_stack,
+	volume,
+	volume_stack
+};
+
+file_kind derive_file_kind(const mrc_header &header) noexcept
+{
+	const auto space_group = header.get_space_group();
+	const auto sections = header.get_section_count();
+
+	if (is_volume_stack_space_group(space_group))
+	{
+		const auto depth = header.get_section_sampling();
+		if (depth == sections)
+		{
+			return file_kind::volume;
+		}
+
+		if (depth != 1)
+		{
+			return file_kind::volume_stack;
+		}
+	}
+	else if (space_group != image_stack_space_group)
+	{
+		return file_kind::volume;
+	}
+
+	return sections == 1 ? file_kind::image : file_kind::image_stack;
+}
+
+std::vector<std::size_t> derive_stored_extents(const mrc_header &header)
+{
+	const auto kind = derive_file_kind(header);
 	const auto columns = to_extent(header.get_column_count());
 	const auto rows = to_extent(header.get_row_count());
 	const auto sections = to_extent(header.get_section_count());
 
-	if (is_volume_stack_space_group(header.get_space_group()))
+	if (kind == file_kind::volume_stack)
 	{
 		const auto depth = to_extent(header.get_section_sampling());
 		return {sections / depth, depth, rows, columns};
 	}
 
-	if (header.get_space_group() == image_stack_space_group && sections == 1)
+	if (kind == file_kind::image)
 	{
 		return {rows, columns};
 	}
 
-	return {sections, rows, columns};
+	return {sections, rows, columns}; // volume or image_stack
 }
 
 std::size_t derive_core_rank(const mrc_header &header) noexcept
 {
-	if (is_volume_stack_space_group(header.get_space_group()))
+	switch (derive_file_kind(header))
 	{
+	case file_kind::image:
+	case file_kind::image_stack:
+		return 2;
+	default: // file_kind::volume or file_kind::volume_stack
 		return 3;
 	}
-
-	return header.get_space_group() == image_stack_space_group ? 2 : 3;
 }
 
 std::vector<std::ptrdiff_t>
-derive_strides(const std::vector<std::size_t> &extents)
+derive_stored_strides(const std::vector<std::size_t> &extents)
 {
 	std::vector<std::ptrdiff_t> strides(extents.size());
 
@@ -67,6 +106,114 @@ derive_strides(const std::vector<std::size_t> &extents)
 	}
 
 	return strides;
+}
+
+std::vector<std::int32_t>
+derive_core_space_axes(const mrc_header &header, std::size_t core_rank)
+{
+	REXLIB_ASSERT( core_rank == 3 || core_rank == 2 );
+
+	std::vector<std::int32_t> axes;
+	axes.reserve(core_rank);
+
+	if (core_rank == 3)
+	{
+		axes.push_back(header.get_section_axis());
+	}
+
+	axes.push_back(header.get_row_axis());
+	axes.push_back(header.get_column_axis());
+
+	return axes;
+}
+
+std::vector<std::size_t> make_stored_order(std::size_t rank)
+{
+	std::vector<std::size_t> order(rank);
+	std::iota(order.begin(), order.end(), std::size_t(0));
+
+	return order;
+}
+
+// A file that states no axis correspondence at all is read as the file it
+// would be if it named the three axes in order, which is what the writer that
+// left the fields alone laid out.
+std::vector<std::size_t> derive_axis_order(
+	const mrc_header &header,
+	std::size_t rank,
+	std::size_t core_rank
+)
+{
+	if (!has_axis_permutation(header))
+	{
+		if (!has_unset_axes(header))
+		{
+			throw image_format_error(
+				"mrc_geometry: The axis correspondence of the file names "
+				"anything but the three axes of space, one each."
+			);
+		}
+
+		REXLIB_LOG_WARN(
+			"An MRC file does not state which axes of space its columns, its "
+			"rows and its sections run along. It is read as though they ran "
+			"along 1, 2 and 3."
+		);
+
+		return make_stored_order(rank);
+	}
+
+	const auto core_axes = derive_core_space_axes(header, core_rank);
+	const auto leading = rank - core_rank;
+
+	auto order = make_stored_order(leading);
+	for (auto space_axis = space_axis_count; space_axis > 0; --space_axis)
+	{
+		const auto stored = std::find(
+			core_axes.cbegin(), core_axes.cend(), space_axis
+		);
+		if (stored != core_axes.cend())
+		{
+			order.push_back(
+				leading +
+				static_cast<std::size_t>(stored - core_axes.cbegin())
+			);
+		}
+	}
+
+	return order;
+}
+
+template <typename T>
+std::vector<T> reorder(
+	const std::vector<T> &values,
+	const std::vector<std::size_t> &order
+)
+{
+	std::vector<T> result;
+	result.reserve(order.size());
+	for (auto axis : order)
+	{
+		result.push_back(values[axis]);
+	}
+
+	return result;
+}
+
+void derive_axes(
+	const mrc_header &header,
+	std::size_t core_rank,
+	std::vector<std::size_t> &extents,
+	std::vector<std::ptrdiff_t> &strides
+)
+{
+	const auto stored_extents = derive_stored_extents(header);
+	const auto order = derive_axis_order(
+		header, stored_extents.size(), core_rank
+	);
+
+	extents = reorder(stored_extents, order);
+	strides = reorder(derive_stored_strides(stored_extents), order);
 }
 
 void check_element_alignment(std::size_t offset, numerical_type data_type)
@@ -84,12 +231,11 @@ void check_element_alignment(std::size_t offset, numerical_type data_type)
 } // anonymous namespace
 
 mrc_geometry::mrc_geometry(const mrc_header &header)
-	: m_extents(derive_extents(header))
-	, m_strides(derive_strides(m_extents))
-	, m_core_rank(derive_core_rank(header))
+	: m_core_rank(derive_core_rank(header))
 	, m_data_type(mrc::get_data_type(header))
 	, m_data_offset(mrc::get_data_offset(header))
 {
+	derive_axes(header, m_core_rank, m_extents, m_strides);
 	check_element_alignment(m_data_offset, m_data_type);
 }
 

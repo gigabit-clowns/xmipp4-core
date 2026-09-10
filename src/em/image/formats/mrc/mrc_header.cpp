@@ -200,18 +200,6 @@ byte_order resolve_byte_order(span<const byte> bytes)
 	);
 }
 
-bool is_axis_permutation(const mrc_header &header) noexcept
-{
-	std::array<std::int32_t, 3> axes = {
-		header.get_column_axis(),
-		header.get_row_axis(),
-		header.get_section_axis()
-	};
-	std::sort(axes.begin(), axes.end());
-
-	return axes[0] == 1 && axes[1] == 2 && axes[2] == 3;
-}
-
 void validate(const mrc_header &header)
 {
 	if (header.get_column_count() < 0 ||
@@ -225,11 +213,11 @@ void validate(const mrc_header &header)
 		);
 	}
 
-	if (!is_axis_permutation(header))
+	if (!has_axis_permutation(header) && !has_unset_axes(header))
 	{
 		throw image_format_error(
-			"mrc::parse_header: The axis correspondence of the file is not "
-			"a permutation of the three axes."
+			"mrc::parse_header: The axis correspondence of the file names "
+			"anything but the three axes of space, one each."
 		);
 	}
 
@@ -685,6 +673,25 @@ void serialize_header(const mrc_header &header, span<byte> bytes)
 		: big_endian_machine_stamp;
 	bytes[offset::machst] = as_byte(stamp[0]);
 	bytes[offset::machst + 1] = as_byte(stamp[1]);
+}
+
+bool has_axis_permutation(const mrc_header &header) noexcept
+{
+	std::array<std::int32_t, space_axis_count> axes = {{
+		header.get_column_axis(),
+		header.get_row_axis(),
+		header.get_section_axis()
+	}};
+	std::sort(axes.begin(), axes.end());
+
+	return axes[0] == 1 && axes[1] == 2 && axes[2] == 3;
+}
+
+bool has_unset_axes(const mrc_header &header) noexcept
+{
+	return header.get_column_axis() == 0 &&
+		header.get_row_axis() == 0 &&
+		header.get_section_axis() == 0;
 }
 
 bool holds_signed_bytes(const mrc_header &header) noexcept

@@ -248,12 +248,12 @@ TEST_CASE(
 	// Each file's read spins until every other one has also started. A
 	// source that serialized file reads would deadlock the first one here
 	// rather than merely run slowly.
-	REXLIB_CONST_CONSTEXPR std::size_t file_count = 4;
+	static REXLIB_CONST_CONSTEXPR std::size_t file_count = 4;
 
 	image_transaction_plan plan(make_span(plane_extents), 3, 3);
 	std::atomic<std::size_t> entered(0);
 	const auto barrier =
-		[&entered, file_count]
+		[&entered]
 		{
 			entered.fetch_add(1);
 			while (entered.load() < file_count)
@@ -296,7 +296,7 @@ TEST_CASE(
 	"[image_source]"
 )
 {
-	REXLIB_CONST_CONSTEXPR std::size_t transaction_count = 2;
+	static REXLIB_CONST_CONSTEXPR std::size_t transaction_count = 2;
 
 	image_transaction_plan first_plan(make_span(plane_extents), 3, 3);
 	const auto first_file = first_plan.add_file("stack_0.mrcs");
@@ -308,7 +308,7 @@ TEST_CASE(
 
 	std::atomic<std::size_t> entered(0);
 	const auto barrier =
-		[&entered, transaction_count]
+		[&entered]
 		{
 			entered.fetch_add(1);
 			while (entered.load() < transaction_count)

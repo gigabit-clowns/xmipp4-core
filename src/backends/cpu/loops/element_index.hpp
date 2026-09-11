@@ -41,9 +41,9 @@ auto dispatch_index_run(
  * @brief Invoke a callable with the index run of a traversal that hands out
  * the linear index.
  *
- * The change of the linear index along the innermost axis is resolved to a
- * stride tag the way @ref dispatch_inner_loop_strides resolves the stride of
- * an operand.
+ * The change of the linear index along the innermost axis is resolved to
+ * `contiguous_stride_tag` when it is one, and left as a runtime
+ * `std::ptrdiff_t` otherwise.
  *
  * @tparam F Callable invoked as `callable(linear_index_run<Stride>)`, once per
  * resolved stride type.

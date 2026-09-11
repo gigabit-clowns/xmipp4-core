@@ -264,7 +264,8 @@ void run_elementwise_loop(
  * where `index_run` is at the first element of the vector, and
  * `index_run.advanced(i)` at its element `i`. It is a
  * `linear_index_run<Stride>` for @ref linear_index_tag, its stride resolved
- * the way the operand strides are, and a @ref multidimensional_index for
+ * to `contiguous_stride_tag` when it is one and left as a runtime
+ * `std::ptrdiff_t` otherwise, and a @ref multidimensional_index for
  * @ref multidimensional_index_tag. For @ref no_index_tag it is left out.
  *
  * @tparam Kernel Functor invoked per 1D vector.
@@ -277,8 +278,8 @@ void run_elementwise_loop(
  * @param indexing The index to hand the kernel.
  * @param pointers The base pointer of each operand.
  *
- * @warning A linear index takes part in the stride dispatch, so @p kernel is
- * instantiated for up to `3^(N+1)` stride combinations.
+ * @warning A linear index doubles the stride combinations @p kernel is
+ * instantiated for, to up to `2*3^N`.
  *
  * @see run_elementwise_vector_loop
  * @see add_index_operands

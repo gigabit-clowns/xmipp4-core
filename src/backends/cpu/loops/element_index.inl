@@ -38,24 +38,25 @@ auto dispatch_index_run(
 {
 	REXLIB_ASSERT( layout.get_number_of_operands() == operand_count + 1 );
 
-	if (layout.get_rank() == 0)
+	// A linear index moves along every axis holding more than one element,
+	// so a broadcasting tag would never be taken. A layout of no axes visits
+	// a single element, for which any stride will do.
+	const auto stride = layout.get_rank() == 0
+		? std::ptrdiff_t(1)
+		: layout.get_strides(operand_count)[0];
+
+	if (stride == 1)
 	{
 		return std::forward<F>(callable)(
-			linear_index_run<broadcasting_stride_tag>(
+			linear_index_run<contiguous_stride_tag>(
 				0,
-				broadcasting_stride_tag()
+				contiguous_stride_tag()
 			)
 		);
 	}
 
-	return dispatch_single_stride(
-		[&callable] (auto stride)
-		{
-			return std::forward<F>(callable)(
-				linear_index_run<decltype(stride)>(0, stride)
-			);
-		},
-		layout.get_strides(operand_count)[0]
+	return std::forward<F>(callable)(
+		linear_index_run<std::ptrdiff_t>(0, stride)
 	);
 }
 

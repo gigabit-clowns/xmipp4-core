@@ -20,6 +20,7 @@ target_sources(
 		mrc_region_transfer_int8.cpp
 		mrc_region_transfer_uint16.cpp
 		mrc_region_transfer_uint8.cpp
+		mrc_region_window.cpp
 		mrc_region_write_plan.cpp
 		mrc_write_format.cpp
 		mrc_writer.cpp

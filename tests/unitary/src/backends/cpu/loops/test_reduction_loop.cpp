@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <backends/cpu/config.hpp>
 #include <backends/cpu/loops/element_index_tags.hpp>
@@ -1039,16 +1040,11 @@ TEST_CASE(
 	"[reduction_loop]"
 )
 {
-	std::array<std::ptrdiff_t, 3> strides;
-
-	SECTION( "an array stored row by row" )
-	{
-		strides = { 12, 4, 1 };
-	}
-	SECTION( "an array stored column by column" )
-	{
-		strides = { 1, 2, 6 };
-	}
+	// Stored row by row, then column by column.
+	const auto strides = GENERATE(
+		std::array<std::ptrdiff_t, 3>{ 12, 4, 1 },
+		std::array<std::ptrdiff_t, 3>{ 1, 2, 6 }
+	);
 
 	const auto kept_layout = make_layout({ 3 }, { { strides[1] }, { 1 } });
 	std::vector<int> output(3, -1);

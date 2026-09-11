@@ -134,16 +134,15 @@ private:
 		std::int64_t candidate_where
 	) const noexcept
 	{
-		// The index is compared first: visited in index order it never
-		// decreases, so the second ordering is only ever asked out of order.
-		const auto wins =
-			m_order(candidate, best) ||
-			(candidate_where < where && !m_order(best, candidate));
-
-		if (wins)
+		// Almost every candidate loses outright, so that is asked first, and
+		// the index is only read for one that does not.
+		if (!m_order(best, candidate))
 		{
-			best = candidate;
-			where = candidate_where;
+			if (m_order(candidate, best) || candidate_where < where)
+			{
+				best = candidate;
+				where = candidate_where;
+			}
 		}
 	}
 
